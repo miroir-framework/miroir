@@ -6,7 +6,10 @@ import {
   selectByDomainManyQueriesFromDomainStateNew
 } from "../../src/2_domain/DomainSelectorNew";
 
-import { DomainElement, DomainManyQueriesWithDeploymentUuid } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import {
+  DomainElement,
+  DomainManyQueriesWithDeploymentUuid,
+} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { circularReplacer } from "../../src/tools";
 import domainStateImport from "./domainState.json";
 
@@ -314,6 +317,66 @@ describe("domainSelector", () => {
           "516a7366-39e7-4998-82cb-80199a7fa667"
         ]
       );
+    }
+  )
+
+  // ###########################################################################################
+  it(
+    'select Authors',
+    () => {
+
+      const queryParam: DomainManyQueriesWithDeploymentUuid = {
+        queryType: "DomainManyQueries",
+        deploymentUuid: applicationDeploymentLibrary.uuid,
+        contextResults: { elementType: "object", elementValue: {} },
+        pageParams: { elementType: "object", elementValue: {} },
+        queryParams: { elementType: "object", elementValue: {} },
+        fetchQuery: {
+          select: {
+            authors: {
+              queryType: "selectObjectListByEntity",
+              parentName: "Author",
+              parentUuid: {
+                referenceType: "constant",
+                referenceUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+              },
+            },
+          },
+        },
+      };
+
+      const result:DomainElement = selectByDomainManyQueriesFromDomainStateNew(domainState, getSelectorParams(queryParam));
+
+      console.log("result", result);
+      
+      expect((result.elementValue as any)["authors"].elementValue).toEqual({
+          '4441169e-0c22-4fbc-81b2-28c87cf48ab2': {
+            uuid: '4441169e-0c22-4fbc-81b2-28c87cf48ab2',
+            parentName: 'Author',
+            parentUuid: 'd7a144ff-d1b9-4135-800c-a7cfc1f38733',
+            name: 'Don Norman'
+          },
+          'ce7b601d-be5f-4bc6-a5af-14091594046a': {
+            uuid: 'ce7b601d-be5f-4bc6-a5af-14091594046a',
+            parentName: 'Author',
+            parentUuid: 'd7a144ff-d1b9-4135-800c-a7cfc1f38733',
+            name: 'Paul Veyne'
+          },
+          'd14c1c0c-eb2e-42d1-8ac1-2d58f5143c17': {
+            uuid: 'd14c1c0c-eb2e-42d1-8ac1-2d58f5143c17',
+            parentName: 'Author',
+            parentUuid: 'd7a144ff-d1b9-4135-800c-a7cfc1f38733',
+            conceptLevel: 'Data',
+            name: 'Cornell Woolrich'
+          },
+          'e4376314-d197-457c-aa5e-d2da5f8d5977': {
+            uuid: 'e4376314-d197-457c-aa5e-d2da5f8d5977',
+            parentName: 'Author',
+            parentUuid: 'd7a144ff-d1b9-4135-800c-a7cfc1f38733',
+            conceptLevel: 'Data',
+            name: 'Catherine Guérard'
+          }
+        });
     }
   )
 

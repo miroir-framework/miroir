@@ -25,7 +25,8 @@
         "parentName": "User",
         "parentUuid": "ca794e28-b2dc-45b3-8137-00151557eea8",
         "label": "Users",
-        "fetchedDataReference": "users"
+        "fetchedDataReference": "users",
+        "sortByAttribute": "lastName"
       }
     }
   }

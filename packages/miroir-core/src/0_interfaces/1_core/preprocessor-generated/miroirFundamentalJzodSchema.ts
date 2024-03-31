@@ -1782,6 +1782,7 @@ export const miroirFundamentalJzodSchema = {
             "extra": {
               "id": 6,
               "defaultLabel": "Application",
+              "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
               "editable": false
             }
           },
@@ -1806,7 +1807,6 @@ export const miroirFundamentalJzodSchema = {
             "extra": {
               "id": 8,
               "defaultLabel": "Application",
-              "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
               "editable": true
             }
           },
@@ -1985,7 +1985,7 @@ export const miroirFundamentalJzodSchema = {
             ],
             "extra": {
               "id": 1,
-              "defaultLabel": "Uuid",
+              "defaultLabel": "Application",
               "editable": false
             }
           },
@@ -1999,7 +1999,7 @@ export const miroirFundamentalJzodSchema = {
             ],
             "extra": {
               "id": 1,
-              "defaultLabel": "Uuid",
+              "defaultLabel": "Report",
               "editable": false
             }
           },
@@ -2014,7 +2014,7 @@ export const miroirFundamentalJzodSchema = {
             ],
             "extra": {
               "id": 1,
-              "defaultLabel": "Uuid",
+              "defaultLabel": "Instance",
               "editable": false
             }
           },
@@ -2219,7 +2219,7 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "extra": {
                       "id": 1,
-                      "defaultLabel": "Uuid",
+                      "defaultLabel": "Application",
                       "editable": false
                     }
                   },
@@ -2233,7 +2233,7 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "extra": {
                       "id": 1,
-                      "defaultLabel": "Uuid",
+                      "defaultLabel": "Report",
                       "editable": false
                     }
                   },
@@ -2248,7 +2248,7 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "extra": {
                       "id": 1,
-                      "defaultLabel": "Uuid",
+                      "defaultLabel": "Instance",
                       "editable": false
                     }
                   },
@@ -2464,6 +2464,11 @@ export const miroirFundamentalJzodSchema = {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "selectObjectQuery"
                 }
+              },
+              "sortByAttribute": {
+                "type": "simpleType",
+                "optional": true,
+                "definition": "string"
               }
             }
           }
@@ -3014,6 +3019,11 @@ export const miroirFundamentalJzodSchema = {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                           "relativePath": "selectObjectQuery"
                         }
+                      },
+                      "sortByAttribute": {
+                        "type": "simpleType",
+                        "optional": true,
+                        "definition": "string"
                       }
                     }
                   }

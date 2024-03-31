@@ -140,19 +140,32 @@ const jzodSchemaConversion
 // console.log("####### convertedZodSchema",JSON.stringify(convertedZodSchema, null, 2));
 
 try {
-  const miroirFundamentalJzodSchemaFilePath = path.join(jzodSchemaConversion[0].targetDirectory,"miroirFundamentalJzodSchema.ts")
-  const miroirFundamentalJzodSchemaJson = "export const miroirFundamentalJzodSchema = " + JSON.stringify(miroirFundamentalJzodSchema, undefined, 2);
-  console.log("generateZodSchemaFileFromJzodSchema miroirFundamentalJzodSchemaFilePath",miroirFundamentalJzodSchemaFilePath);
+  const miroirFundamentalJzodSchemaFilePath = path.join(
+    jzodSchemaConversion[0].targetDirectory,
+    "miroirFundamentalJzodSchema.ts"
+  );
+  const miroirFundamentalJzodSchemaJson =
+    "export const miroirFundamentalJzodSchema = " + JSON.stringify(miroirFundamentalJzodSchema, undefined, 2);
+  console.log(
+    "generateZodSchemaFileFromJzodSchema miroirFundamentalJzodSchemaFilePath",
+    miroirFundamentalJzodSchemaFilePath
+  );
   if (miroirFundamentalJzodSchemaFilePath && existsSync(miroirFundamentalJzodSchemaFilePath)) {
-    const oldFileContents = readFileSync(miroirFundamentalJzodSchemaFilePath).toString()
-    if (miroirFundamentalJzodSchemaJson != oldFileContents)  { // TODO: do deep equal
-      console.log("generateZodSchemaFileFromJzodSchema miroirFundamentalJzodSchemaFileName miroirFundamentalJzodSchemaJson",miroirFundamentalJzodSchemaJson);
-      writeFileSync(miroirFundamentalJzodSchemaFilePath,miroirFundamentalJzodSchemaJson);
+    const oldFileContents = readFileSync(miroirFundamentalJzodSchemaFilePath).toString();
+    if (miroirFundamentalJzodSchemaJson != oldFileContents) {
+      // TODO: do deep equal
+      console.log(
+        "generateZodSchemaFileFromJzodSchema miroirFundamentalJzodSchemaFileName miroirFundamentalJzodSchemaJson",
+        miroirFundamentalJzodSchemaJson
+      );
+      writeFileSync(miroirFundamentalJzodSchemaFilePath, miroirFundamentalJzodSchemaJson);
     } else {
-      console.log("generateZodSchemaFileFromJzodSchema miroirFundamentalJzodSchemaFileName old contents equal new contents, no file generation needed.");
+      console.log(
+        "generateZodSchemaFileFromJzodSchema miroirFundamentalJzodSchemaFileName old contents equal new contents, no file generation needed."
+      );
     }
   } else {
-    writeFileSync(miroirFundamentalJzodSchemaFilePath,miroirFundamentalJzodSchemaJson);
+    writeFileSync(miroirFundamentalJzodSchemaFilePath, miroirFundamentalJzodSchemaJson);
   }
 
   for (const schema of jzodSchemaConversion) {

@@ -111,23 +111,28 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
     []
   )
 
-  const fetchedDataJzodSchemaParams: DomainStateJzodSchemaSelectorParams<DomainModelGetFetchParamJzodSchemaQueryParams> = useMemo(()=>({
-    selectorMap: jzodSchemaSelectorMap,
-    query: {
-      queryType: "getFetchParamsJzodSchema",
-      pageParams: {
-        elementType: "object",
-        elementValue: {
-          applicationSection: {elementType: "string", elementValue: props.applicationSection??"data"},
-          deploymentUuid: {elementType: "string", elementValue: props.deploymentUuid??""},
-          instanceUuid: {elementType: "string", elementValue: props.instanceUuid??""},
-        }
-      },
-      queryParams: { elementType: "object", elementValue: {} },
-      contextResults: { elementType: "object", elementValue: {} },
-      fetchParams: domainFetchQueryParams.query,
-    }
-  }),[jzodSchemaSelectorMap])
+  const fetchedDataJzodSchemaParams: DomainStateJzodSchemaSelectorParams<DomainModelGetFetchParamJzodSchemaQueryParams> =
+    useMemo(
+      () => ({
+        selectorMap: jzodSchemaSelectorMap,
+        query: {
+          queryType: "getFetchParamsJzodSchema",
+          pageParams: {
+            elementType: "object",
+            elementValue: {
+              applicationSection: { elementType: "string", elementValue: props.applicationSection ?? "data" },
+              deploymentUuid: { elementType: "string", elementValue: props.deploymentUuid ?? "" },
+              instanceUuid: { elementType: "string", elementValue: props.instanceUuid ?? "" },
+            },
+          },
+          queryParams: { elementType: "object", elementValue: {} },
+          contextResults: { elementType: "object", elementValue: {} },
+          fetchParams: domainFetchQueryParams.query,
+        },
+      }),
+      [jzodSchemaSelectorMap]
+    )
+  ;
 
   // const fetchedDataJzodSchema: RecordOfJzodObject | undefined = useDomainStateSelectorNew(
   const fetchedDataJzodSchema: RecordOfJzodObject | undefined = useDomainStateJzodSchemaSelector(

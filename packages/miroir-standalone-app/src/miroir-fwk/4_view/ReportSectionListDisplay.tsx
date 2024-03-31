@@ -632,6 +632,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                   // instancesToDisplay={instancesToDisplay}
                   displayTools={true}
                   onRowEdit={onEditFormObject}
+                  sortByAttribute={props.section.definition.sortByAttribute}
                 ></MTableComponent>
               </div>
             ) : (

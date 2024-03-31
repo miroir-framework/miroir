@@ -89,9 +89,13 @@ export const ReportPage = () => {
     }
   }), [])
 
-  const displayedDeploymentDefinition:ApplicationDeploymentConfiguration | undefined = deployments.find(d=>d.uuid == params.deploymentUuid);
+  const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(
+    (d) => d.uuid == params.deploymentUuid
+  );
 
-  const localApplicationSection: ApplicationSection = (params.applicationSection == "data"?"data":"model") as ApplicationSection;
+  const localApplicationSection: ApplicationSection = (
+    params.applicationSection == "data" ? "data" : "model"
+  ) as ApplicationSection;
 
   const mapping = useMemo(() => ({ // displayedDeploymentDefinition, displayedApplicationSection
     [applicationDeploymentMiroir.uuid]: {
@@ -150,15 +154,12 @@ export const ReportPage = () => {
           params.deploymentUuid &&
           params.applicationSection 
           ? (
-            // params.instanceUuid?
-              <RootReportSectionView
-                reportSection={currentMiroirReport?.definition}
-                applicationSection={params.applicationSection as ApplicationSection}
-                deploymentUuid={params.deploymentUuid}
-                instanceUuid={params.instanceUuid}
-              />
-              // : 
-              //   <div>No instance</div>
+            <RootReportSectionView
+              reportSection={currentMiroirReport?.definition}
+              applicationSection={params.applicationSection as ApplicationSection}
+              deploymentUuid={params.deploymentUuid}
+              instanceUuid={params.instanceUuid}
+            />
           ) : (
             <div>Oops.</div>
           )

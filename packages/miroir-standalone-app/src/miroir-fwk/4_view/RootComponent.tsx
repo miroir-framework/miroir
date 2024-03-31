@@ -1,40 +1,23 @@
 import {
   Grid,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
   Toolbar
 } from "@mui/material";
 import { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import CssBaseline from '@mui/material/CssBaseline';
 import { styled } from '@mui/material/styles';
 import { useState } from 'react';
-import { Link, Outlet, Params, useParams } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
+import { Outlet, Params, useParams } from 'react-router-dom';
 
 
 import {
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
-  applicationLibrary,
-  applicationMiroir,
-  applicationModelBranchLibraryMasterBranch,
-  applicationModelBranchMiroirMasterBranch,
-  applicationStoreBasedConfigurationLibrary,
-  applicationStoreBasedConfigurationMiroir,
-  applicationVersionInitialMiroirVersion,
-  applicationVersionLibraryInitialVersion,
-  defaultMiroirMetaModel,
   DomainControllerInterface,
-  DomainManyQueriesWithDeploymentUuid,
   getLoggerName,
   LoggerInterface,
   MiroirConfigForRestClient,
   MiroirLoggerFactory,
-  PersistenceInterface,
-  reportBookInstance,
+  PersistenceInterface
 } from "miroir-core";
 
 import { useDomainControllerService, useMiroirContext } from './MiroirContextReactProvider';
@@ -43,7 +26,6 @@ import { ReportUrlParamKeys } from './routes/ReportPage';
 
 import { packageName } from '../../constants';
 import { cleanLevel } from './constants';
-import { uploadBooksAndReports } from './uploadBooksAndReports';
 import { Sidebar, SidebarWidth } from "./Sidebar";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RootComponent");

@@ -133,12 +133,12 @@
                 "definition": "string",
                 "validations": [
                   {
-                    "type": "Report"
+                    "type": "uuid"
                   }
                 ],
                 "extra": {
                   "id": 1,
-                  "defaultLabel": "Uuid",
+                  "defaultLabel": "Report",
                   "editable": false
                 }
               },

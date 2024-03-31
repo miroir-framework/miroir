@@ -118,30 +118,41 @@ export const MTableComponent = (props: TableComponentProps) => {
   const tableComponentRows: { tableComponentRowUuidIndexSchema: TableComponentRow[] } = useMemo(
     // always use object, not array, to ensure correct refresh!
     () => ({
-      tableComponentRowUuidIndexSchema: Object.values(props.instancesToDisplay ?? {}).map((i: EntityInstance) => ({
-        rawValue: i,
-        jzodSchema: props.type == TableComponentTypeSchema.enum.EntityInstance
-          ? props.currentEntityDefinition.jzodSchema.definition
-          : { },
-        displayedValue: Object.fromEntries(
-          Object.entries(i).map((e) => {
-            const currentAttributeDefinition =
-              props.type == TableComponentTypeSchema.enum.EntityInstance
-                ? Object.entries(props.currentEntityDefinition?.jzodSchema.definition ?? {}).find((a) => a[0] == e[0])
-                : undefined;
-            return [
-              e[0],
-              Array.isArray(currentAttributeDefinition) &&
-              currentAttributeDefinition.length > 1 &&
-              (currentAttributeDefinition[1] as any).type == "object"
-                ? JSON.stringify(e[1])
-                : e[1],
-            ];
-          })
-        ),
-      })),
+      tableComponentRowUuidIndexSchema: Object.values(props.instancesToDisplay ?? {})
+        .sort((a: EntityInstance, b: EntityInstance) =>
+          props.sortByAttribute
+            ? (a as any)[props.sortByAttribute as string] > (b as any)[props.sortByAttribute as string]
+              ? 1
+              : (a as any)[props.sortByAttribute] < (b as any)[props.sortByAttribute]
+              ? -1
+              : 0
+            : 0
+        )
+        .map((i: EntityInstance) => ({
+          rawValue: i,
+          jzodSchema:
+            props.type == TableComponentTypeSchema.enum.EntityInstance
+              ? props.currentEntityDefinition.jzodSchema.definition
+              : {},
+          displayedValue: Object.fromEntries(
+            Object.entries(i).map((e) => {
+              const currentAttributeDefinition =
+                props.type == TableComponentTypeSchema.enum.EntityInstance
+                  ? Object.entries(props.currentEntityDefinition?.jzodSchema.definition ?? {}).find((a) => a[0] == e[0])
+                  : undefined;
+              return [
+                e[0],
+                Array.isArray(currentAttributeDefinition) &&
+                currentAttributeDefinition.length > 1 &&
+                (currentAttributeDefinition[1] as any).type == "object"
+                  ? JSON.stringify(e[1])
+                  : e[1],
+              ];
+            })
+          ),
+        })),
     }),
-    [props.instancesToDisplay]
+    [props.instancesToDisplay,props.sortByAttribute]
   );
   log.info("MTableComponent tableComponentRows", tableComponentRows);
   

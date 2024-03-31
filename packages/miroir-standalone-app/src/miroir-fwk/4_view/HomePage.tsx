@@ -7,19 +7,17 @@ import {
 } from "@mui/material";
 import Box from '@mui/material/Box';
 import { useMemo } from "react";
+import { v4 as uuidv4 } from 'uuid';
 
 import {
   ApplicationDeploymentConfiguration,
   ApplicationSection,
   DomainControllerInterface,
-  DomainElement,
-  DomainManyQueriesWithDeploymentUuid,
   Entity,
   EntityDefinition,
   EntityInstance,
   LoggerInterface,
   MetaModel,
-  MiroirFetchQuery,
   MiroirLoggerFactory,
   ObjectListReportSection,
   Report,
@@ -31,13 +29,10 @@ import {
   entityDefinitionAuthor,
   entityDefinitionBook,
   getLoggerName,
-  getSelectorParams,
-  queryVersionBundleProducerV1,
   reportEntityDefinitionList,
   reportEntityList,
   reportReportList,
-  resetAndInitMiroirAndApplicationDatabase,
-  selectByDomainManyQueriesFromDomainState
+  resetAndInitMiroirAndApplicationDatabase
 } from "miroir-core";
 import { ReduxStateChanges } from "miroir-localcache-redux";
 
@@ -47,7 +42,7 @@ import {
   useMiroirContextService
 } from "../../miroir-fwk/4_view/MiroirContextReactProvider";
 import { Importer } from './Importer';
-import { useCurrentModel, useDomainStateCleanSelector } from "./ReduxHooks";
+import { useCurrentModel } from "./ReduxHooks";
 
 
 // import entityPublisher from "../../assets/library_model/";
@@ -459,7 +454,8 @@ export const HomePage = (props: RootComponentProps) => {
         </button>
       </span>
       <p />
-      <span>transactions: {JSON.stringify(transactions)}</span>
+      <div>uuid: {uuidv4()}</div>
+      <div>transactions: {JSON.stringify(transactions)}</div>
       <p />
       <span>cache size: {JSON.stringify(domainController.currentLocalCacheInfo())}</span>
       <p />

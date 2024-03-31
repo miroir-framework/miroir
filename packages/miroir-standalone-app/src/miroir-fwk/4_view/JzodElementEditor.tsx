@@ -1,6 +1,5 @@
 
-import { useEffect, useMemo, useState } from "react";
-import Select from 'react-select';
+import { useState } from "react";
 
 // import { FieldValues, UseFormRegister, UseFormSetValue, useFormContext } from "react-hook-form";
 
@@ -12,18 +11,14 @@ import {
   ApplicationSection,
   EntityAttribute,
   EntityDefinition,
-  EntityInstanceWithName,
-  EntityInstancesUuidIndex,
   JzodElement,
   JzodObject,
   JzodSchema,
   JzodUnion,
-  LocalCacheQueryParams,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
   Uuid,
-  applicationDeploymentMiroir,
   domainEndpointVersionV1,
   entityDefinitionApplication,
   entityDefinitionApplicationVersion,
@@ -45,18 +40,13 @@ import {
   queryEndpointVersionV1,
   resolveJzodSchemaReference,
   storeManagementEndpoint,
-  undoRedoEndpointVersionV1,
+  undoRedoEndpointVersionV1
 } from "miroir-core";
 
-import { JzodEnumSchemaToJzodElementResolver } from "../JzodTools";
-import { useMiroirContextformHelperState } from "./MiroirContextReactProvider";
-import { useCurrentModel, useEntityInstanceUuidIndexFromLocalCache } from "./ReduxHooks";
-import { cleanLevel } from "./constants";
-import { packageName } from "../../constants";
-import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
 import styled from "@emotion/styled";
-import { Label } from "@mui/icons-material";
-import { Field } from "formik";
+import { packageName } from "../../constants";
+import { useMiroirContextformHelperState } from "./MiroirContextReactProvider";
+import { cleanLevel } from "./constants";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"JzodElementEditor");
@@ -238,21 +228,10 @@ export const JzodElementEditor = (
 ): JSX.Element => {
   count++;
   // log.info("JzodElementEditor count", count, props)
-  // const formMethods = useFormContext();
-  // const { register, handleSubmit, reset, trigger, watch, setValue, getValues, formState } = formMethods;
-  // const { register, setValue } = formMethods;
 
   // const [selectedOption, setSelectedOption] = useState({label:props.name,value:props.initialValuesObject});
   const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
 
-  // const props: JzodElementEditorProps = useMemo(
-  //   () => (
-  //     {
-  //       ...props
-  //     }
-  //   ),
-  //   [props]
-  // )
   const [hiddenFormItems,setHiddenFormItems] = useState<{[k:string]:boolean}>({})
 
   // const localCacheQuery: LocalCacheQueryParams = useMemo(
@@ -313,13 +292,6 @@ export const JzodElementEditor = (
         Array.isArray(currentValue)?currentValue.map((e:any, k:number) => k):[]
       )
   );
-      // Array.isArray(props.formik.values[props.rootLesslistKey])
-      //   ? props.formik.values[props.rootLesslistKey].map((e:any, k:number) => k)
-      //   : (
-      //     typeof(props.formik.values[props.rootLesslistKey]) == "object" && props.formik.values[props.rootLesslistKey] !== null
-      //     ? Object.keys(props.formik.values[props.rootLesslistKey])
-      //     : []
-      //   )
 
   log.info(
     "rendering",
@@ -328,35 +300,6 @@ export const JzodElementEditor = (
     itemsOrder,
   );
   
-  // return (
-  //   <div>
-  //     JzodElementEditor rendered! {count}
-  //     <div>
-  //       {JSON.stringify(initialValuesObject, null, 2)}
-  //     </div>
-  //     <div>
-  //       {JSON.stringify(props.resolvedJzodSchema, null, 2)}
-  //     </div>
-  //     <div>
-  //       {
-
-  //       }
-
-  //     </div>
-  //   </div>
-  // )
-  // const recursiveCallInnerProps = {
-  //   label: currentAttributeDefinition?.extra?.defaultLabel,
-  //   initialValuesObject: props.initialValuesObject
-  //     ? props.initialValuesObject[attribute[0]]
-  //     : undefined,
-  //   showButton: true,
-  //   currentDeploymentUuid: props.currentDeploymentUuid,
-  //   currentApplicationSection: props.currentApplicationSection,
-  //   elementJzodSchema: currentAttributeDefinition,
-  //   rootJzodSchema: props.rootJzodSchema,
-  // };
-
   if (props.resolvedJzodSchema) {
     switch (props.resolvedJzodSchema.type) {
       case "object": {
@@ -637,15 +580,11 @@ export const JzodElementEditor = (
             return (
               <>
                 <label htmlFor={props.listKey}>{displayedLabel}: </label>
-                {/* <label htmlFor={props.listKey}>{displayedLabel}: </label> */}
                 <input
-                  // key={props.listKey}
-                  // form={"form." + props.name}
                   type="text"
                   id={props.rootLesslistKey}
                   name={props.name}
                   {...props.formik.getFieldProps(props.rootLesslistKey)}
-                  // defaultValue={props.initialValuesObject}
                   onChange={props.formik.handleChange}
                   value={currentValue}
                 />
@@ -713,7 +652,6 @@ export const JzodElementEditor = (
               <>
                 <label htmlFor={props.listKey}>{displayedLabel}: </label>
                 <input
-                  // {...register(props.listKey)}
                   id={props.listKey}
                   form={"form." + props.name}
                   name={props.name}
