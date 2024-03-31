@@ -1,0 +1,32 @@
+{
+  "uuid": "3df9413d-5050-4357-910c-f764aacae7e6",
+  "parentName":"Report",
+  "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel":"Model",
+  "name":"UserList",
+  "defaultLabel": "List of Users",
+  "definition": {
+    "reportParameters": {},
+    "fetchQuery": {
+      "select": {
+        "users": {
+          "queryType": "selectObjectListByEntity",
+          "parentName": "User",
+          "parentUuid": {
+            "referenceType": "constant",
+            "referenceUuid": "ca794e28-b2dc-45b3-8137-00151557eea8"
+          }
+        }
+      }
+    },
+    "section": {
+      "type":"objectListReportSection",
+      "definition": {
+        "parentName": "User",
+        "parentUuid": "ca794e28-b2dc-45b3-8137-00151557eea8",
+        "label": "Users",
+        "fetchedDataReference": "users"
+      }
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "uuid": "fc4ba6bc-751f-4d1a-acce-865c10354a31",
+  "parentName":"Report",
+  "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel":"Model",
+  "name":"CountryDetails",
+  "defaultLabel": "Detailed information about a Country",
+  "definition": {
+    "fetchQuery": {
+      "select": {
+        "country": {
+          "queryType": "selectObjectByDirectReference",
+          "parentName": "Country",
+          "parentUuid": {
+            "referenceType": "constant",
+            "referenceUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
+          },
+          "instanceUuid": {
+            "referenceType": "queryParameterReference",
+            "referenceName": "instanceUuid"
+          }
+        },
+        "publishersOfCountry": {
+          "queryType": "selectObjectListByRelation",
+          "parentName": "Publisher",
+          "parentUuid": {
+            "referenceType": "constant",
+            "referenceUuid": "a027c379-8468-43a5-ba4d-bf618be25cab"
+          },
+          "objectReference": {
+            "referenceType": "queryContextReference",
+            "referenceName": "country"
+          },
+          "AttributeOfListObjectToCompareToReferenceUuid": "country"
+        }
+      }
+    },
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type":"objectInstanceReportSection",
+          "definition": {
+            "label": "My Country",
+            "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+            "fetchedDataReference": "country"
+          }
+        },
+        {
+          "type":"objectListReportSection",
+          "definition": {
+            "label": "Country's (${country.name}) Publishers",
+            "parentName": "Publisher",
+            "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+            "fetchedDataReference": "publishersOfCountry"
+          }
+        }
+      ]
+    }
+  }
+}

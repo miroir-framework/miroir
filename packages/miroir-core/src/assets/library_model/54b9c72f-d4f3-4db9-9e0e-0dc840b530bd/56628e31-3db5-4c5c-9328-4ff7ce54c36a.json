@@ -7,6 +7,7 @@
   "conceptLevel": "Model",
   "name": "Country",
   "description": "Country",
+  "defaultInstanceDetailsReportUuid": "fc4ba6bc-751f-4d1a-acce-865c10354a31",
   "viewAttributes": [
     "name",
     "iso3166-1Alpha-2",
