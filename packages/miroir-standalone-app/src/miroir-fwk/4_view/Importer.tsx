@@ -14,6 +14,7 @@ import {
   MetaEntity,
   MiroirLoggerFactory,
   Report,
+  applicationLibrary,
   entityEntity,
   entityEntityDefinition,
   getLoggerName,
@@ -50,7 +51,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
 
   const [file, setFile] = useState(null);
   const [fileDataURL, setFileDataURL] = useState<any>(null);
-  const [fileData, setFileData] = useState<any[]>([]);
+  const [fileData, setFileData] = useState<string[]>([]);
   const [currentWorkSheet, setCurrentWorkSheet] = useState<XLSX.WorkSheet | undefined>(undefined);
 
   const domainController: DomainControllerInterface = useDomainControllerService();
@@ -104,9 +105,9 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     const newEntity: MetaEntity = {
       uuid: uuidv4(),
       parentUuid: entityEntity.uuid,
-      application: '',
-      description: "",
-      name: "test",
+      application: applicationLibrary.uuid,
+      description: "Drinking Fountains of Paris",
+      name: "Fountain",
     }
     // const attributes: EntityAttribute[] = [
     //   {
@@ -139,17 +140,21 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             extra: { id: 1, defaultLabel: "Uuid", editable: false },
           },
         },
-        ...Object.values(fileData[0]).map(
-          (a: string, index) => (
-            {
-              [a]: {
-                type: "simpleType",
-                definition: "string",
-                optional: true,
-                extra: { id: index + 1, defaultLabel: a, editable: true },
-              },
-            }
+        ...(
+          fileData[0]?
+          Object.values(fileData[0]).map(
+            (a: string, index) => (
+              {
+                [a]: {
+                  type: "simpleType",
+                  definition: "string",
+                  optional: true,
+                  extra: { id: index + 1, defaultLabel: a, editable: true },
+                },
+              }
+            )
           )
+          : []
         )
       ),
     };
@@ -173,24 +178,37 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     };
     await domainController.handleAction(createEntityAction, props.currentModel);
     const newEntityReport: Report = {
-      "uuid": uuidv4(),
-      "parentName":"Report",
-      "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-      "conceptLevel":"Model",
-      "name":"FountainList",
-      "defaultLabel": "List of Fountains",
-      "type": "list",
-      "definition":{
-        "section": {
-          "type":"objectListReportSection",
-          "definition": {
-            "queryType": "selectObjectListByRelation",
-            "parentName": "Fountain",
-            "parentUuid": newEntity.uuid
-          }
-        }
-      }
-    }
+      uuid: uuidv4(),
+      parentName: "Report",
+      parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+      conceptLevel: "Model",
+      name: "FountainList",
+      defaultLabel: "List of Fountains",
+      type: "list",
+      definition: {
+        fetchQuery: {
+          select: {
+            fountains: {
+              queryType: "selectObjectListByEntity",
+              parentName: "Fountain",
+              parentUuid: {
+                referenceType: "constant",
+                referenceUuid: newEntity.uuid,
+              },
+            },
+          },
+        },
+        section: {
+          type: "objectListReportSection",
+          definition: {
+            label: "Fountains",
+            // "parentName": "Fountain",
+            parentUuid: newEntity.uuid,
+            fetchedDataReference: "fountains",
+          },
+        },
+      },
+    };
     const createReportAction: DomainAction = {
       actionType: "transactionalInstanceAction",
       instanceAction: {

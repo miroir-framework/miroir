@@ -165,7 +165,7 @@ export const DefaultCellRenderer2 =  memo((props: ICellRendererParams<TableCompo
     props.colDef?.field && props.data && props.data.displayedValue && props.data.displayedValue[props.colDef?.field]
       ? props.data.displayedValue[props.colDef?.field]
       : `attribute ${props.colDef?.field} does not exist on object`;
-  log.info("DefaultCellRenderer2",valueToDisplay, props);
+  // log.info("DefaultCellRenderer2",valueToDisplay, props);
 
   if (Array.isArray(valueToDisplay) || _isObject(valueToDisplay)) {
     return (

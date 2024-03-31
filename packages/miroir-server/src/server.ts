@@ -68,7 +68,8 @@ const portFromConfig: number = Number(miroirConfig.server.rootApiUrl.substring(m
 
 
 const app = express();
-app.use(express.json());
+app.use(express.json({limit: '50mb'}));
+// app.use(express.bodyParser({limit: '50mb'}))
 myLogger.info(`Server being set-up, going to execute on the port::${portFromConfig}`);
 
 miroirCoreStartup();
@@ -108,18 +109,22 @@ for (const op of restServerDefaultHandlers) {
     async (request: Request<{}, any, any, any, Record<string, any>>, response: any, context: any) => {
       const body = request.body;
 
-      const result = await op.handler(
-        true, // useDomainController: since we're on the server, we use the localCache as intermediate step, to access the persistenceStore
-        (response: any) => response.json.bind(response),
-        response,
-        persistenceStoreControllerManager,
-        localCache,
-        op.method,
-        request.originalUrl,
-        body,
-        request.params
-      );
-      return result;
+      try {
+        const result = await op.handler(
+          true, // useDomainController: since we're on the server, we use the localCache as intermediate step, to access the persistenceStore
+          (response: any) => response.json.bind(response),
+          response,
+          persistenceStoreControllerManager,
+          localCache,
+          op.method,
+          request.originalUrl,
+          body,
+          request.params
+        );
+        return result;
+      } catch (error) {
+        myLogger.error("server could not handle action: " + op.method + " on URL: " + op.url + " error: " + error)
+      }
     }
   );
 }
