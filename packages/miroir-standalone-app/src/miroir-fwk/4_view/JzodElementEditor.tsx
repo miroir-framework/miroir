@@ -11,6 +11,9 @@ import {
   ApplicationSection,
   EntityAttribute,
   EntityDefinition,
+  EntityInstance,
+  EntityInstanceWithName,
+  EntityInstancesUuidIndex,
   JzodElement,
   JzodObject,
   JzodSchema,
@@ -47,6 +50,7 @@ import styled from "@emotion/styled";
 import { packageName } from "../../constants";
 import { useMiroirContextformHelperState } from "./MiroirContextReactProvider";
 import { cleanLevel } from "./constants";
+import { Field } from "formik";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"JzodElementEditor");
@@ -96,6 +100,7 @@ export interface JzodElementEditorProps {
   rootLesslistKeyArray: string[],
   indentLevel?:number,
   resolvedJzodSchema: JzodElement | undefined,
+  foreignKeyObjects: Record<string,EntityInstancesUuidIndex>,
   // initialValuesObject: any,
   currentDeploymentUuid?: Uuid,
   currentApplicationSection?: ApplicationSection,
@@ -304,39 +309,6 @@ export const JzodElementEditor = (
     switch (props.resolvedJzodSchema.type) {
       case "object": {
         let resolvedJzodSchema: JzodObject = props.resolvedJzodSchema;
-        // if (elementJzodSchema.extend) {
-        //   if (elementJzodSchema.extend.type == "schemaReference") {
-        //     const resolvedExtend = resolveJzodSchemaReference(
-        //       miroirFundamentalJzodSchema,
-        //       elementJzodSchema.extend,
-        //       currentModel,
-        //       {} as JzodObject
-        //     );
-        //     if (resolvedExtend.type == "object") {
-        //       resolvedJzodSchema = { ...elementJzodSchema, definition: { ...elementJzodSchema.definition, ...resolvedExtend.definition } }
-        //     } else {
-        //       throw new Error(
-        //         "JzodElementEditor extend clause for object schema is not an object. Schema: " +
-        //           JSON.stringify(elementJzodSchema)
-        //       );
-        //     }
-        //   } else {
-        //     if (elementJzodSchema.extend.type == "object") {
-        //       resolvedJzodSchema = { ...elementJzodSchema, definition: { ...elementJzodSchema.definition, ...elementJzodSchema.extend.definition } as Record<string, JzodElement> }
-        //     } else {
-        //       throw new Error(
-        //         "JzodElementEditor extend clause for object schema is not an object. Schema: " +
-        //           JSON.stringify(elementJzodSchema)
-        //       );
-        //     }
-        //     // resolvedJzodSchema = {
-        //     //   ...elementJzodSchema,
-        //     //   definition: { ...elementJzodSchema.definition, ...elementJzodSchema.extend.definition },
-        //     // };
-        //   }
-        // } else {
-        //   resolvedJzodSchema = elementJzodSchema;
-        // }
         // log.info("object", props.listKey, "found resolvedJzodSchema after resolving 'extend' clause:",resolvedJzodSchema);
         // log.info("object", props.listKey, "found value:",props.initialValuesObject, "itemsOrder", itemsOrder);
         
@@ -381,6 +353,7 @@ export const JzodElementEditor = (
                           currentDeploymentUuid={props.currentDeploymentUuid}
                           currentApplicationSection={props.currentApplicationSection}
                           resolvedJzodSchema={currentAttributeDefinition}
+                          foreignKeyObjects={props.foreignKeyObjects}
                           formik={props.formik}
                           // elementJzodSchema={currentAttributeDefinition}
                           // rootJzodSchema={props.rootJzodSchema}
@@ -400,33 +373,6 @@ export const JzodElementEditor = (
       }
       case "array": {
         log.info("############################################### JzodElementEditor array rootLesslistKey", props.rootLesslistKey, "values", props.formik.values);
-        // let resolvedJzodSchema: JzodElement = props.resolvedJzodSchema;
-
-        
-        // const columnDefs: any[] = getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(
-        //   ((elementJzodSchema as JzodArray).definition
-        //     ? (elementJzodSchema as JzodArray).definition
-        //     : {}) as JzodObject
-        // );
-        // const resolvedJzodSchema =
-        //   elementJzodSchema.definition.type == "schemaReference"
-        //     ? // ? resolveJzodSchemaReference(elementJzodSchema.definition, currentModel, props.rootJzodSchema)
-        //       resolveJzodSchemaReference(
-        //         miroirFundamentalJzodSchema,
-        //         elementJzodSchema.definition,
-        //         currentModel,
-        //         {} as JzodObject
-        //       )
-        //     : elementJzodSchema.definition;
-
-        // const targetJzodSchema = resolvedJzodSchema.type == 'union'?props.currentEnumJzodSchemaResolver[elementJzodSchema?.type]:resolvedJzodSchema;
-        // const targetJzodSchema = props.resolvedJzodSchema;
-        // const targetJzodSchema =
-        //   resolvedJzodSchema.type == "union"
-        //     ? props.currentEnumJzodSchemaResolver(elementJzodSchema?.type, elementJzodSchema?.definition)
-        //     : resolvedJzodSchema;
-
-        // const arrayValueObject = props.formik.values[props.rootLesslistKey];
         const arrayValueObject = getValue(props.formik.values,props.rootLesslistKeyArray);
         log.info("array",arrayValueObject, "resolvedJzodSchema",props.resolvedJzodSchema);
 
@@ -448,18 +394,11 @@ export const JzodElementEditor = (
                   const index: number = attributeParam[0];
                   const attribute = attributeParam[1];
                   // HACK HACK HACK
-                  // in the case of a union type, the concrete type of each member has to be resolved, as in the case of the jzodElement definition.
-                  // A proper solution should be devised, such as detecting that a type is displayed (here this could be problematic in general when a
-                  // "type" attribute is defined in a value, "type" becomes a reserved word by Jzod, this is not good.)
                   // TODO: allow individualized schmema resolution for items of an array, in case the definition of the array schema is a union type
+                  // resulting type of an array type would be a tuple type.
 
                   // const currentAttributeJzodSchema: JzodElement = props.resolvedJzodSchema.definition
 
-                  // const currentAttributeJzodSchema =
-                  //   resolvedJzodSchema.type == "union" && attribute.type
-                  //     ? // ? props.currentEnumJzodSchemaResolver[attribute.type]
-                  //       props.currentEnumJzodSchemaResolver(attribute.type, attribute.definition)
-                  //     : targetJzodSchema; // Union of jzodElements
                   log.info(
                     "array [",
                     index,
@@ -535,34 +474,13 @@ export const JzodElementEditor = (
                         // currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
                         indentLevel={usedIndentLevel}
                         label={props.resolvedJzodSchema?.extra?.defaultLabel}
-                        // initialValuesObject={props.initialValuesObject
-                        //     ? props.initialValuesObject[index]
-                        //     : undefined}
-                        // showButton={true}
                         currentDeploymentUuid={props.currentDeploymentUuid}
                         currentApplicationSection={props.currentApplicationSection}
-                        // elementJzodSchema={currentAttributeJzodSchema}
-                        // rootJzodSchema={props.rootJzodSchema}
-
                         rootLesslistKey={props.rootLesslistKey.length > 0? (props.rootLesslistKey + "." + index):("" +index)}
                         rootLesslistKeyArray={[...props.rootLesslistKeyArray,""+index]}
-
-                        // name={attribute[0]}
-                        // listKey={props.listKey + "." + attribute[0]}
-                        // indentLevel={usedIndentLevel}
-                        // label={currentAttributeDefinition?.extra?.defaultLabel}
-                        // initialValuesObject={props.initialValuesObject
-                        //   ? props.initialValuesObject[attribute[0]]
-                        //   : undefined}
-                        // showButton={true}
-                        // currentDeploymentUuid={props.currentDeploymentUuid}
-                        // currentApplicationSection={props.currentApplicationSection}
                         resolvedJzodSchema={props.resolvedJzodSchema?.definition as any} // TODO: wrong type seen for props.resolvedJzodSchema! (cannot be undefined, really)
+                        foreignKeyObjects={props.foreignKeyObjects}
                         formik={props.formik}
-                        // elementJzodSchema={currentAttributeDefinition}
-                        // rootJzodSchema={props.rootJzodSchema}
-                        // register={props.register}
-                        // setValue={props.setValue}
                     />
                     </div>
                   );
@@ -578,6 +496,27 @@ export const JzodElementEditor = (
         switch (props.resolvedJzodSchema.definition) {
           case "string":{
             return (
+              props.resolvedJzodSchema.extra?.targetEntity?
+              <>
+                <label htmlFor={props.listKey}>{displayedLabel}: </label>
+                <select 
+                  id={props.rootLesslistKey}
+                  name={props.name}
+                  {...props.formik.getFieldProps(props.rootLesslistKey)}
+                  onChange={props.formik.handleChange}
+                  value={currentValue}
+                >
+                  {
+                    Object.entries(props.foreignKeyObjects[props.resolvedJzodSchema.extra.targetEntity]??{}).map(
+                      (e:[string,EntityInstance],index: number) => <option id={props.rootLesslistKey+"."+index} value={e[1].uuid}>{(e[1] as EntityInstanceWithName).name}</option>
+                    )
+                  }
+                 {/* <option value="red">Red</option>
+                 <option value="green">Green</option>
+                 <option value="blue">Blue</option> */}
+                </select>
+              </>
+              :
               <>
                 <label htmlFor={props.listKey}>{displayedLabel}: </label>
                 <input

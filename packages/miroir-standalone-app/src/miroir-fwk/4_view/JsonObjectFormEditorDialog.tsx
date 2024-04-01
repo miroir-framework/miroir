@@ -9,7 +9,9 @@ import { Formik } from "formik";
 
 import {
   ApplicationSection,
+  DomainElementObject,
   EntityAttribute,
+  EntityInstancesUuidIndex,
   JzodObject,
   JzodSchema,
   LoggerInterface,
@@ -51,6 +53,7 @@ export interface JsonObjectFormEditorCoreDialogProps {
   currentAppModel: MetaModel,
   currentMiroirModel: MetaModel,
   addObjectdialogFormIsOpen: boolean,
+  foreignKeyObjects: Record<string,EntityInstancesUuidIndex>,
   setAddObjectdialogFormIsOpen: (a:boolean) => void,
   onCreateFormObject?: (a: any) => void,
   // onSubmit: (data:JsonObjectFormEditorDialogInputs, event:React.BaseSyntheticEvent)=>void;
@@ -86,7 +89,7 @@ const Item = styled(Paper)(({ theme }) => ({
 // not used
 const reorderObjectField = (dataParam:any, orderUpdatePathParam:string[], newOrder:string[]):any=>{
   log.info(
-    "handleAddObjectDialogFormSubmit reorderField",
+    "handleAddObjectDialogFormSubmit reorderObjectField",
     orderUpdatePathParam.length,
     "path",
     orderUpdatePathParam,
@@ -100,7 +103,7 @@ const reorderObjectField = (dataParam:any, orderUpdatePathParam:string[], newOrd
   if (orderUpdatePathParam.length == 1) {
     const newFieldValue = newOrder.reduce((acc,curr)=>({...acc,[curr]:dataParam[orderUpdatePathParam[0]][curr]}),{})
     const result = {[orderUpdatePathParam[0]]:newFieldValue}
-    log.info("handleAddObjectDialogFormSubmit reorderField final",newFieldValue,"result",result);
+    log.info("handleAddObjectDialogFormSubmit reorderObjectField final",newFieldValue,"result",result);
     return result;
   } else {
     if (orderUpdatePathParam.length == 0) {
@@ -109,7 +112,7 @@ const reorderObjectField = (dataParam:any, orderUpdatePathParam:string[], newOrd
       const recursiveReorder = reorderObjectField(dataParam[orderUpdatePathParam[0]],orderUpdatePathParam.slice(1),newOrder)
       const result:any = {...dataParam, [orderUpdatePathParam[0]]:recursiveReorder};
       log.info(
-        "handleAddObjectDialogFormSubmit reorderField",
+        "handleAddObjectDialogFormSubmit reorderObjectField",
         orderUpdatePathParam.length,
         "path",
         orderUpdatePathParam,
@@ -134,7 +137,7 @@ const reorderArrayField = (
   newOrder: number[]
 ): any => {
   log.info(
-    "handleAddObjectDialogFormSubmit reorderField",
+    "handleAddObjectDialogFormSubmit reorderArrayField",
     orderUpdatePathParam.length,
     "path",
     orderUpdatePathParam,
@@ -267,51 +270,54 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
   // ##############################################################################################
   // const handleAddObjectDialogFormSubmit: SubmitHandler<JsonObjectFormEditorDialogInputs> = useCallback(
   const handleAddObjectDialogFormSubmit = useCallback(
-    async (data:any) => {
+    async (data:any, source?: string) => {
       // const buttonType: string = (event?.nativeEvent as any)["submitter"]["name"];
       log.info(
         "@@@@@@@@@@@@@@@@@@@@@@ handleAddObjectDialogFormSubmit called for data",
         data,
         "props",
         props,
-        "formHelperState",
-        formHelperState
+        "dialogOuterFormObject",
+        dialogOuterFormObject,
       );
       // event?.stopPropagation();
       // let newVersion = {...data,...data['ROOT']};
 
       // const effectiveData = codeEditorChangedValue? JSON.parse(codeEditorValue): data
-      const effectiveData = dialogOuterFormObject;
-      log.info("handleAddObjectDialogFormSubmit called with effectiveData", effectiveData);
+      const effectiveData = source == "param" && data?data:dialogOuterFormObject;
+      log.info("handleAddObjectDialogFormSubmit called with dialogOuterFormObject", dialogOuterFormObject);
 
       let reorderedDataValue: any;
       let result: any;
-      if (formHelperState && Object.keys(formHelperState).length > 0) {
-        const orderUpdate: string = Object.keys(formHelperState)[0];
-        // const orderUpdateFields = orderUpdate.split(".").splice(0,1);
-        const orderUpdatePath = orderUpdate.split(".").slice(1);
-        const newOrder: number[] = Object.values(formHelperState)[0] as number[];
+      // // if (formHelperState && Object.keys(formHelperState).length > 0) {
+      // if (effectiveData && Object.keys(effectiveData).length > 0) {
+      //   const orderUpdate: string = Object.keys(effectiveData)[0];
+      //   // const orderUpdateFields = orderUpdate.split(".").splice(0,1);
+      //   const orderUpdatePath = orderUpdate.split(".").slice(1);
+      //   const newOrder: number[] = Object.values(effectiveData)[0] as number[];
 
         
-        log.info("handleAddObjectDialogFormSubmit calling reorderField");
+      //   log.info("handleAddObjectDialogFormSubmit calling reorderField");
 
-        const reorderedDataValue = reorderArrayField(effectiveData, orderUpdatePath, newOrder);
-        // const targetField = orderUpdateFields.slice(1).reduce((acc,curr)=>acc[curr],data);
-        // reorderedDataValue = {...data,reorderedField}
-        delete reorderedDataValue["ROOT"]; // WHY HAS ROOT BEEN ADDED???? BUG?
-        const newVersion = structuredClone(reorderedDataValue);
-        log.info(
-          "handleAddObjectDialogFormSubmit after reorderArrayField",
-          "newOrder",
-          newOrder,
-          "reorderedDataValue",
-          reorderedDataValue,
-          "newVersion",
-          newVersion
-          // "data",data
-        );
-        result = props.onSubmit(newVersion);
-      } else {
+      //   const reorderedDataValue = reorderArrayField(effectiveData, orderUpdatePath, newOrder);
+      //   // const targetField = orderUpdateFields.slice(1).reduce((acc,curr)=>acc[curr],data);
+      //   // reorderedDataValue = {...data,reorderedField}
+      //   if (reorderedDataValue["ROOT"]) {
+      //     delete reorderedDataValue["ROOT"]; // TODO: WHY HAS ROOT BEEN ADDED???? BUG?
+      //   }
+      //   const newVersion = structuredClone(reorderedDataValue);
+      //   log.info(
+      //     "handleAddObjectDialogFormSubmit after reorderArrayField",
+      //     "newOrder",
+      //     newOrder,
+      //     "reorderedDataValue",
+      //     reorderedDataValue,
+      //     "newVersion",
+      //     newVersion
+      //     // "data",data
+      //   );
+      //   result = props.onSubmit(newVersion);
+      // } else {
         const newVersion = _.merge(effectiveData, effectiveData["ROOT"]);
         delete newVersion["ROOT"];
         log.info(
@@ -327,12 +333,8 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
           "passed value",
         );
         result = props.onSubmit(newVersion);
-      }
-      // if (buttonType == props.label) {
-      handleAddObjectDialogFormClose("");
-      // } else {
-      //   log.warn("handleAddObjectDialogFormSubmit now closing dialog form", props.label, "buttonType", buttonType);
       // }
+      handleAddObjectDialogFormClose("");
       return result;
     },
     [props,JSON.stringify(dialogOuterFormObject, null, 2)]
@@ -381,15 +383,17 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
           initialValues={dialogOuterFormObject}
           onSubmit={
             async (values, { setSubmitting, setErrors }) => {
-              log.info("onSubmit formik", values)
               try {
                 //  Send values somehow
                 if (props.onCreateFormObject) {
+                  log.info("onSubmit formik onCreateFormObject", values)
                   await props.onCreateFormObject(values)
                   await props.onSubmit(values);
                 } else {
+                  log.info("onSubmit formik handleAddObjectDialogFormSubmit", values)
                   setformHelperState(values);
-                  await handleAddObjectDialogFormSubmit(values)
+                  // setdialogOuterFormObject(values)
+                  await handleAddObjectDialogFormSubmit(values,"param")
                 }
               } catch (e) {
                 log.error(e)
@@ -460,6 +464,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
                   currentDeploymentUuid={props.currentDeploymentUuid}
                   currentApplicationSection={props.currentApplicationSection}
                   resolvedJzodSchema={resolvedJzodSchema?.status == "ok"?resolvedJzodSchema.element:undefined}
+                  foreignKeyObjects={props.foreignKeyObjects}
                   formik={formik}
                 />
                 {/* {errors.exampleRequired && <span>This field is required</span>} */}

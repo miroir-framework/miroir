@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import {
   ApplicationDeploymentSchema,
+  domainElementObject,
   entity,
   entityDefinition,
   entityInstance,
@@ -34,6 +35,8 @@ export const tableComponentCorePropsSchema = z.object({
   defaultFormValuesObject: z.any(),
   miroirFundamentalJzodSchema:jzodSchema,
   sortByAttribute: z.string().optional(),
+  deploymentUuid: z.string().uuid(),
+  paramsAsdomainElements: domainElementObject,
   // setCurrentObjectValue: z.function().args(z.any()),
 });
 

@@ -7,7 +7,6 @@ import {
   Entity,
   EntityDefinition,
   LoggerInterface,
-  MetaEntity,
   MetaModel,
   MiroirLoggerFactory,
   RecordOfJzodObject,
@@ -41,6 +40,7 @@ export interface ReportSectionEntityInstanceProps {
   reportSection: ReportSection,
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
+  paramsAsdomainElements: DomainElementObject,
 }
 
 // ###############################################################################################################
@@ -215,6 +215,7 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
                               deploymentUuid={props.deploymentUuid}
                               applicationSection={props.applicationSection}
                               reportSection={innerReportSection}
+                              paramsAsdomainElements={props.paramsAsdomainElements}
                               // instanceUuid={props.instanceUuid}
                             />
                           </td>
@@ -243,6 +244,7 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
                     domainElementObject={props.domainElementObject}
                     fetchedDataJzodSchema={props.fetchedDataJzodSchema}
                     section={props.reportSection}
+                    paramsAsdomainElements={props.paramsAsdomainElements}
                     // currentModel={currentModel}
                     // currentMiroirReportSectionObjectList={props.reportSection}
                     // currentReportTargerEntity={currentReportTargetEntity}

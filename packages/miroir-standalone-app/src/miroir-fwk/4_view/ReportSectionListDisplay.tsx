@@ -82,6 +82,7 @@ export const ReportSectionDisplayCorePropsSchema = z.object({
   domainElementObject: domainElementObject, // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
   fetchedDataJzodSchema: z.record(jzodObject.optional()).optional(), // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
   chosenApplicationSection: applicationSection.optional(), // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
+  paramsAsdomainElements: domainElementObject,
 });
 
 export const ReportSectionDisplayEntityInstancePropsSchema = ReportSectionDisplayCorePropsSchema.extend({
@@ -602,6 +603,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 isAttributes={true}
                 label={props.defaultlabel ?? currentReportTargetEntityDefinition?.name}
                 entityDefinitionJzodSchema={currentReportTargetEntityDefinition?.jzodSchema as JzodObject}
+                foreignKeyObjects={{}}
                 currentDeploymentUuid={props.displayedDeploymentDefinition?.uuid}
                 currentApplicationSection={props.chosenApplicationSection}
                 defaultFormValuesObject={defaultFormValuesObject}
@@ -629,10 +631,12 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                       // reportSectionListDefinition={props.currentMiroirReportSectionObjectList}
                   columnDefs={tableColumnDefs}
                   instancesToDisplay={instancesToDisplay}
+                  deploymentUuid={props.deploymentUuid}
                   // instancesToDisplay={instancesToDisplay}
                   displayTools={true}
                   onRowEdit={onEditFormObject}
                   sortByAttribute={props.section.definition.sortByAttribute}
+                  paramsAsdomainElements={props.paramsAsdomainElements}
                 ></MTableComponent>
               </div>
             ) : (

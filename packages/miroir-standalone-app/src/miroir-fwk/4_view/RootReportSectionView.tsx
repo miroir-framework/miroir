@@ -174,6 +174,7 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
           reportSection={props.reportSection?.section}
           applicationSection={props.applicationSection}
           deploymentUuid={props.deploymentUuid}
+          paramsAsdomainElements={paramsAsdomainElements}
         />
       </div>
     );

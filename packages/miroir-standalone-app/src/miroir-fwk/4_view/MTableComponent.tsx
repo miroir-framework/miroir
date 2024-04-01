@@ -26,6 +26,15 @@ import {
   applicationDeploymentMiroir,
   entityInstance,
   getLoggerName,
+  DomainElementObject,
+  DomainManyQueriesWithDeploymentUuid,
+  DomainStateSelectorNew,
+  DomainStateSelectorParams,
+  getSelectorParams,
+  DomainStateSelectorMap,
+  MiroirSelectorQueryParams,
+  getSelectorMap,
+  EntityInstancesUuidIndex,
 } from "miroir-core";
 
 import EntityEditor from '../../miroir-fwk/4_view/EntityEditor';
@@ -37,7 +46,7 @@ import {
 import { ToolsCellRenderer } from './GenderCellRenderer';
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from './JsonObjectFormEditorDialog';
 import { TableComponentProps, TableComponentRow, TableComponentTypeSchema } from './MTableComponentInterface';
-import { useCurrentModel } from './ReduxHooks';
+import { useCurrentModel, useDomainStateCleanSelectorNew, useDomainStateSelectorNew } from './ReduxHooks';
 import { defaultFormValues } from './ReportSectionListDisplay';
 import { packageName } from '../../constants';
 import { cleanLevel } from './constants';
@@ -50,33 +59,33 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 });
 
 
-const applicationDeploymentLibrary: ApplicationDeploymentConfiguration = {
-  "uuid":"f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-  "parentName":"ApplicationDeploymentConfiguration",
-  "parentUuid":"35c5608a-7678-4f07-a4ec-76fc5bc35424",
-  "type":"singleNode",
-  "name":"LibraryApplicationPostgresDeployment",
-  "defaultLabel":"LibraryApplicationPostgresDeployment",
-  "application":"5af03c98-fe5e-490b-b08f-e1230971c57f",
-  "description": "The default Postgres Deployment for Application Library",
-  "applicationModelLevel": "model",
-  "model": {
-    "location": {
-      "type": "sql",
-      "side":"server",
-      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "library"
-    }
-  },
-  "data": {
-    "location": {
-      "type": "sql",
-      "side":"server",
-      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "library"
-    }
-  }
-}
+// const applicationDeploymentLibrary: ApplicationDeploymentConfiguration = {
+//   "uuid":"f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+//   "parentName":"ApplicationDeploymentConfiguration",
+//   "parentUuid":"35c5608a-7678-4f07-a4ec-76fc5bc35424",
+//   "type":"singleNode",
+//   "name":"LibraryApplicationPostgresDeployment",
+//   "defaultLabel":"LibraryApplicationPostgresDeployment",
+//   "application":"5af03c98-fe5e-490b-b08f-e1230971c57f",
+//   "description": "The default Postgres Deployment for Application Library",
+//   "applicationModelLevel": "model",
+//   "model": {
+//     "location": {
+//       "type": "sql",
+//       "side":"server",
+//       "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+//       "schema": "library"
+//     }
+//   },
+//   "data": {
+//     "location": {
+//       "type": "sql",
+//       "side":"server",
+//       "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+//       "schema": "library"
+//     }
+//   }
+// }
 
 let count=0
 let prevProps:TableComponentProps;
@@ -99,6 +108,11 @@ export const MTableComponent = (props: TableComponentProps) => {
   const contextDeploymentUuid = context.deploymentUuid;
   // const errorLog = useErrorLogService();
   
+  const selectorMap: DomainStateSelectorMap<MiroirSelectorQueryParams> = useMemo(
+    () => getSelectorMap(),
+    []
+  )
+
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
   const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
 
@@ -121,7 +135,7 @@ export const MTableComponent = (props: TableComponentProps) => {
       tableComponentRowUuidIndexSchema: Object.values(props.instancesToDisplay ?? {})
         .sort((a: EntityInstance, b: EntityInstance) =>
           props.sortByAttribute
-            ? (a as any)[props.sortByAttribute as string] > (b as any)[props.sortByAttribute as string]
+            ? (a as any)[props.sortByAttribute] > (b as any)[props.sortByAttribute]
               ? 1
               : (a as any)[props.sortByAttribute] < (b as any)[props.sortByAttribute]
               ? -1
@@ -155,7 +169,54 @@ export const MTableComponent = (props: TableComponentProps) => {
     [props.instancesToDisplay,props.sortByAttribute]
   );
   log.info("MTableComponent tableComponentRows", tableComponentRows);
+
   
+  const domainFetchQueryParams: DomainStateSelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(
+    () =>
+      getSelectorParams<DomainManyQueriesWithDeploymentUuid>(
+        {
+          queryType: "DomainManyQueries",
+          deploymentUuid: props.deploymentUuid,
+          // applicationSection: props.applicationSection,
+          pageParams: props.paramsAsdomainElements,
+          queryParams: { elementType: "object", elementValue: {} },
+          contextResults: { elementType: "object", elementValue: {} },
+          fetchQuery: {
+            select: Object.fromEntries(
+              Object.entries(
+                props.type == TableComponentTypeSchema.enum.EntityInstance
+                  ? props.currentEntityDefinition?.jzodSchema.definition ?? {}
+                  : {}
+              ).filter((e) => e[1].extra?.targetEntity)
+              .map(e => [
+                e[1].extra?.targetEntity,
+                {
+                  "queryType": "selectObjectListByEntity",
+                  "applicationSection": (props.paramsAsdomainElements as any)["applicationSection"],
+                  "parentName": "",
+                  "parentUuid": {
+                    "referenceType": "constant",
+                    "referenceUuid": e[1].extra?.targetEntity
+                  }
+                },
+              ])
+            ) as any,
+          },
+        },
+        selectorMap
+      ),
+    [selectorMap, props.deploymentUuid, props.paramsAsdomainElements, props.type]
+  );
+
+  log.info("MTableComponent domainFetchQueryParams", domainFetchQueryParams);
+
+  const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = useDomainStateCleanSelectorNew(
+    selectorMap.selectByDomainManyQueriesFromDomainStateNew as DomainStateSelectorNew<DomainManyQueriesWithDeploymentUuid, any>,
+    domainFetchQueryParams
+  );
+
+  log.info("MTableComponent foreignKeyObjects", foreignKeyObjects);
+
   // useEffect(
   //   ()=>{
   //     log.info("MTableComponent setRowData tableComponentRows", tableComponentRows);
@@ -377,52 +438,53 @@ export const MTableComponent = (props: TableComponentProps) => {
       {props.type == "EntityInstance"? (
         <div>
           {
-                dialogFormObject? (
-                  <JsonObjectFormEditorDialog
-                    showButton={false}
-                    isOpen={dialogFormIsOpen}
-                    isAttributes={true}
-                    addObjectdialogFormIsOpen={addObjectdialogFormIsOpen}
-                    setAddObjectdialogFormIsOpen={setAddObjectdialogFormIsOpen}
-                    label={props.currentEntity?.name??"No Entity Found!"}
-                    entityDefinitionJzodSchema={props.currentEntityDefinition?.jzodSchema as JzodObject}
-                    currentDeploymentUuid={contextDeploymentUuid}
-                    currentApplicationSection={context.applicationSection}
-                    miroirFundamentalJzodSchema={props.miroirFundamentalJzodSchema}
-                    currentAppModel={currentModel}
-                    currentMiroirModel={miroirMetaModel}
-                    defaultFormValuesObject={
-                      dialogFormObject??props.defaultFormValuesObject
-                    }
-                    onSubmit={onSubmitTableRowFormDialog}
-                    onClose={handleDialogTableRowFormClose}
-                  />
-                )
-                :<></>
-            }
-            <div id="tata" className="ag-theme-alpine" style={props.styles}>
-              <AgGridReact
-                columnDefs={columnDefs}
-                // autoSizeStrategy={autoSizeStrategy}
-                // rowData={instancesWithStringifiedJsonAttributes.instancesWithStringifiedJsonAttributes}
-                // rowData={tableComponentRowsCopy}
-                rowData={tableComponentRows.tableComponentRowUuidIndexSchema}
-                // rowData={gridData}
-                // getRowId={(params) => {
-                //   // log.info("MtableComponent getRowId", params);
-                //   return params.data?.rawValue?.uuid ? params.data?.rawValue?.uuid : params.data?.rawValue?.id;
-                // }}
-                defaultColDef={defaultColDef}
-                onCellClicked={onCellClicked}
-                onCellValueChanged={onCellValueChanged}
-                //
-                // onCellEditingStarted={onCellEditingStarted}
-                // onCellEditingStopped={onCellEditingStopped}
-                // onRowDataUpdated={onRowDataUpdated}
-                // onCellDoubleClicked={onCellDoubleClicked}
-                // onRowValueChanged={onRowValueChanged}
-              ></AgGridReact>
-            </div>
+            dialogFormObject? (
+              <JsonObjectFormEditorDialog
+                showButton={false}
+                isOpen={dialogFormIsOpen}
+                isAttributes={true}
+                addObjectdialogFormIsOpen={addObjectdialogFormIsOpen}
+                setAddObjectdialogFormIsOpen={setAddObjectdialogFormIsOpen}
+                label={props.currentEntity?.name??"No Entity Found!"}
+                entityDefinitionJzodSchema={props.currentEntityDefinition?.jzodSchema as JzodObject}
+                foreignKeyObjects={foreignKeyObjects}
+                currentDeploymentUuid={contextDeploymentUuid}
+                currentApplicationSection={context.applicationSection}
+                miroirFundamentalJzodSchema={props.miroirFundamentalJzodSchema}
+                currentAppModel={currentModel}
+                currentMiroirModel={miroirMetaModel}
+                defaultFormValuesObject={
+                  dialogFormObject??props.defaultFormValuesObject
+                }
+                onSubmit={onSubmitTableRowFormDialog}
+                onClose={handleDialogTableRowFormClose}
+              />
+            )
+            :<></>
+          }
+          <div id="tata" className="ag-theme-alpine" style={props.styles}>
+            <AgGridReact
+              columnDefs={columnDefs}
+              // autoSizeStrategy={autoSizeStrategy}
+              // rowData={instancesWithStringifiedJsonAttributes.instancesWithStringifiedJsonAttributes}
+              // rowData={tableComponentRowsCopy}
+              rowData={tableComponentRows.tableComponentRowUuidIndexSchema}
+              // rowData={gridData}
+              // getRowId={(params) => {
+              //   // log.info("MtableComponent getRowId", params);
+              //   return params.data?.rawValue?.uuid ? params.data?.rawValue?.uuid : params.data?.rawValue?.id;
+              // }}
+              defaultColDef={defaultColDef}
+              onCellClicked={onCellClicked}
+              onCellValueChanged={onCellValueChanged}
+              //
+              // onCellEditingStarted={onCellEditingStarted}
+              // onCellEditingStopped={onCellEditingStopped}
+              // onRowDataUpdated={onRowDataUpdated}
+              // onCellDoubleClicked={onCellDoubleClicked}
+              // onRowValueChanged={onRowValueChanged}
+            ></AgGridReact>
+          </div>
         </div>
       ) : (
         <div className="ag-theme-alpine" style={{height: 200, width: 200}}>
