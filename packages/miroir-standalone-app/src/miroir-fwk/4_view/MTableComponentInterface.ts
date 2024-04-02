@@ -37,6 +37,7 @@ export const tableComponentCorePropsSchema = z.object({
   sortByAttribute: z.string().optional(),
   deploymentUuid: z.string().uuid(),
   paramsAsdomainElements: domainElementObject,
+  foreignKeyObjects: z.record(z.string(),entityInstancesUuidIndex),
   // setCurrentObjectValue: z.function().args(z.any()),
 });
 

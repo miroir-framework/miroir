@@ -11,6 +11,10 @@ import {
   ApplicationDeploymentConfiguration,
   ApplicationDeploymentSchema,
   DomainControllerInterface,
+  DomainManyQueriesWithDeploymentUuid,
+  DomainStateSelectorMap,
+  DomainStateSelectorNew,
+  DomainStateSelectorParams,
   Entity,
   EntityDefinition,
   EntityInstancesUuidIndex,
@@ -21,6 +25,7 @@ import {
   MetaEntity,
   MetaModel,
   MiroirLoggerFactory,
+  MiroirSelectorQueryParams,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   applicationSection,
@@ -40,6 +45,8 @@ import {
   entityDefinitionReport,
   getLoggerName,
   getMiroirFundamentalJzodSchema,
+  getSelectorMap,
+  getSelectorParams,
   instanceEndpointVersionV1,
   jzodObject,
   jzodSchemajzodMiroirBootstrapSchema,
@@ -61,8 +68,9 @@ import { TableComponentType, TableComponentTypeSchema } from "./MTableComponentI
 import { useDomainControllerService, useMiroirContextInnerFormOutput } from './MiroirContextReactProvider';
 import { packageName } from "../../constants";
 import { cleanLevel } from "./constants";
-import { useCurrentModel } from "./ReduxHooks";
+import { useCurrentModel, useDomainStateCleanSelectorNew } from "./ReduxHooks";
 import { Button } from "@mui/material";
+import { noValue } from "./JzodElementEditor";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportSectionListDisplay");
@@ -136,12 +144,16 @@ export function defaultFormValues(
       }
       log.info();
       
-      const currentEditorAttributes = Object.entries(currentEntityJzodSchema?.definition??{}).reduce((acc,a)=>{
+      const currentEditorAttributes = Object.entries(currentEntityJzodSchema?.definition??{}).reduce((acc,attributeJzodSchema)=>{
         let result
-        if (Object.keys(attributeDefaultValue).includes(a[0])) {
-          result = Object.assign({},acc,{[a[0]]:attributeDefaultValue[a[0]]})
+        if (attributeJzodSchema[1].extra?.targetEntity) {
+          result = Object.assign({},acc,{[attributeJzodSchema[0]]:noValue})
         } else {
-          result = Object.assign({},acc,{[a[0]]:''})
+          if (Object.keys(attributeDefaultValue).includes(attributeJzodSchema[0])) {
+            result = Object.assign({},acc,{[attributeJzodSchema[0]]:attributeDefaultValue[attributeJzodSchema[0]]})
+          } else {
+            result = Object.assign({},acc,{[attributeJzodSchema[0]]:''})
+          }
         }
         // log.info('ReportComponent defaultFormValues',tableComponentType,'EntityInstance setting default value for attribute',a.name,':',result);
         return result;
@@ -213,6 +225,10 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
 
+  const selectorMap: DomainStateSelectorMap<MiroirSelectorQueryParams> = useMemo(
+    () => getSelectorMap(),
+    []
+  )
 
   const miroirFundamentalJzodSchema: JzodSchema = useMemo(() => getMiroirFundamentalJzodSchema(
     entityDefinitionBundleV1 as EntityDefinition,
@@ -347,6 +363,61 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     prevColumnDefs === tableColumnDefs,
     equal(prevColumnDefs, tableColumnDefs)
   );
+
+
+  const foreignKeyObjectsFetchQueryParams: DomainStateSelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(
+    () =>
+      getSelectorParams<DomainManyQueriesWithDeploymentUuid>(
+        {
+          queryType: "DomainManyQueries",
+          deploymentUuid: props.deploymentUuid,
+          // applicationSection: props.applicationSection,
+          pageParams: props.paramsAsdomainElements,
+          queryParams: { elementType: "object", elementValue: {} },
+          contextResults: { elementType: "object", elementValue: {} },
+          fetchQuery: {
+            select: Object.fromEntries(
+              Object.entries(
+                props.tableComponentReportType == TableComponentTypeSchema.enum.EntityInstance
+                  ? currentReportTargetEntityDefinition?.jzodSchema.definition ?? {}
+                  : {}
+              )
+                .filter((e) => e[1].extra?.targetEntity)
+                .map((e) => [
+                  e[1].extra?.targetEntity,
+                  {
+                    queryType: "selectObjectListByEntity",
+                    applicationSection: (props.paramsAsdomainElements as any)["applicationSection"],
+                    parentName: "",
+                    parentUuid: {
+                      referenceType: "constant",
+                      referenceUuid: e[1].extra?.targetEntity,
+                    },
+                  },
+                ])
+            ) as any,
+          },
+        },
+        selectorMap
+      ),
+    [
+      selectorMap,
+      props.deploymentUuid,
+      props.paramsAsdomainElements,
+      currentReportTargetEntityDefinition,
+      props.tableComponentReportType,
+    ]
+  );
+
+  log.info("MTableComponent foreignKeyObjectsFetchQueryParams", foreignKeyObjectsFetchQueryParams);
+
+  const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = useDomainStateCleanSelectorNew(
+    selectorMap.selectByDomainManyQueriesFromDomainStateNew as DomainStateSelectorNew<DomainManyQueriesWithDeploymentUuid, any>,
+    foreignKeyObjectsFetchQueryParams
+  );
+
+  log.info("MTableComponent foreignKeyObjects", foreignKeyObjects);
+
 
   // // ##############################################################################################
   // const onSubmitInnerFormDialog: SubmitHandler<JsonObjectFormEditorDialogInputs> = useCallback(
@@ -603,7 +674,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 isAttributes={true}
                 label={props.defaultlabel ?? currentReportTargetEntityDefinition?.name}
                 entityDefinitionJzodSchema={currentReportTargetEntityDefinition?.jzodSchema as JzodObject}
-                foreignKeyObjects={{}}
+                foreignKeyObjects={foreignKeyObjects}
                 currentDeploymentUuid={props.displayedDeploymentDefinition?.uuid}
                 currentApplicationSection={props.chosenApplicationSection}
                 defaultFormValuesObject={defaultFormValuesObject}
@@ -627,6 +698,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                   currentEntity={currentReportTargetEntity}
                   currentEntityDefinition={currentReportTargetEntityDefinition}
                   miroirFundamentalJzodSchema={miroirFundamentalJzodSchema}
+                  foreignKeyObjects={foreignKeyObjects}
                   currentModel={currentModel}
                       // reportSectionListDefinition={props.currentMiroirReportSectionObjectList}
                   columnDefs={tableColumnDefs}

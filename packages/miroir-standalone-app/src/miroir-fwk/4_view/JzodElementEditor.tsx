@@ -59,6 +59,8 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
+export const noValue = { uuid: "31f3a03a-f150-416d-9315-d3a752cb4eb4", name: "no value", parentUuid: "" } as EntityInstance;
+
 // #####################################################################################################
 // const Item = styled(Paper)(({ theme }) => ({
 //   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -495,28 +497,39 @@ export const JzodElementEditor = (
       case "simpleType": {
         switch (props.resolvedJzodSchema.definition) {
           case "string":{
-            return (
+            const selectList = 
               props.resolvedJzodSchema.extra?.targetEntity?
+              [
+                [noValue.uuid, noValue] as [string, EntityInstance],
+                ...(Object.entries(props.foreignKeyObjects[props.resolvedJzodSchema.extra.targetEntity] ?? {}))
+              ]
+              : []
+            ;
+
+            log.info("selectList for targetEntity", props.resolvedJzodSchema.extra?.targetEntity, "value", selectList, "props.foreignKeyObjects", props.foreignKeyObjects);
+
+            return props.resolvedJzodSchema.extra?.targetEntity ? (
               <>
                 <label htmlFor={props.listKey}>{displayedLabel}: </label>
-                <select 
+                <select
                   id={props.rootLesslistKey}
                   name={props.name}
                   {...props.formik.getFieldProps(props.rootLesslistKey)}
                   onChange={props.formik.handleChange}
                   value={currentValue}
                 >
-                  {
-                    Object.entries(props.foreignKeyObjects[props.resolvedJzodSchema.extra.targetEntity]??{}).map(
-                      (e:[string,EntityInstance],index: number) => <option id={props.rootLesslistKey+"."+index} value={e[1].uuid}>{(e[1] as EntityInstanceWithName).name}</option>
-                    )
-                  }
-                 {/* <option value="red">Red</option>
+                  {/* <option id={props.rootLesslistKey+".undefined"} value=""></option> */}
+                  {selectList.map((e: [string, EntityInstance], index: number) => (
+                    <option id={props.rootLesslistKey + "." + index} value={e[1].uuid}>
+                      {(e[1] as EntityInstanceWithName).name}
+                    </option>
+                  ))}
+                  {/* <option value="red">Red</option>
                  <option value="green">Green</option>
                  <option value="blue">Blue</option> */}
                 </select>
               </>
-              :
+            ) : (
               <>
                 <label htmlFor={props.listKey}>{displayedLabel}: </label>
                 <input

@@ -108,10 +108,10 @@ export const MTableComponent = (props: TableComponentProps) => {
   const contextDeploymentUuid = context.deploymentUuid;
   // const errorLog = useErrorLogService();
   
-  const selectorMap: DomainStateSelectorMap<MiroirSelectorQueryParams> = useMemo(
-    () => getSelectorMap(),
-    []
-  )
+  // const selectorMap: DomainStateSelectorMap<MiroirSelectorQueryParams> = useMemo(
+  //   () => getSelectorMap(),
+  //   []
+  // )
 
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
   const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
@@ -171,51 +171,51 @@ export const MTableComponent = (props: TableComponentProps) => {
   log.info("MTableComponent tableComponentRows", tableComponentRows);
 
   
-  const domainFetchQueryParams: DomainStateSelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(
-    () =>
-      getSelectorParams<DomainManyQueriesWithDeploymentUuid>(
-        {
-          queryType: "DomainManyQueries",
-          deploymentUuid: props.deploymentUuid,
-          // applicationSection: props.applicationSection,
-          pageParams: props.paramsAsdomainElements,
-          queryParams: { elementType: "object", elementValue: {} },
-          contextResults: { elementType: "object", elementValue: {} },
-          fetchQuery: {
-            select: Object.fromEntries(
-              Object.entries(
-                props.type == TableComponentTypeSchema.enum.EntityInstance
-                  ? props.currentEntityDefinition?.jzodSchema.definition ?? {}
-                  : {}
-              ).filter((e) => e[1].extra?.targetEntity)
-              .map(e => [
-                e[1].extra?.targetEntity,
-                {
-                  "queryType": "selectObjectListByEntity",
-                  "applicationSection": (props.paramsAsdomainElements as any)["applicationSection"],
-                  "parentName": "",
-                  "parentUuid": {
-                    "referenceType": "constant",
-                    "referenceUuid": e[1].extra?.targetEntity
-                  }
-                },
-              ])
-            ) as any,
-          },
-        },
-        selectorMap
-      ),
-    [selectorMap, props.deploymentUuid, props.paramsAsdomainElements, props.type]
-  );
+  // const foreignKeyObjectsFetchQueryParams: DomainStateSelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(
+  //   () =>
+  //     getSelectorParams<DomainManyQueriesWithDeploymentUuid>(
+  //       {
+  //         queryType: "DomainManyQueries",
+  //         deploymentUuid: props.deploymentUuid,
+  //         // applicationSection: props.applicationSection,
+  //         pageParams: props.paramsAsdomainElements,
+  //         queryParams: { elementType: "object", elementValue: {} },
+  //         contextResults: { elementType: "object", elementValue: {} },
+  //         fetchQuery: {
+  //           select: Object.fromEntries(
+  //             Object.entries(
+  //               props.type == TableComponentTypeSchema.enum.EntityInstance
+  //                 ? props.currentEntityDefinition?.jzodSchema.definition ?? {}
+  //                 : {}
+  //             ).filter((e) => e[1].extra?.targetEntity)
+  //             .map(e => [
+  //               e[1].extra?.targetEntity,
+  //               {
+  //                 "queryType": "selectObjectListByEntity",
+  //                 "applicationSection": (props.paramsAsdomainElements as any)["applicationSection"],
+  //                 "parentName": "",
+  //                 "parentUuid": {
+  //                   "referenceType": "constant",
+  //                   "referenceUuid": e[1].extra?.targetEntity
+  //                 }
+  //               },
+  //             ])
+  //           ) as any,
+  //         },
+  //       },
+  //       selectorMap
+  //     ),
+  //   [selectorMap, props.deploymentUuid, props.paramsAsdomainElements, props.type]
+  // );
 
-  log.info("MTableComponent domainFetchQueryParams", domainFetchQueryParams);
+  // log.info("MTableComponent foreignKeyObjectsFetchQueryParams", foreignKeyObjectsFetchQueryParams);
 
-  const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = useDomainStateCleanSelectorNew(
-    selectorMap.selectByDomainManyQueriesFromDomainStateNew as DomainStateSelectorNew<DomainManyQueriesWithDeploymentUuid, any>,
-    domainFetchQueryParams
-  );
+  // const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = useDomainStateCleanSelectorNew(
+  //   selectorMap.selectByDomainManyQueriesFromDomainStateNew as DomainStateSelectorNew<DomainManyQueriesWithDeploymentUuid, any>,
+  //   foreignKeyObjectsFetchQueryParams
+  // );
 
-  log.info("MTableComponent foreignKeyObjects", foreignKeyObjects);
+  // log.info("MTableComponent foreignKeyObjects", foreignKeyObjects);
 
   // useEffect(
   //   ()=>{
@@ -447,7 +447,7 @@ export const MTableComponent = (props: TableComponentProps) => {
                 setAddObjectdialogFormIsOpen={setAddObjectdialogFormIsOpen}
                 label={props.currentEntity?.name??"No Entity Found!"}
                 entityDefinitionJzodSchema={props.currentEntityDefinition?.jzodSchema as JzodObject}
-                foreignKeyObjects={foreignKeyObjects}
+                foreignKeyObjects={props.foreignKeyObjects}
                 currentDeploymentUuid={contextDeploymentUuid}
                 currentApplicationSection={context.applicationSection}
                 miroirFundamentalJzodSchema={props.miroirFundamentalJzodSchema}

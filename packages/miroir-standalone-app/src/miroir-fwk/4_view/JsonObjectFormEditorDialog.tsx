@@ -34,6 +34,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
+// #################################################################################################
 export type JsonObjectFormEditorDialogInputs = { [a: string]: any };
 
 export interface EditorAttribute {
@@ -86,6 +87,7 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
+// ################################################################################################
 // not used
 const reorderObjectField = (dataParam:any, orderUpdatePathParam:string[], newOrder:string[]):any=>{
   log.info(
@@ -130,6 +132,7 @@ const reorderObjectField = (dataParam:any, orderUpdatePathParam:string[], newOrd
   }
 }
 
+// ################################################################################################
 const reorderArrayField = (
   // logHeader: string,
   dataParam: any,

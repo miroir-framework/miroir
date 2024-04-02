@@ -1,0 +1,14 @@
+{
+  "uuid": "d869ba03-d8ac-4b84-a821-e3348a52d167",
+  "parentName": "User",
+  "parentUuid": "ca794e28-b2dc-45b3-8137-00151557eea8",
+  "conceptLevel": "Model",
+  "name": "Laurence Jambois",
+  "firstName": "Laurence",
+  "lastName": "Jambois",
+  "street": "154 boulevard Saint-Germain",
+  "postalCode": "75006",
+  "city": "Paris",
+  "state": "",
+  "country": ""
+}
