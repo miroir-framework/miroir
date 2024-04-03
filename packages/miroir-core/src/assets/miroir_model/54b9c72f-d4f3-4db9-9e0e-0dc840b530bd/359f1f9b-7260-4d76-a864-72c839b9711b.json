@@ -70,22 +70,22 @@
               "query": {
                 "type": "simpleType",
                 "optional": true,
-                "definition": "any"
+                "definition": "string"
               },
               "queryReference": {
                 "type": "simpleType",
                 "optional": true,
-                "definition": "any"
+                "definition": "string"
               },
               "queryParameters": {
                 "type": "simpleType",
                 "optional": true,
-                "definition": "any"
+                "definition": "string"
               },
               "queryContext": {
                 "type": "simpleType",
                 "optional": true,
-                "definition": "any"
+                "definition": "string"
               },
               "deploymentUuid": {
                 "type": "simpleType",

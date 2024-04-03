@@ -292,7 +292,7 @@
           },
           "parameterTransformer": {
             "type": "simpleType",
-            "definition": "any"
+            "definition": "string"
           },
           "rootReportSection": {
             "type": "object",
@@ -302,7 +302,7 @@
                 "optional": true,
                 "definition": {
                   "type": "simpleType",
-                  "definition": "any"
+                  "definition": "string"
                 }
               },
               "reportParameters": {
@@ -310,7 +310,7 @@
                 "optional": true,
                 "definition": {
                   "type": "simpleType",
-                  "definition": "any"
+                  "definition": "string"
                 }
               },
               "fetchQuery": {
