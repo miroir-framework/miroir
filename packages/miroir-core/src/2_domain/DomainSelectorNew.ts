@@ -13,6 +13,7 @@ import {
 import { createSelector } from "reselect";
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import {
+  ApplicationSection,
   DomainElement,
   DomainElementObject,
   DomainElementUuidIndex,
@@ -153,9 +154,14 @@ export const selectEntityInstanceUuidIndexFromDomainStateNew: DomainStateSelecto
   const applicationSection = selectorParams.query.singleSelectQuery.select.applicationSection??"data";
   // const entityUuid = selectorParams.select.parentUuid;
 
-  const entityUuid: DomainElement = resolveContextReferenceNew(selectorParams.query.singleSelectQuery.select.parentUuid, selectorParams.query.queryParams, selectorParams.query.contextResults);
+  const entityUuid: DomainElement = resolveContextReferenceNew(
+    selectorParams.query.singleSelectQuery.select.parentUuid,
+    selectorParams.query.queryParams,
+    selectorParams.query.contextResults
+  );
 
   log.info("selectEntityInstanceUuidIndexFromDomainStateNew params", selectorParams, deploymentUuid, applicationSection, entityUuid);
+  log.info("selectEntityInstanceUuidIndexFromDomainStateNew domainState", domainState);
 
   // if (entityUuid && typeof entityUuid == "object" && entityUuid.elementType == "failure") {
   //   return entityUuid //DomainElement, elementType == "failure"
@@ -659,9 +665,14 @@ export const innerSelectElementFromQueryAndDomainStateNew = (
           singleSelectQuery: {
             queryType: "domainSingleSelectQueryWithDeployment",
             deploymentUuid: deploymentUuid,
-            select: query,
-          }
-        }
+            select: query.applicationSection
+              ? query
+              : {
+                  ...query,
+                  applicationSection: pageParams.elementValue.applicationSection.elementValue as ApplicationSection,
+                },
+          },
+        },
       });
       break;
     }

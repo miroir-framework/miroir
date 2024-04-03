@@ -62,7 +62,7 @@
           },
           {
             "label": "Library Reports",
-            "section": "data",
+            "section": "model",
             "application": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
             "reportUuid": "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
             "icon": "list"
