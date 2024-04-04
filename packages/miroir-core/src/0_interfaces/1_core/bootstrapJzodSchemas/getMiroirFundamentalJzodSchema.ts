@@ -28,8 +28,8 @@ function makeReferencesAbsolute(jzodSchema:JzodElement, absolutePath: string):Jz
             absolutePath,
           },
         };
-      console.log("makeReferencesAbsolute schemaReference received", JSON.stringify(jzodSchema));
-      console.log("makeReferencesAbsolute schemaReference returns", JSON.stringify(result));
+      // console.log("makeReferencesAbsolute schemaReference received", JSON.stringify(jzodSchema));
+      // console.log("makeReferencesAbsolute schemaReference returns", JSON.stringify(result));
       return result;
       break;
     }
@@ -107,6 +107,8 @@ function makeReferencesAbsolute(jzodSchema:JzodElement, absolutePath: string):Jz
     }
   }
 }
+
+// ################################################################################################
 export function getMiroirFundamentalJzodSchema(
   entityDefinitionBundleV1 : EntityDefinition,
   entityDefinitionCommit : EntityDefinition,
@@ -118,7 +120,6 @@ export function getMiroirFundamentalJzodSchema(
   domainEndpointVersionV1: any,
   queryEndpointVersionV1: any,
   persistenceEndpointVersionV1: any,
-  // jzodSchemajzodMiroirBootstrapSchema: EntityDefinition,
   jzodSchemajzodMiroirBootstrapSchema: JzodSchema,
   entityDefinitionApplicationV1 : EntityDefinition,
   entityDefinitionApplicationVersionV1 : EntityDefinition,

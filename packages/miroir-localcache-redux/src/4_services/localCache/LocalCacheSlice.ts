@@ -185,22 +185,14 @@ export function localCacheStateToDomainState(localCache:LocalCacheSliceState):Do
 export function currentModel(deploymentUuid: string, state:LocalCacheSliceState): MetaModel {
   // log.info(
   //   "called currentModel(",
-  //   deploymentUuid,")"
+  //   deploymentUuid,
+  //   ") from state:",
+  //   Object.keys(state)
   // );
-  log.info(
-    "called currentModel(",
-    deploymentUuid,
-    ") from state:",
-    Object.keys(state)
-  );
-  // const reduxState = this.innerReduxStore.getState().presentModelSnapshot;
 
   if (!deploymentUuid) {
     throw new Error("currentModel(deploymentUuid) parameter can not be undefined.");
   } else {
-    // if (deploymentUuid == applicationDeploymentMiroir.uuid) {
-      const stateEntries  = Object.entries(state);
-      // log.info("called currentModel(", deploymentUuid, ") stateEntries:", stateEntries);
       const metaModelSection = "model";
       const modelSection = deploymentUuid == applicationDeploymentMiroir.uuid?"data":"model";
       const applicationVersions = state[getLocalCacheSliceIndex(deploymentUuid, modelSection, entityApplicationVersion.uuid)];
@@ -224,8 +216,6 @@ export function currentModel(deploymentUuid: string, state:LocalCacheSliceState)
         menus: (menus && menus.entities? Object.values(menus.entities): []) as Menu[],
         reports: (reports && reports.entities? Object.values(reports.entities):[]) as Report[],
       }
-      // log.info("called currentModel(", deploymentUuid, ") entities:", entities, Object.values(entities.entities));
-      // log.info("called currentModel(", deploymentUuid, ") entities:", entities.entities);
       // log.info("called currentModel(", deploymentUuid, ") found result:", JSON.stringify(result, null, 2));
       return result;
   }
@@ -295,8 +285,6 @@ function getInitializedSectionEntityAdapter(
 //#########################################################################################
 //# REDUCER FUNCTION
 //#########################################################################################
-// function ReplaceInstancesForDeploymentEntity(deploymentUuid: string, state: LocalCacheSliceState, action: PayloadAction<EntityInstanceCollection>) {
-// function equalEntityInstances(newOnes:EntityInstance[],oldOnes:{[k:string]:EntityInstance}) {
 function equalEntityInstances(newOnes:EntityInstance[],oldOnes:Record<string, EntityInstance>) {
   for (const newOne of newOnes) {
     if (!oldOnes[newOne.uuid] || !equal(newOne,oldOnes[newOne.uuid])) {
@@ -313,7 +301,7 @@ function ReplaceInstancesForSectionEntity(
   state: LocalCacheSliceState,
   instanceCollection: EntityInstanceCollection
 ) {
-  log.debug('ReplaceInstancesForSectionEntity',deploymentUuid,section,instanceCollection);
+  // log.debug('ReplaceInstancesForSectionEntity',deploymentUuid,section,instanceCollection);
   const entityEntityIndex = getLocalCacheSliceIndex(deploymentUuid, "model", entityEntity.uuid);
   const instanceCollectionEntityIndex = getLocalCacheSliceIndex(deploymentUuid, section, instanceCollection.parentUuid);
   const entity = state[entityEntityIndex]?.entities[instanceCollection.parentUuid];
@@ -334,28 +322,27 @@ function ReplaceInstancesForSectionEntity(
     Object.keys(instanceCollection.instances).length > 0 &&
     equalEntityInstances(instanceCollection.instances, state[instanceCollectionEntityIndex].entities)
   ) {
-    log.debug(
-      "ReplaceInstancesForDeploymentEntity for deployment",
-      deploymentUuid,
-      "entity",
-      entity ? (entity as any)["name"] : instanceCollection.parentName ? instanceCollection.parentName : "unknown",
-      "uuid",
-      instanceCollection.parentUuid,
-      "nothing to be done, instances did not change."
-    );
+    // log.debug(
+    //   "ReplaceInstancesForDeploymentEntity for deployment",
+    //   deploymentUuid,
+    //   "entity",
+    //   entity ? (entity as any)["name"] : instanceCollection.parentName ? instanceCollection.parentName : "unknown",
+    //   "uuid",
+    //   instanceCollection.parentUuid,
+    //   "nothing to be done, instances did not change."
+    // );
   } else {
-    log.trace(
-      "ReplaceInstancesForDeploymentEntity for deployment",
-      deploymentUuid,
-      "entity",
-      entity ? (entity as any)["name"] : instanceCollection.parentName ? instanceCollection.parentName : "unknown",
-      "uuid",
-      instanceCollection.parentUuid,
-      "new values",
-      instanceCollection.instances,
-      "differ from old values."
-      // state[instanceCollectionEntityIndex].entities
-    );
+    // log.trace(
+    //   "ReplaceInstancesForDeploymentEntity for deployment",
+    //   deploymentUuid,
+    //   "entity",
+    //   entity ? (entity as any)["name"] : instanceCollection.parentName ? instanceCollection.parentName : "unknown",
+    //   "uuid",
+    //   instanceCollection.parentUuid,
+    //   "new values",
+    //   instanceCollection.instances,
+    //   "differ from old values."
+    // );
 
     state[instanceCollectionEntityIndex] = sliceEntityAdapter.setAll(
       state[instanceCollectionEntityIndex],
@@ -371,15 +358,15 @@ function handleInstanceAction(
   state: LocalCacheSliceState,
   instanceAction: InstanceAction
 ): ActionReturnType {
-  log.info(
-    "localCacheSliceObject handleInstanceAction deploymentUuid",
-    instanceAction.deploymentUuid,
-    "actionName",
-    instanceAction.actionName,
-    "called",
-    // JSON.stringify(action, null, 2)
-    instanceAction
-  );
+  // log.info(
+  //   "localCacheSliceObject handleInstanceAction deploymentUuid",
+  //   instanceAction.deploymentUuid,
+  //   "actionName",
+  //   instanceAction.actionName,
+  //   "called",
+  //   // JSON.stringify(action, null, 2)
+  //   instanceAction
+  // );
   switch (instanceAction.actionName) {
     case "createInstance": {
       for (let instanceCollection of instanceAction.objects ?? ([] as EntityInstanceCollection[])) {
@@ -430,10 +417,10 @@ function handleInstanceAction(
     case "deleteInstance": {
       for (let instanceCollection of instanceAction.objects) {
         try {
-          log.debug(
-            "localCacheSliceObject handleInstanceAction delete called for instanceCollection",
-            instanceCollection
-          );
+          // log.debug(
+          //   "localCacheSliceObject handleInstanceAction delete called for instanceCollection",
+          //   instanceCollection
+          // );
 
           const instanceCollectionEntityIndex = getLocalCacheSliceIndex(
             instanceAction.deploymentUuid,
@@ -441,10 +428,10 @@ function handleInstanceAction(
             instanceCollection.parentUuid
           );
 
-          log.debug(
-            "localCacheSliceObject handleInstanceAction delete received instanceCollectionEntityIndex",
-            instanceCollectionEntityIndex
-          );
+          // log.debug(
+          //   "localCacheSliceObject handleInstanceAction delete received instanceCollectionEntityIndex",
+          //   instanceCollectionEntityIndex
+          // );
 
           const sliceEntityAdapter = getInitializedSectionEntityAdapter(
             instanceAction.deploymentUuid,
@@ -452,27 +439,23 @@ function handleInstanceAction(
             instanceCollection.parentUuid,
             state
           );
-          log.trace(
-            "localCacheSliceObject handleInstanceAction delete received sliceEntityAdapter",
-            sliceEntityAdapter,
-            "for instanceCollection",
-            instanceCollection,
-            "state",
-            JSON.stringify(state[instanceCollectionEntityIndex])
-          );
+          // log.trace(
+          //   "localCacheSliceObject handleInstanceAction delete received sliceEntityAdapter",
+          //   sliceEntityAdapter,
+          //   "for instanceCollection",
+          //   instanceCollection,
+          //   "state",
+          //   JSON.stringify(state[instanceCollectionEntityIndex])
+          // );
 
           sliceEntityAdapter.removeMany(
             state[instanceCollectionEntityIndex],
             instanceCollection.instances.map((i) => i.uuid)
           );
-          log.trace(
-            "localCacheSliceObject handleInstanceAction delete state after removeMany for instanceCollection",
-            instanceCollection,
-            "state",
-            JSON.stringify(state[instanceCollectionEntityIndex])
-          );
           // log.trace(
-          //   "localCacheSliceObject handleInstanceAction delete state after",
+          //   "localCacheSliceObject handleInstanceAction delete state after removeMany for instanceCollection",
+          //   instanceCollection,
+          //   "state",
           //   JSON.stringify(state[instanceCollectionEntityIndex])
           // );
         } catch (error) {
@@ -537,16 +520,14 @@ function handleModelAction(
   deploymentUuid: Uuid,
   action: ModelAction
 ): ActionReturnType {
-  log.info(
-    "localCacheSliceObject handleModelAction called",
-    action.actionName,
-    "deploymentUuid",
-    deploymentUuid,
-    "action",
-    action, 
-    // "state",
-    // state
-  );
+  // log.info(
+  //   "localCacheSliceObject handleModelAction called",
+  //   action.actionName,
+  //   "deploymentUuid",
+  //   deploymentUuid,
+  //   "action",
+  //   action, 
+  // );
   // TODO: fail in case of Transactional Entity (Entity, EntityDefinition...)?
   switch (action.actionType) {
     case "modelAction": {
@@ -611,12 +592,12 @@ function handleAction(
   );
   switch (action.actionType) {
     case "undoRedoAction": {
-      log.debug(
-        "localCacheSliceObject handleUndoRedoAction deploymentUuid",
-        action.deploymentUuid,
-        "action has no effect",
-        JSON.stringify(action, undefined, 2)
-      );
+      // log.debug(
+      //   "localCacheSliceObject handleUndoRedoAction deploymentUuid",
+      //   action.deploymentUuid,
+      //   "action has no effect",
+      //   JSON.stringify(action, undefined, 2)
+      // );
       break;
     }
     case "modelAction": {

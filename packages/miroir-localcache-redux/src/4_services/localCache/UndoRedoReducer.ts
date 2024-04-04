@@ -94,20 +94,19 @@ function callUndoRedoReducer(
   );
 
   switch (action.payload.actionType) {
-    // case "localCacheModelActionWithDeployment": {
     case "modelAction": {
       return { newSnapshot: newPresentModelSnapshot, changes: changes, inverseChanges: inverseChanges };
       break;
     }
     case "transactionalInstanceAction": {
-      log.info(
-        "callUndoRedoReducer undoable action type",
-        action.type,
-        "action name",
-        action.payload.instanceAction.actionName,
-        "action",
-        action.payload
-      );
+      // log.info(
+      //   "callUndoRedoReducer undoable action type",
+      //   action.type,
+      //   "action name",
+      //   action.payload.instanceAction.actionName,
+      //   "action",
+      //   action.payload
+      // );
       return { newSnapshot: newPresentModelSnapshot, changes: changes, inverseChanges: inverseChanges };
       break;
     }
@@ -136,14 +135,11 @@ const callNextReducerWithUndoRedo = (
     // presentModelSnapshot !== newSnapshot
     const newPatch: ReduxStateChanges = {
       action: action.payload,
-      // action.payload.actionType == "localCacheModelActionWithDeployment"
-      //   ? action.payload
-      //   : action.payload.instanceAction as DomainTransactionalInstanceAction,
       changes,
       inverseChanges,
     };
 
-    log.info("callNextReducerWithUndoRedo for", action.type, action.payload, "adding Patch to transaction", newPatch);
+    // log.info("callNextReducerWithUndoRedo for", action.type, action.payload, "adding Patch to transaction", newPatch);
 
     return {
       currentTransaction,
@@ -181,7 +177,6 @@ const callNextReducerWithUndoRedoForModelAction = (
   const callResult = { newSnapshot: newPresentModelSnapshot, changes: callChanges, inverseChanges: inverseCallChanges };
 
   const { newSnapshot, changes, inverseChanges } = callResult;
-  // const { newSnapshot, changes, inverseChanges } = callUndoRedoReducer(innerReducer, presentModelSnapshot, action);
   if (presentModelSnapshot === newSnapshot) {
     // log.info('callNextReducerWithUndoRedo presentModelSnapshot === newSnapshot, nothing added to current transaction.');
     return state;
@@ -196,7 +191,6 @@ const callNextReducerWithUndoRedoForModelAction = (
     // log.info('callNextReducerWithUndoRedo for', action.type, action.payload.domainAction.actionType, action.payload.domainAction.actionName,'adding Patch to transaction', newPatch);
 
     // the model action is NOT passed down further to the next reducer
-
     return {
       currentTransaction,
       previousModelSnapshot,
@@ -289,7 +283,7 @@ function handleInstanceAction(
   action: PayloadAction<InstanceAction>
 ): ReduxStateWithUndoRedo {
   // log.info("reduceWithUndoRedo handleInstanceAction treating action", JSON.stringify(action.payload, null, 2));
-  log.info("reduceWithUndoRedo handleInstanceAction", action.payload);
+  // log.info("reduceWithUndoRedo handleInstanceAction", action.payload);
   const {
     currentTransaction,
     previousModelSnapshot,
@@ -324,7 +318,7 @@ function handleUndoRedoAction(
   action: PayloadAction<UndoRedoAction>
 ): ReduxStateWithUndoRedo {
   // log.info("reduceWithUndoRedo handleUndoRedoAction treating action", JSON.stringify(action.payload, null, 2));
-  log.info("reduceWithUndoRedo handleUndoRedoAction", action.payload);
+  // log.info("reduceWithUndoRedo handleUndoRedoAction", action.payload);
   const {
     currentTransaction,
     previousModelSnapshot,
@@ -341,13 +335,13 @@ function handleUndoRedoAction(
           presentModelSnapshot,
           pastModelPatches[pastModelPatches.length - 1].inverseChanges
         );
-        log.info(
-          "reduceWithUndoRedo handleUndoRedoAction undo patches",
-          pastModelPatches,
-          "undo",
-          pastModelPatches[0],
-          pastModelPatches[1]
-        );
+        // log.info(
+        //   "reduceWithUndoRedo handleUndoRedoAction undo patches",
+        //   pastModelPatches,
+        //   "undo",
+        //   pastModelPatches[0],
+        //   pastModelPatches[1]
+        // );
         return {
           currentTransaction,
           previousModelSnapshot,
@@ -420,7 +414,7 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
 
     switch (action.type) {
       case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleAction: {
-        log.info("reduceWithUndoRedo handleAction treating action", action.payload)
+        // log.info("reduceWithUndoRedo handleAction treating action", action.payload)
         switch (action.payload.actionType) {
           case "modelAction": {
             return handleModelAction(innerReducer, state, action as PayloadAction<ModelAction>)
@@ -464,9 +458,7 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
 // TODO: precise type for return value of selectInstancesForEntity. This is a Selector, which reselect considers a Dictionnary...
 // TODO: should it really memoize? Doen't this imply caching the whole value, which can be really large? Or is it juste the selector?
 export const selectCurrentTransaction: () => (state: ReduxStateWithUndoRedo) => ReduxStateChanges[] =
-  // _memoize(
   () => {
-    // return createSelector(
     return createSelector(
       (state: ReduxStateWithUndoRedo) => {
         return state.pastModelPatches;
@@ -474,4 +466,3 @@ export const selectCurrentTransaction: () => (state: ReduxStateWithUndoRedo) => 
       (items: ReduxStateChanges[]) => items
     );
   };
-// )

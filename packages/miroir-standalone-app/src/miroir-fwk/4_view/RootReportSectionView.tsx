@@ -96,7 +96,7 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
   );
 
   const domainElementObject: DomainElementObject = useDomainStateSelectorNew(
-    selectorMap.selectByDomainManyQueriesFromDomainStateNew as DomainStateSelectorNew<DomainManyQueriesWithDeploymentUuid, any>,
+    selectorMap.selectByDomainManyQueriesFromDomainState as DomainStateSelectorNew<DomainManyQueriesWithDeploymentUuid, any>,
     domainFetchQueryParams
   );
 

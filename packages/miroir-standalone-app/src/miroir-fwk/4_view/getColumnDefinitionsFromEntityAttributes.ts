@@ -6,7 +6,7 @@ import { EntityDefinition, JzodObject, LoggerInterface, MiroirLoggerFactory, ent
 
 import { GenderCellEditor } from "../../miroir-fwk/4_view/GenderCellEditor";
 import {
-  DefaultCellRenderer2,
+  DefaultCellRenderer,
   EntityInstanceCellRenderer,
   SelectEntityInstanceEditor,
 } from "../../miroir-fwk/4_view/SelectEntityInstanceEditor";
@@ -112,7 +112,7 @@ export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(
       // log.info("column default:", name, jzodSchema);
       return {
         field: name,
-        cellRenderer: DefaultCellRenderer2,
+        cellRenderer: DefaultCellRenderer,
         cellRendererParams: {
           columnName: name,
         },

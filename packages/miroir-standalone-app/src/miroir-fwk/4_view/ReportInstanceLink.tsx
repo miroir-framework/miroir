@@ -26,8 +26,6 @@ export interface EntityInstanceLinkProps {
   applicationSection: ApplicationSection,
   reportUuid: Uuid,
   instanceUuid: Uuid,
-  // store:any;
-  // reportName: string;
 }
 
 // ###############################################################################################################
@@ -36,23 +34,6 @@ export const ReportInstanceLink = (props: EntityInstanceLinkProps) => {
   log.info('ReportInstanceLink props',props);
   
   const navigate = useNavigate();
-
-  // const reportDefinition: Report = useSelector((state: ReduxStateWithUndoRedo) =>
-  //   applyDomainStateSelector(selectEntityInstanceFromObjectQueryAndDomainState)(state, pageParams, {}, fetchedDataEntriesParams)
-  // );
-
-  // const instancesToDisplayUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
-  //   {
-  //     queryType: "LocalCacheEntityInstancesSelectorParams",
-  //     definition: {
-  //       deploymentUuid: props.deploymentUuid,
-  //       applicationSection: props.applicationSection as ApplicationSection,
-  //       entityUuid: props.reportUuid,
-  //     }
-  //   }
-  // );
-
-  // const instance:any = instancesToDisplayUuidIndex && props.instanceUuid?instancesToDisplayUuidIndex[props.instanceUuid]:undefined;
   const instance:any = {};
 
   if (props.applicationSection && props.instanceUuid) {

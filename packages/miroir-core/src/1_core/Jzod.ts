@@ -98,12 +98,12 @@ export function resolveReferencesForJzodSchemaAndValueObject(
   miroirMetaModel?: MetaModel,
   relativeReferenceJzodContext?: {[k:string]: JzodElement},
 ): ResolvedJzodSchemaReturnType {
-  log.info(
-    "resolveReferencesForJzodSchemaAndValueObject called for valueObject",
-    JSON.stringify(valueObject, null, 2),
-    "schema",
-    JSON.stringify(jzodSchema, null, 2)
-  );
+  // log.info(
+  //   "resolveReferencesForJzodSchemaAndValueObject called for valueObject",
+  //   JSON.stringify(valueObject, null, 2),
+  //   "schema",
+  //   JSON.stringify(jzodSchema, null, 2)
+  // );
   switch (jzodSchema?.type) {
     case "schemaReference": {
       const newContext = {...relativeReferenceJzodContext, ...jzodSchema.context}
@@ -177,7 +177,7 @@ export function resolveReferencesForJzodSchemaAndValueObject(
       } else {
         extendedJzodSchema = jzodSchema
       }
-      log.info("resolveReferencesForJzodSchemaAndValueObject object extendedJzodSchema",extendedJzodSchema)
+      // log.info("resolveReferencesForJzodSchemaAndValueObject object extendedJzodSchema",extendedJzodSchema)
 
       const resolvedObjectEntries:[string, JzodElement][] = Object.entries(valueObject).map(
         (e: [string, any]) => {
@@ -190,7 +190,7 @@ export function resolveReferencesForJzodSchemaAndValueObject(
               miroirMetaModel,
               relativeReferenceJzodContext
             )
-            log.info("resolveReferencesForJzodSchemaAndValueObject object attribute",e,"result",resultSchemaTmp)
+            // log.info("resolveReferencesForJzodSchemaAndValueObject object attribute",e,"result",resultSchemaTmp)
             if (resultSchemaTmp.status == "ok") {
               return [
                 e[0],
@@ -259,11 +259,11 @@ export function resolveReferencesForJzodSchemaAndValueObject(
         }
       });
 
-      log.info(
-        "resolveReferencesForJzodSchemaAndValueObject called for union",
-        "concreteUnrolledJzodSchemas resolved type:",
-        JSON.stringify(concreteUnrolledJzodSchemas, null, 2)
-      );
+      // log.info(
+      //   "resolveReferencesForJzodSchemaAndValueObject called for union",
+      //   "concreteUnrolledJzodSchemas resolved type:",
+      //   JSON.stringify(concreteUnrolledJzodSchemas, null, 2)
+      // );
       switch (typeof valueObject) {
         case "string": {
           // TODO: the following line may introduce some non-determinism, in the case many records actually match the "find" predicate! BAD!
@@ -289,16 +289,16 @@ export function resolveReferencesForJzodSchemaAndValueObject(
           const discriminator = jzodSchema.discriminator??"_undefined_"
           const subDiscriminator = jzodSchema.subDiscriminator??"_undefined_"
 
-          log.info(
-            "resolveReferencesForJzodSchemaAndValueObject called for union-type value object with discriminator=",
-            discriminator,
-            " subdiscriminator=",
-            subDiscriminator,
-            ", valueObject[discriminator]=",
-            valueObject[discriminator],
-            ", valueObject[subDiscriminator]=",
-            valueObject[subDiscriminator]
-          );
+          // log.info(
+          //   "resolveReferencesForJzodSchemaAndValueObject called for union-type value object with discriminator=",
+          //   discriminator,
+          //   " subdiscriminator=",
+          //   subDiscriminator,
+          //   ", valueObject[discriminator]=",
+          //   valueObject[discriminator],
+          //   ", valueObject[subDiscriminator]=",
+          //   valueObject[subDiscriminator]
+          // );
 
           const objectUnionChoices = concreteUnrolledJzodSchemas.filter(j => j.type == "object")
           if (objectUnionChoices.length == 1) {
@@ -331,10 +331,10 @@ export function resolveReferencesForJzodSchemaAndValueObject(
               ) // TDOD: use discriminator attribute for object, not "type"!
           ; // TODO: this works only if there is exactly one object type in the union!
 
-          log.info(
-            "resolveReferencesForJzodSchemaAndValueObject found for union object resolved type: " +
-              JSON.stringify(currentDiscriminatedObjectJzodSchemas, null, 2)
-          );
+          // log.info(
+          //   "resolveReferencesForJzodSchemaAndValueObject found for union object resolved type: " +
+          //     JSON.stringify(currentDiscriminatedObjectJzodSchemas, null, 2)
+          // );
 
           if (currentDiscriminatedObjectJzodSchemas.length == 0) {
             throw new Error("resolveReferencesForJzodSchemaAndValueObject called for union-type value object with discriminator=" +
@@ -395,11 +395,11 @@ export function resolveReferencesForJzodSchemaAndValueObject(
           const objectJzodSchemaDefintion = Object.fromEntries(
             Object.entries(valueObject).map((a: [string, any]) => {
               const foundAttributeJzodSchema = (currentSubDiscriminatedObjectJzodSchema?.definition ?? ({} as any))[a[0]];
-              log.info(
-                "resolveReferencesForJzodSchemaAndValueObject for union called on object attribute '"+
-                a[0] +
-                "' found schema:" + JSON.stringify(foundAttributeJzodSchema, null, 2)
-              );
+              // log.info(
+              //   "resolveReferencesForJzodSchemaAndValueObject for union called on object attribute '"+
+              //   a[0] +
+              //   "' found schema:" + JSON.stringify(foundAttributeJzodSchema, null, 2)
+              // );
               if (foundAttributeJzodSchema) {
                 const subSchema = resolveReferencesForJzodSchemaAndValueObject(
                   miroirFundamentalJzodSchema,
@@ -410,11 +410,11 @@ export function resolveReferencesForJzodSchemaAndValueObject(
                   relativeReferenceJzodContext
                 );
                 if (subSchema.status == "ok") {
-                  log.info(
-                    "resolveReferencesForJzodSchemaAndValueObject returning for union object attribute '" +
-                    a[0] +
-                    "' schema:", JSON.stringify(subSchema, null, 2)
-                  );
+                  // log.info(
+                  //   "resolveReferencesForJzodSchemaAndValueObject returning for union object attribute '" +
+                  //   a[0] +
+                  //   "' schema:", JSON.stringify(subSchema, null, 2)
+                  // );
                   return [a[0], subSchema.element];
                 } else {
                   log.warn(

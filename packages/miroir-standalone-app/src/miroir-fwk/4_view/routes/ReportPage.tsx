@@ -153,16 +153,23 @@ export const ReportPage = () => {
         <div>ReportPage reportUuid: {params.reportUuid} </div> */}
         {
           params.deploymentUuid &&
-          params.applicationSection 
+          params.applicationSection &&
+          params.reportUuid &&
+          params.reportUuid != "undefined"
           ? (
+            <>
+            <div>
+              deploymentUuid={params.deploymentUuid}, applicationSection={params.applicationSection}, reportUuid={params.reportUuid}
+            </div>
             <RootReportSectionView
               reportSection={currentMiroirReport?.definition}
               applicationSection={params.applicationSection as ApplicationSection}
               deploymentUuid={params.deploymentUuid}
               instanceUuid={params.instanceUuid}
             />
+            </>
           ) : (
-            <div>Oops.</div>
+            <span style={{color: "red"}}>no report to display, deploymentUuid={params.deploymentUuid}, applicationSection={params.applicationSection}, reportUuid={params.reportUuid}</span>
           )
         }
       </div>

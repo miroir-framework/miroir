@@ -61,21 +61,19 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams<Tabl
   const context = useMiroirContextService();
   
   const deploymentUuid = context.deploymentUuid;
-  // const entityUuid = props.data?.rawValue.parentUuid;
   const entityUuid = props.colDef?.cellRendererParams.entityUuid;
-  // const targetObjectUuid = props.data?.rawValue.uuid;
-  log.info(
-    "EntityInstanceCellRenderer called for field",
-    props.colDef?.field,
-    "with deploymentUuid",
-    context.deploymentUuid,
-    "entityUuid",
-    entityUuid,
-    "props:",
-    props,
-    "value",
-    props.value
-  );
+  // log.info(
+  //   "EntityInstanceCellRenderer called for field",
+  //   props.colDef?.field,
+  //   "with deploymentUuid",
+  //   context.deploymentUuid,
+  //   "entityUuid",
+  //   entityUuid,
+  //   "props:",
+  //   props,
+  //   "value",
+  //   props.value
+  // );
   
   // const currentModelSelectorParams:EntityInstanceUuidIndexSelectorParams = useMemo(
   const currentModelSelectorParams:LocalCacheQueryParams = useMemo(
@@ -98,8 +96,7 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams<Tabl
     currentModel.entityDefinitions?.find((e) => e?.entityUuid == entityUuid)
   ;
   
-  log.info("EntityInstanceCellRenderer currentMiroirEntityDefinition", currentMiroirEntityDefinition)
-  // const selectorParams:EntityInstanceUuidIndexSelectorParams = useMemo(
+  // log.info("EntityInstanceCellRenderer currentMiroirEntityDefinition", currentMiroirEntityDefinition)
   const selectorParams:LocalCacheQueryParams = useMemo(
     () => ({
       queryType: "LocalCacheEntityInstancesSelectorParams",
@@ -114,7 +111,8 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams<Tabl
   const instancesToDisplay: EntityInstanceWithName[] = useSelector((state: ReduxStateWithUndoRedo) =>
     selectInstanceArrayForDeploymentSectionEntity(state, selectorParams)
   ) as EntityInstanceWithName[];
-  log.info("EntityInstanceCellRenderer instancesToDisplay",instancesToDisplay);
+  // log.info("EntityInstanceCellRenderer instancesToDisplay",instancesToDisplay);
+
   const instanceToDisplay: EntityInstanceWithName = (
     props.colDef?.cellRendererParams.entityDefinition
       ? props.data?.rawValue
@@ -134,38 +132,16 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams<Tabl
   // }
 })
 
-// // ################################################################################################
-// export const DefaultCellRenderer =  memo((props: ICellRendererParams) => {
-//   // const valueToDisplay = props.value && props.value["value"]?props.value["value"]:props.value;
-//   const valueToDisplay = props.data && props.data["value"]?props.data["value"]:props.data;
-//   log.info("DefaultCellRenderer",valueToDisplay, props);
-
-//   if (Array.isArray(valueToDisplay) || _isObject(valueToDisplay)) {
-//     return (
-//       <span>
-//         {JSON.stringify(valueToDisplay)}
-//       </span>
-//     )
-//   } else {
-//     return (
-//       <div>
-//         {/* {props.value && props.value["value"]?props.value["value"]:(props.value?props.value:'null value')} */}
-//         {/* {props.data?props.data:'null value'} */}
-//         {valueToDisplay?valueToDisplay:'null value'}
-//       </div>
-//     );
-//   }
-// })
 
 // ################################################################################################
-export const DefaultCellRenderer2 =  memo((props: ICellRendererParams<TableComponentRow>) => {
+export const DefaultCellRenderer =  memo((props: ICellRendererParams<TableComponentRow>) => {
   // const valueToDisplay = props.value && props.value["value"]?props.value["value"]:props.value;
   // const valueToDisplay = props.data && props.data["value"]?props.data["value"]:props.data;
   const valueToDisplay =
     props.colDef?.field && props.data && props.data.displayedValue && props.data.displayedValue[props.colDef?.field]
       ? props.data.displayedValue[props.colDef?.field]
       : `attribute ${props.colDef?.field} does not exist on object`;
-  // log.info("DefaultCellRenderer2",valueToDisplay, props);
+  // log.info("DefaultCellRenderer",valueToDisplay, props);
 
   if (Array.isArray(valueToDisplay) || _isObject(valueToDisplay)) {
     return (
@@ -188,11 +164,10 @@ export const DefaultCellRenderer2 =  memo((props: ICellRendererParams<TableCompo
 // ################################################################################################
 export const SelectEntityInstanceEditor = memo(
   forwardRef((props: ICellEditorParams, ref) => {
-    log.info('SelectEntityInstanceEditor',props,ref);
+    // log.info('SelectEntityInstanceEditor',props,ref);
     const context = useMiroirContextService();
     const deploymentUuid = context.deploymentUuid;
 
-    // const currentModelSelectorParams:EntityInstanceUuidIndexSelectorParams = useMemo(
     const currentModelSelectorParams:LocalCacheQueryParams = useMemo(
       () => ({
         queryType: "LocalCacheEntityInstancesSelectorParams",
@@ -208,13 +183,10 @@ export const SelectEntityInstanceEditor = memo(
       localSelectModelForDeployment(state, currentModelSelectorParams)
     ) as MetaModel
   
-    const miroirEntities:Entity [] = currentModel.entities;
-    // const miroirEntities:MetaEntity [] = useLocalCacheSectionEntitiesTOREMOVE(deploymentUuid,'model');
+    // const miroirEntities:Entity [] = currentModel.entities;
     const miroirEntityDefinitions:EntityDefinition[] = currentModel.entityDefinitions;
-    // const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(deploymentUuid,'model');
-    const currentMiroirEntityDefinition: EntityDefinition | undefined = miroirEntityDefinitions?.find(e=>e?.entityUuid === (props as any)['entityUuid']);
+    // const currentMiroirEntityDefinition: EntityDefinition | undefined = miroirEntityDefinitions?.find(e=>e?.entityUuid === (props as any)['entityUuid']);
   
-    // const selectorParams:EntityInstanceUuidIndexSelectorParams = useMemo(
     const selectorParams:LocalCacheQueryParams = useMemo(
       () => ({
         queryType: "LocalCacheEntityInstancesSelectorParams",
@@ -229,10 +201,9 @@ export const SelectEntityInstanceEditor = memo(
     const instancesToDisplay: EntityInstanceWithName[] = useSelector((state: ReduxStateWithUndoRedo) =>
       selectInstanceArrayForDeploymentSectionEntity(state, selectorParams)
     ) as EntityInstanceWithName[];
-    const instanceToDisplay = instancesToDisplay.find(i=>i.uuid == props.value);
+    // const instanceToDisplay = instancesToDisplay.find(i=>i.uuid == props.value);
       
     const [ready, setReady] = useState(false);
-    // const [interimValue, setInterimValue] = useState(isFemale(props.value));
     const [interimValue, setInterimValue] = useState(props.value);
     const [selectedElement, setSelectedElement] = useState<any>(null);
     const refContainer = useRef(null);
@@ -281,8 +252,8 @@ export const SelectEntityInstanceEditor = memo(
       padding: 4,
     };
 
-    const femaleStyle = interimValue ? selected : unselected;
-    const maleStyle = !interimValue ? selected : unselected;
+    // const femaleStyle = interimValue ? selected : unselected;
+    // const maleStyle = !interimValue ? selected : unselected;
 
     const selectData = instancesToDisplay.map(
       (i: EntityInstanceWithName) => (
@@ -313,7 +284,7 @@ export const SelectEntityInstanceEditor = memo(
           onChange={(event,value,reason,details) => value?.onClick()}
           isOptionEqualToValue={(o,v)=>o.key == v.key}
           renderOption={(props, option) => {
-            log.info('SelectEntityInstanceEditor renderOption props',props,'option',option);
+            // log.info('SelectEntityInstanceEditor renderOption props',props,'option',option);
             return (
               <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
                 <img

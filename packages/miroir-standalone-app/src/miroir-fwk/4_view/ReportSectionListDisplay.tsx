@@ -412,7 +412,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   log.info("MTableComponent foreignKeyObjectsFetchQueryParams", foreignKeyObjectsFetchQueryParams);
 
   const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = useDomainStateCleanSelectorNew(
-    selectorMap.selectByDomainManyQueriesFromDomainStateNew as DomainStateSelectorNew<DomainManyQueriesWithDeploymentUuid, any>,
+    selectorMap.selectByDomainManyQueriesFromDomainState as DomainStateSelectorNew<DomainManyQueriesWithDeploymentUuid, any>,
     foreignKeyObjectsFetchQueryParams
   );
 
@@ -720,7 +720,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           <span>No elements in the report</span>
         )
       ) : (
-        <span style={{color: "red"}}>no report to display</span>
+        <span style={{color: "red"}}>no report to display: {JSON.stringify(props.section)}</span>
       )}
     </div>
   );

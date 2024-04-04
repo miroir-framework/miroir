@@ -3,8 +3,8 @@ import { applicationDeploymentLibrary } from "../../src/ApplicationDeploymentLib
 import { DomainState } from "../../src/0_interfaces/2_domain/DomainControllerInterface";
 import {
   getSelectorParams,
-  selectByDomainManyQueriesFromDomainStateNew
-} from "../../src/2_domain/DomainSelectorNew";
+  selectByDomainManyQueriesFromDomainState
+} from "../../src/2_domain/DomainSelector";
 
 import {
   DomainElement,
@@ -43,7 +43,7 @@ describe("domainSelector", () => {
           },
         },
       };
-      const result = selectByDomainManyQueriesFromDomainStateNew(domainState, getSelectorParams(queryParam));
+      const result = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam));
       console.info("result", result);
       expect(result).toEqual({
         elementType: "object",
@@ -89,7 +89,7 @@ describe("domainSelector", () => {
           },
         },
       };
-      const result = selectByDomainManyQueriesFromDomainStateNew(domainState, getSelectorParams(queryParam));
+      const result = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam));
       console.info("result", result);
       expect(result).toEqual({
         elementType: "object",
@@ -137,7 +137,7 @@ describe("domainSelector", () => {
         }
       };
 
-      expect(selectByDomainManyQueriesFromDomainStateNew(domainState, getSelectorParams(queryParam))).toEqual({
+      expect(selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam))).toEqual({
         elementType: "object",
         elementValue: {
           book: {
@@ -184,7 +184,7 @@ describe("domainSelector", () => {
         }
       };
 
-      const queryResult:any = selectByDomainManyQueriesFromDomainStateNew(domainState, getSelectorParams(queryParam));
+      const queryResult:any = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam));
 
       expect(queryResult.elementValue.book.elementValue).toBe(domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"])
     }
@@ -223,7 +223,7 @@ describe("domainSelector", () => {
         }
       };
 
-      const queryResult:any = selectByDomainManyQueriesFromDomainStateNew(domainState, getSelectorParams(queryParam));
+      const queryResult:any = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam));
 
       expect(queryResult.elementValue.book2.elementValue).toBe(domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"])
     }
@@ -258,7 +258,7 @@ describe("domainSelector", () => {
         },
       };
 
-      const queryResult:any = selectByDomainManyQueriesFromDomainStateNew(domainState, getSelectorParams(queryParam));
+      const queryResult:any = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam));
       console.log("queryResult", JSON.stringify(queryResult, circularReplacer(), 2));
 
       expect(queryResult.elementValue.book.elementValue).toBe(domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"])
@@ -307,7 +307,7 @@ describe("domainSelector", () => {
         }
       };
 
-      const result:DomainElement = selectByDomainManyQueriesFromDomainStateNew(domainState, getSelectorParams(queryParam));
+      const result:DomainElement = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam));
 
       console.log("result XXXXXXXXXXXXXXXXXXXXXXXXXXXXX", JSON.stringify(result, circularReplacer(), 2));
       
@@ -345,7 +345,7 @@ describe("domainSelector", () => {
         },
       };
 
-      const result:DomainElement = selectByDomainManyQueriesFromDomainStateNew(domainState, getSelectorParams(queryParam));
+      const result:DomainElement = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam));
 
       console.log("result", result);
       
@@ -435,7 +435,7 @@ describe("domainSelector", () => {
         }
       };
 
-      const result:DomainElement = selectByDomainManyQueriesFromDomainStateNew(domainState, getSelectorParams(queryParam));
+      const result:DomainElement = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam));
 
       console.log("result", result);
       
@@ -518,7 +518,7 @@ describe("domainSelector", () => {
         },
       };
 
-      const result:DomainElement = selectByDomainManyQueriesFromDomainStateNew(domainState, getSelectorParams(queryParam));
+      const result:DomainElement = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam));
 
       const expectedValue = {
         "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7": domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
@@ -584,7 +584,7 @@ describe("domainSelector", () => {
         },
       };
 
-      const result:DomainElement = selectByDomainManyQueriesFromDomainStateNew(domainState, getSelectorParams(queryParam));
+      const result:DomainElement = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam));
       // console.log("result", result.elementValue.instancesOfEntities);
       const expectedValue = {
         elementType: "object",

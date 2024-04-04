@@ -28,7 +28,7 @@ import {
   MiroirSelectorQueryParams,
   reportEntityList,
   reportMenuList,
-  selectByDomainManyQueriesFromDomainStateNew
+  selectByDomainManyQueriesFromDomainState
 } from "miroir-core";
 import React, { useMemo } from 'react';
 import { useDomainControllerService, useMiroirContext } from './MiroirContextReactProvider';
@@ -187,7 +187,7 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
   );
 
   const domainElementObject: DomainElementObject = useDomainStateSelectorNew(
-    selectorMap.selectByDomainManyQueriesFromDomainStateNew,
+    selectorMap.selectByDomainManyQueriesFromDomainState,
     domainFetchQueryParams
   );
   // const defaultMiroirMenu = (domainElementObject?.elementValue?.menus?.elementValue as any)?.definition;

@@ -25,12 +25,11 @@ export class RestClient implements RestClientInterface {
 
   // ##############################################################################################
   async call(method:string, endpoint:string, args:any = {}):Promise<RestClientCallReturnType> {
-    log.info("RestClient call", method, endpoint, args)
+    // log.info("RestClient call", method, endpoint, args)
     const { body, ...customConfig } = args;
     const headers = { 'Content-Type': 'application/json' }
   
     const config = {
-      // method: body ? 'POST' : 'GET',
       method: method,
       ...customConfig,
       headers: {
@@ -39,7 +38,7 @@ export class RestClient implements RestClientInterface {
       },
     }
 
-    log.debug("RestClient call config", config)
+    // log.debug("RestClient call config", config)
 
     let data
     try {
@@ -51,12 +50,10 @@ export class RestClient implements RestClientInterface {
       const response = await this.customFetch(endpoint, config)
 
       const responseText: string = await response.text();
-      log.info("RestClient response length", responseText.length, responseText);
+      // log.info("RestClient response length", responseText.length, responseText);
       const data = responseText.length > 0?JSON.parse(responseText):undefined;
-      log.info("RestClient parsed response", data);
-      // data = await response?.json()
+      // log.info("RestClient parsed response", data);
       if (response.ok) {
-        // Return a result object similar to Axios
         return {
           status: response.status,
           data,
@@ -73,28 +70,28 @@ export class RestClient implements RestClientInterface {
   // ##############################################################################################
   async get(endpoint:string, customConfig:any = {}): Promise<RestClientCallReturnType> {
     const result:RestClientCallReturnType = await this.call('GET', endpoint, { ...customConfig, method: 'GET' })
-    log.trace('RestClient get', endpoint, result)
+    // log.trace('RestClient get', endpoint, result)
     return result
   }
 
   // ##############################################################################################
   async post(endpoint:string, body:any, customConfig = {}): Promise<RestClientCallReturnType> {
     const result:RestClientCallReturnType = await this.call('POST', endpoint, { ...customConfig, body })
-    log.trace('RestClient post', endpoint, result)
+    // log.trace('RestClient post', endpoint, result)
     return result
   }
 
   // ##############################################################################################
   async put(endpoint:string, body:any, customConfig = {}): Promise<RestClientCallReturnType> {
     const result:RestClientCallReturnType = await this.call('PUT', endpoint, { ...customConfig, body })
-    log.trace('RestClient put', endpoint, result)
+    // log.trace('RestClient put', endpoint, result)
     return result
   }
 
   // ##############################################################################################
   async delete(endpoint:string, body:any, customConfig = {}): Promise<RestClientCallReturnType> {
     const result:RestClientCallReturnType = await this.call('DELETE', endpoint, { ...customConfig, body })
-    log.trace('RestClient delete', endpoint, result)
+    // log.trace('RestClient delete', endpoint, result)
     return result
   }
 }

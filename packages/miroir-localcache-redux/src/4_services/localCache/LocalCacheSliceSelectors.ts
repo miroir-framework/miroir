@@ -15,7 +15,7 @@ import {
   getLoggerName,
   DomainStateSelector,
   DomainElement,
-  cleanupResultsFromQueryNew,
+  cleanupResultsFromQuery,
   DomainStateSelectorNew,
   DomainStateSelectorParams,
   DomainModelQueryJzodSchemaParams,
@@ -132,7 +132,7 @@ export function applyDomainStateCleanSelectorNew<Q extends MiroirSelectorQueryPa
 ) => any { 
   const cleanupFunction = (domainState: DomainState, params: DomainStateSelectorParams<Q>):DomainElement => {
     const partial:DomainElement = domainStateSelector(domainState, params);
-    const result:any = cleanupResultsFromQueryNew(partial)
+    const result:any = cleanupResultsFromQuery(partial)
     return result;
   }
 
@@ -202,7 +202,7 @@ export function applyDomainStateCleanSelector<Q extends MiroirSelectorQueryParam
 ) => any { 
   const cleanupFunction = (domainState: DomainState, params: Q):DomainElement => {
     const partial:DomainElement = domainStateSelector(domainState, params);
-    const result:any = cleanupResultsFromQueryNew(partial)
+    const result:any = cleanupResultsFromQuery(partial)
     return result;
   }
 
