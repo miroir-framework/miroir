@@ -138,6 +138,13 @@
                     "optional": true,
                     "extra": { "id":1, "defaultLabel": "Label", "editable": false }
                   },
+                  "parentName": {
+                    "type": "simpleType",
+                    "definition": "string",
+                    "optional": true,
+                    "validations": [{ "type": "uuid" }],
+                    "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+                  },
                   "parentUuid": {
                     "type": "simpleType",
                     "definition": "string",
@@ -249,7 +256,6 @@
                 "definition": {
                   "type": "schemaReference",
                   "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                     "relativePath": "objectListReportSection"
                   }
                 }
@@ -263,28 +269,24 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "gridReportSection"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "listReportSection"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "objectListReportSection"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "objectInstanceReportSection"
                 }
               }

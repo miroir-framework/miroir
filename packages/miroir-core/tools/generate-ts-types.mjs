@@ -154,10 +154,10 @@ try {
     const oldFileContents = readFileSync(miroirFundamentalJzodSchemaFilePath).toString();
     if (miroirFundamentalJzodSchemaJson != oldFileContents) {
       // TODO: do deep equal
-      console.log(
-        "generateZodSchemaFileFromJzodSchema miroirFundamentalJzodSchemaFileName miroirFundamentalJzodSchemaJson",
-        miroirFundamentalJzodSchemaJson
-      );
+      // console.log(
+      //   "generateZodSchemaFileFromJzodSchema miroirFundamentalJzodSchemaFileName miroirFundamentalJzodSchemaJson",
+      //   miroirFundamentalJzodSchemaJson
+      // );
       writeFileSync(miroirFundamentalJzodSchemaFilePath, miroirFundamentalJzodSchemaJson);
     } else {
       console.log(

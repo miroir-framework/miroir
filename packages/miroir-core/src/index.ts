@@ -382,17 +382,6 @@ export {
   selectReportDefinitionFromReportUuid,
 } from './2_domain/DomainDataAccess.js';
 export {
-  cleanupResultsFromQuery,
-  selectByDomainManyQueriesFromDomainState,
-  selectJzodSchemaByDomainModelQueryFromDomainState,
-  selectEntityJzodSchemaFromDomainState,
-  selectEntityInstanceUuidIndexFromDomainState,
-  selectEntityInstanceFromObjectQueryAndDomainState,
-  selectEntityInstanceListFromListQueryAndDomainState as selectEntityInstancesFromListQueryAndDomainState,
-  selectFetchQueryJzodSchemaFromDomainState,
-  selectJzodSchemaBySingleSelectQueryFromDomainState,
-} from './2_domain/DomainSelector.js';
-export {
   cleanupResultsFromQueryNew,
   getJzodSchemaSelectorMap,
   getSelectorMap,

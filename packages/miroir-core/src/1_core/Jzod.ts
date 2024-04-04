@@ -318,8 +318,8 @@ export function resolveReferencesForJzodSchemaAndValueObject(
             throw new Error(
               "resolveReferencesForJzodSchemaAndValueObject called for union-type value object with discriminator=" +
                 jzodSchema.discriminator +
-                " valueObject[discriminator]=" +
-                valueObject[discriminator]
+                " valueObject[discriminator] is undefined! valueObject=" +
+                JSON.stringify(valueObject, null, 2)
             );
           }
 
@@ -551,28 +551,72 @@ export function resolveReferencesForJzodSchemaAndValueObject(
           JSON.stringify(valueObject)
         }
       }
-      if (jzodSchema.definition.type == "schemaReference") {
-        // TODO: for now, we take the type of the first array element, for union types this should be a tuple of effective types!
-        const resultSchemaTmp = resolveReferencesForJzodSchemaAndValueObject(
+      const innerSchema = jzodSchema.definition.type == "schemaReference"?
+        resolveJzodSchemaReference2(
           miroirFundamentalJzodSchema,
           jzodSchema.definition,
-          valueObject[0],
           currentModel,
           miroirMetaModel,
           relativeReferenceJzodContext
         )
-        // return resultSchemaTmp;
-        if (resultSchemaTmp.status == "ok") {
-          return { status: "ok", element: { type: "array", definition: resultSchemaTmp.element } }
-        } else {
-          // return resultSchemaTmp;
-          return resultSchemaTmp;
-        }
-        
-      } else {
-        return {status: "ok", element: jzodSchema};
+      : jzodSchema.definition
+      ;
+
+      if (innerSchema.type != "union") {
+        return { status: "ok", element: { type: "array", definition: innerSchema } }
       }
 
+      // innerSchema is a union type, we have to unfold each element to its own type and return a tuple type
+      const result: JzodElement[] = valueObject.map(
+        (e:any) => {
+          const resultSchemaTmp = resolveReferencesForJzodSchemaAndValueObject(
+            miroirFundamentalJzodSchema,
+            innerSchema,
+            e,
+            currentModel,
+            miroirMetaModel,
+            relativeReferenceJzodContext
+          )
+          if (resultSchemaTmp.status == "ok") {
+              return resultSchemaTmp.element
+          } else {
+            log.warn(
+              "resolveReferencesForJzodSchemaAndValueObject record could not find schema for array element '" +
+              e +
+              "' error:", JSON.stringify(resultSchemaTmp, null, 2)
+            );
+            return { type: "simpleType", definition: "never" }
+          }
+        }
+      );
+
+      return { status: "ok", element: { type: "tuple", definition: result } }
+      // if (jzodSchema.definition.type == "schemaReference") {
+      //   // TODO: for now, we take the type of the first array element, for union types this should be a tuple of effective types!
+      //   const resultSchemaTmp = resolveReferencesForJzodSchemaAndValueObject(
+      //     miroirFundamentalJzodSchema,
+      //     jzodSchema.definition,
+      //     valueObject[0],
+      //     currentModel,
+      //     miroirMetaModel,
+      //     relativeReferenceJzodContext
+      //   )
+      //   // return resultSchemaTmp;
+      //   if (resultSchemaTmp.status == "ok") {
+      //     if (resultSchemaTmp.element.type == "union") {
+      //       // union type, we have to unfold each element to its own type and return a tuple type
+          
+      //     }
+      //     return { status: "ok", element: { type: "array", definition: resultSchemaTmp.element } }
+      //   } else {
+      //     // return resultSchemaTmp;
+      //     return resultSchemaTmp;
+      //   }
+
+        
+      // } else {
+      //   return {status: "ok", element: jzodSchema};
+      // }
       break;
     }
     case "intersection":
@@ -661,8 +705,11 @@ export function resolveJzodSchemaReference2(
     throw new Error(
       "resolveJzodSchemaReference2 could not resolve reference " +
         JSON.stringify(jzodReference) +
-        " absoluteReferences" +
-        absoluteReferences
+        // " absoluteReferences" +
+        // JSON.stringify(absoluteReferences)
+        "relativeReferenceJzodContext" +
+        JSON.stringify(relativeReferenceJzodContext)
+  
     );
   }
 

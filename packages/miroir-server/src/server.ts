@@ -8,17 +8,13 @@ import {
   LoggerInterface,
   MiroirConfigServer,
   MiroirLoggerFactory,
+  PersistenceStoreControllerManager,
   RestClient,
   SpecificLoggerOptionsMap,
-  PersistenceStoreControllerManager,
   defaultLevels,
   getLoggerName,
   miroirCoreStartup,
-  restServerDefaultHandlers,
-  DomainController,
-  DomainControllerInterface,
-  Endpoint,
-  MiroirContext
+  restServerDefaultHandlers
 } from "miroir-core";
 
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
@@ -27,7 +23,7 @@ import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 
 import { readFileSync } from 'fs';
 import log from 'loglevelnext';
-import { PersistenceReduxSaga, LocalCache, RestPersistenceClientAndRestClient, createReduxStoreAndPersistenceClient } from 'miroir-localcache-redux';
+import { LocalCache, PersistenceReduxSaga, RestPersistenceClientAndRestClient } from 'miroir-localcache-redux';
 
 const packageName = "server"
 const cleanLevel = "5"

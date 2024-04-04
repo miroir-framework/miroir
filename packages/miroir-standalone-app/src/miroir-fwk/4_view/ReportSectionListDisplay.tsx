@@ -263,7 +263,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(
     (d) => d.uuid == props.deploymentUuid
   );
-  log.info("ReportSectionView displayedDeploymentDefinition", displayedDeploymentDefinition);
+  log.info("ReportSectionListDisplay displayedDeploymentDefinition", displayedDeploymentDefinition);
 
   const domainController: DomainControllerInterface = useDomainControllerService();
   // const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
@@ -304,7 +304,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       ? mapping[displayedDeploymentDefinition?.uuid][props.chosenApplicationSection]
       : { availableReports: [], entities: [], entityDefinitions: [] as EntityDefinition[] };
 
-  log.info("ReportSectionView availableReports",availableReports);
+  log.info("ReportSectionListDisplay availableReports",availableReports);
 
   const currentReportTargetEntity: Entity | undefined =
     props.section?.type === "objectListReportSection" 
@@ -637,6 +637,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   // const currentReportTargetEntityDefinition: EntityDefinition | undefined =
   // entityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
 
+  log.info("currentApplicationSection",currentApplicationSection);
   log.info("instancesToDisplay",instancesToDisplay);
   log.info("props.currentMiroirEntity",currentReportTargetEntity);
   log.info("tableColumnDefs",tableColumnDefs);

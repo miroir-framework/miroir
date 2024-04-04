@@ -656,7 +656,7 @@ export const JzodElementEditor = (
       case "union": {
         return (
           <div>
-            default case: {props.resolvedJzodSchema.type}
+            default case: {props.resolvedJzodSchema.type} {props.listKey} value {props.formik.values[props.rootLesslistKey]}
             {/* <div>
               found schema: {JSON.stringify(props.resolvedJzodSchema, null, 2)}
             </div>
@@ -671,7 +671,7 @@ export const JzodElementEditor = (
   } else {
     return (
       <div>
-        Could not find schema for value
+        Could not find schema for item: {props.listKey} value {props.formik.values[props.rootLesslistKey]}
       </div>
     )
   }

@@ -99,7 +99,7 @@ const resolveContextReferenceNew = (
     // checking that given reference does exist
     return {
       elementType: "failure",
-      elementValue: { queryFailure: "ReferenceNotFound", queryContext: contextResults },
+      elementValue: { queryFailure: "ReferenceNotFound", queryContext: JSON.stringify(contextResults) },
     };
   }
 
@@ -115,7 +115,7 @@ const resolveContextReferenceNew = (
   ) { // checking that given reference does exist
     return {
       elementType: "failure",
-      elementValue: { queryFailure: "ReferenceFoundButUndefined", queryContext: contextResults },
+      elementValue: { queryFailure: "ReferenceFoundButUndefined", queryContext: JSON.stringify(contextResults) },
     };
   }
 
@@ -171,7 +171,7 @@ export const selectEntityInstanceUuidIndexFromDomainStateNew: DomainStateSelecto
       elementType: "failure",
       elementValue: {
         queryFailure: "IncorrectParameters",
-        queryParameters: selectorParams,
+        queryParameters: JSON.stringify(selectorParams),
       },
     };
     // resolving by fetchDataReference, fetchDataReferenceAttribute
@@ -211,7 +211,7 @@ export const selectEntityInstanceUuidIndexFromDomainStateNew: DomainStateSelecto
     case "instanceUuidIndex":
     case "instanceUuidIndexUuidIndex":
     case "array": {
-      return { elementType: "failure", elementValue: { queryFailure: "IncorrectParameters", queryReference: selectorParams.query.singleSelectQuery.select.parentUuid } }
+      return { elementType: "failure", elementValue: { queryFailure: "IncorrectParameters", queryReference: JSON.stringify(selectorParams.query.singleSelectQuery.select.parentUuid)} }
     }
     case "failure": {
       return entityUuid;
@@ -247,7 +247,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainStateNew:DomainStateSel
 
   log.info("selectEntityInstanceFromObjectQueryAndDomainStateNew found entityUuidReference", JSON.stringify(entityUuidReference))
   if (entityUuidReference.elementType != "string" && entityUuidReference.elementType != "instanceUuid") {
-    return { elementType: "failure", elementValue: { queryFailure: "IncorrectParameters", queryReference: querySelectorParams.parentUuid } }
+    return { elementType: "failure", elementValue: { queryFailure: "IncorrectParameters", queryReference: JSON.stringify(querySelectorParams.parentUuid) } }
   }
 
   switch (querySelectorParams?.queryType) {
@@ -267,8 +267,8 @@ export const selectEntityInstanceFromObjectQueryAndDomainStateNew:DomainStateSel
           elementType: "failure",
           elementValue: {
             queryFailure: "IncorrectParameters",
-            queryParameters: selectorParams.query.pageParams,
-            queryContext: selectorParams.query.contextResults,
+            queryParameters: JSON.stringify(selectorParams.query.pageParams),
+            queryContext: JSON.stringify(selectorParams.query.contextResults),
           },
         };
         // resolving by fetchDataReference, fetchDataReferenceAttribute
@@ -777,14 +777,14 @@ export const innerSelectElementFromQueryAndDomainStateNew = (
         };
         return result;
       } else {
-        return { elementType: "failure", elementValue: { queryFailure: "IncorrectParameters", query: query.rootQuery } }
+        return { elementType: "failure", elementValue: { queryFailure: "IncorrectParameters", query: JSON.stringify(query.rootQuery) } }
       }
       break;
     }
     case "queryContextReference": {
       return newFetchedData && newFetchedData.elementType == "object" && newFetchedData.elementValue[query.queryReference]
         ? newFetchedData.elementValue[query.queryReference]
-        : { elementType: "failure", elementValue: { queryFailure: "ReferenceNotFound", query } };
+        : { elementType: "failure", elementValue: { queryFailure: "ReferenceNotFound", query: JSON.stringify(query) } };
       break;
     }
     default: {

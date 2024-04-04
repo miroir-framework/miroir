@@ -1,7 +1,112 @@
 import { JzodObject } from "@miroir-framework/jzod-ts";
-import { EntityDefinition, EntityInstance, JzodSchema, jzodSchema } from "../preprocessor-generated/miroirFundamentalType";
+import {
+  EntityDefinition,
+  JzodElement,
+  JzodSchema
+} from "../preprocessor-generated/miroirFundamentalType";
 // import { Endpoint } from "../../../3_controllers/Endpoint";
 
+function makeReferencesAbsolute(jzodSchema:JzodElement, absolutePath: string):JzodElement {
+  switch (jzodSchema.type) {
+    case "schemaReference": {
+      const convertedContext = Object.fromEntries(
+        Object.entries(jzodSchema.context??{}).map(
+          (e: [string, JzodElement]) => [e[0], makeReferencesAbsolute(e[1], absolutePath)]
+        )
+      );
+
+      const result = jzodSchema.definition.absolutePath
+      ? {
+        ...jzodSchema,
+        context: convertedContext,
+      }
+      : {
+          ...jzodSchema,
+          context: convertedContext,
+          definition: {
+            ...jzodSchema.definition,
+            absolutePath,
+          },
+        };
+      console.log("makeReferencesAbsolute schemaReference received", JSON.stringify(jzodSchema));
+      console.log("makeReferencesAbsolute schemaReference returns", JSON.stringify(result));
+      return result;
+      break;
+    }
+    case "object": {
+      const convertedExtend = jzodSchema.extend?makeReferencesAbsolute(jzodSchema.extend, absolutePath): undefined as any;
+      const convertedDefinition = Object.fromEntries(
+        Object.entries(jzodSchema.definition).map(
+          (e: [string, JzodElement]) => [e[0], makeReferencesAbsolute(e[1], absolutePath)]
+        )
+      );
+      return convertedExtend?{
+        ...jzodSchema,
+        extend: convertedExtend,
+        definition: convertedDefinition
+      }:{
+        ...jzodSchema,
+        definition: convertedDefinition
+      }
+      break;
+    }
+    case "array":
+    case "lazy":
+    case "record": 
+    case "promise":
+    case "set": {
+      return {
+        ...jzodSchema,
+        definition: makeReferencesAbsolute(jzodSchema.definition, absolutePath) as any
+      }
+      break;
+    }
+    case "map": {
+      return {
+        ...jzodSchema,
+        definition: [
+          makeReferencesAbsolute(jzodSchema.definition[0], absolutePath),
+          makeReferencesAbsolute(jzodSchema.definition[1], absolutePath)
+        ]
+      }
+    }
+    case "function": {
+      return {
+        ...jzodSchema,
+        definition: {
+          args: jzodSchema.definition.args.map(e => makeReferencesAbsolute(e,absolutePath)),
+          returns: jzodSchema.definition.returns?makeReferencesAbsolute(jzodSchema.definition.returns,absolutePath):undefined,
+        }
+      }
+      break;
+    }
+    case "intersection": {
+      return {
+        ...jzodSchema,
+        definition: {
+          left: makeReferencesAbsolute(jzodSchema.definition.left, absolutePath),
+          right: makeReferencesAbsolute(jzodSchema.definition.right, absolutePath),
+        }
+      }
+      break;
+    }
+    case "union":
+    case "tuple": {
+      return {
+        ...jzodSchema,
+        definition: jzodSchema.definition.map(e => makeReferencesAbsolute(e,absolutePath)),
+      }
+      break;
+    }
+    case "simpleType":
+    case "enum":
+    case "literal":
+    default: {
+      return jzodSchema
+      break;
+    }
+  }
+}
 export function getMiroirFundamentalJzodSchema(
   entityDefinitionBundleV1 : EntityDefinition,
   entityDefinitionCommit : EntityDefinition,
@@ -24,6 +129,12 @@ export function getMiroirFundamentalJzodSchema(
   entityDefinitionQueryVersionV1 : EntityDefinition,
   entityDefinitionReportV1 : EntityDefinition,
   ): JzodSchema {
+  const entityDefinitionQueryVersionV1WithAbsoluteReferences = makeReferencesAbsolute(
+    entityDefinitionQueryVersionV1.jzodSchema.definition.definition,
+    "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+  ) as any;
+
+  console.log("entityDefinitionQueryVersionV1WithAbsoluteReferences=",JSON.stringify(entityDefinitionQueryVersionV1WithAbsoluteReferences))
   return {
     "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
     "parentName": "JzodSchema",
@@ -777,7 +888,8 @@ export function getMiroirFundamentalJzodSchema(
   
   
         },
-        ...(entityDefinitionQueryVersionV1 as any).jzodSchema.definition.definition.context,
+        // ...(makeReferencesAbsolute(entityDefinitionQueryVersionV1.jzodSchema.definition.definition,"fe9b7d99-f216-44de-bb6e-60e1a1ebb739") as any).context,
+        ...entityDefinitionQueryVersionV1WithAbsoluteReferences.context,
         "domainElementVoid": {
           "type": "object",
           "definition": {
@@ -1400,8 +1512,10 @@ export function getMiroirFundamentalJzodSchema(
             }
           }
         },
+        // TODO: THIS IS DUPLICATED BELOW!!!!
         "domainModelQueryJzodSchemaParams": {
           "type": "union",
+          "discriminator": "queryType",
           "definition": [
             {
               "type": "schemaReference",
@@ -1428,6 +1542,7 @@ export function getMiroirFundamentalJzodSchema(
         },
         "miroirSelectorQueryParams": {
           "type": "union",
+          "discriminator": "queryType",
           "definition": [
             {
               "type": "schemaReference",
@@ -1464,11 +1579,36 @@ export function getMiroirFundamentalJzodSchema(
                 "relativePath": "miroirCustomQueryParams"
               }
             },
+            // {
+            //   "type": "schemaReference",
+            //   "definition": {
+            //     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            //     "relativePath": "domainModelQueryJzodSchemaParams"
+            //   }
+            // }
+            // DUPLICATED BELOW
+            //   |
+            //   |
+            //   v
             {
               "type": "schemaReference",
               "definition": {
                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "domainModelQueryJzodSchemaParams"
+                "relativePath": "domainModelGetEntityDefinitionQueryParams"
+              }
+            },
+            {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "domainModelGetFetchParamJzodSchemaQueryParams"
+              }
+            },
+            {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "domainModelGetSingleSelectQueryJzodSchemaQueryParams"
               }
             }
           ]

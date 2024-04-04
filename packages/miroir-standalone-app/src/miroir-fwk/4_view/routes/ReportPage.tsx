@@ -131,9 +131,10 @@ export const ReportPage = () => {
   const { availableReports, entities, entityDefinitions } =
     displayedDeploymentDefinition && params.applicationSection
       ? mapping[displayedDeploymentDefinition?.uuid][localApplicationSection]
-      : { availableReports: [], entities: [], entityDefinitions: [] };
+      : { availableReports: [], entities: [], entityDefinitions: [] }
+  ;
 
-      log.info("HomePage availableReports",availableReports);
+  log.info("ReportPage availableReports",availableReports);
 
   const currentMiroirReport: Report = availableReports?.find(r=>r.uuid === params.reportUuid)??defaultReport;
 

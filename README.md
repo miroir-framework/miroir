@@ -21,7 +21,7 @@ $ npm install
 build the client and server (shell):
 
 ```sh
-npm run build5 -w miroir-core -w miroir-localcache-redux -w miroir-server-msw-stub -w miroir-store-filesystem -w miroir-store-indexedDb -w miroir-store-postgres
+npm run devBuild -w miroir-core && npm run build -w miroir-localcache-redux -w miroir-server-msw-stub -w miroir-store-filesystem -w miroir-store-indexedDb -w miroir-store-postgres
 ```
 
 # From binary packages

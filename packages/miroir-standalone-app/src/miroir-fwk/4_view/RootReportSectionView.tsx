@@ -1,38 +1,32 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Params, useParams } from 'react-router-dom';
 
 import {
   ApplicationSection,
+  DomainElementObject,
   DomainManyQueriesWithDeploymentUuid,
   DomainModelGetFetchParamJzodSchemaQueryParams,
-  DomainElement,
+  DomainStateJzodSchemaSelectorMap,
+  DomainStateJzodSchemaSelectorParams,
+  DomainStateSelectorMap,
+  DomainStateSelectorNew,
+  DomainStateSelectorParams,
   LoggerInterface,
   MiroirLoggerFactory,
+  MiroirSelectorQueryParams,
   RecordOfJzodObject,
   RootReportSection,
   Uuid,
-  getLoggerName,
-  getSelectorParams,
-  selectByDomainManyQueriesFromDomainState,
-  selectFetchQueryJzodSchemaFromDomainState,
-  DomainElementObject,
-  selectByDomainManyQueriesFromDomainStateNew,
-  DomainStateSelectorParams,
-  MiroirSelectorQueryParams,
-  DomainStateSelectorMap,
-  getSelectorMap,
-  selectJzodSchemaByDomainModelQueryFromDomainStateNew,
-  selectFetchQueryJzodSchemaFromDomainStateNew,
-  DomainStateJzodSchemaSelectorParams,
-  DomainModelQueryJzodSchemaParams,
-  DomainStateJzodSchemaSelectorMap,
   getJzodSchemaSelectorMap,
-  DomainStateSelectorNew,
+  getLoggerName,
+  getSelectorMap,
+  getSelectorParams,
+  selectFetchQueryJzodSchemaFromDomainStateNew
 } from "miroir-core";
 
 
 
-import { useDomainStateJzodSchemaSelector, useDomainStateSelector, useDomainStateSelectorNew } from './ReduxHooks';
+import { useDomainStateJzodSchemaSelector, useDomainStateSelectorNew } from './ReduxHooks';
 import { ReportSectionView } from './ReportSectionView';
 import { ReportUrlParamKeys } from './routes/ReportPage';
 
