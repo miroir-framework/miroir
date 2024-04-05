@@ -15,7 +15,9 @@ import {
   applicationDeploymentMiroir,
   reportEntityDefinitionList,
   reportEntityList,
-  ApplicationDeploymentConfiguration
+  ApplicationDeploymentConfiguration,
+  reportEntityDetails,
+  reportEntityDefinitionDetails
 } from "miroir-core";
 import {
   useErrorLogService,
@@ -35,6 +37,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 export type ReportUrlParamKeys = 'deploymentUuid' | 'applicationSection' | 'reportUuid' | 'instanceUuid';
 
+const metaModelReports = [reportEntityList.uuid, reportEntityDefinitionList.uuid, reportEntityDetails.uuid, reportEntityDefinitionDetails.uuid];
 
 const miroirExpression: JzodElement = {
   type: "object",
@@ -102,14 +105,14 @@ export const ReportPage = () => {
     [applicationDeploymentMiroir.uuid]: {
       "model": {
         availableReports: miroirMetaModel.reports.filter(
-          (r) => [reportEntityList.uuid, reportEntityDefinitionList.uuid].includes(r.uuid)
+          (r) => metaModelReports.includes(r.uuid)
           ),
           entities: miroirMetaModel.entities,
           entityDefinitions: miroirMetaModel.entityDefinitions,
         },
       "data": {
         availableReports: miroirMetaModel.reports.filter(
-          (r) => ![reportEntityList.uuid, reportEntityDefinitionList.uuid].includes(r.uuid)
+          (r) => !metaModelReports.includes(r.uuid)
         ),
         entities: miroirMetaModel.entities,
         entityDefinitions: miroirMetaModel.entityDefinitions,
@@ -137,7 +140,7 @@ export const ReportPage = () => {
 
   log.info("ReportPage availableReports",availableReports);
 
-  const currentMiroirReport: Report = availableReports?.find(r=>r.uuid === params.reportUuid)??defaultReport;
+  const currentMiroirReport: Report = availableReports?.find(r=>r.uuid == params.reportUuid)??defaultReport;
 
   // const currentMiroirReport: Report = currentModel.reports?.find((r:Report) => r.uuid === params.reportUuid)??defaultReport;
 

@@ -45,7 +45,7 @@ import { cleanLevel } from "./constants";
 import { applyTransformer } from "./Transformers";
 import { jzodObject } from "@miroir-framework/jzod-ts";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainSelectorNew");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainSelector");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   (value: LoggerInterface) => {
@@ -232,7 +232,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:DomainStateSelect
     selectorParams.query.contextResults
   );
 
-  // log.info("selectEntityInstanceFromObjectQueryAndDomainState params", querySelectorParams, deploymentUuid, applicationSection, entityUuidReference);
+  log.info("selectEntityInstanceFromObjectQueryAndDomainState params", querySelectorParams, deploymentUuid, applicationSection, entityUuidReference);
 
   // log.info("selectEntityInstanceFromObjectQueryAndDomainState found entityUuidReference", JSON.stringify(entityUuidReference))
   if (entityUuidReference.elementType != "string" && entityUuidReference.elementType != "instanceUuid") {
@@ -310,7 +310,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:DomainStateSelect
     }
     case "selectObjectByDirectReference": {
       const instanceUuid = resolveContextReference(querySelectorParams.instanceUuid, selectorParams.query.queryParams, selectorParams.query.contextResults);
-      // log.info("selectEntityInstanceFromObjectQueryAndDomainState found instanceUuid", JSON.stringify(instanceUuid))
+      log.info("selectEntityInstanceFromObjectQueryAndDomainState found instanceUuid", JSON.stringify(instanceUuid))
 
       if (instanceUuid.elementType != "string" && instanceUuid.elementType != "instanceUuid") {
         return instanceUuid /* QueryResults, elementType == "failure" */
@@ -351,6 +351,20 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:DomainStateSelect
           },
         };
       }
+      
+        log.info("selectEntityInstanceFromObjectQueryAndDomainState selectObjectByDirectReference, ############# reference",
+        querySelectorParams,
+        "entityUuidReference",
+        entityUuidReference,
+        "######### context entityUuid",
+        entityUuidReference,
+        "######### queryParams",
+        JSON.stringify(selectorParams.query.queryParams, undefined, 2),
+        "######### contextResults",
+        JSON.stringify(selectorParams.query.contextResults, undefined, 2),
+        "domainState",
+        domainState
+      );
       return {
         elementType: "instance",
         elementValue:
@@ -665,7 +679,12 @@ export const innerSelectElementFromQueryAndDomainState = (
           singleSelectQuery: {
             queryType: "domainSingleSelectQueryWithDeployment",
             deploymentUuid: deploymentUuid,
-            select: query,
+            select: query.applicationSection
+            ? query
+            : {
+                ...query,
+                applicationSection: pageParams?.elementValue?.applicationSection?.elementValue as ApplicationSection,
+              },
           },
         }
       });
@@ -775,7 +794,7 @@ export const selectByDomainManyQueriesFromDomainState:DomainStateSelectorNew<
   selectorParams: DomainStateSelectorParams<DomainManyQueriesWithDeploymentUuid>,
 ): DomainElementObject => {
 
-  // log.info("########## DomainSelector selectByDomainManyQueriesFromDomainState begin, query", selectorParams);
+  log.info("########## selectByDomainManyQueriesFromDomainState begin, query", selectorParams);
   
   const context: DomainElementObject = {
     elementType: "object",
@@ -784,7 +803,7 @@ export const selectByDomainManyQueriesFromDomainState:DomainStateSelectorNew<
   // log.info("########## DomainSelector selectByDomainManyQueriesFromDomainState will use context", context);
   const localSelectorMap:DomainStateSelectorMap<DomainManyQueriesWithDeploymentUuid> = selectorParams?.selectorMap??selectorMap;
 
-  for (const entry of Object.entries(selectorParams.query.fetchQuery?.select??{})) {
+  for (const entry of Object.entries(selectorParams.query.fetchQuery.select)) {
     let result = innerSelectElementFromQueryAndDomainState(
       domainState,
       context,
@@ -801,7 +820,7 @@ export const selectByDomainManyQueriesFromDomainState:DomainStateSelectorNew<
       entry[1]
     );
     context.elementValue[entry[0]] = result;
-    // log.info("DomainSelector selectByDomainManyQueriesFromDomainState done for entry", entry[0], "query", entry[1], "result=", result);
+    log.info("selectByDomainManyQueriesFromDomainState done for entry", entry[0], "query", entry[1], "result=", result);
   }
 
   if (selectorParams.query.fetchQuery?.crossJoin) {
@@ -824,7 +843,7 @@ export const selectByDomainManyQueriesFromDomainState:DomainStateSelectorNew<
   }
 
   log.info(
-    "DomainSelector selectByDomainManyQueriesFromDomainState",
+    "selectByDomainManyQueriesFromDomainState",
     "query",
     selectorParams,
     "domainState",

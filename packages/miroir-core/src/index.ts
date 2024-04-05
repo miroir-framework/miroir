@@ -505,7 +505,9 @@ import reportApplicationVersionList from './assets/miroir_data/3f2baa83-3ef7-45c
 import reportConfigurationList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/43f04807-8f96-43f9-876f-9a0210f7b99c.json';
 import reportEndpointVersionList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/ace3d5c9-b6a7-43e6-a277-595329e7532a.json';
 import reportEntityDefinitionList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/f9aff35d-8636-4519-8361-c7648e0ddc68.json';
+import reportEntityDefinitionDetails from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/acd55b04-84df-427e-b219-cf0e01a6881b.json';
 import reportEntityList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/c9ea3359-690c-4620-9603-b5b402e4a2b9.json';
+import reportEntityDetails from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/074d1de9-594d-42d6-8848-467baeb6f3e0.json';
 import reportMenuList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/ecfd8787-09cc-417d-8d2c-173633c9f998.json';
 import reportJzodSchemaList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/8b22e84e-9374-4121-b2a7-d13d947a0ba2.json';
 import reportQueryVersionList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/7aed09a9-8a2d-4437-95ab-62966e38352c.json';
@@ -621,7 +623,9 @@ export {
   reportConfigurationList,
   reportEndpointVersionList,
   reportEntityList,
+  reportEntityDetails,
   reportEntityDefinitionList,
+  reportEntityDefinitionDetails,
   reportMenuList,
   reportJzodSchemaList,
   reportReportList,

@@ -100,15 +100,30 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
 
   log.info("ReportSectionView availableReports",availableReports);
 
-  const currentReportTargetEntity: Entity | undefined =
+  const currentListReportTargetEntity: Entity | undefined =
     props.reportSection?.type === "objectListReportSection" 
       ? entities?.find(
           (e) =>
             e?.uuid === (props.reportSection?.definition as any)["parentUuid"]
         )
       : undefined;
-  const currentReportTargetEntityDefinition: EntityDefinition | undefined =
-    entityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
+  const currentListReportTargetEntityDefinition: EntityDefinition | undefined =
+    entityDefinitions?.find((e) => e?.entityUuid === currentListReportTargetEntity?.uuid);
+
+  const entityInstance = props.domainElementObject.elementValue && props.reportSection.type == "objectInstanceReportSection"
+  ? (props.domainElementObject.elementValue as any)[
+      props.reportSection.definition.fetchedDataReference ?? ""
+    ]?.elementValue
+  : undefined
+
+  log.info(
+    "entityInstance",
+    entityInstance,
+    "props.reportSection.definition.fetchedDataReference",
+    (props.reportSection?.definition as any)?.fetchedDataReference,
+    "props",
+    props
+  );
 
   // computing current state #####################################################################
   // log.info(
@@ -227,13 +242,13 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
               // <div>Not a list!!</div>
               <div></div>
             )}
-            {props.reportSection.type === "objectListReportSection" ? (
+            {props.reportSection.type == "objectListReportSection" ? (
               <div>
                 {/* {JSON.stringify(props.domainElementObject, circularReplacer(), 2)} */}
-                {(currentReportTargetEntity && currentReportTargetEntityDefinition) || props.domainElementObject ? (
+                {(currentListReportTargetEntity && currentListReportTargetEntityDefinition) || props.domainElementObject ? (
                   <ReportSectionListDisplay
                     tableComponentReportType="EntityInstance"
-                    label={"EntityInstance-" + currentReportTargetEntity?.name}
+                    label={"EntityInstance-" + currentListReportTargetEntity?.name}
                     defaultlabel={interpolateExpression(props.reportSection.definition?.label, "report label")}
                     styles={styles}
                     deploymentUuid={props.deploymentUuid}
@@ -245,23 +260,17 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
                     paramsAsdomainElements={props.paramsAsdomainElements}
                   />
                 ) : (
-                  <div>error on object list {JSON.stringify(currentReportTargetEntity)}</div>
+                  <div>error on object list {JSON.stringify(currentListReportTargetEntity)}</div>
                 )}
               </div>
             ) : (
               <div></div>
             )}
-            {props.reportSection.type === "objectInstanceReportSection" ? (
+            {props.reportSection.type == "objectInstanceReportSection" ? (
               <div>
                 <ReportSectionEntityInstance
                   domainElement={props.domainElementObject}
-                  instance={
-                    props.domainElementObject.elementValue
-                      ? (props.domainElementObject.elementValue as any)[
-                          props.reportSection.definition.fetchedDataReference ?? ""
-                        ].elementValue
-                      : undefined
-                  }
+                  instance={entityInstance}
                   applicationSection={props.applicationSection as ApplicationSection}
                   deploymentUuid={props.deploymentUuid}
                   entityUuid={props.reportSection.definition.parentUuid}

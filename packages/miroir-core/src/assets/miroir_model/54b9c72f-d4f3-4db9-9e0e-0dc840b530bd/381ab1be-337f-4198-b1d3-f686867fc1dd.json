@@ -7,6 +7,7 @@
   "name":"Entity",
   "conceptLevel":"MetaModel",
   "description": "Entities",
+  "defaultInstanceDetailsReportUuid": "074d1de9-594d-42d6-8848-467baeb6f3e0",
   "viewAttributes": [
     "name",
     "conceptLevel",

@@ -7,6 +7,7 @@
   "name": "EntityDefinition",
   "conceptLevel": "MetaModel",
   "description": "definition of an entity",
+  "defaultInstanceDetailsReportUuid": "acd55b04-84df-427e-b219-cf0e01a6881b",
   "viewAttributes": [
     "name",
     "description",

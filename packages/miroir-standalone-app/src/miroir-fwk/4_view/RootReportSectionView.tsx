@@ -68,6 +68,8 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
     "deploymentUuid",
     props.deploymentUuid,
     props.applicationSection,
+    "paramsAsdomainElements",
+    paramsAsdomainElements,
     "fetchQuery",
     props.reportSection.fetchQuery
   );
@@ -95,9 +97,24 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
     [selectorMap, props.deploymentUuid, props.applicationSection, props.reportSection?.fetchQuery]
   );
 
+  log.info(
+    "-------------------------------------------------- props.reportSection",
+    props.reportSection,
+    "props.reportSection?.fetchQuery",
+    props.reportSection?.fetchQuery,
+  )
+
   const domainElementObject: DomainElementObject = useDomainStateSelectorNew(
-    selectorMap.selectByDomainManyQueriesFromDomainState as DomainStateSelectorNew<DomainManyQueriesWithDeploymentUuid, any>,
+    selectorMap.selectByDomainManyQueriesFromDomainState,
     domainFetchQueryParams
+  );
+
+  log.info(
+    "-------------------------------------------------- props.reportSection",
+    "domainElementObject",
+    domainElementObject,
+    // "fetchedDataJzodSchema",
+    // fetchedDataJzodSchema
   );
 
   const jzodSchemaSelectorMap: DomainStateJzodSchemaSelectorMap = useMemo(
@@ -159,6 +176,16 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
         {props.applicationSection}
       </div>
     </div> */}
+    if (domainElementObject.elementType == "object") {
+      const queryFailures = Object.entries(domainElementObject.elementValue).filter((e) => e[1].elementType == "failure")
+      if (queryFailures.length > 0) {
+        return (
+          <div>
+            found query failures! {JSON.stringify(queryFailures, null, 2)}
+          </div>
+        )        
+      }
+    }
     return (
       <div>
         <div>RootReportSectionView rendered {count}</div>

@@ -206,6 +206,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       </div>
     );
   } else {
-    return <>ReportSectionEntityInstance: Invalid parameters!</>;
+    return <>ReportSectionEntityInstance: No instance to display!</>;
   }
 };
