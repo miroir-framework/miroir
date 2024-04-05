@@ -173,8 +173,8 @@ export const HomePage = (props: RootComponentProps) => {
         (e) => e?.uuid === currentMiroirReportSectionObjectList.definition?.parentUuid
       )
     : undefined;
-  const currentReportTargetEntityDefinition: EntityDefinition | undefined =
-    entityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
+  // const currentReportTargetEntityDefinition: EntityDefinition | undefined =
+  //   entityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
   
   const handleChangeDisplayedReport = (event: SelectChangeEvent) => {
     event.stopPropagation();
@@ -550,7 +550,7 @@ export const HomePage = (props: RootComponentProps) => {
           </div>
         )
         : (
-          <div>Oops.
+          <div>Oops, HomePage coule not be displayed:
             <p>
               currentMiroirReport: {currentMiroirReport?.name}, {currentMiroirReport?.uuid}
             </p>

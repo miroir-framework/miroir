@@ -7,6 +7,7 @@
   "conceptLevel":"Model",
   "name":"Report",
   "icon": "Interests",
+  "defaultInstanceDetailsReportUuid": "ef57aada-6b77-4384-8007-12f13eddd337",
   "viewAttributes": [
     "name",
     "defaultLabel",

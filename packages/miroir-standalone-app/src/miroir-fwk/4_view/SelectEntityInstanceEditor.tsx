@@ -102,7 +102,7 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams<Tabl
       queryType: "LocalCacheEntityInstancesSelectorParams",
       definition: {
         deploymentUuid,
-        applicationSection: "data",
+        applicationSection: context.applicationSection,
         entityUuid: entityUuid,
       }
     } as LocalCacheQueryParams),

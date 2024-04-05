@@ -255,7 +255,7 @@ function getInitializedSectionEntityAdapter(
 ) {
   // TODO: refactor so as to avoid side effects!
   const index = getLocalCacheSliceIndex(deploymentUuid, section, entityUuid);
-  log.debug("getInitializedSectionEntityAdapter called", "deploymentUuid", deploymentUuid, "section", section, "entityUuid", entityUuid, "index", index);
+  // log.debug("getInitializedSectionEntityAdapter called", "deploymentUuid", deploymentUuid, "section", section, "entityUuid", entityUuid, "index", index);
   const sliceEntityAdapter = getLocalCacheSliceEntityAdapter(entityUuid);
   if (!state) {
     log.debug('getInitializedSectionEntityAdapter state is undefined, initializing state!',JSON.stringify(state),state == undefined);
@@ -266,19 +266,17 @@ function getInitializedSectionEntityAdapter(
       log.debug("getInitializedSectionEntityAdapter state[",index,"] is undefined! setting value",JSON.stringify(state[index]));
     }
   }
-  log.debug(
-    "LocalCacheSlice getInitializedSectionEntityAdapter done",
-    "deploymentUuid",
-    deploymentUuid,
-    "section",
-    section,
-    "entityUuid",
-    entityUuid,
-    "result",
-    sliceEntityAdapter
-    // "state",
-    // JSON.stringify(state)
-  );
+  // log.debug(
+  //   "LocalCacheSlice getInitializedSectionEntityAdapter done",
+  //   "deploymentUuid",
+  //   deploymentUuid,
+  //   "section",
+  //   section,
+  //   "entityUuid",
+  //   entityUuid,
+  //   "result",
+  //   sliceEntityAdapter
+  // );
   return sliceEntityAdapter;
 }
 
@@ -375,14 +373,14 @@ function handleInstanceAction(
           instanceAction.applicationSection,
           instanceCollection.parentUuid
         );
-        log.debug(
-          "create for entity",
-          instanceCollection.parentName,
-          instanceCollection.parentUuid,
-          "instances",
-          instanceCollection.instances
-          // JSON.stringify(state)
-        );
+        // log.debug(
+        //   "create for entity",
+        //   instanceCollection.parentName,
+        //   instanceCollection.parentUuid,
+        //   "instances",
+        //   instanceCollection.instances
+        //   // JSON.stringify(state)
+        // );
 
         const sliceEntityAdapter = getInitializedSectionEntityAdapter(
           instanceAction.deploymentUuid,

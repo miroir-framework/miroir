@@ -222,9 +222,15 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:DomainStateSelect
 ): DomainElement => {
   const querySelectorParams: SelectObjectQuery = selectorParams.query.singleSelectQuery.select as SelectObjectQuery;
   const deploymentUuid = selectorParams.query.singleSelectQuery.deploymentUuid;
-  const applicationSection = selectorParams.query.singleSelectQuery.select.applicationSection??"data";
+  const applicationSection: ApplicationSection =
+    selectorParams.query.singleSelectQuery.select.applicationSection ??
+    ((selectorParams.query.pageParams?.elementValue?.applicationSection?.elementValue ?? "data") as ApplicationSection);
 
-  const entityUuidReference:DomainElement = resolveContextReference(querySelectorParams.parentUuid, selectorParams.query.queryParams, selectorParams.query.contextResults);
+  const entityUuidReference: DomainElement = resolveContextReference(
+    querySelectorParams.parentUuid,
+    selectorParams.query.queryParams,
+    selectorParams.query.contextResults
+  );
 
   // log.info("selectEntityInstanceFromObjectQueryAndDomainState params", querySelectorParams, deploymentUuid, applicationSection, entityUuidReference);
 
@@ -771,7 +777,10 @@ export const selectByDomainManyQueriesFromDomainState:DomainStateSelectorNew<
 
   // log.info("########## DomainSelector selectByDomainManyQueriesFromDomainState begin, query", selectorParams);
   
-  const context:DomainElementObject = {elementType: "object", elementValue: {...selectorParams.query.contextResults.elementValue}};
+  const context: DomainElementObject = {
+    elementType: "object",
+    elementValue: { ...selectorParams.query.contextResults.elementValue },
+  };
   // log.info("########## DomainSelector selectByDomainManyQueriesFromDomainState will use context", context);
   const localSelectorMap:DomainStateSelectorMap<DomainManyQueriesWithDeploymentUuid> = selectorParams?.selectorMap??selectorMap;
 
@@ -780,11 +789,16 @@ export const selectByDomainManyQueriesFromDomainState:DomainStateSelectorNew<
       domainState,
       context,
       selectorParams.query.pageParams,
-      {elementType: "object", elementValue: { ...selectorParams.query.pageParams.elementValue, ...selectorParams.query.queryParams.elementValue} },
+      {
+        elementType: "object",
+        elementValue: {
+          ...selectorParams.query.pageParams.elementValue,
+          ...selectorParams.query.queryParams.elementValue,
+        },
+      },
       localSelectorMap as any,
       selectorParams.query.deploymentUuid,
       entry[1]
-
     );
     context.elementValue[entry[0]] = result;
     // log.info("DomainSelector selectByDomainManyQueriesFromDomainState done for entry", entry[0], "query", entry[1], "result=", result);

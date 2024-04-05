@@ -1,8 +1,42 @@
 import { List, ListItem } from "@mui/material";
 import { useMemo } from "react";
 
-import { JzodElement, JzodObject } from "@miroir-framework/jzod-ts";
-import { ApplicationSection, Entity, EntityInstancesUuidIndex, LoggerInterface, MiroirLoggerFactory, Uuid, applicationDeploymentMiroir, getLoggerName, resolveJzodSchemaReference } from "miroir-core";
+import {
+  ApplicationSection,
+  Entity,
+  EntityDefinition,
+  EntityInstancesUuidIndex,
+  JzodElement,
+  JzodObject,
+  JzodRecord,
+  JzodSchema,
+  LoggerInterface,
+  MiroirLoggerFactory,
+  Uuid,
+  applicationDeploymentMiroir,
+  domainEndpointVersionV1,
+  entityDefinitionApplication,
+  entityDefinitionApplicationVersion,
+  entityDefinitionBundleV1,
+  entityDefinitionCommit,
+  entityDefinitionEntity,
+  entityDefinitionEntityDefinition,
+  entityDefinitionJzodSchema,
+  entityDefinitionMenu,
+  entityDefinitionQueryVersionV1,
+  entityDefinitionReport,
+  getLoggerName,
+  getMiroirFundamentalJzodSchema,
+  instanceEndpointVersionV1,
+  jzodSchemajzodMiroirBootstrapSchema,
+  localCacheEndpointVersionV1,
+  modelEndpointV1,
+  persistenceEndpointVersionV1,
+  queryEndpointVersionV1,
+  resolveJzodSchemaReference2,
+  storeManagementEndpoint,
+  undoRedoEndpointVersionV1,
+} from "miroir-core";
 
 import { packageName } from "../../constants";
 import { JzodEnumSchemaToJzodElementResolver } from "../JzodTools";
@@ -11,6 +45,7 @@ import { MTableComponent } from "./MTableComponent";
 import { useCurrentModel, useEntityInstanceUuidIndexFromLocalCache } from "./ReduxHooks";
 import { cleanLevel } from "./constants";
 import { getColumnDefinitionsFromEntityDefinitionJzodElemenSchema } from "./getColumnDefinitionsFromEntityAttributes";
+import { useMiroirContextService } from "./MiroirContextReactProvider";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"JzodElementDisplay");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -27,7 +62,8 @@ export interface JzodElementDisplayProps {
   entityUuid?: Uuid,
   // instanceUuid?: Uuid,
   element: any,
-  elementJzodSchema?: JzodElement,
+  elementJzodSchema: JzodElement,
+  resolvedElementJzodSchema: JzodElement,
   // currentReportDeploymentSectionEntities?: MetaEntity[],
   currentReportDeploymentSectionEntities?: Entity[],
   currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver,
@@ -35,49 +71,32 @@ export interface JzodElementDisplayProps {
 
 
 export function JzodElementDisplay(props: JzodElementDisplayProps){
+  const context = useMiroirContextService();
 
-  // const instancesToDisplayUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
-  //   {
-  //     queryType: "LocalCacheEntityInstancesSelectorParams",
-  //     definition: {
-  //       deploymentUuid: props.deploymentUuid,
-  //       applicationSection: props.applicationSection as ApplicationSection,
-  //       entityUuid: props.entityUuid,
-  //     }
-  //   }
-  // );
 
-  // const instance:any = instancesToDisplayUuidIndex && props.instanceUuid?instancesToDisplayUuidIndex[props.instanceUuid]:undefined;
-
-  // const currentModel = useCurrentModel(props.deploymentUuid);
   const miroirModel = useCurrentModel(applicationDeploymentMiroir.uuid);
 
-  const resolvedJzodSchema =
-    props.elementJzodSchema?.type == "schemaReference"
-      ? resolveJzodSchemaReference(props.elementJzodSchema, miroirModel, {} as JzodObject)
-      : props.elementJzodSchema;
-
   const targetJzodSchema = // hack to display Jzod Schemas (DRAWBACK: makes of "type" a reserved attribute name, it has to be changed to something more specific)
-    resolvedJzodSchema?.type == "union" && props.element?.type
+    props.resolvedElementJzodSchema?.type == "union" && props.element?.type
       // ? props.currentEnumJzodSchemaResolver[props.element?.type]
       ? props.currentEnumJzodSchemaResolver(props.element?.type,props.element?.definition)
-      : resolvedJzodSchema;
+      : props.resolvedElementJzodSchema;
 
   const displayName = targetJzodSchema?.extra?.defaultLabel?targetJzodSchema?.extra?.defaultLabel:props.name;
   const styles = useMemo(
     () => ({
       width: "50vw",
-      height: "22vw",
+      // height: "22vw",
     }),
     []
   );
   log.info(
-    "JzodElementDisplay path",
+    "~~~~~~~~~~~~~~~~~~~~~~~~~~~~ path",
     props.path,
     "props.elementJzodSchema",
     props.elementJzodSchema,
-    "resolvedJzodSchema",
-    resolvedJzodSchema,
+    "props.resolvedElementJzodSchema",
+    props.resolvedElementJzodSchema,
     "targetJzodSchema",
     targetJzodSchema,
     "props.element",
@@ -86,21 +105,22 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
     miroirModel
   );
 
-  switch (targetJzodSchema?.type) {
+  switch (props.resolvedElementJzodSchema.type) {
     case "array": {
-      const columnDefs:any[]=[getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(props.name,targetJzodSchema.definition)];
+      const columnDefs:any[]=[getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(props.name,props.resolvedElementJzodSchema.definition)];
       log.info("JzodElementDisplay array","targetJzodSchema",targetJzodSchema,"columnDefs",columnDefs,"props.element",props.element);
       
       return (
         <>
-          <MTableComponent
+        array!
+          {/* <MTableComponent
             type="JSON_ARRAY"
             styles={styles}
             columnDefs={{columnDefs:columnDefs}}
             rowData={props.element}
             displayTools={true}
           >
-          </MTableComponent>
+          </MTableComponent> */}
         </>
       )
       break;
@@ -121,11 +141,12 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
                             path={props.path+'.'+attribute[0]}
                             applicationSection={props.applicationSection}
                             deploymentUuid={props.deploymentUuid}
-                            elementJzodSchema={targetJzodSchema.definition}
+                            elementJzodSchema={(props.resolvedElementJzodSchema as JzodRecord).definition}
                             entityUuid={props.entityUuid}
                             // instanceUuid={props.instanceUuid}
                             rootJzodSchema={props.rootJzodSchema}
                             currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
+                            resolvedElementJzodSchema={(props.resolvedElementJzodSchema as JzodRecord).definition}
                             element={attribute[1]}
                             currentReportDeploymentSectionEntities={props.currentReportDeploymentSectionEntities}
                           ></JzodElementDisplay>
@@ -176,21 +197,21 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
             typeof props.element == "object" && props.element != null?(
               <div>
               {props.name}: {"{"}
-              <List>
+              <List sx={{paddingTop: 0, paddingBottom: 0}}>
                 {
                   Object.entries(props.element).map(
                     (attribute) => {
                       return (
-                        <ListItem key={attribute[0]}>
+                        <ListItem key={attribute[0]} sx={{paddingTop: 0, paddingBottom: 0}}>
                           <JzodElementDisplay
                             path={props.path + '.' + attribute[0]}
                             applicationSection={props.applicationSection}
                             deploymentUuid={props.deploymentUuid}
-                            elementJzodSchema={(targetJzodSchema as JzodObject)?.definition[attribute[0]]}
+                            elementJzodSchema={(props.resolvedElementJzodSchema as JzodObject)?.definition[attribute[0]]}
                             entityUuid={props.entityUuid}
-                            // instanceUuid={props.instanceUuid}
                             rootJzodSchema={props.rootJzodSchema}
                             currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
+                            resolvedElementJzodSchema={(props.resolvedElementJzodSchema as JzodObject).definition[attribute[0]]}
                             element={attribute[1]}
                             name={attribute[0]}
                             currentReportDeploymentSectionEntities={props.currentReportDeploymentSectionEntities}
@@ -241,7 +262,9 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
     case "simpleType": {
       const targetEntityUuid = targetJzodSchema.extra?.targetEntity
       if (
+        context.applicationSection &&
         targetJzodSchema.definition == "string" &&
+        targetJzodSchema?.extra?.targetEntity &&
         targetEntityUuid
       ) {
         const targetEntity: Entity | undefined = props.currentReportDeploymentSectionEntities?.find(
@@ -252,11 +275,12 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
             {displayName}:
             <EntityInstanceLink
               deploymentUuid={
-                targetJzodSchema.extra?.targetEntityApplication == "metaModel"
-                  ? applicationDeploymentMiroir.uuid
-                  : props.deploymentUuid
+                context.deploymentUuid
+                // targetJzodSchema.extra?.targetEntityApplication == "metaModel"
+                //   ? applicationDeploymentMiroir.uuid
+                //   : props.deploymentUuid
               }
-              applicationSection={targetJzodSchema.extra?.targetEntityApplicationSection == "model" ? "model" : "data"}
+              applicationSection={context.applicationSection}
               entityUuid={targetJzodSchema?.extra?.targetEntity}
               instanceUuid={props.element}
               key={props.name}
@@ -282,7 +306,7 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
     default: {
         return (
             <div>
-              {""} {" instance default"}: {displayName} 
+              {"JzodElementDisplay"} {"instance default"}: {displayName} {targetJzodSchema?.type}
             </div>
         )
         break;

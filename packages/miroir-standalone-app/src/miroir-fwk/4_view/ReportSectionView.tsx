@@ -47,7 +47,7 @@ export interface ReportSectionEntityInstanceProps {
 export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
   // const errorLog = useErrorLogService();
 
-  log.info("########################## ReportSectionView props", props);
+  log.info("########################## props", props);
 
   const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeploymentConfiguration[];
 
@@ -59,9 +59,8 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
   const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(
     (d) => d.uuid == props.deploymentUuid
   );
-  log.info("ReportSectionView displayedDeploymentDefinition", displayedDeploymentDefinition);
+  // log.info("ReportSectionView displayedDeploymentDefinition", displayedDeploymentDefinition);
 
-  // const currentModel = props.deploymentUuid == applicationDeploymentLibrary.uuid? libraryAppModel:miroirMetaModel;
 
   const mapping = useMemo(() => ({ // displayedDeploymentDefinition, displayedApplicationSection
     [applicationDeploymentMiroir.uuid]: {
@@ -112,14 +111,14 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
     entityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
 
   // computing current state #####################################################################
-  log.info(
-    "ReportSectionView displayedDeploymentDefinition",
-    displayedDeploymentDefinition,
-    "props.reportSection",
-    props.reportSection,
-    "currentReportTargetEntity",
-    currentReportTargetEntity
-  );
+  // log.info(
+  //   "ReportSectionView displayedDeploymentDefinition",
+  //   displayedDeploymentDefinition,
+  //   "props.reportSection",
+  //   props.reportSection,
+  //   "currentReportTargetEntity",
+  //   currentReportTargetEntity
+  // );
 
   const styles = useMemo(()=>({
     // display: "flex",
@@ -127,21 +126,20 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
     // height: '100%',
     // flex: '1 1 auto',
     // overflow: "hidden",
-    height: "280px",
+    // height: "280px", // do not set height if domLayout='autoHeight' on AgGridReact
     width: "80vw",
   }),[])
 
-  log.info(
-    "ReportSectionView",
-    "deploymentUuid",
-    props.deploymentUuid,
-    props.applicationSection,
-    "domainElement",
-    props.domainElementObject
-  );
+  // log.info(
+  //   "ReportSectionView",
+  //   "deploymentUuid",
+  //   props.deploymentUuid,
+  //   props.applicationSection,
+  //   "domainElement",
+  //   props.domainElementObject
+  // );
 
-  // log.info('ReportSectionView entityJzodSchema',entityJzodSchemaDefinition);
-  log.info('ReportSectionView props.reportSection',props.reportSection);
+  // log.info('ReportSectionView props.reportSection',props.reportSection);
 
   const evaluateExpression = (expression: string | undefined) => {
     const parts = expression?.split(".");
@@ -150,14 +148,14 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
         ? (props.domainElementObject.elementValue as any)[parts[0]].elementValue
         : undefined;
     const result = object && Array.isArray(parts) && parts.length > 1 ? (object as any)[parts[1]] : undefined;
-    log.info("evaluateExpression", expression, parts, props.domainElementObject, "object", object, "result", result);
+    // log.info("evaluateExpression", expression, parts, props.domainElementObject, "object", object, "result", result);
     return result;
   };
 
   const interpolateExpression = (stringToInterpolate: string | undefined, label?: string)=> {
     const reg = /\$\{([^}]*)\}/g
     const result = stringToInterpolate?stringToInterpolate.replace(reg,(expression, ...args)=>`${evaluateExpression(args[0])}`):"no " + label
-    log.info("interpolateExpression result",result);
+    // log.info("interpolateExpression result",result);
     return result;
   }
 
@@ -245,10 +243,6 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
                     fetchedDataJzodSchema={props.fetchedDataJzodSchema}
                     section={props.reportSection}
                     paramsAsdomainElements={props.paramsAsdomainElements}
-                    // currentModel={currentModel}
-                    // currentMiroirReportSectionObjectList={props.reportSection}
-                    // currentReportTargerEntity={currentReportTargetEntity}
-                    // currentReportTargetEntityDefinition={currentReportTargetEntityDefinition}
                   />
                 ) : (
                   <div>error on object list {JSON.stringify(currentReportTargetEntity)}</div>
@@ -278,7 +272,7 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
             )}
           </div>
         ) : (
-          <div>Oops.</div>
+          <div>Oops, ReportSectionView could not be displayed.</div>
         )}
       </div>
     );

@@ -373,6 +373,10 @@ export {
   // getReportSectionTargetEntityUuid,
   resolveJzodSchemaReference,
   resolveReferencesForJzodSchemaAndValueObject,
+  resolveJzodSchemaReference2,
+  ResolvedJzodSchemaReturnType,
+  ResolvedJzodSchemaReturnTypeError,
+  ResolvedJzodSchemaReturnTypeOK,
 } from './1_core/Jzod.js';
 export {
   selectEntityInstances,

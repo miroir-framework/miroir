@@ -135,7 +135,7 @@ export function getMiroirFundamentalJzodSchema(
     "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
   ) as any;
 
-  console.log("entityDefinitionQueryVersionV1WithAbsoluteReferences=",JSON.stringify(entityDefinitionQueryVersionV1WithAbsoluteReferences))
+  // console.log("entityDefinitionQueryVersionV1WithAbsoluteReferences=",JSON.stringify(entityDefinitionQueryVersionV1WithAbsoluteReferences))
   return {
     "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
     "parentName": "JzodSchema",

@@ -56,18 +56,19 @@ export const ReportPage = () => {
   const context = useMiroirContextService();
 
   count++;
-  log.info("ReportPage count",count,"params", params,);
+  log.info("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& ReportPage rendering count",count,"params", params,);
   useEffect(()=>context.setDeploymentUuid(params.deploymentUuid ? params.deploymentUuid : ""));
+  useEffect(()=>context.setApplicationSection(params.applicationSection as ApplicationSection | undefined));
 
   const errorLog = useErrorLogService();
-  const currentModel: MetaModel = useCurrentModel(params.deploymentUuid);
+  // const currentModel: MetaModel = useCurrentModel(params.deploymentUuid);
 
   const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeploymentConfiguration[];
 
   const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
   const libraryAppModel: MetaModel = useCurrentModel(applicationDeploymentLibrary.uuid);
 
-  log.info("ReportPage currentModel", currentModel);
+  // log.info("ReportPage currentModel", currentModel);
 
   const defaultReport: Report = useMemo(()=> ({
     "uuid": "c0ba7e3d-3740-45a9-b183-20c3382b6419",
@@ -159,7 +160,7 @@ export const ReportPage = () => {
           ? (
             <>
             <div>
-              deploymentUuid={params.deploymentUuid}, applicationSection={params.applicationSection}, reportUuid={params.reportUuid}
+              deploymentUuid={params.deploymentUuid}, applicationSection={params.applicationSection}, reportUuid={params.reportUuid}, instanceUuid={params.instanceUuid}
             </div>
             <RootReportSectionView
               reportSection={currentMiroirReport?.definition}

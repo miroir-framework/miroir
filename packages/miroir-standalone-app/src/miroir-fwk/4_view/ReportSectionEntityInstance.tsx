@@ -8,6 +8,7 @@ import {
   Entity,
   EntityDefinition,
   EntityInstance,
+  JzodSchema,
   LocalCacheQueryParams,
   LoggerInterface,
   MetaModel,
@@ -16,12 +17,33 @@ import {
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   defaultMiroirMetaModel,
-  getLoggerName
+  domainEndpointVersionV1,
+  entityDefinitionApplication,
+  entityDefinitionApplicationVersion,
+  entityDefinitionBundleV1,
+  entityDefinitionCommit,
+  entityDefinitionEntity,
+  entityDefinitionEntityDefinition,
+  entityDefinitionJzodSchema,
+  entityDefinitionMenu,
+  entityDefinitionQueryVersionV1,
+  entityDefinitionReport,
+  getLoggerName,
+  getMiroirFundamentalJzodSchema,
+  instanceEndpointVersionV1,
+  jzodSchemajzodMiroirBootstrapSchema,
+  localCacheEndpointVersionV1,
+  modelEndpointV1,
+  persistenceEndpointVersionV1,
+  queryEndpointVersionV1,
+  resolveReferencesForJzodSchemaAndValueObject,
+  storeManagementEndpoint,
+  undoRedoEndpointVersionV1
 } from "miroir-core";
 import { ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-localcache-redux";
 
 import {
-  useErrorLogService
+  useErrorLogService, useMiroirContextService
 } from "../../miroir-fwk/4_view/MiroirContextReactProvider";
 
 
@@ -52,54 +74,32 @@ export interface ReportSectionEntityInstanceProps {
 // ###############################################################################################################
 export const ReportSectionEntityInstance = (props: ReportSectionEntityInstanceProps) => {
   const errorLog = useErrorLogService();
-  
-  const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeploymentConfiguration[];
+  const context = useMiroirContextService();
 
-  const currentModelSelectorParams:LocalCacheQueryParams = useMemo(
-    () => ({
-      queryType: "LocalCacheEntityInstancesSelectorParams",
-      definition: {
-        deploymentUuid: applicationDeploymentLibrary.uuid,
-      }
-    } as LocalCacheQueryParams),
-    [applicationDeploymentLibrary.uuid]
-  );
-
-  const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
-  const libraryAppModel: MetaModel = useSelector((state: ReduxStateWithUndoRedo) =>
-    localSelectModelForDeployment(state, currentModelSelectorParams)
-  ) as MetaModel;
-
-  // computing current state #####################################################################
-  const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(
-    (d) => d.uuid == props.deploymentUuid
-  );
-  log.info("ReportSectionEntityInstance displayedDeploymentDefinition", displayedDeploymentDefinition);
-  const currentReportDefinitionDeployment: ApplicationDeploymentConfiguration | undefined =
-    displayedDeploymentDefinition?.applicationModelLevel == "metamodel" || props.applicationSection == "model"
-      ? (applicationDeploymentMiroir as ApplicationDeploymentConfiguration)
-      : displayedDeploymentDefinition;
-  const currentModel =
-    props.deploymentUuid == applicationDeploymentLibrary.uuid ? libraryAppModel : defaultMiroirMetaModel;
-  
-  const currentReportDefinitionApplicationSection: ApplicationSection | undefined =
-    currentReportDefinitionDeployment?.applicationModelLevel == "metamodel" ? "data" : "model";
   log.info(
-    "ReportSectionEntityInstance currentReportDefinitionDeployment",
-    currentReportDefinitionDeployment,
-    "currentReportDefinitionApplicationSection",
-    currentReportDefinitionApplicationSection
+    "++++++++++++++++++++++++++++++++ props",
+    props
   );
+
+  // const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
+  // const libraryAppModel: MetaModel = useCurrentModel(applicationDeploymentLibrary.uuid);
+
+  const currentModel: MetaModel = useCurrentModel(
+    context.applicationSection == "data" ? context.deploymentUuid : applicationDeploymentMiroir.uuid
+  );
+  // const currentModel = useCurrentModel(props.deploymentUuid);
 
   const currentReportDeploymentSectionEntities: Entity[] = currentModel.entities; // Entities are always defined in the 'model' section
   const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] = currentModel.entityDefinitions; // EntityDefinitions are always defined in the 'model' section
 
-  log.info("ReportSectionEntityInstance currentReportDeploymentSectionEntities", currentReportDeploymentSectionEntities);
-
+  log.info(
+    "ReportSectionEntityInstance currentReportDeploymentSectionEntities",
+    currentReportDeploymentSectionEntities
+  );
 
   const currentReportTargetEntity: Entity | undefined = currentReportDeploymentSectionEntities?.find(
-      (e) => e?.uuid === props.entityUuid
-    );
+    (e) => e?.uuid === props.entityUuid
+  );
 
   const currentReportTargetEntityDefinition: EntityDefinition | undefined =
     currentReportDeploymentSectionEntityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
@@ -107,7 +107,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const entityJzodSchemaDefinition: { [attributeName: string]: JzodElement } | undefined =
     currentReportTargetEntityDefinition?.jzodSchema.definition;
 
-  const instance:any = props.instance;
+  const instance: any = props.instance;
 
   const currentMiroirModel = useCurrentModel(applicationDeploymentMiroir.uuid);
 
@@ -116,44 +116,96 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     [currentMiroirModel]
   );
 
-  log.info('ReportSectionEntityInstance instance',instance);
-  log.info('ReportSectionEntityInstance entityJzodSchema',entityJzodSchemaDefinition);
-  
+  log.info("ReportSectionEntityInstance instance", instance);
+  log.info("ReportSectionEntityInstance entityJzodSchema", entityJzodSchemaDefinition);
+
+  const miroirFundamentalJzodSchema: JzodSchema = useMemo(() => getMiroirFundamentalJzodSchema(
+    entityDefinitionBundleV1 as EntityDefinition,
+    entityDefinitionCommit as EntityDefinition,
+    modelEndpointV1,
+    storeManagementEndpoint,
+    instanceEndpointVersionV1,
+    undoRedoEndpointVersionV1,
+    localCacheEndpointVersionV1,
+    domainEndpointVersionV1,
+    queryEndpointVersionV1,
+    persistenceEndpointVersionV1,
+    jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
+    entityDefinitionApplication as EntityDefinition,
+    entityDefinitionApplicationVersion as EntityDefinition,
+    entityDefinitionEntity as EntityDefinition,
+    entityDefinitionEntityDefinition as EntityDefinition,
+    entityDefinitionJzodSchema as EntityDefinition,
+    entityDefinitionMenu  as EntityDefinition,
+    entityDefinitionQueryVersionV1 as EntityDefinition,
+    entityDefinitionReport as EntityDefinition,
+    // jzodSchemajzodMiroirBootstrapSchema as any,
+  ),[]);
+
+  const miroirModel = useCurrentModel(applicationDeploymentMiroir.uuid);
+
+  const resolvedJzodSchema = useMemo(
+    () => miroirFundamentalJzodSchema &&
+    currentReportTargetEntityDefinition?.jzodSchema &&
+    instance &&
+    currentModel ?
+    resolveReferencesForJzodSchemaAndValueObject(
+      miroirFundamentalJzodSchema,
+      currentReportTargetEntityDefinition?.jzodSchema,
+      instance,
+      currentModel,
+      currentMiroirModel,
+    ): undefined,
+    [props]
+  )
+
   if (instance) {
     return (
-      <div> 
+      <div>
         {/* <p>
         ReportSectionEntityInstance
         </p> */}
         <h1>
           {currentReportTargetEntity?.name} details: {instance.name}
         </h1>
-          {
-            currentReportTargetEntity && currentReportTargetEntityDefinition && props.applicationSection?
-              <div>
-                <JzodElementDisplay
-                  path={instance?.name}
-                  name={instance?.name}
-                  deploymentUuid={props.deploymentUuid}
-                  applicationSection={props.applicationSection as ApplicationSection}
-                  entityUuid={props.entityUuid}
-                  element={instance}
-                  rootJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
-                  elementJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
-                  currentReportDeploymentSectionEntities={currentReportDeploymentSectionEntities}
-                  currentEnumJzodSchemaResolver={currentEnumJzodSchemaResolver}
-                ></JzodElementDisplay>
-              </div>
-            :
-            <div>Oops.</div>
-          }
+        {
+          currentReportTargetEntity 
+          && currentReportTargetEntityDefinition 
+          && context.applicationSection 
+          && resolvedJzodSchema?.status == "ok"? (
+          <div>
+            <JzodElementDisplay
+              path={instance?.name}
+              name={instance?.name}
+              deploymentUuid={props.deploymentUuid}
+              // prop drilling!
+              applicationSection={context.applicationSection as ApplicationSection}
+              entityUuid={props.entityUuid}
+              element={instance}
+              rootJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
+              elementJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
+              resolvedElementJzodSchema={resolvedJzodSchema.element}
+              currentReportDeploymentSectionEntities={currentReportDeploymentSectionEntities}
+              currentEnumJzodSchemaResolver={currentEnumJzodSchemaResolver}
+            ></JzodElementDisplay>
+          </div>
+        ) : (
+          <div>
+            Oops, ReportSectionEntityInstance could not be displayed.
+            <p/>
+            <div>props application section: {props.applicationSection}</div>
+            <div>context application section: {context.applicationSection}</div>
+            <div>target entity: {currentReportTargetEntity?.name ?? "report target entity not found!"}</div>
+            <div>resolved entity: {JSON.stringify(resolvedJzodSchema)}</div>
+            <div>
+              target entity definition:{" "}
+              {currentReportTargetEntityDefinition?.name ?? "report target entity definition not found!"}
+            </div>
+          </div>
+        )}
       </div>
     );
   } else {
-    return (
-      <>
-        Invalid parameters!
-      </>
-    )
+    return <>ReportSectionEntityInstance: Invalid parameters!</>;
   }
 };

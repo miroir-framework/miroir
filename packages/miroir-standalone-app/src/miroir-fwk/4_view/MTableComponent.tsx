@@ -106,28 +106,17 @@ export const MTableComponent = (props: TableComponentProps) => {
   const navigate = useNavigate();
   const context = useMiroirContextService();
   const contextDeploymentUuid = context.deploymentUuid;
-  // const errorLog = useErrorLogService();
-  
-  // const selectorMap: DomainStateSelectorMap<MiroirSelectorQueryParams> = useMemo(
-  //   () => getSelectorMap(),
-  //   []
-  // )
-
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
   const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
 
   const [dialogFormObject, setdialogFormObject] = useState<undefined | any>(undefined);
-  log.info("MTableComponent refreshing with dialogFormObject",dialogFormObject);
   const [dialogFormIsOpen, setdialogFormIsOpen] = useState(false);
-  // const [rowData, setRowData] = useState<any[]>([]);
+  // log.info("MTableComponent refreshing with dialogFormObject",dialogFormObject);
 
 
-  // const libraryAppModel: MetaModel = useCurrentModel(applicationDeploymentLibrary.uuid);
-  
-  // const currentModel = contextDeploymentUuid == applicationDeploymentLibrary.uuid? libraryAppModel:miroirMetaModel;
   const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
   const currentModel: MetaModel = useCurrentModel(contextDeploymentUuid);
-  log.info("MTableComponent currentModel", currentModel);
+  // log.info("MTableComponent currentModel", currentModel);
 
   const tableComponentRows: { tableComponentRowUuidIndexSchema: TableComponentRow[] } = useMemo(
     // always use object, not array, to ensure correct refresh!
@@ -168,65 +157,7 @@ export const MTableComponent = (props: TableComponentProps) => {
     }),
     [props.instancesToDisplay,props.sortByAttribute]
   );
-  log.info("MTableComponent tableComponentRows", tableComponentRows);
-
-  
-  // const foreignKeyObjectsFetchQueryParams: DomainStateSelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(
-  //   () =>
-  //     getSelectorParams<DomainManyQueriesWithDeploymentUuid>(
-  //       {
-  //         queryType: "DomainManyQueries",
-  //         deploymentUuid: props.deploymentUuid,
-  //         // applicationSection: props.applicationSection,
-  //         pageParams: props.paramsAsdomainElements,
-  //         queryParams: { elementType: "object", elementValue: {} },
-  //         contextResults: { elementType: "object", elementValue: {} },
-  //         fetchQuery: {
-  //           select: Object.fromEntries(
-  //             Object.entries(
-  //               props.type == TableComponentTypeSchema.enum.EntityInstance
-  //                 ? props.currentEntityDefinition?.jzodSchema.definition ?? {}
-  //                 : {}
-  //             ).filter((e) => e[1].extra?.targetEntity)
-  //             .map(e => [
-  //               e[1].extra?.targetEntity,
-  //               {
-  //                 "queryType": "selectObjectListByEntity",
-  //                 "applicationSection": (props.paramsAsdomainElements as any)["applicationSection"],
-  //                 "parentName": "",
-  //                 "parentUuid": {
-  //                   "referenceType": "constant",
-  //                   "referenceUuid": e[1].extra?.targetEntity
-  //                 }
-  //               },
-  //             ])
-  //           ) as any,
-  //         },
-  //       },
-  //       selectorMap
-  //     ),
-  //   [selectorMap, props.deploymentUuid, props.paramsAsdomainElements, props.type]
-  // );
-
-  // log.info("MTableComponent foreignKeyObjectsFetchQueryParams", foreignKeyObjectsFetchQueryParams);
-
-  // const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = useDomainStateCleanSelectorNew(
-  //   selectorMap.selectByDomainManyQueriesFromDomainState as DomainStateSelectorNew<DomainManyQueriesWithDeploymentUuid, any>,
-  //   foreignKeyObjectsFetchQueryParams
-  // );
-
-  // log.info("MTableComponent foreignKeyObjects", foreignKeyObjects);
-
-  // useEffect(
-  //   ()=>{
-  //     log.info("MTableComponent setRowData tableComponentRows", tableComponentRows);
-  //     setRowData(tableComponentRows.tableComponentRowUuidIndexSchema)
-  //   },[tableComponentRows]
-  // )
-
-  // const tableComponentRowsCopy = tableComponentRows.tableComponentRowUuidIndexSchema.slice()
-  // log.info("MTableComponent tableComponentRowsCopy", tableComponentRowsCopy);
-  
+  // log.info("MTableComponent tableComponentRows", tableComponentRows);
 
   // ##############################################################################################
   const onCellValueChanged = useCallback(async (event:CellValueChangedEvent) => {
@@ -347,17 +278,17 @@ export const MTableComponent = (props: TableComponentProps) => {
     }
   ].concat(props.columnDefs.columnDefs),[props.columnDefs]);
   
-  log.info(
-    "MTableComponent started count",
-    count++,
-    "with props",
-    props,
-    props === prevProps,
-    "columnDefs",
-    columnDefs,
-    "rowData changed:",
-    props?.instancesToDisplay === prevProps?.instancesToDisplay
-  );
+  // log.info(
+  //   "MTableComponent started count",
+  //   count++,
+  //   "with props",
+  //   props,
+  //   props === prevProps,
+  //   "columnDefs",
+  //   columnDefs,
+  //   "rowData changed:",
+  //   props?.instancesToDisplay === prevProps?.instancesToDisplay
+  // );
   prevProps = props;
 
   // ##############################################################################################
@@ -463,7 +394,9 @@ export const MTableComponent = (props: TableComponentProps) => {
             :<></>
           }
           <div id="tata" className="ag-theme-alpine" style={props.styles}>
+          {/* <div id="tata" className="ag-theme-alpine"> */}
             <AgGridReact
+              domLayout='autoHeight'
               columnDefs={columnDefs}
               // autoSizeStrategy={autoSizeStrategy}
               // rowData={instancesWithStringifiedJsonAttributes.instancesWithStringifiedJsonAttributes}
@@ -487,7 +420,8 @@ export const MTableComponent = (props: TableComponentProps) => {
           </div>
         </div>
       ) : (
-        <div className="ag-theme-alpine" style={{height: 200, width: 200}}>
+        // <div className="ag-theme-alpine" style={{height: 200, width: 200}}>
+        <div className="ag-theme-alpine">
           <div>
             Not EntityInstance
           </div>
@@ -497,6 +431,7 @@ export const MTableComponent = (props: TableComponentProps) => {
             rowData={dummyRowData}
           ></AgGridReact> */}
           <AgGridReact
+            domLayout='autoHeight'
             columnDefs={props.columnDefs.columnDefs}
             rowData={props.rowData}
             // rowData={props.rowData}

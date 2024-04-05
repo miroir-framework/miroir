@@ -60,51 +60,6 @@ import { packageName } from '../constants';
 import { getLoggerName } from '../tools';
 import { cleanLevel } from './constants';
 import { Application, EntityDefinition, EntityInstance, MetaModel } from '../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
-// import {
-//   applicationEndpointV1,
-//   deploymentEndpointV1,
-//   entityApplication,
-//   entityApplicationDeploymentConfiguration,
-//   entityApplicationModelBranch,
-//   entityApplicationVersion,
-//   entityDefinitionApplication,
-//   entityDefinitionApplicationDeploymentConfiguration,
-//   entityDefinitionApplicationModelBranch,
-//   entityDefinitionApplicationVersion,
-//   entityDefinitionEndpoint,
-//   entityDefinitionEntity,
-//   entityDefinitionEntityDefinition,
-//   entityDefinitionJzodSchema,
-//   entityDefinitionMenu,
-//   entityDefinitionQuery,
-//   entityDefinitionReport,
-//   entityDefinitionStoreBasedConfiguration,
-//   entityEndpointVersion,
-//   entityEntity,
-//   entityEntityDefinition,
-//   entityJzodSchema,
-//   entityMenu,
-//   entityQueryVersion,
-//   entityReport,
-//   entityStoreBasedConfiguration,
-//   instanceEndpointV1,
-//   menuDefaultMiroir,
-//   modelEndpointV1,
-//   queryVersionBundleProducerV1,
-//   reportApplicationDeploymentConfigurationList,
-//   reportApplicationList,
-//   reportApplicationModelBranchList,
-//   reportApplicationVersionList,
-//   reportConfigurationList,
-//   reportEndpointVersionList,
-//   reportEntityDefinitionList,
-//   reportEntityList,
-//   reportJzodSchemaList,
-//   reportMenuList,
-//   reportQueryVersionList,
-//   reportReportList,
-// } from "..";
-// import { MiroirModel } from '../0_interfaces/1_core/Model';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ModelInitializer");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -125,10 +80,10 @@ export const metaModelEntities: MetaEntity[] = [
   entityStoreBasedConfiguration,
 ] as MetaEntity[];
 
-console.log("metaModelEntities", metaModelEntities)
+// console.log("metaModelEntities", metaModelEntities)
 
 export const miroirModelEntities: MetaEntity[] = metaModelEntities.filter((e:MetaEntity)=>{
-  console.log("filtering metaModelEntities entity", e)
+  // console.log("filtering metaModelEntities entity", e)
   return e.conceptLevel == "MetaModel"
 });
 
