@@ -6,7 +6,8 @@ import {
   SelectChangeEvent
 } from "@mui/material";
 import Box from '@mui/material/Box';
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
+import { Params } from "react-router-dom";
 import { v4 as uuidv4 } from 'uuid';
 
 import {
@@ -28,6 +29,7 @@ import {
   entityBook,
   entityDefinitionAuthor,
   entityDefinitionBook,
+  getDeploymentUuidToReportsEntitiesDefinitionsMapping,
   getLoggerName,
   reportEntityDefinitionList,
   reportEntityList,
@@ -49,6 +51,7 @@ import { useCurrentModel } from "./ReduxHooks";
 import { packageName } from "../../constants";
 import { RootReportSectionView } from "./RootReportSectionView";
 import { cleanLevel } from "./constants";
+import { ReportUrlParamKeys } from "./routes/ReportPage";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"HomePage");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -117,49 +120,83 @@ export const HomePage = (props: RootComponentProps) => {
     displayedApplicationSection
   );
 
-  const mapping = useMemo(() => ({ // displayedDeploymentDefinition, displayedApplicationSection
-    [applicationDeploymentMiroir.uuid]: {
-      "model": {
-        availableReports: miroirMetaModel.reports.filter(
-          (r) => [reportEntityList.uuid, reportEntityDefinitionList.uuid].includes(r.uuid)
-          ),
-          entities: miroirMetaModel.entities,
-          entityDefinitions: miroirMetaModel.entityDefinitions,
-        },
-      "data": {
-        availableReports: miroirMetaModel.reports.filter(
-          (r) => ![reportEntityList.uuid, reportEntityDefinitionList.uuid].includes(r.uuid)
-        ),
-        entities: miroirMetaModel.entities,
-        entityDefinitions: miroirMetaModel.entityDefinitions,
-      },
-    },
-    [applicationDeploymentLibrary.uuid]: {
-      "model": {
-        availableReports: miroirMetaModel.reports,
-        entities: miroirMetaModel.entities,
-        entityDefinitions: miroirMetaModel.entityDefinitions,
-      },
-      "data": {
-        availableReports: libraryAppModel.reports,
-        entities: libraryAppModel.entities,
-        entityDefinitions: libraryAppModel.entityDefinitions,
-      },
-    },
-  }), [miroirMetaModel, libraryAppModel]);
+  // const mapping = useMemo(() => ({ // displayedDeploymentDefinition, displayedApplicationSection
+  //   [applicationDeploymentMiroir.uuid]: {
+  //     "model": {
+  //       availableReports: miroirMetaModel.reports.filter(
+  //         (r) => [reportEntityList.uuid, reportEntityDefinitionList.uuid].includes(r.uuid)
+  //         ),
+  //         entities: miroirMetaModel.entities,
+  //         entityDefinitions: miroirMetaModel.entityDefinitions,
+  //       },
+  //     "data": {
+  //       availableReports: miroirMetaModel.reports.filter(
+  //         (r) => ![reportEntityList.uuid, reportEntityDefinitionList.uuid].includes(r.uuid)
+  //       ),
+  //       entities: miroirMetaModel.entities,
+  //       entityDefinitions: miroirMetaModel.entityDefinitions,
+  //     },
+  //   },
+  //   [applicationDeploymentLibrary.uuid]: {
+  //     "model": {
+  //       availableReports: miroirMetaModel.reports,
+  //       entities: miroirMetaModel.entities,
+  //       entityDefinitions: miroirMetaModel.entityDefinitions,
+  //     },
+  //     "data": {
+  //       availableReports: libraryAppModel.reports,
+  //       entities: libraryAppModel.entities,
+  //       entityDefinitions: libraryAppModel.entityDefinitions,
+  //     },
+  //   },
+  // }), [miroirMetaModel, libraryAppModel]);
+  const deploymentUuidToReportsEntitiesDefinitionsMapping = useMemo(
+    () => getDeploymentUuidToReportsEntitiesDefinitionsMapping(miroirMetaModel, libraryAppModel),
+    [miroirMetaModel, libraryAppModel]
+  );
+  useEffect(() =>
+    context.setDeploymentUuidToReportsEntitiesDefinitionsMapping(deploymentUuidToReportsEntitiesDefinitionsMapping)
+  );
 
-  const { availableReports, entities, entityDefinitions } =
-    displayedDeploymentDefinition && displayedApplicationSection
-      ? mapping[displayedDeploymentDefinition?.uuid][displayedApplicationSection]
+  // const { availableReports, entities, entityDefinitions } =
+  //   displayedDeploymentDefinition && displayedApplicationSection
+  //     ? mapping[displayedDeploymentDefinition?.uuid][displayedApplicationSection]
+  //     : { availableReports: [], entities: [], entityDefinitions: [] }
+  // ;
+
+  const { availableReports, entities, entityDefinitions } = useMemo(() => {
+    return displayedDeploymentDefinition &&
+      context.deploymentUuidToReportsEntitiesDefinitionsMapping &&
+      context.deploymentUuidToReportsEntitiesDefinitionsMapping[displayedDeploymentDefinition?.uuid]
+      ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[displayedDeploymentDefinition?.uuid][
+          displayedApplicationSection??"data"
+        ]
       : { availableReports: [], entities: [], entityDefinitions: [] };
-
+  }, [
+    displayedDeploymentDefinition,
+    context.deploymentUuidToReportsEntitiesDefinitionsMapping,
+    displayedApplicationSection,
+  ]);
+    
   log.info("HomePage availableReports",availableReports);
 
-  const currentMiroirReport: Report | undefined = availableReports?.find(r=>r.uuid === displayedReportUuid);
-  const currentMiroirReportSectionObjectList: ObjectListReportSection | undefined =
-    currentMiroirReport?.definition?.section?.type == "objectListReportSection"? currentMiroirReport?.definition?.section: undefined
-  ;
-  log.info("HomePage currentMiroirReport", currentMiroirReport);
+  const currentMiroirReport: Report | undefined = availableReports?.find((r: Report)=>r.uuid === displayedReportUuid);
+
+  const pageParams:Params<ReportUrlParamKeys> = useMemo(
+    () => (
+      {
+        deploymentUuid:displayedDeploymentUuid,
+        applicationSection:displayedApplicationSection,
+        reportUuid:currentMiroirReport?.uuid,
+        instanceUuid: "undefined"
+      } as Params<ReportUrlParamKeys>
+    ),
+    [currentMiroirReport, displayedApplicationSection, displayedDeploymentUuid]
+  )
+  // const currentMiroirReportSectionObjectList: ObjectListReportSection | undefined =
+  //   currentMiroirReport?.definition?.section?.type == "objectListReportSection"? currentMiroirReport?.definition?.section: undefined
+  // ;
+  // log.info("HomePage currentMiroirReport", currentMiroirReport);
   
   // const currentMiroirReportSectionObjectList: ReportSectionListDefinition | undefined =
   //   currentMiroirReport?.type == "list" &&
@@ -168,11 +205,11 @@ export const HomePage = (props: RootComponentProps) => {
   //     ? (currentMiroirReport?.definition[0] as ReportSectionList).definition
   //     : undefined
   // ;
-  const currentReportTargetEntity: Entity | undefined = currentMiroirReportSectionObjectList
-    ? entities?.find(
-        (e) => e?.uuid === currentMiroirReportSectionObjectList.definition?.parentUuid
-      )
-    : undefined;
+  // const currentReportTargetEntity: Entity | undefined = currentMiroirReportSectionObjectList
+  //   ? entities?.find(
+  //       (e) => e?.uuid === currentMiroirReportSectionObjectList.definition?.parentUuid
+  //     )
+  //   : undefined;
   // const currentReportTargetEntityDefinition: EntityDefinition | undefined =
   //   entityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
   
@@ -184,7 +221,7 @@ export const HomePage = (props: RootComponentProps) => {
 
   const handleChangeDisplayedApplicationSection = (event: SelectChangeEvent) => {
     event.stopPropagation();
-    setDisplayedApplicationSection(event.target.value as ApplicationSection|undefined);
+    setDisplayedApplicationSection(event.target.value as ApplicationSection);
     setDisplayedReportUuid("");
   };
 
@@ -523,7 +560,7 @@ export const HomePage = (props: RootComponentProps) => {
             label="displayedReportUuid"
             onChange={handleChangeDisplayedReport}
           >
-            {availableReports.map((r) => {
+            {availableReports.map((r:Report) => {
               return (
                 <MenuItem key={r.name} value={r.uuid}>
                   {r.defaultLabel}
@@ -546,6 +583,7 @@ export const HomePage = (props: RootComponentProps) => {
               reportSection={currentMiroirReport?.definition}
               applicationSection={displayedApplicationSection}
               deploymentUuid={displayedDeploymentUuid}
+              pageParams={pageParams}
             />
           </div>
         )
@@ -554,12 +592,12 @@ export const HomePage = (props: RootComponentProps) => {
             <p>
               currentMiroirReport: {currentMiroirReport?.name}, {currentMiroirReport?.uuid}
             </p>
-            <p>
+            {/* <p>
               report section: {JSON.stringify(currentMiroirReportSectionObjectList)}
-            </p>
-            <p>
+            </p> */}
+            {/* <p>
               currentReportTargetEntity: {currentReportTargetEntity?.name}, {currentReportTargetEntity?.uuid}
-            </p>
+            </p> */}
           </div>
         )
       }

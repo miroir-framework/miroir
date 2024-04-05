@@ -243,6 +243,9 @@ export {
   // StoreBasedConfiguration,
 } from './0_interfaces/1_core/MiroirConfig';
 export {
+  DeploymentUuidToReportsEntitiesDefinitionsMapping
+} from './0_interfaces/1_core/Model';
+export {
   ClientFileStorage,
   ApplicationDeploymentSchema,
   ApplicationDeploymentConfiguration,
@@ -365,6 +368,7 @@ export { DomainInstanceUuidIndexToArray } from './1_core/DomainState.js';
 export {
   defaultMiroirMetaModel,
   getCurrentEntityDefinition,
+  getDeploymentUuidToReportsEntitiesDefinitionsMapping,
  } from './1_core/Model.js';
 export {
   // getReportSectionTargetEntityUuid,

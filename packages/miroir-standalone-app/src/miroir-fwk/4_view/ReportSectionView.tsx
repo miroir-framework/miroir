@@ -26,6 +26,7 @@ import { useCurrentModel } from './ReduxHooks';
 import { ReportSectionEntityInstance } from './ReportSectionEntityInstance';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay';
 import { cleanLevel } from './constants';
+import { useMiroirContextService } from './MiroirContextReactProvider';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportSectionView");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -45,6 +46,7 @@ export interface ReportSectionEntityInstanceProps {
 
 // ###############################################################################################################
 export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
+  const context = useMiroirContextService();
   // const errorLog = useErrorLogService();
 
   log.info("########################## props", props);
@@ -61,54 +63,31 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
   );
   // log.info("ReportSectionView displayedDeploymentDefinition", displayedDeploymentDefinition);
 
-
-  const mapping = useMemo(() => ({ // displayedDeploymentDefinition, displayedApplicationSection
-    [applicationDeploymentMiroir.uuid]: {
-      "model": {
-        availableReports: miroirMetaModel.reports.filter(
-          (r) => [reportEntityList.uuid, reportEntityDefinitionList.uuid].includes(r.uuid)
-          ),
-          entities: miroirMetaModel.entities,
-          entityDefinitions: miroirMetaModel.entityDefinitions,
-        },
-      "data": {
-        availableReports: miroirMetaModel.reports.filter(
-          (r) => ![reportEntityList.uuid, reportEntityDefinitionList.uuid].includes(r.uuid)
-        ),
-        entities: miroirMetaModel.entities,
-        entityDefinitions: miroirMetaModel.entityDefinitions,
-      },
-    },
-    [applicationDeploymentLibrary.uuid]: {
-      "model": {
-        availableReports: miroirMetaModel.reports,
-        entities: miroirMetaModel.entities,
-        entityDefinitions: miroirMetaModel.entityDefinitions,
-      },
-      "data": {
-        availableReports: libraryAppModel.reports,
-        entities: libraryAppModel.entities,
-        entityDefinitions: libraryAppModel.entityDefinitions,
-      },
-    },
-  }), [miroirMetaModel, libraryAppModel]);
-
-  const { availableReports, entities, entityDefinitions } =
-    displayedDeploymentDefinition && props.applicationSection
-      ? mapping[displayedDeploymentDefinition?.uuid][props.applicationSection]
+  const { availableReports, entities, entityDefinitions } = useMemo(() => {
+    return displayedDeploymentDefinition &&
+      context.deploymentUuidToReportsEntitiesDefinitionsMapping &&
+      context.deploymentUuidToReportsEntitiesDefinitionsMapping[displayedDeploymentDefinition?.uuid]
+      ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[displayedDeploymentDefinition?.uuid][
+        props.applicationSection
+        ]
       : { availableReports: [], entities: [], entityDefinitions: [] };
-
+  }, [
+    displayedDeploymentDefinition,
+    context.deploymentUuidToReportsEntitiesDefinitionsMapping,
+    props.applicationSection,
+  ]);
+    
   log.info("ReportSectionView availableReports",availableReports);
 
   const currentListReportTargetEntity: Entity | undefined =
     props.reportSection?.type === "objectListReportSection" 
       ? entities?.find(
-          (e) =>
+          (e:Entity) =>
             e?.uuid === (props.reportSection?.definition as any)["parentUuid"]
         )
       : undefined;
   const currentListReportTargetEntityDefinition: EntityDefinition | undefined =
-    entityDefinitions?.find((e) => e?.entityUuid === currentListReportTargetEntity?.uuid);
+    entityDefinitions?.find((e:EntityDefinition) => e?.entityUuid === currentListReportTargetEntity?.uuid);
 
   const entityInstance = props.domainElementObject.elementValue && props.reportSection.type == "objectInstanceReportSection"
   ? (props.domainElementObject.elementValue as any)[

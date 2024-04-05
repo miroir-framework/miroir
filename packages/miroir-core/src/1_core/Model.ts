@@ -26,6 +26,8 @@ import reportConfigurationList from '../assets/miroir_data/3f2baa83-3ef7-45ce-82
 import reportApplicationModelBranchList from '../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/60648b22-e2c6-4b74-8031-53884f597d63.json';
 import reportJzodSchemaList from '../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/8b22e84e-9374-4121-b2a7-d13d947a0ba2.json';
 import reportEntityList from '../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/c9ea3359-690c-4620-9603-b5b402e4a2b9.json';
+import reportEntityDetails from '../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/074d1de9-594d-42d6-8848-467baeb6f3e0.json';
+import reportEntityDefinitionDetails from '../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/acd55b04-84df-427e-b219-cf0e01a6881b.json';
 import reportApplicationDeploymentConfigurationList from '../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/df0a9a8f-e0f6-4f9f-8635-c8460e638e1b.json';
 import reportEntityDefinitionList from '../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/f9aff35d-8636-4519-8361-c7648e0ddc68.json';
 import applicationVersionInitialMiroirVersionCrossEntityDefinitionEntity from '../assets/miroir_data/8bec933d-6287-4de7-8a88-5c24216de9f4/17adb534-1dcb-4874-a4ef-6c1e03b31c4e.json';
@@ -44,7 +46,8 @@ import instanceConfigurationReference from '../assets/miroir_data/7990c0c9-86c3-
 // import { Report, } from "../0_interfaces/1_core/Report.js";
 import { JzodSchemaDefinition } from "../0_interfaces/1_core/JzodSchemaDefinition.js";
 import { Entity, EntityDefinition, JzodSchema, Menu, MetaModel, Report } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { entityDefinitionMenu, entityMenu, menuDefaultMiroir, reportMenuList } from '..';
+import { applicationDeploymentLibrary, applicationDeploymentMiroir, entityDefinitionMenu, entityMenu, menuDefaultMiroir, reportMenuList } from '..';
+import { DeploymentUuidToReportsEntitiesDefinitionsMapping } from '../0_interfaces/1_core/Model';
 
 // TODO: define current configuration!
 export const defaultMiroirMetaModel: MetaModel = {
@@ -163,4 +166,42 @@ export function getCurrentEntityDefinition(metaModel:MetaModel,applicationUuid:s
   const currentApplicationVersionCrossEntityDefinitions = metaModel.applicationVersionCrossEntityDefinition.filter(e=>e.applicationVersion == currentApplicationVersionUuid);
   const currentEntityDefinitions = currentApplicationVersionCrossEntityDefinitions.map(e=>metaModel.entityDefinitions.find(x=>x.uuid == e.uuid));
   return currentEntityDefinitions.find(e=>e?.entityUuid == entityUuid);
+}
+
+const metaModelReports = [reportEntityList.uuid, reportEntityDefinitionList.uuid, reportEntityDetails.uuid, reportEntityDefinitionDetails.uuid];
+
+export function getDeploymentUuidToReportsEntitiesDefinitionsMapping(
+  miroirMetaModel: MetaModel,
+  libraryAppModel: MetaModel,
+):DeploymentUuidToReportsEntitiesDefinitionsMapping {
+  return { // displayedDeploymentDefinition, displayedApplicationSection
+    [applicationDeploymentMiroir.uuid]: {
+      "model": {
+        availableReports: miroirMetaModel.reports.filter(
+          (r) => metaModelReports.includes(r.uuid)
+          ),
+          entities: miroirMetaModel.entities,
+          entityDefinitions: miroirMetaModel.entityDefinitions,
+        },
+      "data": {
+        availableReports: miroirMetaModel.reports.filter(
+          (r) => !metaModelReports.includes(r.uuid)
+        ),
+        entities: miroirMetaModel.entities,
+        entityDefinitions: miroirMetaModel.entityDefinitions,
+      },
+    },
+    [applicationDeploymentLibrary.uuid]: {
+      "model": {
+        availableReports: miroirMetaModel.reports,
+        entities: miroirMetaModel.entities,
+        entityDefinitions: miroirMetaModel.entityDefinitions,
+      },
+      "data": {
+        availableReports: libraryAppModel.reports,
+        entities: libraryAppModel.entities,
+        entityDefinitions: libraryAppModel.entityDefinitions,
+      },
+    },
+  }
 }

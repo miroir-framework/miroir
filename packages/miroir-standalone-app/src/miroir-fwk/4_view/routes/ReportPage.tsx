@@ -1,32 +1,28 @@
+import Box from '@mui/material/Box';
 import { useEffect, useMemo } from 'react';
 import { Params, useParams } from 'react-router-dom';
-import Box from '@mui/material/Box';
 
-import { JzodElement } from '@miroir-framework/jzod-ts';
 import {
+  ApplicationDeploymentConfiguration,
   ApplicationSection,
+  JzodElement,
   LoggerInterface,
+  MetaModel,
   MiroirLoggerFactory,
   Report,
-  DomainElementObject,
-  getLoggerName,
-  MetaModel,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
-  reportEntityDefinitionList,
-  reportEntityList,
-  ApplicationDeploymentConfiguration,
-  reportEntityDetails,
-  reportEntityDefinitionDetails
+  getDeploymentUuidToReportsEntitiesDefinitionsMapping,
+  getLoggerName
 } from "miroir-core";
 import {
   useErrorLogService,
   useMiroirContextService
 } from "../../../miroir-fwk/4_view/MiroirContextReactProvider";
 
+import { packageName } from '../../../constants';
 import { useCurrentModel } from '../ReduxHooks';
 import { RootReportSectionView } from '../RootReportSectionView';
-import { packageName } from '../../../constants';
 import { cleanLevel } from '../constants';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportPage");
@@ -37,7 +33,6 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 export type ReportUrlParamKeys = 'deploymentUuid' | 'applicationSection' | 'reportUuid' | 'instanceUuid';
 
-const metaModelReports = [reportEntityList.uuid, reportEntityDefinitionList.uuid, reportEntityDetails.uuid, reportEntityDefinitionDetails.uuid];
 
 const miroirExpression: JzodElement = {
   type: "object",
@@ -55,99 +50,92 @@ const miroirExpression: JzodElement = {
 let count = 0;
 // ###############################################################################################################
 export const ReportPage = () => {
-  const params:Params<ReportUrlParamKeys> = useParams<ReportUrlParamKeys>();
+  const pageParams: Params<ReportUrlParamKeys> = useParams<ReportUrlParamKeys>();
   const context = useMiroirContextService();
 
   count++;
-  log.info("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& ReportPage rendering count",count,"params", params,);
-  useEffect(()=>context.setDeploymentUuid(params.deploymentUuid ? params.deploymentUuid : ""));
-  useEffect(()=>context.setApplicationSection(params.applicationSection as ApplicationSection | undefined));
+  log.info("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& ReportPage rendering count", count, "params", pageParams);
+  useEffect(() => context.setDeploymentUuid(pageParams.deploymentUuid ? pageParams.deploymentUuid : ""));
+  useEffect(() => context.setApplicationSection((pageParams.applicationSection as ApplicationSection) ?? "data"));
 
   const errorLog = useErrorLogService();
   // const currentModel: MetaModel = useCurrentModel(params.deploymentUuid);
 
-  const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeploymentConfiguration[];
+  const deployments = [
+    applicationDeploymentMiroir,
+    applicationDeploymentLibrary,
+  ] as ApplicationDeploymentConfiguration[];
 
   const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
   const libraryAppModel: MetaModel = useCurrentModel(applicationDeploymentLibrary.uuid);
 
   // log.info("ReportPage currentModel", currentModel);
 
-  const defaultReport: Report = useMemo(()=> ({
-    "uuid": "c0ba7e3d-3740-45a9-b183-20c3382b6419",
-    "parentName":"Report",
-    "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-    "conceptLevel":"Model",
-    "name":"DummyDefaultReport",
-    "defaultLabel": "No report to display!",
-    "type": "list",
-    "definition": {
-      "fetchQuery": {"select": {}},
-      "section": {
-        "type":"objectListReportSection",
-        "definition": {
-          "parentName": "Test",
-          "parentUuid": "9ad64893-5f8f-4eaf-91aa-ffae110f88c8"
-        }
-      }
-    }
-  }), [])
+  const defaultReport: Report = useMemo(
+    () => ({
+      uuid: "c0ba7e3d-3740-45a9-b183-20c3382b6419",
+      parentName: "Report",
+      parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+      conceptLevel: "Model",
+      name: "DummyDefaultReport",
+      defaultLabel: "No report to display!",
+      type: "list",
+      definition: {
+        fetchQuery: { select: {} },
+        section: {
+          type: "objectListReportSection",
+          definition: {
+            parentName: "Test",
+            parentUuid: "9ad64893-5f8f-4eaf-91aa-ffae110f88c8",
+          },
+        },
+      },
+    }),
+    []
+  );
 
   const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(
-    (d) => d.uuid == params.deploymentUuid
+    (d) => d.uuid == pageParams.deploymentUuid
   );
 
   const localApplicationSection: ApplicationSection = (
-    params.applicationSection == "data" ? "data" : "model"
+    pageParams.applicationSection == "data" ? "data" : "model"
   ) as ApplicationSection;
 
-  const mapping = useMemo(() => ({ // displayedDeploymentDefinition, displayedApplicationSection
-    [applicationDeploymentMiroir.uuid]: {
-      "model": {
-        availableReports: miroirMetaModel.reports.filter(
-          (r) => metaModelReports.includes(r.uuid)
-          ),
-          entities: miroirMetaModel.entities,
-          entityDefinitions: miroirMetaModel.entityDefinitions,
-        },
-      "data": {
-        availableReports: miroirMetaModel.reports.filter(
-          (r) => !metaModelReports.includes(r.uuid)
-        ),
-        entities: miroirMetaModel.entities,
-        entityDefinitions: miroirMetaModel.entityDefinitions,
-      },
-    },
-    [applicationDeploymentLibrary.uuid]: {
-      "model": {
-        availableReports: miroirMetaModel.reports,
-        entities: miroirMetaModel.entities,
-        entityDefinitions: miroirMetaModel.entityDefinitions,
-      },
-      "data": {
-        availableReports: libraryAppModel.reports,
-        entities: libraryAppModel.entities,
-        entityDefinitions: libraryAppModel.entityDefinitions,
-      },
-    },
-  }), [miroirMetaModel, libraryAppModel]);
+  const deploymentUuidToReportsEntitiesDefinitionsMapping = useMemo(
+    () => getDeploymentUuidToReportsEntitiesDefinitionsMapping(miroirMetaModel, libraryAppModel),
+    [miroirMetaModel, libraryAppModel]
+  );
 
-  const { availableReports, entities, entityDefinitions } =
-    displayedDeploymentDefinition && params.applicationSection
-      ? mapping[displayedDeploymentDefinition?.uuid][localApplicationSection]
-      : { availableReports: [], entities: [], entityDefinitions: [] }
-  ;
+  // if (!context.deploymentUuidToReportsEntitiesDefinitionsMapping && miroirMetaModel && libraryAppModel) {
+  useEffect(() =>
+    context.setDeploymentUuidToReportsEntitiesDefinitionsMapping(deploymentUuidToReportsEntitiesDefinitionsMapping)
+  );
+  // }
 
-  log.info("ReportPage availableReports",availableReports);
+  const { availableReports, entities, entityDefinitions } = useMemo(() => {
+    return displayedDeploymentDefinition &&
+      context.deploymentUuidToReportsEntitiesDefinitionsMapping &&
+      context.deploymentUuidToReportsEntitiesDefinitionsMapping[displayedDeploymentDefinition?.uuid]
+      ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[displayedDeploymentDefinition?.uuid][
+          localApplicationSection
+        ]
+      : { availableReports: [], entities: [], entityDefinitions: [] };
+  }, [
+    displayedDeploymentDefinition,
+    context.deploymentUuidToReportsEntitiesDefinitionsMapping,
+    localApplicationSection,
+  ]);
+  log.info("ReportPage availableReports", availableReports);
 
-  const currentMiroirReport: Report = availableReports?.find(r=>r.uuid == params.reportUuid)??defaultReport;
+  const currentMiroirReport: Report = availableReports?.find((r:Report) => r.uuid == pageParams.reportUuid) ?? defaultReport;
 
   // const currentMiroirReport: Report = currentModel.reports?.find((r:Report) => r.uuid === params.reportUuid)??defaultReport;
 
   // const emptyResultsFromQuery: DomainElementObject = useMemo(()=> ({ elementType: "object", elementValue: {}}), []);
 
-  if (params.applicationSection) {
-    log.info("ReportPage rendering count",count,"params", params,);
+  if (pageParams.applicationSection) {
+    log.info("ReportPage rendering count", count, "params", pageParams);
     return (
       <div>
         <Box>
@@ -155,30 +143,29 @@ export const ReportPage = () => {
         </Box>
         {/* <div>ReportPage displayed:{count}</div>
         <div>ReportPage reportUuid: {params.reportUuid} </div> */}
-        {
-          params.deploymentUuid &&
-          params.applicationSection &&
-          params.reportUuid &&
-          params.reportUuid != "undefined"
-          ? (
-            <>
+        {pageParams.deploymentUuid && pageParams.applicationSection && pageParams.reportUuid && pageParams.reportUuid != "undefined" ? (
+          <>
             <div>
-              deploymentUuid={params.deploymentUuid}, applicationSection={params.applicationSection}, reportUuid={params.reportUuid}, instanceUuid={params.instanceUuid}
+              deploymentUuid={pageParams.deploymentUuid}, applicationSection={pageParams.applicationSection}, reportUuid=
+              {pageParams.reportUuid}, instanceUuid={pageParams.instanceUuid}
             </div>
             <RootReportSectionView
               reportSection={currentMiroirReport?.definition}
-              applicationSection={params.applicationSection as ApplicationSection}
-              deploymentUuid={params.deploymentUuid}
-              instanceUuid={params.instanceUuid}
+              applicationSection={pageParams.applicationSection as ApplicationSection}
+              deploymentUuid={pageParams.deploymentUuid}
+              instanceUuid={pageParams.instanceUuid}
+              pageParams={pageParams}
             />
-            </>
-          ) : (
-            <span style={{color: "red"}}>no report to display, deploymentUuid={params.deploymentUuid}, applicationSection={params.applicationSection}, reportUuid={params.reportUuid}</span>
-          )
-        }
+          </>
+        ) : (
+          <span style={{ color: "red" }}>
+            no report to display, deploymentUuid={pageParams.deploymentUuid}, applicationSection={pageParams.applicationSection}
+            , reportUuid={pageParams.reportUuid}
+          </span>
+        )}
       </div>
     );
   } else {
-    return <>ReportPage Invalid parameters! {JSON.stringify(params)}</>;
+    return <>ReportPage Invalid parameters! {JSON.stringify(pageParams)}</>;
   }
 };

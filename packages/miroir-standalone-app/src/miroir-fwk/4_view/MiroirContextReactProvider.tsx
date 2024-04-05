@@ -5,12 +5,16 @@ import { useSelector } from "react-redux";
 import {
   ApplicationSection,
   DomainControllerInterface,
+  Entity,
+  EntityDefinition,
   LoggerInterface,
   MiroirContext,
   MiroirContextInterface,
   MiroirLoggerFactory,
   Uuid,
-  getLoggerName
+  getLoggerName,
+  Report,
+  DeploymentUuidToReportsEntitiesDefinitionsMapping
 } from "miroir-core";
 import {
   ReduxStateChanges,
@@ -26,19 +30,23 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
+
+
 export interface MiroirReactContext {
-  miroirContext: MiroirContextInterface;
-  domainController: DomainControllerInterface;
-  deploymentUuid: string;
-  setDeploymentUuid: React.Dispatch<React.SetStateAction<string>>;
-  reportUuid: Uuid | undefined;
-  setReportUuid: React.Dispatch<React.SetStateAction<Uuid>>;
-  applicationSection: ApplicationSection | undefined;
-  setApplicationSection: React.Dispatch<React.SetStateAction<ApplicationSection | undefined>>;
-  innerFormOutput: any;
-  setInnerFormOutput: React.Dispatch<React.SetStateAction<any>>;
-  formHelperState: any;
-  setformHelperState: React.Dispatch<React.SetStateAction<any>>;
+  miroirContext: MiroirContextInterface,
+  domainController: DomainControllerInterface,
+  deploymentUuid: string,
+  setDeploymentUuid: React.Dispatch<React.SetStateAction<string>>,
+  reportUuid: Uuid | undefined,
+  setReportUuid: React.Dispatch<React.SetStateAction<Uuid>>,
+  applicationSection: ApplicationSection | undefined,
+  setApplicationSection: React.Dispatch<React.SetStateAction<ApplicationSection>>,
+  innerFormOutput: any,
+  setInnerFormOutput: React.Dispatch<React.SetStateAction<any>>,
+  formHelperState: any,
+  setformHelperState: React.Dispatch<React.SetStateAction<any>>,
+  deploymentUuidToReportsEntitiesDefinitionsMapping: DeploymentUuidToReportsEntitiesDefinitionsMapping,
+  setDeploymentUuidToReportsEntitiesDefinitionsMapping: React.Dispatch<React.SetStateAction<DeploymentUuidToReportsEntitiesDefinitionsMapping>>,
 }
 
 const miroirReactContext = createContext<MiroirReactContext>({} as MiroirReactContext);
@@ -61,6 +69,8 @@ export function MiroirContextReactProvider(props: {
   const [applicationSection, setApplicationSection] = useState<ApplicationSection>("data");
   const [innerFormOutput, setInnerFormOutput] = useState<any>({});
   const [formHelperState, setformHelperState] = useState<any>({});
+  const [deploymentUuidToReportsEntitiesDefinitionsMapping, setDeploymentUuidToReportsEntitiesDefinitionsMapping] =
+    useState<DeploymentUuidToReportsEntitiesDefinitionsMapping>({});
 
   // const value = useMemo<MiroirReactContext>(()=>({
   const value = useMemo<MiroirReactContext>(
@@ -78,8 +88,18 @@ export function MiroirContextReactProvider(props: {
       setInnerFormOutput,
       formHelperState,
       setformHelperState,
+      deploymentUuidToReportsEntitiesDefinitionsMapping,
+      setDeploymentUuidToReportsEntitiesDefinitionsMapping,
     }),
-    [deploymentUuid, reportUuid, applicationSection, innerFormOutput, props.miroirContext, props.domainController]
+    [
+      deploymentUuid,
+      reportUuid,
+      applicationSection,
+      deploymentUuidToReportsEntitiesDefinitionsMapping,
+      innerFormOutput,
+      props.miroirContext,
+      props.domainController,
+    ]
   );
   return <miroirReactContext.Provider value={value}>{props.children}</miroirReactContext.Provider>;
 }

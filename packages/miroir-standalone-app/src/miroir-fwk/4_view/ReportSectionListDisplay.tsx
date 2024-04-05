@@ -65,7 +65,7 @@ import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "../../
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from "./JsonObjectFormEditorDialog";
 import { MTableComponent } from "./MTableComponent";
 import { TableComponentType, TableComponentTypeSchema } from "./MTableComponentInterface";
-import { useDomainControllerService, useMiroirContextInnerFormOutput } from './MiroirContextReactProvider';
+import { useDomainControllerService, useMiroirContextInnerFormOutput, useMiroirContextService } from './MiroirContextReactProvider';
 import { packageName } from "../../constants";
 import { cleanLevel } from "./constants";
 import { useCurrentModel, useDomainStateCleanSelectorNew } from "./ReduxHooks";
@@ -215,8 +215,9 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   props: ReportComponentProps
 ) => {
   count++;
-  log.info('ReportSectionListDisplay',count,props === prevProps, equal(props,prevProps));
   prevProps = props;
+  log.info('ReportSectionListDisplay',count,props === prevProps, equal(props,prevProps));
+  const context = useMiroirContextService();
   
   // log.info('ReportSectionListDisplay props.domainElement',props.domainElement);
   log.info('ReportSectionListDisplay props',props);
@@ -266,55 +267,32 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   log.info("ReportSectionListDisplay displayedDeploymentDefinition", displayedDeploymentDefinition);
 
   const domainController: DomainControllerInterface = useDomainControllerService();
-  // const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
 
-  const mapping = useMemo(() => ({ // displayedDeploymentDefinition, displayedApplicationSection
-    [applicationDeploymentMiroir.uuid]: {
-      "model": {
-        availableReports: miroirMetaModel.reports.filter(
-          (r) => [reportEntityList.uuid, reportEntityDefinitionList.uuid].includes(r.uuid)
-          ),
-          entities: miroirMetaModel.entities,
-          entityDefinitions: miroirMetaModel.entityDefinitions,
-        },
-      "data": {
-        availableReports: miroirMetaModel.reports.filter(
-          (r) => ![reportEntityList.uuid, reportEntityDefinitionList.uuid].includes(r.uuid)
-        ),
-        entities: miroirMetaModel.entities,
-        entityDefinitions: miroirMetaModel.entityDefinitions,
-      },
-    },
-    [applicationDeploymentLibrary.uuid]: {
-      "model": {
-        availableReports: miroirMetaModel.reports,
-        entities: miroirMetaModel.entities,
-        entityDefinitions: miroirMetaModel.entityDefinitions,
-      },
-      "data": {
-        availableReports: libraryAppModel.reports,
-        entities: libraryAppModel.entities,
-        entityDefinitions: libraryAppModel.entityDefinitions,
-      },
-    },
-  }), [miroirMetaModel, libraryAppModel]);
-
-  const { availableReports, entities, entityDefinitions } =
-    displayedDeploymentDefinition && props.chosenApplicationSection
-      ? mapping[displayedDeploymentDefinition?.uuid][props.chosenApplicationSection]
-      : { availableReports: [], entities: [], entityDefinitions: [] as EntityDefinition[] };
-
-  log.info("ReportSectionListDisplay availableReports",availableReports);
+  const { availableReports, entities, entityDefinitions } = useMemo(() => {
+    return displayedDeploymentDefinition &&
+      context.deploymentUuidToReportsEntitiesDefinitionsMapping &&
+      context.deploymentUuidToReportsEntitiesDefinitionsMapping[displayedDeploymentDefinition?.uuid]
+      ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[displayedDeploymentDefinition?.uuid][
+        props.chosenApplicationSection
+        ]
+      : { availableReports: [], entities: [], entityDefinitions: [] };
+  }, [
+    displayedDeploymentDefinition,
+    context.deploymentUuidToReportsEntitiesDefinitionsMapping,
+    props.chosenApplicationSection,
+  ]);
+    
+  // log.info("ReportSectionListDisplay availableReports",availableReports);
 
   const currentReportTargetEntity: Entity | undefined =
     props.section?.type === "objectListReportSection" 
       ? entities?.find(
-          (e) =>
+          (e:Entity) =>
             e?.uuid === (props.section?.definition as any)["parentUuid"]
         )
       : undefined;
   const currentReportTargetEntityDefinition: EntityDefinition | undefined =
-    entityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
+    entityDefinitions?.find((e:EntityDefinition) => e?.entityUuid === currentReportTargetEntity?.uuid);
 
   // TODO: AMBIGUOUS!! APPEARS ALSO IN THE Report DEFINITION. PROVIDE A DIRECT WAY TO DETERMINE THIS?
   // const currentApplicationSection = (props.section?.definition as any)["applicationSection"]??"data";

@@ -39,28 +39,27 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
-export interface ReportSectionEntityInstanceProps {
-  // domainElement: Record<string,any>,
+export interface RootReportSectionEntityInstanceProps {
   reportSection: RootReportSection,
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
   instanceUuid?: Uuid,
+  pageParams: Params<ReportUrlParamKeys>,
 }
 
 let count = 0
 // ###############################################################################################################
-export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) => {
+export const RootReportSectionView = (props: RootReportSectionEntityInstanceProps) => {
   count++;
-  const params:Params<ReportUrlParamKeys> = useParams<ReportUrlParamKeys>();
 
   const paramsAsdomainElements: DomainElementObject = useMemo(
     () => ({
       elementType: "object",
       elementValue: Object.fromEntries(
-        Object.entries(params).map((e) => [e[0], { elementType: "string", elementValue: e[1] ?? "" }])
+        Object.entries(props.pageParams).map((e) => [e[0], { elementType: "string", elementValue: e[1] ?? "" }])
       ),
     }),
-    [params]
+    [props.pageParams]
   );
   log.info("########################## RootReportSectionView", count, "ReportSection", JSON.stringify(props.reportSection, null, 2));
 

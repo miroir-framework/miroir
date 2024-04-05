@@ -3,7 +3,7 @@ import { z } from "zod";
 import { EntityInstanceWithName } from "../../0_interfaces/1_core/Instance";
 
 
-import { EntityInstance, entityInstance } from "./preprocessor-generated/miroirFundamentalType";
+import { Entity, EntityDefinition, EntityInstance, Report, entityInstance } from "./preprocessor-generated/miroirFundamentalType";
 
 export interface MiroirModelDefinition extends EntityInstanceWithName {
 
@@ -20,3 +20,18 @@ export const ApplicationVersionCrossEntityDefinitionSchema = entityInstance.exte
   applicationVersion: z.string().uuid(),
   entityDefinition: z.string().uuid(),
 });
+
+export type DeploymentUuidToReportsEntitiesDefinitionsMapping = {
+  [x: string]: {
+      model: {
+          availableReports: Report[];
+          entities: Entity[];
+          entityDefinitions: EntityDefinition[];
+      };
+      data: {
+          availableReports: Report[];
+          entities: Entity[];
+          entityDefinitions: EntityDefinition[];
+      };
+  }
+};
