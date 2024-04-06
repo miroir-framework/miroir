@@ -33,19 +33,16 @@ export const tableComponentCorePropsSchema = z.object({
   displayTools: z.boolean(),
   currentModel: metaModel,
   defaultFormValuesObject: z.any(),
-  // miroirFundamentalJzodSchema:jzodSchema,
   sortByAttribute: z.string().optional(),
   deploymentUuid: z.string().uuid(),
   paramsAsdomainElements: domainElementObject,
   foreignKeyObjects: z.record(z.string(),entityInstancesUuidIndex),
-  // setCurrentObjectValue: z.function().args(z.any()),
 });
 
 export const tableComponentEntityInstancePropsSchema = tableComponentCorePropsSchema.extend({
   type: z.literal(TableComponentTypeSchema.enum.EntityInstance),
   displayedDeploymentDefinition: ApplicationDeploymentSchema,
   currentEntity: entity.optional(),
-  // currentEntityDefinition: entityDefinition.optional(),
   currentEntityDefinition: entityDefinition,
   onRowEdit: z.function().args(z.any()).returns(z.void()).optional(),
 });

@@ -10,47 +10,21 @@ import { Checkbox } from "@mui/material";
 import {
   ApplicationSection,
   EntityAttribute,
-  EntityDefinition,
   EntityInstance,
   EntityInstanceWithName,
   EntityInstancesUuidIndex,
   JzodElement,
   JzodObject,
-  JzodSchema,
-  JzodUnion,
   LoggerInterface,
-  MetaModel,
   MiroirLoggerFactory,
   Uuid,
-  domainEndpointVersionV1,
-  entityDefinitionApplication,
-  entityDefinitionApplicationVersion,
-  entityDefinitionBundleV1,
-  entityDefinitionCommit,
-  entityDefinitionEntity,
-  entityDefinitionEntityDefinition,
-  entityDefinitionJzodSchema,
-  entityDefinitionMenu,
-  entityDefinitionQueryVersionV1,
-  entityDefinitionReport,
-  getLoggerName,
-  getMiroirFundamentalJzodSchema,
-  instanceEndpointVersionV1,
-  jzodSchemajzodMiroirBootstrapSchema,
-  localCacheEndpointVersionV1,
-  modelEndpointV1,
-  persistenceEndpointVersionV1,
-  queryEndpointVersionV1,
-  resolveJzodSchemaReference,
-  storeManagementEndpoint,
-  undoRedoEndpointVersionV1
+  getLoggerName
 } from "miroir-core";
 
 import styled from "@emotion/styled";
 import { packageName } from "../../constants";
 import { useMiroirContextformHelperState } from "./MiroirContextReactProvider";
 import { cleanLevel } from "./constants";
-import { Field } from "formik";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"JzodElementEditor");
@@ -103,7 +77,6 @@ export interface JzodElementEditorProps {
   indentLevel?:number,
   resolvedJzodSchema: JzodElement | undefined,
   foreignKeyObjects: Record<string,EntityInstancesUuidIndex>,
-  // initialValuesObject: any,
   currentDeploymentUuid?: Uuid,
   currentApplicationSection?: ApplicationSection,
   formik: any,
@@ -119,48 +92,25 @@ export interface JzodElementEditorProps {
 
 // export type JzodElementEditorProps = JzodElementFormEditorCoreProps
 
-
-// ################################################################################################
-const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
-  entityDefinitionBundleV1 as EntityDefinition,
-  entityDefinitionCommit as EntityDefinition,
-  modelEndpointV1,
-  storeManagementEndpoint,
-  instanceEndpointVersionV1,
-  undoRedoEndpointVersionV1,
-  localCacheEndpointVersionV1,
-  domainEndpointVersionV1,
-  queryEndpointVersionV1,
-  persistenceEndpointVersionV1,
-  jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
-  entityDefinitionApplication as EntityDefinition,
-  entityDefinitionApplicationVersion as EntityDefinition,
-  entityDefinitionEntity as EntityDefinition,
-  entityDefinitionEntityDefinition as EntityDefinition,
-  entityDefinitionJzodSchema as EntityDefinition,
-  entityDefinitionMenu  as EntityDefinition,
-  entityDefinitionQueryVersionV1 as EntityDefinition,
-  entityDefinitionReport as EntityDefinition,
-  // jzodSchemajzodMiroirBootstrapSchema as any,
-);
-
-
-
-
-// ################################################################################################
-export function getUnionDiscriminantValues(jzodUnion:JzodUnion, rootJzodSchema:JzodObject, currentModel:MetaModel) {
-  return jzodUnion.discriminator
-    ? {
-        [jzodUnion.discriminator]:jzodUnion.definition.map(
-          (e: JzodElement) => {
-            const resolvedSchema =
-              e.type == "schemaReference" ? resolveJzodSchemaReference(miroirFundamentalJzodSchema, e, currentModel, rootJzodSchema) : e;
-            return e.type;
-          }
-        )
-      }
-    : {};
-}
+// // ################################################################################################
+// export function getUnionDiscriminantValues(
+//   jzodUnion:JzodUnion, 
+//   rootJzodSchema:JzodObject, 
+//   currentModel:MetaModel,
+//   miroirFundamentalJzodSchema: JzodSchema,
+// ) {
+//   return jzodUnion.discriminator
+//     ? {
+//         [jzodUnion.discriminator]:jzodUnion.definition.map(
+//           (e: JzodElement) => {
+//             const resolvedSchema =
+//               e.type == "schemaReference" ? resolveJzodSchemaReference(miroirFundamentalJzodSchema, e, currentModel, rootJzodSchema) : e;
+//             return e.type;
+//           }
+//         )
+//       }
+//     : {};
+// }
 
 // ################################################################################################
 export const ExpandOrFold = (

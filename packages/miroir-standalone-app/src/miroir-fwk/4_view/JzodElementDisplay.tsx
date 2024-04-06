@@ -4,48 +4,23 @@ import { useMemo } from "react";
 import {
   ApplicationSection,
   Entity,
-  EntityDefinition,
-  EntityInstancesUuidIndex,
   JzodElement,
   JzodObject,
   JzodRecord,
-  JzodSchema,
   LoggerInterface,
   MiroirLoggerFactory,
   Uuid,
   applicationDeploymentMiroir,
-  domainEndpointVersionV1,
-  entityDefinitionApplication,
-  entityDefinitionApplicationVersion,
-  entityDefinitionBundleV1,
-  entityDefinitionCommit,
-  entityDefinitionEntity,
-  entityDefinitionEntityDefinition,
-  entityDefinitionJzodSchema,
-  entityDefinitionMenu,
-  entityDefinitionQueryVersionV1,
-  entityDefinitionReport,
-  getLoggerName,
-  getMiroirFundamentalJzodSchema,
-  instanceEndpointVersionV1,
-  jzodSchemajzodMiroirBootstrapSchema,
-  localCacheEndpointVersionV1,
-  modelEndpointV1,
-  persistenceEndpointVersionV1,
-  queryEndpointVersionV1,
-  resolveJzodSchemaReference2,
-  storeManagementEndpoint,
-  undoRedoEndpointVersionV1,
+  getLoggerName
 } from "miroir-core";
 
 import { packageName } from "../../constants";
 import { JzodEnumSchemaToJzodElementResolver } from "../JzodTools";
 import { EntityInstanceLink } from "./EntityInstanceLink";
-import { MTableComponent } from "./MTableComponent";
-import { useCurrentModel, useEntityInstanceUuidIndexFromLocalCache } from "./ReduxHooks";
+import { useMiroirContextService } from "./MiroirContextReactProvider";
+import { useCurrentModel } from "./ReduxHooks";
 import { cleanLevel } from "./constants";
 import { getColumnDefinitionsFromEntityDefinitionJzodElemenSchema } from "./getColumnDefinitionsFromEntityAttributes";
-import { useMiroirContextService } from "./MiroirContextReactProvider";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"JzodElementDisplay");
 let log:LoggerInterface = console as any as LoggerInterface;

@@ -364,7 +364,6 @@ export const MTableComponent = (props: TableComponentProps) => {
                 foreignKeyObjects={props.foreignKeyObjects}
                 currentDeploymentUuid={contextDeploymentUuid}
                 currentApplicationSection={context.applicationSection}
-                // miroirFundamentalJzodSchema={props.miroirFundamentalJzodSchema}
                 currentAppModel={currentModel}
                 currentMiroirModel={miroirMetaModel}
                 defaultFormValuesObject={

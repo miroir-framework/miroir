@@ -1,54 +1,10 @@
 import {
-  EntityDefinition,
   JzodElement,
   JzodObject,
   JzodSchema,
   MetaModel,
-  domainEndpointVersionV1,
-  entityDefinitionApplication,
-  entityDefinitionApplicationVersion,
-  entityDefinitionBundleV1,
-  entityDefinitionCommit,
-  entityDefinitionEntity,
-  entityDefinitionEntityDefinition,
-  entityDefinitionJzodSchema,
-  entityDefinitionMenu,
-  entityDefinitionQueryVersionV1,
-  entityDefinitionReport,
-  getMiroirFundamentalJzodSchema,
-  instanceEndpointVersionV1,
-  jzodSchemajzodMiroirBootstrapSchema,
-  localCacheEndpointVersionV1,
-  modelEndpointV1,
-  persistenceEndpointVersionV1,
-  queryEndpointVersionV1,
-  resolveJzodSchemaReference,
-  storeManagementEndpoint,
-  undoRedoEndpointVersionV1,
+  resolveJzodSchemaReference
 } from "miroir-core";
-
-const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
-  entityDefinitionBundleV1 as EntityDefinition,
-  entityDefinitionCommit as EntityDefinition,
-  modelEndpointV1,
-  storeManagementEndpoint,
-  instanceEndpointVersionV1,
-  undoRedoEndpointVersionV1,
-  localCacheEndpointVersionV1,
-  domainEndpointVersionV1,
-  queryEndpointVersionV1,
-  persistenceEndpointVersionV1,
-  jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
-  entityDefinitionApplication as EntityDefinition,
-  entityDefinitionApplicationVersion as EntityDefinition,
-  entityDefinitionEntity as EntityDefinition,
-  entityDefinitionEntityDefinition as EntityDefinition,
-  entityDefinitionJzodSchema as EntityDefinition,
-  entityDefinitionMenu  as EntityDefinition,
-  entityDefinitionQueryVersionV1 as EntityDefinition,
-  entityDefinitionReport as EntityDefinition,
-  // jzodSchemajzodMiroirBootstrapSchema as any,
-);
 
 
 // #####################################################################################################
@@ -58,8 +14,7 @@ export type JzodEnumSchemaToJzodElementResolver = (type: string, definition?: an
 
 export function getCurrentEnumJzodSchemaResolver(
   currentMiroirModel: MetaModel,
-  // relativeReferenceJzodSchema: JzodObject,
-// ):JzodElementRecord  {
+  miroirFundamentalJzodSchema: JzodSchema,
 ):JzodEnumSchemaToJzodElementResolver  {
   return (type: string, definition?: any) => {
     console.log("getCurrentEnumJzodSchemaResolver called with", type, "definition", definition)

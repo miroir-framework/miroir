@@ -81,13 +81,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     props
   );
 
-  // const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
-  // const libraryAppModel: MetaModel = useCurrentModel(applicationDeploymentLibrary.uuid);
-
   const currentModel: MetaModel = useCurrentModel(
     context.applicationSection == "data" ? context.deploymentUuid : applicationDeploymentMiroir.uuid
   );
-  // const currentModel = useCurrentModel(props.deploymentUuid);
 
   const currentReportDeploymentSectionEntities: Entity[] = currentModel.entities; // Entities are always defined in the 'model' section
   const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] = currentModel.entityDefinitions; // EntityDefinitions are always defined in the 'model' section
@@ -112,45 +108,20 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const currentMiroirModel = useCurrentModel(applicationDeploymentMiroir.uuid);
 
   const currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver = useMemo(
-    () => getCurrentEnumJzodSchemaResolver(currentMiroirModel),
+    () => getCurrentEnumJzodSchemaResolver(currentMiroirModel,context.miroirFundamentalJzodSchema),
     [currentMiroirModel]
   );
 
   log.info("ReportSectionEntityInstance instance", instance);
   log.info("ReportSectionEntityInstance entityJzodSchema", entityJzodSchemaDefinition);
 
-  const miroirFundamentalJzodSchema: JzodSchema = useMemo(() => getMiroirFundamentalJzodSchema(
-    entityDefinitionBundleV1 as EntityDefinition,
-    entityDefinitionCommit as EntityDefinition,
-    modelEndpointV1,
-    storeManagementEndpoint,
-    instanceEndpointVersionV1,
-    undoRedoEndpointVersionV1,
-    localCacheEndpointVersionV1,
-    domainEndpointVersionV1,
-    queryEndpointVersionV1,
-    persistenceEndpointVersionV1,
-    jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
-    entityDefinitionApplication as EntityDefinition,
-    entityDefinitionApplicationVersion as EntityDefinition,
-    entityDefinitionEntity as EntityDefinition,
-    entityDefinitionEntityDefinition as EntityDefinition,
-    entityDefinitionJzodSchema as EntityDefinition,
-    entityDefinitionMenu  as EntityDefinition,
-    entityDefinitionQueryVersionV1 as EntityDefinition,
-    entityDefinitionReport as EntityDefinition,
-    // jzodSchemajzodMiroirBootstrapSchema as any,
-  ),[]);
-
-  const miroirModel = useCurrentModel(applicationDeploymentMiroir.uuid);
-
   const resolvedJzodSchema = useMemo(
-    () => miroirFundamentalJzodSchema &&
+    () => context.miroirFundamentalJzodSchema &&
     currentReportTargetEntityDefinition?.jzodSchema &&
     instance &&
     currentModel ?
     resolveReferencesForJzodSchemaAndValueObject(
-      miroirFundamentalJzodSchema,
+      context.miroirFundamentalJzodSchema,
       currentReportTargetEntityDefinition?.jzodSchema,
       instance,
       currentModel,
