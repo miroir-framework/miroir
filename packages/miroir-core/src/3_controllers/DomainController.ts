@@ -538,24 +538,23 @@ export class DomainController implements DomainControllerInterface {
                   }
                 )
               )
-              .then(
-                (context: Record<string, any>) =>
-                  this.callUtil.callLocalCacheAction(
-                    context, // context
-                    {}, // context update
-                    {
-                      actionType: "modelAction",
-                      actionName: "rollback",
-                      deploymentUuid,
-                      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                    }
-                  )
-              )
               .catch((reason) => log.error(reason));
           }
 
+          await this.callUtil.callLocalCacheAction(
+            context, // context
+            {}, // context update
+            {
+              actionType: "modelAction",
+              actionName: "rollback",
+              deploymentUuid,
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            }
+          );
+
+
           log.info(
-            "DomainController loadConfigurationFromRemoteDataStore done rollback",
+            "DomainController loadConfigurationFromRemoteDataStore done rollback, currentTransaction=",
             this.currentTransaction()
           );
 

@@ -310,6 +310,8 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:DomainStateSelect
     }
     case "selectObjectByDirectReference": {
       const instanceUuid = resolveContextReference(querySelectorParams.instanceUuid, selectorParams.query.queryParams, selectorParams.query.contextResults);
+      // log.info("selectEntityInstanceFromObjectQueryAndDomainState selectObjectByDirectReference found domainState", JSON.stringify(domainState))
+
       log.info("selectEntityInstanceFromObjectQueryAndDomainState found instanceUuid", JSON.stringify(instanceUuid))
 
       if (instanceUuid.elementType != "string" && instanceUuid.elementType != "instanceUuid") {

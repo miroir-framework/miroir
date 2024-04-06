@@ -244,8 +244,8 @@ export const selectEntityInstanceUuidIndexFromLocalCache = (
       params.definition.deploymentUuid &&
       params.definition.applicationSection &&
       params.definition.entityUuid &&
-      reduxState.presentModelSnapshot[localEntityIndex]
-        ? (reduxState.presentModelSnapshot[localEntityIndex].entities as EntityInstancesUuidIndex)
+      reduxState.presentModelSnapshot.current[localEntityIndex]
+        ? (reduxState.presentModelSnapshot.current[localEntityIndex].entities as EntityInstancesUuidIndex)
         : empty;
     // log.info('selectEntityInstanceUuidIndexFromLocalCache','params',params,'localEntityIndex',localEntityIndex,'state',state,'result',result);
     return result;

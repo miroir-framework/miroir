@@ -24,13 +24,18 @@ export type MiroirDictionary = z.infer<typeof ZDictionarySchema>;
 export const ZEntityStateSchema = z.object({ ids: z.array(z.string()), entities: ZDictionarySchema });
 export type ZEntityState = z.infer<typeof ZEntityStateSchema>; //not used
 
-export type LocalCacheSliceState = { 
-  [DeploymentUuidSectionEntityUuid: string]: ZEntityState 
-}; // TODO: check format of DeploymentUuidSectionEntityUuid?
 // export type LocalCacheSliceState = { 
-//   loading?: { [DeploymentUuidSectionEntityUuid: string]: ZEntityState },
-//   current: { [DeploymentUuidSectionEntityUuid: string]: ZEntityState }
+//   [DeploymentUuidSectionEntityUuid: string]: ZEntityState 
 // }; // TODO: check format of DeploymentUuidSectionEntityUuid?
+export type LocalCacheSliceState = { 
+  loading: { [DeploymentUuidSectionEntityUuid: string]: ZEntityState },
+  current: { [DeploymentUuidSectionEntityUuid: string]: ZEntityState }
+  status: {
+    initialLoadDone: boolean,
+  }
+}; // TODO: check format of DeploymentUuidSectionEntityUuid?
+
+export type LocalCacheSliceStateZone = "loading" | "current";
 
 export const localCacheSliceName: string = "localCache";
 
