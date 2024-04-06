@@ -4,29 +4,28 @@ import {
   ApplicationDeploymentConfiguration,
   ApplicationSection,
   DomainElementObject,
+  DomainStateSelectorMap,
   Entity,
   EntityDefinition,
   LoggerInterface,
-  MetaModel,
   MiroirLoggerFactory,
+  MiroirSelectorQueryParams,
   RecordOfJzodObject,
   ReportSection,
+  RootReportSection,
   Uuid,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
-  getLoggerName,
-  reportEntityDefinitionList,
-  reportEntityList
+  getLoggerName
 } from "miroir-core";
 
 
 
 import { packageName } from '../../constants';
-import { useCurrentModel } from './ReduxHooks';
+import { useMiroirContextService } from './MiroirContextReactProvider';
 import { ReportSectionEntityInstance } from './ReportSectionEntityInstance';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay';
 import { cleanLevel } from './constants';
-import { useMiroirContextService } from './MiroirContextReactProvider';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportSectionView");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -36,13 +35,48 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 export interface ReportSectionEntityInstanceProps {
   // domainElement: DomainElement,
-  domainElementObject: DomainElementObject,
-  fetchedDataJzodSchema: RecordOfJzodObject | undefined,
-  reportSection: ReportSection,
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
+  queryResults: DomainElementObject,
+  fetchedDataJzodSchema: RecordOfJzodObject | undefined,
   paramsAsdomainElements: DomainElementObject,
+  reportSection: ReportSection,
+  rootReportSection: RootReportSection,
+  selectorMap: DomainStateSelectorMap<MiroirSelectorQueryParams>
+  // pageParams: Params<ReportUrlParamKeys>,
 }
+
+// ###############################################################################################################
+const evaluateExpression = (
+  expression: string | undefined,
+  domainElementObject: DomainElementObject
+  ) => {
+  const parts = expression?.split(".");
+  const object =
+    Array.isArray(parts) && parts.length > 0 && domainElementObject.elementValue
+      ? (domainElementObject.elementValue as any)[parts[0]].elementValue
+      : undefined;
+  const result = object && Array.isArray(parts) && parts.length > 1 ? (object as any)[parts[1]] : undefined;
+  // log.info("evaluateExpression", expression, parts, props.domainElementObject, "object", object, "result", result);
+  return result;
+};
+
+const interpolateExpression = (
+  stringToInterpolate: string | undefined, 
+  domainElementObject: DomainElementObject,
+  label?: string,
+) => {
+  const reg = /\$\{([^}]*)\}/g;
+  const result = stringToInterpolate
+    ? stringToInterpolate.replace(
+        reg,
+        (expression, ...args) => `${evaluateExpression(args[0], domainElementObject)}`
+      )
+    : "no " + label;
+  // log.info("interpolateExpression result",result);
+  return result;
+};
+
 
 // ###############################################################################################################
 export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
@@ -54,10 +88,6 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
   const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeploymentConfiguration[];
 
   // ##############################################################################################
-  const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
-  const libraryAppModel: MetaModel = useCurrentModel(applicationDeploymentLibrary.uuid);
-
-  // computing current state #####################################################################
   const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(
     (d) => d.uuid == props.deploymentUuid
   );
@@ -89,8 +119,8 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
   const currentListReportTargetEntityDefinition: EntityDefinition | undefined =
     entityDefinitions?.find((e:EntityDefinition) => e?.entityUuid === currentListReportTargetEntity?.uuid);
 
-  const entityInstance = props.domainElementObject.elementValue && props.reportSection.type == "objectInstanceReportSection"
-  ? (props.domainElementObject.elementValue as any)[
+  const entityInstance = props.queryResults.elementValue && props.reportSection.type == "objectInstanceReportSection"
+  ? (props.queryResults.elementValue as any)[
       props.reportSection.definition.fetchedDataReference ?? ""
     ]?.elementValue
   : undefined
@@ -104,7 +134,10 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
     props
   );
 
-  // computing current state #####################################################################
+
+
+
+
   // log.info(
   //   "ReportSectionView displayedDeploymentDefinition",
   //   displayedDeploymentDefinition,
@@ -135,23 +168,7 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
 
   // log.info('ReportSectionView props.reportSection',props.reportSection);
 
-  const evaluateExpression = (expression: string | undefined) => {
-    const parts = expression?.split(".");
-    const object =
-      Array.isArray(parts) && parts.length > 0 && props.domainElementObject.elementValue
-        ? (props.domainElementObject.elementValue as any)[parts[0]].elementValue
-        : undefined;
-    const result = object && Array.isArray(parts) && parts.length > 1 ? (object as any)[parts[1]] : undefined;
-    // log.info("evaluateExpression", expression, parts, props.domainElementObject, "object", object, "result", result);
-    return result;
-  };
 
-  const interpolateExpression = (stringToInterpolate: string | undefined, label?: string)=> {
-    const reg = /\$\{([^}]*)\}/g
-    const result = stringToInterpolate?stringToInterpolate.replace(reg,(expression, ...args)=>`${evaluateExpression(args[0])}`):"no " + label
-    // log.info("interpolateExpression result",result);
-    return result;
-  }
 
   if (props.applicationSection) {
     return (
@@ -202,12 +219,14 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
                         <tr key={index}>
                           <td>
                             <ReportSectionView
-                              domainElementObject={props.domainElementObject}
-                              fetchedDataJzodSchema={props.fetchedDataJzodSchema}
-                              deploymentUuid={props.deploymentUuid}
                               applicationSection={props.applicationSection}
-                              reportSection={innerReportSection}
+                              queryResults={props.queryResults}
+                              deploymentUuid={props.deploymentUuid}
+                              fetchedDataJzodSchema={props.fetchedDataJzodSchema}
                               paramsAsdomainElements={props.paramsAsdomainElements}
+                              reportSection={innerReportSection}
+                              rootReportSection={props.rootReportSection}
+                              selectorMap={props.selectorMap}
                               // instanceUuid={props.instanceUuid}
                             />
                           </td>
@@ -224,16 +243,16 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
             {props.reportSection.type == "objectListReportSection" ? (
               <div>
                 {/* {JSON.stringify(props.domainElementObject, circularReplacer(), 2)} */}
-                {(currentListReportTargetEntity && currentListReportTargetEntityDefinition) || props.domainElementObject ? (
+                {(currentListReportTargetEntity && currentListReportTargetEntityDefinition) || props.queryResults ? (
                   <ReportSectionListDisplay
                     tableComponentReportType="EntityInstance"
                     label={"EntityInstance-" + currentListReportTargetEntity?.name}
-                    defaultlabel={interpolateExpression(props.reportSection.definition?.label, "report label")}
+                    defaultlabel={interpolateExpression(props.reportSection.definition?.label, props.queryResults, "report label")}
                     styles={styles}
                     deploymentUuid={props.deploymentUuid}
                     chosenApplicationSection={props.applicationSection as ApplicationSection}
                     displayedDeploymentDefinition={displayedDeploymentDefinition}
-                    domainElementObject={props.domainElementObject}
+                    domainElementObject={props.queryResults}
                     fetchedDataJzodSchema={props.fetchedDataJzodSchema}
                     section={props.reportSection}
                     paramsAsdomainElements={props.paramsAsdomainElements}
@@ -248,7 +267,7 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
             {props.reportSection.type == "objectInstanceReportSection" ? (
               <div>
                 <ReportSectionEntityInstance
-                  domainElement={props.domainElementObject}
+                  domainElement={props.queryResults}
                   instance={entityInstance}
                   applicationSection={props.applicationSection as ApplicationSection}
                   deploymentUuid={props.deploymentUuid}

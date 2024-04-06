@@ -14,13 +14,10 @@ import {
   ApplicationDeploymentConfiguration,
   ApplicationSection,
   DomainControllerInterface,
-  Entity,
-  EntityDefinition,
   EntityInstance,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
-  ObjectListReportSection,
   Report,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
@@ -31,8 +28,6 @@ import {
   entityDefinitionBook,
   getDeploymentUuidToReportsEntitiesDefinitionsMapping,
   getLoggerName,
-  reportEntityDefinitionList,
-  reportEntityList,
   reportReportList,
   resetAndInitMiroirAndApplicationDatabase
 } from "miroir-core";
@@ -97,14 +92,6 @@ export const HomePage = (props: RootComponentProps) => {
   // computing current state #####################################################################
   const displayedDeploymentDefinition:ApplicationDeploymentConfiguration | undefined = deployments.find(d=>d.uuid == displayedDeploymentUuid);
   log.info("HomePage displayedDeploymentDefinition",displayedDeploymentDefinition);
-  // const currentReportDefinitionDeployment: ApplicationDeploymentConfiguration | undefined = displayedDeploymentDefinition
-  // ;
-  // const currentReportDefinitionDeployment: ApplicationDeploymentConfiguration | undefined = 
-  //   displayedDeploymentDefinition?.applicationModelLevel == "metamodel" || displayedApplicationSection =='model'? 
-  //     applicationDeploymentMiroir as ApplicationDeploymentConfiguration
-  //     :
-  //     displayedDeploymentDefinition
-  // ;
 
   const currentModel = displayedDeploymentUuid == applicationDeploymentLibrary.uuid? libraryAppModel:defaultMiroirMetaModel;
   // const currentModel = libraryAppModel;
@@ -120,36 +107,6 @@ export const HomePage = (props: RootComponentProps) => {
     displayedApplicationSection
   );
 
-  // const mapping = useMemo(() => ({ // displayedDeploymentDefinition, displayedApplicationSection
-  //   [applicationDeploymentMiroir.uuid]: {
-  //     "model": {
-  //       availableReports: miroirMetaModel.reports.filter(
-  //         (r) => [reportEntityList.uuid, reportEntityDefinitionList.uuid].includes(r.uuid)
-  //         ),
-  //         entities: miroirMetaModel.entities,
-  //         entityDefinitions: miroirMetaModel.entityDefinitions,
-  //       },
-  //     "data": {
-  //       availableReports: miroirMetaModel.reports.filter(
-  //         (r) => ![reportEntityList.uuid, reportEntityDefinitionList.uuid].includes(r.uuid)
-  //       ),
-  //       entities: miroirMetaModel.entities,
-  //       entityDefinitions: miroirMetaModel.entityDefinitions,
-  //     },
-  //   },
-  //   [applicationDeploymentLibrary.uuid]: {
-  //     "model": {
-  //       availableReports: miroirMetaModel.reports,
-  //       entities: miroirMetaModel.entities,
-  //       entityDefinitions: miroirMetaModel.entityDefinitions,
-  //     },
-  //     "data": {
-  //       availableReports: libraryAppModel.reports,
-  //       entities: libraryAppModel.entities,
-  //       entityDefinitions: libraryAppModel.entityDefinitions,
-  //     },
-  //   },
-  // }), [miroirMetaModel, libraryAppModel]);
   const deploymentUuidToReportsEntitiesDefinitionsMapping = useMemo(
     () => getDeploymentUuidToReportsEntitiesDefinitionsMapping(miroirMetaModel, libraryAppModel),
     [miroirMetaModel, libraryAppModel]
@@ -157,12 +114,6 @@ export const HomePage = (props: RootComponentProps) => {
   useEffect(() =>
     context.setDeploymentUuidToReportsEntitiesDefinitionsMapping(deploymentUuidToReportsEntitiesDefinitionsMapping)
   );
-
-  // const { availableReports, entities, entityDefinitions } =
-  //   displayedDeploymentDefinition && displayedApplicationSection
-  //     ? mapping[displayedDeploymentDefinition?.uuid][displayedApplicationSection]
-  //     : { availableReports: [], entities: [], entityDefinitions: [] }
-  // ;
 
   const { availableReports, entities, entityDefinitions } = useMemo(() => {
     return displayedDeploymentDefinition &&
@@ -193,26 +144,7 @@ export const HomePage = (props: RootComponentProps) => {
     ),
     [currentMiroirReport, displayedApplicationSection, displayedDeploymentUuid]
   )
-  // const currentMiroirReportSectionObjectList: ObjectListReportSection | undefined =
-  //   currentMiroirReport?.definition?.section?.type == "objectListReportSection"? currentMiroirReport?.definition?.section: undefined
-  // ;
-  // log.info("HomePage currentMiroirReport", currentMiroirReport);
-  
-  // const currentMiroirReportSectionObjectList: ReportSectionListDefinition | undefined =
-  //   currentMiroirReport?.type == "list" &&
-  //   currentMiroirReport.definition.length > 0 &&
-  //   currentMiroirReport?.definition[0].type == "objectListReportSection"
-  //     ? (currentMiroirReport?.definition[0] as ReportSectionList).definition
-  //     : undefined
-  // ;
-  // const currentReportTargetEntity: Entity | undefined = currentMiroirReportSectionObjectList
-  //   ? entities?.find(
-  //       (e) => e?.uuid === currentMiroirReportSectionObjectList.definition?.parentUuid
-  //     )
-  //   : undefined;
-  // const currentReportTargetEntityDefinition: EntityDefinition | undefined =
-  //   entityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
-  
+
   const handleChangeDisplayedReport = (event: SelectChangeEvent) => {
     event.stopPropagation();
     const reportUuid = defaultToEntityList(event.target.value, availableReports);
@@ -580,7 +512,7 @@ export const HomePage = (props: RootComponentProps) => {
               reportUuid: {displayedReportUuid}
             </div> */}
             <RootReportSectionView
-              reportSection={currentMiroirReport?.definition}
+              rootReportSection={currentMiroirReport?.definition}
               applicationSection={displayedApplicationSection}
               deploymentUuid={displayedDeploymentUuid}
               pageParams={pageParams}

@@ -40,81 +40,99 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 });
 
 export interface RootReportSectionEntityInstanceProps {
-  reportSection: RootReportSection,
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
   instanceUuid?: Uuid,
   pageParams: Params<ReportUrlParamKeys>,
+  rootReportSection: RootReportSection,
 }
 
 let count = 0
 // ###############################################################################################################
+/**
+ * It role is to gather the data that must be displayed by the potentially many sections of the report.
+ * 
+ * @param props 
+ * @returns 
+ */
 export const RootReportSectionView = (props: RootReportSectionEntityInstanceProps) => {
   count++;
 
   const paramsAsdomainElements: DomainElementObject = useMemo(
-    () => ({
-      elementType: "object",
-      elementValue: Object.fromEntries(
-        Object.entries(props.pageParams).map((e) => [e[0], { elementType: "string", elementValue: e[1] ?? "" }])
-      ),
-    }),
-    [props.pageParams]
+  () => ({
+  elementType: "object",
+  elementValue: Object.fromEntries(
+  Object.entries(props.pageParams).map((e) => [e[0], { elementType: "string", elementValue: e[1] ?? "" }])
+  ),
+  }),
+  [props.pageParams]
   );
-  log.info("########################## RootReportSectionView", count, "ReportSection", JSON.stringify(props.reportSection, null, 2));
+  log.info("########################## RootReportSectionView", count, "ReportSection", JSON.stringify(props.rootReportSection, null, 2));
 
-  log.info(
-    "deploymentUuid",
-    props.deploymentUuid,
-    props.applicationSection,
-    "paramsAsdomainElements",
-    paramsAsdomainElements,
-    "fetchQuery",
-    props.reportSection.fetchQuery
-  );
+  // log.info(
+  //   "deploymentUuid",
+  //   props.deploymentUuid,
+  //   props.applicationSection,
+  //   "paramsAsdomainElements",
+  //   paramsAsdomainElements,
+  //   "fetchQuery",
+  //   props.reportSection.fetchQuery
+  // );
   
   const selectorMap: DomainStateSelectorMap<MiroirSelectorQueryParams> = useMemo(
-    () => getSelectorMap(),
-    []
+  () => getSelectorMap(),
+  []
   )
 
-  // const domainFetchQueryParams: DomainStateSelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(() => getSelectorParams(
   const domainFetchQueryParams: DomainStateSelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(
     () =>
-      getSelectorParams<DomainManyQueriesWithDeploymentUuid>(
-        {
-          queryType: "DomainManyQueries",
-          deploymentUuid: props.deploymentUuid,
-          // applicationSection: props.applicationSection,
-          pageParams: paramsAsdomainElements,
-          queryParams: { elementType: "object", elementValue: {} },
-          contextResults: { elementType: "object", elementValue: {} },
-          fetchQuery: props.reportSection.fetchQuery,
-        },
-        selectorMap
-      ),
-    [selectorMap, props.deploymentUuid, props.applicationSection, props.reportSection?.fetchQuery]
+      props.pageParams.deploymentUuid && props.pageParams.applicationSection && props.pageParams.reportUuid
+        ? getSelectorParams<DomainManyQueriesWithDeploymentUuid>(
+            {
+              queryType: "DomainManyQueries",
+              deploymentUuid: props.pageParams.deploymentUuid,
+              // applicationSection: props.applicationSection,
+              pageParams: paramsAsdomainElements,
+              queryParams: { elementType: "object", elementValue: {} },
+              contextResults: { elementType: "object", elementValue: {} },
+              fetchQuery: props.rootReportSection.fetchQuery,
+            },
+            selectorMap
+          )
+        : // dummy query
+          getSelectorParams<DomainManyQueriesWithDeploymentUuid>(
+            {
+              queryType: "DomainManyQueries",
+              deploymentUuid: "",
+              pageParams: paramsAsdomainElements,
+              queryParams: { elementType: "object", elementValue: {} },
+              contextResults: { elementType: "object", elementValue: {} },
+              fetchQuery: { select: {} },
+            },
+            selectorMap
+          ),
+    [selectorMap, props.pageParams, props.rootReportSection]
   );
 
-  log.info(
-    "-------------------------------------------------- props.reportSection",
-    props.reportSection,
-    "props.reportSection?.fetchQuery",
-    props.reportSection?.fetchQuery,
-  )
+  // // log.info(
+  // //   "-------------------------------------------------- props.reportSection",
+  // //   props.reportSection,
+  // //   "props.reportSection?.fetchQuery",
+  // //   props.reportSection?.fetchQuery,
+  // // )
 
-  const domainElementObject: DomainElementObject = useDomainStateSelectorNew(
-    selectorMap.selectByDomainManyQueriesFromDomainState,
-    domainFetchQueryParams
+  const queryResults: DomainElementObject = useDomainStateSelectorNew(
+  selectorMap.selectByDomainManyQueriesFromDomainState,
+  domainFetchQueryParams
   );
 
-  log.info(
-    "-------------------------------------------------- props.reportSection",
-    "domainElementObject",
-    domainElementObject,
-    // "fetchedDataJzodSchema",
-    // fetchedDataJzodSchema
-  );
+  // log.info(
+  //   "-------------------------------------------------- props.reportSection",
+  //   "domainElementObject",
+  //   domainElementObject,
+  //   // "fetchedDataJzodSchema",
+  //   // fetchedDataJzodSchema
+  // );
 
   const jzodSchemaSelectorMap: DomainStateJzodSchemaSelectorMap = useMemo(
     () => getJzodSchemaSelectorMap(),
@@ -125,26 +143,48 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
     useMemo(
       () => ({
         selectorMap: jzodSchemaSelectorMap,
-        query: {
+        query: props.pageParams.deploymentUuid && props.pageParams.applicationSection && props.pageParams.reportUuid
+        ? {
           queryType: "getFetchParamsJzodSchema",
           pageParams: {
             elementType: "object",
             elementValue: {
-              applicationSection: { elementType: "string", elementValue: props.applicationSection ?? "data" },
-              deploymentUuid: { elementType: "string", elementValue: props.deploymentUuid ?? "" },
-              instanceUuid: { elementType: "string", elementValue: props.instanceUuid ?? "" },
+              applicationSection: { elementType: "string", elementValue: props.pageParams.applicationSection},
+              deploymentUuid: { elementType: "string", elementValue: props.pageParams.deploymentUuid },
+              instanceUuid: { elementType: "string", elementValue: props.pageParams.instanceUuid ?? "" },
             },
           },
           queryParams: { elementType: "object", elementValue: {} },
           contextResults: { elementType: "object", elementValue: {} },
           fetchParams: domainFetchQueryParams.query,
+        }
+        : // dummy query
+        {
+          queryType: "getFetchParamsJzodSchema",
+          pageParams: {
+            elementType: "object",
+            elementValue: {
+              applicationSection: { elementType: "string", elementValue: "data" },
+              deploymentUuid: { elementType: "string", elementValue: "" },
+              instanceUuid: { elementType: "string", elementValue: "" },
+            },
+          },
+          queryParams: { elementType: "object", elementValue: {} },
+          contextResults: { elementType: "object", elementValue: {} },
+          fetchParams: {
+            queryType: "DomainManyQueries",
+            deploymentUuid: "",
+            pageParams: paramsAsdomainElements,
+            queryParams: { elementType: "object", elementValue: {} },
+            contextResults: { elementType: "object", elementValue: {} },
+            fetchQuery: { select: {} },
+          },
         },
       }),
-      [jzodSchemaSelectorMap]
+      [jzodSchemaSelectorMap, props.pageParams, props.rootReportSection]
     )
   ;
 
-  // const fetchedDataJzodSchema: RecordOfJzodObject | undefined = useDomainStateSelectorNew(
   const fetchedDataJzodSchema: RecordOfJzodObject | undefined = useDomainStateJzodSchemaSelector(
     selectFetchQueryJzodSchemaFromDomainStateNew,
     fetchedDataJzodSchemaParams
@@ -152,13 +192,13 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
 
   log.info(
     "RootReportSectionView props.reportSection?.fetchQuery",
-    props.reportSection?.fetchQuery,
-    "domainElementObject",
-    domainElementObject,
+    props.rootReportSection?.fetchQuery,
+    "props.queryResults",
+    queryResults,
     "fetchedDataJzodSchema",
     fetchedDataJzodSchema
   );
-  log.info('RootReportSectionView props.reportSection',props.reportSection);
+  log.info('RootReportSectionView props.reportSection',props.rootReportSection);
 
   if (props.applicationSection) {
     {/* <div>
@@ -175,8 +215,8 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
         {props.applicationSection}
       </div>
     </div> */}
-    if (domainElementObject.elementType == "object") {
-      const queryFailures = Object.entries(domainElementObject.elementValue).filter((e) => e[1].elementType == "failure")
+    if (queryResults.elementType == "object") {
+      const queryFailures = Object.entries(queryResults.elementValue).filter((e) => e[1].elementType == "failure")
       if (queryFailures.length > 0) {
         return (
           <div>
@@ -189,12 +229,14 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
       <div>
         <div>RootReportSectionView rendered {count}</div>
         <ReportSectionView
-          domainElementObject={domainElementObject}
+          queryResults={queryResults}
           fetchedDataJzodSchema={fetchedDataJzodSchema}
-          reportSection={props.reportSection?.section}
+          reportSection={props.rootReportSection?.section}
+          rootReportSection={props.rootReportSection}
           applicationSection={props.applicationSection}
           deploymentUuid={props.deploymentUuid}
           paramsAsdomainElements={paramsAsdomainElements}
+          selectorMap={selectorMap}
         />
       </div>
     );

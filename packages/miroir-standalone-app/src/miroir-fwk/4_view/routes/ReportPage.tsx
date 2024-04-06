@@ -72,25 +72,27 @@ export const ReportPage = () => {
   // log.info("ReportPage currentModel", currentModel);
 
   const defaultReport: Report = useMemo(
-    () => ({
-      uuid: "c0ba7e3d-3740-45a9-b183-20c3382b6419",
-      parentName: "Report",
-      parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-      conceptLevel: "Model",
-      name: "DummyDefaultReport",
-      defaultLabel: "No report to display!",
-      type: "list",
-      definition: {
-        fetchQuery: { select: {} },
-        section: {
-          type: "objectListReportSection",
-          definition: {
-            parentName: "Test",
-            parentUuid: "9ad64893-5f8f-4eaf-91aa-ffae110f88c8",
+    () => (
+      {
+        uuid: "c0ba7e3d-3740-45a9-b183-20c3382b6419",
+        parentName: "Report",
+        parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+        conceptLevel: "Model",
+        name: "DummyDefaultReport",
+        defaultLabel: "No report to display!",
+        type: "list",
+        definition: {
+          fetchQuery: { select: {} },
+          section: {
+            type: "objectListReportSection",
+            definition: {
+              parentName: "Test",
+              parentUuid: "9ad64893-5f8f-4eaf-91aa-ffae110f88c8",
+            },
           },
         },
-      },
-    }),
+      }
+    ),
     []
   );
 
@@ -98,41 +100,34 @@ export const ReportPage = () => {
     (d) => d.uuid == pageParams.deploymentUuid
   );
 
-  const localApplicationSection: ApplicationSection = (
-    pageParams.applicationSection == "data" ? "data" : "model"
-  ) as ApplicationSection;
-
   const deploymentUuidToReportsEntitiesDefinitionsMapping = useMemo(
     () => getDeploymentUuidToReportsEntitiesDefinitionsMapping(miroirMetaModel, libraryAppModel),
     [miroirMetaModel, libraryAppModel]
   );
 
-  // if (!context.deploymentUuidToReportsEntitiesDefinitionsMapping && miroirMetaModel && libraryAppModel) {
   useEffect(() =>
     context.setDeploymentUuidToReportsEntitiesDefinitionsMapping(deploymentUuidToReportsEntitiesDefinitionsMapping)
   );
-  // }
+
 
   const { availableReports, entities, entityDefinitions } = useMemo(() => {
     return displayedDeploymentDefinition &&
+      pageParams.applicationSection &&
       context.deploymentUuidToReportsEntitiesDefinitionsMapping &&
       context.deploymentUuidToReportsEntitiesDefinitionsMapping[displayedDeploymentDefinition?.uuid]
       ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[displayedDeploymentDefinition?.uuid][
-          localApplicationSection
+          pageParams.applicationSection as ApplicationSection
         ]
       : { availableReports: [], entities: [], entityDefinitions: [] };
   }, [
     displayedDeploymentDefinition,
     context.deploymentUuidToReportsEntitiesDefinitionsMapping,
-    localApplicationSection,
+    pageParams.applicationSection,
   ]);
   log.info("ReportPage availableReports", availableReports);
 
-  const currentMiroirReport: Report = availableReports?.find((r:Report) => r.uuid == pageParams.reportUuid) ?? defaultReport;
-
-  // const currentMiroirReport: Report = currentModel.reports?.find((r:Report) => r.uuid === params.reportUuid)??defaultReport;
-
-  // const emptyResultsFromQuery: DomainElementObject = useMemo(()=> ({ elementType: "object", elementValue: {}}), []);
+  const currentMiroirReport: Report =
+    availableReports?.find((r: Report) => r.uuid == pageParams.reportUuid) ?? defaultReport;
 
   if (pageParams.applicationSection) {
     log.info("ReportPage rendering count", count, "params", pageParams);
@@ -143,26 +138,31 @@ export const ReportPage = () => {
         </Box>
         {/* <div>ReportPage displayed:{count}</div>
         <div>ReportPage reportUuid: {params.reportUuid} </div> */}
-        {pageParams.deploymentUuid && pageParams.applicationSection && pageParams.reportUuid && pageParams.reportUuid != "undefined" ? (
-          <>
-            <div>
-              deploymentUuid={pageParams.deploymentUuid}, applicationSection={pageParams.applicationSection}, reportUuid=
-              {pageParams.reportUuid}, instanceUuid={pageParams.instanceUuid}
-            </div>
-            <RootReportSectionView
-              reportSection={currentMiroirReport?.definition}
-              applicationSection={pageParams.applicationSection as ApplicationSection}
-              deploymentUuid={pageParams.deploymentUuid}
-              instanceUuid={pageParams.instanceUuid}
-              pageParams={pageParams}
-            />
-          </>
-        ) : (
-          <span style={{ color: "red" }}>
-            no report to display, deploymentUuid={pageParams.deploymentUuid}, applicationSection={pageParams.applicationSection}
-            , reportUuid={pageParams.reportUuid}
-          </span>
-        )}
+        {
+          pageParams.deploymentUuid &&
+          pageParams.applicationSection &&
+          pageParams.reportUuid &&
+          pageParams.reportUuid != "undefined" ? (
+            <>
+              <div>
+                deploymentUuid={pageParams.deploymentUuid}, applicationSection={pageParams.applicationSection},
+                reportUuid={pageParams.reportUuid}, instanceUuid={pageParams.instanceUuid}
+              </div>
+              <RootReportSectionView
+                applicationSection={pageParams.applicationSection as ApplicationSection}
+                deploymentUuid={pageParams.deploymentUuid}
+                instanceUuid={pageParams.instanceUuid}
+                pageParams={pageParams}
+                rootReportSection={currentMiroirReport?.definition}
+              />
+            </>
+          ) : (
+            <span style={{ color: "red" }}>
+              no report to display, deploymentUuid={pageParams.deploymentUuid}, applicationSection=
+              {pageParams.applicationSection}, reportUuid={pageParams.reportUuid}
+            </span>
+          )
+        }
       </div>
     );
   } else {
