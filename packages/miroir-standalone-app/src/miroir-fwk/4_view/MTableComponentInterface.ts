@@ -33,7 +33,7 @@ export const tableComponentCorePropsSchema = z.object({
   displayTools: z.boolean(),
   currentModel: metaModel,
   defaultFormValuesObject: z.any(),
-  miroirFundamentalJzodSchema:jzodSchema,
+  // miroirFundamentalJzodSchema:jzodSchema,
   sortByAttribute: z.string().optional(),
   deploymentUuid: z.string().uuid(),
   paramsAsdomainElements: domainElementObject,

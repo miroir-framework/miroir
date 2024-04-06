@@ -20,9 +20,7 @@ import {
   EntityInstancesUuidIndex,
   InstanceAction,
   JzodObject,
-  JzodSchema,
   LoggerInterface,
-  MetaEntity,
   MetaModel,
   MiroirLoggerFactory,
   MiroirSelectorQueryParams,
@@ -30,47 +28,23 @@ import {
   applicationDeploymentMiroir,
   applicationSection,
   domainElementObject,
-  domainEndpointVersionV1,
-  entity,
-  entityDefinition,
-  entityDefinitionApplication,
-  entityDefinitionApplicationVersion,
-  entityDefinitionBundleV1,
-  entityDefinitionCommit,
-  entityDefinitionEntity,
-  entityDefinitionEntityDefinition,
-  entityDefinitionJzodSchema,
-  entityDefinitionMenu,
-  entityDefinitionQueryVersionV1,
-  entityDefinitionReport,
   getLoggerName,
-  getMiroirFundamentalJzodSchema,
   getSelectorMap,
   getSelectorParams,
-  instanceEndpointVersionV1,
   jzodObject,
-  jzodSchemajzodMiroirBootstrapSchema,
-  localCacheEndpointVersionV1,
-  modelEndpointV1,
-  objectListReportSection,
-  persistenceEndpointVersionV1,
-  queryEndpointVersionV1,
-  reportEntityDefinitionList,
-  reportEntityList,
-  storeManagementEndpoint,
-  undoRedoEndpointVersionV1
+  objectListReportSection
 } from "miroir-core";
 
+import { Button } from "@mui/material";
+import { packageName } from "../../constants";
 import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "../../miroir-fwk/4_view/getColumnDefinitionsFromEntityAttributes";
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from "./JsonObjectFormEditorDialog";
+import { noValue } from "./JzodElementEditor";
 import { MTableComponent } from "./MTableComponent";
 import { TableComponentType, TableComponentTypeSchema } from "./MTableComponentInterface";
 import { useDomainControllerService, useMiroirContextInnerFormOutput, useMiroirContextService } from './MiroirContextReactProvider';
-import { packageName } from "../../constants";
-import { cleanLevel } from "./constants";
 import { useCurrentModel, useDomainStateCleanSelectorNew } from "./ReduxHooks";
-import { Button } from "@mui/material";
-import { noValue } from "./JzodElementEditor";
+import { cleanLevel } from "./constants";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportSectionListDisplay");
@@ -231,28 +205,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     []
   )
 
-  const miroirFundamentalJzodSchema: JzodSchema = useMemo(() => getMiroirFundamentalJzodSchema(
-    entityDefinitionBundleV1 as EntityDefinition,
-    entityDefinitionCommit as EntityDefinition,
-    modelEndpointV1,
-    storeManagementEndpoint,
-    instanceEndpointVersionV1,
-    undoRedoEndpointVersionV1,
-    localCacheEndpointVersionV1,
-    domainEndpointVersionV1,
-    queryEndpointVersionV1,
-    persistenceEndpointVersionV1,
-    jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
-    entityDefinitionApplication as EntityDefinition,
-    entityDefinitionApplicationVersion as EntityDefinition,
-    entityDefinitionEntity as EntityDefinition,
-    entityDefinitionEntityDefinition as EntityDefinition,
-    entityDefinitionJzodSchema as EntityDefinition,
-    entityDefinitionMenu  as EntityDefinition,
-    entityDefinitionQueryVersionV1 as EntityDefinition,
-    entityDefinitionReport as EntityDefinition,
-    // jzodSchemajzodMiroirBootstrapSchema as any,
-  ),[]);
   
   const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeploymentConfiguration[];
 
@@ -657,7 +609,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 currentDeploymentUuid={props.displayedDeploymentDefinition?.uuid}
                 currentApplicationSection={props.chosenApplicationSection}
                 defaultFormValuesObject={defaultFormValuesObject}
-                miroirFundamentalJzodSchema={miroirFundamentalJzodSchema}
                 currentAppModel={currentModel}
                 currentMiroirModel={miroirMetaModel}
                 addObjectdialogFormIsOpen={addObjectdialogFormIsOpen}
@@ -676,14 +627,11 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                   styles={props.styles}
                   currentEntity={currentReportTargetEntity}
                   currentEntityDefinition={currentReportTargetEntityDefinition}
-                  miroirFundamentalJzodSchema={miroirFundamentalJzodSchema}
                   foreignKeyObjects={foreignKeyObjects}
                   currentModel={currentModel}
-                      // reportSectionListDefinition={props.currentMiroirReportSectionObjectList}
                   columnDefs={tableColumnDefs}
                   instancesToDisplay={instancesToDisplay}
                   deploymentUuid={props.deploymentUuid}
-                  // instancesToDisplay={instancesToDisplay}
                   displayTools={true}
                   onRowEdit={onEditFormObject}
                   sortByAttribute={props.section.definition.sortByAttribute}

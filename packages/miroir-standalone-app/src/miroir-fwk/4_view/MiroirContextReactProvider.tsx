@@ -4,17 +4,15 @@ import { useSelector } from "react-redux";
 
 import {
   ApplicationSection,
+  DeploymentUuidToReportsEntitiesDefinitionsMapping,
   DomainControllerInterface,
-  Entity,
-  EntityDefinition,
+  JzodSchema,
   LoggerInterface,
   MiroirContext,
   MiroirContextInterface,
   MiroirLoggerFactory,
   Uuid,
-  getLoggerName,
-  Report,
-  DeploymentUuidToReportsEntitiesDefinitionsMapping
+  getLoggerName
 } from "miroir-core";
 import {
   ReduxStateChanges,
@@ -47,6 +45,8 @@ export interface MiroirReactContext {
   setformHelperState: React.Dispatch<React.SetStateAction<any>>,
   deploymentUuidToReportsEntitiesDefinitionsMapping: DeploymentUuidToReportsEntitiesDefinitionsMapping,
   setDeploymentUuidToReportsEntitiesDefinitionsMapping: React.Dispatch<React.SetStateAction<DeploymentUuidToReportsEntitiesDefinitionsMapping>>,
+  miroirFundamentalJzodSchema: JzodSchema,
+  setMiroirFundamentalJzodSchema: React.Dispatch<React.SetStateAction<JzodSchema>>,
 }
 
 const miroirReactContext = createContext<MiroirReactContext>({} as MiroirReactContext);
@@ -71,6 +71,8 @@ export function MiroirContextReactProvider(props: {
   const [formHelperState, setformHelperState] = useState<any>({});
   const [deploymentUuidToReportsEntitiesDefinitionsMapping, setDeploymentUuidToReportsEntitiesDefinitionsMapping] =
     useState<DeploymentUuidToReportsEntitiesDefinitionsMapping>({});
+  const [miroirFundamentalJzodSchema, setMiroirFundamentalJzodSchema] =
+    useState<JzodSchema>({name: "dummyJzodSchema", parentName: "JzodSchema", parentUuid:"", uuid: ""});
 
   // const value = useMemo<MiroirReactContext>(()=>({
   const value = useMemo<MiroirReactContext>(
@@ -90,12 +92,15 @@ export function MiroirContextReactProvider(props: {
       setformHelperState,
       deploymentUuidToReportsEntitiesDefinitionsMapping,
       setDeploymentUuidToReportsEntitiesDefinitionsMapping,
+      miroirFundamentalJzodSchema,
+      setMiroirFundamentalJzodSchema,
     }),
     [
       deploymentUuid,
       reportUuid,
       applicationSection,
       deploymentUuidToReportsEntitiesDefinitionsMapping,
+      miroirFundamentalJzodSchema,
       innerFormOutput,
       props.miroirContext,
       props.domainController,

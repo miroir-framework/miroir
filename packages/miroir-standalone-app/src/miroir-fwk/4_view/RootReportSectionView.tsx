@@ -59,13 +59,13 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
   count++;
 
   const paramsAsdomainElements: DomainElementObject = useMemo(
-  () => ({
-  elementType: "object",
-  elementValue: Object.fromEntries(
-  Object.entries(props.pageParams).map((e) => [e[0], { elementType: "string", elementValue: e[1] ?? "" }])
-  ),
-  }),
-  [props.pageParams]
+    () => ({
+      elementType: "object",
+      elementValue: Object.fromEntries(
+        Object.entries(props.pageParams).map((e) => [e[0], { elementType: "string", elementValue: e[1] ?? "" }])
+      ),
+    }),
+    [props.pageParams]
   );
   log.info("########################## RootReportSectionView", count, "ReportSection", JSON.stringify(props.rootReportSection, null, 2));
 

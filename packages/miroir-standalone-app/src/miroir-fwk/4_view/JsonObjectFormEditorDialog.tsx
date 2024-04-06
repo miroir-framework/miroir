@@ -24,7 +24,7 @@ import {
 
 import { packageName } from "../../constants";
 import { JzodElementEditor } from "./JzodElementEditor";
-import { useMiroirContextInnerFormOutput, useMiroirContextformHelperState } from "./MiroirContextReactProvider";
+import { useMiroirContextInnerFormOutput, useMiroirContextService, useMiroirContextformHelperState } from "./MiroirContextReactProvider";
 import { cleanLevel } from "./constants";
 
 
@@ -45,7 +45,7 @@ export interface EditorAttribute {
 export interface JsonObjectFormEditorCoreDialogProps {
   label?: string,
   // name: string;
-  miroirFundamentalJzodSchema: JzodSchema,
+  // miroirFundamentalJzodSchema: JzodSchema,
   isAttributes?: boolean,
   entityDefinitionJzodSchema: JzodObject,
   defaultFormValuesObject: any,
@@ -202,6 +202,8 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
   );
   // const logHeader = "JsonObjectFormEditorDialog " + (props.label ? props.label + " " : "");
   // const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
+  const context = useMiroirContextService();
+
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
   const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
 
@@ -222,18 +224,18 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
   const formIsOpen = props.addObjectdialogFormIsOpen || (!props.showButton && props.isOpen);
 
   const resolvedJzodSchema = useMemo(
-    () => props.miroirFundamentalJzodSchema &&
+    () => context.miroirFundamentalJzodSchema &&
     props.entityDefinitionJzodSchema &&
     props.defaultFormValuesObject &&
     props.currentAppModel ?
     resolveReferencesForJzodSchemaAndValueObject(
-      props.miroirFundamentalJzodSchema,
+      context.miroirFundamentalJzodSchema,
       props.entityDefinitionJzodSchema,
       props.defaultFormValuesObject,
       props.currentAppModel,
       props.currentMiroirModel,
     ): undefined,
-    [props]
+    [props, context.miroirFundamentalJzodSchema]
   )
   log.info(
     "called resolveReferencesForJzodSchemaAndValueObject for valueObject",

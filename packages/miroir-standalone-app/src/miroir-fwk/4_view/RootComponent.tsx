@@ -5,7 +5,7 @@ import {
 import { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Outlet, Params, useParams } from 'react-router-dom';
 
 
@@ -13,14 +13,36 @@ import {
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   DomainControllerInterface,
+  domainEndpointVersionV1,
+  EntityDefinition,
+  entityDefinitionApplication,
+  entityDefinitionApplicationVersion,
+  entityDefinitionBundleV1,
+  entityDefinitionCommit,
+  entityDefinitionEntity,
+  entityDefinitionEntityDefinition,
+  entityDefinitionJzodSchema,
+  entityDefinitionMenu,
+  entityDefinitionQueryVersionV1,
+  entityDefinitionReport,
   getLoggerName,
+  getMiroirFundamentalJzodSchema,
+  instanceEndpointVersionV1,
+  JzodSchema,
+  jzodSchemajzodMiroirBootstrapSchema,
+  localCacheEndpointVersionV1,
   LoggerInterface,
   MiroirConfigForRestClient,
   MiroirLoggerFactory,
-  PersistenceInterface
+  modelEndpointV1,
+  persistenceEndpointVersionV1,
+  PersistenceInterface,
+  queryEndpointVersionV1,
+  storeManagementEndpoint,
+  undoRedoEndpointVersionV1
 } from "miroir-core";
 
-import { useDomainControllerService, useMiroirContext } from './MiroirContextReactProvider';
+import { useDomainControllerService, useMiroirContext, useMiroirContextService } from './MiroirContextReactProvider';
 import ResponsiveAppBar from './ResponsiveAppBar';
 import { ReportUrlParamKeys } from './routes/ReportPage';
 
@@ -116,8 +138,39 @@ styled(
 const boxParams = { display: 'flex', flexGrow: 1, flexDirection:"column" };
 
 export const RootComponent = (props: RootComponentProps) => {
-  const params = useParams<any>() as Readonly<Params<ReportUrlParamKeys>>;
+  // const params = useParams<any>() as Readonly<Params<ReportUrlParamKeys>>;
   const [drawerIsOpen, setDrawerIsOpen] = useState(true);
+
+  const domainController: DomainControllerInterface = useDomainControllerService();
+  const context = useMiroirContextService();
+  const miroirConfig = context.miroirContext.getMiroirConfig();
+
+
+
+  const miroirFundamentalJzodSchema: JzodSchema = useMemo(() => getMiroirFundamentalJzodSchema(
+    entityDefinitionBundleV1 as EntityDefinition,
+    entityDefinitionCommit as EntityDefinition,
+    modelEndpointV1,
+    storeManagementEndpoint,
+    instanceEndpointVersionV1,
+    undoRedoEndpointVersionV1,
+    localCacheEndpointVersionV1,
+    domainEndpointVersionV1,
+    queryEndpointVersionV1,
+    persistenceEndpointVersionV1,
+    jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
+    entityDefinitionApplication as EntityDefinition,
+    entityDefinitionApplicationVersion as EntityDefinition,
+    entityDefinitionEntity as EntityDefinition,
+    entityDefinitionEntityDefinition as EntityDefinition,
+    entityDefinitionJzodSchema as EntityDefinition,
+    entityDefinitionMenu  as EntityDefinition,
+    entityDefinitionQueryVersionV1 as EntityDefinition,
+    entityDefinitionReport as EntityDefinition,
+    // jzodSchemajzodMiroirBootstrapSchema as any,
+  ),[]);
+
+  useEffect(() => context.setMiroirFundamentalJzodSchema(miroirFundamentalJzodSchema));
 
   const handleDrawerOpen = () => {
     setDrawerIsOpen(true);
@@ -127,9 +180,6 @@ export const RootComponent = (props: RootComponentProps) => {
     setDrawerIsOpen(false);
   };
 
-  const domainController: DomainControllerInterface = useDomainControllerService();
-  const context = useMiroirContext();
-  const miroirConfig = context.getMiroirConfig();
 
 
   return (

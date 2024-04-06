@@ -5,7 +5,7 @@ import {
   ColGroupDef
 } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import 'ag-grid-community/styles/ag-grid.css';
@@ -13,44 +13,27 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 
 import {
-  ApplicationDeploymentConfiguration,
   EntityDefinition,
   EntityInstance,
-  JzodElement,
-  JzodRecord,
-  JzodSchema,
   JzodObject,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
   applicationDeploymentMiroir,
-  entityInstance,
-  getLoggerName,
-  DomainElementObject,
-  DomainManyQueriesWithDeploymentUuid,
-  DomainStateSelectorNew,
-  DomainStateSelectorParams,
-  getSelectorParams,
-  DomainStateSelectorMap,
-  MiroirSelectorQueryParams,
-  getSelectorMap,
-  EntityInstancesUuidIndex,
+  getLoggerName
 } from "miroir-core";
 
+import { packageName } from '../../constants';
 import EntityEditor from '../../miroir-fwk/4_view/EntityEditor';
 import {
-  useErrorLogService,
   useMiroirContextInnerFormOutput,
   useMiroirContextService
 } from '../../miroir-fwk/4_view/MiroirContextReactProvider';
 import { ToolsCellRenderer } from './GenderCellRenderer';
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from './JsonObjectFormEditorDialog';
 import { TableComponentProps, TableComponentRow, TableComponentTypeSchema } from './MTableComponentInterface';
-import { useCurrentModel, useDomainStateCleanSelectorNew, useDomainStateSelectorNew } from './ReduxHooks';
-import { defaultFormValues } from './ReportSectionListDisplay';
-import { packageName } from '../../constants';
+import { useCurrentModel } from './ReduxHooks';
 import { cleanLevel } from './constants';
-import { Button } from '@mui/material';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"MtableComponent");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -381,7 +364,7 @@ export const MTableComponent = (props: TableComponentProps) => {
                 foreignKeyObjects={props.foreignKeyObjects}
                 currentDeploymentUuid={contextDeploymentUuid}
                 currentApplicationSection={context.applicationSection}
-                miroirFundamentalJzodSchema={props.miroirFundamentalJzodSchema}
+                // miroirFundamentalJzodSchema={props.miroirFundamentalJzodSchema}
                 currentAppModel={currentModel}
                 currentMiroirModel={miroirMetaModel}
                 defaultFormValuesObject={

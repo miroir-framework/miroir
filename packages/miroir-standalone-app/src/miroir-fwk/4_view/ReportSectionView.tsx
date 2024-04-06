@@ -34,7 +34,6 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 });
 
 export interface ReportSectionEntityInstanceProps {
-  // domainElement: DomainElement,
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
   queryResults: DomainElementObject,
@@ -43,7 +42,6 @@ export interface ReportSectionEntityInstanceProps {
   reportSection: ReportSection,
   rootReportSection: RootReportSection,
   selectorMap: DomainStateSelectorMap<MiroirSelectorQueryParams>
-  // pageParams: Params<ReportUrlParamKeys>,
 }
 
 // ###############################################################################################################
