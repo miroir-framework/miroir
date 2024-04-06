@@ -531,7 +531,7 @@ export class DomainController implements DomainControllerInterface {
                   {}, // context update
                   {
                     actionType: "instanceAction",
-                    actionName: "replaceLocalCache",
+                    actionName: "loadNewInstancesInLocalCache",
                     deploymentUuid,
                     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                     objects: instances,

@@ -6787,7 +6787,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "actionName": {
                 "type": "literal",
-                "definition": "replaceLocalCache"
+                "definition": "loadNewInstancesInLocalCache"
               },
               "endpoint": {
                 "type": "literal",

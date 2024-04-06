@@ -186,8 +186,8 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
           // case "updateInstance": {
           //   break;
           // }
-          case "replaceLocalCache": {
-            throw new Error("PersistenceStoreController handleAction can not handle replaceLocalCache action!");
+          case "loadNewInstancesInLocalCache": {
+            throw new Error("PersistenceStoreController handleAction can not handle loadNewInstancesInLocalCache action!");
             break;
           }
           case "getInstance": {

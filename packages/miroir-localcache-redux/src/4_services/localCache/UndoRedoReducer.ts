@@ -293,7 +293,7 @@ function handleInstanceAction(
     queriesResultsCache,
   } = state;
   switch (action.payload.actionName) {
-    case "replaceLocalCache": {
+    case "loadNewInstancesInLocalCache": {
       const next = callNextReducer(innerReducer, state, action as PayloadAction<InstanceAction>);
       return {
         currentTransaction,

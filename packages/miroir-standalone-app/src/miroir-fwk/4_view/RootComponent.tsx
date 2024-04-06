@@ -223,30 +223,6 @@ export const RootComponent = (props: RootComponentProps) => {
             <span>
               <button
                 onClick={async () => {
-                  log.info("fetching instances from datastore for deployment",applicationDeploymentMiroir)
-                  await domainController.handleAction(
-                    {
-                      actionType: "modelAction",
-                      actionName: "rollback",
-                      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                      deploymentUuid:applicationDeploymentMiroir.uuid,
-                    }
-                  );
-                  await domainController.handleAction(
-                    {
-                      actionType: "modelAction",
-                      actionName: "rollback",
-                      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                      deploymentUuid:applicationDeploymentLibrary.uuid,
-                    }
-                  );
-                }
-              }
-              >
-                fetch Miroir & App configurations from database
-              </button>
-              <button
-                onClick={async () => {
                   const remoteStore:PersistenceInterface = domainController.getRemoteStore();
                   log.info(
                     "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ OPENSTORE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
@@ -288,6 +264,30 @@ export const RootComponent = (props: RootComponentProps) => {
                 }}
               >
                 Open database
+              </button>
+              <button
+                onClick={async () => {
+                  log.info("fetching instances from datastore for deployment",applicationDeploymentMiroir)
+                  await domainController.handleAction(
+                    {
+                      actionType: "modelAction",
+                      actionName: "rollback",
+                      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                      deploymentUuid:applicationDeploymentMiroir.uuid,
+                    }
+                  );
+                  await domainController.handleAction(
+                    {
+                      actionType: "modelAction",
+                      actionName: "rollback",
+                      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                      deploymentUuid:applicationDeploymentLibrary.uuid,
+                    }
+                  );
+                }
+              }
+              >
+                fetch Miroir & App configurations from database
               </button>
                   {/* <button
                     onClick={async () => {

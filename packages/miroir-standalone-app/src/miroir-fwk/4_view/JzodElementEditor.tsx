@@ -191,28 +191,6 @@ export const JzodElementEditor = (
 
   const [hiddenFormItems,setHiddenFormItems] = useState<{[k:string]:boolean}>({})
 
-  // const localCacheQuery: LocalCacheQueryParams = useMemo(
-  //   () => ({
-  //     queryType: "LocalCacheEntityInstancesSelectorParams",
-  //     definition: {
-  //       deploymentUuid: props.currentDeploymentUuid,
-  //       applicationSection: props.currentApplicationSection,
-  //       entityUuid:
-  //         props.elementJzodSchema?.type == "simpleType" && props.elementJzodSchema?.definition == "string" && props.elementJzodSchema.extra?.targetEntity
-  //           ? props.elementJzodSchema.extra?.targetEntity
-  //           : "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-  //     }
-  //   }),
-  //   [props.elementJzodSchema]
-  // )
-  // const instancesToDisplayUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(localCacheQuery);
-
-  // const selectList: EntityInstanceWithName[] = useMemo(
-  //   () => (instancesToDisplayUuidIndex ? Object.values(instancesToDisplayUuidIndex) : []) as EntityInstanceWithName[],
-  //   [instancesToDisplayUuidIndex]
-  // );
-
-  // const currentModel = useCurrentModel(applicationDeploymentMiroir.uuid);
 
   const displayedLabel: string = props.label??props.name;
 
@@ -222,17 +200,12 @@ export const JzodElementEditor = (
     props.listKey,
     "type=",
     props.resolvedJzodSchema?.type,
-    // "typeof initialValue=",
-    // typeof props.initialValuesObject,
-    // "initialValue=",
-    // props.initialValuesObject,
     "jzodSchema=",
     props.resolvedJzodSchema,
     "props=",
     props
   );
 
-  // const currentValue = props.listKey == "ROOT"? props.formik.values:props.formik.values[props.rootLesslistKey];
   const currentValue = getValue(props.formik.values,props.rootLesslistKeyArray);
   log.info(
     "rendering",
@@ -277,14 +250,10 @@ export const JzodElementEditor = (
               listKey={props.listKey}
             ></ExpandOrFold>
             <div id={props.listKey + ".inner"} style={{ display: hiddenFormItems[props.listKey] ? "none" : "block" }}>
-              {/* {Object.entries(props.initialValuesObject).map((attribute: [string, JzodElement]) => { */}
               {
                 itemsOrder
-                  // .map((i): [string, JzodElement] => [i, props.initialValuesObject[i]])
                   .map((i): [string, JzodElement] => [i, props.formik.values[props.rootLesslistKey.length > 0? (props.rootLesslistKey + "." + i[0]):i[0]]])
-                  // .map((i): [string, JzodElement] => [i, getValue(props.formik.values,[...props.rootLesslistKeyArray,i[0]])])
                   .map((attribute: [string, JzodElement]) => {
-                    // const currentAttributeDefinition = elementJzodSchema.definition[attribute[0]];
                     const currentAttributeDefinition = resolvedJzodSchema.definition[attribute[0]];
                     return (
                       <div
@@ -298,19 +267,11 @@ export const JzodElementEditor = (
                           rootLesslistKeyArray={[...props.rootLesslistKeyArray,attribute[0]]}
                           indentLevel={usedIndentLevel}
                           label={currentAttributeDefinition?.extra?.defaultLabel}
-                          // initialValuesObject={props.initialValuesObject
-                          //   ? props.initialValuesObject[attribute[0]]
-                          //   : undefined}
-                          // showButton={true}
                           currentDeploymentUuid={props.currentDeploymentUuid}
                           currentApplicationSection={props.currentApplicationSection}
                           resolvedJzodSchema={currentAttributeDefinition}
                           foreignKeyObjects={props.foreignKeyObjects}
                           formik={props.formik}
-                          // elementJzodSchema={currentAttributeDefinition}
-                          // rootJzodSchema={props.rootJzodSchema}
-                          // register={props.register}
-                          // setValue={props.setValue}
                         />
                       </div>
                     );

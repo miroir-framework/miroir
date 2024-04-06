@@ -1,46 +1,19 @@
 import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
 
 import { JzodElement } from '@miroir-framework/jzod-ts';
 import {
-  ApplicationDeploymentConfiguration,
   ApplicationSection,
   Entity,
   EntityDefinition,
   EntityInstance,
-  JzodSchema,
-  LocalCacheQueryParams,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
   Uuid,
-  applicationDeploymentLibrary,
   applicationDeploymentMiroir,
-  defaultMiroirMetaModel,
-  domainEndpointVersionV1,
-  entityDefinitionApplication,
-  entityDefinitionApplicationVersion,
-  entityDefinitionBundleV1,
-  entityDefinitionCommit,
-  entityDefinitionEntity,
-  entityDefinitionEntityDefinition,
-  entityDefinitionJzodSchema,
-  entityDefinitionMenu,
-  entityDefinitionQueryVersionV1,
-  entityDefinitionReport,
   getLoggerName,
-  getMiroirFundamentalJzodSchema,
-  instanceEndpointVersionV1,
-  jzodSchemajzodMiroirBootstrapSchema,
-  localCacheEndpointVersionV1,
-  modelEndpointV1,
-  persistenceEndpointVersionV1,
-  queryEndpointVersionV1,
-  resolveReferencesForJzodSchemaAndValueObject,
-  storeManagementEndpoint,
-  undoRedoEndpointVersionV1
+  resolveReferencesForJzodSchemaAndValueObject
 } from "miroir-core";
-import { ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-localcache-redux";
 
 import {
   useErrorLogService, useMiroirContextService

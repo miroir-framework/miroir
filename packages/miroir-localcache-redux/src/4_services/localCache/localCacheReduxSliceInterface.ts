@@ -15,6 +15,38 @@ import {
 import { z } from "zod";
 
 
+//#########################################################################################
+//# LocalCacheSliceState
+//#########################################################################################
+export const ZEntityIdSchema = z.union([z.number(), z.string()]);
+export const ZDictionarySchema = z.record(z.string().uuid(), entityInstance);
+export type MiroirDictionary = z.infer<typeof ZDictionarySchema>;
+export const ZEntityStateSchema = z.object({ ids: z.array(z.string()), entities: ZDictionarySchema });
+export type ZEntityState = z.infer<typeof ZEntityStateSchema>; //not used
+
+export type LocalCacheSliceState = { 
+  [DeploymentUuidSectionEntityUuid: string]: ZEntityState 
+}; // TODO: check format of DeploymentUuidSectionEntityUuid?
+// export type LocalCacheSliceState = { 
+//   loading?: { [DeploymentUuidSectionEntityUuid: string]: ZEntityState },
+//   current: { [DeploymentUuidSectionEntityUuid: string]: ZEntityState }
+// }; // TODO: check format of DeploymentUuidSectionEntityUuid?
+
+export const localCacheSliceName: string = "localCache";
+
+export const localCacheSliceInputActionNamesObject = {
+  handleAction: "handleAction",
+};
+export type LocalCacheSliceInputActionNamesObjectTuple = typeof localCacheSliceInputActionNamesObject;
+export type LocalCacheSliceInputActionNamesKey = keyof LocalCacheSliceInputActionNamesObjectTuple;
+export const localCacheSliceInputActionNames = Object.values(localCacheSliceInputActionNamesObject);
+export const localCacheSliceInputFullActionNames = Object.values(localCacheSliceInputActionNamesObject).map(
+  (n) => localCacheSliceName + "/" + n
+); // TODO: use map type?
+
+//#########################################################################################
+//# ReduxStateWithUndoRedo
+//#########################################################################################
 /**
  * This reducer wraps a "plain" reducer, enhancing it with undo/redo capabilities.
  * It is however not "pure" or "clean", in the sense that it requires the inner 
@@ -77,26 +109,4 @@ export type ReduxReducerWithUndoRedoInterface = (
 
 export type ReduxStoreWithUndoRedo = Store<ReduxStateWithUndoRedo, any>; // TODO: precise the type of Actions!
 
-//#########################################################################################
-//# DATA TYPES
-//#########################################################################################
-export const ZEntityIdSchema = z.union([z.number(), z.string()]);
-export const ZDictionarySchema = z.record(z.string().uuid(), entityInstance);
-export type MiroirDictionary = z.infer<typeof ZDictionarySchema>;
-export const ZEntityStateSchema = z.object({ ids: z.array(z.string()), entities: ZDictionarySchema });
-export type ZEntityState = z.infer<typeof ZEntityStateSchema>; //not used
-
-export type LocalCacheSliceState = { [DeploymentUuidSectionEntityUuid: string]: ZEntityState }; // TODO: check format of DeploymentUuidSectionEntityUuid?
-
-export const localCacheSliceName: string = "localCache";
-
-export const localCacheSliceInputActionNamesObject = {
-  handleAction: "handleAction",
-};
-export type LocalCacheSliceInputActionNamesObjectTuple = typeof localCacheSliceInputActionNamesObject;
-export type LocalCacheSliceInputActionNamesKey = keyof LocalCacheSliceInputActionNamesObjectTuple;
-export const localCacheSliceInputActionNames = Object.values(localCacheSliceInputActionNamesObject);
-export const localCacheSliceInputFullActionNames = Object.values(localCacheSliceInputActionNamesObject).map(
-  (n) => localCacheSliceName + "/" + n
-); // TODO: use map type?
 

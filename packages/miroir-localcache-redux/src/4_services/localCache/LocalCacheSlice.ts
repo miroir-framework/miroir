@@ -229,41 +229,49 @@ export function currentModel(deploymentUuid: string, state:LocalCacheSliceState)
 //#########################################################################################
 // IMPLEMENTATION
 //#########################################################################################
-const getLocalCacheSliceEntityAdapter: (entityUuid: string) => EntityAdapter<EntityInstance, string> = _memoize(
-  (entityUuid: string) => {
-    // log.info("getEntityAdapter creating EntityAdapter For entity", parentName);
-    const result: EntityAdapter<EntityInstance, string> = createEntityAdapter<EntityInstance, string>({
-      // Assume IDs are stored in a field other than `book.id`
-      selectId: (entity) => entity.uuid,
-      // Keep the "all IDs" array sorted based on book titles
-      // sortComparer: (a, b) => a.name.localeCompare(b.name),
-    });
+const entityAdapter: EntityAdapter<EntityInstance, string> = createEntityAdapter<EntityInstance, string>({
+  // Assume IDs are stored in a field other than `book.id`
+  selectId: (entity) => entity.uuid,
+  // Keep the "all IDs" array sorted based on book titles
+  // sortComparer: (a, b) => a.name.localeCompare(b.name),
+});
 
-    // log.info("getEntityAdapter creating EntityAdapter For entity", entityUuid, "result", result);
+// const getLocalCacheSliceEntityAdapter: () => EntityAdapter<EntityInstance, string> = _memoize(
+//   () => {
+//     // log.info("getEntityAdapter creating EntityAdapter For entity", parentName);
+//     const result: EntityAdapter<EntityInstance, string> = createEntityAdapter<EntityInstance, string>({
+//       // Assume IDs are stored in a field other than `book.id`
+//       selectId: (entity) => entity.uuid,
+//       // Keep the "all IDs" array sorted based on book titles
+//       // sortComparer: (a, b) => a.name.localeCompare(b.name),
+//     });
 
-    return result;
-  }
-);
+//     // log.info("getEntityAdapter creating EntityAdapter For entity", entityUuid, "result", result);
+
+//     return result;
+//   }
+// );
 
 //#########################################################################################
 // DOES SIDE EFFECT ON STATE!!!!!!!!!!!!
-function getInitializedSectionEntityAdapter(
+function initializeLocalCacheSliceStateWithEntityAdapter(
   deploymentUuid: string,
   section: ApplicationSection,
   entityUuid: string,
   state: LocalCacheSliceState
 ) {
   // TODO: refactor so as to avoid side effects!
-  const index = getLocalCacheSliceIndex(deploymentUuid, section, entityUuid);
+  const entityInstancesLocationIndex = getLocalCacheSliceIndex(deploymentUuid, section, entityUuid);
   // log.debug("getInitializedSectionEntityAdapter called", "deploymentUuid", deploymentUuid, "section", section, "entityUuid", entityUuid, "index", index);
-  const sliceEntityAdapter = getLocalCacheSliceEntityAdapter(entityUuid);
+  // const sliceEntityAdapter = getLocalCacheSliceEntityAdapter();
+  const sliceEntityAdapter = entityAdapter;
   if (!state) {
     log.debug('getInitializedSectionEntityAdapter state is undefined, initializing state!',JSON.stringify(state),state == undefined);
-    state = { [index]: sliceEntityAdapter.getInitialState() } as LocalCacheSliceState;
+    state = { [entityInstancesLocationIndex]: sliceEntityAdapter.getInitialState() } as LocalCacheSliceState;
   } else {
-    if (!state[index]) {
-      state[index] = sliceEntityAdapter.getInitialState();
-      log.debug("getInitializedSectionEntityAdapter state[",index,"] is undefined! setting value",JSON.stringify(state[index]));
+    if (!state[entityInstancesLocationIndex]) {
+      state[entityInstancesLocationIndex] = sliceEntityAdapter.getInitialState();
+      log.debug("getInitializedSectionEntityAdapter state[",entityInstancesLocationIndex,"] is undefined! setting value",JSON.stringify(state[entityInstancesLocationIndex]));
     }
   }
   // log.debug(
@@ -293,23 +301,23 @@ function equalEntityInstances(newOnes:EntityInstance[],oldOnes:Record<string, En
 }
 
 // ################################################################################################
-function ReplaceInstancesForSectionEntity(
+function loadNewInstancesInLocalCache(
   deploymentUuid: string,
   section: ApplicationSection,
   state: LocalCacheSliceState,
   instanceCollection: EntityInstanceCollection
 ) {
-  // log.debug('ReplaceInstancesForSectionEntity',deploymentUuid,section,instanceCollection);
-  const entityEntityIndex = getLocalCacheSliceIndex(deploymentUuid, "model", entityEntity.uuid);
+  // log.debug('loadNewInstancesForSectionEntity',deploymentUuid,section,instanceCollection);
+  // const entityEntityIndex = getLocalCacheSliceIndex(deploymentUuid, "model", entityEntity.uuid);
   const instanceCollectionEntityIndex = getLocalCacheSliceIndex(deploymentUuid, section, instanceCollection.parentUuid);
-  const entity = state[entityEntityIndex]?.entities[instanceCollection.parentUuid];
+  // const entity = state[entityEntityIndex]?.entities[instanceCollection.parentUuid];
   // log.info(
   //   "ReplaceInstancesForDeploymentEntity for deployment",
   //   deploymentUuid,
   //   "entity",
   //   entity ? (entity as any)["name"] : "entity not found for deployment"
   // );
-  const sliceEntityAdapter = getInitializedSectionEntityAdapter(
+  const sliceEntityAdapter = initializeLocalCacheSliceStateWithEntityAdapter(
     deploymentUuid,
     section,
     instanceCollection.parentUuid,
@@ -382,7 +390,7 @@ function handleInstanceAction(
         //   // JSON.stringify(state)
         // );
 
-        const sliceEntityAdapter = getInitializedSectionEntityAdapter(
+        const sliceEntityAdapter = initializeLocalCacheSliceStateWithEntityAdapter(
           instanceAction.deploymentUuid,
           instanceAction.applicationSection,
           instanceCollection.parentUuid,
@@ -400,7 +408,7 @@ function handleInstanceAction(
           // log.info('localCacheSliceObject handleInstanceAction creating entityAdapter for Entities',instanceCollection.instances.map((i:EntityInstanceWithName)=>i['name']));
 
           instanceCollection.instances.forEach((i: EntityInstance) =>
-            getInitializedSectionEntityAdapter(
+            initializeLocalCacheSliceStateWithEntityAdapter(
               instanceAction.deploymentUuid,
               instanceAction.applicationSection,
               i["uuid"],
@@ -431,7 +439,7 @@ function handleInstanceAction(
           //   instanceCollectionEntityIndex
           // );
 
-          const sliceEntityAdapter = getInitializedSectionEntityAdapter(
+          const sliceEntityAdapter = initializeLocalCacheSliceStateWithEntityAdapter(
             instanceAction.deploymentUuid,
             instanceAction.applicationSection,
             instanceCollection.parentUuid,
@@ -474,7 +482,7 @@ function handleInstanceAction(
           instanceAction.applicationSection,
           instanceCollection.parentUuid
         );
-        const sliceEntityAdapter = getInitializedSectionEntityAdapter(
+        const sliceEntityAdapter = initializeLocalCacheSliceStateWithEntityAdapter(
           instanceAction.deploymentUuid,
           instanceAction.applicationSection,
           instanceCollection.parentUuid,
@@ -490,10 +498,10 @@ function handleInstanceAction(
       }
       break;
     }
-    case "replaceLocalCache": {
-      log.info("localCacheSlice handleInstanceAction replaceLocalCache called!");
+    case "loadNewInstancesInLocalCache": {
+      log.info("localCacheSlice handleInstanceAction loadNewInstancesInLocalCache called!");
       for (const instanceCollection of instanceAction.objects) {
-        ReplaceInstancesForSectionEntity(
+        loadNewInstancesInLocalCache(
           instanceAction.deploymentUuid,
           instanceCollection.applicationSection,
           state,

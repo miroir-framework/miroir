@@ -44,8 +44,6 @@ export interface EditorAttribute {
 
 export interface JsonObjectFormEditorCoreDialogProps {
   label?: string,
-  // name: string;
-  // miroirFundamentalJzodSchema: JzodSchema,
   isAttributes?: boolean,
   entityDefinitionJzodSchema: JzodObject,
   defaultFormValuesObject: any,
@@ -57,7 +55,6 @@ export interface JsonObjectFormEditorCoreDialogProps {
   foreignKeyObjects: Record<string,EntityInstancesUuidIndex>,
   setAddObjectdialogFormIsOpen: (a:boolean) => void,
   onCreateFormObject?: (a: any) => void,
-  // onSubmit: (data:JsonObjectFormEditorDialogInputs, event:React.BaseSyntheticEvent)=>void;
   onSubmit: (data:JsonObjectFormEditorDialogInputs)=>void,
 }
 
