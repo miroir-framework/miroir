@@ -39,7 +39,7 @@ import {
   useMiroirContextService
 } from "../../miroir-fwk/4_view/MiroirContextReactProvider";
 import { Importer } from './Importer';
-import { useCurrentModel } from "./ReduxHooks";
+import { useCurrentModelOld } from "./ReduxHooks";
 
 
 // import entityPublisher from "../../assets/library_model/";
@@ -86,8 +86,8 @@ export const HomePage = (props: RootComponentProps) => {
   const displayedApplicationSection = context.applicationSection;
   const setDisplayedApplicationSection = context.setApplicationSection;
 
-  const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
-  const libraryAppModel: MetaModel = useCurrentModel(displayedDeploymentUuid);
+  const miroirMetaModel: MetaModel = useCurrentModelOld(applicationDeploymentMiroir.uuid);
+  const libraryAppModel: MetaModel = useCurrentModelOld(displayedDeploymentUuid);
 
   // computing current state #####################################################################
   const displayedDeploymentDefinition:ApplicationDeploymentConfiguration | undefined = deployments.find(d=>d.uuid == displayedDeploymentUuid);

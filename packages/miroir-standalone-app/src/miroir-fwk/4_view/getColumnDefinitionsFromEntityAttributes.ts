@@ -109,7 +109,7 @@ export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(
       };
     }
     default: {
-      // log.info("column default:", name, jzodSchema);
+      log.info("column default:", name, jzodSchema);
       return {
         field: name,
         cellRenderer: DefaultCellRenderer,

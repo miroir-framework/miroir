@@ -24,7 +24,7 @@ import { packageName } from '../../constants';
 import { JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from '../JzodTools';
 import { JzodElementDisplay } from './JzodElementDisplay';
 import {
-  useCurrentModel
+  useCurrentModelOld
 } from "./ReduxHooks";
 import { cleanLevel } from './constants';
 
@@ -54,7 +54,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     props
   );
 
-  const currentModel: MetaModel = useCurrentModel(
+  const currentModel: MetaModel = useCurrentModelOld(
     context.applicationSection == "data" ? context.deploymentUuid : applicationDeploymentMiroir.uuid
   );
 
@@ -78,7 +78,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   const instance: any = props.instance;
 
-  const currentMiroirModel = useCurrentModel(applicationDeploymentMiroir.uuid);
+  const currentMiroirModel = useCurrentModelOld(applicationDeploymentMiroir.uuid);
 
   const currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver = useMemo(
     () => getCurrentEnumJzodSchemaResolver(currentMiroirModel,context.miroirFundamentalJzodSchema),

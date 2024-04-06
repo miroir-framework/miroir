@@ -24,8 +24,8 @@ import {
   JzodElement,
   RecordOfJzodElement,
 } from "miroir-core";
-import { getLocalCacheSliceIndex, localCacheStateToDomainState } from "./LocalCacheSlice";
-import { ReduxStateWithUndoRedo, LocalCacheSliceState } from "./localCacheReduxSliceInterface";
+import { getLocalCacheSliceIndex, localCacheStateEntityZoneToDomainState, localCacheStateToDomainState } from "./LocalCacheSlice";
+import { ReduxStateWithUndoRedo, LocalCacheSliceState, LocalCacheSliceStateEntityZone } from "./localCacheReduxSliceInterface";
 import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
 
@@ -86,6 +86,59 @@ const selectPresentModelSnapshot = (reduxState: ReduxStateWithUndoRedo,  params:
   return result;
 }
 
+// ################################################################################################
+export const selectLocalCacheCurrentEntityZone = (reduxState: ReduxStateWithUndoRedo, params: MiroirSelectorQueryParams):LocalCacheSliceStateEntityZone => {
+  return reduxState.presentModelSnapshot.current;
+}
+
+// ################################################################################################
+export const selectLocalCacheCurrentEntityZonePlain = (reduxState: ReduxStateWithUndoRedo):LocalCacheSliceStateEntityZone => {
+  return reduxState.presentModelSnapshot.current;
+}
+
+// ################################################################################################
+export const selectMiroirSelectorQueryParams = (reduxState: ReduxStateWithUndoRedo, params: MiroirSelectorQueryParams):MiroirSelectorQueryParams => {
+  return params;
+}
+
+
+//#########################################################################################
+export const selectDomainStatePlainOld: (
+  state: ReduxStateWithUndoRedo,
+) => DomainState = createSelector(
+  [selectPresentModelSnapshotPlain],
+  (state: LocalCacheSliceState) => {
+    // log.info("selectInstanceArrayForDeploymentSectionEntity called", params, state);
+
+    return state ? localCacheStateToDomainState(state) : {};
+  }
+);
+
+//#########################################################################################
+export const selectDomainStatePlain: (
+  state: ReduxStateWithUndoRedo,
+) => DomainState = createSelector(
+  [selectLocalCacheCurrentEntityZonePlain],
+  (state: LocalCacheSliceStateEntityZone) => {
+    // log.info("selectInstanceArrayForDeploymentSectionEntity called", params, state);
+
+    return state ? localCacheStateEntityZoneToDomainState(state) : {};
+  }
+);
+
+// ################################################################################################
+export const selectDomainState: (
+  state: ReduxStateWithUndoRedo,
+  params: MiroirSelectorQueryParams
+) => DomainState = createSelector(
+  [selectPresentModelSnapshot, selectSelectorParams],
+  (state: LocalCacheSliceState, params: MiroirSelectorQueryParams) => {
+    // log.info("selectInstanceArrayForDeploymentSectionEntity called", params, state);
+
+    return state ? localCacheStateToDomainState(state) : {};
+  }
+);
+
 //#########################################################################################
 //#########################################################################################
 //#########################################################################################
@@ -103,6 +156,7 @@ export function applyDomainStateSelectorNew<Q extends MiroirSelectorQueryParams,
   params: DomainStateSelectorParams<Q>
 ) => T { 
   return createSelector(
+    // [selectDomainStatePlainOld, selectDomainStateSelectorParams as DomainStateSelectorParamsSelector<Q>],
     [selectDomainStatePlain, selectDomainStateSelectorParams as DomainStateSelectorParamsSelector<Q>],
     domainStateSelector
   )
@@ -117,7 +171,7 @@ export function applyDomainStateJzodSchemaSelector<Q extends DomainModelQueryJzo
 // ) => any { 
 ) => RecordOfJzodElement | JzodElement | undefined { 
   return createSelector(
-    [selectDomainStatePlain, selectDomainStateJzodSchemaSelectorParams as DomainStateJzodSchemaSelectorParamsSelector<Q>],
+    [selectDomainStatePlainOld, selectDomainStateJzodSchemaSelectorParams as DomainStateJzodSchemaSelectorParamsSelector<Q>],
     domainStateSelector
   )
 }
@@ -137,7 +191,7 @@ export function applyDomainStateCleanSelectorNew<Q extends MiroirSelectorQueryPa
   }
 
   return createSelector(
-    [selectDomainStatePlain, selectDomainStateSelectorParams as DomainStateSelectorParamsSelector<Q>],
+    [selectDomainStatePlainOld, selectDomainStateSelectorParams as DomainStateSelectorParamsSelector<Q>],
     cleanupFunction
   )
 }
@@ -155,30 +209,6 @@ export function applyDomainStateCleanSelectorNew<Q extends MiroirSelectorQueryPa
 //#########################################################################################
 //#########################################################################################
 // DOMAIN SELECTORS
-//#########################################################################################
-export const selectDomainStatePlain: (
-  state: ReduxStateWithUndoRedo,
-) => DomainState = createSelector(
-  [selectPresentModelSnapshotPlain],
-  (state: LocalCacheSliceState) => {
-    // log.info("selectInstanceArrayForDeploymentSectionEntity called", params, state);
-
-    return state ? localCacheStateToDomainState(state) : {};
-  }
-);
-
-// ################################################################################################
-export const selectDomainState: (
-  state: ReduxStateWithUndoRedo,
-  params: MiroirSelectorQueryParams
-) => DomainState = createSelector(
-  [selectPresentModelSnapshot, selectSelectorParams],
-  (state: LocalCacheSliceState, params: MiroirSelectorQueryParams) => {
-    // log.info("selectInstanceArrayForDeploymentSectionEntity called", params, state);
-
-    return state ? localCacheStateToDomainState(state) : {};
-  }
-);
 
 // ################################################################################################
 export function applyDomainStateSelector<Q extends MiroirSelectorQueryParams, T>( // TODO: memoize?
@@ -188,7 +218,7 @@ export function applyDomainStateSelector<Q extends MiroirSelectorQueryParams, T>
   params: MiroirSelectorQueryParams
 ) => T { 
   return createSelector(
-    [selectDomainStatePlain, selectSelectorParams as SelectorParamsSelector<Q>],
+    [selectDomainStatePlainOld, selectSelectorParams as SelectorParamsSelector<Q>],
     domainStateSelector 
   ) as any // TODO: determine exact type! do we need parametered type at all?
 }
@@ -207,7 +237,7 @@ export function applyDomainStateCleanSelector<Q extends MiroirSelectorQueryParam
   }
 
   return createSelector(
-    [selectDomainStatePlain, selectSelectorParams  as SelectorParamsSelector<Q>],
+    [selectDomainStatePlainOld, selectSelectorParams  as SelectorParamsSelector<Q>],
     cleanupFunction
   ) as any
 }
@@ -246,6 +276,33 @@ export const selectEntityInstanceUuidIndexFromLocalCache = (
       params.definition.entityUuid &&
       reduxState.presentModelSnapshot.current[localEntityIndex]
         ? (reduxState.presentModelSnapshot.current[localEntityIndex].entities as EntityInstancesUuidIndex)
+        : empty;
+    // log.info('selectEntityInstanceUuidIndexFromLocalCache','params',params,'localEntityIndex',localEntityIndex,'state',state,'result',result);
+    return result;
+  } else {
+    // return undefined;
+    return empty;
+  }
+};
+
+// ################################################################################################
+export const selectEntityInstanceUuidIndexFromLocalCacheEntityZone = (
+  // reduxState: ReduxStateWithUndoRedo,
+  reduxState: LocalCacheSliceStateEntityZone,
+  params: MiroirSelectorQueryParams
+): EntityInstancesUuidIndex => {
+  if (params.queryType == "LocalCacheEntityInstancesSelectorParams") {
+    const localEntityIndex = getLocalCacheSliceIndex(
+      params.definition.deploymentUuid,
+      params.definition.applicationSection,
+      params.definition.entityUuid
+    );
+    const result =
+      params.definition.deploymentUuid &&
+      params.definition.applicationSection &&
+      params.definition.entityUuid &&
+      reduxState[localEntityIndex]
+        ? (reduxState[localEntityIndex].entities as EntityInstancesUuidIndex)
         : empty;
     // log.info('selectEntityInstanceUuidIndexFromLocalCache','params',params,'localEntityIndex',localEntityIndex,'state',state,'result',result);
     return result;

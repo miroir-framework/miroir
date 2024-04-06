@@ -48,6 +48,7 @@ import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
 import {
   LocalCacheSliceState,
+  LocalCacheSliceStateEntityZone,
   LocalCacheSliceStateZone,
   localCacheSliceInputActionNames,
   localCacheSliceInputActionNamesObject,
@@ -169,6 +170,41 @@ export function localCacheStateToDomainState(localCache:LocalCacheSliceState):Do
                       k=>[
                         getLocalCacheIndexEntityUuid(k),
                         localCache.current[k]?.entities  as EntityInstancesUuidIndex?? {}
+                      ]
+                    )
+                  )
+                ]
+              }
+            )
+          )
+        ]
+      }
+    )
+  )
+}
+
+//#########################################################################################
+export function localCacheStateEntityZoneToDomainState(localCacheEntityZone:LocalCacheSliceStateEntityZone):DomainState {
+  const localCacheKeys = Object.keys(localCacheEntityZone);
+  const deployments = getDeploymentUuidListFromLocalCacheKeys(localCacheKeys);
+  return Object.fromEntries(
+    deployments.map(
+      deploymentUuid=>{
+        const deploymentLocalCacheKeys = getLocalCacheKeysForDeploymentUuid(localCacheKeys,deploymentUuid);
+        const sections = getLocalCacheKeysDeploymentSectionList(deploymentLocalCacheKeys,deploymentUuid);
+        return [
+          deploymentUuid,
+          Object.fromEntries(
+            sections.map(
+              section=> {
+                const sectionLocalCacheKeys: string[] = getLocalCacheKeysForDeploymentSection(deploymentLocalCacheKeys,section)
+                return [
+                  section,
+                  Object.fromEntries(
+                    sectionLocalCacheKeys.map(
+                      (k: string)=>[
+                        getLocalCacheIndexEntityUuid(k),
+                        localCacheEntityZone[k]?.entities  as EntityInstancesUuidIndex?? {}
                       ]
                     )
                   )
@@ -330,8 +366,8 @@ function loadNewEntityInstancesInLocalCache(
     state
   );
 
-    // (state as any).loading[instanceCollectionEntityIndex] = sliceEntityAdapter.setAll(
-  sliceEntityAdapter.setAll(
+    (state as any).loading[instanceCollectionEntityIndex] = sliceEntityAdapter.setAll(
+  // sliceEntityAdapter.setAll(
     (state as any).loading[instanceCollectionEntityIndex],
     instanceCollection.instances
   );

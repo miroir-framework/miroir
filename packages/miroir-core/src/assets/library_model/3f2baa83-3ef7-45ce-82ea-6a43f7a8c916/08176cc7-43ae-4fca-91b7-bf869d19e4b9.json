@@ -17,10 +17,6 @@
             "referenceUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
           }
         }
-      },
-      "crossJoin": {
-        "a": "countries",
-        "b": "countries"
       }
     },
     "section": {
@@ -34,15 +30,6 @@
             "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
             "fetchedDataReference": "countries",
             "sortByAttribute": "name"
-          }
-        },
-        {
-          "type":"objectListReportSection",
-          "definition": {
-            "label": "Countries Cross Product",
-            "parentName": "Country",
-            "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
-            "fetchedDataReference": "crossJoin"
           }
         }
       ]

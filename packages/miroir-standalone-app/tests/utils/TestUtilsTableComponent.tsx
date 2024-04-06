@@ -23,7 +23,7 @@ import { JzodElement } from "@miroir-framework/jzod-ts";
 import { ReduxStateWithUndoRedo, selectInstanceArrayForDeploymentSectionEntity, selectModelForDeployment } from "miroir-localcache-redux";
 import { useSelector } from "react-redux";
 
-import { EntityInstanceUuidIndexSelectorParams } from "../../src/miroir-fwk/4_view/ReduxHooks";
+import { EntityInstanceUuidIndexSelectorParams, useCurrentModelOld } from "../../src/miroir-fwk/4_view/ReduxHooks";
 import { packageName } from "../../src/constants";
 import { cleanLevel } from "../../src/miroir-fwk/4_view/constants";
 export interface MiroirReportComponentProps {
@@ -47,20 +47,22 @@ export const TestUtilsTableComponent = (
   props: MiroirReportComponentProps
 ) => {
   // const currentModelSelectorParams:EntityInstanceUuidIndexSelectorParams = React.useMemo(
-  const currentModelSelectorParams:LocalCacheQueryParams = React.useMemo(
-    () => ({
-      queryType: "LocalCacheEntityInstancesSelectorParams",
-      definition: {
-        deploymentUuid: props.deploymentUuid,
-      }
-    } as LocalCacheQueryParams),
-    [props.deploymentUuid]
-  );
+  // const currentModelSelectorParams:LocalCacheQueryParams = React.useMemo(
+  //   () => ({
+  //     queryType: "LocalCacheEntityInstancesSelectorParams",
+  //     definition: {
+  //       deploymentUuid: props.deploymentUuid,
+  //     }
+  //   } as LocalCacheQueryParams),
+  //   [props.deploymentUuid]
+  // );
 
-  const localSelectModelForDeployment = React.useMemo(selectModelForDeployment,[]);
-  const currentModel = useSelector((state: ReduxStateWithUndoRedo) =>
-    localSelectModelForDeployment(state, currentModelSelectorParams)
-  ) as MetaModel
+  // const localSelectModelForDeployment = React.useMemo(selectModelForDeployment,[]);
+  // const currentModel = useSelector((state: ReduxStateWithUndoRedo) =>
+  //   localSelectModelForDeployment(state, currentModelSelectorParams)
+  // ) as MetaModel
+
+  const currentModel: MetaModel = useCurrentModelOld(props.deploymentUuid)
 
   const entitiesOfDataSection:Entity [] = currentModel.entities;
   const entityDefinitionsOfDataSection:EntityDefinition[] = currentModel.entityDefinitions;

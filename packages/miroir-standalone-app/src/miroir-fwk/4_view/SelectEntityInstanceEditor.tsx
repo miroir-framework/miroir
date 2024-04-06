@@ -43,6 +43,7 @@ import {
 } from './MiroirContextReactProvider';
 import { cleanLevel } from "./constants";
 import { TableComponentRow } from "./MTableComponentInterface";
+import { useCurrentModelOld } from "./ReduxHooks";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"SelectEntityInstanceEditor");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -75,22 +76,22 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams<Tabl
   //   props.value
   // );
   
-  // const currentModelSelectorParams:EntityInstanceUuidIndexSelectorParams = useMemo(
-  const currentModelSelectorParams:LocalCacheQueryParams = useMemo(
-    () => ({
-      queryType: "LocalCacheEntityInstancesSelectorParams",
-      definition: {
-        deploymentUuid: context.deploymentUuid,
-      }
-    } as LocalCacheQueryParams),
-    [context]
-  );
+  // const currentModelSelectorParams:LocalCacheQueryParams = useMemo(
+  //   () => ({
+  //     queryType: "LocalCacheEntityInstancesSelectorParams",
+  //     definition: {
+  //       deploymentUuid: context.deploymentUuid,
+  //     }
+  //   } as LocalCacheQueryParams),
+  //   [context]
+  // );
 
-  const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
-  const currentModel = useSelector((state: ReduxStateWithUndoRedo) =>
-    localSelectModelForDeployment(state, currentModelSelectorParams)
-  ) as MetaModel
+  // const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
+  // const currentModel = useSelector((state: ReduxStateWithUndoRedo) =>
+  //   localSelectModelForDeployment(state, currentModelSelectorParams)
+  // ) as MetaModel
 
+  const currentModel: MetaModel = useCurrentModelOld(context.deploymentUuid)
   const currentMiroirEntityDefinition: EntityDefinition | undefined =
     props.colDef?.cellRendererParams.entityDefinition ??
     currentModel.entityDefinitions?.find((e) => e?.entityUuid == entityUuid)
@@ -168,21 +169,23 @@ export const SelectEntityInstanceEditor = memo(
     const context = useMiroirContextService();
     const deploymentUuid = context.deploymentUuid;
 
-    const currentModelSelectorParams:LocalCacheQueryParams = useMemo(
-      () => ({
-        queryType: "LocalCacheEntityInstancesSelectorParams",
-        definition: {
-          deploymentUuid: context.deploymentUuid,
-        }
-      } as LocalCacheQueryParams),
-      [context]
-    );
+    // const currentModelSelectorParams:LocalCacheQueryParams = useMemo(
+    //   () => ({
+    //     queryType: "LocalCacheEntityInstancesSelectorParams",
+    //     definition: {
+    //       deploymentUuid: context.deploymentUuid,
+    //     }
+    //   } as LocalCacheQueryParams),
+    //   [context]
+    // );
   
-    const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
-    const currentModel = useSelector((state: ReduxStateWithUndoRedo) =>
-      localSelectModelForDeployment(state, currentModelSelectorParams)
-    ) as MetaModel
+    // const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
+    // const currentModel = useSelector((state: ReduxStateWithUndoRedo) =>
+    //   localSelectModelForDeployment(state, currentModelSelectorParams)
+    // ) as MetaModel
   
+    const currentModel: MetaModel = useCurrentModelOld(context.deploymentUuid)
+
     // const miroirEntities:Entity [] = currentModel.entities;
     const miroirEntityDefinitions:EntityDefinition[] = currentModel.entityDefinitions;
     // const currentMiroirEntityDefinition: EntityDefinition | undefined = miroirEntityDefinitions?.find(e=>e?.entityUuid === (props as any)['entityUuid']);

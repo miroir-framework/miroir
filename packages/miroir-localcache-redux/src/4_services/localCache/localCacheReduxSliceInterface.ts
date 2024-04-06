@@ -27,8 +27,9 @@ export type ZEntityState = z.infer<typeof ZEntityStateSchema>; //not used
 // export type LocalCacheSliceState = { 
 //   [DeploymentUuidSectionEntityUuid: string]: ZEntityState 
 // }; // TODO: check format of DeploymentUuidSectionEntityUuid?
+export type LocalCacheSliceStateEntityZone = { [DeploymentUuidSectionEntityUuid: string]: ZEntityState };
 export type LocalCacheSliceState = { 
-  loading: { [DeploymentUuidSectionEntityUuid: string]: ZEntityState },
+  loading: LocalCacheSliceStateEntityZone,
   current: { [DeploymentUuidSectionEntityUuid: string]: ZEntityState }
   status: {
     initialLoadDone: boolean,

@@ -147,9 +147,9 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
   count++;
   const theme = useTheme();
 
-  const domainController: DomainControllerInterface = useDomainControllerService();
-  const context = useMiroirContext();
-  const miroirConfig = context.getMiroirConfig();
+  // const domainController: DomainControllerInterface = useDomainControllerService();
+  // const miroirConfig = context.getMiroirConfig();
+  // const context = useMiroirContext();
 
   const selectorMap: DomainStateSelectorMap<MiroirSelectorQueryParams> = useMemo(
     () => getSelectorMap(),
