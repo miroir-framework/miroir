@@ -15,13 +15,10 @@ export {
 export {
   applyDomainStateJzodSchemaSelector,
   applyDomainStateSelectorNew,
-  applyDomainStateSelector,
-  applyDomainStateCleanSelector,
   applyDomainStateCleanSelectorNew,
   selectDomainStateJzodSchemaSelectorParams,
   selectDomainStateSelectorParams,
   selectDomainState,
-  selectDomainStatePlainOld as selectDomainStatePlain,
   selectEntityInstanceUuidIndexFromLocalCache,
   selectEntityInstanceUuidIndexFromLocalCacheEntityZone,
   selectInstanceArrayForDeploymentSectionEntity,

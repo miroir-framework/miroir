@@ -65,20 +65,20 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
     }),
     []
   );
-  log.info(
-    "~~~~~~~~~~~~~~~~~~~~~~~~~~~~ path",
-    props.path,
-    "props.elementJzodSchema",
-    props.elementJzodSchema,
-    "props.resolvedElementJzodSchema",
-    props.resolvedElementJzodSchema,
-    "targetJzodSchema",
-    targetJzodSchema,
-    "props.element",
-    props.element,
-    "miroirModel",
-    miroirModel
-  );
+  // log.info(
+  //   "~~~~~~~~~~~~~~~~~~~~~~~~~~~~ path",
+  //   props.path,
+  //   "props.elementJzodSchema",
+  //   props.elementJzodSchema,
+  //   "props.resolvedElementJzodSchema",
+  //   props.resolvedElementJzodSchema,
+  //   "targetJzodSchema",
+  //   targetJzodSchema,
+  //   "props.element",
+  //   props.element,
+  //   "miroirModel",
+  //   miroirModel
+  // );
 
   switch (props.resolvedElementJzodSchema.type) {
     case "array": {

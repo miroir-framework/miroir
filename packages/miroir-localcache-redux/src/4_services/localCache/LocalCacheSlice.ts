@@ -273,22 +273,6 @@ const entityAdapter: EntityAdapter<EntityInstance, string> = createEntityAdapter
   // sortComparer: (a, b) => a.name.localeCompare(b.name),
 });
 
-// const getLocalCacheSliceEntityAdapter: () => EntityAdapter<EntityInstance, string> = _memoize(
-//   () => {
-//     // log.info("getEntityAdapter creating EntityAdapter For entity", parentName);
-//     const result: EntityAdapter<EntityInstance, string> = createEntityAdapter<EntityInstance, string>({
-//       // Assume IDs are stored in a field other than `book.id`
-//       selectId: (entity) => entity.uuid,
-//       // Keep the "all IDs" array sorted based on book titles
-//       // sortComparer: (a, b) => a.name.localeCompare(b.name),
-//     });
-
-//     // log.info("getEntityAdapter creating EntityAdapter For entity", entityUuid, "result", result);
-
-//     return result;
-//   }
-// );
-
 //#########################################################################################
 // DOES SIDE EFFECT ON STATE!!!!!!!!!!!!
 function initializeLocalCacheSliceStateWithEntityAdapter(
@@ -349,9 +333,7 @@ function loadNewEntityInstancesInLocalCache(
   instanceCollection: EntityInstanceCollection
 ) {
   // log.debug('loadNewInstancesForSectionEntity',deploymentUuid,section,instanceCollection);
-  // const entityEntityIndex = getLocalCacheSliceIndex(deploymentUuid, "model", entityEntity.uuid);
   const instanceCollectionEntityIndex = getLocalCacheSliceIndex(deploymentUuid, section, instanceCollection.parentUuid);
-  // const entity = state[entityEntityIndex]?.entities[instanceCollection.parentUuid];
   // log.info(
   //   "ReplaceInstancesForDeploymentEntity for deployment",
   //   deploymentUuid,
@@ -367,14 +349,10 @@ function loadNewEntityInstancesInLocalCache(
   );
 
     (state as any).loading[instanceCollectionEntityIndex] = sliceEntityAdapter.setAll(
-  // sliceEntityAdapter.setAll(
-    (state as any).loading[instanceCollectionEntityIndex],
-    instanceCollection.instances
-  );
-  log.info("loadNewInstancesInLocalCache returned state", JSON.stringify(state))
-
-  // }
-  // log.info('ReplaceInstancesForDeploymentEntity for deployment',deploymentUuid, 'entity',action.payload.parentUuid,action.payload.parentName);
+      (state as any).loading[instanceCollectionEntityIndex],
+      instanceCollection.instances
+    );
+  // log.info("loadNewInstancesInLocalCache returned state", JSON.stringify(state))
 }
 
 //#########################################################################################
@@ -522,7 +500,7 @@ function handleInstanceAction(
       break;
     }
     case "loadNewInstancesInLocalCache": {
-      log.info("localCacheSlice handleInstanceAction loadNewInstancesInLocalCache called!");
+      // log.info("localCacheSlice handleInstanceAction loadNewInstancesInLocalCache called!");
       for (const instanceCollection of instanceAction.objects) {
         loadNewEntityInstancesInLocalCache(
           instanceAction.deploymentUuid,
@@ -572,12 +550,12 @@ function handleModelAction(
       state.status = {
         initialLoadDone: true
       };
-      log.info(
-        "localCacheSliceObject handleModelAction done!",
-        action.actionName,
-        "state",
-        JSON.stringify(state)
-      );
+      // log.info(
+      //   "localCacheSliceObject handleModelAction done!",
+      //   action.actionName,
+      //   "state",
+      //   JSON.stringify(state)
+      // );
       break;
     }
     case "initModel":

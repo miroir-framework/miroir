@@ -102,25 +102,32 @@ const StyledDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== '
 
 const sideBarDefaultItems = [
   {
-    label: "Miroir Entities",
+    label: "A Menu will be displayed here!",
     section: "model",
     application: applicationDeploymentMiroir.uuid,
-    reportUuid: reportEntityList.uuid,
-    "icon": "category",
+    reportUuid: "",
+    "icon": "south",
   },
+  // {
+  //   label: "Miroir Entities",
+  //   section: "model",
+  //   application: applicationDeploymentMiroir.uuid,
+  //   reportUuid: reportEntityList.uuid,
+  //   "icon": "category",
+  // },
   // {
   //   label: "Miroir Reports",
   //   section: "data",
   //   application: applicationDeploymentMiroir.uuid,
   //   reportUuid: reportReportList.uuid,
   // },
-  {
-    label: "Miroir Menus",
-    section: "data",
-    application: applicationDeploymentMiroir.uuid,
-    reportUuid: reportMenuList.uuid,
-    "icon": "category",
-  },
+  // {
+  //   label: "Miroir Menus",
+  //   section: "data",
+  //   application: applicationDeploymentMiroir.uuid,
+  //   reportUuid: reportMenuList.uuid,
+  //   "icon": "category",
+  // },
   // {
   //   label: "Library Books",
   //   section: "data",

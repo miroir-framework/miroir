@@ -1,6 +1,4 @@
-// import { JzodElement, JzodObject } from "@miroir-framework/jzod-ts";
 import {
-  DomainModelGetSingleSelectObjectListQueryQueryParams,
   DomainModelQueryJzodSchemaParams,
   JzodElement,
   JzodObject,
@@ -26,28 +24,11 @@ export type DomainStateSelectorNew<P extends MiroirSelectorQueryParams, T> = (
 
 
 // // ################################################################################################
-// // DomainModelQueryJzodSchemaParams = DomainModelGetEntityDefinitionQueryParams | DomainModelGetFetchParamJzodSchemaQueryParams | DomainModelGetSingleSelectQueryJzodSchemaQueryParams;
-// export type DomainStateJzodSchemaSelector = (
-//   domainState: DomainState,
-//   // domainState: ReduxStateWithUndoRedo,
-//   params: DomainStateJzodSchemaSelectorParams
-//   // query: Q
-// ) => RecordOfJzodElement | JzodElement | undefined;
-
-// export type DomainStateJzodSchemaSelectorMap = {[k:string]: DomainModelQueryJzodSchemaParams};
-
-// export interface DomainStateJzodSchemaSelectorParams {
-//   selectorMap: DomainStateJzodSchemaSelectorMap
-//   query: DomainModelQueryJzodSchemaParams
-// }
 export type DomainStateJzodSchemaSelector<Q extends DomainModelQueryJzodSchemaParams> = (
   domainState: DomainState,
-  // domainState: ReduxStateWithUndoRedo,
   params: DomainStateJzodSchemaSelectorParams<Q>
-  // query: Q
 ) => RecordOfJzodElement | JzodElement | undefined;
 
-// export type DomainStateJzodSchemaSelectorMap<Q extends DomainModelQueryJzodSchemaParams> = {[k:string]: DomainStateJzodSchemaSelector<Q>};
 export type DomainStateJzodSchemaSelectorMap = {[k:string]: DomainStateJzodSchemaSelector<DomainModelQueryJzodSchemaParams>};
 
 export interface DomainStateJzodSchemaSelectorParams<Q extends DomainModelQueryJzodSchemaParams> {
@@ -55,16 +36,9 @@ export interface DomainStateJzodSchemaSelectorParams<Q extends DomainModelQueryJ
   query: Q
 }
 
-// export type DomainStateJzodSchemaSelector<P extends MiroirSelectorQueryParams, T> = (
-//   domainState: DomainState,
-//   params: DomainStateSelectorParams<P>
-// ) => T;
-
-
 // ################################################################################################
 export type DomainStateSelector<P extends MiroirSelectorQueryParams, T> = (
   domainState: DomainState,
   params: P
 ) => T;
-// export type DomainStateSelector<P extends DomainStateSelectorParams<MiroirSelectorQueryParams>, T> = (
 
