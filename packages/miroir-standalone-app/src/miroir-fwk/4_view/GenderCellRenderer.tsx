@@ -28,11 +28,19 @@ export const ToolsCellRenderer: React.MemoExoticComponent<(props: ICellRendererP
       <span>
         <button
           onClick={() => {
-            console.log("ToolsCellRenderer calling onClick!");
-            (props as any)["onClick"](props.data);
+            console.log("ToolsCellRenderer calling onClickEdit!");
+            (props as any)["onClickEdit"](props.data);
           }}
         >
           <Icon>create</Icon>
+        </button>
+        <button
+          onClick={() => {
+            console.log("ToolsCellRenderer calling onClickDelete!");
+            (props as any)["onClickDelete"](props.data);
+          }}
+        >
+          <Icon>delete</Icon>
         </button>
       </span>
     );

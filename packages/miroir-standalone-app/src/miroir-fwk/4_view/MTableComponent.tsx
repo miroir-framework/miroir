@@ -30,10 +30,11 @@ import {
   useMiroirContextService
 } from '../../miroir-fwk/4_view/MiroirContextReactProvider';
 import { ToolsCellRenderer } from './GenderCellRenderer';
-import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from './JsonObjectFormEditorDialog';
+import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from './JsonObjectEditFormDialog';
 import { TableComponentProps, TableComponentRow, TableComponentTypeSchema } from './MTableComponentInterface';
 import { useCurrentModelOld } from './ReduxHooks';
 import { cleanLevel } from './constants';
+import { JsonObjectDeleteFormDialog } from './JsonObjectDeleteFormDialog';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"MtableComponent");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -89,11 +90,17 @@ export const MTableComponent = (props: TableComponentProps) => {
   const navigate = useNavigate();
   const context = useMiroirContextService();
   const contextDeploymentUuid = context.deploymentUuid;
-  const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
-  const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
 
+  // TODO: redundant?
+  const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
   const [dialogFormObject, setdialogFormObject] = useState<undefined | any>(undefined);
-  const [dialogFormIsOpen, setdialogFormIsOpen] = useState(false);
+
+  // TODO: redundant?
+  const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
+  const [editDialogFormIsOpen, setEditDialogFormIsOpen] = useState(false);
+
+  const [deleteDialogFormIsOpen, setDeleteDialogFormIsOpen] = useState(false);
+  
   // log.info("MTableComponent refreshing with dialogFormObject",dialogFormObject);
 
 
@@ -105,7 +112,7 @@ export const MTableComponent = (props: TableComponentProps) => {
     // always use object, not array, to ensure correct refresh!
     () => ({
       tableComponentRowUuidIndexSchema: Object.values(props.instancesToDisplay ?? {})
-        .sort((a: EntityInstance, b: EntityInstance) =>
+        .sort((a: EntityInstance, b: EntityInstance) => // initial sort, to be enhanced! (issue #22)
           props.sortByAttribute
             ? (a as any)[props.sortByAttribute] > (b as any)[props.sortByAttribute]
               ? 1
@@ -193,52 +200,73 @@ export const MTableComponent = (props: TableComponentProps) => {
   },[props,currentModel,])
 
   // ##############################################################################################
-  // const onSubmitTableRowFormDialog: SubmitHandler<JsonObjectFormEditorDialogInputs> = useCallback(async (data,event) => {
-  // const onSubmitTableRowFormDialog: (data:JsonObjectFormEditorDialogInputs, event:React.BaseSyntheticEvent)=>void = useCallback(async (data,event) => {
-  const onSubmitTableRowFormDialog: (data:JsonObjectFormEditorDialogInputs)=>void = useCallback(async (data) => {
-    // event?.stopPropagation();
-    log.info('MTableComponent onSubmitTableRowFormDialog called with data',data);
+  // TODO: looks like prop drilling... pass onRowEdit directly?
+  const onEditDialogFormSubmit: (data:JsonObjectEditFormDialogInputs)=>void = useCallback(async (data) => {
+    log.info('onEditDialogFormSubmit called with data',data);
     
     if (props.type == 'EntityInstance' && props?.onRowEdit) {
       await props.onRowEdit(data);
     } else {
-      log.error('MTableComponent onSubmitTableRowFormDialog called for not EntityInstance');
+      log.error('onEditDialogFormSubmit called for not EntityInstance');
     }
-    handleDialogTableRowFormClose('');
+    handleEditDialogFormClose('');
   },[props])
 
   // ##############################################################################################
-  const handleDialogTableRowFormOpen = useCallback((a?:TableComponentRow,event?:any) => {
+  const onDeleteDialogFormSubmit: (data:JsonObjectEditFormDialogInputs)=>void = useCallback(async (data) => {
+    log.info('onEditDialogFormSubmit called with data',data);
+    
+    if (props.type == 'EntityInstance' && props?.onRowDelete) {
+      await props.onRowDelete(data);
+    } else {
+      log.error('onEditDialogFormSubmit called for not EntityInstance');
+    }
+    handleEditDialogFormClose('');
+  },[props])
+
+  // ##############################################################################################
+  const handleEditDialogFormOpen = useCallback((a?:TableComponentRow,event?:any) => {
     event?.stopPropagation();
-    // const editedObject = props.instancesToDisplay?props.instancesToDisplay[a["uuid"]]:a;
-    log.info('MTableComponent handleDialogTableRowFormOpen called with props',props);
-    // log.info('MTableComponent handleDialogTableRowFormOpen called with props.instancesToDisplay',props.instancesToDisplay);
-    // log.info("MTableComponent handleDialogTableRowFormOpen instancesWithStringifiedJsonAttributes", instancesWithStringifiedJsonAttributes);
-    log.info('MTableComponent handleDialogTableRowFormOpen called dialogFormObject',dialogFormObject, "event value", a);
+    log.info('handleEditDialogFormOpen called with props',props);
+    log.info('handleEditDialogFormOpen called dialogFormObject',dialogFormObject, "event value", a);
     
     if (a) {
-      // setdialogFormObject(Object.assign({},dialogFormObject?dialogFormObject:{},{[label]:a}));
       setdialogFormObject(a.rawValue);
-      // props.setCurrentObjectValue(a.rawValue)
       setdialogOuterFormObject(a.rawValue)
-      // setdialogFormObject(a);
-      log.info('MTableComponent handleDialogTableRowFormOpen parameter is defined dialogFormObject',dialogFormObject);
+      log.info('handleEditDialogFormOpen parameter is defined dialogFormObject',dialogFormObject);
     } else {
-      // setdialogFormObject(Object.assign({},dialogFormObject?dialogFormObject:{},{[label]:undefined}));
       setdialogFormObject(undefined);
-      log.info('MTableComponent handleDialogTableRowFormOpen parameter is undefined, no value is passed to form. dialogFormObject',dialogFormObject);
+      log.info('handleEditDialogFormOpen parameter is undefined, no value is passed to form. dialogFormObject',dialogFormObject);
     }
-    setdialogFormIsOpen(true);
+    setEditDialogFormIsOpen(true);
   },[props.instancesToDisplay]);
 
   // ##############################################################################################
-  const handleDialogTableRowFormClose = useCallback((value?: string, event?:any) => {
+  const handleEditDialogFormClose = useCallback((value?: string, event?:any) => {
     event?.stopPropagation();
-    log.info('ReportComponent handleDialogTableRowFormClose',value);
+    log.info('handleEditDialogFormClose',value);
     
-    setdialogFormIsOpen(false);
+    setEditDialogFormIsOpen(false);
   },[]);
 
+  // ##############################################################################################
+  const handleDeleteDialogFormOpen = useCallback((a?:TableComponentRow,event?:any) => {
+    event?.stopPropagation();
+    log.info('handleDeleteDialogFormOpen called with props',props);
+    log.info('handleDeleteDialogFormOpen called dialogFormObject',dialogFormObject, "event value", a);
+    
+    if (a) {
+      setdialogFormObject(a.rawValue);
+      setdialogOuterFormObject(a.rawValue)
+      log.info('handleDeleteDialogFormOpen parameter is defined dialogFormObject',dialogFormObject);
+    } else {
+      // setdialogFormObject(Object.assign({},dialogFormObject?dialogFormObject:{},{[label]:undefined}));
+      setdialogFormObject(undefined);
+      log.info('handleDeleteDialogFormOpen parameter is undefined, no value is passed to form. dialogFormObject',dialogFormObject);
+    }
+    setDeleteDialogFormIsOpen(true);
+  },[props.instancesToDisplay]);
+  
   // ##############################################################################################
   const defaultColDef:ColDef | ColGroupDef = useMemo(()=>({
     editable: true,
@@ -254,9 +282,10 @@ export const MTableComponent = (props: TableComponentProps) => {
       field: '',
       cellRenderer: ToolsCellRenderer,
       editable:false,
-      width: 80,
+      width: 140,
       cellRendererParams: {
-        onClick:handleDialogTableRowFormOpen
+        onClickEdit:handleEditDialogFormOpen,
+        onClickDelete:handleDeleteDialogFormOpen
       },
     }
   ].concat(props.columnDefs.columnDefs),[props.columnDefs]);
@@ -353,9 +382,10 @@ export const MTableComponent = (props: TableComponentProps) => {
         <div>
           {
             dialogFormObject? (
-              <JsonObjectFormEditorDialog
+              <>
+              <JsonObjectEditFormDialog
                 showButton={false}
-                isOpen={dialogFormIsOpen}
+                isOpen={editDialogFormIsOpen}  // redundant with addObjectdialogFormIsOpen?
                 isAttributes={true}
                 addObjectdialogFormIsOpen={addObjectdialogFormIsOpen}
                 setAddObjectdialogFormIsOpen={setAddObjectdialogFormIsOpen}
@@ -369,9 +399,29 @@ export const MTableComponent = (props: TableComponentProps) => {
                 defaultFormValuesObject={
                   dialogFormObject??props.defaultFormValuesObject
                 }
-                onSubmit={onSubmitTableRowFormDialog}
-                onClose={handleDialogTableRowFormClose}
+                onSubmit={onEditDialogFormSubmit}
+                onClose={handleEditDialogFormClose}
               />
+              <JsonObjectDeleteFormDialog
+                showButton={false}
+                currentDeploymentUuid={contextDeploymentUuid}
+                currentApplicationSection={context.applicationSection}
+                currentAppModel={currentModel}
+                currentMiroirModel={miroirMetaModel}
+                defaultFormValuesObject={
+                  dialogFormObject??props.defaultFormValuesObject
+                }
+                deleteObjectdialogFormIsOpen={deleteDialogFormIsOpen}
+                entityDefinitionJzodSchema={props.currentEntityDefinition?.jzodSchema as JzodObject}
+                foreignKeyObjects={props.foreignKeyObjects}
+                isOpen={deleteDialogFormIsOpen} // redundant with deleteObjectdialogFormIsOpen?
+                isAttributes={true}
+                label={props.currentEntity?.name??"No Entity Found!"}
+                onDeleteFormObject={onDeleteDialogFormSubmit}
+                onClose={handleEditDialogFormClose}
+                setDeleteObjectdialogFormIsOpen={setDeleteDialogFormIsOpen}
+              />
+              </>
             )
             :<></>
           }

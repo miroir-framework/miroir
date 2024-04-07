@@ -45,6 +45,7 @@ export const tableComponentEntityInstancePropsSchema = tableComponentCorePropsSc
   currentEntity: entity.optional(),
   currentEntityDefinition: entityDefinition,
   onRowEdit: z.function().args(z.any()).returns(z.void()).optional(),
+  onRowDelete: z.function().args(z.any()).returns(z.void()).optional(),
 });
 export type TableComponentEntityInstanceProps = z.infer<typeof tableComponentEntityInstancePropsSchema>;
 

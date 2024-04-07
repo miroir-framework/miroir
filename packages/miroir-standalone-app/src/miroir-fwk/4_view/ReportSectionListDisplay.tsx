@@ -38,7 +38,7 @@ import {
 import { Button } from "@mui/material";
 import { packageName } from "../../constants";
 import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "../../miroir-fwk/4_view/getColumnDefinitionsFromEntityAttributes";
-import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from "./JsonObjectFormEditorDialog";
+import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from "./JsonObjectEditFormDialog";
 import { noValue } from "./JzodElementEditor";
 import { MTableComponent } from "./MTableComponent";
 import { TableComponentType, TableComponentTypeSchema } from "./MTableComponentInterface";
@@ -350,7 +350,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
 
 
   // // ##############################################################################################
-  // const onSubmitInnerFormDialog: SubmitHandler<JsonObjectFormEditorDialogInputs> = useCallback(
+  // const onSubmitInnerFormDialog: SubmitHandler<JsonObjectEditFormDialogInputs> = useCallback(
   //   async (data,event) => {
   //     const buttonType:string=(event?.nativeEvent as any)['submitter']['name'];
   //     log.info('ReportComponent onSubmitFormDialog',buttonType,'received data',data,'props',props,'dialogFormObject',dialogOuterFormObject);
@@ -486,7 +486,65 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   )
 
   // ##############################################################################################
-  const onSubmitOuterDialog: (data: JsonObjectFormEditorDialogInputs)=>void = useCallback(
+  const onDeleteFormObject = useCallback(
+    async (data:any) => {
+      // const newEntity:EntityInstance = Object.assign({...data as EntityInstance},{attributes:dialogFormObject?dialogFormObject['attributes']:[]});
+      log.info('ReportComponent onEditFormObject called with new object value',data);
+      
+      if (props.displayedDeploymentDefinition) {
+        if (props.chosenApplicationSection == 'model') {
+          await domainController.handleAction(
+            {
+              actionType: "transactionalInstanceAction",
+              instanceAction: {
+                actionType: "instanceAction",
+                actionName: "deleteInstance",
+                applicationSection: "model",
+                deploymentUuid: props.displayedDeploymentDefinition.uuid,
+                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                objects: [
+                  {
+                    parentName: data.name,
+                    parentUuid: data.parentUuid,
+                    applicationSection:props.chosenApplicationSection,
+                    instances: [
+                      data 
+                    ]
+                  }
+                ],
+              }
+            },props.tableComponentReportType == "EntityInstance"?currentModel:undefined
+          );
+        } else {
+          const updateAction: InstanceAction = {
+            actionType: "instanceAction",
+            actionName: "deleteInstance",
+            applicationSection: props.chosenApplicationSection?props.chosenApplicationSection:"data",
+            deploymentUuid: props.displayedDeploymentDefinition?.uuid,
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            objects: [
+              {
+                parentName: data.name,
+                parentUuid: data.parentUuid,
+                applicationSection:props.chosenApplicationSection?props.chosenApplicationSection:"data",
+                instances: [
+                  data 
+                ],
+              },
+            ],
+          };
+          log.info("onDeleteFormObject updateAction", updateAction);
+          await domainController.handleAction(updateAction);
+        }
+      } else {
+        throw new Error('ReportComponent onSubmitOuterDialog props.displayedDeploymentDefinition is undefined.')
+      }
+    },
+    [domainController, props.displayedDeploymentDefinition, props.chosenApplicationSection]
+  )
+
+  // ##############################################################################################
+  const onSubmitOuterDialog: (data: JsonObjectEditFormDialogInputs)=>void = useCallback(
     async (data) => {
       log.info('ReportComponent onSubmitOuterDialog','data',data);
       setAddObjectdialogFormIsOpen(false);
@@ -531,7 +589,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       props.displayedDeploymentDefinition
     ):undefined, [currentReportTargetEntity, currentReportTargetEntityDefinition]
   )
-  log.info("calling JsonObjectFormEditorDialog with defaultFormValuesObject", defaultFormValuesObject)
+  log.info("calling JsonObjectEditFormDialog with defaultFormValuesObject", defaultFormValuesObject)
 
   // ##############################################################################################
   const handleAddObjectDialogFormButtonClick = useCallback((label: string  | undefined, a: any) => {
@@ -597,7 +655,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             </h3>
             {
               addObjectdialogFormIsOpen?
-              <JsonObjectFormEditorDialog
+              <JsonObjectEditFormDialog
                 showButton={false}
                 isOpen={addObjectdialogFormIsOpen}
                 onClose={handleAddObjectDialogTableRowFormClose}
@@ -634,6 +692,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                   deploymentUuid={props.deploymentUuid}
                   displayTools={true}
                   onRowEdit={onEditFormObject}
+                  onRowDelete={onDeleteFormObject}
                   sortByAttribute={props.section.definition.sortByAttribute}
                   paramsAsdomainElements={props.paramsAsdomainElements}
                 ></MTableComponent>
@@ -657,7 +716,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   //   return (
   //     <div>
   //       {/* <span>rendered ReportSectionListDisplay: {count} times.</span> */}
-  //       {/* <JsonObjectFormEditorDialog
+  //       {/* <JsonObjectEditFormDialog
   //         showButton={true}
   //         jzodSchema={entityDefinitionEntityDefinition.jzodSchema as JzodObject}
   //         initialValuesObject={defaultFormValues(props.tableComponentReportType, entityDefinitionEntityDefinition.jzodSchema as JzodObject, [], existingRows)}

@@ -8,7 +8,7 @@ import { GenderCellEditor } from "../../miroir-fwk/4_view/GenderCellEditor";
 import {
   DefaultCellRenderer,
   EntityInstanceCellRenderer,
-  SelectEntityInstanceEditor,
+  // SelectEntityInstanceEditorNotUsed,
 } from "../../miroir-fwk/4_view/SelectEntityInstanceEditor";
 import GenderCellRenderer from "./GenderCellRenderer";
 import { packageName } from "../../constants";
@@ -33,13 +33,13 @@ export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(
       // field: "publisher",
       field: name,
       cellRenderer: EntityInstanceCellRenderer,
-      cellEditor: SelectEntityInstanceEditor,
-      cellEditorPopup: true,
-      editable: true,
+      // cellEditor: SelectEntityInstanceEditorNotUsed, // can not be edited in table column: click navigates to instance details report page
+      // cellEditorPopup: true,
+      // editable: true,
       // sort:'asc',
-      cellEditorParams: {
-        entityUuid: jzodSchema?.extra?.targetEntity,
-      },
+      // cellEditorParams: {
+      //   entityUuid: jzodSchema?.extra?.targetEntity,
+      // },
       cellRendererParams: {
         entityUuid: jzodSchema?.extra?.targetEntity,
       },
@@ -77,13 +77,12 @@ export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(
       return {
         field: "name",
         cellRenderer: EntityInstanceCellRenderer,
-        cellEditor: SelectEntityInstanceEditor,
-        cellEditorPopup: true,
-        editable: true,
-        // sort:'asc',
-        cellEditorParams: {
-          entityUuid: entityDefinition?.uuid??"",
-        },
+        // cellEditor: SelectEntityInstanceEditorNotUsed,
+        // cellEditorPopup: true,
+        // editable: true,
+        // cellEditorParams: {
+        //   entityUuid: entityDefinition?.uuid??"",
+        // },
         cellRendererParams: {
           entityUuid: entityDefinition?.uuid??"",
           entityDefinition

@@ -163,33 +163,14 @@ export const DefaultCellRenderer =  memo((props: ICellRendererParams<TableCompon
 })
 
 // ################################################################################################
-export const SelectEntityInstanceEditor = memo(
+export const SelectEntityInstanceEditorNotUsed = memo(
   forwardRef((props: ICellEditorParams, ref) => {
-    // log.info('SelectEntityInstanceEditor',props,ref);
+    log.info('SelectEntityInstanceEditor',props,ref);
     const context = useMiroirContextService();
     const deploymentUuid = context.deploymentUuid;
 
-    // const currentModelSelectorParams:LocalCacheQueryParams = useMemo(
-    //   () => ({
-    //     queryType: "LocalCacheEntityInstancesSelectorParams",
-    //     definition: {
-    //       deploymentUuid: context.deploymentUuid,
-    //     }
-    //   } as LocalCacheQueryParams),
-    //   [context]
-    // );
-  
-    // const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
-    // const currentModel = useSelector((state: ReduxStateWithUndoRedo) =>
-    //   localSelectModelForDeployment(state, currentModelSelectorParams)
-    // ) as MetaModel
-  
     const currentModel: MetaModel = useCurrentModelOld(context.deploymentUuid)
 
-    // const miroirEntities:Entity [] = currentModel.entities;
-    const miroirEntityDefinitions:EntityDefinition[] = currentModel.entityDefinitions;
-    // const currentMiroirEntityDefinition: EntityDefinition | undefined = miroirEntityDefinitions?.find(e=>e?.entityUuid === (props as any)['entityUuid']);
-  
     const selectorParams:LocalCacheQueryParams = useMemo(
       () => ({
         queryType: "LocalCacheEntityInstancesSelectorParams",
@@ -204,7 +185,6 @@ export const SelectEntityInstanceEditor = memo(
     const instancesToDisplay: EntityInstanceWithName[] = useSelector((state: ReduxStateWithUndoRedo) =>
       selectInstanceArrayForDeploymentSectionEntity(state, selectorParams)
     ) as EntityInstanceWithName[];
-    // const instanceToDisplay = instancesToDisplay.find(i=>i.uuid == props.value);
       
     const [ready, setReady] = useState(false);
     const [interimValue, setInterimValue] = useState(props.value);

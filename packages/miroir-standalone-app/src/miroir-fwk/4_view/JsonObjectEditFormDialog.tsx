@@ -1,19 +1,17 @@
 import _ from "lodash";
 
-import { Dialog, DialogTitle, Paper, styled } from "@mui/material";
-import { ChangeEvent, useCallback, useMemo, useState } from "react";
-import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
+import { Dialog, DialogTitle, Paper, styled } from "@mui/material";
+import CodeMirror from '@uiw/react-codemirror';
+import { ChangeEvent, useCallback, useMemo } from "react";
 
 import { Formik } from "formik";
 
 import {
   ApplicationSection,
-  DomainElementObject,
   EntityAttribute,
   EntityInstancesUuidIndex,
   JzodObject,
-  JzodSchema,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
@@ -28,14 +26,14 @@ import { useMiroirContextInnerFormOutput, useMiroirContextService, useMiroirCont
 import { cleanLevel } from "./constants";
 
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"JsonObjectFormEditorDialog");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"JsonObjectEditFormDialog");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;
 });
 
 // #################################################################################################
-export type JsonObjectFormEditorDialogInputs = { [a: string]: any };
+export type JsonObjectEditFormDialogInputs = { [a: string]: any };
 
 export interface EditorAttribute {
   attribute: EntityAttribute;
@@ -55,23 +53,22 @@ export interface JsonObjectFormEditorCoreDialogProps {
   foreignKeyObjects: Record<string,EntityInstancesUuidIndex>,
   setAddObjectdialogFormIsOpen: (a:boolean) => void,
   onCreateFormObject?: (a: any) => void,
-  onSubmit: (data:JsonObjectFormEditorDialogInputs)=>void,
+  onSubmit: (data:JsonObjectEditFormDialogInputs)=>void,
 }
 
 export interface JsonObjectFormEditorWithButtonDialogProps extends JsonObjectFormEditorCoreDialogProps {
   showButton: true;
 }
 
-export interface JsonObjectFormEditorDialogWithoutButtonProps extends JsonObjectFormEditorCoreDialogProps {
+export interface JsonObjectEditFormDialogWithoutButtonProps extends JsonObjectFormEditorCoreDialogProps {
   showButton: false;
   isOpen: boolean;
   onClose: (a?: any,event?:any) => void;
-  // onClose: z.function().args(z.any()).returns(z.void()),
 }
 
-export type JsonObjectFormEditorDialogProps =
+export type JsonObjectEditFormDialogProps =
   | JsonObjectFormEditorWithButtonDialogProps
-  | JsonObjectFormEditorDialogWithoutButtonProps;
+  | JsonObjectEditFormDialogWithoutButtonProps;
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -184,7 +181,7 @@ const reorderArrayField = (
 
 let count = 0;
 // #####################################################################################################
-export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProps) {
+export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
   count++;
   log.info(
     "##################################### rendering",
@@ -197,25 +194,15 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
     "entityDefinitionJzodSchema",
     props.entityDefinitionJzodSchema
   );
-  // const logHeader = "JsonObjectFormEditorDialog " + (props.label ? props.label + " " : "");
-  // const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
   const context = useMiroirContextService();
 
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
   const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
 
-  // const [codeEditorValue, setCodeEditorValue] = useState(props.defaultFormValuesObject?JSON.stringify(props.defaultFormValuesObject, null, 2):"");
-  // const [codeEditorValue, setCodeEditorValue] = useState(dialogOuterFormObject?JSON.stringify(dialogOuterFormObject, null, 2):"");
-  // const [codeEditorChangedValue, setCodeEditorChangedValue] = useState(false);
-
   const onCodeEditorChange = useCallback((values:any, viewUpdate:any) => {
     log.info('edit code received value:', values);
-    // setCodeEditorValue(values);
-    // setCodeEditorChangedValue(true);
     setdialogOuterFormObject(JSON.parse(values))
     log.info('edit code done');
-    // setformHelperState(values);
-    // handleAddObjectDialogFormSubmit(values)
   }, []);
 
   const formIsOpen = props.addObjectdialogFormIsOpen || (!props.showButton && props.isOpen);
@@ -270,7 +257,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
   },[props]);
 
   // ##############################################################################################
-  // const handleAddObjectDialogFormSubmit: SubmitHandler<JsonObjectFormEditorDialogInputs> = useCallback(
+  // const handleAddObjectDialogFormSubmit: SubmitHandler<JsonObjectEditFormDialogInputs> = useCallback(
   const handleAddObjectDialogFormSubmit = useCallback(
     async (data:any, source?: string) => {
       // const buttonType: string = (event?.nativeEvent as any)["submitter"]["name"];
@@ -342,24 +329,6 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
     [props,JSON.stringify(dialogOuterFormObject, null, 2)]
   );
 
-  // const setCodeEditorValueWrapper = useCallback(
-  //   (a:any) => {
-  //     setCodeEditorValue(a)
-  //   },
-  //   [setCodeEditorValue]
-  // )
-  // const selectList:EntityInstanceWithName[] = useLocalCacheInstancesForJzodAttribute(
-  //   props.currentDeploymentUuid,
-  //   props.currentApplicationSection,
-  //   props.jzodSchema as JzodAttribute
-  // ) as EntityInstanceWithName[];
-  // log.info("selectList",selectList);
-
-  // if (formIsOpen && getValues()["uuid"] != props.defaultFormValuesObject["uuid"]) {
-  //   log.info("reset form!");
-  //   reset(props.defaultFormValuesObject);
-  // }
-
   // const dialogStyle = useMemo(()=>({
   //   height: "90vh",
   //   width: "200vw",
@@ -367,7 +336,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
   // }),[])
 
   return (
-    <div className="JsonObjectFormEditorDialog">
+    <div className="JsonObjectEditFormDialog">
       {/* <span> */}
         {props.showButton ? (
           <h3>
@@ -444,7 +413,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
           ) => (
             <Dialog onClose={handleAddObjectDialogFormClose} open={formIsOpen} fullScreen>
               <DialogTitle>{props.label} add / edit Element</DialogTitle>
-              <span>form: {"form." + props.label}, JsonObjectFormEditorDialog count {count}</span>
+              <span>form: {"form." + props.label}, JsonObjectEditFormDialog count {count}</span>
               <form
                 id={"form." + props.label}
                 // onSubmit={handleSubmit(handleAddObjectDialogFormSubmit)}
