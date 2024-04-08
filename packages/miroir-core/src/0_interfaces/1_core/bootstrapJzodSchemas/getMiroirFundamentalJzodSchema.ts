@@ -1742,7 +1742,7 @@ export function getMiroirFundamentalJzodSchema(
         "modelActionDropEntity": modelEndpointVersionV1.definition.actions.find((a: any) => a.actionParameters.definition.actionName.definition == "dropEntity")?.actionParameters,
         "modelActionRenameEntity": modelEndpointVersionV1.definition.actions.find((a: any) => a.actionParameters.definition.actionName.definition == "renameEntity")?.actionParameters,
         "modelAction": { "type": "union", "definition": modelEndpointVersionV1.definition.actions.map((e: any)=>e.actionParameters)},
-        "instanceCUDAction": { "type": "union", "definition": instanceEndpointVersionV1.definition.actions.filter((e: any)=>["createInstance", "updateInstance", "deleteInstance"].includes(e.actionParameters.definition.actionName.definition)).map((e: any)=>e.actionParameters)},
+        "instanceCUDAction": { "type": "union", "definition": instanceEndpointVersionV1.definition.actions.filter((e: any)=>["createInstance", "updateInstance", "deleteInstance", "deleteInstanceWithCascade"].includes(e.actionParameters.definition.actionName.definition)).map((e: any)=>e.actionParameters)},
         "instanceAction": { "type": "union", "definition": instanceEndpointVersionV1.definition.actions.map((e: any)=>e.actionParameters)},
         "undoRedoAction": { "type": "union", "definition": undoRedoEndpointVersionV1.definition.actions.map((e: any)=>e.actionParameters)},
         "transactionalInstanceAction": domainEndpointVersionV1.definition.actions.find((a: any) => a.actionParameters.definition.actionType && a.actionParameters.definition.actionType.definition == "transactionalInstanceAction")?.actionParameters,

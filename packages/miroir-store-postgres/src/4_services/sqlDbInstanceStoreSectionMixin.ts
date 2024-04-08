@@ -141,7 +141,23 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
 
     // ##############################################################################################
     async deleteInstance(parentUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
-      console.debug(this.logHeader, "deleteInstance", parentUuid, instance);
+      console.debug(this.logHeader, "deleteInstanceWithCascade", parentUuid, instance);
+      const sequelizeModel = this.sqlSchemaTableAccess[parentUuid].sequelizeModel;
+      await sequelizeModel.destroy({ where: { uuid: instance.uuid } });
+      return Promise.resolve(ACTION_OK);
+    }
+
+    // ##############################################################################################
+    async deleteInstancesWithCascade(parentUuid: string, instances: EntityInstance[]): Promise<ActionVoidReturnType> {
+      for (const instance of instances) {
+        await this.deleteInstanceWithCascade(parentUuid, instance);
+      }
+      return Promise.resolve(ACTION_OK);
+    }
+
+    // ##############################################################################################
+    async deleteInstanceWithCascade(parentUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
+      console.debug(this.logHeader, "deleteInstanceWithCascade", parentUuid, instance);
       const sequelizeModel = this.sqlSchemaTableAccess[parentUuid].sequelizeModel;
       await sequelizeModel.destroy({ where: { uuid: instance.uuid } });
       return Promise.resolve(ACTION_OK);

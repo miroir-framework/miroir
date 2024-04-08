@@ -82,6 +82,8 @@ export interface AbstractInstanceStoreSectionInterface {
   upsertInstance(parentUuid:string, instance:EntityInstance):Promise<ActionVoidReturnType>;
   deleteInstances(parentUuid:string, instances:EntityInstance[]):Promise<ActionVoidReturnType>;
   deleteInstance(parentUuid:string, instance:EntityInstance):Promise<ActionVoidReturnType>;
+  deleteInstancesWithCascade(parentUuid:string, instances:EntityInstance[]):Promise<ActionVoidReturnType>;
+  deleteInstanceWithCascade(parentUuid:string, instance:EntityInstance):Promise<ActionVoidReturnType>;
 }
 
 // ###########################################################################################

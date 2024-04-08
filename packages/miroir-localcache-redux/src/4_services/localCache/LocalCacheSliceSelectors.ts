@@ -25,7 +25,7 @@ import {
 } from "miroir-core";
 import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
-import { getLocalCacheSliceIndex, localCacheStateEntityZoneToDomainState, localCacheStateToDomainState } from "./LocalCacheSlice";
+import { getLocalCacheSliceIndex, localCacheStateEntityZoneToDomainState } from "./LocalCacheSlice";
 import { LocalCacheSliceState, LocalCacheSliceStateEntityZone, ReduxStateWithUndoRedo } from "./localCacheReduxSliceInterface";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"LocalCacheSliceSelector");
@@ -103,18 +103,18 @@ export const selectDomainStatePlain: (
   }
 );
 
-// ################################################################################################
-export const selectDomainState: (
-  state: ReduxStateWithUndoRedo,
-  params: MiroirSelectorQueryParams
-) => DomainState = createSelector(
-  [selectPresentModelSnapshot, selectSelectorParams],
-  (state: LocalCacheSliceState, params: MiroirSelectorQueryParams) => {
-    // log.info("selectInstanceArrayForDeploymentSectionEntity called", params, state);
+// // ################################################################################################
+// export const selectDomainState: (
+//   state: ReduxStateWithUndoRedo,
+//   params: MiroirSelectorQueryParams
+// ) => DomainState = createSelector(
+//   [selectPresentModelSnapshot, selectSelectorParams],
+//   (state: LocalCacheSliceState, params: MiroirSelectorQueryParams) => {
+//     // log.info("selectInstanceArrayForDeploymentSectionEntity called", params, state);
 
-    return state ? localCacheStateToDomainState(state) : {};
-  }
-);
+//     return state ? localCacheStateToDomainState(state) : {};
+//   }
+// );
 
 // ################################################################################################
 // ################################################################################################

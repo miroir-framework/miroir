@@ -41,7 +41,8 @@ import {
   Menu,
   entityReport,
   entityStoreBasedConfiguration,
-  getLoggerName
+  getLoggerName,
+  Entity
 } from "miroir-core";
 
 import { packageName } from "../../constants";
@@ -286,9 +287,8 @@ function initializeLocalCacheSliceStateWithEntityAdapter(
   const entityInstancesLocationIndex = getLocalCacheSliceIndex(deploymentUuid, section, entityUuid);
   // log.debug("getInitializedSectionEntityAdapter called", "deploymentUuid", deploymentUuid, "section", section, "entityUuid", entityUuid, "index", index);
   // const sliceEntityAdapter = getLocalCacheSliceEntityAdapter();
-  const sliceEntityAdapter = entityAdapter;
   if (!(state as any)[zone][entityInstancesLocationIndex]) {
-    (state as any)[zone][entityInstancesLocationIndex] = sliceEntityAdapter.getInitialState();
+    (state as any)[zone][entityInstancesLocationIndex] = entityAdapter.getInitialState();
     log.info(
       "getInitializedSectionEntityAdapter state[",
       zone,
@@ -310,7 +310,7 @@ function initializeLocalCacheSliceStateWithEntityAdapter(
   //   "result",
   //   sliceEntityAdapter
   // );
-  return sliceEntityAdapter;
+  return entityAdapter;
 }
 
 //#########################################################################################
@@ -354,6 +354,86 @@ function loadNewEntityInstancesInLocalCache(
     );
   // log.info("loadNewInstancesInLocalCache returned state", JSON.stringify(state))
 }
+
+// ################################################################################################
+const deleteCascade = async (p:{
+  deploymentUuid: string,
+  section: ApplicationSection,
+  state: LocalCacheSliceState,
+  instanceCollection: EntityInstanceCollection
+  // 
+  entity: Entity,
+  entityDefinition: EntityDefinition,
+  entityInstances: EntityInstance[]
+}) => {
+  // No need to fetch list of objects pointing to current list of objects
+  const deleteCascadeForeignKeyObjectsAttributeDefinition:[string, JzodElement][] = 
+    Object.entries(
+      p.entityDefinition.jzodSchema.definition ?? {}
+    ).filter((e) => e[1].extra?.targetEntity)
+  ;
+
+  const deleteCascadeforeignKeyObjectsFetchQuery: DomainManyQueriesWithDeploymentUuid = {
+    queryType: "DomainManyQueries",
+    deploymentUuid: props.deploymentUuid,
+    // applicationSection: props.applicationSection,
+    pageParams: props.paramsAsdomainElements,
+    queryParams: { elementType: "object", elementValue: {} },
+    contextResults: { elementType: "object", elementValue: {} },
+    fetchQuery: {
+      select: Object.fromEntries(
+        deleteCascadeForeignKeyObjectsAttributeDefinition.map((e) => [
+            e[1].extra?.targetEntity,
+            {
+              queryType: "selectObjectListByEntity",
+              applicationSection: (props.paramsAsdomainElements as any)["applicationSection"],
+              parentName: "",
+              parentUuid: {
+                referenceType: "constant",
+                referenceUuid: e[1].extra?.targetEntity,
+              },
+            },
+          ])
+      ) as any,
+    }
+  };
+
+  const domainState = localCache.getDomainState();
+  // log.info("localCacheSliceObject handleDomainEntityAction queryAction domainState=", JSON.stringify(domainState, undefined, 2))
+  // const queryResult: DomainElement = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(query));
+  // const queryResult: DomainElement = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(query));
+
+  const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(deleteCascadeforeignKeyObjectsFetchQuery))
+
+  // const deleteCascadeforeignKeyObjectsFetchQueryParams: DomainStateSelectorParams<DomainManyQueriesWithDeploymentUuid> = 
+  //   getSelectorParams<DomainManyQueriesWithDeploymentUuid>(deleteCascadeforeignKeyObjectsFetchQuery,
+  //     selectorMap
+  //   )
+  // ;
+  // const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = useDomainStateCleanSelectorNew(
+  //   selectorMap.selectByDomainManyQueriesFromDomainState as DomainStateSelectorNew<DomainManyQueriesWithDeploymentUuid, any>,
+  //   foreignKeyObjectsFetchQueryParams
+  // );
+
+
+  // delete current list of objects (on a relational database, this would require suspending foreign key constraints for the involved relations)
+  const deleteCurrentEntityInstancesAction: InstanceAction = {
+    actionType: "instanceAction",
+    actionName: "deleteInstance",
+    applicationSection: props.chosenApplicationSection?props.chosenApplicationSection:"data",
+    deploymentUuid: props.displayedDeploymentDefinition.uuid,
+    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    objects: entityInstances.length > 0?[
+      {
+        parentName: (entityInstances[0] as any)["name"]??"undefined name",
+        parentUuid: entityInstances[0].parentUuid,
+        applicationSection:props.chosenApplicationSection?props.chosenApplicationSection:"data",
+        instances: entityInstances,
+      },
+    ]:[]
+  };
+}
+
 
 //#########################################################################################
 // 

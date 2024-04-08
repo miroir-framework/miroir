@@ -6551,6 +6551,65 @@ export const miroirFundamentalJzodSchema = {
               },
               "actionName": {
                 "type": "literal",
+                "definition": "deleteInstanceWithCascade"
+              },
+              "deploymentUuid": {
+                "type": "simpleType",
+                "definition": "string",
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Uuid",
+                  "editable": false
+                }
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+              },
+              "applicationSection": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "includeInTransaction": {
+                "type": "simpleType",
+                "definition": "boolean",
+                "optional": true
+              },
+              "objects": {
+                "type": "array",
+                "extra": {
+                  "id": 2,
+                  "defaultLabel": "Entity Instances to delete",
+                  "editable": true
+                },
+                "definition": {
+                  "type": "schemaReference",
+                  "optional": false,
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entityInstanceCollection"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "instanceAction"
+              },
+              "actionName": {
+                "type": "literal",
                 "definition": "updateInstance"
               },
               "endpoint": {
@@ -6670,6 +6729,65 @@ export const miroirFundamentalJzodSchema = {
               "actionName": {
                 "type": "literal",
                 "definition": "deleteInstance"
+              },
+              "deploymentUuid": {
+                "type": "simpleType",
+                "definition": "string",
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Uuid",
+                  "editable": false
+                }
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+              },
+              "applicationSection": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "includeInTransaction": {
+                "type": "simpleType",
+                "definition": "boolean",
+                "optional": true
+              },
+              "objects": {
+                "type": "array",
+                "extra": {
+                  "id": 2,
+                  "defaultLabel": "Entity Instances to delete",
+                  "editable": true
+                },
+                "definition": {
+                  "type": "schemaReference",
+                  "optional": false,
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entityInstanceCollection"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "instanceAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "deleteInstanceWithCascade"
               },
               "deploymentUuid": {
                 "type": "simpleType",

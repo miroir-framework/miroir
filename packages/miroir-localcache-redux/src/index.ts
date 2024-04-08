@@ -18,7 +18,7 @@ export {
   applyDomainStateCleanSelectorNew,
   selectDomainStateJzodSchemaSelectorParams,
   selectDomainStateSelectorParams,
-  selectDomainState,
+  // selectDomainState,
   selectEntityInstanceUuidIndexFromLocalCache,
   selectEntityInstanceUuidIndexFromLocalCacheEntityZone,
   selectInstanceArrayForDeploymentSectionEntity,

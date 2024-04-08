@@ -468,6 +468,7 @@ export class DomainController implements DomainControllerInterface {
                 JSON.stringify(context.dataEntitiesFromModelSection,undefined,2)
             );
           }
+          // TODO: information has to come from localCacheSlice, not from hard-coded source!
           const modelEntitiesToFetch: MetaEntity[] =
             deploymentUuid == applicationDeploymentMiroir.uuid ? miroirModelEntities : metaModelEntities;
           const dataEntitiesToFetch: MetaEntity[] =
