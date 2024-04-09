@@ -26,7 +26,7 @@ import {
 import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
 import {
-  selectEntityInstanceUuidIndexFromLocalCacheEntityZone,
+  selectEntityInstanceUuidIndexFromDeploymentEntityState,
   selectCurrentEntityZoneFromReduxState,
   selectMiroirSelectorQueryParams,
 } from "./LocalCacheSliceSelectors";
@@ -42,10 +42,10 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 
 // ################################################################################################
 // const selectEntities = (reduxState: ReduxStateWithUndoRedo, params:  ) => {
-const selectEntities = createSelector(
+const selectEntitiesFromReduxState = createSelector(
   [selectCurrentEntityZoneFromReduxState,selectMiroirSelectorQueryParams],
   (reduxState: DeploymentEntityState, params: MiroirSelectorQueryParams) => {
-    const result = selectEntityInstanceUuidIndexFromLocalCacheEntityZone(reduxState, {
+    const result = selectEntityInstanceUuidIndexFromDeploymentEntityState(reduxState, {
       queryType: "LocalCacheEntityInstancesSelectorParams",
       definition: {
         deploymentUuid:
@@ -59,10 +59,10 @@ const selectEntities = createSelector(
 );
 
 // ################################################################################################
-const selectEntityDefinitions = createSelector(
+const selectEntityDefinitionsFromReduxState = createSelector(
   [selectCurrentEntityZoneFromReduxState,selectMiroirSelectorQueryParams],
   (reduxState: DeploymentEntityState, params: MiroirSelectorQueryParams) => {
-    const result = selectEntityInstanceUuidIndexFromLocalCacheEntityZone(reduxState, {
+    const result = selectEntityInstanceUuidIndexFromDeploymentEntityState(reduxState, {
       queryType: "LocalCacheEntityInstancesSelectorParams",
       definition: {
         deploymentUuid:
@@ -76,10 +76,10 @@ const selectEntityDefinitions = createSelector(
 );
 
 // ################################################################################################
-const selectJzodSchemas = createSelector(
+const selectJzodSchemasFromReduxState = createSelector(
   [selectCurrentEntityZoneFromReduxState,selectMiroirSelectorQueryParams],
   (reduxState: DeploymentEntityState, params: MiroirSelectorQueryParams) => {
-    const result = selectEntityInstanceUuidIndexFromLocalCacheEntityZone(reduxState, {
+    const result = selectEntityInstanceUuidIndexFromDeploymentEntityState(reduxState, {
       queryType: "LocalCacheEntityInstancesSelectorParams",
       definition: {
         deploymentUuid:
@@ -98,10 +98,10 @@ const selectJzodSchemas = createSelector(
 );
 
 // ################################################################################################
-const selectMenus = createSelector(
+const selectMenusFromReduxState = createSelector(
   [selectCurrentEntityZoneFromReduxState,selectMiroirSelectorQueryParams],
   (reduxState: DeploymentEntityState, params: MiroirSelectorQueryParams) => {
-    const result = selectEntityInstanceUuidIndexFromLocalCacheEntityZone(reduxState, {
+    const result = selectEntityInstanceUuidIndexFromDeploymentEntityState(reduxState, {
       queryType: "LocalCacheEntityInstancesSelectorParams",
       definition: {
         deploymentUuid:
@@ -120,10 +120,10 @@ const selectMenus = createSelector(
 );
 
 // ################################################################################################
-const selectReports = createSelector(
+const selectReportsFromReduxState = createSelector(
   [selectCurrentEntityZoneFromReduxState,selectMiroirSelectorQueryParams],
   (reduxState: DeploymentEntityState, params: MiroirSelectorQueryParams) => {
-    const result = selectEntityInstanceUuidIndexFromLocalCacheEntityZone(reduxState, {
+    const result = selectEntityInstanceUuidIndexFromDeploymentEntityState(reduxState, {
       queryType: "LocalCacheEntityInstancesSelectorParams",
       definition: {
         deploymentUuid:
@@ -142,10 +142,10 @@ const selectReports = createSelector(
 );
 
 // ################################################################################################
-const selectConfigurations = createSelector(
+const selectConfigurationsFromReduxState = createSelector(
   [selectCurrentEntityZoneFromReduxState,selectMiroirSelectorQueryParams],
   (reduxState: DeploymentEntityState, params: MiroirSelectorQueryParams) => {
-    const result = selectEntityInstanceUuidIndexFromLocalCacheEntityZone(reduxState, {
+    const result = selectEntityInstanceUuidIndexFromDeploymentEntityState(reduxState, {
       queryType: "LocalCacheEntityInstancesSelectorParams",
       definition: {
         deploymentUuid:
@@ -164,10 +164,10 @@ const selectConfigurations = createSelector(
 );
 
 // ################################################################################################
-const selectApplicationVersions = createSelector(
+const selectApplicationVersionsFromReduxState = createSelector(
   [selectCurrentEntityZoneFromReduxState,selectMiroirSelectorQueryParams],
   (reduxState: DeploymentEntityState, params: MiroirSelectorQueryParams) => {
-  const result = selectEntityInstanceUuidIndexFromLocalCacheEntityZone(reduxState, {
+  const result = selectEntityInstanceUuidIndexFromDeploymentEntityState(reduxState, {
     queryType: "LocalCacheEntityInstancesSelectorParams",
     definition: {
       deploymentUuid:
@@ -188,19 +188,19 @@ const selectApplicationVersions = createSelector(
 );
 
 //#########################################################################################
-export const selectModelForDeployment: () => (
+export const selectModelForDeploymentFromReduxState: () => (
   state: ReduxStateWithUndoRedo,
   params: MiroirSelectorQueryParams
 ) => MetaModel = () =>
   createSelector(
     [
-      selectApplicationVersions,
-      selectConfigurations,
-      selectEntities,
-      selectEntityDefinitions,
-      selectJzodSchemas,
-      selectMenus,
-      selectReports,
+      selectApplicationVersionsFromReduxState,
+      selectConfigurationsFromReduxState,
+      selectEntitiesFromReduxState,
+      selectEntityDefinitionsFromReduxState,
+      selectJzodSchemasFromReduxState,
+      selectMenusFromReduxState,
+      selectReportsFromReduxState,
       // selectSelectorParams,
     ],
     (
@@ -225,7 +225,7 @@ export const selectModelForDeployment: () => (
         menus: (menus ? Object.values(menus) : []) as Menu[],
         reports: (reports ? Object.values(reports) : []) as Report[],
       } as MetaModel;
-      // log.info("selectModelForDeployment",params,result);
+      // log.info("selectModelForDeploymentFromReduxState",params,result);
 
       return result;
     }

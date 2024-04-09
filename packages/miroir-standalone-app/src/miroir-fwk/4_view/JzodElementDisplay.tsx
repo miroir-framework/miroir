@@ -10,7 +10,6 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   Uuid,
-  applicationDeploymentMiroir,
   getLoggerName
 } from "miroir-core";
 
@@ -18,7 +17,6 @@ import { packageName } from "../../constants";
 import { JzodEnumSchemaToJzodElementResolver } from "../JzodTools";
 import { EntityInstanceLink } from "./EntityInstanceLink";
 import { useMiroirContextService } from "./MiroirContextReactProvider";
-import { useCurrentModelOld } from "./ReduxHooks";
 import { cleanLevel } from "./constants";
 import { getColumnDefinitionsFromEntityDefinitionJzodElemenSchema } from "./getColumnDefinitionsFromEntityAttributes";
 
@@ -47,9 +45,6 @@ export interface JzodElementDisplayProps {
 
 export function JzodElementDisplay(props: JzodElementDisplayProps){
   const context = useMiroirContextService();
-
-
-  const miroirModel = useCurrentModelOld(applicationDeploymentMiroir.uuid);
 
   const targetJzodSchema = // hack to display Jzod Schemas (DRAWBACK: makes of "type" a reserved attribute name, it has to be changed to something more specific)
     props.resolvedElementJzodSchema?.type == "union" && props.element?.type

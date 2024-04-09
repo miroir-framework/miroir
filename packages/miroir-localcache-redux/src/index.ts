@@ -7,20 +7,16 @@ export {
   LocalCacheSlice,
 } from "./4_services/localCache/LocalCacheSlice";
 export {
-  selectModelForDeployment,
+  selectModelForDeploymentFromReduxState,
 } from "./4_services/localCache/LocalCacheSliceModelSelector";
-export {
-  selectModelForDeploymentOld,
-} from "./4_services/localCache/LocalCacheSliceModelSelectorOld";
 export {
   applyDomainStateJzodSchemaSelector,
   applyDomainStateQuerySelector,
   applyDomainStateQuerySelectorForCleanedResult,
   selectDomainStateJzodSchemaSelectorParams,
   selectDomainStateSelectorParams,
-  // selectDomainState,
   selectEntityInstanceUuidIndexFromLocalCache,
-  selectEntityInstanceUuidIndexFromLocalCacheEntityZone,
+  selectEntityInstanceUuidIndexFromDeploymentEntityState,
   selectInstanceArrayForDeploymentSectionEntity,
   selectSelectorParams,
 } from "./4_services/localCache/LocalCacheSliceSelectors";

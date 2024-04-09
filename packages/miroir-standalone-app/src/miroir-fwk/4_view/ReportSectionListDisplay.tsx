@@ -48,7 +48,7 @@ import {
   useMiroirContextInnerFormOutput,
   useMiroirContextService,
 } from "./MiroirContextReactProvider";
-import { useCurrentModelOld, useDomainStateQuerySelectorForCleanedResult } from "./ReduxHooks";
+import { useCurrentModel, useDomainStateQuerySelectorForCleanedResult } from "./ReduxHooks";
 import { cleanLevel } from "./constants";
 
 
@@ -213,8 +213,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   
   const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeploymentConfiguration[];
 
-  const miroirMetaModel: MetaModel = useCurrentModelOld(applicationDeploymentMiroir.uuid);
-  const libraryAppModel: MetaModel = useCurrentModelOld(applicationDeploymentLibrary.uuid);
+  const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
+  const libraryAppModel: MetaModel = useCurrentModel(applicationDeploymentLibrary.uuid);
   
   const currentModel = props.deploymentUuid == applicationDeploymentLibrary.uuid? libraryAppModel:miroirMetaModel;
 

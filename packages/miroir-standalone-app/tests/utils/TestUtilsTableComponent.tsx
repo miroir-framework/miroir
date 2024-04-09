@@ -20,10 +20,10 @@ import {
   Entity,
 } from 'miroir-core';
 import { JzodElement } from "@miroir-framework/jzod-ts";
-import { ReduxStateWithUndoRedo, selectInstanceArrayForDeploymentSectionEntity, selectModelForDeployment } from "miroir-localcache-redux";
+import { ReduxStateWithUndoRedo, selectInstanceArrayForDeploymentSectionEntity, selectModelForDeploymentFromReduxState } from "miroir-localcache-redux";
 import { useSelector } from "react-redux";
 
-import { EntityInstanceUuidIndexSelectorParams, useCurrentModelOld } from "../../src/miroir-fwk/4_view/ReduxHooks";
+import { EntityInstanceUuidIndexSelectorParams, useCurrentModel } from "../../src/miroir-fwk/4_view/ReduxHooks";
 import { packageName } from "../../src/constants";
 import { cleanLevel } from "../../src/miroir-fwk/4_view/constants";
 export interface MiroirReportComponentProps {
@@ -57,12 +57,12 @@ export const TestUtilsTableComponent = (
   //   [props.deploymentUuid]
   // );
 
-  // const localSelectModelForDeployment = React.useMemo(selectModelForDeployment,[]);
+  // const localSelectModelForDeployment = React.useMemo(selectModelForDeploymentFromReduxState,[]);
   // const currentModel = useSelector((state: ReduxStateWithUndoRedo) =>
   //   localSelectModelForDeployment(state, currentModelSelectorParams)
   // ) as MetaModel
 
-  const currentModel: MetaModel = useCurrentModelOld(props.deploymentUuid)
+  const currentModel: MetaModel = useCurrentModel(props.deploymentUuid)
 
   const entitiesOfDataSection:Entity [] = currentModel.entities;
   const entityDefinitionsOfDataSection:EntityDefinition[] = currentModel.entityDefinitions;

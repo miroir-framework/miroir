@@ -9,6 +9,7 @@ import {
   DomainModelQueryJzodSchemaParams,
   DomainStateJzodSchemaSelector,
   DomainStateJzodSchemaSelectorParams,
+  DomainStateQuerySelectorParams,
   DomainStateSelectorNew,
   EntityInstance,
   EntityInstancesUuidIndex,
@@ -23,18 +24,16 @@ import {
   RecordOfJzodElement,
   Uuid,
   getLoggerName,
-  selectEntityUuidFromJzodAttribute,
-  DomainStateQuerySelectorParams
+  selectEntityUuidFromJzodAttribute
 } from "miroir-core";
 import {
   ReduxStateWithUndoRedo,
   applyDomainStateJzodSchemaSelector,
-  applyDomainStateQuerySelectorForCleanedResult,
   applyDomainStateQuerySelector,
+  applyDomainStateQuerySelectorForCleanedResult,
   selectEntityInstanceUuidIndexFromLocalCache,
   selectInstanceArrayForDeploymentSectionEntity,
-  selectModelForDeployment,
-  selectModelForDeploymentOld
+  selectModelForDeploymentFromReduxState
 } from "miroir-localcache-redux";
 
 import { packageName } from "../../constants";
@@ -97,26 +96,8 @@ export function useDomainStateJzodSchemaSelector<Q extends DomainModelQueryJzodS
 }
 
 // ################################################################################################
-export function useCurrentModelOld(deploymentUuid: Uuid | undefined) {
-  const localSelectModelForDeployment = useMemo(selectModelForDeploymentOld,[]);
-  const selectorParams:LocalCacheQueryParams = useMemo(
-    () => ({
-      queryType: "LocalCacheEntityInstancesSelectorParams",
-      definition: {
-        deploymentUuid,
-      }
-    } as LocalCacheQueryParams),
-    [deploymentUuid]
-  );
-
-  return useSelector((state: ReduxStateWithUndoRedo) =>
-    localSelectModelForDeployment(state, selectorParams)
-  )
-}
-
-// ################################################################################################
 export function useCurrentModel(deploymentUuid: Uuid | undefined): MetaModel {
-  const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
+  const localSelectModelForDeployment = useMemo(selectModelForDeploymentFromReduxState,[]);
   const selectorParams:LocalCacheQueryParams = useMemo(
     () => ({
       queryType: "LocalCacheEntityInstancesSelectorParams",

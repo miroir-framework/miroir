@@ -21,9 +21,7 @@ import ReactDOM from 'react-dom';
 import { useSelector } from "react-redux";
 
 import {
-  Entity,
   EntityDefinition,
-  EntityInstance,
   EntityInstanceWithName,
   LocalCacheQueryParams,
   LoggerInterface,
@@ -33,17 +31,16 @@ import {
 } from "miroir-core";
 import {
   ReduxStateWithUndoRedo,
-  selectInstanceArrayForDeploymentSectionEntity,
-  selectModelForDeployment,
+  selectInstanceArrayForDeploymentSectionEntity
 } from "miroir-localcache-redux";
 
 import { packageName } from "../../constants";
+import { TableComponentRow } from "./MTableComponentInterface";
 import {
   useMiroirContextService
 } from './MiroirContextReactProvider';
+import { useCurrentModel } from "./ReduxHooks";
 import { cleanLevel } from "./constants";
-import { TableComponentRow } from "./MTableComponentInterface";
-import { useCurrentModelOld } from "./ReduxHooks";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"SelectEntityInstanceEditor");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -86,12 +83,12 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams<Tabl
   //   [context]
   // );
 
-  // const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
+  // const localSelectModelForDeployment = useMemo(selectModelForDeploymentFromReduxState,[]);
   // const currentModel = useSelector((state: ReduxStateWithUndoRedo) =>
   //   localSelectModelForDeployment(state, currentModelSelectorParams)
   // ) as MetaModel
 
-  const currentModel: MetaModel = useCurrentModelOld(context.deploymentUuid)
+  const currentModel: MetaModel = useCurrentModel(context.deploymentUuid)
   const currentMiroirEntityDefinition: EntityDefinition | undefined =
     props.colDef?.cellRendererParams.entityDefinition ??
     currentModel.entityDefinitions?.find((e) => e?.entityUuid == entityUuid)
@@ -168,8 +165,6 @@ export const SelectEntityInstanceEditorNotUsed = memo(
     log.info('SelectEntityInstanceEditor',props,ref);
     const context = useMiroirContextService();
     const deploymentUuid = context.deploymentUuid;
-
-    const currentModel: MetaModel = useCurrentModelOld(context.deploymentUuid)
 
     const selectorParams:LocalCacheQueryParams = useMemo(
       () => ({

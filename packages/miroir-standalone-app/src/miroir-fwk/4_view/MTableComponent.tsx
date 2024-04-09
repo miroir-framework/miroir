@@ -32,7 +32,7 @@ import {
 import { ToolsCellRenderer } from './GenderCellRenderer';
 import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from './JsonObjectEditFormDialog';
 import { TableComponentProps, TableComponentRow, TableComponentTypeSchema } from './MTableComponentInterface';
-import { useCurrentModelOld } from './ReduxHooks';
+import { useCurrentModel } from './ReduxHooks';
 import { cleanLevel } from './constants';
 import { JsonObjectDeleteFormDialog } from './JsonObjectDeleteFormDialog';
 
@@ -104,8 +104,8 @@ export const MTableComponent = (props: TableComponentProps) => {
   // log.info("MTableComponent refreshing with dialogFormObject",dialogFormObject);
 
 
-  const miroirMetaModel: MetaModel = useCurrentModelOld(applicationDeploymentMiroir.uuid);
-  const currentModel: MetaModel = useCurrentModelOld(contextDeploymentUuid);
+  const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
+  const currentModel: MetaModel = useCurrentModel(contextDeploymentUuid);
   // log.info("MTableComponent currentModel", currentModel);
 
   const tableComponentRows: { tableComponentRowUuidIndexSchema: TableComponentRow[] } = useMemo(

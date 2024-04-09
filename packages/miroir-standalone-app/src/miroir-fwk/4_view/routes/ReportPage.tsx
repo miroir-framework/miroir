@@ -21,7 +21,7 @@ import {
 } from "../../../miroir-fwk/4_view/MiroirContextReactProvider";
 
 import { packageName } from '../../../constants';
-import { useCurrentModelOld } from '../ReduxHooks';
+import { useCurrentModel } from '../ReduxHooks';
 import { RootReportSectionView } from '../RootReportSectionView';
 import { cleanLevel } from '../constants';
 
@@ -66,8 +66,8 @@ export const ReportPage = () => {
     applicationDeploymentLibrary,
   ] as ApplicationDeploymentConfiguration[];
 
-  const miroirMetaModel: MetaModel = useCurrentModelOld(applicationDeploymentMiroir.uuid);
-  const libraryAppModel: MetaModel = useCurrentModelOld(applicationDeploymentLibrary.uuid);
+  const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
+  const libraryAppModel: MetaModel = useCurrentModel(applicationDeploymentLibrary.uuid);
 
   // log.info("ReportPage currentModel", currentModel);
 
