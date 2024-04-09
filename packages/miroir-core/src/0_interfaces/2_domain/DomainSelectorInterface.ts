@@ -17,9 +17,9 @@ export interface DomainStateSelectorParams<Q extends MiroirSelectorQueryParams> 
   query: Q
 }
 
-export type DomainStateSelectorNew<P extends MiroirSelectorQueryParams, T> = (
+export type DomainStateSelectorNew<Q extends MiroirSelectorQueryParams, T> = (
   domainState: DomainState,
-  params: DomainStateSelectorParams<P>
+  params: DomainStateSelectorParams<Q>
 ) => T;
 
 
@@ -36,9 +36,9 @@ export interface DomainStateJzodSchemaSelectorParams<Q extends DomainModelQueryJ
   query: Q
 }
 
-// ################################################################################################
-export type DomainStateSelector<P extends MiroirSelectorQueryParams, T> = (
-  domainState: DomainState,
-  params: P
-) => T;
+// // ################################################################################################
+// export type DomainStateSelector<P extends MiroirSelectorQueryParams, T> = (
+//   domainState: DomainState,
+//   params: P
+// ) => T;
 

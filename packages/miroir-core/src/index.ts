@@ -291,7 +291,6 @@ export {
   CUDActionNamesArray,
 } from './0_interfaces/2_domain/DomainControllerInterface.js';
 export {
-  DomainStateSelector,
   DomainStateSelectorNew,
   DomainStateSelectorMap,
   DomainStateSelectorParams,
@@ -301,6 +300,11 @@ export {
   RecordOfJzodElement,
   RecordOfJzodObject,
 } from './0_interfaces/2_domain/DomainSelectorInterface.js';
+export {
+  ZEntityState,
+  ZEntityStateSchema,
+  DeploymentEntityState,
+} from './0_interfaces/2_domain/DeploymentStateInterface.js';
 // export {
 //   // WrappedTransactionalEntityUpdateWithCUDUpdateSchema,
 //   // WrappedTransactionalEntityUpdateWithCUDUpdate,

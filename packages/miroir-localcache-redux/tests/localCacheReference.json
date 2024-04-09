@@ -1,4 +1,8 @@
 {
+  "loading": {},
+  "status": {
+    "initialLoadDone": true
+  },
   "current": {
     "10ff36f2-50a3-48d8-b80f-e48e5d13af8e_model_16dbfe28-e1d7-4f20-9ba4-c1a9873202ad": {
       "ids": [

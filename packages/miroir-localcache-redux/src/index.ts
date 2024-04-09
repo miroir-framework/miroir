@@ -36,10 +36,12 @@ export {
   ReduxStateWithUndoRedo,
   ReduxStoreWithUndoRedo,
   LocalCacheSliceState,
-  LocalCacheSliceStateEntityZone,
   LocalCacheSliceStateZone,
-  MiroirDictionary,
 } from "./4_services/localCache/localCacheReduxSliceInterface";
+export {
+  getMemoizedJzodSchemaSelectorMap,
+  getMemoizedSelectorMap,
+} from "./4_services/localCache/DomainStateSelectors";
 export {
   PersistenceReduxSaga,
   PersistenceSagaGenReturnType,

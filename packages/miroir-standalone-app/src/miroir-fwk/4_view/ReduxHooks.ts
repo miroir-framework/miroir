@@ -49,9 +49,9 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 export type EntityInstanceUuidIndexSelectorParams = LocalCacheEntityInstancesSelectorParams;
 
 // ################################################################################################
-export function useDomainStateSelectorNew<P extends MiroirSelectorQueryParams, T >(
-  domainStateSelector:DomainStateSelectorNew<P, T>,
-  selectorParams:DomainStateSelectorParams<P>,
+export function useDomainStateSelectorNew<Q extends MiroirSelectorQueryParams, T >(
+  domainStateSelector:DomainStateSelectorNew<Q, T>,
+  selectorParams:DomainStateSelectorParams<Q>,
   customQueryInterpreter?: { [k: string]: (query:MiroirSelectorQueryParams) => T }
 ): T {
   const innerSelector = useMemo(
@@ -65,9 +65,9 @@ export function useDomainStateSelectorNew<P extends MiroirSelectorQueryParams, T
 }
 
 // ################################################################################################
-export function useDomainStateCleanSelectorNew<P extends MiroirSelectorQueryParams, T >(
-  domainStateSelector:DomainStateSelectorNew<P, DomainElement>,
-  selectorParams:DomainStateSelectorParams<P>,
+export function useDomainStateCleanSelectorNew<Q extends MiroirSelectorQueryParams, T >(
+  domainStateSelector:DomainStateSelectorNew<Q, DomainElement>,
+  selectorParams:DomainStateSelectorParams<Q>,
   customQueryInterpreter?: { [k: string]: (query:MiroirSelectorQueryParams) => T }
 ): T {
   const innerSelector = useMemo(
@@ -115,7 +115,7 @@ export function useCurrentModelOld(deploymentUuid: Uuid | undefined) {
 }
 
 // ################################################################################################
-export function useCurrentModel(deploymentUuid: Uuid | undefined) {
+export function useCurrentModel(deploymentUuid: Uuid | undefined): MetaModel {
   const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
   const selectorParams:LocalCacheQueryParams = useMemo(
     () => ({

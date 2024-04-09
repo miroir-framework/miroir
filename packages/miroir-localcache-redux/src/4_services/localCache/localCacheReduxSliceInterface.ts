@@ -1,7 +1,9 @@
+import { z } from "zod";
 import { PayloadAction, Store } from "@reduxjs/toolkit";
 import { Patch } from "immer";
 import {
   Commit,
+  DeploymentEntityState,
   DomainElement,
   InstanceAction,
   LocalCacheAction,
@@ -12,25 +14,18 @@ import {
   UndoRedoAction,
   entityInstance
 } from "miroir-core";
-import { z } from "zod";
 
 
 //#########################################################################################
 //# LocalCacheSliceState
 //#########################################################################################
-export const ZEntityIdSchema = z.union([z.number(), z.string()]);
-export const ZDictionarySchema = z.record(z.string().uuid(), entityInstance);
-export type MiroirDictionary = z.infer<typeof ZDictionarySchema>;
-export const ZEntityStateSchema = z.object({ ids: z.array(z.string()), entities: ZDictionarySchema });
-export type ZEntityState = z.infer<typeof ZEntityStateSchema>; //not used
 
 // export type LocalCacheSliceState = { 
 //   [DeploymentUuidSectionEntityUuid: string]: ZEntityState 
 // }; // TODO: check format of DeploymentUuidSectionEntityUuid?
-export type LocalCacheSliceStateEntityZone = { [DeploymentUuidSectionEntityUuid: string]: ZEntityState };
 export type LocalCacheSliceState = { 
-  loading: LocalCacheSliceStateEntityZone,
-  current: { [DeploymentUuidSectionEntityUuid: string]: ZEntityState }
+  loading: DeploymentEntityState,
+  current: DeploymentEntityState
   status: {
     initialLoadDone: boolean,
   }

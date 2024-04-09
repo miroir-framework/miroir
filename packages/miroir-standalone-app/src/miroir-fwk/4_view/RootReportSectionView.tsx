@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Params, useParams } from 'react-router-dom';
+import { Params } from 'react-router-dom';
 
 import {
   ApplicationSection,
@@ -9,7 +9,6 @@ import {
   DomainStateJzodSchemaSelectorMap,
   DomainStateJzodSchemaSelectorParams,
   DomainStateSelectorMap,
-  DomainStateSelectorNew,
   DomainStateSelectorParams,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -17,9 +16,7 @@ import {
   RecordOfJzodObject,
   RootReportSection,
   Uuid,
-  getJzodSchemaSelectorMap,
   getLoggerName,
-  getSelectorMap,
   getSelectorParams,
   selectFetchQueryJzodSchemaFromDomainStateNew
 } from "miroir-core";
@@ -30,6 +27,7 @@ import { useDomainStateJzodSchemaSelector, useDomainStateSelectorNew } from './R
 import { ReportSectionView } from './ReportSectionView';
 import { ReportUrlParamKeys } from './routes/ReportPage';
 
+import { getMemoizedJzodSchemaSelectorMap, getMemoizedSelectorMap } from 'miroir-localcache-redux';
 import { packageName } from '../../constants';
 import { cleanLevel } from './constants';
 
@@ -80,7 +78,7 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
   // );
   
   const selectorMap: DomainStateSelectorMap<MiroirSelectorQueryParams> = useMemo(
-  () => getSelectorMap(),
+  () => getMemoizedSelectorMap(),
   []
   )
 
@@ -122,8 +120,8 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
   // // )
 
   const queryResults: DomainElementObject = useDomainStateSelectorNew(
-  selectorMap.selectByDomainManyQueriesFromDomainState,
-  domainFetchQueryParams
+    selectorMap.selectByDomainManyQueriesFromDomainState,
+    domainFetchQueryParams
   );
 
   // log.info(
@@ -135,7 +133,7 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
   // );
 
   const jzodSchemaSelectorMap: DomainStateJzodSchemaSelectorMap = useMemo(
-    () => getJzodSchemaSelectorMap(),
+    () => getMemoizedJzodSchemaSelectorMap(),
     []
   )
 

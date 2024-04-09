@@ -279,7 +279,8 @@ export async function restActionHandler(
     }
   }
 
-  // ################################################################################################
+// ################################################################################################
+// USES LocalCache memoized reducers, shall go to miroir-server instead?
 export async function queryHandler(
   useDomainController: boolean,
   continuationFunction: (response:any) =>(arg0: any) => any,

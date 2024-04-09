@@ -1,6 +1,7 @@
 import { createSelector } from "@reduxjs/toolkit";
 import {
   ApplicationVersion,
+  DeploymentEntityState,
   EntityDefinition,
   EntityInstancesUuidIndex,
   JzodSchemaDefinition,
@@ -22,10 +23,14 @@ import {
   entityStoreBasedConfiguration,
   getLoggerName,
 } from "miroir-core";
-import { LocalCacheSliceStateEntityZone, ReduxStateWithUndoRedo } from "./localCacheReduxSliceInterface";
-import { selectEntityInstanceUuidIndexFromLocalCache, selectEntityInstanceUuidIndexFromLocalCacheEntityZone, selectLocalCacheCurrentEntityZone, selectMiroirSelectorQueryParams, selectSelectorParams } from "./LocalCacheSliceSelectors";
 import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
+import {
+  selectEntityInstanceUuidIndexFromLocalCacheEntityZone,
+  selectCurrentEntityZoneFromReduxState,
+  selectMiroirSelectorQueryParams,
+} from "./LocalCacheSliceSelectors";
+import { ReduxStateWithUndoRedo } from "./localCacheReduxSliceInterface";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"LocalCacheSliceModelSelector");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -36,10 +41,10 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 );
 
 // ################################################################################################
-// const selectEntities = (reduxState: ReduxStateWithUndoRedo, params: MiroirSelectorQueryParams) => {
+// const selectEntities = (reduxState: ReduxStateWithUndoRedo, params:  ) => {
 const selectEntities = createSelector(
-  [selectLocalCacheCurrentEntityZone,selectMiroirSelectorQueryParams],
-  (reduxState: LocalCacheSliceStateEntityZone, params: MiroirSelectorQueryParams) => {
+  [selectCurrentEntityZoneFromReduxState,selectMiroirSelectorQueryParams],
+  (reduxState: DeploymentEntityState, params: MiroirSelectorQueryParams) => {
     const result = selectEntityInstanceUuidIndexFromLocalCacheEntityZone(reduxState, {
       queryType: "LocalCacheEntityInstancesSelectorParams",
       definition: {
@@ -55,8 +60,8 @@ const selectEntities = createSelector(
 
 // ################################################################################################
 const selectEntityDefinitions = createSelector(
-  [selectLocalCacheCurrentEntityZone,selectMiroirSelectorQueryParams],
-  (reduxState: LocalCacheSliceStateEntityZone, params: MiroirSelectorQueryParams) => {
+  [selectCurrentEntityZoneFromReduxState,selectMiroirSelectorQueryParams],
+  (reduxState: DeploymentEntityState, params: MiroirSelectorQueryParams) => {
     const result = selectEntityInstanceUuidIndexFromLocalCacheEntityZone(reduxState, {
       queryType: "LocalCacheEntityInstancesSelectorParams",
       definition: {
@@ -72,8 +77,8 @@ const selectEntityDefinitions = createSelector(
 
 // ################################################################################################
 const selectJzodSchemas = createSelector(
-  [selectLocalCacheCurrentEntityZone,selectMiroirSelectorQueryParams],
-  (reduxState: LocalCacheSliceStateEntityZone, params: MiroirSelectorQueryParams) => {
+  [selectCurrentEntityZoneFromReduxState,selectMiroirSelectorQueryParams],
+  (reduxState: DeploymentEntityState, params: MiroirSelectorQueryParams) => {
     const result = selectEntityInstanceUuidIndexFromLocalCacheEntityZone(reduxState, {
       queryType: "LocalCacheEntityInstancesSelectorParams",
       definition: {
@@ -94,8 +99,8 @@ const selectJzodSchemas = createSelector(
 
 // ################################################################################################
 const selectMenus = createSelector(
-  [selectLocalCacheCurrentEntityZone,selectMiroirSelectorQueryParams],
-  (reduxState: LocalCacheSliceStateEntityZone, params: MiroirSelectorQueryParams) => {
+  [selectCurrentEntityZoneFromReduxState,selectMiroirSelectorQueryParams],
+  (reduxState: DeploymentEntityState, params: MiroirSelectorQueryParams) => {
     const result = selectEntityInstanceUuidIndexFromLocalCacheEntityZone(reduxState, {
       queryType: "LocalCacheEntityInstancesSelectorParams",
       definition: {
@@ -116,8 +121,8 @@ const selectMenus = createSelector(
 
 // ################################################################################################
 const selectReports = createSelector(
-  [selectLocalCacheCurrentEntityZone,selectMiroirSelectorQueryParams],
-  (reduxState: LocalCacheSliceStateEntityZone, params: MiroirSelectorQueryParams) => {
+  [selectCurrentEntityZoneFromReduxState,selectMiroirSelectorQueryParams],
+  (reduxState: DeploymentEntityState, params: MiroirSelectorQueryParams) => {
     const result = selectEntityInstanceUuidIndexFromLocalCacheEntityZone(reduxState, {
       queryType: "LocalCacheEntityInstancesSelectorParams",
       definition: {
@@ -138,8 +143,8 @@ const selectReports = createSelector(
 
 // ################################################################################################
 const selectConfigurations = createSelector(
-  [selectLocalCacheCurrentEntityZone,selectMiroirSelectorQueryParams],
-  (reduxState: LocalCacheSliceStateEntityZone, params: MiroirSelectorQueryParams) => {
+  [selectCurrentEntityZoneFromReduxState,selectMiroirSelectorQueryParams],
+  (reduxState: DeploymentEntityState, params: MiroirSelectorQueryParams) => {
     const result = selectEntityInstanceUuidIndexFromLocalCacheEntityZone(reduxState, {
       queryType: "LocalCacheEntityInstancesSelectorParams",
       definition: {
@@ -160,8 +165,8 @@ const selectConfigurations = createSelector(
 
 // ################################################################################################
 const selectApplicationVersions = createSelector(
-  [selectLocalCacheCurrentEntityZone,selectMiroirSelectorQueryParams],
-  (reduxState: LocalCacheSliceStateEntityZone, params: MiroirSelectorQueryParams) => {
+  [selectCurrentEntityZoneFromReduxState,selectMiroirSelectorQueryParams],
+  (reduxState: DeploymentEntityState, params: MiroirSelectorQueryParams) => {
   const result = selectEntityInstanceUuidIndexFromLocalCacheEntityZone(reduxState, {
     queryType: "LocalCacheEntityInstancesSelectorParams",
     definition: {

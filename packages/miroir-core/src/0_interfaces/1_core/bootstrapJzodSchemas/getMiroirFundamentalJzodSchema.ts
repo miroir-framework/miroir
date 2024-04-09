@@ -1563,6 +1563,13 @@ export function getMiroirFundamentalJzodSchema(
               "type": "schemaReference",
               "definition": {
                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "domainModelGetSingleSelectObjectListQueryQueryParams"
+              }
+            },
+            {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                 "relativePath": "domainManyQueriesWithDeploymentUuid"
               }
             },

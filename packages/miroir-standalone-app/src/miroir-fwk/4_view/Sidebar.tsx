@@ -1,7 +1,5 @@
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import MailIcon from '@mui/icons-material/Mail';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
 import Divider from '@mui/material/Divider';
 import MuiDrawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
@@ -14,27 +12,21 @@ import { CSSObject, styled, Theme, useTheme } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
 
 
+import { AutoStories } from '@mui/icons-material';
+import { Icon } from '@mui/material';
 import {
   applicationDeploymentMiroir,
-  DomainControllerInterface,
   DomainElementObject,
   DomainManyQueriesWithDeploymentUuid,
   DomainStateSelectorMap,
   DomainStateSelectorParams,
-  getSelectorMap,
   getSelectorParams,
-  Menu,
   menuDefaultMiroir,
-  MiroirSelectorQueryParams,
-  reportEntityList,
-  reportMenuList,
-  selectByDomainManyQueriesFromDomainState
+  MiroirSelectorQueryParams
 } from "miroir-core";
-import React, { useMemo } from 'react';
-import { useDomainControllerService, useMiroirContext } from './MiroirContextReactProvider';
+import { useMemo } from 'react';
 import { useDomainStateSelectorNew } from './ReduxHooks';
-import { AutoStories } from '@mui/icons-material';
-import { Icon } from '@mui/material';
+import { getMemoizedSelectorMap } from 'miroir-localcache-redux';
 
 
 
@@ -159,7 +151,7 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
   // const context = useMiroirContext();
 
   const selectorMap: DomainStateSelectorMap<MiroirSelectorQueryParams> = useMemo(
-    () => getSelectorMap(),
+    () => getMemoizedSelectorMap(),
     []
   )
 

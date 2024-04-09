@@ -2,7 +2,7 @@ import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface"
 import {
   DomainStateJzodSchemaSelectorMap,
   DomainStateJzodSchemaSelectorParams,
-  DomainStateSelector,
+  DomainStateJzodSchemaSelector,
   DomainStateSelectorMap,
   DomainStateSelectorNew,
   DomainStateSelectorParams,
@@ -10,7 +10,6 @@ import {
   RecordOfJzodObject
 } from "../0_interfaces/2_domain/DomainSelectorInterface";
 
-import { createSelector } from "reselect";
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import {
   ApplicationSection,
@@ -38,12 +37,11 @@ import {
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/Logger";
-import entityEntityDefinition from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
 import { packageName } from "../constants";
 import { getLoggerName } from "../tools";
 import { cleanLevel } from "./constants";
 import { applyTransformer } from "./Transformers";
-import { jzodObject } from "@miroir-framework/jzod-ts";
+import entityEntityDefinition from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainSelector");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -52,6 +50,11 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
     log = value;
   }
 );
+
+const domainStateSelector = (domainState: DomainState, params: any) => domainState;
+const domainStateSelectorParams = (domainState: DomainState, params: any) => params;
+let emptySelectorMap: DomainStateSelectorMap<MiroirSelectorQueryParams> = {}
+let emptyJzodSchemaSelectorMap: DomainStateJzodSchemaSelectorMap = {}
 
 
 // ################################################################################################
@@ -384,68 +387,6 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:DomainStateSelect
   }
 };
 
-// ################################################################################################
-// ################################################################################################
-const domainStateSelector = (domainState: DomainState, params: any) => domainState;
-const domainStateSelectorParams = (domainState: DomainState, params: any) => params;
-
-
-let selectorMap: DomainStateSelectorMap<MiroirSelectorQueryParams> = {}
-let jzodSchemaSelectorMap: DomainStateJzodSchemaSelectorMap = {}
-
-export function getSelectorMap(): DomainStateSelectorMap<MiroirSelectorQueryParams> {
-  // return selectorMap;
-  return {
-    selectEntityInstanceUuidIndexFromDomainState: createSelector(
-      [domainStateSelector, domainStateSelectorParams],
-      selectEntityInstanceUuidIndexFromDomainState
-    ),
-    selectEntityInstanceFromObjectQueryAndDomainState: createSelector(
-      [domainStateSelector, domainStateSelectorParams],
-      selectEntityInstanceFromObjectQueryAndDomainState
-    ),
-    selectEntityInstanceListFromListQueryAndDomainState: createSelector(
-      [domainStateSelector, domainStateSelectorParams],
-      selectEntityInstanceListFromListQueryAndDomainState
-    ),
-    selectByDomainManyQueriesFromDomainState: createSelector(
-      [domainStateSelector, domainStateSelectorParams],
-      selectByDomainManyQueriesFromDomainState
-    ),
-  };
-}
-
-export function getJzodSchemaSelectorMap(): DomainStateJzodSchemaSelectorMap {
-  // return jzodSchemaSelectorMap;
-  return {
-    selectJzodSchemaByDomainModelQueryFromDomainStateNew: createSelector(
-      [domainStateSelector, domainStateSelectorParams],
-      selectJzodSchemaByDomainModelQueryFromDomainStateNew
-    ),
-    selectEntityJzodSchemaFromDomainStateNew: createSelector(
-      [domainStateSelector, domainStateSelectorParams],
-      selectEntityJzodSchemaFromDomainStateNew
-    ),
-    selectFetchQueryJzodSchemaFromDomainStateNew: createSelector(
-      [domainStateSelector, domainStateSelectorParams],
-      selectFetchQueryJzodSchemaFromDomainStateNew
-    ),
-    selectJzodSchemaBySingleSelectQueryFromDomainStateNew: createSelector(
-      [domainStateSelector, domainStateSelectorParams],
-      selectJzodSchemaBySingleSelectQueryFromDomainStateNew
-    ),
-  };
-}
-
-export function getSelectorParams<Q extends MiroirSelectorQueryParams>(
-  query: Q,
-  selectorMap?: DomainStateSelectorMap<MiroirSelectorQueryParams>
-): DomainStateSelectorParams<Q> {
-  return {
-    query,
-    selectorMap: selectorMap ?? getSelectorMap(),
-  };
-}
 
 
 // ################################################################################################
@@ -467,7 +408,7 @@ export const selectEntityInstanceListFromListQueryAndDomainState: DomainStateSel
   //   "selectorParams",
   //   selectorParams
   // );
-  const localSelectorMap:DomainStateSelectorMap<DomainModelGetSingleSelectObjectListQueryQueryParams> = selectorParams?.selectorMap??selectorMap;
+  const localSelectorMap:DomainStateSelectorMap<DomainModelGetSingleSelectObjectListQueryQueryParams> = selectorParams?.selectorMap??emptySelectorMap;
   const selectedInstances: DomainElement = localSelectorMap.selectEntityInstanceUuidIndexFromDomainState(domainState, selectorParams);
 
   switch (selectorParams.query.singleSelectQuery.select.queryType) {
@@ -803,7 +744,7 @@ export const selectByDomainManyQueriesFromDomainState:DomainStateSelectorNew<
     elementValue: { ...selectorParams.query.contextResults.elementValue },
   };
   // log.info("########## DomainSelector selectByDomainManyQueriesFromDomainState will use context", context);
-  const localSelectorMap:DomainStateSelectorMap<DomainManyQueriesWithDeploymentUuid> = selectorParams?.selectorMap??selectorMap;
+  const localSelectorMap:DomainStateSelectorMap<DomainManyQueriesWithDeploymentUuid> = selectorParams?.selectorMap??emptySelectorMap;
 
   for (const entry of Object.entries(selectorParams.query.fetchQuery.select)) {
     let result = innerSelectElementFromQueryAndDomainState(
@@ -855,7 +796,6 @@ export const selectByDomainManyQueriesFromDomainState:DomainStateSelectorNew<
   );
   return context;
 };
-
 
 // // ################################################################################################
 // export const selectByCustomQueryFromDomainStateNew = (
@@ -1032,16 +972,70 @@ export const selectJzodSchemaByDomainModelQueryFromDomainStateNew = (
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-jzodSchemaSelectorMap = {
-  "selectJzodSchemaByDomainModelQueryFromDomainStateNew": createSelector([domainStateSelector,domainStateSelectorParams],selectJzodSchemaByDomainModelQueryFromDomainStateNew),
-  "selectEntityJzodSchemaFromDomainStateNew": createSelector([domainStateSelector,domainStateSelectorParams],selectEntityJzodSchemaFromDomainStateNew),
-  "selectFetchQueryJzodSchemaFromDomainStateNew": createSelector([domainStateSelector,domainStateSelectorParams],selectFetchQueryJzodSchemaFromDomainStateNew),
-  "selectJzodSchemaBySingleSelectQueryFromDomainStateNew": createSelector([domainStateSelector,domainStateSelectorParams],selectJzodSchemaBySingleSelectQueryFromDomainStateNew),
+// ################################################################################################
+// DEPENDENT ON RESELECT / REDUX. TO MOVE TO miroir-localCache-redux!
+// ################################################################################################
+
+export function getSelectorMap(): DomainStateSelectorMap<MiroirSelectorQueryParams> {
+  // return selectorMap;
+  return {
+    selectEntityInstanceUuidIndexFromDomainState:
+      selectEntityInstanceUuidIndexFromDomainState as DomainStateSelectorNew<
+        MiroirSelectorQueryParams,
+        DomainElementObject
+      >,
+    selectEntityInstanceFromObjectQueryAndDomainState:
+      selectEntityInstanceFromObjectQueryAndDomainState as DomainStateSelectorNew<
+        MiroirSelectorQueryParams,
+        DomainElementObject
+      >,
+    selectEntityInstanceListFromListQueryAndDomainState:
+      selectEntityInstanceListFromListQueryAndDomainState as DomainStateSelectorNew<
+        MiroirSelectorQueryParams,
+        DomainElementObject
+      >,
+    selectByDomainManyQueriesFromDomainState: selectByDomainManyQueriesFromDomainState as DomainStateSelectorNew<
+      MiroirSelectorQueryParams,
+      DomainElementObject
+    >,
+  };
 }
 
-selectorMap = {
-  "selectEntityInstanceUuidIndexFromDomainState": createSelector([domainStateSelector,domainStateSelectorParams],selectEntityInstanceUuidIndexFromDomainState),
-  "selectEntityInstanceFromObjectQueryAndDomainState": createSelector([domainStateSelector,domainStateSelectorParams],selectEntityInstanceFromObjectQueryAndDomainState),
-  "selectEntityInstanceListFromListQueryAndDomainState": createSelector([domainStateSelector,domainStateSelectorParams],selectEntityInstanceListFromListQueryAndDomainState),
-  "selectByDomainManyQueriesFromDomainState": createSelector([domainStateSelector,domainStateSelectorParams],selectByDomainManyQueriesFromDomainState),
+
+
+export function getJzodSchemaSelectorMap(): DomainStateJzodSchemaSelectorMap {
+  // return jzodSchemaSelectorMap;
+  return {
+    selectJzodSchemaByDomainModelQueryFromDomainStateNew: selectJzodSchemaByDomainModelQueryFromDomainStateNew,
+    selectEntityJzodSchemaFromDomainStateNew:
+      selectEntityJzodSchemaFromDomainStateNew as DomainStateJzodSchemaSelector<DomainModelQueryJzodSchemaParams>,
+    selectFetchQueryJzodSchemaFromDomainStateNew:
+      selectFetchQueryJzodSchemaFromDomainStateNew as DomainStateJzodSchemaSelector<DomainModelQueryJzodSchemaParams>,
+    selectJzodSchemaBySingleSelectQueryFromDomainStateNew:
+      selectJzodSchemaBySingleSelectQueryFromDomainStateNew as DomainStateJzodSchemaSelector<DomainModelQueryJzodSchemaParams>,
+  };
 }
+
+export function getSelectorParams<Q extends MiroirSelectorQueryParams>(
+  query: Q,
+  selectorMap?: DomainStateSelectorMap<MiroirSelectorQueryParams>
+): DomainStateSelectorParams<Q> {
+  return {
+    query,
+    selectorMap: selectorMap ?? getSelectorMap(),
+  };
+}
+
+// jzodSchemaSelectorMap = {
+//   "selectJzodSchemaByDomainModelQueryFromDomainStateNew": createSelector([domainStateSelector,domainStateSelectorParams],selectJzodSchemaByDomainModelQueryFromDomainStateNew),
+//   "selectEntityJzodSchemaFromDomainStateNew": createSelector([domainStateSelector,domainStateSelectorParams],selectEntityJzodSchemaFromDomainStateNew),
+//   "selectFetchQueryJzodSchemaFromDomainStateNew": createSelector([domainStateSelector,domainStateSelectorParams],selectFetchQueryJzodSchemaFromDomainStateNew),
+//   "selectJzodSchemaBySingleSelectQueryFromDomainStateNew": createSelector([domainStateSelector,domainStateSelectorParams],selectJzodSchemaBySingleSelectQueryFromDomainStateNew),
+// }
+
+// selectorMap = {
+//   "selectEntityInstanceUuidIndexFromDomainState": createSelector([domainStateSelector,domainStateSelectorParams],selectEntityInstanceUuidIndexFromDomainState),
+//   "selectEntityInstanceFromObjectQueryAndDomainState": createSelector([domainStateSelector,domainStateSelectorParams],selectEntityInstanceFromObjectQueryAndDomainState),
+//   "selectEntityInstanceListFromListQueryAndDomainState": createSelector([domainStateSelector,domainStateSelectorParams],selectEntityInstanceListFromListQueryAndDomainState),
+//   "selectByDomainManyQueriesFromDomainState": createSelector([domainStateSelector,domainStateSelectorParams],selectByDomainManyQueriesFromDomainState),
+// }

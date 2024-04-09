@@ -329,7 +329,15 @@ describe("domainSelector", () => {
         queryType: "DomainManyQueries",
         deploymentUuid: applicationDeploymentLibrary.uuid,
         contextResults: { elementType: "object", elementValue: {} },
-        pageParams: { elementType: "object", elementValue: {} },
+        pageParams: {
+          elementType: "object",
+          elementValue: {
+            applicationSection: {
+              elementType: "string",
+              elementValue: "data",
+            },
+          },
+        },
         queryParams: { elementType: "object", elementValue: {} },
         fetchQuery: {
           select: {
@@ -387,52 +395,60 @@ describe("domainSelector", () => {
 
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
-        "deploymentUuid": applicationDeploymentLibrary.uuid,
-        "contextResults": { elementType: "object", elementValue: {} },
-        pageParams: { elementType: "object", elementValue: {} },
+        deploymentUuid: applicationDeploymentLibrary.uuid,
+        contextResults: { elementType: "object", elementValue: {} },
+        pageParams: {
+          elementType: "object",
+          elementValue: {
+            applicationSection: {
+              elementType: "string",
+              elementValue: "data",
+            },
+          },
+        },
         queryParams: { elementType: "object", elementValue: {} },
-        "fetchQuery": {
-          "select": {
-            "book": {
+        fetchQuery: {
+          select: {
+            book: {
               queryType: "selectObjectByDirectReference",
               parentName: "Book",
               parentUuid: {
-                "referenceType": "constant",
-                referenceUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                referenceType: "constant",
+                referenceUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
               },
               instanceUuid: {
                 referenceType: "constant",
-                referenceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
-              }
+                referenceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+              },
             },
-            "publisher": {
-              "queryType": "selectObjectByRelation",
-              "parentName": "Publisher",
+            publisher: {
+              queryType: "selectObjectByRelation",
+              parentName: "Publisher",
               parentUuid: {
-                "referenceType": "constant",
-                referenceUuid: "a027c379-8468-43a5-ba4d-bf618be25cab"
+                referenceType: "constant",
+                referenceUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
               },
-              "objectReference": {
-                "referenceType": "queryContextReference",
-                "referenceName": "book"
+              objectReference: {
+                referenceType: "queryContextReference",
+                referenceName: "book",
               },
-              "AttributeOfObjectToCompareToReferenceUuid": "publisher",
+              AttributeOfObjectToCompareToReferenceUuid: "publisher",
             },
-            "booksOfPublisher": {
-              "queryType": "selectObjectListByRelation",
-              "parentName": "Book",
+            booksOfPublisher: {
+              queryType: "selectObjectListByRelation",
+              parentName: "Book",
               parentUuid: {
-                "referenceType": "constant",
-                referenceUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                referenceType: "constant",
+                referenceUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
               },
-              "objectReference": {
-                "referenceType": "constant",
-                "referenceUuid": "516a7366-39e7-4998-82cb-80199a7fa667",
+              objectReference: {
+                referenceType: "constant",
+                referenceUuid: "516a7366-39e7-4998-82cb-80199a7fa667",
               },
-              "AttributeOfListObjectToCompareToReferenceUuid": "publisher"
-            }
-          }
-        }
+              AttributeOfListObjectToCompareToReferenceUuid: "publisher",
+            },
+          },
+        },
       };
 
       const result:DomainElement = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam));
@@ -456,7 +472,15 @@ describe("domainSelector", () => {
         queryType: "DomainManyQueries",
         deploymentUuid: applicationDeploymentLibrary.uuid,
         contextResults: { elementType: "object", elementValue: {} },
-        pageParams: { elementType: "object", elementValue: {} },
+        pageParams: {
+          elementType: "object",
+          elementValue: {
+            applicationSection: {
+              elementType: "string",
+              elementValue: "data",
+            },
+          },
+        },
         queryParams: { elementType: "object", elementValue: {} },
         fetchQuery: {
           select: {
@@ -542,7 +566,12 @@ describe("domainSelector", () => {
         queryType: "DomainManyQueries",
         deploymentUuid: applicationDeploymentLibrary.uuid,
         contextResults: { elementType: "object", elementValue: {} },
-        pageParams: { elementType: "object", elementValue: {} },
+        pageParams: { elementType: "object", elementValue: {
+          applicationSection: {
+            elementType: "string",
+            elementValue: "data",
+          },
+      } },
         queryParams: { elementType: "object", elementValue: {} },
         fetchQuery: {
           select: {

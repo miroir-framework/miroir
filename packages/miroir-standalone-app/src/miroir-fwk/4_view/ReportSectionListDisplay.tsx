@@ -17,7 +17,6 @@ import {
   DomainStateSelectorParams,
   Entity,
   EntityDefinition,
-  EntityInstance,
   EntityInstancesUuidIndex,
   InstanceAction,
   JzodElement,
@@ -31,21 +30,24 @@ import {
   applicationSection,
   domainElementObject,
   getLoggerName,
-  getSelectorMap,
   getSelectorParams,
   jzodObject,
-  objectListReportSection,
-  selectByDomainManyQueriesFromDomainState
+  objectListReportSection
 } from "miroir-core";
 
 import { Button } from "@mui/material";
+import { getMemoizedSelectorMap } from "miroir-localcache-redux";
 import { packageName } from "../../constants";
 import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "../../miroir-fwk/4_view/getColumnDefinitionsFromEntityAttributes";
 import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from "./JsonObjectEditFormDialog";
 import { noValue } from "./JzodElementEditor";
 import { MTableComponent } from "./MTableComponent";
 import { TableComponentType, TableComponentTypeSchema } from "./MTableComponentInterface";
-import { useDomainControllerService, useMiroirContextInnerFormOutput, useMiroirContextService } from './MiroirContextReactProvider';
+import {
+  useDomainControllerService,
+  useMiroirContextInnerFormOutput,
+  useMiroirContextService,
+} from "./MiroirContextReactProvider";
 import { useCurrentModelOld, useDomainStateCleanSelectorNew } from "./ReduxHooks";
 import { cleanLevel } from "./constants";
 
@@ -204,7 +206,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
 
   const selectorMap: DomainStateSelectorMap<MiroirSelectorQueryParams> = useMemo(
-    () => getSelectorMap(),
+    () => getMemoizedSelectorMap(),
     []
   )
 
