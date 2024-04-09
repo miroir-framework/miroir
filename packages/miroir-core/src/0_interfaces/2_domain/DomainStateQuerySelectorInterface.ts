@@ -10,16 +10,16 @@ import { DomainState } from "./DomainControllerInterface";
 export type RecordOfJzodElement = Record<string, JzodElement | undefined>;
 export type RecordOfJzodObject = Record<string, JzodObject | undefined>;
 
-export type DomainStateSelectorMap<Q extends MiroirSelectorQueryParams> = {[k:string]: DomainStateSelectorNew<Q, any>};
+export type DomainStateQuerySelectorMap<Q extends MiroirSelectorQueryParams> = {[k:string]: DomainStateQuerySelector<Q, any>};
 
-export interface DomainStateSelectorParams<Q extends MiroirSelectorQueryParams> {
-  selectorMap?: DomainStateSelectorMap<Q>
+export interface DomainStateQuerySelectorParams<Q extends MiroirSelectorQueryParams> {
+  selectorMap?: DomainStateQuerySelectorMap<Q>
   query: Q
 }
 
-export type DomainStateSelectorNew<Q extends MiroirSelectorQueryParams, T> = (
+export type DomainStateQuerySelector<Q extends MiroirSelectorQueryParams, T> = (
   domainState: DomainState,
-  params: DomainStateSelectorParams<Q>
+  params: DomainStateQuerySelectorParams<Q>
 ) => T;
 
 

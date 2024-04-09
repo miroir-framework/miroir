@@ -18,14 +18,14 @@ import {
   applicationDeploymentMiroir,
   DomainElementObject,
   DomainManyQueriesWithDeploymentUuid,
-  DomainStateSelectorMap,
-  DomainStateSelectorParams,
+  DomainStateQuerySelectorMap,
+  DomainStateQuerySelectorParams,
   getSelectorParams,
   menuDefaultMiroir,
   MiroirSelectorQueryParams
 } from "miroir-core";
 import { useMemo } from 'react';
-import { useDomainStateSelectorNew } from './ReduxHooks';
+import { useDomainStateQuerySelector } from './ReduxHooks';
 import { getMemoizedSelectorMap } from 'miroir-localcache-redux';
 
 
@@ -150,12 +150,12 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
   // const miroirConfig = context.getMiroirConfig();
   // const context = useMiroirContext();
 
-  const selectorMap: DomainStateSelectorMap<MiroirSelectorQueryParams> = useMemo(
+  const selectorMap: DomainStateQuerySelectorMap<MiroirSelectorQueryParams> = useMemo(
     () => getMemoizedSelectorMap(),
     []
   )
 
-  const domainFetchQueryParams: DomainStateSelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(
+  const domainFetchQueryParams: DomainStateQuerySelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(
     () => 
     getSelectorParams<DomainManyQueriesWithDeploymentUuid>({
       queryType: "DomainManyQueries",
@@ -185,7 +185,7 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
     [selectorMap]
   );
 
-  const domainElementObject: DomainElementObject = useDomainStateSelectorNew(
+  const domainElementObject: DomainElementObject = useDomainStateQuerySelector(
     selectorMap.selectByDomainManyQueriesFromDomainState,
     domainFetchQueryParams
   );

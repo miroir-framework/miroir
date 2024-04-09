@@ -12,9 +12,9 @@ import {
   ApplicationDeploymentSchema,
   DomainControllerInterface,
   DomainManyQueriesWithDeploymentUuid,
-  DomainStateSelectorMap,
+  DomainStateQuerySelectorMap,
   DomainStateSelectorNew,
-  DomainStateSelectorParams,
+  DomainStateQuerySelectorParams,
   Entity,
   EntityDefinition,
   EntityInstancesUuidIndex,
@@ -48,7 +48,7 @@ import {
   useMiroirContextInnerFormOutput,
   useMiroirContextService,
 } from "./MiroirContextReactProvider";
-import { useCurrentModelOld, useDomainStateCleanSelectorNew } from "./ReduxHooks";
+import { useCurrentModelOld, useDomainStateQuerySelectorForCleanedResult } from "./ReduxHooks";
 import { cleanLevel } from "./constants";
 
 
@@ -205,7 +205,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
 
-  const selectorMap: DomainStateSelectorMap<MiroirSelectorQueryParams> = useMemo(
+  const selectorMap: DomainStateQuerySelectorMap<MiroirSelectorQueryParams> = useMemo(
     () => getMemoizedSelectorMap(),
     []
   )
@@ -315,7 +315,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     ]
   );
 
-  const foreignKeyObjectsFetchQueryParams: DomainStateSelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(
+  const foreignKeyObjectsFetchQueryParams: DomainStateQuerySelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(
     () =>
       getSelectorParams<DomainManyQueriesWithDeploymentUuid>(
         {
@@ -355,7 +355,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
 
   log.info("MTableComponent foreignKeyObjectsFetchQueryParams", foreignKeyObjectsFetchQueryParams);
 
-  const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = useDomainStateCleanSelectorNew(
+  const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = useDomainStateQuerySelectorForCleanedResult(
     selectorMap.selectByDomainManyQueriesFromDomainState as DomainStateSelectorNew<DomainManyQueriesWithDeploymentUuid, any>,
     foreignKeyObjectsFetchQueryParams
   );

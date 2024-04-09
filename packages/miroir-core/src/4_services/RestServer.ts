@@ -31,7 +31,7 @@ import { cleanLevel } from "./constants";
 
 import applicationDeploymentMiroir from "../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface";
-import { getSelectorParams, selectByDomainManyQueriesFromDomainState } from "../2_domain/DomainSelector";
+import { getSelectorParams, selectByDomainManyQueriesFromDomainState } from "../2_domain/DomainStateQuerySelectors";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RestServer");
 let log:LoggerInterface = console as any as LoggerInterface;

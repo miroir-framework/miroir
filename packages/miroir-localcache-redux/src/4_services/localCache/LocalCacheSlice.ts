@@ -405,12 +405,12 @@ function loadNewEntityInstancesInLocalCache(
 
 //   const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(deleteCascadeforeignKeyObjectsFetchQuery))
 
-//   // const deleteCascadeforeignKeyObjectsFetchQueryParams: DomainStateSelectorParams<DomainManyQueriesWithDeploymentUuid> = 
+//   // const deleteCascadeforeignKeyObjectsFetchQueryParams: DomainStateQuerySelectorParams<DomainManyQueriesWithDeploymentUuid> = 
 //   //   getSelectorParams<DomainManyQueriesWithDeploymentUuid>(deleteCascadeforeignKeyObjectsFetchQuery,
 //   //     selectorMap
 //   //   )
 //   // ;
-//   // const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = useDomainStateCleanSelectorNew(
+//   // const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = useDomainStateQuerySelectorForCleanedResult(
 //   //   selectorMap.selectByDomainManyQueriesFromDomainState as DomainStateSelectorNew<DomainManyQueriesWithDeploymentUuid, any>,
 //   //   foreignKeyObjectsFetchQueryParams
 //   // );

@@ -1,10 +1,10 @@
 import { createSelector } from "@reduxjs/toolkit";
-import { DomainStateSelectorMap, MiroirSelectorQueryParams, selectEntityInstanceUuidIndexFromDomainState, selectEntityInstanceFromObjectQueryAndDomainState, selectEntityInstanceListFromListQueryAndDomainState, selectByDomainManyQueriesFromDomainState, DomainStateJzodSchemaSelectorMap, selectJzodSchemaByDomainModelQueryFromDomainStateNew, selectEntityJzodSchemaFromDomainStateNew, selectFetchQueryJzodSchemaFromDomainStateNew, selectJzodSchemaBySingleSelectQueryFromDomainStateNew, DomainState } from "miroir-core";
+import { DomainStateQuerySelectorMap, MiroirSelectorQueryParams, selectEntityInstanceUuidIndexFromDomainState, selectEntityInstanceFromObjectQueryAndDomainState, selectEntityInstanceListFromListQueryAndDomainState, selectByDomainManyQueriesFromDomainState, DomainStateJzodSchemaSelectorMap, selectJzodSchemaByDomainModelQueryFromDomainStateNew, selectEntityJzodSchemaFromDomainStateNew, selectFetchQueryJzodSchemaFromDomainStateNew, selectJzodSchemaBySingleSelectQueryFromDomainStateNew, DomainState } from "miroir-core";
 
 const domainStateSelector = (domainState: DomainState, params: any) => domainState;
 const domainStateSelectorParams = (domainState: DomainState, params: any) => params;
 
-export function getMemoizedSelectorMap(): DomainStateSelectorMap<MiroirSelectorQueryParams> {
+export function getMemoizedSelectorMap(): DomainStateQuerySelectorMap<MiroirSelectorQueryParams> {
   // return selectorMap;
   return {
     selectEntityInstanceUuidIndexFromDomainState: createSelector(

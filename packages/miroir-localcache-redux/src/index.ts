@@ -14,8 +14,8 @@ export {
 } from "./4_services/localCache/LocalCacheSliceModelSelectorOld";
 export {
   applyDomainStateJzodSchemaSelector,
-  applyDomainStateSelectorNew,
-  applyDomainStateCleanSelectorNew,
+  applyDomainStateQuerySelector,
+  applyDomainStateQuerySelectorForCleanedResult,
   selectDomainStateJzodSchemaSelectorParams,
   selectDomainStateSelectorParams,
   // selectDomainState,
@@ -41,7 +41,7 @@ export {
 export {
   getMemoizedJzodSchemaSelectorMap,
   getMemoizedSelectorMap,
-} from "./4_services/localCache/DomainStateSelectors";
+} from "./4_services/localCache/DomainStateMemoizedSelectors";
 export {
   PersistenceReduxSaga,
   PersistenceSagaGenReturnType,

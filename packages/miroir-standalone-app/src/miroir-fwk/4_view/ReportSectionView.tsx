@@ -4,7 +4,7 @@ import {
   ApplicationDeploymentConfiguration,
   ApplicationSection,
   DomainElementObject,
-  DomainStateSelectorMap,
+  DomainStateQuerySelectorMap,
   Entity,
   EntityDefinition,
   LoggerInterface,
@@ -41,7 +41,7 @@ export interface ReportSectionEntityInstanceProps {
   paramsAsdomainElements: DomainElementObject,
   reportSection: ReportSection,
   rootReportSection: RootReportSection,
-  selectorMap: DomainStateSelectorMap<MiroirSelectorQueryParams>
+  selectorMap: DomainStateQuerySelectorMap<MiroirSelectorQueryParams>
 }
 
 // ###############################################################################################################

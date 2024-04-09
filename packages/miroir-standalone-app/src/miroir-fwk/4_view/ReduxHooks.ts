@@ -23,20 +23,20 @@ import {
   RecordOfJzodElement,
   Uuid,
   getLoggerName,
-  selectEntityUuidFromJzodAttribute
+  selectEntityUuidFromJzodAttribute,
+  DomainStateQuerySelectorParams
 } from "miroir-core";
 import {
   ReduxStateWithUndoRedo,
-  applyDomainStateCleanSelectorNew,
   applyDomainStateJzodSchemaSelector,
-  applyDomainStateSelectorNew,
+  applyDomainStateQuerySelectorForCleanedResult,
+  applyDomainStateQuerySelector,
   selectEntityInstanceUuidIndexFromLocalCache,
   selectInstanceArrayForDeploymentSectionEntity,
   selectModelForDeployment,
   selectModelForDeploymentOld
 } from "miroir-localcache-redux";
 
-import { DomainStateSelectorParams } from "miroir-core/src/0_interfaces/2_domain/DomainSelectorInterface";
 import { packageName } from "../../constants";
 import { cleanLevel } from "./constants";
 
@@ -49,14 +49,14 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 export type EntityInstanceUuidIndexSelectorParams = LocalCacheEntityInstancesSelectorParams;
 
 // ################################################################################################
-export function useDomainStateSelectorNew<Q extends MiroirSelectorQueryParams, T >(
+export function useDomainStateQuerySelector<Q extends MiroirSelectorQueryParams, T >(
   domainStateSelector:DomainStateSelectorNew<Q, T>,
-  selectorParams:DomainStateSelectorParams<Q>,
+  selectorParams:DomainStateQuerySelectorParams<Q>,
   customQueryInterpreter?: { [k: string]: (query:MiroirSelectorQueryParams) => T }
 ): T {
   const innerSelector = useMemo(
     () => {
-      return applyDomainStateSelectorNew(domainStateSelector);
+      return applyDomainStateQuerySelector(domainStateSelector);
     }, [domainStateSelector]);
   const result: T = useSelector((state: ReduxStateWithUndoRedo) =>
     innerSelector(state, selectorParams)
@@ -65,14 +65,14 @@ export function useDomainStateSelectorNew<Q extends MiroirSelectorQueryParams, T
 }
 
 // ################################################################################################
-export function useDomainStateCleanSelectorNew<Q extends MiroirSelectorQueryParams, T >(
+export function useDomainStateQuerySelectorForCleanedResult<Q extends MiroirSelectorQueryParams, T >(
   domainStateSelector:DomainStateSelectorNew<Q, DomainElement>,
-  selectorParams:DomainStateSelectorParams<Q>,
+  selectorParams:DomainStateQuerySelectorParams<Q>,
   customQueryInterpreter?: { [k: string]: (query:MiroirSelectorQueryParams) => T }
 ): T {
   const innerSelector = useMemo(
     () => {
-      return applyDomainStateCleanSelectorNew(domainStateSelector);
+      return applyDomainStateQuerySelectorForCleanedResult(domainStateSelector);
     }, [domainStateSelector]);
   const result: T = useSelector((state: ReduxStateWithUndoRedo) =>
     innerSelector(state, selectorParams)

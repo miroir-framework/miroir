@@ -291,15 +291,15 @@ export {
   CUDActionNamesArray,
 } from './0_interfaces/2_domain/DomainControllerInterface.js';
 export {
-  DomainStateSelectorNew,
-  DomainStateSelectorMap,
-  DomainStateSelectorParams,
+  DomainStateQuerySelector as DomainStateSelectorNew,
+  DomainStateQuerySelectorMap,
+  DomainStateQuerySelectorParams,
   DomainStateJzodSchemaSelector,
   DomainStateJzodSchemaSelectorMap,
   DomainStateJzodSchemaSelectorParams,
   RecordOfJzodElement,
   RecordOfJzodObject,
-} from './0_interfaces/2_domain/DomainSelectorInterface.js';
+} from './0_interfaces/2_domain/DomainStateQuerySelectorInterface.js';
 export {
   ZEntityState,
   ZEntityStateSchema,
@@ -406,7 +406,7 @@ export {
   selectEntityInstanceListFromListQueryAndDomainState,
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
-} from './2_domain/DomainSelector.js';
+} from './2_domain/DomainStateQuerySelectors.js';
 export {
   ModelEntityActionTransformer
 } from './2_domain/ModelEntityActionTransformer.js';

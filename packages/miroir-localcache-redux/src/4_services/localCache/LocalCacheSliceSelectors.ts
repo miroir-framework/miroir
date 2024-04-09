@@ -14,7 +14,7 @@ import {
   DomainStateJzodSchemaSelector,
   DomainStateJzodSchemaSelectorParams,
   DomainStateSelectorNew,
-  DomainStateSelectorParams,
+  DomainStateQuerySelectorParams,
   EntityInstancesUuidIndex,
   JzodElement,
   LoggerInterface,
@@ -38,8 +38,6 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 );
 
 // ################################################################################################
-declare type SelectorParamsSelector<Q extends MiroirSelectorQueryParams> = (reduxState: ReduxStateWithUndoRedo, params: Q) => Q;
-
 export const selectSelectorParams /*: SelectorParamsSelector*/ = <Q extends MiroirSelectorQueryParams>(
   reduxState: ReduxStateWithUndoRedo,
   params: Q
@@ -49,14 +47,14 @@ export const selectSelectorParams /*: SelectorParamsSelector*/ = <Q extends Miro
 
 declare type DomainStateSelectorParamsSelector<Q extends MiroirSelectorQueryParams> = (
   reduxState: ReduxStateWithUndoRedo,
-  params: DomainStateSelectorParams<Q>
-) => DomainStateSelectorParams<Q>;
+  params: DomainStateQuerySelectorParams<Q>
+) => DomainStateQuerySelectorParams<Q>;
 
 // ################################################################################################
 export const selectDomainStateSelectorParams /*: DomainStateSelectorParamsSelector<Q> */ = <Q extends MiroirSelectorQueryParams>(
   reduxState: ReduxStateWithUndoRedo,
-  params: DomainStateSelectorParams<Q>
-): DomainStateSelectorParams<Q> => {
+  params: DomainStateQuerySelectorParams<Q>
+): DomainStateQuerySelectorParams<Q> => {
   return params;
 };
 
@@ -96,7 +94,7 @@ export const selectMiroirSelectorQueryParams = (reduxState: ReduxStateWithUndoRe
 
 
 //#########################################################################################
-export const selectDomainStatePlainFromReduxState: (
+export const selectDomainStateFromReduxState: (
   state: ReduxStateWithUndoRedo,
 ) => DomainState = createSelector(
   [selectCurrentEntityZoneFromReduxState],
@@ -133,14 +131,14 @@ export const selectDomainStatePlainFromReduxState: (
 // DOMAIN STATE SELECTORS
 // ################################################################################################
 // ################################################################################################
-export function applyDomainStateSelectorNew<Q extends MiroirSelectorQueryParams, T>( // TODO: memoize?
+export function applyDomainStateQuerySelector<Q extends MiroirSelectorQueryParams, T>( // TODO: memoize?
   domainStateSelector: DomainStateSelectorNew<Q, T>
 ): (
   reduxState: ReduxStateWithUndoRedo,
-  params: DomainStateSelectorParams<Q>
+  params: DomainStateQuerySelectorParams<Q>
 ) => T { 
   return createSelector(
-    [selectDomainStatePlainFromReduxState, selectDomainStateSelectorParams as DomainStateSelectorParamsSelector<Q>],
+    [selectDomainStateFromReduxState, selectDomainStateSelectorParams as DomainStateSelectorParamsSelector<Q>],
     domainStateSelector
   )
 }
@@ -152,27 +150,27 @@ export function applyDomainStateJzodSchemaSelector<Q extends DomainModelQueryJzo
   params: DomainStateJzodSchemaSelectorParams<Q>
 ) => RecordOfJzodElement | JzodElement | undefined { 
   return createSelector(
-    [selectDomainStatePlainFromReduxState, selectDomainStateJzodSchemaSelectorParams as DomainStateJzodSchemaSelectorParamsSelector<Q>],
+    [selectDomainStateFromReduxState, selectDomainStateJzodSchemaSelectorParams as DomainStateJzodSchemaSelectorParamsSelector<Q>],
     domainStateSelector
   )
 }
 
 
 // ################################################################################################
-export function applyDomainStateCleanSelectorNew<Q extends MiroirSelectorQueryParams>( // TODO: memoize?
+export function applyDomainStateQuerySelectorForCleanedResult<Q extends MiroirSelectorQueryParams>( // TODO: memoize?
   domainStateSelector: DomainStateSelectorNew<Q, DomainElement>
 ): (
   reduxState: ReduxStateWithUndoRedo,
-  params: DomainStateSelectorParams<Q>
+  params: DomainStateQuerySelectorParams<Q>
 ) => any { 
-  const cleanupFunction = (domainState: DomainState, params: DomainStateSelectorParams<Q>):DomainElement => {
+  const cleanupFunction = (domainState: DomainState, params: DomainStateQuerySelectorParams<Q>):DomainElement => {
     const partial:DomainElement = domainStateSelector(domainState, params);
     const result:any = cleanupResultsFromQuery(partial)
     return result;
   }
 
   return createSelector(
-    [selectDomainStatePlainFromReduxState, selectDomainStateSelectorParams as DomainStateSelectorParamsSelector<Q>],
+    [selectDomainStateFromReduxState, selectDomainStateSelectorParams as DomainStateSelectorParamsSelector<Q>],
     cleanupFunction
   )
 }
