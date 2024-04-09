@@ -15,6 +15,11 @@
       },
       "storeSectionConfiguration": {
         "miroirServerConfig":{
+          "admin": {
+            "emulatedServerType": "sql",
+            "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+            "schema": "miroirAdmin"
+          },
           "model": {
             "emulatedServerType": "sql",
             "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
@@ -27,6 +32,11 @@
           }
         },
         "appServerConfig": {
+          "admin": {
+            "emulatedServerType": "sql",
+            "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+            "schema": "miroirAdmin"
+          },
           "model": {
             "emulatedServerType": "sql",
             "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",

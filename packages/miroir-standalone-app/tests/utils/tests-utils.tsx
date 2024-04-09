@@ -150,7 +150,7 @@ export async function miroirBeforeAll(
   miroirConfig: MiroirConfigClient,
   createRestServiceFromHandlers: (...handlers: Array<RequestHandler>) => any,
 ):Promise< BeforeAllReturnType | undefined > {
-  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll');
+  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll started');
   try {
 
     const miroirContext = new MiroirContext(miroirConfig);
@@ -213,9 +213,56 @@ export async function miroirBeforeAll(
         localDataStoreServer: undefined,
       });
     } else {
-      let localMiroirPersistenceStoreController, localAppPersistenceStoreController;
+      console.log("EMULATED SERVER, DATASTORE WILL BE ACCESSED DIRECTLY FROM NODEJS TEST ENVIRONMENT, NO SERVER WILL BE USED")
+      let localDataStoreWorker; // browser
+      let localDataStoreServer; // nodejs
+
+      try {
+        const {
+          localDataStoreWorker: localDataStoreWorkertmp, // browser
+          localDataStoreServer: localDataStoreServertmp, // nodejs
+        } = await createMswRestServer(
+          miroirConfig,
+          'nodejs',
+          restServerDefaultHandlers,
+          persistenceStoreControllerManager,
+          localCache,
+          createRestServiceFromHandlers
+        );
+        localDataStoreWorker = localDataStoreWorkertmp
+        localDataStoreServer = localDataStoreServertmp
+      } catch (error) {
+        console.error("tests-utils miroirBeforeAll could not create MSW Rest server: " + error)
+        throw(error)
+      }
+
+      if (localDataStoreServer) {
+        log.warn("tests-utils localDataStoreWorkers starting, listHandlers", localDataStoreServer.listHandlers().map(h=>h.info.header));
+        await localDataStoreServer.listen();
+        log.warn("tests-utils localDataStoreWorkers STARTED, listHandlers", localDataStoreServer.listHandlers().map(h=>h.info.header));
+      } else {
+        throw new Error("tests-utils localDataStoreServer not found.");
+        
+      }
+
+      // let localMiroirPersistenceStoreController, localAppPersistenceStoreController;
 
       log.info("miroirBeforeAll emulated server config",miroirConfig)
+
+      console.warn('miroirBeforeAll: emulateServer is true in miroirConfig, a real server is used, tests results depend on the availability of the server.');
+      // TODO: send openStore action instead?
+      // const remoteStore:PersistenceInterface = domainController.getRemoteStore();
+      // await remoteStore.handlePersistenceAction({
+      //   actionType: "storeManagementAction",
+      //   actionName: "openStore",
+      //   endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+      //   configuration: {
+      //     [applicationDeploymentMiroir.uuid]: miroirConfig.client.miroirServerConfig as StoreUnitConfiguration,
+      //     [applicationDeploymentLibrary.uuid]: miroirConfig.client.appServerConfig as StoreUnitConfiguration,
+      //   },
+      //   deploymentUuid: applicationDeploymentMiroir.uuid,
+      // })
+
       const deployments = {
         [applicationDeploymentMiroir.uuid]: miroirConfig.client.miroirServerConfig,
         [applicationDeploymentLibrary.uuid]: miroirConfig.client.appServerConfig,
@@ -228,44 +275,14 @@ export async function miroirBeforeAll(
       }
 
 
-      const localMiroirPersistenceStoreControllerTmp = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentMiroir.uuid);
-      const localAppPersistenceStoreControllerTmp = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentLibrary.uuid);
+      const localMiroirPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentMiroir.uuid);
+      const localAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentLibrary.uuid);
 
-      if (!localMiroirPersistenceStoreControllerTmp || !localAppPersistenceStoreControllerTmp) {
+      if (!localMiroirPersistenceStoreController || !localAppPersistenceStoreController) {
         throw new Error("could not find controller:" + localMiroirPersistenceStoreController + " " + localAppPersistenceStoreController);
-      } else {
-        localMiroirPersistenceStoreController = localMiroirPersistenceStoreControllerTmp;
-        localAppPersistenceStoreController = localAppPersistenceStoreControllerTmp;
       }
 
-      const {
-        localDataStoreWorker,
-        localDataStoreServer,
-      } = await createMswRestServer(
-        miroirConfig,
-        'nodejs',
-        restServerDefaultHandlers,
-        persistenceStoreControllerManager,
-        localCache,
-        createRestServiceFromHandlers
-      );
-  
-
-      localDataStoreServer?.listen();
       await startLocalPersistenceStoreControllers(localMiroirPersistenceStoreController, localAppPersistenceStoreController)
-
-      console.warn('miroirBeforeAll: emulateServer is true in miroirConfig, a real server is used, tests results depend on the availability of the server.');
-      const remoteStore:PersistenceInterface = domainController.getRemoteStore();
-      await remoteStore.handlePersistenceAction({
-        actionType: "storeManagementAction",
-        actionName: "openStore",
-        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        configuration: {
-          [applicationDeploymentMiroir.uuid]: miroirConfig.client.miroirServerConfig as StoreUnitConfiguration,
-          [applicationDeploymentLibrary.uuid]: miroirConfig.client.appServerConfig as StoreUnitConfiguration,
-        },
-        deploymentUuid: applicationDeploymentMiroir.uuid,
-      })
 
       // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.open',JSON.stringify(localMiroirPersistenceStoreController, circularReplacer()));
       console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll DONE');
@@ -315,8 +332,13 @@ export async function miroirBeforeEach(
         throw new Error("miroirBeforeEach could not create model and data stores");
       }
 
-      await localAppPersistenceStoreController.clear();
-      await localMiroirPersistenceStoreController.clear();
+      try {
+        await localAppPersistenceStoreController.clear();
+        await localMiroirPersistenceStoreController.clear();
+      } catch (error) {
+        console.error('could not clear persistence stores, can not go further!');
+        throw(error);
+      }
       try {
         console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach initApplication miroir START');
         await localMiroirPersistenceStoreController.initApplication(
@@ -398,7 +420,7 @@ export async function miroirAfterAll(
   domainController: DomainControllerInterface | undefined,
   localMiroirPersistenceStoreController: PersistenceStoreControllerInterface,
   localAppPersistenceStoreController: PersistenceStoreControllerInterface,
-  localDataStoreServer?: any /*SetupServerApi*/,
+  localRestServer?: any /*SetupServerApi*/,
 ) {
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterAll');
   if (!miroirConfig.client.emulateServer) {
@@ -418,7 +440,7 @@ export async function miroirAfterAll(
     }
   } else {
     try {
-      await (localDataStoreServer as any)?.close();
+      await (localRestServer as any)?.close();
       await localMiroirPersistenceStoreController.close();
       await localAppPersistenceStoreController.close();
     } catch (error) {

@@ -92,9 +92,31 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
     if (this.persistenceStoreControllers[deploymentUuid]) {
       log.info("addPersistenceStoreController for", deploymentUuid, "already exists, doing nothing!");
     } else {
+      if (!config.admin) {
+       throw new Error("PersistenceStoreControllerManager addPersistenceStoreController could not find admin section in configuration " + JSON.stringify(config));
+      }
       const adminStoreFactory = this.adminStoreFactoryRegister.get(
         JSON.stringify({ storageType: config.admin.emulatedServerType })
       );
+
+      if (!this.localCache || !this.persistenceStore) {
+        throw new Error(
+          "PersistenceStoreControllerManager getLocalCache no localCache or persitenceStore yet! localCache=" +
+            this.localCache +
+            " persistenceStore=" +
+            this.persistenceStore
+        );
+      }
+
+      this.domainController = new DomainController(
+        true, // we are on the server, use localCache for queries
+        new MiroirContext(),
+        this.localCache, // implements LocalCacheInterface
+        this.persistenceStore, // implements PersistenceInterface
+        new Endpoint(this.localCache)
+      );
+
+
       if (!adminStoreFactory) {
         log.info(
           "addPersistenceStoreController no admin store factory found for",
@@ -118,24 +140,8 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
         config.model,
         dataStore
       )) as StoreModelSectionInterface;
-      this.persistenceStoreControllers[deploymentUuid] = new PersistenceStoreController(adminStore, modelStore, dataStore);
 
-      if (this.localCache && this.persistenceStore) {
-        this.domainController = new DomainController(
-          true, // we are on the server, use localCache for queries
-          new MiroirContext(),
-          this.localCache, // implements LocalCacheInterface
-          this.persistenceStore, // implements PersistenceInterface
-          new Endpoint(this.localCache)
-        );
-      } else {
-        throw new Error(
-          "PersistenceStoreControllerManager getLocalCache no localCache or persitenceStore yet! localCache=" +
-            this.localCache +
-            " persistenceStore=" +
-            this.persistenceStore
-        );
-      }
+      this.persistenceStoreControllers[deploymentUuid] = new PersistenceStoreController(adminStore, modelStore, dataStore);
 
     }
   }

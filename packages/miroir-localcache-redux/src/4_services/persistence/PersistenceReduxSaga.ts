@@ -198,7 +198,7 @@ export class PersistenceReduxSaga implements PersistenceInterface {
           }
 
           if (this.remoteStoreNetworkClient != undefined) { // indirect access to a remote storeController through the network
-            log.info("handlePersistenceAction calling remoteStoreNetworkClient on action",JSON.stringify(action));
+            // log.info("handlePersistenceAction calling remoteStoreNetworkClient on action",JSON.stringify(action));
             const clientResult: RestClientCallReturnType
              = yield* call(() =>
               (this.remoteStoreNetworkClient as RestPersistenceClientAndRestClientInterface).handleNetworkPersistenceAction(action)
@@ -223,7 +223,7 @@ export class PersistenceReduxSaga implements PersistenceInterface {
                 break;
               }
               case 'queryAction': {
-                log.info("handlePersistenceAction calling remoteStoreNetworkClient on action",JSON.stringify(action));
+                // log.info("handlePersistenceAction calling remoteStoreNetworkClient on action",JSON.stringify(action));
                 const clientResult: RestClientCallReturnType = yield* call(() =>
                   (this.remoteStoreNetworkClient as RestPersistenceClientAndRestClientInterface).handleNetworkPersistenceAction(action)
                 );

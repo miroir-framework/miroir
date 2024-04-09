@@ -1,11 +1,11 @@
 {
-  "uuid":"b30b7180-f7dc-4cca-b4e8-e476b77fe61d",
-  "parentName":"EntityDefinition",
-  "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "uuid": "b30b7180-f7dc-4cca-b4e8-e476b77fe61d",
+  "parentName": "EntityDefinition",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-  "conceptLevel":"Model",
-  "name":"Author",
+  "conceptLevel": "Model",
+  "name": "Author",
   "description": "author",
   "defaultInstanceDetailsReportUuid": "6d9faa54-643c-4aec-87c3-32635ad95902",
   "viewAttributes": [
@@ -20,40 +20,100 @@
       "uuid": {
         "type": "simpleType",
         "definition": "string",
-        "validations": [{ "type": "uuid" }],
-        "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+        "validations": [
+          {
+            "type": "uuid"
+          }
+        ],
+        "extra": {
+          "id": 1,
+          "defaultLabel": "Uuid",
+          "editable": false
+        }
       },
       "parentName": {
         "type": "simpleType",
         "definition": "string",
         "optional": true,
-        "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+        "extra": {
+          "id": 2,
+          "defaultLabel": "Entity Name",
+          "editable": false
+        }
       },
       "parentUuid": {
         "type": "simpleType",
         "definition": "string",
-        "validations": [{ "type": "uuid" }],
-        "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
+        "validations": [
+          {
+            "type": "uuid"
+          }
+        ],
+        "extra": {
+          "id": 3,
+          "defaultLabel": "Entity Uuid",
+          "editable": false
+        }
       },
       "conceptLevel": {
         "type": "enum",
-        "definition": ["MetaModel", "Model", "Data"],
+        "definition": [
+          "MetaModel",
+          "Model",
+          "Data"
+        ],
         "optional": true,
-        "extra": { "id": 5, "defaultLabel": "Concept Level", "editable": false }
+        "extra": {
+          "id": 5,
+          "defaultLabel": "Concept Level",
+          "editable": false
+        }
       },
       "name": {
         "type": "simpleType",
         "definition": "string",
-        "extra": { "id":4, "defaultLabel": "Name", "editable": true }
+        "extra": {
+          "id": 4,
+          "defaultLabel": "Name",
+          "editable": true
+        }
       },
       "country": {
         "type": "simpleType",
         "definition": "string",
-        "validations": [{ "type": "uuid" }],
+        "validations": [
+          {
+            "type": "uuid"
+          }
+        ],
         "optional": true,
-        "extra": { "id":5, "defaultLabel": "Country", "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4", "editable": true }
+        "extra": {
+          "id": 5,
+          "defaultLabel": "Country",
+          "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+          "editable": true
+        }
       },
-      "icon": { "type": "simpleType", "definition": "string", "optional": true, "extra": { "id":6, "defaultLabel": "Gender (narrow-minded)", "editable": true } }
+      "icon": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "extra": {
+          "id": 6,
+          "defaultLabel": "Gender (narrow-minded)",
+          "editable": true
+        }
+      },
+      "icons": {
+        "type": "simpleType",
+        "definition": "number",
+        "optional": true,
+        "extra": {
+          "id": 6,
+          "defaultLabel": "Gender (narrow-minded)",
+          "editable": true
+        }
+      }
     }
   }
 }

@@ -28,6 +28,18 @@ npm run devBuild -w miroir-core && npm run build -w miroir-localcache-redux -w m
 
 TBW
 
+# Configuration
+
+## Data stores
+
+### indexedDb
+
+### File System
+
+### Postgres
+
+there must be an "admin" user/schema, that is used as a life line, to create / administer other user/schemas.
+
 # Development process
 
 ## launching client & server for interactive tests
@@ -80,6 +92,48 @@ Tests:       1 skipped, 11 passed, 12 total
 Snapshots:   0 total
 Time:        6.032 s, estimated 8 s
 Ran all test suites with tests matching "domainSelector".
+```
+
+### Miroir-standalone-app: Automated Integration Tests
+
+#### automated integration tests On File System
+
+Using jest / vitest environment only
+```sh
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run test -w miroir-standalone-app -- DomainController
+```
+
+Using real server
+```sh
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-realServer-filesystem VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run test -w miroir-standalone-app -- DomainController
+```
+
+#### automated integration tests On Indexed DB
+
+Using jest / vitest environment only (nodejs), DB will exist as files on the local filesystem
+
+```sh
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run test -w miroir-standalone-app -- DomainController
+```
+
+Using a real server running on nodejs, DB will exist as files on the local filesystem
+
+```sh
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-realServer-indexedDb VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run test -w miroir-standalone-app -- DomainController
+```
+
+#### automated integration tests On Postgres
+
+Using jest / vitest environment only (nodejs), the "miroir" and "library" schemas are created, then dropped at the end of the test
+
+```sh
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run test -w miroir-standalone-app -- DomainController
+```
+
+Using a real server running on nodejs, the "miroir" and "library" schemas are NOT created or dropped, they have to exist for the test to pass [issue #24](https://github.com/miroir-framework/miroir/issues/24).
+
+```sh
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run test -w miroir-standalone-app -- DomainController
 ```
 
 ## Organization

@@ -134,8 +134,7 @@ describe.sequential(
   'DomainController.Model.CRUD',
   () => {
     // ###########################################################################################
-    it(
-      'Refresh all Entity definitions',
+    it('Refresh all Entity definitions',
       async () => {
         console.log('Refresh all Entity definitions start');
         const displayLoadingInfo=<DisplayLoadingInfo/>
@@ -196,8 +195,7 @@ describe.sequential(
     )
 
     // ###########################################################################################
-    it(
-      'Add Entity then rollback',
+    it('Add Entity then rollback',
       async () => {
         try {
           console.log('Add Entity then rollback start');
@@ -340,8 +338,7 @@ describe.sequential(
     )
 
     // ###########################################################################################
-    it(
-      'Add entity then commit',
+    it('Add entity then commit',
       async () => {
         try {
           console.log('Add Report definition then commit start');
@@ -519,8 +516,7 @@ describe.sequential(
     )
 
     // ###########################################################################################
-    it(
-      'Remove Entity then commit',
+    it('Remove Entity then commit',
       async () => {
         try {
           console.log('remove Author entity start');
@@ -726,8 +722,7 @@ describe.sequential(
     )
 
     // ###########################################################################################
-    it(
-      'Rename Entity then commit',
+    it('Rename Entity then commit',
       async () => {
         try {
           console.log('update Author definition start');
@@ -986,8 +981,7 @@ describe.sequential(
 
     // ###########################################################################################
     // TODO
-    it(
-      'Alter Entity definition then commit',
+    it('Alter Entity definition then commit',
       async () => {
         try {
           console.log('update Author definition start');
@@ -1155,7 +1149,7 @@ describe.sequential(
               // targetValue: "Authorsss",
               addColumns: [
                 {
-                  "name": "icons",
+                  "name": "aNewColumnForTest",
                   "definition": iconsDefinition
                 }
               ],
@@ -1187,7 +1181,7 @@ describe.sequential(
             },
           ).then(
             ()=> {
-              expect(screen.queryByText(/icons/i)).toBeTruthy() // Report List
+              expect(screen.queryByText(/aNewColumnForTest/i)).toBeTruthy() // Report List
             }
           );
 
@@ -1258,8 +1252,7 @@ describe.sequential(
 
     // ###########################################################################################
     // TODO
-    it(
-      'Alter Miroir Model Report definition then commit',
+    it('Alter Miroir Model Report definition then commit',
       async () => {
         try {
           console.log('Alter Miroir Model Report definition start');
