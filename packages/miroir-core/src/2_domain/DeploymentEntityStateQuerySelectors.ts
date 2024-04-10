@@ -88,96 +88,6 @@ let emptyJzodSchemaSelectorMap: DeploymentEntityStateJzodSchemaSelectorMap = {}
 // }
 
 // ################################################################################################
-export const selectEntityInstanceUuidIndexFromDeploymentEntityState: DeploymentEntityStateQuerySelector<
-  DomainModelGetSingleSelectObjectListQueryQueryParams, DomainElement
-> = (
-  deploymentEntityState: DeploymentEntityState,
-  selectorParams: DeploymentEntityStateQuerySelectorParams<DomainModelGetSingleSelectObjectListQueryQueryParams>
-): DomainElement => {
-  const deploymentUuid = selectorParams.query.singleSelectQuery.deploymentUuid;
-  const applicationSection = selectorParams.query.singleSelectQuery.select.applicationSection??"data";
-
-  const entityUuid: DomainElement = resolveContextReference(
-    selectorParams.query.singleSelectQuery.select.parentUuid,
-    selectorParams.query.queryParams,
-    selectorParams.query.contextResults
-  );
-
-  // log.info("selectEntityInstanceUuidIndexFromDomainState params", selectorParams, deploymentUuid, applicationSection, entityUuid);
-  // log.info("selectEntityInstanceUuidIndexFromDomainState domainState", domainState);
-
-  if (
-    !deploymentUuid ||
-    !applicationSection ||
-    !entityUuid ||
-    (entityUuid.elementType != "string" && entityUuid.elementType != "instanceUuid")
-  ) {
-    return {
-      // new object
-      elementType: "failure",
-      elementValue: {
-        queryFailure: "IncorrectParameters",
-        queryParameters: JSON.stringify(selectorParams),
-      },
-    };
-    // resolving by fetchDataReference, fetchDataReferenceAttribute
-  }
-  const deploymentEntityStateIndex = getDeploymentEntityStateIndex(
-    deploymentUuid,
-    applicationSection,
-    entityUuid.elementValue
-  )
-  // if (!domainState) {
-  //   return { elementType: "failure", elementValue: { queryFailure: "DomainStateNotLoaded" } };
-  // }
-  // if (!domainState[deploymentUuid]) {
-  //   return { elementType: "failure", elementValue: { queryFailure: "DeploymentNotFound", deploymentUuid } };
-  // }
-  // if (!domainState[deploymentUuid][applicationSection]) {
-  if (!deploymentEntityState[deploymentEntityStateIndex]) {
-    return {
-      elementType: "failure",
-      elementValue: { queryFailure: "ApplicationSectionNotFound", deploymentUuid, applicationSection },
-    };
-  }
-  switch (entityUuid.elementType) {
-    case "string":
-    case "instanceUuid": {
-      if (!deploymentEntityState[deploymentEntityStateIndex]) {
-        return {
-          elementType: "failure",
-          elementValue: {
-            queryFailure: "EntityNotFound",
-            deploymentUuid,
-            applicationSection,
-            entityUuid: entityUuid.elementValue,
-          },
-        };
-      }
-    
-      // return { elementType: "instanceUuidIndex", elementValue: Object.fromEntries(deploymentEntityState[index].map(e=>[e.uuid,e])) };
-      return { elementType: "instanceUuidIndex", elementValue: deploymentEntityState[deploymentEntityStateIndex].entities };
-      break;
-    }
-    // case "object":
-    // case "instance":
-    // case "instanceUuidIndex":
-    // case "instanceUuidIndexUuidIndex":
-    // case "array": {
-    //   return { elementType: "failure", elementValue: { queryFailure: "IncorrectParameters", queryReference: JSON.stringify(selectorParams.query.singleSelectQuery.select.parentUuid)} }
-    // }
-    // case "failure": {
-    //   return entityUuid;
-    //   break;
-    // }
-    default: {
-      throw new Error("selectEntityInstanceUuidIndexFromDomainState could not handle reference entityUuid=" + entityUuid);
-      break;
-    }
-  }
-};
-
-// ################################################################################################
 /**
  * returns an Entity Instance (Object) from and selectObjectByParameterValue
  * @param deploymentEntityState 
@@ -370,6 +280,75 @@ export const selectEntityInstanceFromObjectQueryAndDeploymentEntityState:Deploym
   }
 };
 
+// ################################################################################################
+export const selectEntityInstanceUuidIndexFromDeploymentEntityState: DeploymentEntityStateQuerySelector<
+  DomainModelGetSingleSelectObjectListQueryQueryParams, DomainElement
+> = (
+  deploymentEntityState: DeploymentEntityState,
+  selectorParams: DeploymentEntityStateQuerySelectorParams<DomainModelGetSingleSelectObjectListQueryQueryParams>
+): DomainElement => {
+  const deploymentUuid = selectorParams.query.singleSelectQuery.deploymentUuid;
+  const applicationSection = selectorParams.query.singleSelectQuery.select.applicationSection??"data";
+
+  const entityUuid: DomainElement = resolveContextReference(
+    selectorParams.query.singleSelectQuery.select.parentUuid,
+    selectorParams.query.queryParams,
+    selectorParams.query.contextResults
+  );
+
+  log.info("selectEntityInstanceUuidIndexFromDeploymentEntityState params", selectorParams, deploymentUuid, applicationSection, entityUuid);
+  log.info("selectEntityInstanceUuidIndexFromDeploymentEntityState deploymentEntityState", deploymentEntityState);
+
+  if (
+    !deploymentUuid ||
+    !applicationSection ||
+    !entityUuid ||
+    (entityUuid.elementType != "string" && entityUuid.elementType != "instanceUuid")
+  ) {
+    return {
+      // new object
+      elementType: "failure",
+      elementValue: {
+        queryFailure: "IncorrectParameters",
+        queryParameters: JSON.stringify(selectorParams),
+      },
+    };
+    // resolving by fetchDataReference, fetchDataReferenceAttribute
+  }
+  const deploymentEntityStateIndex = getDeploymentEntityStateIndex(
+    deploymentUuid,
+    applicationSection,
+    entityUuid.elementValue
+  )
+  switch (entityUuid.elementType) {
+    case "string":
+    case "instanceUuid": {
+      if (!deploymentEntityState[deploymentEntityStateIndex]) {
+        log.warn("selectEntityInstanceUuidIndexFromDeploymentEntityState could not find index", deploymentEntityStateIndex, "in deploymentEntityState", deploymentEntityState )
+        return {
+          elementType: "failure",
+          elementValue: {
+            queryFailure: "EntityNotFound",
+            deploymentUuid,
+            applicationSection,
+            entityUuid: entityUuid.elementValue,
+          },
+        };
+      }
+    
+      // return { elementType: "instanceUuidIndex", elementValue: Object.fromEntries(deploymentEntityState[index].map(e=>[e.uuid,e])) };
+      log.info("selectEntityInstanceUuidIndexFromDeploymentEntityState for", deploymentEntityStateIndex, "result", deploymentEntityState[deploymentEntityStateIndex].entities )
+      return { elementType: "instanceUuidIndex", elementValue: deploymentEntityState[deploymentEntityStateIndex].entities };
+      break;
+    }
+    default: {
+      throw new Error("selectEntityInstanceUuidIndexFromDeploymentEntityState could not handle reference entityUuid=" + entityUuid);
+      break;
+    }
+  }
+};
+
+
 
 
 // ################################################################################################
@@ -385,17 +364,21 @@ export const selectEntityInstanceListFromListQueryAndDeploymentEntityState: Depl
   deploymentEntityState: DeploymentEntityState,
   selectorParams: DeploymentEntityStateQuerySelectorParams<DomainModelGetSingleSelectObjectListQueryQueryParams>
 ): DomainElement => {
-  // log.info(
-  //   "selectEntityInstanceListFromListQueryAndDomainState called with queryType",
-  //   selectorParams.query.singleSelectQuery.select.queryType,
-  //   "selectorParams",
-  //   selectorParams
-  // );
+  log.info(
+    "selectEntityInstanceListFromListQueryAndDeploymentEntityState called with queryType",
+    selectorParams.query.singleSelectQuery.select.queryType,
+    "selectorParams",
+    selectorParams
+  );
   const localSelectorMap: DeploymentEntityStateQuerySelectorMap<DomainModelGetSingleSelectObjectListQueryQueryParams> =
     selectorParams?.selectorMap ?? emptySelectorMap;
   const selectedInstances: DomainElement = localSelectorMap.selectEntityInstanceUuidIndexFromDeploymentEntityState(
     deploymentEntityState,
     selectorParams
+  );
+
+  log.info(
+    "selectEntityInstanceListFromListQueryAndDeploymentEntityState found selectedInstances", selectedInstances
   );
 
 
@@ -408,8 +391,8 @@ export const selectEntityInstanceListFromListQueryAndDeploymentEntityState: Depl
       const relationQuery: SelectObjectListByRelationQuery = selectorParams.query.singleSelectQuery.select;
       const reference: DomainElement = resolveContextReference(relationQuery.objectReference, selectorParams.query.queryParams, selectorParams.query.contextResults);
 
-      // log.info("selectEntityInstanceListFromListQueryAndDomainState selectObjectListByRelation", JSON.stringify(selectedInstances))
-      log.info("selectEntityInstanceListFromListQueryAndDomainState selectObjectListByRelation", selectedInstances)
+      // log.info("selectEntityInstanceListFromListQueryAndDeploymentEntityState selectObjectListByRelation", JSON.stringify(selectedInstances))
+      log.info("selectEntityInstanceListFromListQueryAndDeploymentEntityState selectObjectListByRelation", selectedInstances)
       switch (selectedInstances.elementType) {
         case "instanceUuidIndex": {
           return { "elementType": "instanceUuidIndex", "elementValue": Object.fromEntries(
@@ -448,7 +431,7 @@ export const selectEntityInstanceListFromListQueryAndDeploymentEntityState: Depl
         case "array":
         default: {
           throw new Error(
-            "selectEntityInstanceListFromListQueryAndDomainState selectObjectListByRelation can not use reference instances with type" +
+            "selectEntityInstanceListFromListQueryAndDeploymentEntityState selectObjectListByRelation can not use reference instances with type" +
               selectedInstances.elementType
           );
           break;
@@ -458,7 +441,7 @@ export const selectEntityInstanceListFromListQueryAndDeploymentEntityState: Depl
     case "selectObjectListByManyToManyRelation": {
       const relationQuery: SelectObjectListByManyToManyRelationQuery = selectorParams.query.singleSelectQuery.select;
 
-      // log.info("selectEntityInstanceListFromListQueryAndDomainState selectObjectListByManyToManyRelation", selectedInstances)
+      // log.info("selectEntityInstanceListFromListQueryAndDeploymentEntityState selectObjectListByManyToManyRelation", selectedInstances)
       switch (selectedInstances.elementType) {
         case "instanceUuidIndex": {
           let otherList: DomainElement | undefined = undefined
@@ -472,11 +455,11 @@ export const selectEntityInstanceListFromListQueryAndDeploymentEntityState: Depl
               relationQuery.objectListReference.referenceName
             ]) ?? {elementType: "void", elementValue: undefined });
             
-            // log.info("selectEntityInstanceListFromListQueryAndDomainState selectObjectListByManyToManyRelation found otherList", otherList);
+            // log.info("selectEntityInstanceListFromListQueryAndDeploymentEntityState selectObjectListByManyToManyRelation found otherList", otherList);
             
           } else if (relationQuery.objectListReference?.referenceType == "constant") {
             throw new Error(
-              "selectEntityInstanceListFromListQueryAndDomainState selectObjectListByManyToManyRelation provided constant for objectListReference. This cannot be a constant, it must be a reference to a List of Objects."
+              "selectEntityInstanceListFromListQueryAndDeploymentEntityState selectObjectListByManyToManyRelation provided constant for objectListReference. This cannot be a constant, it must be a reference to a List of Objects."
             );
           }
 
@@ -497,7 +480,7 @@ export const selectEntityInstanceListFromListQueryAndDeploymentEntityState: Depl
                           (v: any) => v[otherListAttribute] == (selectedInstancesEntry[1] as any)[rootListAttribute]
                         ) >= 0;
                       // log.info(
-                      //   "selectEntityInstanceListFromListQueryAndDomainState selectObjectListByManyToManyRelation search otherList for attribute",
+                      //   "selectEntityInstanceListFromListQueryAndDeploymentEntityState selectObjectListByManyToManyRelation search otherList for attribute",
                       //   otherListAttribute,
                       //   "on object",
                       //   selectedInstancesEntry[1],
@@ -520,7 +503,7 @@ export const selectEntityInstanceListFromListQueryAndDeploymentEntityState: Depl
                     case "array":
                     default: {
                       throw new Error(
-                        "selectEntityInstanceListFromListQueryAndDomainState selectObjectListByManyToManyRelation can not use objectListReference, selectedInstances elementType=" +
+                        "selectEntityInstanceListFromListQueryAndDeploymentEntityState selectObjectListByManyToManyRelation can not use objectListReference, selectedInstances elementType=" +
                         selectedInstances.elementType + " other list elementType" + localOtherList.elementType
                       );
                       break;
@@ -531,7 +514,7 @@ export const selectEntityInstanceListFromListQueryAndDeploymentEntityState: Depl
             )} as DomainElementUuidIndex;
           } else {
             throw new Error(
-              "selectEntityInstanceListFromListQueryAndDomainState selectObjectListByManyToManyRelation could not find list for objectListReference, selectedInstances elementType=" +
+              "selectEntityInstanceListFromListQueryAndDeploymentEntityState selectObjectListByManyToManyRelation could not find list for objectListReference, selectedInstances elementType=" +
                 selectedInstances.elementType
             );
           }
@@ -544,14 +527,14 @@ export const selectEntityInstanceListFromListQueryAndDeploymentEntityState: Depl
         case "failure":
         case "array":
         default: {
-          throw new Error("selectEntityInstanceListFromListQueryAndDomainState selectObjectListByRelation can not use reference with elementType=" + selectedInstances.elementType);
+          throw new Error("selectEntityInstanceListFromListQueryAndDeploymentEntityState selectObjectListByRelation can not use reference with elementType=" + selectedInstances.elementType);
           break;
         }
       }
     }
     default: {
       throw new Error(
-        "selectEntityInstanceListFromListQueryAndDomainState could not handle query, selectorParams=" +
+        "selectEntityInstanceListFromListQueryAndDeploymentEntityState could not handle query, selectorParams=" +
           JSON.stringify(selectorParams.query.singleSelectQuery.select, undefined, 2)
       );
       break;
@@ -577,7 +560,7 @@ export const innerSelectElementFromQueryAndDomainState = (
     case "selectObjectListByEntity":
     case "selectObjectListByRelation": 
     case "selectObjectListByManyToManyRelation": {
-      return selectorMap.selectEntityInstanceListFromListQueryAndDomainState(deploymentEntityState, {
+      return selectorMap.selectEntityInstanceListFromListQueryAndDeploymentEntityState(deploymentEntityState, {
         selectorMap,
         query: {
           queryType: "getSingleSelectQuery",
@@ -1000,7 +983,7 @@ export function getDeploymentEntityStateSelectorMap(): DeploymentEntityStateQuer
         MiroirSelectorQueryParams,
         DomainElementObject
       >,
-    selectEntityInstanceListFromListQueryAndDomainState:
+    selectEntityInstanceListFromListQueryAndDeploymentEntityState:
       selectEntityInstanceListFromListQueryAndDeploymentEntityState as DeploymentEntityStateQuerySelector<
         MiroirSelectorQueryParams,
         DomainElementObject
@@ -1046,8 +1029,8 @@ export function getDeploymentEntityStateSelectorParams<Q extends MiroirSelectorQ
 // }
 
 // selectorMap = {
-//   "selectEntityInstanceUuidIndexFromDomainState": createSelector([domainStateSelector,domainStateSelectorParams],selectEntityInstanceUuidIndexFromDomainState),
+//   "selectEntityInstanceUuidIndexFromDeploymentEntityState": createSelector([domainStateSelector,domainStateSelectorParams],selectEntityInstanceUuidIndexFromDeploymentEntityState),
 //   "selectEntityInstanceFromObjectQueryAndDeploymentEntityState": createSelector([domainStateSelector,domainStateSelectorParams],selectEntityInstanceFromObjectQueryAndDeploymentEntityState),
-//   "selectEntityInstanceListFromListQueryAndDomainState": createSelector([domainStateSelector,domainStateSelectorParams],selectEntityInstanceListFromListQueryAndDomainState),
+//   "selectEntityInstanceListFromListQueryAndDeploymentEntityState": createSelector([domainStateSelector,domainStateSelectorParams],selectEntityInstanceListFromListQueryAndDeploymentEntityState),
 //   "selectByDomainManyQueriesFromDomainState": createSelector([domainStateSelector,domainStateSelectorParams],selectByDomainManyQueriesFromDomainState),
 // }

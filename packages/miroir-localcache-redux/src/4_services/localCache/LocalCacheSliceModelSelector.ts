@@ -28,7 +28,7 @@ import {
 import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
 import {
-  selectEntityInstanceUuidIndexFromDeploymentEntityState,
+  selectEntityInstanceUuidIndexFromLocalCacheQueryAndDeploymentEntityState,
   selectCurrentDeploymentEntityStateFromReduxState,
   selectMiroirSelectorQueryParams,
 } from "./LocalCacheSliceSelectors";
@@ -49,7 +49,7 @@ function selectEntityInstancesFromDeploymentEntityState(
   applicationSection:ApplicationSection | undefined,
   entityUuid: Uuid | undefined
 ) {
-  const result = selectEntityInstanceUuidIndexFromDeploymentEntityState(reduxState, {
+  const result = selectEntityInstanceUuidIndexFromLocalCacheQueryAndDeploymentEntityState(reduxState, {
     queryType: "LocalCacheEntityInstancesSelectorParams",
     definition: {
       deploymentUuid,

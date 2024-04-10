@@ -22,8 +22,8 @@ import {
   selectFetchQueryJzodSchemaFromDeploymentEntityState,
   selectJzodSchemaBySingleSelectQueryFromDeploymentEntityState,
   DeploymentEntityStateJzodSchemaSelectorMap,
+  selectEntityInstanceUuidIndexFromDeploymentEntityState,
 } from "miroir-core";
-import { selectEntityInstanceUuidIndexFromDeploymentEntityState } from "./LocalCacheSliceSelectors";
 
 const deploymentEntityStateSelector = (domainState: DeploymentEntityState, params: any) => domainState;
 const deploymentEntityStateSelectorParams = (domainState: DeploymentEntityState, params: any) => params;

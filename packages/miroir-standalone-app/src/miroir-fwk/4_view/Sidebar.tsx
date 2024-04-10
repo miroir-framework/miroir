@@ -168,10 +168,8 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
   )
 
   const deploymentEntityStateFetchQueryParams: DeploymentEntityStateQuerySelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(
-  // const domainFetchQueryParams: DeploymentEntityStateQuerySelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(
     () => 
     getDeploymentEntityStateSelectorParams<DomainManyQueriesWithDeploymentUuid>({
-    // getSelectorParams<DomainManyQueriesWithDeploymentUuid>({
       queryType: "DomainManyQueries",
       deploymentUuid: applicationDeploymentMiroir.uuid,
       // applicationSection: "data",
@@ -181,7 +179,6 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
       fetchQuery: {
         select: {
           menus: {
-            // "queryType": "selectObjectListByEntity",
             queryType: "selectObjectByDirectReference",
             parentName: "Menu",
             parentUuid: {

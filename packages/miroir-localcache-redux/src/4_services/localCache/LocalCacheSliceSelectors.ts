@@ -240,34 +240,52 @@ export function applyDomainStateQuerySelectorForCleanedResult<Q extends MiroirSe
 const empty = {}
 
 // ################################################################################################
-export const selectEntityInstanceUuidIndexFromDeploymentEntityState = (
+export const selectEntityInstanceUuidIndexFromLocalCacheQueryAndDeploymentEntityState = (
   deploymentEntityState: DeploymentEntityState,
   params: MiroirSelectorQueryParams
 ): EntityInstancesUuidIndex => {
-  if (params.queryType == "LocalCacheEntityInstancesSelectorParams") {
-    const localEntityIndex = getDeploymentEntityStateIndex(
-      params.definition.deploymentUuid,
-      params.definition.applicationSection,
-      params.definition.entityUuid
+  if (params.queryType != "LocalCacheEntityInstancesSelectorParams") {
+    log.error(
+      "selectEntityInstanceUuidIndexFromLocalCacheQueryAndDeploymentEntityState queryType is not LocalCacheEntityInstancesSelectorParams",
+      params.queryType,
+      "params",
+      params
     );
-    const result =
-      params.definition.deploymentUuid &&
-      params.definition.applicationSection &&
-      params.definition.entityUuid &&
-      deploymentEntityState[localEntityIndex]
-        ? (deploymentEntityState[localEntityIndex].entities as EntityInstancesUuidIndex)
-        : empty;
-    // log.info('selectEntityInstanceUuidIndexFromLocalCache','params',params,'localEntityIndex',localEntityIndex,'state',state,'result',result);
-    return result;
-  } else {
-    // return undefined;
     return empty;
   }
+  const localEntityIndex = getDeploymentEntityStateIndex(
+    params.definition.deploymentUuid,
+    params.definition.applicationSection,
+    params.definition.entityUuid
+  );
+  const result =
+    params.definition.deploymentUuid &&
+    params.definition.applicationSection &&
+    params.definition.entityUuid &&
+    deploymentEntityState[localEntityIndex]
+      ? (deploymentEntityState[localEntityIndex].entities)
+      : empty;
+  log.info(
+    "selectEntityInstanceUuidIndexFromLocalCacheQueryAndDeploymentEntityState",
+    "params",
+    params,
+    "localEntityIndex",
+    localEntityIndex,
+    "deploymentEntityState",
+    deploymentEntityState,
+    "result",
+    result
+  );
+  return result;
+  // } else {
+  //   // return undefined;
+  //   return empty;
+  // }
 };
 // ################################################################################################
 export const selectEntityInstanceUuidIndexFromLocalCache = createSelector (
   [selectCurrentDeploymentEntityStateFromReduxState,selectMiroirSelectorQueryParams],
-  selectEntityInstanceUuidIndexFromDeploymentEntityState
+  selectEntityInstanceUuidIndexFromLocalCacheQueryAndDeploymentEntityState
 )
 
 

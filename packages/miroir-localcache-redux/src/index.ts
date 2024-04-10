@@ -22,7 +22,7 @@ export {
   selectDomainStateJzodSchemaSelectorParams,
   selectDomainStateSelectorParams,
   selectEntityInstanceUuidIndexFromLocalCache,
-  selectEntityInstanceUuidIndexFromDeploymentEntityState,
+  selectEntityInstanceUuidIndexFromLocalCacheQueryAndDeploymentEntityState,
   selectInstanceArrayForDeploymentSectionEntity,
   selectSelectorParams,
 } from "./4_services/localCache/LocalCacheSliceSelectors";

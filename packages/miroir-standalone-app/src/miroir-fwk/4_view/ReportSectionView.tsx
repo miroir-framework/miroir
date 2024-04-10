@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import {
   ApplicationDeploymentConfiguration,
   ApplicationSection,
+  DeploymentEntityStateQuerySelectorMap,
   DomainElementObject,
   DomainStateQuerySelectorMap,
   Entity,
@@ -41,7 +42,7 @@ export interface ReportSectionEntityInstanceProps {
   paramsAsdomainElements: DomainElementObject,
   reportSection: ReportSection,
   rootReportSection: RootReportSection,
-  selectorMap: DomainStateQuerySelectorMap<MiroirSelectorQueryParams>
+  selectorMap: DeploymentEntityStateQuerySelectorMap<MiroirSelectorQueryParams>
 }
 
 // ###############################################################################################################
