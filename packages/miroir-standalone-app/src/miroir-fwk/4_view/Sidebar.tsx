@@ -16,8 +16,7 @@ import { AutoStories } from '@mui/icons-material';
 import { Icon } from '@mui/material';
 import {
   applicationDeploymentMiroir,
-  DeploymentEntityStateQuerySelectorMap,
-  DeploymentEntityStateQuerySelectorParams,
+  DeploymentEntityState,
   DomainElementObject,
   DomainManyQueriesWithDeploymentUuid,
   getDeploymentEntityStateSelectorParams,
@@ -25,7 +24,9 @@ import {
   LoggerInterface,
   menuDefaultMiroir,
   MiroirLoggerFactory,
-  MiroirSelectorQueryParams
+  MiroirSelectorQueryParams,
+  QuerySelectorMap,
+  QuerySelectorParams
 } from "miroir-core";
 import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
 import { useMemo } from 'react';
@@ -162,12 +163,12 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
   // const miroirConfig = context.getMiroirConfig();
   // const context = useMiroirContext();
 
-  const deploymentEntityStateSelectorMap: DeploymentEntityStateQuerySelectorMap<MiroirSelectorQueryParams> = useMemo(
+  const deploymentEntityStateSelectorMap: QuerySelectorMap<MiroirSelectorQueryParams, DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
   )
 
-  const deploymentEntityStateFetchQueryParams: DeploymentEntityStateQuerySelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(
+  const deploymentEntityStateFetchQueryParams: QuerySelectorParams<DomainManyQueriesWithDeploymentUuid, DeploymentEntityState> = useMemo(
     () => 
     getDeploymentEntityStateSelectorParams<DomainManyQueriesWithDeploymentUuid>({
       queryType: "DomainManyQueries",

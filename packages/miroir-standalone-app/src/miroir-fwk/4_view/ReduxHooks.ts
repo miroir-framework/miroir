@@ -6,8 +6,6 @@ import { useSelector } from "react-redux";
 import {
   ApplicationSection,
   DeploymentEntityState,
-  DeploymentEntityStateQuerySelector,
-  DeploymentEntityStateQuerySelectorParams,
   DomainElement,
   DomainModelQueryJzodSchemaParams,
   DomainStateJzodSchemaSelector,
@@ -55,16 +53,16 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 export type EntityInstanceUuidIndexSelectorParams = LocalCacheEntityInstancesSelectorParams;
 
 // ################################################################################################
-export function useDeploymentEntityStateQuerySelector<Q extends MiroirSelectorQueryParams, T >(
-  deploymentEntityStateQuerySelector:DeploymentEntityStateQuerySelector<Q, T>,
-  selectorParams:DeploymentEntityStateQuerySelectorParams<Q>,
-  customQueryInterpreter?: { [k: string]: (query:MiroirSelectorQueryParams) => T }
-): T {
+export function useDeploymentEntityStateQuerySelector<QueryType extends MiroirSelectorQueryParams, ResultType extends DomainElement>(
+  deploymentEntityStateQuerySelector:QuerySelector<QueryType, DeploymentEntityState, ResultType>,
+  selectorParams:QuerySelectorParams<QueryType, DeploymentEntityState>,
+  customQueryInterpreter?: { [k: string]: (query:MiroirSelectorQueryParams) => ResultType }
+): ResultType {
   const innerSelector = useMemo(
     () => {
       return applyDeploymentEntityStateQuerySelector(deploymentEntityStateQuerySelector);
     }, [deploymentEntityStateQuerySelector]);
-  const result: T = useSelector((state: ReduxStateWithUndoRedo) =>
+  const result: ResultType = useSelector((state: ReduxStateWithUndoRedo) =>
     innerSelector(state, selectorParams)
   );
   return result

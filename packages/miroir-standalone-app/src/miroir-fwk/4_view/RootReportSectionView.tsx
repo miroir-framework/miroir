@@ -3,8 +3,7 @@ import { Params } from 'react-router-dom';
 
 import {
   ApplicationSection,
-  DeploymentEntityStateQuerySelectorMap,
-  DeploymentEntityStateQuerySelectorParams,
+  DeploymentEntityState,
   DomainElementObject,
   DomainManyQueriesWithDeploymentUuid,
   DomainModelGetFetchParamJzodSchemaQueryParams,
@@ -13,12 +12,13 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   MiroirSelectorQueryParams,
+  QuerySelectorMap,
+  QuerySelectorParams,
   RecordOfJzodObject,
   RootReportSection,
   Uuid,
   getDeploymentEntityStateSelectorParams,
-  getLoggerName,
-  selectFetchQueryJzodSchemaFromDomainStateNew
+  getLoggerName
 } from "miroir-core";
 
 
@@ -77,12 +77,12 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
   //   props.reportSection.fetchQuery
   // );
   
-  const deploymentEntityStateSelectorMap: DeploymentEntityStateQuerySelectorMap<MiroirSelectorQueryParams> = useMemo(
+  const deploymentEntityStateSelectorMap: QuerySelectorMap<MiroirSelectorQueryParams, DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
   )
 
-  const deploymentEntityStateFetchQueryParams: DeploymentEntityStateQuerySelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(
+  const deploymentEntityStateFetchQueryParams: QuerySelectorParams<DomainManyQueriesWithDeploymentUuid, DeploymentEntityState> = useMemo(
     () =>
       props.pageParams.deploymentUuid && props.pageParams.applicationSection && props.pageParams.reportUuid
         ? getDeploymentEntityStateSelectorParams<DomainManyQueriesWithDeploymentUuid>(

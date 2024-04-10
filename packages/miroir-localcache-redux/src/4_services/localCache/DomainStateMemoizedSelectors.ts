@@ -1,10 +1,10 @@
 import { createSelector } from "@reduxjs/toolkit";
 import {
   DeploymentEntityState,
-  DeploymentEntityStateJzodSchemaSelectorMap,
   DomainState,
   DomainStateJzodSchemaSelectorMap,
   DomainStateQuerySelectorMap,
+  JzodSchemaQuerySelectorMap,
   MiroirSelectorQueryParams,
   QuerySelectorMap,
   selectByDomainManyQueriesFromDeploymentEntityState,
@@ -74,7 +74,7 @@ export function getMemoizedDeploymentEntityStateSelectorMap(): QuerySelectorMap<
   };
 }
 
-export function getMemoizedDeploymentEntityStateJzodSchemaSelectorMap(): DeploymentEntityStateJzodSchemaSelectorMap {
+export function getMemoizedDeploymentEntityStateJzodSchemaSelectorMap(): JzodSchemaQuerySelectorMap<DeploymentEntityState> {
   // return jzodSchemaSelectorMap;
   return {
     selectJzodSchemaByDomainModelQuery: createSelector(

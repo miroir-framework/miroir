@@ -301,15 +301,13 @@ export {
   RecordOfJzodObject,
 } from './0_interfaces/2_domain/DomainStateQuerySelectorInterface.js';
 export {
+  JzodSchemaQuerySelector,
+  JzodSchemaQuerySelectorMap,
+  JzodSchemaQuerySelectorParams,
   QuerySelector,
   QuerySelectorMap,
   QuerySelectorParams,
-  DeploymentEntityStateQuerySelector,
-  DeploymentEntityStateQuerySelectorMap,
-  DeploymentEntityStateQuerySelectorParams,
-  DeploymentEntityStateJzodSchemaSelector,
-  DeploymentEntityStateJzodSchemaSelectorMap,
-  DeploymentEntityStateJzodSchemaSelectorParams,
+
   // RecordOfJzodElement,
   // RecordOfJzodObject,
 } from './0_interfaces/2_domain/DeploymentEntityStateQuerySelectorInterface.js';

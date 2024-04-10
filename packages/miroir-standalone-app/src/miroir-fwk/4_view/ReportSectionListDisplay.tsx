@@ -11,9 +11,6 @@ import {
   ApplicationDeploymentConfiguration,
   ApplicationDeploymentSchema,
   DeploymentEntityState,
-  DeploymentEntityStateQuerySelector,
-  DeploymentEntityStateQuerySelectorMap,
-  DeploymentEntityStateQuerySelectorParams,
   DomainControllerInterface,
   DomainElement,
   DomainManyQueriesWithDeploymentUuid,
@@ -320,7 +317,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     ]
   );
 
-  // const foreignKeyObjectsFetchQueryParams: DeploymentEntityStateQuerySelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(
   const foreignKeyObjectsFetchQueryParams: QuerySelectorParams<
     DomainManyQueriesWithDeploymentUuid,
     DeploymentEntityState
