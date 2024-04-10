@@ -16,18 +16,30 @@ import { AutoStories } from '@mui/icons-material';
 import { Icon } from '@mui/material';
 import {
   applicationDeploymentMiroir,
+  DeploymentEntityStateQuerySelectorMap,
+  DeploymentEntityStateQuerySelectorParams,
   DomainElementObject,
   DomainManyQueriesWithDeploymentUuid,
-  DomainStateQuerySelectorMap,
-  DomainStateQuerySelectorParams,
-  getSelectorParams,
+  getDeploymentEntityStateSelectorParams,
+  getLoggerName,
+  LoggerInterface,
   menuDefaultMiroir,
+  MiroirLoggerFactory,
   MiroirSelectorQueryParams
 } from "miroir-core";
+import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
 import { useMemo } from 'react';
-import { useDomainStateQuerySelector } from './ReduxHooks';
-import { getMemoizedSelectorMap } from 'miroir-localcache-redux';
+import { packageName } from '../../constants';
+import { cleanLevel } from './constants';
+import { useDeploymentEntityStateQuerySelector } from './ReduxHooks';
 
+const loggerName: string = getLoggerName(packageName, cleanLevel,"Sidebar");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
+  (value: LoggerInterface) => {
+    log = value;
+  }
+);
 
 
 export const SidebarWidth = 200;
@@ -150,14 +162,16 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
   // const miroirConfig = context.getMiroirConfig();
   // const context = useMiroirContext();
 
-  const selectorMap: DomainStateQuerySelectorMap<MiroirSelectorQueryParams> = useMemo(
-    () => getMemoizedSelectorMap(),
+  const deploymentEntityStateSelectorMap: DeploymentEntityStateQuerySelectorMap<MiroirSelectorQueryParams> = useMemo(
+    () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
   )
 
-  const domainFetchQueryParams: DomainStateQuerySelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(
+  const deploymentEntityStateFetchQueryParams: DeploymentEntityStateQuerySelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(
+  // const domainFetchQueryParams: DeploymentEntityStateQuerySelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(
     () => 
-    getSelectorParams<DomainManyQueriesWithDeploymentUuid>({
+    getDeploymentEntityStateSelectorParams<DomainManyQueriesWithDeploymentUuid>({
+    // getSelectorParams<DomainManyQueriesWithDeploymentUuid>({
       queryType: "DomainManyQueries",
       deploymentUuid: applicationDeploymentMiroir.uuid,
       // applicationSection: "data",
@@ -181,16 +195,24 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
           },
         },
       },
-    }, selectorMap),
-    [selectorMap]
+    }, deploymentEntityStateSelectorMap),
+    [deploymentEntityStateSelectorMap]
   );
 
-  const domainElementObject: DomainElementObject = useDomainStateQuerySelector(
-    selectorMap.selectByDomainManyQueriesFromDomainState,
-    domainFetchQueryParams
+  const deploymentEntityStateDomainElementObject: DomainElementObject = useDeploymentEntityStateQuerySelector(
+    deploymentEntityStateSelectorMap.selectByDomainManyQueriesFromDeploymentEntityState,
+    deploymentEntityStateFetchQueryParams
   );
+
+  log.info("deploymentEntityStateDomainElementObject",deploymentEntityStateDomainElementObject)
   // const defaultMiroirMenu = (domainElementObject?.elementValue?.menus?.elementValue as any)?.definition;
-  console.log("Sidebar refresh", count++, "found miroir menu:", domainElementObject, domainElementObject?.elementValue?.menus?.elementValue);
+  console.log(
+    "Sidebar refresh",
+    count++,
+    "found miroir menu:",
+    deploymentEntityStateDomainElementObject,
+    deploymentEntityStateDomainElementObject?.elementValue?.menus?.elementValue
+  );
   const drawerSx = useMemo(()=>({flexDirection:'column'}),[])
   const styledDrawerSx = useMemo(()=>({alignItems: "end"}),[])
 
@@ -214,11 +236,11 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
         {/* {sideBarDefaultItems.map((i: any, index: number) => ( */}
         {/* TODO: DRY the menuSection display!*/}
         {
-          !(domainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.menuType ||
-          (domainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.menuType == "simpleMenu"?
+          !(deploymentEntityStateDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.menuType ||
+          (deploymentEntityStateDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.menuType == "simpleMenu"?
           <List disablePadding dense>
             {(
-              (domainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.definition ?? sideBarDefaultItems
+              (deploymentEntityStateDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.definition ?? sideBarDefaultItems
               ).map((i: any, index: number) => (
               <ListItem key={i.label} disablePadding>
                 <ListItemButton sx={{padding: 0}} component={Link} to={`/report/${i.application}/${i.section}/${i.reportUuid}/xxxxxx`}>
@@ -234,7 +256,7 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
           :
           <List disablePadding dense>
             {(
-              (domainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.definition ?? []
+              (deploymentEntityStateDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.definition ?? []
               ).flatMap((menuSection: any, index: number) => (
                 menuSection.items.map(
                   (curr:any, index: number) => (

@@ -43,7 +43,11 @@ import {
   entityStoreBasedConfiguration,
   getLoggerName,
   Entity,
-  DeploymentEntityState
+  DeploymentEntityState,
+  getLocalCacheIndexDeploymentSection,
+  getLocalCacheIndexDeploymentUuid,
+  getLocalCacheIndexEntityUuid,
+  getDeploymentEntityStateIndex
 } from "miroir-core";
 
 import { packageName } from "../../constants";
@@ -72,46 +76,6 @@ export function getPersistenceActionReduxEventNames(promiseActionNames: string[]
 export const localCacheSliceGeneratedActionNames = getPersistenceActionReduxEventNames(localCacheSliceInputActionNames);
 
 
-//#########################################################################################
-export function getLocalCacheSliceIndex(
-  deploymentUuid: Uuid | undefined,
-  applicationSection: ApplicationSection | undefined,
-  entityUuid: Uuid | undefined
-): string {
-  return "" + deploymentUuid + "_" + applicationSection + "_" + entityUuid;
-}
-
-//#########################################################################################
-export function getLocalCacheIndexEntityUuid(localCacheIndex:string): Uuid {
-  const entityUuid = new RegExp(/\_([0-9a-fA-F\-]+)$/).exec(localCacheIndex)
-  if (entityUuid) {
-    // log.info('found entityUuid',entityUuid);
-    return entityUuid[1];
-  } else {
-    throw new Error("unknown entity in local cache index: " + localCacheIndex);
-  }
-}
-//#########################################################################################
-export function getLocalCacheIndexDeploymentUuid(localCacheIndex:string): Uuid {
-  const deploymentUuid = new RegExp(/^([0-9a-fA-F\-]+)\_/).exec(localCacheIndex)
-  if (deploymentUuid) {
-    // log.info('found deploymentUuid',deploymentUuid);
-    return deploymentUuid[1];
-  } else {
-    throw new Error("unknown deployment in local cache index: " + localCacheIndex);
-  }
-}
-//#########################################################################################
-export function getLocalCacheIndexDeploymentSection(localCacheIndex:string): Uuid {
-  const deploymentSection = new RegExp(/^[0-9a-fA-F\-]+_([^_]+)_[0-9a-fA-F\-]+$/).exec(localCacheIndex)
-  if (deploymentSection) {
-    // log.info('getLocalCacheIndexDeploymentSection found deploymentSection',deploymentSection);
-    return deploymentSection[1];
-  } else {
-    throw new Error("getLocalCacheIndexDeploymentSection unknown deployment section in local cache index: " + localCacheIndex + ' found deploymentSection is undefined');
-  }
-  // return deploymentSection?deploymentSection[1]:undefined;
-}
 
 //#########################################################################################
 export function getLocalCacheKeysForDeploymentUuid(localCacheKeys:string[], deploymentUuid: Uuid): string[] {
@@ -233,13 +197,13 @@ export function currentModel(deploymentUuid: string, state:LocalCacheSliceState)
   } else {
       const metaModelSection = "model";
       const modelSection = deploymentUuid == applicationDeploymentMiroir.uuid?"data":"model";
-      const applicationVersions = state.current[getLocalCacheSliceIndex(deploymentUuid, modelSection, entityApplicationVersion.uuid)];
-      const configuration = state.current[getLocalCacheSliceIndex(deploymentUuid, modelSection, entityStoreBasedConfiguration.uuid)];
-      const entities = state.current[getLocalCacheSliceIndex(deploymentUuid, metaModelSection, entityEntity.uuid)];
-      const entityDefinitions = state.current[getLocalCacheSliceIndex(deploymentUuid, metaModelSection, entityEntityDefinition.uuid)];
-      const jzodSchemas = state.current[getLocalCacheSliceIndex(deploymentUuid, modelSection, entityJzodSchema.uuid)];
-      const menus = state.current[getLocalCacheSliceIndex(deploymentUuid, modelSection, entityMenu.uuid)];
-      const reports = state.current[getLocalCacheSliceIndex(deploymentUuid, modelSection, entityReport.uuid)];
+      const applicationVersions = state.current[getDeploymentEntityStateIndex(deploymentUuid, modelSection, entityApplicationVersion.uuid)];
+      const configuration = state.current[getDeploymentEntityStateIndex(deploymentUuid, modelSection, entityStoreBasedConfiguration.uuid)];
+      const entities = state.current[getDeploymentEntityStateIndex(deploymentUuid, metaModelSection, entityEntity.uuid)];
+      const entityDefinitions = state.current[getDeploymentEntityStateIndex(deploymentUuid, metaModelSection, entityEntityDefinition.uuid)];
+      const jzodSchemas = state.current[getDeploymentEntityStateIndex(deploymentUuid, modelSection, entityJzodSchema.uuid)];
+      const menus = state.current[getDeploymentEntityStateIndex(deploymentUuid, modelSection, entityMenu.uuid)];
+      const reports = state.current[getDeploymentEntityStateIndex(deploymentUuid, modelSection, entityReport.uuid)];
       const result = {
         applicationVersions: (applicationVersions && applicationVersions.entities
           ? Object.values(applicationVersions.entities)
@@ -284,7 +248,7 @@ function initializeLocalCacheSliceStateWithEntityAdapter(
   state: LocalCacheSliceState
 ) {
   // TODO: refactor so as to avoid side effects!
-  const entityInstancesLocationIndex = getLocalCacheSliceIndex(deploymentUuid, section, entityUuid);
+  const entityInstancesLocationIndex = getDeploymentEntityStateIndex(deploymentUuid, section, entityUuid);
   // log.debug("getInitializedSectionEntityAdapter called", "deploymentUuid", deploymentUuid, "section", section, "entityUuid", entityUuid, "index", index);
   // const sliceEntityAdapter = getLocalCacheSliceEntityAdapter();
   if (!(state as any)[zone][entityInstancesLocationIndex]) {
@@ -333,7 +297,7 @@ function loadNewEntityInstancesInLocalCache(
   instanceCollection: EntityInstanceCollection
 ) {
   // log.debug('loadNewInstancesForSectionEntity',deploymentUuid,section,instanceCollection);
-  const instanceCollectionEntityIndex = getLocalCacheSliceIndex(deploymentUuid, section, instanceCollection.parentUuid);
+  const instanceCollectionEntityIndex = getDeploymentEntityStateIndex(deploymentUuid, section, instanceCollection.parentUuid);
   // log.info(
   //   "ReplaceInstancesForDeploymentEntity for deployment",
   //   deploymentUuid,
@@ -453,7 +417,7 @@ function handleInstanceAction(
   switch (instanceAction.actionName) {
     case "createInstance": {
       for (let instanceCollection of instanceAction.objects ?? ([] as EntityInstanceCollection[])) {
-        const instanceCollectionEntityIndex = getLocalCacheSliceIndex(
+        const instanceCollectionEntityIndex = getDeploymentEntityStateIndex(
           instanceAction.deploymentUuid,
           instanceAction.applicationSection,
           instanceCollection.parentUuid
@@ -507,7 +471,7 @@ function handleInstanceAction(
           //   instanceCollection
           // );
 
-          const instanceCollectionEntityIndex = getLocalCacheSliceIndex(
+          const instanceCollectionEntityIndex = getDeploymentEntityStateIndex(
             instanceAction.deploymentUuid,
             instanceAction.applicationSection,
             instanceCollection.parentUuid
@@ -557,7 +521,7 @@ function handleInstanceAction(
     }
     case "updateInstance": {
       for (let instanceCollection of instanceAction.objects) {
-        const instanceCollectionEntityIndex = getLocalCacheSliceIndex(
+        const instanceCollectionEntityIndex = getDeploymentEntityStateIndex(
           instanceAction.deploymentUuid,
           instanceAction.applicationSection,
           instanceCollection.parentUuid

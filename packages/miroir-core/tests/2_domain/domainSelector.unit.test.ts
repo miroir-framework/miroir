@@ -4,7 +4,7 @@ import { DomainState } from "../../src/0_interfaces/2_domain/DomainControllerInt
 import {
   getSelectorParams,
   selectByDomainManyQueriesFromDomainState
-} from "../../src/2_domain/DomainSelector";
+} from "../../src/2_domain/DomainStateQuerySelectors";
 
 import {
   DomainElement,

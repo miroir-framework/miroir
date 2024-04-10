@@ -10,6 +10,12 @@ export {
   selectModelForDeploymentFromReduxState,
 } from "./4_services/localCache/LocalCacheSliceModelSelector";
 export {
+  applyDeploymentEntityStateQuerySelector,
+  selectCurrentDeploymentEntityStateFromReduxState,
+  selectDeploymentEntityStateSelectorParams,
+  selectDomainStateFromReduxState,
+  selectMiroirSelectorQueryParams,
+
   applyDomainStateJzodSchemaSelector,
   applyDomainStateQuerySelector,
   applyDomainStateQuerySelectorForCleanedResult,
@@ -37,6 +43,8 @@ export {
 export {
   getMemoizedJzodSchemaSelectorMap,
   getMemoizedSelectorMap,
+  getMemoizedDeploymentEntityStateJzodSchemaSelectorMap,
+  getMemoizedDeploymentEntityStateSelectorMap,
 } from "./4_services/localCache/DomainStateMemoizedSelectors";
 export {
   PersistenceReduxSaga,

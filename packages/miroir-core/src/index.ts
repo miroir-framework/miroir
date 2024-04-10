@@ -301,6 +301,16 @@ export {
   RecordOfJzodObject,
 } from './0_interfaces/2_domain/DomainStateQuerySelectorInterface.js';
 export {
+  DeploymentEntityStateQuerySelector,
+  DeploymentEntityStateQuerySelectorMap,
+  DeploymentEntityStateQuerySelectorParams,
+  DeploymentEntityStateJzodSchemaSelector,
+  DeploymentEntityStateJzodSchemaSelectorMap,
+  DeploymentEntityStateJzodSchemaSelectorParams,
+  // RecordOfJzodElement,
+  // RecordOfJzodObject,
+} from './0_interfaces/2_domain/DeploymentEntityStateQuerySelectorInterface.js';
+export {
   ZEntityState,
   ZEntityStateSchema,
   DeploymentEntityState,
@@ -407,6 +417,25 @@ export {
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
 } from './2_domain/DomainStateQuerySelectors.js';
+export {
+  getDeploymentEntityStateJzodSchemaSelectorMap,
+  getDeploymentEntityStateSelectorMap,
+  getDeploymentEntityStateSelectorParams,
+  selectByDomainManyQueriesFromDeploymentEntityState,
+  selectEntityInstanceFromObjectQueryAndDeploymentEntityState,
+  selectEntityInstanceListFromListQueryAndDeploymentEntityState,
+  selectEntityInstanceUuidIndexFromDeploymentEntityState,
+  selectEntityJzodSchemaFromDeploymentEntityState,
+  selectFetchQueryJzodSchemaFromDeploymentEntityState,
+  selectJzodSchemaByDomainModelQueryFromDeploymentEntityState,
+  selectJzodSchemaBySingleSelectQueryFromDeploymentEntityState,
+} from './2_domain/DeploymentEntityStateQuerySelectors.js';
+export{
+  getLocalCacheIndexDeploymentSection,
+  getLocalCacheIndexDeploymentUuid,
+  getLocalCacheIndexEntityUuid,
+  getDeploymentEntityStateIndex,
+} from './2_domain/DeploymentEntityState.js';
 export {
   ModelEntityActionTransformer
 } from './2_domain/ModelEntityActionTransformer.js';
