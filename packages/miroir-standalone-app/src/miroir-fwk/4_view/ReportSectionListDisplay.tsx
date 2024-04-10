@@ -32,11 +32,15 @@ import {
   getLoggerName,
   getSelectorParams,
   jzodObject,
-  objectListReportSection
+  objectListReportSection,
+  DeploymentEntityStateQuerySelectorParams,
+  getDeploymentEntityStateSelectorParams,
+  DeploymentEntityStateQuerySelectorMap,
+  DeploymentEntityStateQuerySelector
 } from "miroir-core";
 
 import { Button } from "@mui/material";
-import { getMemoizedSelectorMap } from "miroir-localcache-redux";
+import { getMemoizedDeploymentEntityStateSelectorMap, getMemoizedSelectorMap } from "miroir-localcache-redux";
 import { packageName } from "../../constants";
 import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "../../miroir-fwk/4_view/getColumnDefinitionsFromEntityAttributes";
 import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from "./JsonObjectEditFormDialog";
@@ -48,7 +52,7 @@ import {
   useMiroirContextInnerFormOutput,
   useMiroirContextService,
 } from "./MiroirContextReactProvider";
-import { useCurrentModel, useDomainStateQuerySelectorForCleanedResult } from "./ReduxHooks";
+import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult, useDomainStateQuerySelectorForCleanedResult } from "./ReduxHooks";
 import { cleanLevel } from "./constants";
 
 
@@ -205,8 +209,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
 
-  const selectorMap: DomainStateQuerySelectorMap<MiroirSelectorQueryParams> = useMemo(
-    () => getMemoizedSelectorMap(),
+  const deploymentEntityStateSelectorMap: DeploymentEntityStateQuerySelectorMap<MiroirSelectorQueryParams> = useMemo(
+    () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
   )
 
@@ -307,7 +311,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       ).filter((e) => e[1].extra?.targetEntity)
     ,
     [
-      selectorMap,
+      deploymentEntityStateSelectorMap,
       props.deploymentUuid,
       props.paramsAsdomainElements,
       currentReportTargetEntityDefinition,
@@ -315,9 +319,9 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     ]
   );
 
-  const foreignKeyObjectsFetchQueryParams: DomainStateQuerySelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(
+  const foreignKeyObjectsFetchQueryParams: DeploymentEntityStateQuerySelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(
     () =>
-      getSelectorParams<DomainManyQueriesWithDeploymentUuid>(
+      getDeploymentEntityStateSelectorParams<DomainManyQueriesWithDeploymentUuid>(
         {
           queryType: "DomainManyQueries",
           deploymentUuid: props.deploymentUuid,
@@ -342,10 +346,10 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             ) as any,
           },
         },
-        selectorMap
+        deploymentEntityStateSelectorMap
       ),
     [
-      selectorMap,
+      deploymentEntityStateSelectorMap,
       props.deploymentUuid,
       props.paramsAsdomainElements,
       currentReportTargetEntityDefinition,
@@ -355,8 +359,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
 
   log.info("MTableComponent foreignKeyObjectsFetchQueryParams", foreignKeyObjectsFetchQueryParams);
 
-  const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = useDomainStateQuerySelectorForCleanedResult(
-    selectorMap.selectByDomainManyQueriesFromDomainState as DomainStateSelectorNew<DomainManyQueriesWithDeploymentUuid, any>,
+  const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = useDeploymentEntityStateQuerySelectorForCleanedResult(
+    deploymentEntityStateSelectorMap.selectByDomainManyQueriesFromDeploymentEntityState as DeploymentEntityStateQuerySelector<DomainManyQueriesWithDeploymentUuid, any>,
     foreignKeyObjectsFetchQueryParams
   );
 

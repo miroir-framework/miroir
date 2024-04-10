@@ -31,6 +31,7 @@ import {
 import {
   ReduxStateWithUndoRedo,
   applyDeploymentEntityStateQuerySelector,
+  applyDeploymentEntityStateQuerySelectorForCleanedResult,
   applyDomainStateJzodSchemaSelector,
   applyDomainStateQuerySelector,
   applyDomainStateQuerySelectorForCleanedResult,
@@ -65,6 +66,24 @@ export function useDeploymentEntityStateQuerySelector<Q extends MiroirSelectorQu
   );
   return result
 }
+
+// ################################################################################################
+export function useDeploymentEntityStateQuerySelectorForCleanedResult<Q extends MiroirSelectorQueryParams, T >(
+  deploymentEntityStateQuerySelector:DeploymentEntityStateQuerySelector<Q, DomainElement>,
+  selectorParams:DeploymentEntityStateQuerySelectorParams<Q>,
+  customQueryInterpreter?: { [k: string]: (query:MiroirSelectorQueryParams) => T }
+): T {
+  const innerSelector = useMemo(
+    () => {
+      return applyDeploymentEntityStateQuerySelectorForCleanedResult(deploymentEntityStateQuerySelector);
+    }, [deploymentEntityStateQuerySelector]);
+  const result: T = useSelector((state: ReduxStateWithUndoRedo) =>
+    innerSelector(state, selectorParams)
+  );
+  return result
+}
+
+
 // ################################################################################################
 export function useDomainStateQuerySelector<Q extends MiroirSelectorQueryParams, T >(
   domainStateSelector:DomainStateSelectorNew<Q, T>,

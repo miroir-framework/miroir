@@ -11,6 +11,7 @@ export {
 } from "./4_services/localCache/LocalCacheSliceModelSelector";
 export {
   applyDeploymentEntityStateQuerySelector,
+  applyDeploymentEntityStateQuerySelectorForCleanedResult,
   selectCurrentDeploymentEntityStateFromReduxState,
   selectDeploymentEntityStateSelectorParams,
   selectDomainStateFromReduxState,

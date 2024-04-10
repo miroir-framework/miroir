@@ -10,8 +10,6 @@ import {
   DomainModelGetFetchParamJzodSchemaQueryParams,
   DomainStateJzodSchemaSelectorMap,
   DomainStateJzodSchemaSelectorParams,
-  DomainStateQuerySelectorMap,
-  DomainStateQuerySelectorParams,
   LoggerInterface,
   MiroirLoggerFactory,
   MiroirSelectorQueryParams,
@@ -20,17 +18,16 @@ import {
   Uuid,
   getDeploymentEntityStateSelectorParams,
   getLoggerName,
-  getSelectorParams,
   selectFetchQueryJzodSchemaFromDomainStateNew
 } from "miroir-core";
 
 
 
-import { useDeploymentEntityStateQuerySelector, useDomainStateJzodSchemaSelector, useDomainStateQuerySelector } from './ReduxHooks';
+import { useDeploymentEntityStateQuerySelector, useDomainStateJzodSchemaSelector } from './ReduxHooks';
 import { ReportSectionView } from './ReportSectionView';
 import { ReportUrlParamKeys } from './routes/ReportPage';
 
-import { getMemoizedDeploymentEntityStateSelectorMap, getMemoizedJzodSchemaSelectorMap, getMemoizedSelectorMap } from 'miroir-localcache-redux';
+import { getMemoizedDeploymentEntityStateSelectorMap, getMemoizedJzodSchemaSelectorMap } from 'miroir-localcache-redux';
 import { packageName } from '../../constants';
 import { cleanLevel } from './constants';
 
@@ -127,11 +124,6 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
   );
 
   log.info("deploymentEntityStateQueryResults",deploymentEntityStateQueryResults)
-
-  // const queryResults: DomainElementObject = useDomainStateQuerySelector(
-  //   selectorMap.selectByDomainManyQueriesFromDomainState,
-  //   domainFetchQueryParams
-  // );
 
   // log.info(
   //   "-------------------------------------------------- props.reportSection",

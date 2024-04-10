@@ -164,6 +164,26 @@ export function applyDeploymentEntityStateQuerySelector<Q extends MiroirSelector
   )
 }
 
+// ################################################################################################
+export function applyDeploymentEntityStateQuerySelectorForCleanedResult<Q extends MiroirSelectorQueryParams>( // TODO: memoize?
+  deploymentEntityStateQuerySelector: DeploymentEntityStateQuerySelector<Q, DomainElement>
+): (
+  reduxState: ReduxStateWithUndoRedo,
+  params: DeploymentEntityStateQuerySelectorParams<Q>
+) => any { 
+  const cleanupFunction = (deploymentEntityState: DeploymentEntityState, params: DeploymentEntityStateQuerySelectorParams<Q>):DomainElement => {
+    const partial:DomainElement = deploymentEntityStateQuerySelector(deploymentEntityState, params);
+    const result:any = cleanupResultsFromQuery(partial)
+    return result;
+  }
+
+  return createSelector(
+    [selectCurrentDeploymentEntityStateFromReduxState, selectDeploymentEntityStateSelectorParams as DeploymentEntityStateSelectorParamsSelector<Q>],
+    cleanupFunction
+  )
+}
+
+
 export function applyDomainStateQuerySelector<Q extends MiroirSelectorQueryParams, T>( // TODO: memoize?
   domainStateSelector: DomainStateSelectorNew<Q, T>
 ): (
