@@ -119,7 +119,7 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
   // // )
 
   const deploymentEntityStateQueryResults: DomainElementObject = useDeploymentEntityStateQuerySelector(
-    deploymentEntityStateSelectorMap.selectByDomainManyQueriesFromDeploymentEntityState,
+    deploymentEntityStateSelectorMap.selectByDomainManyQueries,
     deploymentEntityStateFetchQueryParams
   );
 
@@ -185,7 +185,7 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
   ;
 
   const fetchedDataJzodSchema: RecordOfJzodObject | undefined = useDomainStateJzodSchemaSelector(
-    selectFetchQueryJzodSchemaFromDomainStateNew,
+    jzodSchemaSelectorMap.selectFetchQueryJzodSchema,
     fetchedDataJzodSchemaParams
   ) as RecordOfJzodObject | undefined; // TODO: use correct return type
 

@@ -45,7 +45,7 @@ import entityEntityDefinition from '../assets/miroir_model/16dbfe28-e1d7-4f20-9b
 import { resolveContextReference } from "./DomainStateQuerySelectors";
 import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface";
 import { getDeploymentEntityStateIndex } from "./DeploymentEntityState";
-import { DeploymentEntityStateJzodSchemaSelector, DeploymentEntityStateJzodSchemaSelectorMap, DeploymentEntityStateJzodSchemaSelectorParams, DeploymentEntityStateQuerySelector, DeploymentEntityStateQuerySelectorMap, DeploymentEntityStateQuerySelectorParams } from "../0_interfaces/2_domain/DeploymentEntityStateQuerySelectorInterface";
+import { DeploymentEntityStateJzodSchemaSelector, DeploymentEntityStateJzodSchemaSelectorMap, DeploymentEntityStateJzodSchemaSelectorParams, DeploymentEntityStateQuerySelector, DeploymentEntityStateQuerySelectorMap, DeploymentEntityStateQuerySelectorParams, QuerySelector, QuerySelectorMap, QuerySelectorParams } from "../0_interfaces/2_domain/DeploymentEntityStateQuerySelectorInterface";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainSelector");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -88,6 +88,7 @@ let emptyJzodSchemaSelectorMap: DeploymentEntityStateJzodSchemaSelectorMap = {}
 // }
 
 // ################################################################################################
+// ACCESSES deploymentEntityState
 /**
  * returns an Entity Instance (Object) from and selectObjectByParameterValue
  * @param deploymentEntityState 
@@ -153,18 +154,6 @@ export const selectEntityInstanceFromObjectQueryAndDeploymentEntityState:Deploym
         };
       }
 
-      // if (!deploymentEntityState) {
-      //   return { elementType: "failure", elementValue: { queryFailure: "DomainStateNotLoaded" } };
-      // }
-      // if (!deploymentEntityState[deploymentUuid]) {
-      //   return { elementType: "failure", elementValue: { queryFailure: "DeploymentNotFound", deploymentUuid } };
-      // }
-      // if (!deploymentEntityState[deploymentUuid][applicationSection]) {
-      //   return {
-      //     elementType: "failure",
-      //     elementValue: { queryFailure: "ApplicationSectionNotFound", deploymentUuid, applicationSection },
-      //   };
-      // }
       if (!deploymentEntityState[index]) {
         return {
           elementType: "failure",
@@ -214,18 +203,6 @@ export const selectEntityInstanceFromObjectQueryAndDeploymentEntityState:Deploym
         return instanceUuid /* QueryResults, elementType == "failure" */
       }
       log.info("selectEntityInstanceFromObjectQueryAndDeploymentEntityState resolved instanceUuid =", instanceUuid);
-      // if (!deploymentEntityState) {
-      //   return { elementType: "failure", elementValue: { queryFailure: "DomainStateNotLoaded" } };
-      // }
-      // if (!deploymentEntityState[deploymentUuid]) {
-      //   return { elementType: "failure", elementValue: { queryFailure: "DeploymentNotFound", deploymentUuid } };
-      // }
-      // if (!deploymentEntityState[deploymentUuid][applicationSection]) {
-      //   return {
-      //     elementType: "failure",
-      //     elementValue: { queryFailure: "ApplicationSectionNotFound", deploymentUuid, applicationSection },
-      //   };
-      // }
       if (!deploymentEntityState[index]) {
         return {
           elementType: "failure",
@@ -281,6 +258,7 @@ export const selectEntityInstanceFromObjectQueryAndDeploymentEntityState:Deploym
 };
 
 // ################################################################################################
+// ACCESSES deploymentEntityState
 export const selectEntityInstanceUuidIndexFromDeploymentEntityState: DeploymentEntityStateQuerySelector<
   DomainModelGetSingleSelectObjectListQueryQueryParams, DomainElement
 > = (
@@ -372,7 +350,7 @@ export const selectEntityInstanceListFromListQueryAndDeploymentEntityState: Depl
   );
   const localSelectorMap: DeploymentEntityStateQuerySelectorMap<DomainModelGetSingleSelectObjectListQueryQueryParams> =
     selectorParams?.selectorMap ?? emptySelectorMap;
-  const selectedInstances: DomainElement = localSelectorMap.selectEntityInstanceUuidIndexFromDeploymentEntityState(
+  const selectedInstances: DomainElement = localSelectorMap.selectEntityInstanceUuidIndex(
     deploymentEntityState,
     selectorParams
   );
@@ -543,12 +521,15 @@ export const selectEntityInstanceListFromListQueryAndDeploymentEntityState: Depl
 };
 
 // ################################################################################################
-export const innerSelectElementFromQueryAndDomainState = (
+// export const innerSelectElementFromQuery = <StateTypeParam, StateQuerySelectorMapParam>(
+export const innerSelectElementFromQuery = (
   deploymentEntityState: DeploymentEntityState,
+  // deploymentEntityState: StateTypeParam,
   newFetchedData: DomainElementObject,
   pageParams: DomainElementObject,
   queryParams: DomainElementObject,
   selectorMap:DeploymentEntityStateQuerySelectorMap<MiroirSelectorQueryParams>,
+  // selectorMap:StateQuerySelectorMapParam,
   deploymentUuid: Uuid,
   query: MiroirSelectQuery
 ): DomainElement => {
@@ -560,7 +541,7 @@ export const innerSelectElementFromQueryAndDomainState = (
     case "selectObjectListByEntity":
     case "selectObjectListByRelation": 
     case "selectObjectListByManyToManyRelation": {
-      return selectorMap.selectEntityInstanceListFromListQueryAndDeploymentEntityState(deploymentEntityState, {
+      return selectorMap.selectEntityInstanceListFromListQuery(deploymentEntityState, {
         selectorMap,
         query: {
           queryType: "getSingleSelectQuery",
@@ -583,7 +564,7 @@ export const innerSelectElementFromQueryAndDomainState = (
     }
     case "selectObjectByRelation":
     case "selectObjectByDirectReference": {
-      return selectorMap.selectEntityInstanceFromObjectQueryAndDeploymentEntityState(deploymentEntityState, {
+      return selectorMap.selectEntityInstanceFromObjectQuery(deploymentEntityState, {
         selectorMap,
         query: {
           queryType: "getSingleSelectQuery",
@@ -610,7 +591,7 @@ export const innerSelectElementFromQueryAndDomainState = (
         elementValue: Object.fromEntries(
           Object.entries(query.definition).map((e: [string, MiroirSelectQuery]) => [
             e[0],
-            innerSelectElementFromQueryAndDomainState(
+            innerSelectElementFromQuery(
               deploymentEntityState,
               newFetchedData,
               pageParams ?? {},
@@ -628,7 +609,7 @@ export const innerSelectElementFromQueryAndDomainState = (
       return {
         elementType: "array",
         elementValue: query.definition.map((e) =>
-          innerSelectElementFromQueryAndDomainState(
+          innerSelectElementFromQuery(
             deploymentEntityState,
             newFetchedData,
             pageParams ?? {},
@@ -642,7 +623,7 @@ export const innerSelectElementFromQueryAndDomainState = (
       break;
     }
     case "queryCombiner": {
-      const rootQueryResults = innerSelectElementFromQueryAndDomainState(
+      const rootQueryResults = innerSelectElementFromQuery(
         deploymentEntityState,
         newFetchedData,
         pageParams,
@@ -658,7 +639,7 @@ export const innerSelectElementFromQueryAndDomainState = (
             Object.entries(rootQueryResults.elementValue).map((entry) => {
               return [
                 entry[1].uuid,
-                innerSelectElementFromQueryAndDomainState(
+                innerSelectElementFromQuery(
                   deploymentEntityState,
                   newFetchedData,
                   pageParams,
@@ -720,7 +701,7 @@ export const selectByDomainManyQueriesFromDeploymentEntityState:DeploymentEntity
     selectorParams?.selectorMap ?? emptySelectorMap;
 
   for (const entry of Object.entries(selectorParams.query.fetchQuery.select)) {
-    let result = innerSelectElementFromQueryAndDomainState(
+    let result = innerSelectElementFromQuery(
       deploymentEntityState,
       context,
       selectorParams.query.pageParams,
@@ -815,7 +796,7 @@ export const selectJzodSchemaBySingleSelectQueryFromDeploymentEntityState = (
       return undefined
     }
 
-    return selectorParams.selectorMap.selectEntityJzodSchemaFromDeploymentEntityState(deploymentEntityState, {
+    return selectorParams.selectorMap.selectEntityJzodSchema(deploymentEntityState, {
       selectorMap: selectorParams.selectorMap,
       query: {
         queryType: "getEntityDefinition",
@@ -830,6 +811,7 @@ export const selectJzodSchemaBySingleSelectQueryFromDeploymentEntityState = (
 }
 
 // ################################################################################################
+// ACCESSES deploymentEntityState
 export const selectEntityJzodSchemaFromDeploymentEntityState = (
   deploymentEntityState: DeploymentEntityState,
   selectorParams: DeploymentEntityStateJzodSchemaSelectorParams<DomainModelGetEntityDefinitionQueryParams>
@@ -847,18 +829,7 @@ export const selectEntityJzodSchemaFromDeploymentEntityState = (
     deploymentEntityState[deploymentEntityStateIndex] &&
     deploymentEntityState[deploymentEntityStateIndex].entities &&
     deploymentEntityState[deploymentEntityStateIndex].entities[entityEntityDefinition.uuid]
-    // && deploymentEntityState[localQuery.deploymentUuid]
-    // && deploymentEntityState[localQuery.deploymentUuid]["model"]
-    // && deploymentEntityState[localQuery.deploymentUuid]["model"][entityEntityDefinition.uuid]
   ) {
-    // const values: EntityDefinition[] = Object.values(
-    //   deploymentEntityState[deploymentEntityStateIndex].entities ?? {}
-    // ) as EntityDefinition[];
-    // const index = values.findIndex(
-    //   (e: EntityDefinition) => e.entityUuid == localQuery.entityUuid
-    // );
-
-    // const result: JzodObject | undefined = index > -1?values[index].jzodSchema: undefined;
     const result: JzodObject = (
       deploymentEntityState[deploymentEntityStateIndex].entities[entityEntityDefinition.uuid] as EntityDefinition
     ).jzodSchema;
@@ -889,7 +860,7 @@ export const selectFetchQueryJzodSchemaFromDeploymentEntityState = (
   const fetchQueryJzodSchema = Object.fromEntries(
     Object.entries(localFetchParams?.fetchQuery?.select??{}).map((entry: [string, MiroirSelectQuery]) => [
       entry[0],
-      selectorParams.selectorMap.selectJzodSchemaBySingleSelectQueryFromDeploymentEntityState(deploymentEntityState, {
+      selectorParams.selectorMap.selectJzodSchemaBySingleSelectQuery(deploymentEntityState, {
         selectorMap:selectorParams.selectorMap,
         query: {
           queryType: "getSingleSelectQueryJzodSchema",
@@ -933,14 +904,14 @@ export const selectJzodSchemaByDomainModelQueryFromDeploymentEntityState = (
 ): RecordOfJzodElement | JzodElement | undefined => {
   switch (selectorParams.query.queryType) {
     case "getEntityDefinition":{ 
-      return selectorParams.selectorMap.selectEntityJzodSchemaFromDeploymentEntityState(
+      return selectorParams.selectorMap.selectEntityJzodSchema(
         deploymentEntityState,
         selectorParams as DeploymentEntityStateJzodSchemaSelectorParams<DomainModelGetEntityDefinitionQueryParams>
       );
       break;
     }
     case "getFetchParamsJzodSchema": {
-      return selectorParams.selectorMap.selectFetchQueryJzodSchemaFromDeploymentEntityState(
+      return selectorParams.selectorMap.selectFetchQueryJzodSchema(
         deploymentEntityState,
         selectorParams as DeploymentEntityStateJzodSchemaSelectorParams<DomainModelGetFetchParamJzodSchemaQueryParams>
       );
@@ -970,29 +941,33 @@ export const selectJzodSchemaByDomainModelQueryFromDeploymentEntityState = (
 // DEPENDENT ON RESELECT / REDUX. TO MOVE TO miroir-localCache-redux!
 // ################################################################################################
 
-export function getDeploymentEntityStateSelectorMap(): DeploymentEntityStateQuerySelectorMap<MiroirSelectorQueryParams> {
+export function getDeploymentEntityStateSelectorMap<QueryType extends MiroirSelectorQueryParams>(): QuerySelectorMap<
+  QueryType,
+  DeploymentEntityState
+> {
   // return selectorMap;
   return {
-    selectEntityInstanceUuidIndexFromDeploymentEntityState:
-      selectEntityInstanceUuidIndexFromDeploymentEntityState as DeploymentEntityStateQuerySelector<
-        MiroirSelectorQueryParams,
-        DomainElementObject
+    selectEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDeploymentEntityState as QuerySelector<
+      QueryType,
+      DeploymentEntityState,
+      DomainElement
+    >,
+    selectEntityInstanceFromObjectQuery: selectEntityInstanceFromObjectQueryAndDeploymentEntityState as QuerySelector<
+      QueryType,
+      DeploymentEntityState,
+      DomainElement
+    >,
+    selectEntityInstanceListFromListQuery:
+      selectEntityInstanceListFromListQueryAndDeploymentEntityState as QuerySelector<
+        QueryType,
+        DeploymentEntityState,
+        DomainElement
       >,
-    selectEntityInstanceFromObjectQueryAndDeploymentEntityState:
-      selectEntityInstanceFromObjectQueryAndDeploymentEntityState as DeploymentEntityStateQuerySelector<
-        MiroirSelectorQueryParams,
-        DomainElementObject
-      >,
-    selectEntityInstanceListFromListQueryAndDeploymentEntityState:
-      selectEntityInstanceListFromListQueryAndDeploymentEntityState as DeploymentEntityStateQuerySelector<
-        MiroirSelectorQueryParams,
-        DomainElementObject
-      >,
-    selectByDomainManyQueriesFromDomainState:
-      selectByDomainManyQueriesFromDeploymentEntityState as DeploymentEntityStateQuerySelector<
-        MiroirSelectorQueryParams,
-        DomainElementObject
-      >,
+    selectByDomainManyQueries: selectByDomainManyQueriesFromDeploymentEntityState as QuerySelector<
+      QueryType,
+      DeploymentEntityState,
+      DomainElementObject
+    >,
   };
 }
 
@@ -1001,36 +976,22 @@ export function getDeploymentEntityStateSelectorMap(): DeploymentEntityStateQuer
 export function getDeploymentEntityStateJzodSchemaSelectorMap(): DeploymentEntityStateJzodSchemaSelectorMap {
   // return jzodSchemaSelectorMap;
   return {
-    selectJzodSchemaByDomainModelQueryFromDeploymentEntityState: selectJzodSchemaByDomainModelQueryFromDeploymentEntityState,
-    selectEntityJzodSchemaFromDeploymentEntityState:
+    selectJzodSchemaByDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDeploymentEntityState,
+    selectEntityJzodSchema:
       selectEntityJzodSchemaFromDeploymentEntityState as DeploymentEntityStateJzodSchemaSelector<DomainModelQueryJzodSchemaParams>,
-    selectFetchQueryJzodSchemaFromDeploymentEntityState:
+    selectFetchQueryJzodSchema:
       selectFetchQueryJzodSchemaFromDeploymentEntityState as DeploymentEntityStateJzodSchemaSelector<DomainModelQueryJzodSchemaParams>,
-    selectJzodSchemaBySingleSelectQueryFromDeploymentEntityState:
+    selectJzodSchemaBySingleSelectQuery:
       selectJzodSchemaBySingleSelectQueryFromDeploymentEntityState as DeploymentEntityStateJzodSchemaSelector<DomainModelQueryJzodSchemaParams>,
   };
 }
 
-export function getDeploymentEntityStateSelectorParams<Q extends MiroirSelectorQueryParams>(
-  query: Q,
-  selectorMap?: DeploymentEntityStateQuerySelectorMap<MiroirSelectorQueryParams>
-): DeploymentEntityStateQuerySelectorParams<Q> {
+export function getDeploymentEntityStateSelectorParams<QueryType extends MiroirSelectorQueryParams>(
+  query: QueryType,
+  selectorMap?: QuerySelectorMap<QueryType, DeploymentEntityState>
+): QuerySelectorParams<QueryType, DeploymentEntityState> {
   return {
     query,
-    selectorMap: selectorMap ?? getDeploymentEntityStateSelectorMap(),
+    selectorMap: selectorMap ?? getDeploymentEntityStateSelectorMap<QueryType>(),
   };
 }
-
-// jzodSchemaSelectorMap = {
-//   "selectJzodSchemaByDomainModelQueryFromDomainStateNew": createSelector([domainStateSelector,domainStateSelectorParams],selectJzodSchemaByDomainModelQueryFromDomainStateNew),
-//   "selectEntityJzodSchemaFromDomainStateNew": createSelector([domainStateSelector,domainStateSelectorParams],selectEntityJzodSchemaFromDomainStateNew),
-//   "selectFetchQueryJzodSchemaFromDomainStateNew": createSelector([domainStateSelector,domainStateSelectorParams],selectFetchQueryJzodSchemaFromDomainStateNew),
-//   "selectJzodSchemaBySingleSelectQueryFromDomainStateNew": createSelector([domainStateSelector,domainStateSelectorParams],selectJzodSchemaBySingleSelectQueryFromDomainStateNew),
-// }
-
-// selectorMap = {
-//   "selectEntityInstanceUuidIndexFromDeploymentEntityState": createSelector([domainStateSelector,domainStateSelectorParams],selectEntityInstanceUuidIndexFromDeploymentEntityState),
-//   "selectEntityInstanceFromObjectQueryAndDeploymentEntityState": createSelector([domainStateSelector,domainStateSelectorParams],selectEntityInstanceFromObjectQueryAndDeploymentEntityState),
-//   "selectEntityInstanceListFromListQueryAndDeploymentEntityState": createSelector([domainStateSelector,domainStateSelectorParams],selectEntityInstanceListFromListQueryAndDeploymentEntityState),
-//   "selectByDomainManyQueriesFromDomainState": createSelector([domainStateSelector,domainStateSelectorParams],selectByDomainManyQueriesFromDomainState),
-// }

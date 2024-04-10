@@ -23,6 +23,8 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   MiroirSelectorQueryParams,
+  QuerySelector,
+  QuerySelectorParams,
   RecordOfJzodElement,
   cleanupResultsFromQuery,
   getDeploymentEntityStateIndex,
@@ -53,6 +55,11 @@ declare type DomainStateJzodSchemaSelectorParamsSelector<Q extends DomainModelQu
 ) => DomainStateJzodSchemaSelectorParams<Q>;
 
 // ################################################################################################
+declare type SelectorParamsSelector<QueryType extends MiroirSelectorQueryParams, StateType> = (
+  reduxState: ReduxStateWithUndoRedo,
+  params: QuerySelectorParams<QueryType, StateType>
+) => QuerySelectorParams<QueryType, StateType>;
+
 declare type DeploymentEntityStateSelectorParamsSelector<Q extends MiroirSelectorQueryParams> = (
   reduxState: ReduxStateWithUndoRedo,
   params: DeploymentEntityStateQuerySelectorParams<Q>
@@ -151,36 +158,45 @@ export const selectDomainStateJzodSchemaSelectorParams = <Q extends DomainModelQ
 // DOMAIN STATE SELECTORS
 // ################################################################################################
 // ################################################################################################
-export function applyDeploymentEntityStateQuerySelector<Q extends MiroirSelectorQueryParams, T>( // TODO: memoize?
-  deploymentEntityStateQuerySelector: DeploymentEntityStateQuerySelector<Q, T>
+export function applyDeploymentEntityStateQuerySelector<QueryType extends MiroirSelectorQueryParams, ResultType>( // TODO: memoize?
+  deploymentEntityStateQuerySelector: DeploymentEntityStateQuerySelector<QueryType, ResultType>
 ): (
   reduxState: ReduxStateWithUndoRedo,
-  params: DeploymentEntityStateQuerySelectorParams<Q>
-) => T { 
+  params: DeploymentEntityStateQuerySelectorParams<QueryType>
+) => ResultType { 
   return createSelector(
     // [selectCurrentDeploymentEntityStateFromReduxState, selectDomainStateSelectorParams as DomainStateSelectorParamsSelector<Q>],
-    [selectCurrentDeploymentEntityStateFromReduxState, selectDeploymentEntityStateSelectorParams as DeploymentEntityStateSelectorParamsSelector<Q>],
+    [selectCurrentDeploymentEntityStateFromReduxState, selectDeploymentEntityStateSelectorParams as DeploymentEntityStateSelectorParamsSelector<QueryType>],
     deploymentEntityStateQuerySelector
   )
 }
 
 // ################################################################################################
-export function applyDeploymentEntityStateQuerySelectorForCleanedResult<Q extends MiroirSelectorQueryParams>( // TODO: memoize?
-  deploymentEntityStateQuerySelector: DeploymentEntityStateQuerySelector<Q, DomainElement>
+export function applyDeploymentEntityStateQuerySelectorForCleanedResult<QueryType extends MiroirSelectorQueryParams>( // TODO: memoize?
+  deploymentEntityStateQuerySelector: QuerySelector<QueryType, DeploymentEntityState, DomainElement>
 ): (
   reduxState: ReduxStateWithUndoRedo,
-  params: DeploymentEntityStateQuerySelectorParams<Q>
+  params: QuerySelectorParams<QueryType, DeploymentEntityState>
 ) => any { 
-  const cleanupFunction = (deploymentEntityState: DeploymentEntityState, params: DeploymentEntityStateQuerySelectorParams<Q>):DomainElement => {
-    const partial:DomainElement = deploymentEntityStateQuerySelector(deploymentEntityState, params);
-    const result:any = cleanupResultsFromQuery(partial)
+  const cleanupFunction = (
+    deploymentEntityState: DeploymentEntityState,
+    params: QuerySelectorParams<QueryType, DeploymentEntityState>
+  ): DomainElement => {
+    const partial: DomainElement = deploymentEntityStateQuerySelector(deploymentEntityState, params);
+    const result: any = cleanupResultsFromQuery(partial);
     return result;
-  }
+  };
 
   return createSelector(
-    [selectCurrentDeploymentEntityStateFromReduxState, selectDeploymentEntityStateSelectorParams as DeploymentEntityStateSelectorParamsSelector<Q>],
+    [
+      selectCurrentDeploymentEntityStateFromReduxState,
+      selectDeploymentEntityStateSelectorParams as SelectorParamsSelector<
+        QueryType,
+        DeploymentEntityState
+      >,
+    ],
     cleanupFunction
-  )
+  );
 }
 
 

@@ -1,28 +1,28 @@
 import { createSelector } from "@reduxjs/toolkit";
 import {
+  DeploymentEntityState,
+  DeploymentEntityStateJzodSchemaSelectorMap,
+  DomainState,
+  DomainStateJzodSchemaSelectorMap,
   DomainStateQuerySelectorMap,
   MiroirSelectorQueryParams,
-  selectEntityInstanceUuidIndexFromDomainState,
-  selectEntityInstanceFromObjectQueryAndDomainState,
-  selectEntityInstanceListFromListQueryAndDomainState,
-  selectByDomainManyQueriesFromDomainState,
-  DomainStateJzodSchemaSelectorMap,
-  selectJzodSchemaByDomainModelQueryFromDomainStateNew,
-  selectEntityJzodSchemaFromDomainStateNew,
-  selectFetchQueryJzodSchemaFromDomainStateNew,
-  selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
-  DomainState,
-  DeploymentEntityState,
-  DeploymentEntityStateQuerySelectorMap,
-  selectEntityInstanceFromObjectQueryAndDeploymentEntityState,
-  selectEntityInstanceListFromListQueryAndDeploymentEntityState,
+  QuerySelectorMap,
   selectByDomainManyQueriesFromDeploymentEntityState,
-  selectJzodSchemaByDomainModelQueryFromDeploymentEntityState,
-  selectEntityJzodSchemaFromDeploymentEntityState,
-  selectFetchQueryJzodSchemaFromDeploymentEntityState,
-  selectJzodSchemaBySingleSelectQueryFromDeploymentEntityState,
-  DeploymentEntityStateJzodSchemaSelectorMap,
+  selectByDomainManyQueriesFromDomainState,
+  selectEntityInstanceFromObjectQueryAndDeploymentEntityState,
+  selectEntityInstanceFromObjectQueryAndDomainState,
+  selectEntityInstanceListFromListQueryAndDeploymentEntityState,
+  selectEntityInstanceListFromListQueryAndDomainState,
   selectEntityInstanceUuidIndexFromDeploymentEntityState,
+  selectEntityInstanceUuidIndexFromDomainState,
+  selectEntityJzodSchemaFromDeploymentEntityState,
+  selectEntityJzodSchemaFromDomainStateNew,
+  selectFetchQueryJzodSchemaFromDeploymentEntityState,
+  selectFetchQueryJzodSchemaFromDomainStateNew,
+  selectJzodSchemaByDomainModelQueryFromDeploymentEntityState,
+  selectJzodSchemaByDomainModelQueryFromDomainStateNew,
+  selectJzodSchemaBySingleSelectQueryFromDeploymentEntityState,
+  selectJzodSchemaBySingleSelectQueryFromDomainStateNew
 } from "miroir-core";
 
 const deploymentEntityStateSelector = (domainState: DeploymentEntityState, params: any) => domainState;
@@ -33,41 +33,41 @@ const domainStateSelectorParams = (domainState: DomainState, params: any) => par
 export function getMemoizedSelectorMap(): DomainStateQuerySelectorMap<MiroirSelectorQueryParams> {
   // return selectorMap;
   return {
-    selectEntityInstanceUuidIndexFromDomainState: createSelector(
+    selectEntityInstanceUuidIndex: createSelector(
       [domainStateSelector, domainStateSelectorParams],
       selectEntityInstanceUuidIndexFromDomainState
     ),
-    selectEntityInstanceFromObjectQueryAndDomainState: createSelector(
+    selectEntityInstanceFromObject: createSelector(
       [domainStateSelector, domainStateSelectorParams],
       selectEntityInstanceFromObjectQueryAndDomainState
     ),
-    selectEntityInstanceListFromListQueryAndDomainState: createSelector(
+    selectEntityInstanceListFromListQuery: createSelector(
       [domainStateSelector, domainStateSelectorParams],
       selectEntityInstanceListFromListQueryAndDomainState
     ),
-    selectByDomainManyQueriesFromDomainState: createSelector(
+    selectByDomainManyQueries: createSelector(
       [domainStateSelector, domainStateSelectorParams],
       selectByDomainManyQueriesFromDomainState
     ),
   };
 }
 
-export function getMemoizedDeploymentEntityStateSelectorMap(): DeploymentEntityStateQuerySelectorMap<MiroirSelectorQueryParams> {
+export function getMemoizedDeploymentEntityStateSelectorMap(): QuerySelectorMap<MiroirSelectorQueryParams,DeploymentEntityState> {
   // return selectorMap;
   return {
-    selectEntityInstanceUuidIndexFromDeploymentEntityState: createSelector(
+    selectEntityInstanceUuidIndex: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
       selectEntityInstanceUuidIndexFromDeploymentEntityState
     ),
-    selectEntityInstanceFromObjectQueryAndDeploymentEntityState: createSelector(
+    selectEntityInstanceFromObjectQuery: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
       selectEntityInstanceFromObjectQueryAndDeploymentEntityState
     ),
-    selectEntityInstanceListFromListQueryAndDeploymentEntityState: createSelector(
+    selectEntityInstanceListFromListQuery: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
       selectEntityInstanceListFromListQueryAndDeploymentEntityState
     ),
-    selectByDomainManyQueriesFromDeploymentEntityState: createSelector(
+    selectByDomainManyQueries: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
       selectByDomainManyQueriesFromDeploymentEntityState
     ),
@@ -77,19 +77,19 @@ export function getMemoizedDeploymentEntityStateSelectorMap(): DeploymentEntityS
 export function getMemoizedDeploymentEntityStateJzodSchemaSelectorMap(): DeploymentEntityStateJzodSchemaSelectorMap {
   // return jzodSchemaSelectorMap;
   return {
-    selectJzodSchemaByDomainModelQueryFromDeploymentEntityState: createSelector(
+    selectJzodSchemaByDomainModelQuery: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
       selectJzodSchemaByDomainModelQueryFromDeploymentEntityState
     ),
-    selectEntityJzodSchemaFromDeploymentEntityState: createSelector(
+    selectEntityJzodSchema: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
       selectEntityJzodSchemaFromDeploymentEntityState
     ),
-    selectFetchQueryJzodSchemaFromDeploymentEntityState: createSelector(
+    selectFetchQueryJzodSchema: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
       selectFetchQueryJzodSchemaFromDeploymentEntityState
     ),
-    selectJzodSchemaBySingleSelectQueryFromDeploymentEntityState: createSelector(
+    selectJzodSchemaBySingleSelectQuery: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
       selectJzodSchemaBySingleSelectQueryFromDeploymentEntityState
     ),
@@ -98,19 +98,19 @@ export function getMemoizedDeploymentEntityStateJzodSchemaSelectorMap(): Deploym
 export function getMemoizedJzodSchemaSelectorMap(): DomainStateJzodSchemaSelectorMap {
   // return jzodSchemaSelectorMap;
   return {
-    selectJzodSchemaByDomainModelQueryFromDomainStateNew: createSelector(
+    selectJzodSchemaByDomainModelQuery: createSelector(
       [domainStateSelector, domainStateSelectorParams],
       selectJzodSchemaByDomainModelQueryFromDomainStateNew
     ),
-    selectEntityJzodSchemaFromDomainStateNew: createSelector(
+    selectEntityJzodSchema: createSelector(
       [domainStateSelector, domainStateSelectorParams],
       selectEntityJzodSchemaFromDomainStateNew
     ),
-    selectFetchQueryJzodSchemaFromDomainStateNew: createSelector(
+    selectFetchQueryJzodSchema: createSelector(
       [domainStateSelector, domainStateSelectorParams],
       selectFetchQueryJzodSchemaFromDomainStateNew
     ),
-    selectJzodSchemaBySingleSelectQueryFromDomainStateNew: createSelector(
+    selectJzodSchemaBySingleSelectQuery: createSelector(
       [domainStateSelector, domainStateSelectorParams],
       selectJzodSchemaBySingleSelectQueryFromDomainStateNew
     ),

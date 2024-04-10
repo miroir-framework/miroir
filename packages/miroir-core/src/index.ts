@@ -301,6 +301,9 @@ export {
   RecordOfJzodObject,
 } from './0_interfaces/2_domain/DomainStateQuerySelectorInterface.js';
 export {
+  QuerySelector,
+  QuerySelectorMap,
+  QuerySelectorParams,
   DeploymentEntityStateQuerySelector,
   DeploymentEntityStateQuerySelectorMap,
   DeploymentEntityStateQuerySelectorParams,

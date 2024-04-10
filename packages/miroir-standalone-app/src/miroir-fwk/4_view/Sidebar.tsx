@@ -197,7 +197,7 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
   );
 
   const deploymentEntityStateDomainElementObject: DomainElementObject = useDeploymentEntityStateQuerySelector(
-    deploymentEntityStateSelectorMap.selectByDomainManyQueriesFromDeploymentEntityState,
+    deploymentEntityStateSelectorMap.selectByDomainManyQueries,
     deploymentEntityStateFetchQueryParams
   );
 

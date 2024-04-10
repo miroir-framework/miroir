@@ -10,11 +10,13 @@ import { z } from "zod";
 import {
   ApplicationDeploymentConfiguration,
   ApplicationDeploymentSchema,
+  DeploymentEntityState,
+  DeploymentEntityStateQuerySelector,
+  DeploymentEntityStateQuerySelectorMap,
+  DeploymentEntityStateQuerySelectorParams,
   DomainControllerInterface,
+  DomainElement,
   DomainManyQueriesWithDeploymentUuid,
-  DomainStateQuerySelectorMap,
-  DomainStateSelectorNew,
-  DomainStateQuerySelectorParams,
   Entity,
   EntityDefinition,
   EntityInstancesUuidIndex,
@@ -25,22 +27,21 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   MiroirSelectorQueryParams,
+  QuerySelector,
+  QuerySelectorMap,
+  QuerySelectorParams,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   applicationSection,
   domainElementObject,
-  getLoggerName,
-  getSelectorParams,
-  jzodObject,
-  objectListReportSection,
-  DeploymentEntityStateQuerySelectorParams,
   getDeploymentEntityStateSelectorParams,
-  DeploymentEntityStateQuerySelectorMap,
-  DeploymentEntityStateQuerySelector
+  getLoggerName,
+  jzodObject,
+  objectListReportSection
 } from "miroir-core";
 
 import { Button } from "@mui/material";
-import { getMemoizedDeploymentEntityStateSelectorMap, getMemoizedSelectorMap } from "miroir-localcache-redux";
+import { getMemoizedDeploymentEntityStateSelectorMap } from "miroir-localcache-redux";
 import { packageName } from "../../constants";
 import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "../../miroir-fwk/4_view/getColumnDefinitionsFromEntityAttributes";
 import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from "./JsonObjectEditFormDialog";
@@ -52,7 +53,7 @@ import {
   useMiroirContextInnerFormOutput,
   useMiroirContextService,
 } from "./MiroirContextReactProvider";
-import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult, useDomainStateQuerySelectorForCleanedResult } from "./ReduxHooks";
+import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from "./ReduxHooks";
 import { cleanLevel } from "./constants";
 
 
@@ -209,7 +210,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
 
-  const deploymentEntityStateSelectorMap: DeploymentEntityStateQuerySelectorMap<MiroirSelectorQueryParams> = useMemo(
+  const deploymentEntityStateSelectorMap: QuerySelectorMap<MiroirSelectorQueryParams, DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
   )
@@ -319,7 +320,11 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     ]
   );
 
-  const foreignKeyObjectsFetchQueryParams: DeploymentEntityStateQuerySelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(
+  // const foreignKeyObjectsFetchQueryParams: DeploymentEntityStateQuerySelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(
+  const foreignKeyObjectsFetchQueryParams: QuerySelectorParams<
+    DomainManyQueriesWithDeploymentUuid,
+    DeploymentEntityState
+  > = useMemo(
     () =>
       getDeploymentEntityStateSelectorParams<DomainManyQueriesWithDeploymentUuid>(
         {
@@ -331,18 +336,18 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           contextResults: { elementType: "object", elementValue: {} },
           fetchQuery: {
             select: Object.fromEntries(
-                  foreignKeyObjectsAttributeDefinition.map((e) => [
-                  e[1].extra?.targetEntity,
-                  {
-                    queryType: "selectObjectListByEntity",
-                    applicationSection: (props.paramsAsdomainElements as any)["applicationSection"],
-                    parentName: "",
-                    parentUuid: {
-                      referenceType: "constant",
-                      referenceUuid: e[1].extra?.targetEntity,
-                    },
+              foreignKeyObjectsAttributeDefinition.map((e) => [
+                e[1].extra?.targetEntity,
+                {
+                  queryType: "selectObjectListByEntity",
+                  applicationSection: (props.paramsAsdomainElements as any)["applicationSection"],
+                  parentName: "",
+                  parentUuid: {
+                    referenceType: "constant",
+                    referenceUuid: e[1].extra?.targetEntity,
                   },
-                ])
+                },
+              ])
             ) as any,
           },
         },
@@ -359,8 +364,9 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
 
   log.info("MTableComponent foreignKeyObjectsFetchQueryParams", foreignKeyObjectsFetchQueryParams);
 
+  // const foreignKeyObjects:  = useDeploymentEntityStateQuerySelectorForCleanedResult(
   const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = useDeploymentEntityStateQuerySelectorForCleanedResult(
-    deploymentEntityStateSelectorMap.selectByDomainManyQueriesFromDeploymentEntityState as DeploymentEntityStateQuerySelector<DomainManyQueriesWithDeploymentUuid, any>,
+    deploymentEntityStateSelectorMap.selectByDomainManyQueries as QuerySelector<DomainManyQueriesWithDeploymentUuid, DeploymentEntityState, DomainElement>,
     foreignKeyObjectsFetchQueryParams
   );
 

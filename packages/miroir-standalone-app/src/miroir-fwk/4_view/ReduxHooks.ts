@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 // import { JzodAttribute } from "@miroir-framework/jzod-ts";
 import {
   ApplicationSection,
+  DeploymentEntityState,
   DeploymentEntityStateQuerySelector,
   DeploymentEntityStateQuerySelectorParams,
   DomainElement,
@@ -23,6 +24,8 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   MiroirSelectorQueryParams,
+  QuerySelector,
+  QuerySelectorParams,
   RecordOfJzodElement,
   Uuid,
   getLoggerName,
@@ -68,16 +71,17 @@ export function useDeploymentEntityStateQuerySelector<Q extends MiroirSelectorQu
 }
 
 // ################################################################################################
-export function useDeploymentEntityStateQuerySelectorForCleanedResult<Q extends MiroirSelectorQueryParams, T >(
-  deploymentEntityStateQuerySelector:DeploymentEntityStateQuerySelector<Q, DomainElement>,
-  selectorParams:DeploymentEntityStateQuerySelectorParams<Q>,
-  customQueryInterpreter?: { [k: string]: (query:MiroirSelectorQueryParams) => T }
-): T {
+export function useDeploymentEntityStateQuerySelectorForCleanedResult<QueryType extends MiroirSelectorQueryParams>(
+  // deploymentEntityStateQuerySelector:QuerySelector<QueryType, DeploymentEntityState, DomainElement>,
+  deploymentEntityStateQuerySelector:QuerySelector<QueryType, DeploymentEntityState, DomainElement>,
+  selectorParams:QuerySelectorParams<QueryType, DeploymentEntityState>,
+  customQueryInterpreter?: { [k: string]: (query:MiroirSelectorQueryParams) => DomainElement }
+): any {
   const innerSelector = useMemo(
     () => {
       return applyDeploymentEntityStateQuerySelectorForCleanedResult(deploymentEntityStateQuerySelector);
     }, [deploymentEntityStateQuerySelector]);
-  const result: T = useSelector((state: ReduxStateWithUndoRedo) =>
+  const result: any = useSelector((state: ReduxStateWithUndoRedo) =>
     innerSelector(state, selectorParams)
   );
   return result
