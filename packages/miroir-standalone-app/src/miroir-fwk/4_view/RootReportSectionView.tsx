@@ -77,7 +77,7 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
   //   props.reportSection.fetchQuery
   // );
   
-  const deploymentEntityStateSelectorMap: QuerySelectorMap<MiroirSelectorQueryParams, DeploymentEntityState> = useMemo(
+  const deploymentEntityStateSelectorMap: QuerySelectorMap<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
   )

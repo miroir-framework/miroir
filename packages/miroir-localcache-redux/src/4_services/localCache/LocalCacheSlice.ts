@@ -375,7 +375,7 @@ function loadNewEntityInstancesInLocalCache(
 //   //   )
 //   // ;
 //   // const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = useDomainStateQuerySelectorForCleanedResult(
-//   //   selectorMap.selectByDomainManyQueriesFromDomainState as DomainStateSelectorNew<DomainManyQueriesWithDeploymentUuid, any>,
+//   //   selectorMap.selectByDomainManyQueriesFromDomainState as DomainStateQuerySelector<DomainManyQueriesWithDeploymentUuid, any>,
 //   //   foreignKeyObjectsFetchQueryParams
 //   // );
 

@@ -291,12 +291,9 @@ export {
   CUDActionNamesArray,
 } from './0_interfaces/2_domain/DomainControllerInterface.js';
 export {
-  DomainStateQuerySelector as DomainStateSelectorNew,
-  DomainStateQuerySelectorMap,
-  DomainStateQuerySelectorParams,
-  DomainStateJzodSchemaSelector,
-  DomainStateJzodSchemaSelectorMap,
-  DomainStateJzodSchemaSelectorParams,
+  // DomainStateJzodSchemaSelector,
+  // DomainStateJzodSchemaSelectorMap,
+  // DomainStateJzodSchemaSelectorParams,
   RecordOfJzodElement,
   RecordOfJzodObject,
 } from './0_interfaces/2_domain/DomainStateQuerySelectorInterface.js';
@@ -402,7 +399,6 @@ export {
   selectReportDefinitionFromReportUuid,
 } from './2_domain/DomainDataAccess.js';
 export {
-  cleanupResultsFromQuery,
   getJzodSchemaSelectorMap,
   getSelectorMap,
   getSelectorParams,
@@ -424,6 +420,7 @@ export {
   selectEntityJzodSchemaFromDeploymentEntityState,
 } from './2_domain/DeploymentEntityStateQuerySelectors.js';
 export {
+  cleanupResultsFromQuery,
   selectByDomainManyQueries,
   selectEntityInstanceListFromListQuery,
   selectFetchQueryJzodSchema,

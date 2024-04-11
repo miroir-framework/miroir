@@ -42,7 +42,7 @@ export interface ReportSectionEntityInstanceProps {
   paramsAsdomainElements: DomainElementObject,
   reportSection: ReportSection,
   rootReportSection: RootReportSection,
-  selectorMap: QuerySelectorMap<MiroirSelectorQueryParams, DeploymentEntityState>
+  selectorMap: QuerySelectorMap<DeploymentEntityState>
 }
 
 // ###############################################################################################################

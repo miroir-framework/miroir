@@ -8,10 +8,7 @@ import {
   DeploymentEntityState,
   DomainElement,
   DomainModelQueryJzodSchemaParams,
-  DomainStateJzodSchemaSelector,
-  DomainStateJzodSchemaSelectorParams,
-  DomainStateQuerySelectorParams,
-  DomainStateSelectorNew,
+  DomainState,
   EntityInstance,
   EntityInstancesUuidIndex,
   JzodAttribute,
@@ -90,41 +87,41 @@ export function useDeploymentEntityStateQuerySelectorForCleanedResult<QueryType 
 
 
 // ################################################################################################
-export function useDomainStateQuerySelector<Q extends MiroirSelectorQueryParams, T >(
-  domainStateSelector:DomainStateSelectorNew<Q, T>,
-  selectorParams:DomainStateQuerySelectorParams<Q>,
-  customQueryInterpreter?: { [k: string]: (query:MiroirSelectorQueryParams) => T }
-): T {
+export function useDomainStateQuerySelector<QueryType extends MiroirSelectorQueryParams, ResultType >(
+  domainStateSelector:QuerySelector<QueryType, DomainState, ResultType>,
+  selectorParams:QuerySelectorParams<QueryType, DomainState>,
+  customQueryInterpreter?: { [k: string]: (query:MiroirSelectorQueryParams) => ResultType }
+): ResultType {
   const innerSelector = useMemo(
     () => {
       return applyDomainStateQuerySelector(domainStateSelector);
     }, [domainStateSelector]);
-  const result: T = useSelector((state: ReduxStateWithUndoRedo) =>
+  const result: ResultType = useSelector((state: ReduxStateWithUndoRedo) =>
     innerSelector(state, selectorParams)
   );
   return result
 }
 
 // ################################################################################################
-export function useDomainStateQuerySelectorForCleanedResult<Q extends MiroirSelectorQueryParams, T >(
-  domainStateSelector:DomainStateSelectorNew<Q, DomainElement>,
-  selectorParams:DomainStateQuerySelectorParams<Q>,
-  customQueryInterpreter?: { [k: string]: (query:MiroirSelectorQueryParams) => T }
-): T {
+export function useDomainStateQuerySelectorForCleanedResult<QueryType extends MiroirSelectorQueryParams, ResultType >(
+  domainStateSelector:QuerySelector<QueryType, DomainState, DomainElement>,
+  selectorParams:QuerySelectorParams<QueryType, DomainState>,
+  customQueryInterpreter?: { [k: string]: (query:MiroirSelectorQueryParams) => ResultType }
+): ResultType {
   const innerSelector = useMemo(
     () => {
       return applyDomainStateQuerySelectorForCleanedResult(domainStateSelector);
     }, [domainStateSelector]);
-  const result: T = useSelector((state: ReduxStateWithUndoRedo) =>
+  const result: ResultType = useSelector((state: ReduxStateWithUndoRedo) =>
     innerSelector(state, selectorParams)
   );
   return result
 }
 
 // ################################################################################################
-export function useDomainStateJzodSchemaSelector<Q extends DomainModelQueryJzodSchemaParams>(
-  domainStateSelector:DomainStateJzodSchemaSelector<Q>,
-  selectorParams:DomainStateJzodSchemaSelectorParams<Q>,
+export function useDomainStateJzodSchemaSelector<QueryType extends DomainModelQueryJzodSchemaParams>(
+  domainStateSelector:JzodSchemaQuerySelector<QueryType, DomainState>,
+  selectorParams:JzodSchemaQuerySelectorParams<QueryType, DomainState>,
   customQueryInterpreter?: { [k: string]: (query:DomainModelQueryJzodSchemaParams) => RecordOfJzodElement | JzodElement | undefined }
 ): RecordOfJzodElement | JzodElement | undefined {
   const innerSelector = useMemo(

@@ -19,7 +19,7 @@ const deploymentEntityStateSelectorParams = (domainState: DeploymentEntityState,
 // const domainStateSelector = (domainState: DomainState, params: any) => domainState;
 // const domainStateSelectorParams = (domainState: DomainState, params: any) => params;
 
-export function getMemoizedDeploymentEntityStateSelectorMap(): QuerySelectorMap<MiroirSelectorQueryParams,DeploymentEntityState> {
+export function getMemoizedDeploymentEntityStateSelectorMap(): QuerySelectorMap<DeploymentEntityState> {
   // return selectorMap;
   return {
     selectEntityInstanceUuidIndex: createSelector(

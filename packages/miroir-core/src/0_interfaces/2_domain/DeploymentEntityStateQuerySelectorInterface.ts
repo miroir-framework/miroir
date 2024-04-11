@@ -1,8 +1,11 @@
 import {
   DomainElement,
   DomainElementObject,
+  DomainManyQueriesWithDeploymentUuid,
   DomainModelGetEntityDefinitionQueryParams,
   DomainModelGetFetchParamJzodSchemaQueryParams,
+  DomainModelGetSingleSelectObjectListQueryQueryParams,
+  DomainModelGetSingleSelectObjectQueryQueryParams,
   DomainModelGetSingleSelectQueryJzodSchemaQueryParams,
   DomainModelQueryJzodSchemaParams,
   JzodElement,
@@ -15,16 +18,16 @@ export type RecordOfJzodElement = Record<string, JzodElement | undefined>;
 export type RecordOfJzodObject = Record<string, JzodObject | undefined>;
 
 // ################################################################################################
-export type QuerySelectorMap<QueryType extends MiroirSelectorQueryParams, StateType> = {
-  selectEntityInstanceUuidIndex: QuerySelector<QueryType, StateType, DomainElement>,
-  selectEntityInstanceFromObjectQuery: QuerySelector<QueryType, StateType, DomainElement>,
-  selectEntityInstanceListFromListQuery: QuerySelector<QueryType, StateType, DomainElement>,
-  selectByDomainManyQueries: QuerySelector<QueryType, StateType, DomainElementObject>
+export type QuerySelectorMap<StateType> = {
+  selectEntityInstanceUuidIndex: QuerySelector<DomainModelGetSingleSelectObjectListQueryQueryParams, StateType, DomainElement>,
+  selectEntityInstanceFromObjectQuery: QuerySelector<DomainModelGetSingleSelectObjectQueryQueryParams, StateType, DomainElement>,
+  selectEntityInstanceListFromListQuery: QuerySelector<DomainModelGetSingleSelectObjectListQueryQueryParams, StateType, DomainElement>,
+  selectByDomainManyQueries: QuerySelector<DomainManyQueriesWithDeploymentUuid, StateType, DomainElementObject>
 };
 
 // ################################################################################################
 export interface QuerySelectorParams<QueryType extends MiroirSelectorQueryParams, StateType> {
-  selectorMap?: QuerySelectorMap<QueryType, StateType>
+  selectorMap?: QuerySelectorMap<StateType>
   query: QueryType
 }
 

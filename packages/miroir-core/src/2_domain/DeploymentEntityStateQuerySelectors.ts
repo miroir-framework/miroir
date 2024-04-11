@@ -28,8 +28,8 @@ import { packageName } from "../constants";
 import { getLoggerName } from "../tools";
 import { cleanLevel } from "./constants";
 import { getDeploymentEntityStateIndex } from "./DeploymentEntityState";
-import { resolveContextReference } from "./DomainStateQuerySelectors";
 import {
+  resolveContextReference,
   selectByDomainManyQueries,
   selectEntityInstanceListFromListQuery,
   selectFetchQueryJzodSchema,
@@ -336,32 +336,14 @@ export const selectEntityJzodSchemaFromDeploymentEntityState = (
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-export function getDeploymentEntityStateSelectorMap<QueryType extends MiroirSelectorQueryParams>(): QuerySelectorMap<
-  QueryType,
+export function getDeploymentEntityStateSelectorMap(): QuerySelectorMap<
   DeploymentEntityState
 > {
   return {
-    selectEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDeploymentEntityState as QuerySelector<
-      QueryType,
-      DeploymentEntityState,
-      DomainElement
-    >,
-    selectEntityInstanceFromObjectQuery: selectEntityInstanceFromObjectQueryAndDeploymentEntityState as QuerySelector<
-      QueryType,
-      DeploymentEntityState,
-      DomainElement
-    >,
-    selectEntityInstanceListFromListQuery:
-      selectEntityInstanceListFromListQuery as QuerySelector<
-        QueryType,
-        DeploymentEntityState,
-        DomainElement
-      >,
-    selectByDomainManyQueries: selectByDomainManyQueries as QuerySelector<
-      QueryType,
-      DeploymentEntityState,
-      DomainElementObject
-    >,
+    selectEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDeploymentEntityState,
+    selectEntityInstanceFromObjectQuery: selectEntityInstanceFromObjectQueryAndDeploymentEntityState,
+    selectEntityInstanceListFromListQuery: selectEntityInstanceListFromListQuery,
+    selectByDomainManyQueries: selectByDomainManyQueries,
   };
 }
 
@@ -369,34 +351,20 @@ export function getDeploymentEntityStateSelectorMap<QueryType extends MiroirSele
 // ################################################################################################
 export function getDeploymentEntityStateJzodSchemaSelectorMap(): JzodSchemaQuerySelectorMap<DeploymentEntityState> {
   return {
-    selectJzodSchemaByDomainModelQuery:
-      selectJzodSchemaByDomainModelQuery as JzodSchemaQuerySelector<
-        DomainModelQueryJzodSchemaParams,
-        DeploymentEntityState
-      >,
-    selectEntityJzodSchema: selectEntityJzodSchemaFromDeploymentEntityState as JzodSchemaQuerySelector<
-      DomainModelQueryJzodSchemaParams,
-      DeploymentEntityState
-    >,
-    selectFetchQueryJzodSchema: selectFetchQueryJzodSchema as JzodSchemaQuerySelector<
-      DomainModelQueryJzodSchemaParams,
-      DeploymentEntityState
-    >,
-    selectJzodSchemaBySingleSelectQuery:
-      selectJzodSchemaBySingleSelectQuery as JzodSchemaQuerySelector<
-        DomainModelQueryJzodSchemaParams,
-        DeploymentEntityState
-      >,
+    selectJzodSchemaByDomainModelQuery: selectJzodSchemaByDomainModelQuery,
+    selectEntityJzodSchema: selectEntityJzodSchemaFromDeploymentEntityState,
+    selectFetchQueryJzodSchema: selectFetchQueryJzodSchema,
+    selectJzodSchemaBySingleSelectQuery: selectJzodSchemaBySingleSelectQuery,
   };
 }
 
 // ################################################################################################
 export function getDeploymentEntityStateSelectorParams<QueryType extends MiroirSelectorQueryParams>(
   query: QueryType,
-  selectorMap?: QuerySelectorMap<QueryType, DeploymentEntityState>
+  selectorMap?: QuerySelectorMap<DeploymentEntityState>
 ): QuerySelectorParams<QueryType, DeploymentEntityState> {
   return {
     query,
-    selectorMap: selectorMap ?? getDeploymentEntityStateSelectorMap<QueryType>(),
+    selectorMap: selectorMap ?? getDeploymentEntityStateSelectorMap(),
   };
 }
