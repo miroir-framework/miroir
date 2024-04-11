@@ -35,6 +35,12 @@ export type QuerySelector<QueryType extends MiroirSelectorQueryParams, StateType
 ) => ResultType;
 
 // ################################################################################################
+export type GenericQuerySelector<QueryType extends MiroirSelectorQueryParams, StateType, ResultType> = (
+  domainState: StateType,
+  params: QuerySelectorParams<QueryType, StateType>
+) => ResultType;
+
+// ################################################################################################
 export type JzodSchemaQuerySelectorMap<StateType> = {
   selectJzodSchemaByDomainModelQuery: JzodSchemaQuerySelector<DomainModelQueryJzodSchemaParams, StateType>,
   selectEntityJzodSchema: JzodSchemaQuerySelector<DomainModelGetEntityDefinitionQueryParams, StateType>,

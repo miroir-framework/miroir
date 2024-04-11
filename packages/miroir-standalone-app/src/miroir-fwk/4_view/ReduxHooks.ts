@@ -16,6 +16,8 @@ import {
   EntityInstancesUuidIndex,
   JzodAttribute,
   JzodElement,
+  JzodSchemaQuerySelector,
+  JzodSchemaQuerySelectorParams,
   LocalCacheEntityInstancesSelectorParams,
   LocalCacheQueryParams,
   LoggerInterface,
@@ -31,6 +33,7 @@ import {
 } from "miroir-core";
 import {
   ReduxStateWithUndoRedo,
+  applyDeploymentEntityStateJzodSchemaSelector,
   applyDeploymentEntityStateQuerySelector,
   applyDeploymentEntityStateQuerySelectorForCleanedResult,
   applyDomainStateJzodSchemaSelector,
@@ -127,6 +130,22 @@ export function useDomainStateJzodSchemaSelector<Q extends DomainModelQueryJzodS
   const innerSelector = useMemo(
     () => {
       return applyDomainStateJzodSchemaSelector(domainStateSelector);
+    }, [domainStateSelector]);
+  const result: RecordOfJzodElement | JzodElement | undefined = useSelector((state: ReduxStateWithUndoRedo) =>
+    innerSelector(state, selectorParams)
+  );
+  return result
+}
+
+// ################################################################################################
+export function useDeploymentEntityStateJzodSchemaSelector<QueryType extends DomainModelQueryJzodSchemaParams>(
+  domainStateSelector:JzodSchemaQuerySelector<QueryType, DeploymentEntityState>,
+  selectorParams:JzodSchemaQuerySelectorParams<QueryType, DeploymentEntityState>,
+  customQueryInterpreter?: { [k: string]: (query:DomainModelQueryJzodSchemaParams) => RecordOfJzodElement | JzodElement | undefined }
+): RecordOfJzodElement | JzodElement | undefined {
+  const innerSelector = useMemo(
+    () => {
+      return applyDeploymentEntityStateJzodSchemaSelector(domainStateSelector);
     }, [domainStateSelector]);
   const result: RecordOfJzodElement | JzodElement | undefined = useSelector((state: ReduxStateWithUndoRedo) =>
     innerSelector(state, selectorParams)

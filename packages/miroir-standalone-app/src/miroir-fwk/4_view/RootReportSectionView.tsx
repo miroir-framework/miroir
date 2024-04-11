@@ -7,8 +7,8 @@ import {
   DomainElementObject,
   DomainManyQueriesWithDeploymentUuid,
   DomainModelGetFetchParamJzodSchemaQueryParams,
-  DomainStateJzodSchemaSelectorMap,
-  DomainStateJzodSchemaSelectorParams,
+  JzodSchemaQuerySelectorMap,
+  JzodSchemaQuerySelectorParams,
   LoggerInterface,
   MiroirLoggerFactory,
   MiroirSelectorQueryParams,
@@ -23,11 +23,11 @@ import {
 
 
 
-import { useDeploymentEntityStateQuerySelector, useDomainStateJzodSchemaSelector } from './ReduxHooks';
+import { useDeploymentEntityStateJzodSchemaSelector, useDeploymentEntityStateQuerySelector, useDomainStateJzodSchemaSelector } from './ReduxHooks';
 import { ReportSectionView } from './ReportSectionView';
 import { ReportUrlParamKeys } from './routes/ReportPage';
 
-import { getMemoizedDeploymentEntityStateSelectorMap, getMemoizedJzodSchemaSelectorMap } from 'miroir-localcache-redux';
+import { getMemoizedDeploymentEntityStateSelectorMap, getMemoizedDeploymentEntityStateJzodSchemaSelectorMap } from 'miroir-localcache-redux';
 import { packageName } from '../../constants';
 import { cleanLevel } from './constants';
 
@@ -133,58 +133,61 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
   //   // fetchedDataJzodSchema
   // );
 
-  const jzodSchemaSelectorMap: DomainStateJzodSchemaSelectorMap = useMemo(
-    () => getMemoizedJzodSchemaSelectorMap(),
+  const jzodSchemaSelectorMap: JzodSchemaQuerySelectorMap<DeploymentEntityState> = useMemo(
+    () => getMemoizedDeploymentEntityStateJzodSchemaSelectorMap(),
     []
   )
 
-  const fetchedDataJzodSchemaParams: DomainStateJzodSchemaSelectorParams<DomainModelGetFetchParamJzodSchemaQueryParams> =
-    useMemo(
-      () => ({
-        selectorMap: jzodSchemaSelectorMap,
-        query: props.pageParams.deploymentUuid && props.pageParams.applicationSection && props.pageParams.reportUuid
-        ? {
-          queryType: "getFetchParamsJzodSchema",
-          pageParams: {
-            elementType: "object",
-            elementValue: {
-              applicationSection: { elementType: "string", elementValue: props.pageParams.applicationSection},
-              deploymentUuid: { elementType: "string", elementValue: props.pageParams.deploymentUuid },
-              instanceUuid: { elementType: "string", elementValue: props.pageParams.instanceUuid ?? "" },
+  const fetchedDataJzodSchemaParams: JzodSchemaQuerySelectorParams<
+    DomainModelGetFetchParamJzodSchemaQueryParams,
+    DeploymentEntityState
+  > = useMemo(
+    () => ({
+      selectorMap: jzodSchemaSelectorMap,
+      query:
+        props.pageParams.deploymentUuid && props.pageParams.applicationSection && props.pageParams.reportUuid
+          ? {
+              queryType: "getFetchParamsJzodSchema",
+              pageParams: {
+                elementType: "object",
+                elementValue: {
+                  applicationSection: { elementType: "string", elementValue: props.pageParams.applicationSection },
+                  deploymentUuid: { elementType: "string", elementValue: props.pageParams.deploymentUuid },
+                  instanceUuid: { elementType: "string", elementValue: props.pageParams.instanceUuid ?? "" },
+                },
+              },
+              queryParams: { elementType: "object", elementValue: {} },
+              contextResults: { elementType: "object", elementValue: {} },
+              fetchParams: deploymentEntityStateFetchQueryParams.query,
+            }
+          : // dummy query
+            {
+              queryType: "getFetchParamsJzodSchema",
+              pageParams: {
+                elementType: "object",
+                elementValue: {
+                  applicationSection: { elementType: "string", elementValue: "data" },
+                  deploymentUuid: { elementType: "string", elementValue: "" },
+                  instanceUuid: { elementType: "string", elementValue: "" },
+                },
+              },
+              queryParams: { elementType: "object", elementValue: {} },
+              contextResults: { elementType: "object", elementValue: {} },
+              fetchParams: {
+                queryType: "DomainManyQueries",
+                deploymentUuid: "",
+                pageParams: paramsAsdomainElements,
+                queryParams: { elementType: "object", elementValue: {} },
+                contextResults: { elementType: "object", elementValue: {} },
+                fetchQuery: { select: {} },
+              },
             },
-          },
-          queryParams: { elementType: "object", elementValue: {} },
-          contextResults: { elementType: "object", elementValue: {} },
-          fetchParams: deploymentEntityStateFetchQueryParams.query,
-        }
-        : // dummy query
-        {
-          queryType: "getFetchParamsJzodSchema",
-          pageParams: {
-            elementType: "object",
-            elementValue: {
-              applicationSection: { elementType: "string", elementValue: "data" },
-              deploymentUuid: { elementType: "string", elementValue: "" },
-              instanceUuid: { elementType: "string", elementValue: "" },
-            },
-          },
-          queryParams: { elementType: "object", elementValue: {} },
-          contextResults: { elementType: "object", elementValue: {} },
-          fetchParams: {
-            queryType: "DomainManyQueries",
-            deploymentUuid: "",
-            pageParams: paramsAsdomainElements,
-            queryParams: { elementType: "object", elementValue: {} },
-            contextResults: { elementType: "object", elementValue: {} },
-            fetchQuery: { select: {} },
-          },
-        },
-      }),
-      [jzodSchemaSelectorMap, props.pageParams, props.rootReportSection]
-    )
+    }),
+    [jzodSchemaSelectorMap, props.pageParams, props.rootReportSection]
+  )
   ;
 
-  const fetchedDataJzodSchema: RecordOfJzodObject | undefined = useDomainStateJzodSchemaSelector(
+  const fetchedDataJzodSchema: RecordOfJzodObject | undefined = useDeploymentEntityStateJzodSchemaSelector(
     jzodSchemaSelectorMap.selectFetchQueryJzodSchema,
     fetchedDataJzodSchemaParams
   ) as RecordOfJzodObject | undefined; // TODO: use correct return type

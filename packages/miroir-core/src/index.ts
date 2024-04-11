@@ -307,9 +307,6 @@ export {
   QuerySelector,
   QuerySelectorMap,
   QuerySelectorParams,
-
-  // RecordOfJzodElement,
-  // RecordOfJzodObject,
 } from './0_interfaces/2_domain/DeploymentEntityStateQuerySelectorInterface.js';
 export {
   ZEntityState,
@@ -422,15 +419,17 @@ export {
   getDeploymentEntityStateJzodSchemaSelectorMap,
   getDeploymentEntityStateSelectorMap,
   getDeploymentEntityStateSelectorParams,
-  selectByDomainManyQueriesFromDeploymentEntityState,
   selectEntityInstanceFromObjectQueryAndDeploymentEntityState,
-  selectEntityInstanceListFromListQueryAndDeploymentEntityState,
   selectEntityInstanceUuidIndexFromDeploymentEntityState,
   selectEntityJzodSchemaFromDeploymentEntityState,
-  selectFetchQueryJzodSchemaFromDeploymentEntityState,
-  selectJzodSchemaByDomainModelQueryFromDeploymentEntityState,
-  selectJzodSchemaBySingleSelectQueryFromDeploymentEntityState,
 } from './2_domain/DeploymentEntityStateQuerySelectors.js';
+export {
+  selectByDomainManyQueries,
+  selectEntityInstanceListFromListQuery,
+  selectFetchQueryJzodSchema,
+  selectJzodSchemaByDomainModelQuery,
+  selectJzodSchemaBySingleSelectQuery,
+} from './2_domain/QuerySelectors.js';
 export{
   getLocalCacheIndexDeploymentSection,
   getLocalCacheIndexDeploymentUuid,
