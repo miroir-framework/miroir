@@ -77,13 +77,10 @@ export interface StorageSpaceHandlerInterface {
 // ###########################################################################################
 export interface AbstractInstanceStoreSectionInterface {
   getInstance(parentUuid: string, uuid: string): Promise<ActionEntityInstanceReturnType>;
-  // getInstances(parentUuid: string): Promise<EntityInstance[]>;
   getInstances(parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType>;
   upsertInstance(parentUuid:string, instance:EntityInstance):Promise<ActionVoidReturnType>;
   deleteInstances(parentUuid:string, instances:EntityInstance[]):Promise<ActionVoidReturnType>;
   deleteInstance(parentUuid:string, instance:EntityInstance):Promise<ActionVoidReturnType>;
-  deleteInstancesWithCascade(parentUuid:string, instances:EntityInstance[]):Promise<ActionVoidReturnType>;
-  deleteInstanceWithCascade(parentUuid:string, instance:EntityInstance):Promise<ActionVoidReturnType>;
 }
 
 // ###########################################################################################

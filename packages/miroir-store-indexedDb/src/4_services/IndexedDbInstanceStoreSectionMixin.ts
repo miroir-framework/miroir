@@ -101,21 +101,5 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
       log.debug(this.logHeader, "deleteInstance done.", parentUuid, instance);
       return Promise.resolve(ACTION_OK);
     }
-    // #############################################################################################
-    async deleteInstancesWithCascade(parentUuid: string, instances: EntityInstance[]): Promise<ActionVoidReturnType> {
-      log.info(this.logHeader, "deleteInstancesWithCascade", parentUuid, instances);
-      for (const o of instances) {
-        await this.deleteInstanceWithCascade(parentUuid, { uuid: o.uuid } as EntityInstance);
-      }
-      return Promise.resolve(ACTION_OK);
-    }
-
-    // #############################################################################################
-    async deleteInstanceWithCascade(parentUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
-      log.debug(this.logHeader, "deleteInstanceWithCascade started.", "entity", parentUuid, "instance", instance);
-      await this.localUuidIndexedDb.deleteValue(parentUuid, instance.uuid);
-      log.debug(this.logHeader, "deleteInstanceWithCascade done.", parentUuid, instance);
-      return Promise.resolve(ACTION_OK);
-    }
   };
 }

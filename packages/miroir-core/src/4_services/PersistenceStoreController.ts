@@ -183,15 +183,6 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
             }
             break;
           }
-          case "deleteInstanceWithCascade": {
-            for (const instanceCollection of persistenceStoreControllerAction.objects) {
-              await this.deleteInstancesWithCascade(instanceCollection.applicationSection,instanceCollection.instances)
-            }
-            break;
-          }
-          // case "updateInstance": {
-          //   break;
-          // }
           case "loadNewInstancesInLocalCache": {
             throw new Error("PersistenceStoreController handleAction can not handle loadNewInstancesInLocalCache action!");
             break;
@@ -613,28 +604,6 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
         await this.dataStoreSection.deleteInstance(instance.parentUuid,instance);
       } else {
         await this.modelStoreSection.deleteInstance(instance.parentUuid,instance);
-      }
-    }
-    return Promise.resolve(ACTION_OK);
-  }
-
-  // ##############################################################################################
-  async deleteInstanceWithCascade(section: ApplicationSection, instance:EntityInstance):Promise<ActionVoidReturnType>{
-    if (section == 'data') {
-      await this.dataStoreSection.deleteInstanceWithCascade(instance.parentUuid,instance);
-    } else {
-      await this.modelStoreSection.deleteInstanceWithCascade(instance.parentUuid,instance);
-    }
-    return Promise.resolve(ACTION_OK);
-  }
-
-  // ##############################################################################################
-  async deleteInstancesWithCascade(section: ApplicationSection, instances:EntityInstance[]):Promise<ActionVoidReturnType>{
-    for (const instance of instances) {
-      if (section == 'data') {
-        await this.dataStoreSection.deleteInstanceWithCascade(instance.parentUuid,instance);
-      } else {
-        await this.modelStoreSection.deleteInstanceWithCascade(instance.parentUuid,instance);
       }
     }
     return Promise.resolve(ACTION_OK);

@@ -171,31 +171,5 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
       return Promise.resolve(ACTION_OK);
     }
   // };
-    // #############################################################################################
-    async deleteInstancesWithCascade(parentUuid: string, instances: EntityInstance[]): Promise<ActionVoidReturnType> {
-      log.info(this.logHeader, "deleteInstances", parentUuid, instances);
-      for (const o of instances) {
-        await this.deleteInstance(parentUuid, { uuid: o.uuid } as EntityInstance);
-      }
-      return Promise.resolve(ACTION_OK);
-    }
-
-    // #############################################################################################
-    deleteInstanceWithCascade(entityUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
-      const filePath = path.join(this.directory, entityUuid, fullName(instance.uuid));
-      if (fs.existsSync(filePath)) {
-        fs.rmSync(filePath);
-      } else {
-        log.debug(
-          "deleteInstance could not find file to delete:",
-          filePath,
-          "entityUuid",
-          entityUuid,
-          "instance",
-          instance
-        );
-      }
-      return Promise.resolve(ACTION_OK);
-    }
   };
 }

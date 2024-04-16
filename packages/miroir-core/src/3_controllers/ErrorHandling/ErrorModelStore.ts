@@ -80,10 +80,4 @@ export class ErrorModelStore implements StoreModelSectionInterface {
   deleteInstance(parentUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
     throw new Error("Method not implemented.");
   }
-  deleteInstancesWithCascade(parentUuid: string, instances: EntityInstance[]): Promise<ActionVoidReturnType> {
-    throw new Error("Method not implemented.");
-  }
-  deleteInstanceWithCascade(parentUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
-    throw new Error("Method not implemented.");
-  }
 }
