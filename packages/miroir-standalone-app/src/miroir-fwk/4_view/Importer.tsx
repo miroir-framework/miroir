@@ -128,6 +128,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     //   editable: true,
     //   nullable: true,
     // })));
+    log.info("createEntity fileData", fileData);
     const jzodSchema:JzodObject = {
       type: "object",
       definition: Object.assign(
@@ -149,7 +150,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                   type: "simpleType",
                   definition: "string",
                   optional: true,
-                  extra: { id: index + 1, defaultLabel: a, editable: true },
+                  extra: { id: index + 2 /* uuid attribute has been added*/, defaultLabel: a, editable: true },
                 },
               }
             )
@@ -238,13 +239,14 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       },
       props.currentModel
     );
-    // const entityColumns = 
+    const objectAttributeNames = fileData[0];
+    // log.info('createEntity objectAttributeNames',objectAttributeNames);
     const instances:EntityInstance[] = 
       fileData.map(
-        (r:any) => {
+        (fileDataRow:any) => {
           return Object.fromEntries(
             [
-              ...Object.entries(r).map((e,index)=>([[Object.keys(jzodSchema.definition)[index]],e[1]])),
+              ...Object.entries(fileDataRow).map((e:[string, any],index:number)=>([objectAttributeNames[(e as any)[0]],e[1]])),
               ['uuid',uuidv4()],
               ['parentName',newEntity.name],
               ['parentUuid',newEntity.uuid],
