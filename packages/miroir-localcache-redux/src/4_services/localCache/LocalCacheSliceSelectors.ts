@@ -290,17 +290,17 @@ export const selectEntityInstanceUuidIndexFromLocalCacheQueryAndDeploymentEntity
     deploymentEntityState[localEntityIndex]
       ? (deploymentEntityState[localEntityIndex].entities)
       : empty;
-  log.info(
-    "selectEntityInstanceUuidIndexFromLocalCacheQueryAndDeploymentEntityState",
-    "params",
-    params,
-    "localEntityIndex",
-    localEntityIndex,
-    "deploymentEntityState",
-    deploymentEntityState,
-    "result",
-    result
-  );
+  // log.info(
+  //   "selectEntityInstanceUuidIndexFromLocalCacheQueryAndDeploymentEntityState",
+  //   "params",
+  //   params,
+  //   "localEntityIndex",
+  //   localEntityIndex,
+  //   "deploymentEntityState",
+  //   deploymentEntityState,
+  //   "result",
+  //   result
+  // );
   return result;
   // } else {
   //   // return undefined;

@@ -49,7 +49,7 @@ function wrapResults(instances: any[]): HttpResponseBodyFormat {
 // ################################################################################################
 export async function restMethodGetHandler
 (
-  useDomainController: boolean,
+  useDomainControllerToHandleModelAndInstanceActions: boolean,
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
@@ -136,7 +136,7 @@ export async function restMethodGetHandler
 
 // ################################################################################################
 export async function restMethodsPostPutDeleteHandler(
-  useDomainController: boolean,
+  useDomainControllerToHandleModelAndInstanceActions: boolean,
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
@@ -200,7 +200,7 @@ export async function restMethodsPostPutDeleteHandler(
 
 // ################################################################################################
 export async function restActionHandler(
-  useDomainController: boolean,
+  useDomainControllerToHandleModelAndInstanceActions: boolean,
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
@@ -236,7 +236,8 @@ export async function restActionHandler(
       if (!localMiroirPersistenceStoreController || !localAppPersistenceStoreController) {
         throw new Error("could not find controller:" + localMiroirPersistenceStoreController + " " + localAppPersistenceStoreController);
       }
-      if (useDomainController) {
+      if (useDomainControllerToHandleModelAndInstanceActions) {
+        // we are on the server, the action has been received from remote client
         switch (action.deploymentUuid) {
           case applicationDeploymentMiroir.uuid: {
             const result = await domainController.handleAction(action)
@@ -254,6 +255,11 @@ export async function restActionHandler(
           }
         }
       } else {
+        /**
+         * we are on the client:
+         * - the RestServerStub emulates the client,
+         * - the client has direct access to the persistence store (which is emulated, too)
+         *  */ 
         switch (action.deploymentUuid) {
           case applicationDeploymentMiroir.uuid: {
             const result = await localMiroirPersistenceStoreController.handleAction(action)
@@ -282,7 +288,7 @@ export async function restActionHandler(
 // ################################################################################################
 // USES LocalCache memoized reducers, shall go to miroir-server instead?
 export async function queryHandler(
-  useDomainController: boolean,
+  useDomainControllerToHandleModelAndInstanceActions: boolean,
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
@@ -292,20 +298,65 @@ export async function queryHandler(
   body: HttpRequestBodyFormat,
   params: any,
 ):Promise<void> {
-  log.info("restActionRunner params", params, "body", body);
+  log.info("RestServer queryHandler params", params, "body", body);
 
-  const query: DomainManyQueriesWithDeploymentUuid = body.query as DomainManyQueriesWithDeploymentUuid ;
-  const domainState = localCache.getDomainState();
-  // log.info("localCacheSliceObject handleDomainEntityAction queryAction domainState=", JSON.stringify(domainState, undefined, 2))
-  // const queryResult: DomainElement = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(query));
-  const queryResult: DomainElement = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(query));
-  const result:ActionReturnType = {
-    status: "ok",
-    returnedDomainElement: queryResult
+  /**
+   * shall a query be executed based on the state of the localCache, or fetching state from a PersistenceStore?
+   * 
+   * go through the DomainController? (would be better, wouldn't it?)
+   * 
+   * when the implementation accesses the localCache, the implementation is based on selectors
+   * 
+   * when the implementation uses the persistenceStore, it could:
+   * - load the required data in the localCache (select) then execute in the localCache (filter, aggregation)
+   * - execute on the persistent store (sql)
+   * 
+   */
+  // const query: DomainManyQueriesWithDeploymentUuid = body.query as DomainManyQueriesWithDeploymentUuid ;
+  const queryAction: QueryAction = body as QueryAction ;
+
+  const localMiroirPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentMiroir.uuid);
+  const localAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentLibrary.uuid);
+  const domainController = persistenceStoreControllerManager.getDomainController();
+  if (!localMiroirPersistenceStoreController || !localAppPersistenceStoreController) {
+    throw new Error("RestServer could not find controller:" + localMiroirPersistenceStoreController + " " + localAppPersistenceStoreController);
   }
-  log.info("localCacheSliceObject handleDomainEntityAction queryAction result=", JSON.stringify(result, undefined,2))
+  if (useDomainControllerToHandleModelAndInstanceActions) {
+    // we are on the server, the action has been received from remote client
+    switch (queryAction.deploymentUuid) {
+      case applicationDeploymentMiroir.uuid: {
+        const result = await domainController.handleQuery(queryAction)
+        log.info("RestServer queryHandler used applicationDeploymentMiroir domainController result=", JSON.stringify(result, undefined,2))
+        return continuationFunction(response)(result)
+        break;
+      }
+      case applicationDeploymentLibrary.uuid: {
+        const result = await domainController.handleQuery(queryAction)
+        log.info("RestServer queryHandler used applicationDeploymentLibrary domainController result=", JSON.stringify(result, undefined,2))
+        return continuationFunction(response)(result)
+        break;
+      }
+      default: {
+        throw new Error("RestServer queryHandler could not handle query " + queryAction + " unknown deployment uuid=" + queryAction.deploymentUuid);
+        break;
+      }
+    }
+  } else {
+    // we're on the client, called by RestServerStub
+    // uses the local cache, needs to have done a Model "rollback" action on the client//, or a Model "remoteLocalCacheRollback" action on the server
+    const domainState = localCache.getDomainState();
+    log.info("RestServer queryHandler query=", JSON.stringify(queryAction, undefined, 2))
+    log.info("RestServer queryHandler domainState=", JSON.stringify(domainState, undefined, 2))
+    // const queryResult: DomainElement = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(query));
+    const queryResult: DomainElement = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryAction.query));
+    const result:ActionReturnType = {
+      status: "ok",
+      returnedDomainElement: queryResult
+    }
+    log.info("RestServer queryHandler used local cache result=", JSON.stringify(result, undefined,2))
 
-  return continuationFunction(response)(result);
+    return continuationFunction(response)(result);
+  }
 }
 
 // ################################################################################################

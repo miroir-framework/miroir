@@ -183,112 +183,112 @@ export const RootComponent = (props: RootComponentProps) => {
 
 
   return (
-    <div> 
+    <div>
       {/* <PersistentDrawerLeft></PersistentDrawerLeft> */}
       {/* <Box sx={{ display: 'flex', flexDirection:"column", flexGrow: 1 }}> */}
       <Box sx={boxParams}>
-      {/* <CssBaseline /> */}
-      <Grid
-        container
-        direction="column"
-      >
-        <Grid
-          item
-        >
-          <ResponsiveAppBar
-            handleDrawerOpen={handleDrawerOpen}
-            open = {drawerIsOpen}
-          >
-            Bar!
-          </ResponsiveAppBar>
-          <Toolbar />
-        </Grid>
-        <Grid
-          item container
-        >
-          <Grid
-            item
-          >
-            <Sidebar
-              open={drawerIsOpen}
-              setOpen={setDrawerIsOpen}
-            ></Sidebar>
+        {/* <CssBaseline /> */}
+        <Grid container direction="column">
+          <Grid item>
+            <ResponsiveAppBar handleDrawerOpen={handleDrawerOpen} open={drawerIsOpen}>
+              Bar!
+            </ResponsiveAppBar>
+            <Toolbar />
           </Grid>
-          <Grid
-            item
-          >
-            <StyledMain
-              open = {drawerIsOpen}
-            >
-            <span>
-              <button
-                onClick={async () => {
-                  const remoteStore:PersistenceInterface = domainController.getRemoteStore();
-                  log.info(
-                    "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ OPENSTORE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-                  );
-                  if (!miroirConfig) {
-                    throw new Error("no miroirConfig given, it has to be given on the command line starting the server!");
-                  }
-                  if (miroirConfig && miroirConfig.client.emulateServer) {
-                    await remoteStore.handlePersistenceAction({
-                      actionType: "storeManagementAction",
-                      actionName: "openStore",
-                      endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-                      configuration: {
-                        [applicationDeploymentMiroir.uuid]: miroirConfig.client.miroirServerConfig,
-                        [applicationDeploymentLibrary.uuid]: miroirConfig.client.appServerConfig,
-                      },
-                      deploymentUuid: applicationDeploymentMiroir.uuid,
-                    })
-                  } else {
-                    const localMiroirConfig = miroirConfig.client as MiroirConfigForRestClient;
-                    await remoteStore.handlePersistenceAction({
-                      actionType: "storeManagementAction",
-                      actionName: "openStore",
-                      endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-                      configuration: {
-                        [applicationDeploymentMiroir.uuid]: localMiroirConfig.serverConfig.storeSectionConfiguration.miroirServerConfig,
-                        [applicationDeploymentLibrary.uuid]: localMiroirConfig.serverConfig.storeSectionConfiguration.appServerConfig,
-                      },
-                      deploymentUuid: applicationDeploymentMiroir.uuid,
-                    })
-                  }
+          <Grid item container>
+            <Grid item>
+              <Sidebar open={drawerIsOpen} setOpen={setDrawerIsOpen}></Sidebar>
+            </Grid>
+            <Grid item>
+              <StyledMain open={drawerIsOpen}>
+                <span>
+                  <button
+                    onClick={async () => {
+                      const remoteStore: PersistenceInterface = domainController.getRemoteStore();
+                      log.info(
+                        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ OPENSTORE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+                      );
+                      if (!miroirConfig) {
+                        throw new Error(
+                          "no miroirConfig given, it has to be given on the command line starting the server!"
+                        );
+                      }
+                      if (miroirConfig && miroirConfig.client.emulateServer) {
+                        await remoteStore.handlePersistenceAction({
+                          actionType: "storeManagementAction",
+                          actionName: "openStore",
+                          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+                          configuration: {
+                            [applicationDeploymentMiroir.uuid]: miroirConfig.client.miroirServerConfig,
+                            [applicationDeploymentLibrary.uuid]: miroirConfig.client.appServerConfig,
+                          },
+                          deploymentUuid: applicationDeploymentMiroir.uuid,
+                        });
+                      } else {
+                        const localMiroirConfig = miroirConfig.client as MiroirConfigForRestClient;
+                        await remoteStore.handlePersistenceAction({
+                          actionType: "storeManagementAction",
+                          actionName: "openStore",
+                          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+                          configuration: {
+                            [applicationDeploymentMiroir.uuid]:
+                              localMiroirConfig.serverConfig.storeSectionConfiguration.miroirServerConfig,
+                            [applicationDeploymentLibrary.uuid]:
+                              localMiroirConfig.serverConfig.storeSectionConfiguration.appServerConfig,
+                          },
+                          deploymentUuid: applicationDeploymentMiroir.uuid,
+                        });
+                      }
 
-                  // TODO: transactional action must not autocommit! initModel neither?!
-                  // .then(
-                  // async () => {
-                  log.info(
-                    "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ OPENSTORE DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-                  );
-                }}
-              >
-                Open database
-              </button>
-              <button
-                onClick={async () => {
-                  log.info("fetching instances from datastore for deployment",applicationDeploymentMiroir)
-                  await domainController.handleAction(
-                    {
-                      actionType: "modelAction",
-                      actionName: "rollback",
-                      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                      deploymentUuid:applicationDeploymentMiroir.uuid,
-                    }
-                  );
-                  await domainController.handleAction(
-                    {
-                      actionType: "modelAction",
-                      actionName: "rollback",
-                      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                      deploymentUuid:applicationDeploymentLibrary.uuid,
-                    }
-                  );
-                }
-              }
-              >
-                fetch Miroir & App configurations from database
-              </button>
+                      // TODO: transactional action must not autocommit! initModel neither?!
+                      // .then(
+                      // async () => {
+                      log.info(
+                        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ OPENSTORE DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+                      );
+                    }}
+                  >
+                    Open database
+                  </button>
+                  <button
+                    onClick={async () => {
+                      log.info("fetching instances from datastore for deployment", applicationDeploymentMiroir);
+                      await domainController.handleAction({
+                        actionType: "modelAction",
+                        actionName: "rollback",
+                        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                        deploymentUuid: applicationDeploymentMiroir.uuid,
+                      });
+                      await domainController.handleAction({
+                        actionType: "modelAction",
+                        actionName: "rollback",
+                        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                        deploymentUuid: applicationDeploymentLibrary.uuid,
+                      });
+                    }}
+                  >
+                    fetch Miroir & App configurations from database
+                  </button>
+                  <button
+                    onClick={async () => {
+                      // await uploadBooksAndReports(domainController, defaultMiroirMetaModel);
+                      await domainController.handleAction({
+                        actionType: "modelAction",
+                        actionName: "remoteLocalCacheRollback",
+                        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                        deploymentUuid: applicationDeploymentMiroir.uuid,
+                      });
+                      await domainController.handleAction({
+                        actionType: "modelAction",
+                        actionName: "remoteLocalCacheRollback",
+                        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                        deploymentUuid: applicationDeploymentLibrary.uuid,
+                      });
+                    }}
+                  >
+                    Load server local cache
+                  </button>
+
                   {/* <button
                     onClick={async () => {
                       const remoteStore:PersistenceInterface = domainController.getRemoteStore();
@@ -433,15 +433,15 @@ export const RootComponent = (props: RootComponentProps) => {
                     send query to database
                   </button> */}
                 </span>
-              <Outlet></Outlet>
-            </StyledMain>
+                <Outlet></Outlet>
+              </StyledMain>
+            </Grid>
           </Grid>
         </Grid>
-      </Grid>
         {/* <StyledDrawerHeader /> */}
-      {/* <Box sx={{ display: 'flex', flexDirection:"row", width: 1 }}> */}
-      {/* </Box> */}
-    </Box>
-    </div> 
+        {/* <Box sx={{ display: 'flex', flexDirection:"row", width: 1 }}> */}
+        {/* </Box> */}
+      </Box>
+    </div>
   );
 };

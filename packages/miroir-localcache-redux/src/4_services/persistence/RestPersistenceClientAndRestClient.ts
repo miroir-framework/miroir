@@ -57,7 +57,8 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
   } = {
     RestPersistenceAction: { "*": { attribute: "objects", result: "crudInstances" } },
     modelAction: { "*": { action: true } },
-    queryAction: { "*": { attribute: "query", result: "query" } },
+    // queryAction: { "*": { attribute: "query", result: "query" } },
+    queryAction: { "*": { action: true } },
     instanceAction: { "*": { action: true } },
     storeManagementAction: { "*": { action: true } }, // TODO: remove, there must be no impact when adding/removing an actionType
   };

@@ -7,6 +7,12 @@
   "name": "Endpoint",
   "conceptLevel": "MetaModel",
   "description": "definition of an Endpoint",
+  "viewAttributes": [
+    "name",
+    "description",
+    "transactionalEndpoint",
+    "uuid"
+  ],
   "jzodSchema": {
     "type": "object",
     "definition": {

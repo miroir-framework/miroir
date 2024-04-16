@@ -9,7 +9,6 @@ import {
   EntityDefinition,
   LoggerInterface,
   MiroirLoggerFactory,
-  MiroirSelectorQueryParams,
   QuerySelectorMap,
   RecordOfJzodObject,
   ReportSection,

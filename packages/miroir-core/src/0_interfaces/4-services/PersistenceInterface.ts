@@ -27,7 +27,7 @@ export interface HttpResponseBodyFormat {
 
 // ################################################################################################
 export type RestMethodHandler =  (
-  useDomainController: boolean,
+  useDomainControllerToHandleModelAndInstanceActions: boolean,
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,

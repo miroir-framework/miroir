@@ -275,7 +275,7 @@ async function start(root:Root) {
     persistenceSaga.run(localCache)
 
     const domainController: DomainControllerInterface = new DomainController(
-      false, // we are on the client, we have to use persistenceStore to execute (remote) Queries
+      false, // we are on the client, we have to send "remoteLocalCacheRollback" actions to the (remote) persistenceStore
       miroirContext,
       localCache, // implements LocalCacheInterface
       persistenceSaga, // implements PersistenceInterface

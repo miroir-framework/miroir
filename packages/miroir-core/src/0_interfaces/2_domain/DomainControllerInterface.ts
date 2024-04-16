@@ -1,12 +1,14 @@
 import { z } from "zod";
 
 import {
+  ActionReturnType,
   ActionVoidReturnType,
   DomainAction,
   EntityInstance,
   EntityInstancesUuidIndex,
   MetaModel,
   ModelAction,
+  QueryAction,
   TransactionalInstanceAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 import { PersistenceInterface } from "../4-services/PersistenceInterface.js";
@@ -72,6 +74,7 @@ export type EntityInstancesUuidIndexEntityInstanceArraySelector = (entityInstanc
 // ###################################################################################
 export interface DomainControllerInterface {
   // handleAction(deploymentUuid: Uuid, action: DomainAction, currentModel?: MetaModel): Promise<void>;
+  handleQuery(action: QueryAction, currentModel?: MetaModel): Promise<ActionReturnType>;
   handleAction(action: DomainAction, currentModel?: MetaModel): Promise<ActionVoidReturnType>;
   /**
    * data access must accomodate different styles of access

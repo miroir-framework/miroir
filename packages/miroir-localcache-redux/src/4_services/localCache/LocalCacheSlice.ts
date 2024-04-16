@@ -47,7 +47,17 @@ import {
   getLocalCacheIndexDeploymentSection,
   getLocalCacheIndexDeploymentUuid,
   getLocalCacheIndexEntityUuid,
-  getDeploymentEntityStateIndex
+  getDeploymentEntityStateIndex,
+  JzodElement,
+  DomainManyQueriesWithDeploymentUuid,
+  getSelectorParams,
+  selectByDomainManyQueriesFromDomainState,
+  selectByDomainManyQueries,
+  getDeploymentEntityStateSelectorParams,
+  DomainElementObject,
+  cleanupResultsFromQuery,
+  entityInstance,
+  EntityInstanceWithName
 } from "miroir-core";
 
 import { packageName } from "../../constants";
@@ -319,84 +329,142 @@ function loadNewEntityInstancesInLocalCache(
   // log.info("loadNewInstancesInLocalCache returned state", JSON.stringify(state))
 }
 
-// // ################################################################################################
-// const deleteCascade = async (p:{
-//   deploymentUuid: string,
-//   section: ApplicationSection,
-//   state: LocalCacheSliceState,
-//   instanceCollection: EntityInstanceCollection
-//   // 
-//   entity: Entity,
-//   entityDefinition: EntityDefinition,
-//   entityInstances: EntityInstance[]
-// }) => {
-//   // No need to fetch list of objects pointing to current list of objects
-//   const deleteCascadeForeignKeyObjectsAttributeDefinition:[string, JzodElement][] = 
-//     Object.entries(
-//       p.entityDefinition.jzodSchema.definition ?? {}
-//     ).filter((e) => e[1].extra?.targetEntity)
-//   ;
+// ################################################################################################
+const deleteCascade = (p:{
+  deploymentUuid: string,
+  applicationSection: ApplicationSection,
+  state: LocalCacheSliceState,
+  entityDefinition: EntityDefinition,
+  entityDefinitions: EntityDefinition[],
+  entityInstances: EntityInstance[]
+}) => {
 
-//   const deleteCascadeforeignKeyObjectsFetchQuery: DomainManyQueriesWithDeploymentUuid = {
-//     queryType: "DomainManyQueries",
-//     deploymentUuid: props.deploymentUuid,
-//     // applicationSection: props.applicationSection,
-//     pageParams: props.paramsAsdomainElements,
-//     queryParams: { elementType: "object", elementValue: {} },
-//     contextResults: { elementType: "object", elementValue: {} },
-//     fetchQuery: {
-//       select: Object.fromEntries(
-//         deleteCascadeForeignKeyObjectsAttributeDefinition.map((e) => [
-//             e[1].extra?.targetEntity,
-//             {
-//               queryType: "selectObjectListByEntity",
-//               applicationSection: (props.paramsAsdomainElements as any)["applicationSection"],
-//               parentName: "",
-//               parentUuid: {
-//                 referenceType: "constant",
-//                 referenceUuid: e[1].extra?.targetEntity,
-//               },
-//             },
-//           ])
-//       ) as any,
-//     }
-//   };
+  log.info("++++++++++++++++++++++++++++ deleteInstanceWithCascade deleteCascade deleting instances of entity", p.entityDefinition.name, p.entityInstances)
 
-//   const domainState = localCache.getDomainState();
-//   // log.info("localCacheSliceObject handleDomainEntityAction queryAction domainState=", JSON.stringify(domainState, undefined, 2))
-//   // const queryResult: DomainElement = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(query));
-//   // const queryResult: DomainElement = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(query));
+  // finding all entities which have an attribute pointing to the current entity
+  const foreignKeysPointingToEntity = Object.fromEntries(
+    Object.entries(p.entityDefinitions)
+      .map((e: [string, EntityDefinition]) => {
+        const fkAttributes = Object.entries(e[1].jzodSchema.definition).find(
+          (a) => a[1].extra?.targetEntity == p.entityDefinition.entityUuid
+        );
+        return [e[1].entityUuid, fkAttributes ? fkAttributes[0] : undefined];
+      })
+      .filter((e) => e[1])
+  );
 
-//   const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(deleteCascadeforeignKeyObjectsFetchQuery))
+  log.info("deleteInstanceWithCascade deleteCascade will delete instances of entities that point to current entity", foreignKeysPointingToEntity)
 
-//   // const deleteCascadeforeignKeyObjectsFetchQueryParams: DomainStateQuerySelectorParams<DomainManyQueriesWithDeploymentUuid> = 
-//   //   getSelectorParams<DomainManyQueriesWithDeploymentUuid>(deleteCascadeforeignKeyObjectsFetchQuery,
-//   //     selectorMap
-//   //   )
-//   // ;
-//   // const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = useDomainStateQuerySelectorForCleanedResult(
-//   //   selectorMap.selectByDomainManyQueriesFromDomainState as DomainStateQuerySelector<DomainManyQueriesWithDeploymentUuid, any>,
-//   //   foreignKeyObjectsFetchQueryParams
-//   // );
+  const pageParams: DomainElementObject = {
+    elementType: "object",
+    elementValue: {
+      deploymentUuid: {elementType: "string", elementValue: p.deploymentUuid},
+      applicationSection: {elementType: "string", elementValue: p.applicationSection},
+    }
+  };
 
 
-//   // delete current list of objects (on a relational database, this would require suspending foreign key constraints for the involved relations)
-//   const deleteCurrentEntityInstancesAction: InstanceAction = {
-//     actionType: "instanceAction",
-//     actionName: "deleteInstance",
-//     applicationSection: props.chosenApplicationSection?props.chosenApplicationSection:"data",
-//     deploymentUuid: props.displayedDeploymentDefinition.uuid,
-//     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-//     objects: entityInstances.length > 0?[
-//       {
-//         parentName: (entityInstances[0] as any)["name"]??"undefined name",
-//         parentUuid: entityInstances[0].parentUuid,
-//         applicationSection:props.chosenApplicationSection?props.chosenApplicationSection:"data",
-//         instances: entityInstances,
-//       },
-//     ]:[]
-//   };
-// }
+  const foreignKeyObjectsFetchQuery: DomainManyQueriesWithDeploymentUuid = {
+    queryType: "DomainManyQueries",
+    deploymentUuid: p.deploymentUuid,
+    pageParams,
+    queryParams: { elementType: "object", elementValue: {} },
+    contextResults: { elementType: "object", elementValue: {} },
+    fetchQuery: {
+      select: Object.fromEntries(
+          Object.keys(foreignKeysPointingToEntity).map((entityUuid) => [
+            entityUuid,
+            {
+              queryType: "selectObjectListByEntity",
+              applicationSection: p.applicationSection,
+              parentName: "",
+              parentUuid: {
+                referenceType: "constant",
+                referenceUuid: entityUuid,
+              },
+            },
+          ])
+      ) as any,
+    }
+  };
+
+  const foreignKeyUnfilteredObjects: DomainElementObject = cleanupResultsFromQuery(
+    selectByDomainManyQueries<DeploymentEntityState>(
+      p.state.current,
+      getDeploymentEntityStateSelectorParams(foreignKeyObjectsFetchQuery)
+    )
+  );
+
+  log.info(
+    "deleteInstanceWithCascade deleteCascade found p.state.current",
+    JSON.stringify(p.state.current),
+  );
+  log.info(
+    "deleteInstanceWithCascade deleteCascade found foreign key objects that may be pointing to objects to delete",
+    JSON.stringify(foreignKeyUnfilteredObjects),
+    "deleteCascadeforeignKeyObjectsFetchQuery",
+    foreignKeyObjectsFetchQuery,
+  );
+
+  const foreignKeyObjects = Object.fromEntries(Object.entries(foreignKeyUnfilteredObjects).map(
+    entity => [
+      entity[0],
+      Object.values(entity[1]).filter(
+        (entityInstance:EntityInstanceWithName)=> p.entityInstances.find(e => e.uuid == (entityInstance as any)[foreignKeysPointingToEntity[entity[0]]]) != undefined
+      )
+    ]
+  ))
+
+  log.info(
+    "deleteInstanceWithCascade deleteCascade found foreign key objects pointing to objects to delete",
+    JSON.stringify(foreignKeyObjects),
+  );
+
+
+  // delete current list of objects (on a relational database, this would require suspending foreign key constraints for the involved relations)
+  const deleteCurrentEntityInstancesAction: InstanceAction = {
+    actionType: "instanceAction",
+    actionName: "deleteInstance",
+    applicationSection: p.applicationSection,
+    deploymentUuid: p.deploymentUuid,
+    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    objects: p.entityInstances.length > 0?[
+      {
+        parentName: (p.entityInstances[0] as any)["name"]??"undefined name",
+        parentUuid: p.entityInstances[0].parentUuid,
+        applicationSection:p.applicationSection,
+        instances: p.entityInstances,
+      },
+    ]:[]
+  };
+
+  log.info("deleteInstanceWithCascade deleteCascade deleting current instances action", deleteCurrentEntityInstancesAction)
+  handleInstanceAction(p.state,deleteCurrentEntityInstancesAction);
+  log.info("deleteInstanceWithCascade deleteCascade deleting current instances DONE")
+  
+  // recursive calls
+  for (const entityInstances of Object.entries(foreignKeyObjects)) {
+    const entityDefinitionTmp: [string, EntityDefinition] | undefined = Object.entries(p.entityDefinitions ?? {}).find(
+      (e: [string, EntityDefinition]) => e[1].entityUuid == entityInstances[0]
+    );
+    if (!p.entityDefinitions ||  !entityDefinitionTmp) {
+      throw new Error("NOT WORKING");
+      
+    }
+    const entityDefinition: EntityDefinition = entityDefinitionTmp[1];
+    deleteCascade({
+      deploymentUuid:p.deploymentUuid,
+      applicationSection: p.applicationSection,
+      state: p.state,
+      entityDefinition:entityDefinition,
+      entityDefinitions: p.entityDefinitions,
+      entityInstances: entityInstances[1] as EntityInstance[]
+    });
+  }
+  
+  // log.info("deleteInstanceWithCascade deleteCascade foreign key objects to delete", JSON.stringify(foreignKeyObjects));
+
+}
 
 
 //#########################################################################################
@@ -463,13 +531,56 @@ function handleInstanceAction(
       }
       break;
     }
+    case "deleteInstanceWithCascade": {
+
+      const entityDefinitionsForinstanceCollection = getDeploymentEntityStateIndex(
+        instanceAction.deploymentUuid,
+        "model",
+        entityEntityDefinition.uuid
+        // instanceAction.objects[0].parentUuid
+      );
+      log.info("handleInstanceAction deleteInstanceWithCascade entityDefinitionsForinstanceCollection",entityDefinitionsForinstanceCollection)
+
+
+      // const entityDefinition:EntityDefinition = state.current[entityDefinitionsForinstanceCollection].entities[instanceAction.objects[0].parentUuid] as EntityDefinition
+      const entityDefinitions: Record<string, EntityDefinition> = state.current[entityDefinitionsForinstanceCollection].entities as Record<string, EntityDefinition>;
+      const entityDefinitionTmp: [string, EntityDefinition] | undefined = Object.entries(entityDefinitions??{}).find((e: [string, EntityDefinition]) => e[1].entityUuid == instanceAction.objects[0].parentUuid);
+      if (!entityDefinitions ||  !entityDefinitionTmp) {
+        throw new Error("NOT WORKING");
+        
+      }
+      const entityDefinition: EntityDefinition = entityDefinitionTmp[1];
+      // .find((e: [string, EntityDefinition]) => e.entityUuid == instanceAction.objects[0].parentUuid) as EntityDefinition;
+
+
+      log.info(
+        "handleInstanceAction deleteInstanceWithCascade entityDefinition",
+        entityDefinition,
+        "entityUuid",
+        instanceAction.objects[0].parentUuid,
+        "definitions",
+        JSON.stringify(state.current[entityDefinitionsForinstanceCollection].entities, null, 2)
+      );
+      deleteCascade({
+        deploymentUuid:instanceAction.deploymentUuid,
+        applicationSection: instanceAction.applicationSection,
+        state,
+        // instanceCollection: instanceAction.objects[0],
+        // entity: Entity,
+        entityDefinition:entityDefinition,
+        entityDefinitions: Object.values(entityDefinitions),
+        entityInstances: instanceAction.objects[0].instances
+      });
+
+      break;
+    }
     case "deleteInstance": {
       for (let instanceCollection of instanceAction.objects) {
         try {
-          // log.debug(
-          //   "localCacheSliceObject handleInstanceAction delete called for instanceCollection",
-          //   instanceCollection
-          // );
+          log.debug(
+            "localCacheSliceObject handleInstanceAction delete called for instanceCollection",
+            instanceCollection
+          );
 
           const instanceCollectionEntityIndex = getDeploymentEntityStateIndex(
             instanceAction.deploymentUuid,
@@ -502,12 +613,12 @@ function handleInstanceAction(
             state.current[instanceCollectionEntityIndex],
             instanceCollection.instances.map((i) => i.uuid)
           );
-          // log.trace(
-          //   "localCacheSliceObject handleInstanceAction delete state after removeMany for instanceCollection",
-          //   instanceCollection,
-          //   "state",
-          //   JSON.stringify(state[instanceCollectionEntityIndex])
-          // );
+          log.info(
+            "localCacheSliceObject handleInstanceAction delete state after removeMany for instanceCollection",
+            instanceCollection,
+            "state",
+            JSON.stringify(state.current[instanceCollectionEntityIndex])
+          );
         } catch (error) {
           log.error(
             "localCacheSliceObject handleInstanceAction delete for instanceCollection",

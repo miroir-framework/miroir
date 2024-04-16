@@ -65,7 +65,7 @@ export class CallUtils {
     action: PersistenceAction
   ): Promise<Record<string, any>> {
     const result: ActionReturnType = await this.persistenceStore.handlePersistenceAction(action);
-    console.log("callPersistenceAction received result", result)
+    console.log("CallUtils callPersistenceAction received result", result)
     if (result['status'] == "error") {
       //ensure the proper persistence of errors in the local storage, for it to be accessible by view components.
       // Problem: what if the local storage is not accessible? => store it in a in-memory effect.
@@ -73,7 +73,8 @@ export class CallUtils {
       this.errorLogService.pushError(error);
       throw error;
     } else {
-      // console.log("callPersistenceAction ok", result);
+      console.log("CallUtils callPersistenceAction ok", result);
+      console.log("CallUtils callPersistenceAction continuation", continuation);
       const transformedResult = continuation.resultTransformation? continuation.resultTransformation(result, context): result;
 
       if (continuation.addResultToContextAsName) {

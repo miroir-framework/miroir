@@ -109,7 +109,7 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
       }
 
       this.domainController = new DomainController(
-        true, // we are on the server, use localCache for queries
+        true, // we are on the server, use localCache for queries upon receiving "remoteLocalCacheRollback" action
         new MiroirContext(),
         this.localCache, // implements LocalCacheInterface
         this.persistenceStore, // implements PersistenceInterface

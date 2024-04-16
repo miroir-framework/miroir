@@ -243,6 +243,11 @@ export class PersistenceReduxSaga implements PersistenceInterface {
                 break;
               }
             }
+          } else {
+            throw new Error(
+              "persistenceReduxSaga persistenceActionReduxSaga found neither remoteStoreNetworkClient nor persistenceStoreControllerManager for action " +
+                JSON.stringify(action)
+            );
           }
         } catch (e: any) {
           log.error("handlePersistenceAction exception", e);

@@ -20,6 +20,7 @@ import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873
 import entityApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
 
 import {
+  ActionReturnType,
   ActionVoidReturnType,
   ApplicationSection,
   ApplicationVersion,
@@ -29,6 +30,7 @@ import {
   InstanceAction,
   MetaModel,
   ModelAction,
+  QueryAction,
   RestPersistenceAction,
   TransactionalInstanceAction,
   UndoRedoAction
@@ -42,6 +44,7 @@ import { CallUtils } from './ErrorHandling/CallUtils.js';
 import { metaModelEntities, miroirModelEntities } from './ModelInitializer';
 import { cleanLevel } from './constants.js';
 import { ACTION_OK } from '../1_core/constants.js';
+import { resolveContextReference } from '../2_domain/QuerySelectors.js';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -198,6 +201,7 @@ export class DomainController implements DomainControllerInterface {
             await this.loadConfigurationFromPersistenceStore(deploymentUuid);
             log.info("handleModelAction reloading current configuration from local PersistenceStore DONE!")
           } else {
+            // send action to (remote) persistence action interface handler.
             await this.callUtil.callPersistenceAction(
               {}, // context
               {}, // context update
@@ -575,6 +579,112 @@ export class DomainController implements DomainControllerInterface {
       return Promise.resolve(ACTION_OK);
   }
 
+  async handleQuery(queryAction: QueryAction, currentModel: MetaModel): Promise<ActionReturnType> {
+    // let entityDomainAction:DomainAction | undefined = undefined;
+    log.info(
+      "handleQuery",
+      "deploymentUuid",
+      queryAction.deploymentUuid,
+      "actionName",
+      (queryAction as any).actionName,
+      "actionType",
+      queryAction?.actionType,
+      "objects",
+      JSON.stringify((queryAction as any)["objects"], null, 2)
+    );
+    if (this.hasDirectAccessToPersistenceStore) {
+      // we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
+      // const result = await this.callUtil.callLocalCacheAction(
+      //   {}, // context
+      //   {}, // context update
+      //   domainAction
+      // );
+      // log.info("handleAction queryAction callLocalCacheAction Result=", result);
+      // return result;
+      const queries = Object.entries(queryAction.query.fetchQuery.select);
+      if (queries.length != 1) {
+        throw new Error("DomainController handleQuery queryAction no query found in fetchQuery.select! " + JSON.stringify(queryAction));
+      }
+      const query = queries[0][1];
+      const queryName = queries[0][0];
+
+      
+      log.info("DomainController handleQuery queryAction executing query", JSON.stringify(query))
+      switch (query.queryType) {
+        case 'selectObjectListByEntity': {
+          const parentUuid = resolveContextReference(query.parentUuid,queryAction.query.queryParams, queryAction.query.contextResults)
+
+          log.info("DomainController handleQuery queryAction resolved parentUuid", JSON.stringify(parentUuid))
+
+          if (parentUuid.elementType != "instanceUuid") {
+            throw new Error("DomainController handleQuery queryAction no parentUuid found for query " + JSON.stringify(query) + " parentUuid " + JSON.stringify(parentUuid));
+          }
+
+          if (!query.applicationSection) {
+            throw new Error("DomainController handleQuery queryAction no applicationSection found for query " + JSON.stringify(query));
+          }
+
+          const result = await this.callUtil
+          .callPersistenceAction(
+            {}, // context
+            {
+              addResultToContextAsName: "dataEntitiesFromModelSection",
+              expectedDomainElementType: "entityInstanceCollection",
+            }, // context update
+            // deploymentUuid,
+            {
+              actionType: "RestPersistenceAction",
+              actionName: "read",
+              endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
+              deploymentUuid: queryAction.deploymentUuid,
+              parentName: query.parentName,
+              parentUuid: parentUuid.elementValue,
+              section: query.applicationSection,
+            }
+          )
+  
+          log.info("DomainController handleQuery queryName=", queryName)
+          log.info("DomainController handleQuery result=", JSON.stringify(result))
+
+          return result["dataEntitiesFromModelSection"];
+          break;
+        }
+        case 'literal':
+        case 'selectObjectListByRelation':
+        case 'selectObjectListByManyToManyRelation':
+        case 'queryCombiner':
+        case 'selectObjectByRelation':
+        case 'selectObjectByDirectReference':
+        case 'queryContextReference':
+        case 'wrapperReturningObject':
+        case 'wrapperReturningList':
+        default: {
+          throw new Error("DomainController handleQuery queryAction no query found in fetchQuery.select! " + JSON.stringify(queryAction));
+          break;
+        }
+      }
+
+    } else {
+      // we're on the client, the query is sent to the server for execution.
+      // is it right? We're limiting querying for script execution to remote queries right there!
+      // principle: the scripts using transactional (thus Model) actions are limited to localCache access
+      // while non-transactional accesses are limited to persistence store access (does this make sense?)
+      log.info("DomainController handleQuery queryAction sending query to server for execution", JSON.stringify(queryAction))
+      const result = await this.callUtil.callPersistenceAction( // what if it is a REAL persistence store?? exception?
+        {}, // context
+        {
+          addResultToContextAsName: "dataEntitiesFromModelSection",
+          expectedDomainElementType: "entityInstanceCollection",
+        }, // continuation
+        queryAction
+      );
+      log.info("handleQuery queryAction callPersistenceAction Result=", result);
+      return result["dataEntitiesFromModelSection"];
+    }
+    
+    return ACTION_OK;
+  }
+
   // ##############################################################################################
   async handleAction(domainAction: DomainAction, currentModel: MetaModel): Promise<ActionVoidReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
@@ -590,7 +700,7 @@ export class DomainController implements DomainControllerInterface {
       JSON.stringify((domainAction as any)["objects"], null, 2)
     );
 
-    log.debug("handleAction domainAction", domainAction);
+    log.debug("DomainController handleAction domainAction", domainAction);
 
     switch (domainAction.actionType) {
       case "modelAction": {
@@ -602,34 +712,102 @@ export class DomainController implements DomainControllerInterface {
           domainAction
         );
       }
-      case "queryAction": {
-        // if (this.hasDirectAccessToPersistenceStore) {
-        //   const result = await this.callUtil.callLocalCacheAction(
-        //     {}, // context
-        //     {}, // context update
-        //     domainAction
-        //   );
-        //   log.info("handleAction queryAction callLocalCacheAction Result=", result);
-        //   // return result;
-        // } else {
-        // queryActions only exist on the client
-        // they are translated to "query" Rest calls and the result is placed in the local cache.
-        const result = this.callUtil.callPersistenceAction(
-          {}, // context
-          {}, // context update
-          domainAction
-        );
-        log.info("handleAction queryAction callPersistenceAction Result=", result);
-        // return result;
-        // }
+      // case "queryAction": {
+      //   if (this.hasDirectAccessToPersistenceStore) {
+      //     // we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
+      //     // const result = await this.callUtil.callLocalCacheAction(
+      //     //   {}, // context
+      //     //   {}, // context update
+      //     //   domainAction
+      //     // );
+      //     // log.info("handleAction queryAction callLocalCacheAction Result=", result);
+      //     // return result;
+      //     const queries = Object.entries(domainAction.query.fetchQuery.select);
+      //     if (queries.length != 1) {
+      //       throw new Error("DomainController handleAction queryAction no query found in fetchQuery.select! " + JSON.stringify(domainAction));
+      //     }
+      //     const query = queries[0][1];
+      //     const queryName = queries[0][0];
+
+          
+      //     log.info("DomainController handleAction queryAction executing query", JSON.stringify(query))
+      //     switch (query.queryType) {
+      //       case 'selectObjectListByEntity': {
+      //         const parentUuid = resolveContextReference(query.parentUuid,domainAction.query.queryParams, domainAction.query.contextResults)
+
+      //         log.info("DomainController handleAction queryAction resolved parentUuid", JSON.stringify(parentUuid))
+
+      //         if (parentUuid.elementType != "instanceUuid") {
+      //           throw new Error("DomainController handleAction queryAction no parentUuid found for query " + JSON.stringify(query) + " parentUuid " + JSON.stringify(parentUuid));
+      //         }
+    
+      //         if (!query.applicationSection) {
+      //           throw new Error("DomainController handleAction queryAction no applicationSection found for query " + JSON.stringify(query));
+      //         }
+    
+      //         const result = await this.callUtil
+      //         .callPersistenceAction(
+      //           {}, // context
+      //           {
+      //             addResultToContextAsName: "dataEntitiesFromModelSection",
+      //             expectedDomainElementType: "entityInstanceCollection",
+      //           }, // context update
+      //           // deploymentUuid,
+      //           {
+      //             actionType: "RestPersistenceAction",
+      //             actionName: "read",
+      //             endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
+      //             deploymentUuid: domainAction.deploymentUuid,
+      //             parentName: query.parentName,
+      //             parentUuid: parentUuid.elementValue,
+      //             section: query.applicationSection,
+      //           }
+      //         )
+      
+      //         log.info("DomainController handleAction result=", JSON.stringify(result))
+
+      //         return {
+      //           status: "ok",
+      //           returnedDomainElement: result[queryName]
+      //         }
+      //         break;
+      //       }
+      //       case 'literal':
+      //       case 'selectObjectListByRelation':
+      //       case 'selectObjectListByManyToManyRelation':
+      //       case 'queryCombiner':
+      //       case 'selectObjectByRelation':
+      //       case 'selectObjectByDirectReference':
+      //       case 'queryContextReference':
+      //       case 'wrapperReturningObject':
+      //       case 'wrapperReturningList':
+      //       default: {
+      //         throw new Error("DomainController handleAction queryAction no query found in fetchQuery.select! " + JSON.stringify(domainAction));
+      //         break;
+      //       }
+      //     }
+
+      //   } else {
+      //     // we're on the client, the query is sent to the server for execution.
+      //     // is it right? We're limiting querying for script execution to remote queries right there!
+      //     // principle: the scripts using transactional (thus Model) actions are limited to localCache access
+      //     // while non-transactional accesses are limited to persistence store access (does this make sense?)
+      //     const result = await this.callUtil.callPersistenceAction( // what if it is a REAL persistence store?? exception?
+      //       {}, // context
+      //       {}, // context update
+      //       domainAction
+      //     );
+      //     log.info("handleAction queryAction callPersistenceAction Result=", result);
+      //     // return result;
+      //   }
         
-        return ACTION_OK;
-        // return this.handleQueryAction(
-        //   domainAction.deploymentUuid,
-        //   domainAction
-        // );
-        break;
-      }
+      //   return ACTION_OK;
+      //   // return this.handleQueryAction(
+      //   //   domainAction.deploymentUuid,
+      //   //   domainAction
+      //   // );
+      //   break;
+      // }
       case "undoRedoAction": {
         return this.handleDomainUndoRedoAction(
           domainAction.deploymentUuid,

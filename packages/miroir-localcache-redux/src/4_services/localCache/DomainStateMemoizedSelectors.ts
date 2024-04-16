@@ -2,7 +2,6 @@ import { createSelector } from "@reduxjs/toolkit";
 import {
   DeploymentEntityState,
   JzodSchemaQuerySelectorMap,
-  MiroirSelectorQueryParams,
   QuerySelectorMap,
   selectByDomainManyQueries,
   selectEntityInstanceFromObjectQueryAndDeploymentEntityState,
@@ -16,11 +15,8 @@ import {
 
 const deploymentEntityStateSelector = (domainState: DeploymentEntityState, params: any) => domainState;
 const deploymentEntityStateSelectorParams = (domainState: DeploymentEntityState, params: any) => params;
-// const domainStateSelector = (domainState: DomainState, params: any) => domainState;
-// const domainStateSelectorParams = (domainState: DomainState, params: any) => params;
 
 export function getMemoizedDeploymentEntityStateSelectorMap(): QuerySelectorMap<DeploymentEntityState> {
-  // return selectorMap;
   return {
     selectEntityInstanceUuidIndex: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
@@ -42,7 +38,6 @@ export function getMemoizedDeploymentEntityStateSelectorMap(): QuerySelectorMap<
 }
 
 export function getMemoizedDeploymentEntityStateJzodSchemaSelectorMap(): JzodSchemaQuerySelectorMap<DeploymentEntityState> {
-  // return jzodSchemaSelectorMap;
   return {
     selectJzodSchemaByDomainModelQuery: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],

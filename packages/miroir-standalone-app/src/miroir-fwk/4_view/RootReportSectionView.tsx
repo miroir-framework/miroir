@@ -11,7 +11,6 @@ import {
   JzodSchemaQuerySelectorParams,
   LoggerInterface,
   MiroirLoggerFactory,
-  MiroirSelectorQueryParams,
   QuerySelectorMap,
   QuerySelectorParams,
   RecordOfJzodObject,
@@ -23,11 +22,11 @@ import {
 
 
 
-import { useDeploymentEntityStateJzodSchemaSelector, useDeploymentEntityStateQuerySelector, useDomainStateJzodSchemaSelector } from './ReduxHooks';
+import { useDeploymentEntityStateJzodSchemaSelector, useDeploymentEntityStateQuerySelector } from './ReduxHooks';
 import { ReportSectionView } from './ReportSectionView';
 import { ReportUrlParamKeys } from './routes/ReportPage';
 
-import { getMemoizedDeploymentEntityStateSelectorMap, getMemoizedDeploymentEntityStateJzodSchemaSelectorMap } from 'miroir-localcache-redux';
+import { getMemoizedDeploymentEntityStateJzodSchemaSelectorMap, getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
 import { packageName } from '../../constants';
 import { cleanLevel } from './constants';
 

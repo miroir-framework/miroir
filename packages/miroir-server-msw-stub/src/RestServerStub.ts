@@ -61,7 +61,7 @@ export class RestServerStub {
           // log.info("RestServerStub received request",h.method, h.rootApiUrl + h.url, "body", body);
           try {
             const result = await h.handler(
-              false, // useDomainController: since we're emulating the REST server, we have direct access the persistenceStore
+              false, // useDomainControllerToHandleModelAndInstanceActions: since we're emulating the REST server, we have direct access the persistenceStore, do not use the domainController
               (response: any) => (localData: any) => HttpResponse.json(localData),
               undefined /* response object provided by Express Rest interface, which is not needed by MSW, that uses class HttpResponse*/,
               persistenceStoreControllerManager,

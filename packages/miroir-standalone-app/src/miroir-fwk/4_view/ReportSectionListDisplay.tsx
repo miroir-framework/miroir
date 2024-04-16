@@ -10,6 +10,7 @@ import { z } from "zod";
 import {
   ApplicationDeploymentConfiguration,
   ApplicationDeploymentSchema,
+  ApplicationSection,
   DeploymentEntityState,
   DomainControllerInterface,
   DomainElement,
@@ -23,7 +24,6 @@ import {
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
-  MiroirSelectorQueryParams,
   QuerySelector,
   QuerySelectorMap,
   QuerySelectorParams,
@@ -52,6 +52,7 @@ import {
 } from "./MiroirContextReactProvider";
 import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from "./ReduxHooks";
 import { cleanLevel } from "./constants";
+import { deleteCascade } from "./scripts";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportSectionListDisplay");
@@ -78,10 +79,6 @@ export const ReportSectionDisplayEntityInstancePropsSchema = ReportSectionDispla
   tableComponentReportType: z.literal(TableComponentTypeSchema.enum.EntityInstance),
   chosenApplicationSection: applicationSection,
   deploymentUuid: z.string().uuid()
-  // currentModel: z.any(),
-  // currentMiroirEntity: MetaEntitySchema.optional(),
-  // currentReportTargerEntity: entity.optional(),
-  // currentReportTargetEntityDefinition: entityDefinition.optional(),
 });
 
 export const ReportSectionDisplayJsonArrayPropsSchema = ReportSectionDisplayCorePropsSchema.extend({
@@ -511,6 +508,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     async (data:any) => {
       // const newEntity:EntityInstance = Object.assign({...data as EntityInstance},{attributes:dialogFormObject?dialogFormObject['attributes']:[]});
       log.info('onDeleteFormObject called with new object value',data);
+      log.info('onDeleteFormObject called with props',props);
       
       if (props.displayedDeploymentDefinition) {
         if (props.chosenApplicationSection == 'model') {
@@ -541,37 +539,43 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
            throw new Error("ReportSectionListDisplay onDeleteFormObject no EntityDefinition found for object to delete! " + currentReportTargetEntity?.name);
           }
 
-          // const entitiesToCascadeTo = Object.entries(currentReportTargetEntityDefinition.jzodSchema.definition).filter(
-          //   (a) => a[1].extra?.targetEntity
-          // ).map(
-          //   (a) => a[1].extra?.targetEntity
-          // )
+          await deleteCascade(
+            {
+              applicationSection: props.chosenApplicationSection?props.chosenApplicationSection:"data" as ApplicationSection,
+              deploymentUuid: props.displayedDeploymentDefinition?.uuid,
+              domainController: domainController,
+              entityDefinition: currentReportTargetEntityDefinition,
+              entityDefinitions: currentModel.entityDefinitions,
+              entityInstances: [data],
+            }
+          )
+          // const updateAction: InstanceAction = {
+          //   actionType: "instanceAction",
+          //   actionName: "deleteInstanceWithCascade",
+          //   applicationSection: props.chosenApplicationSection?props.chosenApplicationSection:"data",
+          //   deploymentUuid: props.displayedDeploymentDefinition?.uuid,
+          //   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          //   objects: [
+          //     {
+          //       parentName: data.name,
+          //       parentUuid: data.parentUuid,
+          //       applicationSection:props.chosenApplicationSection?props.chosenApplicationSection:"data",
+          //       instances: [
+          //         data 
+          //       ],
+          //     },
+          //   ],
+          // };
+          // log.info("onDeleteFormObject updateAction", updateAction);
+          // await domainController.handleAction(updateAction);
 
-          const updateAction: InstanceAction = {
-            actionType: "instanceAction",
-            actionName: "deleteInstance",
-            applicationSection: props.chosenApplicationSection?props.chosenApplicationSection:"data",
-            deploymentUuid: props.displayedDeploymentDefinition?.uuid,
-            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-            objects: [
-              {
-                parentName: data.name,
-                parentUuid: data.parentUuid,
-                applicationSection:props.chosenApplicationSection?props.chosenApplicationSection:"data",
-                instances: [
-                  data 
-                ],
-              },
-            ],
-          };
-          log.info("onDeleteFormObject updateAction", updateAction);
-          await domainController.handleAction(updateAction);
+
         }
       } else {
         throw new Error('ReportComponent onSubmitOuterDialog props.displayedDeploymentDefinition is undefined.')
       }
     },
-    [domainController, props.displayedDeploymentDefinition, props.chosenApplicationSection]
+    [domainController, props]
   )
 
   

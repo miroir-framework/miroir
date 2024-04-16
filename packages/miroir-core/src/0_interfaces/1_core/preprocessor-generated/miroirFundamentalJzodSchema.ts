@@ -7176,14 +7176,6 @@ export const miroirFundamentalJzodSchema = {
             "optional": false,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "queryAction"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "optional": false,
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "undoRedoAction"
             }
           },

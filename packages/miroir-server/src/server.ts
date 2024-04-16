@@ -107,7 +107,7 @@ for (const op of restServerDefaultHandlers) {
 
       try {
         const result = await op.handler(
-          true, // useDomainController: since we're on the server, we use the localCache as intermediate step, to access the persistenceStore
+          true, // useDomainControllerToHandleModelAndInstanceActions: since we're on the server, we use the localCache as intermediate step, to access the persistenceStore
           (response: any) => response.json.bind(response),
           response,
           persistenceStoreControllerManager,
