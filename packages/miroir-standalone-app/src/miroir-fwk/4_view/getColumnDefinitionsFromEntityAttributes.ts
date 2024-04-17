@@ -14,17 +14,17 @@ import GenderCellRenderer from "./GenderCellRenderer";
 import { packageName } from "../../constants";
 import { cleanLevel } from "./constants";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"getColumnDefinitionsFromEntityDefinitionJzodElemenSchema");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"getColumnDefinitionsFromEntityDefinitionAttribute");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;
 });
 
 // ################################################################################################
-export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(
+export function getColumnDefinitionsFromEntityDefinitionAttribute(
   name: string,
   jzodSchema: JzodElement,
-  jzodObjectSchema?: JzodObject,
+  // jzodObjectSchema?: JzodObject,
   entityDefinition?: EntityDefinition | undefined,
 ): ColDef<any> {
 
@@ -42,6 +42,7 @@ export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(
       // },
       cellRendererParams: {
         entityUuid: jzodSchema?.extra?.targetEntity,
+        entityDefinition
       },
     };
     // log.info(
@@ -60,22 +61,23 @@ export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(
 
     return result;
   }
-  // log.info(
-  //   "getColumnDefinitionsFromEntityDefinitionJzodElemenSchema name column",
-  //   name,
-  //   "jzodSchema",
-  //   jzodSchema,
-  //   "jzodObjectSchema",
-  //   jzodObjectSchema,
-  //   "entityDefinition",
-  //   entityDefinition
-  // );
+  log.info(
+    "getColumnDefinitionsFromEntityDefinitionAttribute name column",
+    name,
+    "jzodSchema",
+    jzodSchema,
+    // "jzodObjectSchema",
+    // jzodObjectSchema,
+    "entityDefinition",
+    entityDefinition
+  );
 
   switch (name) {
+    case "uuid":
     case "name": {
 
       return {
-        field: "name",
+        field: name,
         cellRenderer: EntityInstanceCellRenderer,
         // cellEditor: SelectEntityInstanceEditorNotUsed,
         // cellEditorPopup: true,
@@ -84,7 +86,7 @@ export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(
         //   entityUuid: entityDefinition?.uuid??"",
         // },
         cellRendererParams: {
-          entityUuid: entityDefinition?.uuid??"",
+          entityUuid: entityDefinition?.entityUuid??"",
           entityDefinition
         },
       };
@@ -135,17 +137,23 @@ export function getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(
         const schemaKeys = Object.keys(jzodSchema.definition)
         if (viewAttributes) {
           return viewAttributes
-          .filter(
-           (a:string) => [a, schemaKeys.find(b => b == a)]
-          )
-          .map(
-            (a: string) => getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(a, jzodSchema.definition[a], jzodSchema as JzodObject, entityDefinition)
-          )
+            .filter((a: string) => [a, schemaKeys.find((b) => b == a)])
+            .map((a: string) =>
+              getColumnDefinitionsFromEntityDefinitionAttribute(
+                a,
+                jzodSchema.definition[a],
+                // jzodSchema as JzodObject,
+                entityDefinition
+              )
+            );
         } else {
-          return Object.entries(jzodSchema.definition ? jzodSchema.definition : {})
-            // ?.filter((e: [string, any]) => viewAttributes == undefined || viewAttributes.includes(e[0]))
-            .map((e: [string, any]) => getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(e[0], e[1]));
-          
+          return (
+            Object.entries(jzodSchema.definition ? jzodSchema.definition : {})
+              // ?.filter((e: [string, any]) => viewAttributes == undefined || viewAttributes.includes(e[0]))
+              .map((e: [string, any]) =>
+                getColumnDefinitionsFromEntityDefinitionAttribute(e[0], e[1], entityDefinition)
+              )
+          );
         }
       }
       break;

@@ -60,18 +60,19 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams<Tabl
   
   const deploymentUuid = context.deploymentUuid;
   const entityUuid = props.colDef?.cellRendererParams.entityUuid;
-  // log.info(
-  //   "EntityInstanceCellRenderer called for field",
-  //   props.colDef?.field,
-  //   "with deploymentUuid",
-  //   context.deploymentUuid,
-  //   "entityUuid",
-  //   entityUuid,
-  //   "props:",
-  //   props,
-  //   "value",
-  //   props.value
-  // );
+  // const currentMiroirEntityDefinition = props.colDef?.cellRendererParams.entityDefinition
+  log.info(
+    "EntityInstanceCellRenderer called for field",
+    props.colDef?.field,
+    "with deploymentUuid",
+    context.deploymentUuid,
+    "entityUuid",
+    entityUuid,
+    "props:",
+    props,
+    "value",
+    props.value
+  );
   
   // const currentModelSelectorParams:LocalCacheQueryParams = useMemo(
   //   () => ({
@@ -88,6 +89,7 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams<Tabl
   //   localSelectModelForDeployment(state, currentModelSelectorParams)
   // ) as MetaModel
 
+  // TODO: costly!!!!
   const currentModel: MetaModel = useCurrentModel(context.deploymentUuid)
   const currentMiroirEntityDefinition: EntityDefinition | undefined =
     props.colDef?.cellRendererParams.entityDefinition ??
@@ -117,11 +119,13 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams<Tabl
       : instancesToDisplay.find((i) => i.uuid == (props.data?.rawValue as any)[props.colDef?.field ?? ""])
   ) as EntityInstanceWithName;
 
+  const attributeName: string = props.colDef?.field??"unknown attribute name";
+  // ? instanceToDisplay["name"]
   return (
     <span>
       {instanceToDisplay
-        ? instanceToDisplay["name"]
-        : (currentMiroirEntityDefinition ? currentMiroirEntityDefinition["name"] : "entity definition not found") +
+        ? (instanceToDisplay as any)[attributeName]
+        : (currentMiroirEntityDefinition ? (currentMiroirEntityDefinition as any)[attributeName] : "entity definition not found") +
           " " +
           props.value +
           " not known."}

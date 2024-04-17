@@ -2567,13 +2567,27 @@ export const miroirFundamentalJzodSchema = {
             }
           },
           "definition": {
-            "type": "array",
-            "definition": {
-              "type": "schemaReference",
-              "definition": {
-                "relativePath": "objectListReportSection"
+            "type": "union",
+            "definition": [
+              {
+                "type": "array",
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "objectInstanceReportSection"
+                  }
+                }
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "objectListReportSection"
+                  }
+                }
               }
-            }
+            ]
           }
         }
       },
@@ -3132,13 +3146,27 @@ export const miroirFundamentalJzodSchema = {
                     }
                   },
                   "definition": {
-                    "type": "array",
-                    "definition": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "relativePath": "objectListReportSection"
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "array",
+                        "definition": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "objectInstanceReportSection"
+                          }
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "definition": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "objectListReportSection"
+                          }
+                        }
                       }
-                    }
+                    ]
                   }
                 }
               },

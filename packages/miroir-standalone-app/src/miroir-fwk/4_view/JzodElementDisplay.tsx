@@ -18,7 +18,7 @@ import { JzodEnumSchemaToJzodElementResolver } from "../JzodTools";
 import { EntityInstanceLink } from "./EntityInstanceLink";
 import { useMiroirContextService } from "./MiroirContextReactProvider";
 import { cleanLevel } from "./constants";
-import { getColumnDefinitionsFromEntityDefinitionJzodElemenSchema } from "./getColumnDefinitionsFromEntityAttributes";
+import { getColumnDefinitionsFromEntityDefinitionAttribute } from "./getColumnDefinitionsFromEntityAttributes";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"JzodElementDisplay");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -77,7 +77,7 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
 
   switch (props.resolvedElementJzodSchema.type) {
     case "array": {
-      const columnDefs:any[]=[getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(props.name,props.resolvedElementJzodSchema.definition)];
+      const columnDefs:any[]=[getColumnDefinitionsFromEntityDefinitionAttribute(props.name,props.resolvedElementJzodSchema.definition)];
       log.info("JzodElementDisplay array","targetJzodSchema",targetJzodSchema,"columnDefs",columnDefs,"props.element",props.element);
       
       return (

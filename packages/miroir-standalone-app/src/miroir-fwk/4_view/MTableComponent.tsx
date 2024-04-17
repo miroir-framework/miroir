@@ -312,7 +312,7 @@ export const MTableComponent = (props: TableComponentProps) => {
       const columnDefinitionAttributeEntry = Object.entries(
         props.currentEntityDefinition?.jzodSchema.definition ?? {}
       ).find((a: [string, any]) => a[0] == event.colDef.field);
-      if (event.colDef.field == "name") {
+      if (["name", "uuid"].includes(event.colDef.field)) {
         // display current Entity Details for Entity Instance
         navigate(
           `/report/${contextDeploymentUuid}/${

@@ -318,7 +318,7 @@ export const selectEntityInstanceUuidIndexFromLocalCache = createSelector (
 export const selectInstanceArrayForDeploymentSectionEntity = createSelector(
   [selectEntityInstanceUuidIndexFromLocalCache, selectSelectorParams],
   (state: EntityInstancesUuidIndex, params: MiroirSelectorQueryParams) => {
-    log.info("selectInstanceArrayForDeploymentSectionEntity called", params, state);
+    // log.info("selectInstanceArrayForDeploymentSectionEntity called", params, state);
 
     return state ? Object.values(state) : [];
   }

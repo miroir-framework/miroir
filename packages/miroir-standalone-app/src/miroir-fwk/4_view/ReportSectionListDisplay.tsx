@@ -511,30 +511,30 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       log.info('onDeleteFormObject called with props',props);
       
       if (props.displayedDeploymentDefinition) {
-        if (props.chosenApplicationSection == 'model') {
-          await domainController.handleAction(
-            {
-              actionType: "transactionalInstanceAction",
-              instanceAction: {
-                actionType: "instanceAction",
-                actionName: "deleteInstance",
-                applicationSection: "model",
-                deploymentUuid: props.displayedDeploymentDefinition.uuid,
-                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                objects: [
-                  {
-                    parentName: data.name,
-                    parentUuid: data.parentUuid,
-                    applicationSection:props.chosenApplicationSection,
-                    instances: [
-                      data 
-                    ]
-                  }
-                ],
-              }
-            },props.tableComponentReportType == "EntityInstance"?currentModel:undefined
-          );
-        } else {
+        // if (props.chosenApplicationSection == 'model') {
+        //   await domainController.handleAction(
+        //     {
+        //       actionType: "transactionalInstanceAction",
+        //       instanceAction: {
+        //         actionType: "instanceAction",
+        //         actionName: "deleteInstance",
+        //         applicationSection: "model",
+        //         deploymentUuid: props.displayedDeploymentDefinition.uuid,
+        //         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+        //         objects: [
+        //           {
+        //             parentName: data.name,
+        //             parentUuid: data.parentUuid,
+        //             applicationSection:props.chosenApplicationSection,
+        //             instances: [
+        //               data 
+        //             ]
+        //           }
+        //         ],
+        //       }
+        //     },props.tableComponentReportType == "EntityInstance"?currentModel:undefined
+        //   );
+        // } else {
           if (!currentReportTargetEntityDefinition) {
            throw new Error("ReportSectionListDisplay onDeleteFormObject no EntityDefinition found for object to delete! " + currentReportTargetEntity?.name);
           }
@@ -549,30 +549,30 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               entityInstances: [data],
             }
           )
-          // const updateAction: InstanceAction = {
-          //   actionType: "instanceAction",
-          //   actionName: "deleteInstanceWithCascade",
-          //   applicationSection: props.chosenApplicationSection?props.chosenApplicationSection:"data",
-          //   deploymentUuid: props.displayedDeploymentDefinition?.uuid,
-          //   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          //   objects: [
-          //     {
-          //       parentName: data.name,
-          //       parentUuid: data.parentUuid,
-          //       applicationSection:props.chosenApplicationSection?props.chosenApplicationSection:"data",
-          //       instances: [
-          //         data 
-          //       ],
-          //     },
-          //   ],
-          // };
-          // log.info("onDeleteFormObject updateAction", updateAction);
-          // await domainController.handleAction(updateAction);
+      //     // const updateAction: InstanceAction = {
+      //     //   actionType: "instanceAction",
+      //     //   actionName: "deleteInstanceWithCascade",
+      //     //   applicationSection: props.chosenApplicationSection?props.chosenApplicationSection:"data",
+      //     //   deploymentUuid: props.displayedDeploymentDefinition?.uuid,
+      //     //   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      //     //   objects: [
+      //     //     {
+      //     //       parentName: data.name,
+      //     //       parentUuid: data.parentUuid,
+      //     //       applicationSection:props.chosenApplicationSection?props.chosenApplicationSection:"data",
+      //     //       instances: [
+      //     //         data 
+      //     //       ],
+      //     //     },
+      //     //   ],
+      //     // };
+      //     // log.info("onDeleteFormObject updateAction", updateAction);
+      //     // await domainController.handleAction(updateAction);
 
 
-        }
-      } else {
-        throw new Error('ReportComponent onSubmitOuterDialog props.displayedDeploymentDefinition is undefined.')
+      //   }
+      // } else {
+      //   throw new Error('ReportComponent onSubmitOuterDialog props.displayedDeploymentDefinition is undefined.')
       }
     },
     [domainController, props]
