@@ -1961,7 +1961,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "menuItem": {
+      "miroirMenuItem": {
         "type": "object",
         "definition": {
           "label": {
@@ -2034,7 +2034,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "type": "schemaReference",
           "definition": {
-            "relativePath": "menuItem"
+            "relativePath": "miroirMenuItem"
           }
         }
       },
@@ -2195,7 +2195,7 @@ export const miroirFundamentalJzodSchema = {
           "definition": {
             "type": "schemaReference",
             "context": {
-              "menuItem": {
+              "miroirMenuItem": {
                 "type": "object",
                 "definition": {
                   "label": {
@@ -2268,7 +2268,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "type": "schemaReference",
                   "definition": {
-                    "relativePath": "menuItem"
+                    "relativePath": "miroirMenuItem"
                   }
                 }
               },

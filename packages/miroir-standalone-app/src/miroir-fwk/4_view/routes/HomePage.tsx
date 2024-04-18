@@ -37,16 +37,16 @@ import {
   useDomainControllerService, useErrorLogService,
   useLocalCacheTransactions,
   useMiroirContextService
-} from "../../miroir-fwk/4_view/MiroirContextReactProvider";
-import { Importer } from './Importer';
-import { useCurrentModel } from "./ReduxHooks";
+} from "../MiroirContextReactProvider";
+import { Importer } from '../Importer';
+import { useCurrentModel } from "../ReduxHooks";
 
 
 // import entityPublisher from "../../assets/library_model/";
-import { packageName } from "../../constants";
-import { RootReportSectionView } from "./RootReportSectionView";
-import { cleanLevel } from "./constants";
-import { ReportUrlParamKeys } from "./routes/ReportPage";
+import { packageName } from "../../../constants";
+import { RootReportSectionView } from "../components/RootReportSectionView";
+import { cleanLevel } from "../constants";
+import { ReportUrlParamKeys } from "./ReportPage";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"HomePage");
 let log:LoggerInterface = console as any as LoggerInterface;

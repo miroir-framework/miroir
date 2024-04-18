@@ -37,9 +37,9 @@ import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 
 import { loglevelnext } from './loglevelnextImporter';
 import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage";
-import { HomePage } from "./miroir-fwk/4_view/HomePage";
+import { HomePage } from "./miroir-fwk/4_view/routes/HomePage";
 import { MiroirContextReactProvider } from "./miroir-fwk/4_view/MiroirContextReactProvider";
-import { RootComponent } from "./miroir-fwk/4_view/RootComponent";
+import { RootComponent } from "./miroir-fwk/4_view/components/RootComponent";
 import { ReportPage } from "./miroir-fwk/4_view/routes/ReportPage";
 import { miroirAppStartup } from "./startup";
 
@@ -53,6 +53,7 @@ import miroirConfigRealServerFilesystemTmp from "./assets/miroirConfig-realServe
 import miroirConfigRealServerIndexedDb from "./assets/miroirConfig-realServer-indexedDb.json";
 import miroirConfigRealServerSql from "./assets/miroirConfig-realServer-sql.json";
 import miroirConfig from "./assets/miroirConfig.json";
+import { ToolsPage } from "./miroir-fwk/4_view/routes/Tools";
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
   // "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
@@ -122,6 +123,11 @@ const router = createBrowserRouter([
       {
         path: "report/:deploymentUuid/:applicationSection/:reportUuid/:instanceUuid",
         element: <ReportPage />,
+        // errorElement: <ErrorPage />,
+      },
+      {
+        path: "tools",
+        element: <ToolsPage />,
         // errorElement: <ErrorPage />,
       },
     ]

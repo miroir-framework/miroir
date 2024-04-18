@@ -23,17 +23,17 @@ import {
   getLoggerName
 } from "miroir-core";
 
-import { packageName } from '../../constants';
-import EntityEditor from '../../miroir-fwk/4_view/EntityEditor';
+import { packageName } from '../../../constants';
+import EntityEditor from '../EntityEditor';
 import {
   useMiroirContextInnerFormOutput,
   useMiroirContextService
-} from '../../miroir-fwk/4_view/MiroirContextReactProvider';
+} from '../MiroirContextReactProvider';
 import { ToolsCellRenderer } from './GenderCellRenderer';
 import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from './JsonObjectEditFormDialog';
 import { TableComponentProps, TableComponentRow, TableComponentTypeSchema } from './MTableComponentInterface';
-import { useCurrentModel } from './ReduxHooks';
-import { cleanLevel } from './constants';
+import { useCurrentModel } from '../ReduxHooks';
+import { cleanLevel } from '../constants';
 import { JsonObjectDeleteFormDialog } from './JsonObjectDeleteFormDialog';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"MtableComponent");
@@ -373,7 +373,6 @@ export const MTableComponent = (props: TableComponentProps) => {
   // const againRowData:any[] = Object.values(props.instancesToDisplay??{});
 
   // const domLayout = tableComponentRows.tableComponentRowUuidIndexSchema.length > 10?"normal":"autoHeight";
-  const domLayout = "autoHeight";
   return (
     <div>
       {/* <span>MtableComponent count {count}</span>
@@ -381,27 +380,24 @@ export const MTableComponent = (props: TableComponentProps) => {
       {/* <span>{props.type}</span>
       <br /> */}
       {/* <span>rowData: {JSON.stringify(props.rowData.instancesWithStringifiedJsonAttributes)}</span> */}
-      {props.type == "EntityInstance"? (
+      {props.type == "EntityInstance" ? (
         <div>
-          {
-            dialogFormObject? (
-              <>
+          {dialogFormObject ? (
+            <>
               <JsonObjectEditFormDialog
                 showButton={false}
-                isOpen={editDialogFormIsOpen}  // redundant with addObjectdialogFormIsOpen?
+                isOpen={editDialogFormIsOpen} // redundant with addObjectdialogFormIsOpen?
                 isAttributes={true}
                 addObjectdialogFormIsOpen={addObjectdialogFormIsOpen}
                 setAddObjectdialogFormIsOpen={setAddObjectdialogFormIsOpen}
-                label={props.currentEntity?.name??"No Entity Found!"}
+                label={props.currentEntity?.name ?? "No Entity Found!"}
                 entityDefinitionJzodSchema={props.currentEntityDefinition?.jzodSchema as JzodObject}
                 foreignKeyObjects={props.foreignKeyObjects}
                 currentDeploymentUuid={contextDeploymentUuid}
                 currentApplicationSection={context.applicationSection}
                 currentAppModel={currentModel}
                 currentMiroirModel={miroirMetaModel}
-                defaultFormValuesObject={
-                  dialogFormObject??props.defaultFormValuesObject
-                }
+                defaultFormValuesObject={dialogFormObject ?? props.defaultFormValuesObject}
                 onSubmit={onEditDialogFormSubmit}
                 onClose={handleEditDialogFormClose}
               />
@@ -411,85 +407,68 @@ export const MTableComponent = (props: TableComponentProps) => {
                 currentApplicationSection={context.applicationSection}
                 currentAppModel={currentModel}
                 currentMiroirModel={miroirMetaModel}
-                defaultFormValuesObject={
-                  dialogFormObject??props.defaultFormValuesObject
-                }
+                defaultFormValuesObject={dialogFormObject ?? props.defaultFormValuesObject}
                 deleteObjectdialogFormIsOpen={deleteDialogFormIsOpen}
                 entityDefinitionJzodSchema={props.currentEntityDefinition?.jzodSchema as JzodObject}
                 foreignKeyObjects={props.foreignKeyObjects}
                 isOpen={deleteDialogFormIsOpen} // redundant with deleteObjectdialogFormIsOpen?
                 isAttributes={true}
-                label={props.currentEntity?.name??"No Entity Found!"}
+                label={props.currentEntity?.name ?? "No Entity Found!"}
                 onDeleteFormObject={onDeleteDialogFormSubmit}
                 onClose={handleEditDialogFormClose}
                 setDeleteObjectdialogFormIsOpen={setDeleteDialogFormIsOpen}
               />
-              </>
-            )
-            :<></>
-          }
+            </>
+          ) : (
+            <></>
+          )}
           {
-            tableComponentRows.tableComponentRowUuidIndexSchema.length > 50?
-              <div id="tata" className="ag-theme-alpine" style={{...props.styles, height:"50vh"}}>
-                <AgGridReact
-                  columnDefs={columnDefs}
-                  rowData={tableComponentRows.tableComponentRowUuidIndexSchema}
-                  // getRowId={(params) => {
-                  //   // log.info("MtableComponent getRowId", params);
-                  //   return params.data?.rawValue?.uuid ? params.data?.rawValue?.uuid : params.data?.rawValue?.id;
-                  // }}
-                  defaultColDef={defaultColDef}
-                  onCellClicked={onCellClicked}
-                  onCellValueChanged={onCellValueChanged}
-                  //
-                  // onCellEditingStarted={onCellEditingStarted}
-                  // onCellEditingStopped={onCellEditingStopped}
-                  // onRowDataUpdated={onRowDataUpdated}
-                  // onCellDoubleClicked={onCellDoubleClicked}
-                  // onRowValueChanged={onRowValueChanged}
-                ></AgGridReact>
-              </div>
-              :
-              <div id="tata" className="ag-theme-alpine" style={props.styles}>
-                <AgGridReact
-                  domLayout={domLayout}
-                  columnDefs={columnDefs}
-                  rowData={tableComponentRows.tableComponentRowUuidIndexSchema}
-                  // getRowId={(params) => {
-                  //   // log.info("MtableComponent getRowId", params);
-                  //   return params.data?.rawValue?.uuid ? params.data?.rawValue?.uuid : params.data?.rawValue?.id;
-                  // }}
-                  defaultColDef={defaultColDef}
-                  onCellClicked={onCellClicked}
-                  onCellValueChanged={onCellValueChanged}
-                  //
-                  // onCellEditingStarted={onCellEditingStarted}
-                  // onCellEditingStopped={onCellEditingStopped}
-                  // onRowDataUpdated={onRowDataUpdated}
-                  // onCellDoubleClicked={onCellDoubleClicked}
-                  // onRowValueChanged={onRowValueChanged}
-                ></AgGridReact>
-              </div>
+            <div
+              id="tata"
+              className="ag-theme-alpine"
+              style={
+                tableComponentRows.tableComponentRowUuidIndexSchema.length > 50
+                  ? { ...props.styles, height: "50vh" }
+                  : props.styles
+              }
+            >
+              <AgGridReact
+                domLayout={tableComponentRows.tableComponentRowUuidIndexSchema.length > 50 ? "normal" : "autoHeight"}
+                columnDefs={columnDefs}
+                rowData={tableComponentRows.tableComponentRowUuidIndexSchema}
+                // getRowId={(params) => {
+                //   // log.info("MtableComponent getRowId", params);
+                //   return params.data?.rawValue?.uuid ? params.data?.rawValue?.uuid : params.data?.rawValue?.id;
+                // }}
+                defaultColDef={defaultColDef}
+                onCellClicked={onCellClicked}
+                onCellValueChanged={onCellValueChanged}
+                //
+                // onCellEditingStarted={onCellEditingStarted}
+                // onCellEditingStopped={onCellEditingStopped}
+                // onRowDataUpdated={onRowDataUpdated}
+                // onCellDoubleClicked={onCellDoubleClicked}
+                // onRowValueChanged={onRowValueChanged}
+              ></AgGridReact>
+            </div>
           }
         </div>
       ) : (
         // <div className="ag-theme-alpine" style={{height: 200, width: 200}}>
         <div className="ag-theme-alpine">
-          <div>
-            Not EntityInstance
-          </div>
+          <div>Not EntityInstance</div>
           {/* MtableComponent {props.type} {JSON.stringify(props.columnDefs.columnDefs)} {JSON.stringify(props.rowData)} */}
           {/* <AgGridReact
             columnDefs={dummyColumnDefs}
             rowData={dummyRowData}
           ></AgGridReact> */}
           <AgGridReact
-            domLayout='autoHeight'
+            domLayout="autoHeight"
             columnDefs={props.columnDefs.columnDefs}
             rowData={props.rowData}
             // rowData={props.rowData}
             // rowData={gridData}
-            getRowId={(params:any) => {
+            getRowId={(params: any) => {
               log.info("MtableComponent getRowId", params);
               return params?.data["uuid"]
                 ? params?.data["uuid"]
@@ -509,7 +488,6 @@ export const MTableComponent = (props: TableComponentProps) => {
             // onCellDoubleClicked={onCellDoubleClicked}
             // onRowValueChanged={onRowValueChanged}
           ></AgGridReact>
-
         </div>
       )}
     </div>

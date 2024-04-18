@@ -4,14 +4,14 @@ import { JzodElement } from "@miroir-framework/jzod-ts";
 
 import { EntityDefinition, JzodObject, LoggerInterface, MiroirLoggerFactory, entityAuthor, entityPublisher, getLoggerName } from "miroir-core";
 
-import { GenderCellEditor } from "../../miroir-fwk/4_view/GenderCellEditor";
+import { GenderCellEditor } from "./components/GenderCellEditor";
 import {
   DefaultCellRenderer,
-} from "../../miroir-fwk/4_view/SelectEntityInstanceEditor";
-import GenderCellRenderer from "./GenderCellRenderer";
+} from "./components/SelectEntityInstanceEditor";
+import GenderCellRenderer from "./components/GenderCellRenderer";
 import { packageName } from "../../constants";
 import { cleanLevel } from "./constants";
-import { EntityInstanceCellRenderer } from "./EntityInstanceCellRenderer";
+import { EntityInstanceCellRenderer } from "./components/EntityInstanceCellRenderer";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"getColumnDefinitionsFromEntityDefinitionAttribute");
 let log:LoggerInterface = console as any as LoggerInterface;

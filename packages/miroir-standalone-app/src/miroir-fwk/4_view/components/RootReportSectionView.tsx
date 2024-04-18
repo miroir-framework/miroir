@@ -22,13 +22,13 @@ import {
 
 
 
-import { useDeploymentEntityStateJzodSchemaSelector, useDeploymentEntityStateQuerySelector } from './ReduxHooks';
+import { useDeploymentEntityStateJzodSchemaSelector, useDeploymentEntityStateQuerySelector } from '../ReduxHooks';
 import { ReportSectionView } from './ReportSectionView';
-import { ReportUrlParamKeys } from './routes/ReportPage';
+import { ReportUrlParamKeys } from '../routes/ReportPage';
 
 import { getMemoizedDeploymentEntityStateJzodSchemaSelectorMap, getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
-import { packageName } from '../../constants';
-import { cleanLevel } from './constants';
+import { packageName } from '../../../constants';
+import { cleanLevel } from '../constants';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RootReportSectionView");
 let log:LoggerInterface = console as any as LoggerInterface;

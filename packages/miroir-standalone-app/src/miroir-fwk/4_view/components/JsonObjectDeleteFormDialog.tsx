@@ -20,10 +20,10 @@ import {
   resolveReferencesForJzodSchemaAndValueObject
 } from "miroir-core";
 
-import { packageName } from "../../constants";
+import { packageName } from "../../../constants";
 import { JzodElementEditor } from "./JzodElementEditor";
-import { useMiroirContextInnerFormOutput, useMiroirContextService, useMiroirContextformHelperState } from "./MiroirContextReactProvider";
-import { cleanLevel } from "./constants";
+import { useMiroirContextInnerFormOutput, useMiroirContextService, useMiroirContextformHelperState } from "../MiroirContextReactProvider";
+import { cleanLevel } from "../constants";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"JsonObjectDeleteFormDialog");

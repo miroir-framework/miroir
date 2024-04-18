@@ -13,12 +13,12 @@ import {
   getLoggerName
 } from "miroir-core";
 
-import { packageName } from "../../constants";
-import { JzodEnumSchemaToJzodElementResolver } from "../JzodTools";
+import { packageName } from "../../../constants";
+import { JzodEnumSchemaToJzodElementResolver } from "../../JzodTools";
 import { EntityInstanceLink } from "./EntityInstanceLink";
-import { useMiroirContextService } from "./MiroirContextReactProvider";
-import { cleanLevel } from "./constants";
-import { getColumnDefinitionsFromEntityDefinitionAttribute } from "./getColumnDefinitionsFromEntityAttributes";
+import { useMiroirContextService } from "../MiroirContextReactProvider";
+import { cleanLevel } from "../constants";
+import { getColumnDefinitionsFromEntityDefinitionAttribute } from "../getColumnDefinitionsFromEntityAttributes";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"JzodElementDisplay");
 let log:LoggerInterface = console as any as LoggerInterface;

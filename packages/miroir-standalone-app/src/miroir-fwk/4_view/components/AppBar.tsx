@@ -13,14 +13,14 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 
-import { LoggerInterface, MiroirLoggerFactory, getLoggerName } from 'miroir-core';
+import { LoggerInterface, MiroirLoggerFactory, MiroirMenuItem, getLoggerName } from 'miroir-core';
 
-import { packageName } from '../../constants';
-import { cleanLevel } from './constants';
+import { packageName } from '../../../constants';
+import { cleanLevel } from '../constants';
 import { SidebarWidth } from './Sidebar';
 import { useTheme } from '@emotion/react';
 import { Icon } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ResponsiveAppBar");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -28,12 +28,30 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
-const pages = ['Page1', 'Page2', 'Page3'];
+const pages: MiroirMenuItem[] = [
+  {
+    "label": "Tools",
+    "section": "model",
+    "application": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+    "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+    "icon": "category"
+  },
+  {
+    "label": "Page2",
+    "section": "model",
+    "application": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+    "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+    "icon": "category"
+  },
+];
 const settings = ['Setting1', 'Setting2', 'Setting3', 'Setting4'];
 
 
-interface AppBarProps extends MuiAppBarProps {
-  open?: boolean;
+export interface AppBarProps extends MuiAppBarProps {
+  // open?: boolean;
+  handleDrawerOpen?: ()=>void,
+  open: boolean,
+  children:any,
   // theme: any
 }
 
@@ -92,15 +110,13 @@ styled(
 // ,[props.open])
 ;
 
-export interface ResponsiveAppBarProps {
-  handleDrawerOpen: ()=>void,
-  open: boolean,
-  children:any,
-}
-
 const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
 
-export function ResponsiveAppBar(props:ResponsiveAppBarProps) {
+export function AppBar(props:AppBarProps) {
+  // react hooks
+  const navigate = useNavigate();
+
+  // custom hooks
   const theme = useTheme();
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -120,6 +136,9 @@ export function ResponsiveAppBar(props:ResponsiveAppBarProps) {
     setAnchorElUser(null);
   };
 
+  const menuNavigate = () => {
+    navigate("/tools")
+  }
   
 
   return (
@@ -163,7 +182,8 @@ export function ResponsiveAppBar(props:ResponsiveAppBarProps) {
 
               {/* open: {props.open?"true":"false"} */}
             {/* </Typography> */}
-          <Box sx={{ flexGrow: 0, display: { xs: 'flex', md: 'none'} }}>
+          
+          <Box sx={{ flexGrow: 0, display: { xs: 'flex', md: 'flex'} }}>
             <IconButton
               size="large"
               aria-label="account of current user"
@@ -193,8 +213,8 @@ export function ResponsiveAppBar(props:ResponsiveAppBarProps) {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+                <MenuItem key={page.label} onClick={menuNavigate}>
+                    <Typography textAlign="center">{page.label}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -219,15 +239,19 @@ export function ResponsiveAppBar(props:ResponsiveAppBarProps) {
             LOGO
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                {page}
-              </Button>
-            ))}
+            {
+              pages.map(
+                (page) => (
+                  <Button
+                    key={page.label}
+                    onClick={menuNavigate}
+                    sx={{ my: 2, color: 'white', display: 'block' }}
+                  >
+                    {page.label}
+                  </Button>
+                )
+              )
+            }
           </Box>
 
           <Box sx={{ flexGrow: 0, display: "flex" }}>
@@ -263,4 +287,4 @@ export function ResponsiveAppBar(props:ResponsiveAppBarProps) {
     </StyledAppBar>
   );
 }
-export default ResponsiveAppBar;
+export default AppBar;

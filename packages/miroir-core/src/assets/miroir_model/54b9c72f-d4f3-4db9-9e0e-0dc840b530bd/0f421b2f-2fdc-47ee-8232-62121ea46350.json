@@ -100,7 +100,7 @@
       "definition": {
         "type": "schemaReference",
         "context": {
-          "menuItem": {
+          "miroirMenuItem": {
             "type": "object",
             "definition": {
               "label": {
@@ -173,7 +173,7 @@
             "definition": {
               "type": "schemaReference",
               "definition": {
-                "relativePath": "menuItem"
+                "relativePath": "miroirMenuItem"
               }
             }
           },

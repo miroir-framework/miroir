@@ -21,11 +21,11 @@ import {
 
 
 
-import { packageName } from '../../constants';
-import { useMiroirContextService } from './MiroirContextReactProvider';
+import { packageName } from '../../../constants';
+import { useMiroirContextService } from '../MiroirContextReactProvider';
 import { ReportSectionEntityInstance } from './ReportSectionEntityInstance';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay';
-import { cleanLevel } from './constants';
+import { cleanLevel } from '../constants';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportSectionView");
 let log:LoggerInterface = console as any as LoggerInterface;

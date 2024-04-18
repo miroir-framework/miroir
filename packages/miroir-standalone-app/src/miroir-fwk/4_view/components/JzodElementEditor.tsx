@@ -22,9 +22,9 @@ import {
 } from "miroir-core";
 
 import styled from "@emotion/styled";
-import { packageName } from "../../constants";
-import { useMiroirContextformHelperState } from "./MiroirContextReactProvider";
-import { cleanLevel } from "./constants";
+import { packageName } from "../../../constants";
+import { useMiroirContextformHelperState } from "../MiroirContextReactProvider";
+import { cleanLevel } from "../constants";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"JzodElementEditor");

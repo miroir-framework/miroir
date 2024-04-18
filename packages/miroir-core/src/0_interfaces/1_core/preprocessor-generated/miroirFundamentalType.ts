@@ -423,7 +423,7 @@ export type EntityDefinition = {
     viewAttributes?: string[] | undefined;
     jzodSchema: JzodObject;
 };
-export type MenuItem = {
+export type MiroirMenuItem = {
     label: string;
     section: ApplicationSection;
     application: string;
@@ -431,7 +431,7 @@ export type MenuItem = {
     instanceUuid?: string | undefined;
     icon: string;
 };
-export type MenuItemArray = MenuItem[];
+export type MenuItemArray = MiroirMenuItem[];
 export type SectionOfMenu = {
     title: string;
     label: string;
@@ -1301,8 +1301,8 @@ export const applicationVersion: z.ZodType<ApplicationVersion> = z.object({uuid:
 export const bundle: z.ZodType<Bundle> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid(), name:z.string(), contents:z.union([z.object({type:z.literal("runtime")}).strict(), z.object({type:z.literal("development"), applicationVersion:z.lazy(() =>applicationVersion)}).strict()])}).strict();
 export const entity: z.ZodType<Entity> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), application:z.string().uuid().optional(), name:z.string(), author:z.string().uuid().optional(), description:z.string().optional()}).strict();
 export const entityDefinition: z.ZodType<EntityDefinition> = z.object({uuid:z.string().uuid(), parentName:z.string(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), entityUuid:z.string().uuid(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), description:z.string().optional(), defaultInstanceDetailsReportUuid:z.string().uuid().optional(), viewAttributes:z.array(z.string()).optional(), jzodSchema:z.lazy(() =>jzodObject)}).strict();
-export const menuItem: z.ZodType<MenuItem> = z.object({label:z.string(), section:z.lazy(() =>applicationSection), application:z.string().uuid(), reportUuid:z.string().uuid(), instanceUuid:z.string().uuid().optional(), icon:z.string().uuid()}).strict();
-export const menuItemArray: z.ZodType<MenuItemArray> = z.array(z.lazy(() =>menuItem));
+export const miroirMenuItem: z.ZodType<MiroirMenuItem> = z.object({label:z.string(), section:z.lazy(() =>applicationSection), application:z.string().uuid(), reportUuid:z.string().uuid(), instanceUuid:z.string().uuid().optional(), icon:z.string().uuid()}).strict();
+export const menuItemArray: z.ZodType<MenuItemArray> = z.array(z.lazy(() =>miroirMenuItem));
 export const sectionOfMenu: z.ZodType<SectionOfMenu> = z.object({title:z.string(), label:z.string(), items:z.lazy(() =>menuItemArray)}).strict();
 export const simpleMenu: z.ZodType<SimpleMenu> = z.object({menuType:z.literal("simpleMenu"), definition:z.lazy(() =>menuItemArray)}).strict();
 export const complexMenu: z.ZodType<ComplexMenu> = z.object({menuType:z.literal("complexMenu"), definition:z.array(z.lazy(() =>sectionOfMenu))}).strict();

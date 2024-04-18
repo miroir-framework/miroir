@@ -8,9 +8,9 @@ import {
   getLoggerName
 } from "miroir-core";
 import { Link, useNavigate } from 'react-router-dom';
-import { useEntityInstanceUuidIndexFromLocalCache } from "./ReduxHooks";
-import { packageName } from "../../constants";
-import { cleanLevel } from "./constants";
+import { useEntityInstanceUuidIndexFromLocalCache } from "../ReduxHooks";
+import { packageName } from "../../../constants";
+import { cleanLevel } from "../constants";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"EntityInstanceLink");

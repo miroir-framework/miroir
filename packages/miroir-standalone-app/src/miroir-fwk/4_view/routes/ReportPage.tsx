@@ -22,7 +22,7 @@ import {
 
 import { packageName } from '../../../constants';
 import { useCurrentModel } from '../ReduxHooks';
-import { RootReportSectionView } from '../RootReportSectionView';
+import { RootReportSectionView } from '../components/RootReportSectionView';
 import { cleanLevel } from '../constants';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportPage");

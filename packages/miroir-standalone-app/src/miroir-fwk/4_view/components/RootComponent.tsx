@@ -42,12 +42,12 @@ import {
   undoRedoEndpointVersionV1
 } from "miroir-core";
 
-import { useDomainControllerService, useMiroirContext, useMiroirContextService } from './MiroirContextReactProvider';
-import ResponsiveAppBar from './ResponsiveAppBar';
-import { ReportUrlParamKeys } from './routes/ReportPage';
+import { useDomainControllerService, useMiroirContext, useMiroirContextService } from '../MiroirContextReactProvider';
+import AppBar from './AppBar';
+import { ReportUrlParamKeys } from '../routes/ReportPage';
 
-import { packageName } from '../../constants';
-import { cleanLevel } from './constants';
+import { packageName } from '../../../constants';
+import { cleanLevel } from '../constants';
 import { Sidebar, SidebarWidth } from "./Sidebar";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RootComponent");
@@ -190,9 +190,9 @@ export const RootComponent = (props: RootComponentProps) => {
         {/* <CssBaseline /> */}
         <Grid container direction="column">
           <Grid item>
-            <ResponsiveAppBar handleDrawerOpen={handleDrawerOpen} open={drawerIsOpen}>
+            <AppBar handleDrawerOpen={handleDrawerOpen} open={drawerIsOpen}>
               Bar!
-            </ResponsiveAppBar>
+            </AppBar>
             <Toolbar />
           </Grid>
           <Grid item container>

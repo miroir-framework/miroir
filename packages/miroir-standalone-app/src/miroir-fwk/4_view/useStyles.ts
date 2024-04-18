@@ -1,5 +1,5 @@
 import { makeStyles } from "@mui/material";
-import { SidebarWidth } from "./Sidebar";
+import { SidebarWidth } from "./components/Sidebar";
 
 export const useStyles = makeStyles((theme:any) => ({
   root: {

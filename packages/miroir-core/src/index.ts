@@ -141,6 +141,8 @@ export {
   StoreOrBundleAction,
   Menu,
   menu,
+  MiroirMenuItem,
+  miroirMenuItem,
   MiroirConfigForMswClient,
   miroirConfigForMswClient,
   MiroirConfigForRestClient,

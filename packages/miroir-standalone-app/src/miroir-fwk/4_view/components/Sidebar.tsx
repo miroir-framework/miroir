@@ -30,9 +30,9 @@ import {
 } from "miroir-core";
 import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
 import { useMemo } from 'react';
-import { packageName } from '../../constants';
-import { cleanLevel } from './constants';
-import { useDeploymentEntityStateQuerySelector } from './ReduxHooks';
+import { packageName } from '../../../constants';
+import { cleanLevel } from '../constants';
+import { useDeploymentEntityStateQuerySelector } from '../ReduxHooks';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"Sidebar");
 let log:LoggerInterface = console as any as LoggerInterface;

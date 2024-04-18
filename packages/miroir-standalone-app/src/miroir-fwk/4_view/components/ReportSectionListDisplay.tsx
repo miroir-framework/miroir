@@ -43,8 +43,8 @@ import {
 
 import { Button } from "@mui/material";
 import { getMemoizedDeploymentEntityStateSelectorMap } from "miroir-localcache-redux";
-import { packageName } from "../../constants";
-import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "../../miroir-fwk/4_view/getColumnDefinitionsFromEntityAttributes";
+import { packageName } from "../../../constants";
+import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "../getColumnDefinitionsFromEntityAttributes";
 import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from "./JsonObjectEditFormDialog";
 import { noValue } from "./JzodElementEditor";
 import { MTableComponent } from "./MTableComponent";
@@ -53,10 +53,10 @@ import {
   useDomainControllerService,
   useMiroirContextInnerFormOutput,
   useMiroirContextService,
-} from "./MiroirContextReactProvider";
-import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from "./ReduxHooks";
-import { cleanLevel } from "./constants";
-import { deleteCascade } from "./scripts";
+} from "../MiroirContextReactProvider";
+import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from "../ReduxHooks";
+import { cleanLevel } from "../constants";
+import { deleteCascade } from "../scripts";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportSectionListDisplay");

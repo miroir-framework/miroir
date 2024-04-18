@@ -17,16 +17,16 @@ import {
 
 import {
   useErrorLogService, useMiroirContextService
-} from "../../miroir-fwk/4_view/MiroirContextReactProvider";
+} from "../MiroirContextReactProvider";
 
 
-import { packageName } from '../../constants';
-import { JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from '../JzodTools';
+import { packageName } from '../../../constants';
+import { JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from '../../JzodTools';
 import { JzodElementDisplay } from './JzodElementDisplay';
 import {
   useCurrentModel
-} from "./ReduxHooks";
-import { cleanLevel } from './constants';
+} from "../ReduxHooks";
+import { cleanLevel } from '../constants';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportSectionEntityInstance");
 let log:LoggerInterface = console as any as LoggerInterface;

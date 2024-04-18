@@ -1,8 +1,8 @@
 import { ICellRendererParams } from 'ag-grid-community';
 import { getLoggerName, LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
 import React, { memo, useMemo } from 'react';
-import { packageName } from '../../constants';
-import { cleanLevel } from './constants';
+import { packageName } from '../../../constants';
+import { cleanLevel } from '../constants';
 import { Icon } from '@mui/material';
 
 // export default (props) => {
