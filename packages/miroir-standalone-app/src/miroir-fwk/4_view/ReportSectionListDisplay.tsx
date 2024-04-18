@@ -31,6 +31,10 @@ import {
   applicationDeploymentMiroir,
   applicationSection,
   domainElementObject,
+  entityApplication,
+  entityEntity,
+  entityEntityDefinition,
+  entityReport,
   getDeploymentEntityStateSelectorParams,
   getLoggerName,
   jzodObject,
@@ -314,6 +318,23 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     ]
   );
 
+  const getApplicationSection = (
+    deploymentUUid: string,
+    entityUuid: string,
+  ):ApplicationSection => {
+    if (deploymentUUid == applicationDeploymentMiroir.uuid) {
+      return entityUuid == entityEntity.uuid || entityUuid == entityEntityDefinition.uuid?"model":"data"
+    } else {
+      return entityUuid == entityEntity.uuid ||
+        entityUuid == entityEntityDefinition.uuid ||
+        entityUuid == entityReport.uuid ||
+        entityUuid == entityApplication.uuid
+      ?
+      "model":"data"
+
+    }
+  }
+
   const foreignKeyObjectsFetchQueryParams: QuerySelectorParams<
     DomainManyQueriesWithDeploymentUuid,
     DeploymentEntityState
@@ -333,7 +354,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 e[1].extra?.targetEntity,
                 {
                   queryType: "selectObjectListByEntity",
-                  applicationSection: (props.paramsAsdomainElements as any)["applicationSection"],
+                  // applicationSection: (props.paramsAsdomainElements as any)["applicationSection"],
+                  applicationSection: getApplicationSection(props.deploymentUuid,e[1].extra?.targetEntity??"undefined"),
                   parentName: "",
                   parentUuid: {
                     referenceType: "constant",
@@ -355,7 +377,15 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     ]
   );
 
-  log.info("MTableComponent foreignKeyObjectsFetchQueryParams", foreignKeyObjectsFetchQueryParams);
+  log.info(
+    "@@@@@@@@@@@@@@@@@@@@@@@ ReportSectionListDisplay rendering",
+    count,
+    "foreignKeyObjectsAttributeDefinition",
+    foreignKeyObjectsAttributeDefinition,
+    "foreignKeyObjectsFetchQueryParams",
+    foreignKeyObjectsFetchQueryParams
+    
+  )
 
   // const foreignKeyObjects:  = useDeploymentEntityStateQuerySelectorForCleanedResult(
   const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = useDeploymentEntityStateQuerySelectorForCleanedResult(
@@ -363,7 +393,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     foreignKeyObjectsFetchQueryParams
   );
 
-  log.info("MTableComponent foreignKeyObjects", foreignKeyObjects);
+  log.info("ReportSectionListDisplay foreignKeyObjects", foreignKeyObjects);
 
 
   // // ##############################################################################################

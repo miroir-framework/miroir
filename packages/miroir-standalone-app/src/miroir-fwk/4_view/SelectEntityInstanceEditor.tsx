@@ -21,11 +21,9 @@ import ReactDOM from 'react-dom';
 import { useSelector } from "react-redux";
 
 import {
-  EntityDefinition,
   EntityInstanceWithName,
   LocalCacheQueryParams,
   LoggerInterface,
-  MetaModel,
   MiroirLoggerFactory,
   getLoggerName
 } from "miroir-core";
@@ -39,7 +37,6 @@ import { TableComponentRow } from "./MTableComponentInterface";
 import {
   useMiroirContextService
 } from './MiroirContextReactProvider';
-import { useCurrentModel } from "./ReduxHooks";
 import { cleanLevel } from "./constants";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"SelectEntityInstanceEditor");
@@ -53,86 +50,6 @@ const KEY_BACKSPACE = 'Backspace';
 const KEY_F2 = 'F2';
 const KEY_ENTER = 'Enter';
 const KEY_TAB = 'Tab';
-
-// ################################################################################################
-export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams<TableComponentRow>) => {
-  const context = useMiroirContextService();
-  
-  const deploymentUuid = context.deploymentUuid;
-  const entityUuid = props.colDef?.cellRendererParams.entityUuid;
-  // const currentMiroirEntityDefinition = props.colDef?.cellRendererParams.entityDefinition
-  log.info(
-    "EntityInstanceCellRenderer called for field",
-    props.colDef?.field,
-    "with deploymentUuid",
-    context.deploymentUuid,
-    "entityUuid",
-    entityUuid,
-    "props:",
-    props,
-    "value",
-    props.value
-  );
-  
-  // const currentModelSelectorParams:LocalCacheQueryParams = useMemo(
-  //   () => ({
-  //     queryType: "LocalCacheEntityInstancesSelectorParams",
-  //     definition: {
-  //       deploymentUuid: context.deploymentUuid,
-  //     }
-  //   } as LocalCacheQueryParams),
-  //   [context]
-  // );
-
-  // const localSelectModelForDeployment = useMemo(selectModelForDeploymentFromReduxState,[]);
-  // const currentModel = useSelector((state: ReduxStateWithUndoRedo) =>
-  //   localSelectModelForDeployment(state, currentModelSelectorParams)
-  // ) as MetaModel
-
-  // TODO: costly!!!!
-  const currentModel: MetaModel = useCurrentModel(context.deploymentUuid)
-  const currentMiroirEntityDefinition: EntityDefinition | undefined =
-    props.colDef?.cellRendererParams.entityDefinition ??
-    currentModel.entityDefinitions?.find((e) => e?.entityUuid == entityUuid)
-  ;
-  
-  // log.info("EntityInstanceCellRenderer currentMiroirEntityDefinition", currentMiroirEntityDefinition)
-  const selectorParams:LocalCacheQueryParams = useMemo(
-    () => ({
-      queryType: "LocalCacheEntityInstancesSelectorParams",
-      definition: {
-        deploymentUuid,
-        applicationSection: context.applicationSection,
-        entityUuid: entityUuid,
-      }
-    } as LocalCacheQueryParams),
-    [deploymentUuid, entityUuid]
-  );
-  const instancesToDisplay: EntityInstanceWithName[] = useSelector((state: ReduxStateWithUndoRedo) =>
-    selectInstanceArrayForDeploymentSectionEntity(state, selectorParams)
-  ) as EntityInstanceWithName[];
-  // log.info("EntityInstanceCellRenderer instancesToDisplay",instancesToDisplay);
-
-  const instanceToDisplay: EntityInstanceWithName = (
-    props.colDef?.cellRendererParams.entityDefinition
-      ? props.data?.rawValue
-      : instancesToDisplay.find((i) => i.uuid == (props.data?.rawValue as any)[props.colDef?.field ?? ""])
-  ) as EntityInstanceWithName;
-
-  const attributeName: string = props.colDef?.field??"unknown attribute name";
-  // ? instanceToDisplay["name"]
-  return (
-    <span>
-      {instanceToDisplay
-        ? (instanceToDisplay as any)[attributeName]
-        : (currentMiroirEntityDefinition ? (currentMiroirEntityDefinition as any)[attributeName] : "entity definition not found") +
-          " " +
-          props.value +
-          " not known."}
-    </span>
-  );
-  // }
-})
 
 
 // ################################################################################################

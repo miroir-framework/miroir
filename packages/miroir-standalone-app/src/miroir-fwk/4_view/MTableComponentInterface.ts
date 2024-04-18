@@ -67,6 +67,7 @@ export const tableComponentRowSchema = z.object({
   displayedValue: z.any(),
   rawValue: entityInstance,
   jzodSchema: z.record(jzodElement),
+  foreignKeyObjects: z.record(entityInstancesUuidIndex)
 })
 
 export const tableComponentRowArraySchema = z.array(

@@ -7,12 +7,11 @@ import { EntityDefinition, JzodObject, LoggerInterface, MiroirLoggerFactory, ent
 import { GenderCellEditor } from "../../miroir-fwk/4_view/GenderCellEditor";
 import {
   DefaultCellRenderer,
-  EntityInstanceCellRenderer,
-  // SelectEntityInstanceEditorNotUsed,
 } from "../../miroir-fwk/4_view/SelectEntityInstanceEditor";
 import GenderCellRenderer from "./GenderCellRenderer";
 import { packageName } from "../../constants";
 import { cleanLevel } from "./constants";
+import { EntityInstanceCellRenderer } from "./EntityInstanceCellRenderer";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"getColumnDefinitionsFromEntityDefinitionAttribute");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -41,6 +40,7 @@ export function getColumnDefinitionsFromEntityDefinitionAttribute(
       //   entityUuid: jzodSchema?.extra?.targetEntity,
       // },
       cellRendererParams: {
+        isFK: true,
         entityUuid: jzodSchema?.extra?.targetEntity,
         entityDefinition
       },

@@ -123,6 +123,7 @@ export const MTableComponent = (props: TableComponentProps) => {
         )
         .map((i: EntityInstance) => ({
           rawValue: i,
+          foreignKeyObjects: props.foreignKeyObjects,
           jzodSchema:
             props.type == TableComponentTypeSchema.enum.EntityInstance
               ? props.currentEntityDefinition.jzodSchema.definition
@@ -371,6 +372,8 @@ export const MTableComponent = (props: TableComponentProps) => {
   // }
   // const againRowData:any[] = Object.values(props.instancesToDisplay??{});
 
+  // const domLayout = tableComponentRows.tableComponentRowUuidIndexSchema.length > 10?"normal":"autoHeight";
+  const domLayout = "autoHeight";
   return (
     <div>
       {/* <span>MtableComponent count {count}</span>
@@ -425,31 +428,49 @@ export const MTableComponent = (props: TableComponentProps) => {
             )
             :<></>
           }
-          <div id="tata" className="ag-theme-alpine" style={props.styles}>
-          {/* <div id="tata" className="ag-theme-alpine"> */}
-            <AgGridReact
-              domLayout='autoHeight'
-              columnDefs={columnDefs}
-              // autoSizeStrategy={autoSizeStrategy}
-              // rowData={instancesWithStringifiedJsonAttributes.instancesWithStringifiedJsonAttributes}
-              // rowData={tableComponentRowsCopy}
-              rowData={tableComponentRows.tableComponentRowUuidIndexSchema}
-              // rowData={gridData}
-              // getRowId={(params) => {
-              //   // log.info("MtableComponent getRowId", params);
-              //   return params.data?.rawValue?.uuid ? params.data?.rawValue?.uuid : params.data?.rawValue?.id;
-              // }}
-              defaultColDef={defaultColDef}
-              onCellClicked={onCellClicked}
-              onCellValueChanged={onCellValueChanged}
-              //
-              // onCellEditingStarted={onCellEditingStarted}
-              // onCellEditingStopped={onCellEditingStopped}
-              // onRowDataUpdated={onRowDataUpdated}
-              // onCellDoubleClicked={onCellDoubleClicked}
-              // onRowValueChanged={onRowValueChanged}
-            ></AgGridReact>
-          </div>
+          {
+            tableComponentRows.tableComponentRowUuidIndexSchema.length > 50?
+              <div id="tata" className="ag-theme-alpine" style={{...props.styles, height:"50vh"}}>
+                <AgGridReact
+                  columnDefs={columnDefs}
+                  rowData={tableComponentRows.tableComponentRowUuidIndexSchema}
+                  // getRowId={(params) => {
+                  //   // log.info("MtableComponent getRowId", params);
+                  //   return params.data?.rawValue?.uuid ? params.data?.rawValue?.uuid : params.data?.rawValue?.id;
+                  // }}
+                  defaultColDef={defaultColDef}
+                  onCellClicked={onCellClicked}
+                  onCellValueChanged={onCellValueChanged}
+                  //
+                  // onCellEditingStarted={onCellEditingStarted}
+                  // onCellEditingStopped={onCellEditingStopped}
+                  // onRowDataUpdated={onRowDataUpdated}
+                  // onCellDoubleClicked={onCellDoubleClicked}
+                  // onRowValueChanged={onRowValueChanged}
+                ></AgGridReact>
+              </div>
+              :
+              <div id="tata" className="ag-theme-alpine" style={props.styles}>
+                <AgGridReact
+                  domLayout={domLayout}
+                  columnDefs={columnDefs}
+                  rowData={tableComponentRows.tableComponentRowUuidIndexSchema}
+                  // getRowId={(params) => {
+                  //   // log.info("MtableComponent getRowId", params);
+                  //   return params.data?.rawValue?.uuid ? params.data?.rawValue?.uuid : params.data?.rawValue?.id;
+                  // }}
+                  defaultColDef={defaultColDef}
+                  onCellClicked={onCellClicked}
+                  onCellValueChanged={onCellValueChanged}
+                  //
+                  // onCellEditingStarted={onCellEditingStarted}
+                  // onCellEditingStopped={onCellEditingStopped}
+                  // onRowDataUpdated={onRowDataUpdated}
+                  // onCellDoubleClicked={onCellDoubleClicked}
+                  // onRowValueChanged={onRowValueChanged}
+                ></AgGridReact>
+              </div>
+          }
         </div>
       ) : (
         // <div className="ag-theme-alpine" style={{height: 200, width: 200}}>
