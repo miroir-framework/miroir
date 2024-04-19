@@ -116,11 +116,76 @@ export async function storeActionOrBundleActionStoreRunner(
     // case "deleteBundle":
     //   break;
     case "createStore": {
-      log.warn("storeActionOrBundleActionStoreRunner createStore does nothing!")
+      // log.warn("storeActionOrBundleActionStoreRunner createStore does nothing!")
+      if (!action.deploymentUuid) {
+        return {
+          status: "error",
+          error: {
+            errorType: "FailedToCreateStore",
+            errorMessage: "storeActionOrBundleActionStoreRunner no deploymentUuid in action " + JSON.stringify(action),
+          },
+        };
+      }
+
+      const localAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
+      if (!localAppPersistenceStoreController) {
+        throw new Error("could not find controller:" + localAppPersistenceStoreController);
+      }
+
+      // await persistenceStoreControllerManager.addPersistenceStoreController(action.deploymentUuid, action.configuration)
+      const miroirModelStoreCreated: ActionReturnType = await localAppPersistenceStoreController.createStore(action.configuration.model)
+      const miroirDataStoreCreated: ActionReturnType = await localAppPersistenceStoreController.createStore(action.configuration.data)
+      // const libraryModelStoreCreated: ActionReturnType = await localMiroirPersistenceStoreController.createStore(miroirConfig.client.appServerConfig.model)
+      // const libraryDataStoreCreated: ActionReturnType = await localMiroirPersistenceStoreController.createStore(miroirConfig.client.appServerConfig.data)
+
+      // .createStore(miroirConfig.client.miroirServerConfig.model)
+      if (miroirModelStoreCreated.status != "ok" || miroirDataStoreCreated.status != "ok") {
+        return {
+          status: "error",
+          error: {
+            errorType: "FailedToCreateStore",
+            errorMessage:
+              (miroirModelStoreCreated.status != "ok" ? miroirModelStoreCreated.error : "model store created OK") +
+              " --- " +
+              (miroirDataStoreCreated.status != "ok" ? miroirDataStoreCreated.error : "data store created OK"),
+          },
+        };
+      }
       break;
     }
     case "deleteStore": {
-      log.warn("storeActionOrBundleActionStoreRunner deleteStore does nothing!")
+      // log.warn("storeActionOrBundleActionStoreRunner deleteStore does nothing!")
+      if (!action.deploymentUuid) {
+        return {
+          status: "error",
+          error: {
+            errorType: "FailedToDeleteStore",
+            errorMessage: "storeActionOrBundleActionStoreRunner no deploymentUuid in action " + JSON.stringify(action),
+          },
+        };
+      }
+
+      const localAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
+      if (!localAppPersistenceStoreController) {
+        throw new Error("could not find controller:" + localAppPersistenceStoreController);
+      }
+
+      // await persistenceStoreControllerManager.addPersistenceStoreController(action.deploymentUuid, action.configuration)
+      const miroirModelStoreDeleted: ActionReturnType = await localAppPersistenceStoreController.deleteStore(action.configuration.model)
+      const miroirDataStoreDeleted: ActionReturnType = await localAppPersistenceStoreController.deleteStore(action.configuration.data)
+
+      if (miroirModelStoreDeleted.status != "ok" || miroirDataStoreDeleted.status != "ok") {
+        return {
+          status: "error",
+          error: {
+            errorType: "FailedToDeleteStore",
+            errorMessage:
+              (miroirModelStoreDeleted.status != "ok" ? miroirModelStoreDeleted.error : "model store deleted OK") +
+              " --- " +
+              (miroirDataStoreDeleted.status != "ok" ? miroirDataStoreDeleted.error : "data store deleted OK"),
+          },
+        };
+      }
       break;
     }
     case "openStore": {

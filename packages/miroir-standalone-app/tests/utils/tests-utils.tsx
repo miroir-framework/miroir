@@ -190,6 +190,7 @@ export async function miroirBeforeAll(
 
     if (!miroirConfig.client.emulateServer) {
       console.warn('miroirBeforeAll: emulateServer is true in miroirConfig, a real server is used, tests results depend on the availability of the server.');
+
       const remoteStore:PersistenceInterface = domainController.getRemoteStore();
       await remoteStore.handlePersistenceAction({
         actionType: "storeManagementAction",
@@ -201,6 +202,33 @@ export async function miroirBeforeAll(
         },
         deploymentUuid: applicationDeploymentMiroir.uuid,
       })
+
+      console.log("miroirBeforeAll: real server, sending remote storeManagementAction to server for test store creation")
+      const createdApplicationLibraryStore = await domainController?.handleAction(
+        {
+          actionType: "storeManagementAction",
+          actionName: "createStore",
+          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+          deploymentUuid: applicationDeploymentLibrary.uuid,
+          configuration: miroirConfig.client.serverConfig.storeSectionConfiguration.appServerConfig
+        }
+      )
+      if (createdApplicationLibraryStore?.status != "ok") {
+        console.error('Error afterEach',JSON.stringify(createdApplicationLibraryStore, null, 2));
+      }
+
+      const createdMiroirStore = await domainController?.handleAction(
+        {
+          actionType: "storeManagementAction",
+          actionName: "createStore",
+          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+          deploymentUuid: applicationDeploymentMiroir.uuid,
+          configuration: miroirConfig.client.serverConfig.storeSectionConfiguration.miroirServerConfig
+        }
+      )
+      if (createdMiroirStore?.status != "ok") {
+        console.error('Error afterEach',JSON.stringify(createdMiroirStore, null, 2));
+      }
 
       console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll DONE');
       return Promise.resolve({
@@ -396,7 +424,7 @@ export async function miroirAfterEach(
 ):Promise<void> {
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterEach');
   if (!miroirConfig.client.emulateServer) {
-    console.log('miroirAfterAll emulateServer is false in miroirConfig, a real server is used, nothing to do on client side.'); // TODO: empty clear / reset datastore
+    console.log('miroirAfterEach emulateServer is false in miroirConfig, a real server is used, nothing to do on client side.'); // TODO: empty clear / reset datastore
   } else {
     try {
       // await localDataStore?.close();
@@ -424,10 +452,35 @@ export async function miroirAfterAll(
 ) {
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterAll');
   if (!miroirConfig.client.emulateServer) {
-    console.log('miroirAfterAll emulateServer is false in miroirConfig, a real server is used, nothing to do on client side.'); // TODO: really???
     if (!domainController) {
       throw new Error("miroirAfterAll could not close store controller: DomainController is undefined");
     } else {
+      console.log('miroirAfterAll a real server is used, sending remote actions to delete and close test stores.'); // TODO: really???
+      const deletedApplicationLibraryStore = await domainController?.handleAction(
+        {
+          actionType: "storeManagementAction",
+          actionName: "deleteStore",
+          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+          deploymentUuid: applicationDeploymentLibrary.uuid,
+          configuration: miroirConfig.client.serverConfig.storeSectionConfiguration.appServerConfig
+        }
+      )
+      if (deletedApplicationLibraryStore?.status != "ok") {
+        console.error('Error afterEach',JSON.stringify(deletedApplicationLibraryStore, null, 2));
+      }
+      const deletedMiroirStore = await domainController?.handleAction(
+        {
+          actionType: "storeManagementAction",
+          actionName: "deleteStore",
+          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+          deploymentUuid: applicationDeploymentMiroir.uuid,
+          configuration: miroirConfig.client.serverConfig.storeSectionConfiguration.miroirServerConfig
+        }
+      )
+      if (deletedMiroirStore?.status != "ok") {
+        console.error('Error afterEach',JSON.stringify(deletedMiroirStore, null, 2));
+      }
+  
       console.log('miroirAfterAll closing deployment:', applicationDeploymentMiroir.uuid); // TODO: really???
       const remoteStore:PersistenceInterface = domainController.getRemoteStore();
       await remoteStore.handlePersistenceAction({

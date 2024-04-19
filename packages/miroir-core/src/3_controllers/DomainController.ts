@@ -579,6 +579,7 @@ export class DomainController implements DomainControllerInterface {
       return Promise.resolve(ACTION_OK);
   }
 
+  // ##############################################################################################
   async handleQuery(queryAction: QueryAction, currentModel: MetaModel): Promise<ActionReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     log.info(
@@ -808,6 +809,30 @@ export class DomainController implements DomainControllerInterface {
       //   // );
       //   break;
       // }
+      case 'storeManagementAction':
+      case 'bundleAction': {
+        try {
+          await this.callUtil.callPersistenceAction(
+          {}, // context
+          {}, // context update
+          // deploymentUuid,
+          domainAction
+        );
+      } catch (error) {
+        log.warn(
+          "DomainController handleAction caught exception when handling",
+          domainAction.actionType,
+          "deployment",
+          domainAction.deploymentUuid,
+          "action",
+          domainAction,
+          "exception",
+          error
+        );
+      }
+      return Promise.resolve(ACTION_OK);
+      break;
+      }
       case "undoRedoAction": {
         return this.handleDomainUndoRedoAction(
           domainAction.deploymentUuid,

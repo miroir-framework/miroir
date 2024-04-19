@@ -184,7 +184,7 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
     if (testLocalMiroirPersistenceStoreController) {
       await testLocalMiroirPersistenceStoreController.clear();
       try {
-        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deployModule initApplication',initApplicationParameters.dataStoreType,"START");
+        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ initApplication',initApplicationParameters.dataStoreType,"START");
         await testLocalMiroirPersistenceStoreController.initApplication(
           initApplicationParameters.metaModel,
           initApplicationParameters.dataStoreType,

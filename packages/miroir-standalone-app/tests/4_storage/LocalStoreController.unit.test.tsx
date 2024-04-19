@@ -138,7 +138,11 @@ const chainTestSteps = async (
   console.log("########################################### chainTestAsyncDomainCalls", stepName, "result:", JSON.stringify(domainElement,undefined, 2));
   let testResult
   if (domainElement.status == "ok") {
-    testResult = resultTransformation?resultTransformation(domainElement,context):domainElement.status == "ok"?domainElement?.returnedDomainElement?.elementValue:undefined;
+    testResult = resultTransformation
+      ? resultTransformation(domainElement, context)
+      : domainElement.status == "ok"
+      ? domainElement?.returnedDomainElement?.elementValue
+      : undefined;
     if (expectedDomainElementType) {
       if (domainElement.returnedDomainElement?.elementType != expectedDomainElementType) {
         expect(domainElement.returnedDomainElement?.elementType, stepName + "received result: " + domainElement.returnedDomainElement).toEqual(expectedDomainElementType) // fails
@@ -287,6 +291,7 @@ describe.sequential("localPersistenceStoreController.unit.test", () => {
         "a659d350-dd97-4da9-91de-524fa01745dc",
         "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
         "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+        "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
         "e4320b9e-ab45-4abe-85d8-359604b3c62f",
       ]
     );

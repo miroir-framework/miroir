@@ -182,9 +182,11 @@ export interface PersistenceStoreControllerInterface
   getDataState(): Promise<{ [uuid: string]: EntityInstanceCollection }>; // used only for testing purposes!
 
   // // instance interface differs from the one in AbstractInstanceStoreSectionInterface: it has an ApplicationSection as first parameter
+  getInstance(section: ApplicationSection, parentUuid: string, uuid: Uuid): Promise<ActionEntityInstanceReturnType>;
   getInstances(section: ApplicationSection, parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType>;
   upsertInstance(section: ApplicationSection, instance: EntityInstance): Promise<ActionVoidReturnType>;
   deleteInstance(section: ApplicationSection, instance: EntityInstance): Promise<ActionVoidReturnType>;
+  deleteInstances(section: ApplicationSection, instance: EntityInstance[]): Promise<ActionVoidReturnType>;
 
   handleAction(storeManagementAction: PersistenceStoreControllerAction): Promise<any>;
 }
