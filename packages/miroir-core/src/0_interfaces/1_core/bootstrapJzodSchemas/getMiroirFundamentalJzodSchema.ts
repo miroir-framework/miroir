@@ -716,16 +716,10 @@ export function getMiroirFundamentalJzodSchema(
               "definition": "any",
             },
             "storeSectionConfiguration": {
-              "type": "object",
+              "type": "record",
               "definition": {
-                "miroirServerConfig":{
-                  "type": "schemaReference",
-                  "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeUnitConfiguration"}
-                },
-                "appServerConfig":{
-                  "type": "schemaReference",
-                  "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeUnitConfiguration"}
-                }
+                "type": "schemaReference",
+                "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeUnitConfiguration"}
               }
             }
           }
@@ -741,13 +735,12 @@ export function getMiroirFundamentalJzodSchema(
               "type": "simpleType",
               "definition": "string",
             },
-            "miroirServerConfig":{
-              "type": "schemaReference",
-              "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeUnitConfiguration"}
-            },
-            "appServerConfig":{
-              "type": "schemaReference",
-              "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeUnitConfiguration"}
+            "deploymentStorageConfig": {
+              "type": "record",
+              "definition": {
+                "type": "schemaReference",
+                "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeUnitConfiguration"}
+              }
             }
           }
         },

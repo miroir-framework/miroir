@@ -38,6 +38,7 @@ import {
   persistenceEndpointVersionV1,
   PersistenceInterface,
   queryEndpointVersionV1,
+  StoreManagementAction,
   storeManagementEndpoint,
   undoRedoEndpointVersionV1
 } from "miroir-core";
@@ -219,25 +220,27 @@ export const RootComponent = (props: RootComponentProps) => {
                           actionName: "openStore",
                           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
                           configuration: {
-                            [applicationDeploymentMiroir.uuid]: miroirConfig.client.miroirServerConfig,
-                            [applicationDeploymentLibrary.uuid]: miroirConfig.client.appServerConfig,
+                            [applicationDeploymentMiroir.uuid]: miroirConfig.client.deploymentStorageConfig[applicationDeploymentMiroir.uuid],
+                            [applicationDeploymentLibrary.uuid]: miroirConfig.client.deploymentStorageConfig[applicationDeploymentLibrary.uuid],
                           },
                           deploymentUuid: applicationDeploymentMiroir.uuid,
                         });
                       } else {
                         const localMiroirConfig = miroirConfig.client as MiroirConfigForRestClient;
-                        await remoteStore.handlePersistenceAction({
+                        const openStoreAction:StoreManagementAction = {
                           actionType: "storeManagementAction",
                           actionName: "openStore",
                           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
                           configuration: {
                             [applicationDeploymentMiroir.uuid]:
-                              localMiroirConfig.serverConfig.storeSectionConfiguration.miroirServerConfig,
+                              localMiroirConfig.serverConfig.storeSectionConfiguration[applicationDeploymentMiroir.uuid],
                             [applicationDeploymentLibrary.uuid]:
-                              localMiroirConfig.serverConfig.storeSectionConfiguration.appServerConfig,
+                              localMiroirConfig.serverConfig.storeSectionConfiguration[applicationDeploymentLibrary.uuid],
                           },
                           deploymentUuid: applicationDeploymentMiroir.uuid,
-                        });
+                        }
+                        log.info("openStore openStoreAction",openStoreAction, "localMiroirConfig.serverConfig", localMiroirConfig.serverConfig);
+                        await remoteStore.handlePersistenceAction(openStoreAction);
                       }
 
                       // TODO: transactional action must not autocommit! initModel neither?!

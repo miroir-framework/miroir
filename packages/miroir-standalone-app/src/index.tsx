@@ -43,7 +43,7 @@ import { RootComponent } from "./miroir-fwk/4_view/components/RootComponent";
 import { ReportPage } from "./miroir-fwk/4_view/routes/ReportPage";
 import { miroirAppStartup } from "./startup";
 
-import { createReduxStoreAndPersistenceClient, PersistenceReduxSaga, LocalCache, RestPersistenceClientAndRestClient } from "miroir-localcache-redux";
+import { PersistenceReduxSaga, LocalCache, RestPersistenceClientAndRestClient } from "miroir-localcache-redux";
 import { packageName } from "./constants";
 import { cleanLevel } from "./miroir-fwk/4_view/constants";
 
@@ -315,8 +315,8 @@ async function start(root:Root) {
         actionName: "openStore",
         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         configuration: {
-          [applicationDeploymentMiroir.uuid]: (currentMiroirConfig.client as any).miroirServerConfig as StoreUnitConfiguration,
-          [applicationDeploymentLibrary.uuid]: (currentMiroirConfig.client as any).appServerConfig as StoreUnitConfiguration,
+          [applicationDeploymentMiroir.uuid]: currentMiroirConfig.client.deploymentStorageConfig[applicationDeploymentMiroir.uuid] as StoreUnitConfiguration,
+          [applicationDeploymentLibrary.uuid]: currentMiroirConfig.client.deploymentStorageConfig[applicationDeploymentLibrary.uuid] as StoreUnitConfiguration,
         },
         deploymentUuid: applicationDeploymentMiroir.uuid,
       };

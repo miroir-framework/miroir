@@ -2,32 +2,34 @@
   "client": {
     "emulateServer": true,
     "rootApiUrl":"http://localhost:3080",
-    "miroirServerConfig":{
-      "admin": {
-        "emulatedServerType": "indexedDb",
-        "indexedDbName":"miroir-uuid-indexedDb_model"
+    "deploymentStorageConfig": {
+      "10ff36f2-50a3-48d8-b80f-e48e5d13af8e":{
+        "admin": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName":"miroir-uuid-indexedDb_model"
+        },
+        "model": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName":"miroir-uuid-indexedDb_model"
+        },
+        "data": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName":"miroir-uuid-indexedDb_data"
+        }
       },
-      "model": {
-        "emulatedServerType": "indexedDb",
-        "indexedDbName":"miroir-uuid-indexedDb_model"
-      },
-      "data": {
-        "emulatedServerType": "indexedDb",
-        "indexedDbName":"miroir-uuid-indexedDb_data"
-      }
-    },
-    "appServerConfig": {
-      "admin": {
-        "emulatedServerType": "indexedDb",
-        "indexedDbName":"library-uuid-indexedDb_model"
-      },
-      "model": {
-        "emulatedServerType": "indexedDb",
-        "indexedDbName":"library-uuid-indexedDb_model"
-      },
-      "data": {
-        "emulatedServerType": "indexedDb",
-        "indexedDbName":"library-uuid-indexedDb_data"
+      "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": {
+        "admin": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName":"library-uuid-indexedDb_model"
+        },
+        "model": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName":"library-uuid-indexedDb_model"
+        },
+        "data": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName":"library-uuid-indexedDb_data"
+        }
       }
     }
   }

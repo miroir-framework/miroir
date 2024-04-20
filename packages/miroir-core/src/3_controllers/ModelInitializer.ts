@@ -206,54 +206,92 @@ export async function modelInitialize(
   }
 
   if (dataStoreType == 'app') {
-    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(entityEntity as MetaEntity,entityDefinitionEntity as EntityDefinition); //entityDefinition for entityEntity has not been inserted!
-  
-    log.info(logHeader, 'app initialized entity Entity',persistenceStoreController.getEntityUuids());
+    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+      entityEntity as MetaEntity,
+      entityDefinitionEntity as EntityDefinition
+    ); //entityDefinition for entityEntity has not been inserted!
+
+    log.info(logHeader, "app initialized entity Entity", persistenceStoreController.getEntityUuids());
 
     // bootstrap MetaClass EntityDefinition
-    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(entityEntityDefinition as MetaEntity, entityDefinitionEntityDefinition as EntityDefinition);
-    log.info(logHeader, 'app initialized entity Definition',persistenceStoreController.getEntityUuids());
+    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+      entityEntityDefinition as MetaEntity,
+      entityDefinitionEntityDefinition as EntityDefinition
+    );
+    log.info(logHeader, "app initialized entity Definition", persistenceStoreController.getEntityUuids());
 
     // bootstrap Application
-    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(entityApplication as MetaEntity, entityDefinitionApplication as EntityDefinition);
-    log.info(logHeader, 'app initialized entity Application',persistenceStoreController.getEntityUuids());
+    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+      entityApplication as MetaEntity,
+      entityDefinitionApplication as EntityDefinition
+    );
+    log.info(logHeader, "app initialized entity Application", persistenceStoreController.getEntityUuids());
 
     // bootstrap ApplicationModelBranch
-    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(entityApplicationModelBranch as MetaEntity, entityDefinitionApplicationModelBranch as EntityDefinition);
-    log.info(logHeader, 'app initialized entity ApplicationModelBranch',persistenceStoreController.getEntityUuids());
+    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+      entityApplicationModelBranch as MetaEntity,
+      entityDefinitionApplicationModelBranch as EntityDefinition
+    );
+    log.info(logHeader, "app initialized entity ApplicationModelBranch", persistenceStoreController.getEntityUuids());
 
     // bootstrap ApplicationVersion
-    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(entityApplicationVersion as MetaEntity, entityDefinitionApplicationVersion as EntityDefinition);
-    log.info(logHeader, 'app initialized entity ApplicationVersion',persistenceStoreController.getEntityUuids());
+    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+      entityApplicationVersion as MetaEntity,
+      entityDefinitionApplicationVersion as EntityDefinition
+    );
+    log.info(logHeader, "app initialized entity ApplicationVersion", persistenceStoreController.getEntityUuids());
 
     // bootstrap Application
-    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(entityApplicationDeploymentConfiguration as MetaEntity, entityDefinitionApplicationDeploymentConfiguration as EntityDefinition);
-    log.info(logHeader, 'app initialized entity ApplicationDeploymentConfiguration',persistenceStoreController.getEntityUuids());
+    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+      entityApplicationDeploymentConfiguration as MetaEntity,
+      entityDefinitionApplicationDeploymentConfiguration as EntityDefinition
+    );
+    log.info(
+      logHeader,
+      "app initialized entity ApplicationDeploymentConfiguration",
+      persistenceStoreController.getEntityUuids()
+    );
 
     // // bootstrap Endpoint
     // await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(entityEndpoint as MetaEntity, entityDefinitionEndpoint as EntityDefinition);
     // log.info(logHeader, 'app initialized entity Endpoint',persistenceStoreController.getEntityUuids());
 
     // bootstrap Endpoint
-    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(entityEndpointVersion as MetaEntity, entityDefinitionEndpoint as EntityDefinition);
-    log.info(logHeader, 'app initialized entity Endpoint',persistenceStoreController.getEntityUuids());
+    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+      entityEndpointVersion as MetaEntity,
+      entityDefinitionEndpoint as EntityDefinition
+    );
+    log.info(logHeader, "app initialized entity Endpoint", persistenceStoreController.getEntityUuids());
 
     // bootstrap EntityReport
-    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(entityReport as MetaEntity, entityDefinitionReport as EntityDefinition);
-    log.info(logHeader, 'app initialized entity Report',persistenceStoreController.getEntityUuids());
+    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+      entityReport as MetaEntity,
+      entityDefinitionReport as EntityDefinition
+    );
+    log.info(logHeader, "app initialized entity Report", persistenceStoreController.getEntityUuids());
 
     // bootstrap EntityStoreBasedConfiguration
-    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(entityStoreBasedConfiguration as MetaEntity, entityDefinitionStoreBasedConfiguration as EntityDefinition);
-    log.info(logHeader, 'app initialized entity StoreBasedConfiguration',persistenceStoreController.getEntityUuids());
+    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+      entityStoreBasedConfiguration as MetaEntity,
+      entityDefinitionStoreBasedConfiguration as EntityDefinition
+    );
+    log.info(logHeader, "app initialized entity StoreBasedConfiguration", persistenceStoreController.getEntityUuids());
 
-    await persistenceStoreController.upsertInstance('model', application);
-    await persistenceStoreController.upsertInstance('model', applicationDeploymentConfiguration);
-    await persistenceStoreController.upsertInstance('model', applicationModelBranch);
-    await persistenceStoreController.upsertInstance('model', applicationVersion);
-    await persistenceStoreController.upsertInstance('model', applicationStoreBasedConfiguration);
+    await persistenceStoreController.upsertInstance("model", application);
+    await persistenceStoreController.upsertInstance("model", applicationDeploymentConfiguration);
+    await persistenceStoreController.upsertInstance("model", applicationModelBranch);
+    await persistenceStoreController.upsertInstance("model", applicationVersion);
+    await persistenceStoreController.upsertInstance("model", applicationStoreBasedConfiguration);
   }
 
 
-  log.info(logHeader, 'modelInitialize done', JSON.stringify({model: await persistenceStoreController.getModelState(), data: await persistenceStoreController.getDataState()}));
+  log.info(
+    logHeader,
+    "modelInitialize done",
+    JSON.stringify({
+      model: await persistenceStoreController.getModelState(),
+      data: await persistenceStoreController.getDataState(),
+    })
+  );
   return Promise.resolve(undefined);
 }

@@ -58,7 +58,7 @@ const miroirConfig: MiroirConfigClient = {
         }
       },
       "storeSectionConfiguration": {
-        "miroirServerConfig":{
+        [applicationDeploymentMiroir.uuid]:{
           "admin": {
             "emulatedServerType": "sql",
             "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
@@ -75,7 +75,7 @@ const miroirConfig: MiroirConfigClient = {
             "schema": "miroir"
           }
         },
-        "appServerConfig": {
+        [applicationDeploymentLibrary.uuid]: {
           "admin": {
             "emulatedServerType": "sql",
             "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
@@ -251,7 +251,7 @@ export const ToolsPage: React.FC<any> = (
                 }
               },
               "storeSectionConfiguration": {
-                "miroirServerConfig":{
+                [applicationDeploymentMiroir.uuid]:{
                   "admin": {
                     "emulatedServerType": "sql",
                     "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
@@ -268,7 +268,7 @@ export const ToolsPage: React.FC<any> = (
                     "schema": values.applicationName + "miroir"
                   }
                 },
-                "appServerConfig": {
+                [applicationDeploymentLibrary.uuid]: {
                   "admin": {
                     "emulatedServerType": "sql",
                     "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
@@ -308,9 +308,9 @@ export const ToolsPage: React.FC<any> = (
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           configuration: {
             [applicationDeploymentMiroir.uuid]: (submitMiroirConfig.client as MiroirConfigForRestClient).serverConfig
-              .storeSectionConfiguration.miroirServerConfig as StoreUnitConfiguration,
+              .storeSectionConfiguration[applicationDeploymentMiroir.uuid] as StoreUnitConfiguration,
             [applicationDeploymentLibrary.uuid]: (submitMiroirConfig.client as MiroirConfigForRestClient).serverConfig
-              .storeSectionConfiguration.appServerConfig as StoreUnitConfiguration,
+              .storeSectionConfiguration[applicationDeploymentLibrary.uuid] as StoreUnitConfiguration,
           },
           deploymentUuid: applicationDeploymentMiroir.uuid,
         });
@@ -322,7 +322,7 @@ export const ToolsPage: React.FC<any> = (
             actionName: "createStore",
             endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
             deploymentUuid: applicationDeploymentLibrary.uuid,
-            configuration: (submitMiroirConfig.client as MiroirConfigForRestClient).serverConfig.storeSectionConfiguration.appServerConfig
+            configuration: (submitMiroirConfig.client as MiroirConfigForRestClient).serverConfig.storeSectionConfiguration[applicationDeploymentLibrary.uuid]
           }
         )
         if (createdApplicationLibraryStore?.status != "ok") {
@@ -335,7 +335,7 @@ export const ToolsPage: React.FC<any> = (
             actionName: "createStore",
             endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
             deploymentUuid: applicationDeploymentMiroir.uuid,
-            configuration: (submitMiroirConfig.client as MiroirConfigForRestClient).serverConfig.storeSectionConfiguration.miroirServerConfig
+            configuration: (submitMiroirConfig.client as MiroirConfigForRestClient).serverConfig.storeSectionConfiguration[applicationDeploymentMiroir.uuid]
           }
         )
         if (createdMiroirStore?.status != "ok") {

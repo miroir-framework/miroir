@@ -6,11 +6,14 @@ import {
   ConfigurationService,
   LoggerFactoryInterface,
   LoggerInterface,
+  MiroirConfigClient,
   MiroirConfigServer,
   MiroirLoggerFactory,
   PersistenceStoreControllerManager,
   RestClient,
   SpecificLoggerOptionsMap,
+  applicationDeploymentLibrary,
+  applicationDeploymentMiroir,
   defaultLevels,
   getLoggerName,
   miroirCoreStartup,
@@ -23,7 +26,7 @@ import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 
 import { readFileSync } from 'fs';
 import log from 'loglevelnext';
-import { LocalCache, PersistenceReduxSaga, RestPersistenceClientAndRestClient } from 'miroir-localcache-redux';
+import { LocalCache, PersistenceReduxSaga } from 'miroir-localcache-redux';
 
 const packageName = "server"
 const cleanLevel = "5"
@@ -44,7 +47,58 @@ MiroirLoggerFactory.setEffectiveLoggerFactory(
   specificLoggerOptions,
 );
 
-
+const serverStoreConfig:MiroirConfigClient = {
+  "client": {
+    "emulateServer": false,
+    "serverConfig":{
+      "rootApiUrl":"http://localhost:3080",
+      "dataflowConfiguration": {
+        "type":"singleNode",
+        "metaModel": {
+          "location": {
+            "side":"server",
+            "type": "filesystem",
+            "location":"../miroir-core/src/assets"
+          }
+        }
+      },
+      "storeSectionConfiguration": {
+        [applicationDeploymentMiroir.uuid]:{
+          "admin": {
+            "emulatedServerType": "filesystem",
+            "directory":"../miroir-core/src/assets/admin"
+          },
+          "model": {
+            "emulatedServerType": "filesystem",
+            "directory":"../miroir-core/src/assets/miroir_model"
+          },
+          "data": {
+            "emulatedServerType": "filesystem",
+            "directory":"../miroir-core/src/assets/miroir_data"
+          }
+        },
+        [applicationDeploymentLibrary.uuid]: {
+          "admin": {
+            "emulatedServerType": "filesystem",
+            "directory":"../miroir-core/src/assets/admin"
+          },
+          "model": {
+            "emulatedServerType": "filesystem",
+            "directory":"../miroir-core/src/assets/library_model"
+          },
+          "data": {
+            "emulatedServerType": "filesystem",
+            "directory":"../miroir-core/src/assets/library_data"
+          }
+        }
+      }
+    },
+    // "deploymentMode":"monoUser",
+    // "monoUserAutentification": false,
+    // "monoUserVersionControl": false,
+    // "versionControlForDataConceptLevel": false
+  }
+}
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"Server");
 let myLogger:LoggerInterface = console as any as LoggerInterface;
@@ -65,7 +119,6 @@ const portFromConfig: number = Number(miroirConfig.server.rootApiUrl.substring(m
 
 const app = express();
 app.use(express.json({limit: '50mb'}));
-// app.use(express.bodyParser({limit: '50mb'}))
 myLogger.info(`Server being set-up, going to execute on the port::${portFromConfig}`);
 
 miroirCoreStartup();
@@ -74,10 +127,9 @@ miroirIndexedDbStoreSectionStartup();
 miroirPostgresStoreSectionStartup();
 
 
-// const { localCache: mReduxStore } = await createReduxStoreAndPersistenceClient("", fetch);
 
 const client: RestClient = new RestClient(fetch);
-const persistenceClientAndRestClient = new RestPersistenceClientAndRestClient("", client);
+// const persistenceClientAndRestClient = new RestPersistenceClientAndRestClient("", client);
 
 const localCache: LocalCache = new LocalCache();
 

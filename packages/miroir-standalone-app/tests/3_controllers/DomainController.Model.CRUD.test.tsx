@@ -133,13 +133,14 @@ afterEach(
 describe.sequential(
   'DomainController.Model.CRUD',
   () => {
+
     // ###########################################################################################
     it('Refresh all Entity definitions',
       async () => {
         console.log('Refresh all Entity definitions start');
         const displayLoadingInfo=<DisplayLoadingInfo/>
         const user = userEvent.setup()
-
+  
         try {
           const {
             getByText,
@@ -184,11 +185,14 @@ describe.sequential(
             ()=> {
               expect(getByText(new RegExp(`${entityReport.uuid}`,'i'))).toBeTruthy() // Report
               expect(getByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy() // Entity
+              // expect(getByText(new RegExp(`${entityBook.uuid}`,'i'))).toBeTruthy() // Entity
+              // expect(false,'success during test ' +  expect.getState().currentTestName).toBeTruthy();
             }
           );
         } catch (error) {
-          console.error('error during test',expect.getState().currentTestName,error);
-          expect(false).toBeTruthy();
+          // console.error('error during test',expect.getState().currentTestName,"ERROR:", error);
+          // expect(true).toBeTruthy();
+          expect(false,'error during test ' +  expect.getState().currentTestName + " ERROR: " + error).toBeTruthy();
         }
         expect(true).toBeTruthy() // Entity
       }
@@ -336,7 +340,7 @@ describe.sequential(
         }
       }
     )
-
+  
     // ###########################################################################################
     it('Add entity then commit',
       async () => {
@@ -1425,5 +1429,6 @@ describe.sequential(
       },
       10000
     )
+
   }
 )

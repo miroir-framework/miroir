@@ -178,8 +178,8 @@ describe.sequential("localPersistenceStoreController.unit.test", () => {
   // // it(
   // //   "Delete miroir2 store or remove existing store", async () => { // TODO: test failure cases!
   // //     if (miroirConfig.client.emulateServer) {
-  // //       const testResult: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(miroirConfig.client.miroirServerConfig.model)
-  // //       const testResult2: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(miroirConfig.client.miroirServerConfig.data)
+  // //       const testResult: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(miroirConfig.client[applicationDeploymentMiroir.uuid].model)
+  // //       const testResult2: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(miroirConfig.client[applicationDeploymentMiroir.uuid].data)
   // //       expect(testResult).toEqual(ACTION_OK)
   // //       expect(testResult2).toEqual(ACTION_OK)
   // //     } else {
@@ -193,11 +193,11 @@ describe.sequential("localPersistenceStoreController.unit.test", () => {
     "Create miroir2 store", async () => { // TODO: test failure cases!
       if (miroirConfig.client.emulateServer) {
         console.log("Create miroir2 store START")
-        const testResult: ActionReturnType = await localMiroirPersistenceStoreController.createStore(miroirConfig.client.miroirServerConfig.model)
-        const testResult2: ActionReturnType = await localMiroirPersistenceStoreController.createStore(miroirConfig.client.miroirServerConfig.data)
+        const testResult: ActionReturnType = await localMiroirPersistenceStoreController.createStore(miroirConfig.client[applicationDeploymentMiroir.uuid].model)
+        const testResult2: ActionReturnType = await localMiroirPersistenceStoreController.createStore(miroirConfig.client[applicationDeploymentMiroir.uuid].data)
         //cleanup
-        const testResult3: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(miroirConfig.client.miroirServerConfig.model)
-        const testResult4: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(miroirConfig.client.miroirServerConfig.data)
+        const testResult3: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(miroirConfig.client[applicationDeploymentMiroir.uuid].model)
+        const testResult4: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(miroirConfig.client[applicationDeploymentMiroir.uuid].data)
         // test
         expect(testResult).toEqual(ACTION_OK)
         expect(testResult2).toEqual(ACTION_OK)
@@ -220,7 +220,7 @@ describe.sequential("localPersistenceStoreController.unit.test", () => {
         const deployMiroir = await persistenceStoreControllerManager.deployModule(
           localMiroirPersistenceStoreController,
           newMiroirDeploymentUuid,
-          miroirConfig.client.miroirServerConfig,
+          miroirConfig.client[applicationDeploymentMiroir.uuid],
           {
             metaModel: defaultMiroirMetaModel,
             dataStoreType: 'miroir',
@@ -234,7 +234,7 @@ describe.sequential("localPersistenceStoreController.unit.test", () => {
         const deployApp = await persistenceStoreControllerManager.deployModule(
           localMiroirPersistenceStoreController,
           newLibraryDeploymentUuid,
-          miroirConfig.client.appServerConfig,
+          miroirConfig.client[applicationDeploymentLibrary.uuid],
           {
             metaModel: defaultMiroirMetaModel,
             dataStoreType: 'app',

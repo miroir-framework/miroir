@@ -135,10 +135,7 @@ export async function storeActionOrBundleActionStoreRunner(
       // await persistenceStoreControllerManager.addPersistenceStoreController(action.deploymentUuid, action.configuration)
       const miroirModelStoreCreated: ActionReturnType = await localAppPersistenceStoreController.createStore(action.configuration.model)
       const miroirDataStoreCreated: ActionReturnType = await localAppPersistenceStoreController.createStore(action.configuration.data)
-      // const libraryModelStoreCreated: ActionReturnType = await localMiroirPersistenceStoreController.createStore(miroirConfig.client.appServerConfig.model)
-      // const libraryDataStoreCreated: ActionReturnType = await localMiroirPersistenceStoreController.createStore(miroirConfig.client.appServerConfig.data)
 
-      // .createStore(miroirConfig.client.miroirServerConfig.model)
       if (miroirModelStoreCreated.status != "ok" || miroirDataStoreCreated.status != "ok") {
         return {
           status: "error",
