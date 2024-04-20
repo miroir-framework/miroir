@@ -671,6 +671,7 @@ export function getMiroirFundamentalJzodSchema(
         },
         "storeSectionConfiguration": {
           "type": "union",
+          "discriminator": "emulatedServerType",
           "definition": [
             {
               "type": "schemaReference",

@@ -187,6 +187,7 @@ export const HomePage = (props: RootComponentProps) => {
     <div>
       {/* <PersistentDrawerLeft></PersistentDrawerLeft> */}
       {/* <Box sx={{ display: 'flex' }}> */}
+      {/* undo */}
       <span>
         <button
           onClick={async () => {
@@ -201,6 +202,7 @@ export const HomePage = (props: RootComponentProps) => {
           undo
         </button>
       </span>
+      {/* redo */}
       <span>
         <button
           onClick={async () => {
@@ -215,6 +217,7 @@ export const HomePage = (props: RootComponentProps) => {
           Redo
         </button>
       </span>
+      {/* commit miroir */}
       <span>
         <button
           onClick={async () => {
@@ -232,6 +235,7 @@ export const HomePage = (props: RootComponentProps) => {
           Commit Miroir
         </button>
       </span>
+      {/* Commit Library app */}
       <span>
         <button
           onClick={async () => {
@@ -249,6 +253,7 @@ export const HomePage = (props: RootComponentProps) => {
           Commit Library app
         </button>
       </span>
+      {/* rollback */}
       <span>
         <button
           onClick={async () => {
@@ -264,9 +269,11 @@ export const HomePage = (props: RootComponentProps) => {
         </button>
       </span>
       <p />
+      {/* Reset Application database */}
       <span>
         <button
-          onClick={ async () =>resetAndInitMiroirAndApplicationDatabase.bind(domainController)
+          onClick={
+            async () =>resetAndInitMiroirAndApplicationDatabase.bind(domainController)
           //   async () => {
           //   await domainController.handleAction({
           //     actionType: "DomainTransactionalInstanceAction",
@@ -293,6 +300,7 @@ export const HomePage = (props: RootComponentProps) => {
           Reset Application database
         </button>
       </span>
+      {/* Reset Library Application Data */}
       <span>
         <button
           onClick={async () => {
@@ -348,6 +356,7 @@ export const HomePage = (props: RootComponentProps) => {
           upload App configuration to database
         </button>
       </span> */}
+      {/* Modify Book entity name */}
       <span>
         <button
           onClick={async () => {
@@ -369,6 +378,7 @@ export const HomePage = (props: RootComponentProps) => {
           Modify Book entity name
         </button>
       </span>
+      {/* modify report list name */}
       <span>
         <button
           onClick={async () => {
@@ -403,6 +413,7 @@ export const HomePage = (props: RootComponentProps) => {
           Modify Report List name
         </button>
       </span>
+      {/* remove author entity */}
       <span>
         <button
           onClick={async () => {

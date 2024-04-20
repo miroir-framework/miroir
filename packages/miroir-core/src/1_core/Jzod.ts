@@ -648,16 +648,7 @@ export function resolveJzodSchemaReference2(
   miroirMetaModel?: MetaModel,
   relativeReferenceJzodContext?: {[k:string]: JzodElement},
 ): JzodElement {
-  // const fundamentalJzodSchemas = miroirFundamentalJzodSchema.definition.context
-  // const absoluteReferences: {[k:string]: JzodElement} = (currentModel
-  //   // ? (currentModel as any).jzodSchemas
-  //   // : []
-  //   ? {...(miroirFundamentalJzodSchema.definition.context), ...(currentModel as any).jzodSchemas} // very inefficient!
-  //   : {...miroirFundamentalJzodSchema.definition.context}
-  // )
   const absoluteReferences = (currentModel
-    // ? (currentModel as any).jzodSchemas
-    // : []
     ? [miroirFundamentalJzodSchema, ...(currentModel as any).jzodSchemas, ...(miroirMetaModel as any).jzodSchemas] // very inefficient!
     : [miroirFundamentalJzodSchema]
   )
@@ -693,6 +684,8 @@ export function resolveJzodSchemaReference2(
       jzodReference,
       "result",
       targetJzodSchema,
+      "absoluteReferences",
+      absoluteReferences,
       "currentModel",
       currentModel,
       "miroirFundamentalJzodSchema", 

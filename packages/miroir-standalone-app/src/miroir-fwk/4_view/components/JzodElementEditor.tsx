@@ -150,9 +150,7 @@ export const ExpandOrFold = (
 
 // ################################################################################################
 function getValue(valueObject:any, path: string[]) {
-  // if (path.length > 0) {
-    // const length = path.length
-    log.info("getValue called with", valueObject, "path", path)
+    // log.info("getValue called with", valueObject, "path", path)
     return path.reduce((acc, curr, index) => {
       if (index == path.length && (acc == undefined || acc[curr] == undefined)) {
         throw new Error(
@@ -170,13 +168,7 @@ function getValue(valueObject:any, path: string[]) {
       } else {
         return acc[curr];
       }
-      // if (acc) {
-      // } else {
-      // }
     }, valueObject);
-    // } else {
-  //   return valueObject
-  // }
 }
 let count = 0;
 // #####################################################################################################
@@ -195,24 +187,24 @@ export const JzodElementEditor = (
   const displayedLabel: string = props.label??props.name;
 
   const usedIndentLevel: number = props.indentLevel?props.indentLevel:0;
-  log.info(
-    "rendering",
-    props.listKey,
-    "type=",
-    props.resolvedJzodSchema?.type,
-    "jzodSchema=",
-    props.resolvedJzodSchema,
-    "props=",
-    props
-  );
+  // log.info(
+  //   "rendering",
+  //   props.listKey,
+  //   "type=",
+  //   props.resolvedJzodSchema?.type,
+  //   "jzodSchema=",
+  //   props.resolvedJzodSchema,
+  //   "props=",
+  //   props
+  // );
 
   const currentValue = getValue(props.formik.values,props.rootLesslistKeyArray);
-  log.info(
-    "rendering",
-    props.listKey,
-    "currentValue",
-    currentValue,
-  );
+  // log.info(
+  //   "rendering",
+  //   props.listKey,
+  //   "currentValue",
+  //   currentValue,
+  // );
 
   const [itemsOrder, setItemsOrder] = useState<any[]>(
     props.resolvedJzodSchema?.type == "object" && typeof(currentValue) == "object" && currentValue !== null?
@@ -223,12 +215,12 @@ export const JzodElementEditor = (
       )
   );
 
-  log.info(
-    "rendering",
-    props.listKey,
-    "itemsOrder",
-    itemsOrder,
-  );
+  // log.info(
+  //   "rendering",
+  //   props.listKey,
+  //   "itemsOrder",
+  //   itemsOrder,
+  // );
   
   if (props.resolvedJzodSchema) {
     switch (props.resolvedJzodSchema.type) {
@@ -417,7 +409,7 @@ export const JzodElementEditor = (
               : []
             ;
 
-            log.info("selectList for targetEntity", props.resolvedJzodSchema.extra?.targetEntity, "value", selectList, "props.foreignKeyObjects", props.foreignKeyObjects);
+            // log.info("selectList for targetEntity", props.resolvedJzodSchema.extra?.targetEntity, "value", selectList, "props.foreignKeyObjects", props.foreignKeyObjects);
 
             return props.resolvedJzodSchema.extra?.targetEntity ? (
               <>
