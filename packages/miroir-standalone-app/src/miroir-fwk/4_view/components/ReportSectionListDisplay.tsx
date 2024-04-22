@@ -36,6 +36,7 @@ import {
   entityEntity,
   entityEntityDefinition,
   entityReport,
+  getApplicationSection,
   getDeploymentEntityStateSelectorParams,
   getLoggerName,
   jzodObject,
@@ -344,23 +345,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     ]
   );
 
-  const getApplicationSection = (
-    deploymentUUid: string,
-    entityUuid: string,
-  ):ApplicationSection => {
-    if (deploymentUUid == applicationDeploymentMiroir.uuid) {
-      return entityUuid == entityEntity.uuid || entityUuid == entityEntityDefinition.uuid?"model":"data"
-    } else {
-      return entityUuid == entityEntity.uuid ||
-        entityUuid == entityEntityDefinition.uuid ||
-        entityUuid == entityReport.uuid ||
-        entityUuid == entityApplication.uuid
-      ?
-      "model":"data"
-
-    }
-  }
-
   const foreignKeyObjectsFetchQueryParams: QuerySelectorParams<
     DomainManyQueriesWithDeploymentUuid,
     DeploymentEntityState
@@ -404,8 +388,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   );
 
   log.info(
-    "@@@@@@@@@@@@@@@@@@@@@@@ ReportSectionListDisplay rendering",
-    count,
     "foreignKeyObjectsAttributeDefinition",
     foreignKeyObjectsAttributeDefinition,
     "foreignKeyObjectsFetchQueryParams",
@@ -797,7 +779,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           <span>No elements in the report</span>
         )
       ) : (
-        <span style={{color: "red"}}>no report to display: {JSON.stringify(props.section)}</span>
+        <span style={{color: "red"}}>ReportSectionListDisplay, no report to display: {JSON.stringify(props.section)}</span>
       )}
     </div>
   );

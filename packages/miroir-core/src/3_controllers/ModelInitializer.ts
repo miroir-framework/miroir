@@ -69,25 +69,6 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   }
 );
 
-export const metaModelEntities: MetaEntity[] = [
-  entityApplication,
-  entityApplicationDeploymentConfiguration, // TODO: remove, deployments are not part of applications, they are external to them, belonging to a separate application, which contents is specific to each node (no transactions / historization)
-  entityApplicationModelBranch,
-  entityApplicationVersion,
-  entityEntity,
-  entityEntityDefinition,
-  entityReport,
-  entityStoreBasedConfiguration,
-] as MetaEntity[];
-
-// console.log("metaModelEntities", metaModelEntities)
-
-export const miroirModelEntities: MetaEntity[] = metaModelEntities.filter((e:MetaEntity)=>{
-  // console.log("filtering metaModelEntities entity", e)
-  return e.conceptLevel == "MetaModel"
-});
-
-export const applicationModelEntities: MetaEntity[] = metaModelEntities.filter((e:MetaEntity)=>e.conceptLevel != "MetaModel");
 
 export async function modelInitialize(
   metaModel:MetaModel,

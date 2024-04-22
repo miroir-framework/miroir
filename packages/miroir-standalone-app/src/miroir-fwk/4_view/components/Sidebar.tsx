@@ -15,6 +15,8 @@ import { Link } from 'react-router-dom';
 import { AutoStories } from '@mui/icons-material';
 import { Icon } from '@mui/material';
 import {
+  applicationDeploymentAdmin,
+  applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   DeploymentEntityState,
   DomainElementObject,
@@ -22,6 +24,8 @@ import {
   getDeploymentEntityStateSelectorParams,
   getLoggerName,
   LoggerInterface,
+  menuDefaultAdmin,
+  menuDefaultLibrary,
   menuDefaultMiroir,
   MiroirLoggerFactory,
   MiroirSelectorQueryParams,
@@ -29,10 +33,11 @@ import {
   QuerySelectorParams
 } from "miroir-core";
 import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
-import { useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import { packageName } from '../../../constants';
 import { cleanLevel } from '../constants';
 import { useDeploymentEntityStateQuerySelector } from '../ReduxHooks';
+import { SidebarSection } from './SidebarSection';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"Sidebar");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -113,33 +118,6 @@ const sideBarDefaultItems = [
     reportUuid: "",
     "icon": "south",
   },
-  // {
-  //   label: "Miroir Entities",
-  //   section: "model",
-  //   application: applicationDeploymentMiroir.uuid,
-  //   reportUuid: reportEntityList.uuid,
-  //   "icon": "category",
-  // },
-  // {
-  //   label: "Miroir Reports",
-  //   section: "data",
-  //   application: applicationDeploymentMiroir.uuid,
-  //   reportUuid: reportReportList.uuid,
-  // },
-  // {
-  //   label: "Miroir Menus",
-  //   section: "data",
-  //   application: applicationDeploymentMiroir.uuid,
-  //   reportUuid: reportMenuList.uuid,
-  //   "icon": "category",
-  // },
-  // {
-  //   label: "Library Books",
-  //   section: "data",
-  //   application: applicationDeploymentLibrary.uuid,
-  //   reportUuid: reportBookList.uuid,
-  // }
-  // {
 ];
 
 let count = 0;
@@ -155,62 +133,58 @@ const muiIcons = {
 //    const Icon = icon && MUIcon[icon];
 //    return ({Icon && <Icon />})
 // }
-export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
+export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
   count++;
   const theme = useTheme();
 
-  // const domainController: DomainControllerInterface = useDomainControllerService();
-  // const miroirConfig = context.getMiroirConfig();
-  // const context = useMiroirContext();
+  // const deploymentEntityStateSelectorMap: QuerySelectorMap<DeploymentEntityState> = useMemo(
+  //   () => getMemoizedDeploymentEntityStateSelectorMap(),
+  //   []
+  // )
 
-  const deploymentEntityStateSelectorMap: QuerySelectorMap<DeploymentEntityState> = useMemo(
-    () => getMemoizedDeploymentEntityStateSelectorMap(),
-    []
-  )
+  // const FetchMiroirMenusQueryParams: QuerySelectorParams<DomainManyQueriesWithDeploymentUuid, DeploymentEntityState> = useMemo(
+  //   () => 
+  //   getDeploymentEntityStateSelectorParams<DomainManyQueriesWithDeploymentUuid>({
+  //     queryType: "DomainManyQueries",
+  //     deploymentUuid: applicationDeploymentMiroir.uuid,
+  //     // applicationSection: "data",
+  //     pageParams: { elementType: "object", elementValue: {} },
+  //     queryParams: { elementType: "object", elementValue: {} },
+  //     contextResults: { elementType: "object", elementValue: {} },
+  //     fetchQuery: {
+  //       select: {
+  //         menus: {
+  //           queryType: "selectObjectByDirectReference",
+  //           parentName: "Menu",
+  //           parentUuid: {
+  //             referenceType: "constant",
+  //             referenceUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+  //           },
+  //           instanceUuid: {
+  //             referenceType: "constant",
+  //             referenceUuid: menuDefaultMiroir.uuid,
+  //           }
+  //         },
+  //       },
+  //     },
+  //   }, deploymentEntityStateSelectorMap),
+  //   [deploymentEntityStateSelectorMap]
+  // );
 
-  const deploymentEntityStateFetchQueryParams: QuerySelectorParams<DomainManyQueriesWithDeploymentUuid, DeploymentEntityState> = useMemo(
-    () => 
-    getDeploymentEntityStateSelectorParams<DomainManyQueriesWithDeploymentUuid>({
-      queryType: "DomainManyQueries",
-      deploymentUuid: applicationDeploymentMiroir.uuid,
-      // applicationSection: "data",
-      pageParams: { elementType: "object", elementValue: {} },
-      queryParams: { elementType: "object", elementValue: {} },
-      contextResults: { elementType: "object", elementValue: {} },
-      fetchQuery: {
-        select: {
-          menus: {
-            queryType: "selectObjectByDirectReference",
-            parentName: "Menu",
-            parentUuid: {
-              referenceType: "constant",
-              referenceUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
-            },
-            instanceUuid: {
-              referenceType: "constant",
-              referenceUuid: menuDefaultMiroir.uuid,
-            }
-          },
-        },
-      },
-    }, deploymentEntityStateSelectorMap),
-    [deploymentEntityStateSelectorMap]
-  );
+  // const miroirMenusDomainElementObject: DomainElementObject = useDeploymentEntityStateQuerySelector(
+  //   deploymentEntityStateSelectorMap.selectByDomainManyQueries,
+  //   FetchMiroirMenusQueryParams
+  // );
 
-  const deploymentEntityStateDomainElementObject: DomainElementObject = useDeploymentEntityStateQuerySelector(
-    deploymentEntityStateSelectorMap.selectByDomainManyQueries,
-    deploymentEntityStateFetchQueryParams
-  );
-
-  log.info("deploymentEntityStateDomainElementObject",deploymentEntityStateDomainElementObject)
-  // const defaultMiroirMenu = (domainElementObject?.elementValue?.menus?.elementValue as any)?.definition;
-  console.log(
-    "Sidebar refresh",
-    count++,
-    "found miroir menu:",
-    deploymentEntityStateDomainElementObject,
-    deploymentEntityStateDomainElementObject?.elementValue?.menus?.elementValue
-  );
+  // log.info("deploymentEntityStateDomainElementObject",miroirMenusDomainElementObject)
+  // // const defaultMiroirMenu = (domainElementObject?.elementValue?.menus?.elementValue as any)?.definition;
+  // console.log(
+  //   "Sidebar refresh",
+  //   count++,
+  //   "found miroir menu:",
+  //   miroirMenusDomainElementObject,
+  //   miroirMenusDomainElementObject?.elementValue?.menus?.elementValue
+  // );
   const drawerSx = useMemo(()=>({flexDirection:'column'}),[])
   const styledDrawerSx = useMemo(()=>({alignItems: "end"}),[])
 
@@ -231,19 +205,42 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
       </StyledDrawerHeader>
       count: {count}
       <Divider />
+      <SidebarSection
+        deploymentUuid={applicationDeploymentMiroir.uuid}
+        menuUuid={menuDefaultMiroir.uuid}
+        open={props.open}
+        setOpen={props.setOpen}
+      >
+      </SidebarSection>
+      <Divider />
+      <SidebarSection
+        deploymentUuid={applicationDeploymentLibrary.uuid}
+        menuUuid={menuDefaultLibrary.uuid}
+        open={props.open}
+        setOpen={props.setOpen}
+      >
+      </SidebarSection>
+      <Divider />
+      <SidebarSection
+        deploymentUuid={applicationDeploymentAdmin.uuid}
+        menuUuid={menuDefaultAdmin.uuid}
+        open={props.open}
+        setOpen={props.setOpen}
+      >
+      </SidebarSection>
+
         {/* {sideBarDefaultItems.map((i: any, index: number) => ( */}
         {/* TODO: DRY the menuSection display!*/}
-        {
-          !(deploymentEntityStateDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.menuType ||
-          (deploymentEntityStateDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.menuType == "simpleMenu"?
+        {/* {
+          !(miroirMenusDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.menuType ||
+          (miroirMenusDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.menuType == "simpleMenu"?
           <List disablePadding dense>
             {(
-              (deploymentEntityStateDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.definition ?? sideBarDefaultItems
+              (miroirMenusDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.definition ?? sideBarDefaultItems
               ).map((i: any, index: number) => (
               <ListItem key={i.label} disablePadding>
                 <ListItemButton sx={{padding: 0}} component={Link} to={`/report/${i.application}/${i.section}/${i.reportUuid}/xxxxxx`}>
                   <ListItemIcon>
-                    {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
                     <Icon>{i.icon}</Icon>
                   </ListItemIcon>
                   <ListItemText primary={i.label} />
@@ -254,14 +251,13 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
           :
           <List disablePadding dense>
             {(
-              (deploymentEntityStateDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.definition ?? []
+              (miroirMenusDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.definition ?? []
               ).flatMap((menuSection: any, index: number) => (
                 menuSection.items.map(
                   (curr:any, index: number) => (
                     <ListItem key={curr.label + index} disablePadding>
                       <ListItemButton component={Link} to={`/report/${curr.application}/${curr.section}/${curr.reportUuid}/xxxxxx`}>
                         <ListItemIcon>
-                          {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
                           <Icon>{curr.icon}</Icon>
                         </ListItemIcon>
                         <ListItemText primary={curr.label} />
@@ -272,21 +268,8 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
               )
             )}
           </List>
-        }
+        } */}
       <Divider />
-      {/* <List>
-        {['All mail', 'Trash', 'Spam'].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List> */}
-      {/* </MuiDrawer> */}
     </StyledDrawer>
   );
 }

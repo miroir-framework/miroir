@@ -41,7 +41,7 @@ import { packageName } from '../constants.js';
 import { getLoggerName } from '../tools';
 import { Endpoint } from './Endpoint.js';
 import { CallUtils } from './ErrorHandling/CallUtils.js';
-import { metaModelEntities, miroirModelEntities } from './ModelInitializer';
+import { metaModelEntities, miroirModelEntities } from '../1_core/Model.js';
 import { cleanLevel } from './constants.js';
 import { ACTION_OK } from '../1_core/constants.js';
 import { resolveContextReference } from '../2_domain/QuerySelectors.js';

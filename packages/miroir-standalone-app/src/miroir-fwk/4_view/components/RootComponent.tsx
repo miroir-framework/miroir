@@ -50,7 +50,8 @@ import { ReportUrlParamKeys } from '../routes/ReportPage';
 
 import { packageName } from '../../../constants';
 import { cleanLevel } from '../constants';
-import { Sidebar, SidebarWidth } from "./Sidebar";
+import { SidebarSection, SidebarWidth } from "./SidebarSection";
+import { Sidebar } from "./Sidebar";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RootComponent");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -199,6 +200,7 @@ export const RootComponent = (props: RootComponentProps) => {
           </Grid>
           <Grid item container>
             <Grid item>
+              {/* <SidebarSection open={drawerIsOpen} setOpen={setDrawerIsOpen}></SidebarSection> */}
               <Sidebar open={drawerIsOpen} setOpen={setDrawerIsOpen}></Sidebar>
             </Grid>
             <Grid item>

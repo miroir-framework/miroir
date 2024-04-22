@@ -372,7 +372,7 @@ export function innerSelectElementFromQuery<StateType>(
           singleSelectQuery: {
             queryType: "domainSingleSelectQueryWithDeployment",
             deploymentUuid: deploymentUuid,
-            select: query.applicationSection
+            select: query.applicationSection // TODO: UGLY!!! WHERE IS THE APPLICATION SECTION PLACED?
             ? query
             : {
                 ...query,

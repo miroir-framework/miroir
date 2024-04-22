@@ -369,15 +369,21 @@ export {
   StoreSectionFactory,
   StoreSectionFactoryRegister,
 } from "./0_interfaces/4-services/PersistenceStoreControllerInterface.js";
+export {
+  getApplicationSection
+} from './1_core/Application.js';
 export { } from './1_core/Report.js';
 export { ACTION_OK } from './1_core/constants.js';
 export { DomainController } from './3_controllers/DomainController';
 export { DomainInstanceUuidIndexToArray } from './1_core/DomainState.js';
 export {
+  applicationModelEntities,
   defaultMiroirMetaModel,
   getCurrentEntityDefinition,
   getDeploymentUuidToReportsEntitiesDefinitionsMapping,
- } from './1_core/Model.js';
+  metaModelEntities,
+  miroirModelEntities,
+} from './1_core/Model.js';
 export {
   // getReportSectionTargetEntityUuid,
 } from './1_core/Report.js';
@@ -464,9 +470,6 @@ export {
 } from './3_controllers/ActionRunner.js';
 export {
   modelInitialize,
-  applicationModelEntities,
-  metaModelEntities,
-  miroirModelEntities,
 } from './3_controllers/ModelInitializer.js';
 export { ErrorLogService } from './3_controllers/ErrorHandling/ErrorLogService.js';
 export { CallUtils } from './3_controllers/ErrorHandling/CallUtils.js';
@@ -689,6 +692,8 @@ import applicationStoreBasedConfigurationLibrary from "./assets/library_model/79
 import applicationVersionLibraryInitialVersion from "./assets/library_model/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/419773b4-a73c-46ca-8913-0ee27fb2ce0a.json";
 import applicationModelBranchLibraryMasterBranch from "./assets/library_model/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json";
 
+import menuDefaultLibrary from "./assets/library_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/dd168e5a-2a21-4d2d-a443-032c6d15eb22.json";
+
 import reportAuthorDetails from "./assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/6d9faa54-643c-4aec-87c3-32635ad95902.json";
 import reportBookDetails from "./assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/c3503412-3d8a-43ef-a168-aa36e975e606.json";
 import reportCountryList from "./assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/08176cc7-43ae-4fca-91b7-bf869d19e4b9.json";
@@ -723,6 +728,8 @@ export {
   entityDefinitionCountry,
   entityDefinitionPublisher,
   // entityDefinitionTest,
+  menuDefaultLibrary,
+  // 
   reportAuthorList,
   reportAuthorDetails,
   reportBookList,
@@ -756,6 +763,11 @@ export {
 };
 
 
+import menuDefaultAdmin from "./assets/admin_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/dd168e5a-2a21-4d2d-a443-032c6d15eb22.json";
+
+export {
+  menuDefaultAdmin
+}
 
 // const myDefaultExport = "Miroir-core default export"
 export default {

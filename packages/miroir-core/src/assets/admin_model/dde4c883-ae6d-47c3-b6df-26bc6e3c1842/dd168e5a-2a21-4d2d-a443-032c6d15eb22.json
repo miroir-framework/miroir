@@ -1,0 +1,26 @@
+{
+  "uuid": "dd168e5a-2a21-4d2d-a443-032c6d15eb22",
+  "parentName": "Menu",
+  "parentUuid": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+  "name": "MiroirMenu",
+  "defaultLabel": "Meta-Model",
+  "description": "This is the default menu allowing to explore the Miroir Meta-Model.",
+  "definition": {
+    "menuType": "complexMenu",
+    "definition": [
+      {
+        "title": "Admin",
+        "label": "admin",
+        "items": [
+          {
+            "label": "Deployments",
+            "section": "data",
+            "application": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+            "reportUuid": "e4488cba-b743-4b46-80e5-18c441c9882c",
+            "icon": "storage"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -17,7 +17,7 @@ import { LoggerInterface, MiroirLoggerFactory, MiroirMenuItem, getLoggerName } f
 
 import { packageName } from '../../../constants';
 import { cleanLevel } from '../constants';
-import { SidebarWidth } from './Sidebar';
+import { SidebarWidth } from './SidebarSection';
 import { useTheme } from '@emotion/react';
 import { Icon } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';

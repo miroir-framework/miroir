@@ -49,6 +49,29 @@ import { Entity, EntityDefinition, JzodSchema, Menu, MetaModel, Report } from ".
 import { applicationDeploymentAdmin, applicationDeploymentLibrary, applicationDeploymentMiroir, entityDefinitionMenu, entityMenu, menuDefaultMiroir, reportMenuList } from '..';
 import { DeploymentUuidToReportsEntitiesDefinitionsMapping } from '../0_interfaces/1_core/Model';
 
+// TODO: REMOVE THIS!!!
+// FIRST: CENTRALIZE LOGIC TO DETERMINE MODEL ENTITIES
+export const metaModelEntities: MetaEntity[] = [
+  entityApplication,
+  entityApplicationDeploymentConfiguration, // TODO: remove, deployments are not part of applications, they are external to them, belonging to a separate application, which contents is specific to each node (no transactions / historization)
+  entityApplicationModelBranch,
+  entityApplicationVersion,
+  entityEntity,
+  entityEntityDefinition,
+  entityMenu,
+  entityReport,
+  entityStoreBasedConfiguration,
+] as MetaEntity[];
+
+// console.log("metaModelEntities", metaModelEntities)
+
+export const miroirModelEntities: MetaEntity[] = metaModelEntities.filter((e:MetaEntity)=>{
+  // console.log("filtering metaModelEntities entity", e)
+  return e.conceptLevel == "MetaModel"
+});
+
+export const applicationModelEntities: MetaEntity[] = metaModelEntities.filter((e:MetaEntity)=>e.conceptLevel != "MetaModel");
+
 // TODO: define current configuration!
 export const defaultMiroirMetaModel: MetaModel = {
   configuration: [instanceConfigurationReference],

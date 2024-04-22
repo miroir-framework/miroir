@@ -62,9 +62,11 @@ export const ReportPage = () => {
   const errorLog = useErrorLogService();
   // const currentModel: MetaModel = useCurrentModel(params.deploymentUuid);
 
+  // TODO: REMOVE HARD-CODED LIST!!! WHAT IS IT USEFUL FOR???
   const deployments = [
     applicationDeploymentMiroir,
     applicationDeploymentLibrary,
+    applicationDeploymentAdmin,
   ] as ApplicationDeploymentConfiguration[];
 
   const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
@@ -104,7 +106,7 @@ export const ReportPage = () => {
 
   const deploymentUuidToReportsEntitiesDefinitionsMapping = useMemo(
     () => getDeploymentUuidToReportsEntitiesDefinitionsMapping(miroirMetaModel, libraryAppModel, adminAppModel),
-    [miroirMetaModel, libraryAppModel]
+    [miroirMetaModel, libraryAppModel, adminAppModel]
   );
 
   useEffect(() =>
@@ -126,6 +128,8 @@ export const ReportPage = () => {
     context.deploymentUuidToReportsEntitiesDefinitionsMapping,
     pageParams.applicationSection,
   ]);
+  log.info("displayedDeploymentDefinition", displayedDeploymentDefinition);
+  log.info("context.deploymentUuidToReportsEntitiesDefinitionsMapping", context.deploymentUuidToReportsEntitiesDefinitionsMapping);
   log.info("ReportPage availableReports", availableReports);
 
   const currentMiroirReport: Report =
@@ -160,7 +164,7 @@ export const ReportPage = () => {
             </>
           ) : (
             <span style={{ color: "red" }}>
-              no report to display, deploymentUuid={pageParams.deploymentUuid}, applicationSection=
+              ReportDisplay: no report to display, deploymentUuid={pageParams.deploymentUuid}, applicationSection=
               {pageParams.applicationSection}, reportUuid={pageParams.reportUuid}
             </span>
           )
