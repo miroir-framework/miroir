@@ -66,7 +66,13 @@ export function selectCurrentDeploymentModel(
 ):DomainStateMetaModelSelector {
   return (domainState:DomainState):MetaModel => {
     log.info('selectCurrentDeploymentModel for deploymentUuid', deploymentUuid, 'existing entities:', Object.keys(domainState))
-    if (deploymentUuid == applicationDeploymentLibrary.uuid) {
+    if (!deploymentUuid) {
+      throw new Error("selectCurrentDeploymentModel for deploymentUuid undefined");
+      
+    }
+    if (deploymentUuid == applicationDeploymentMiroir.uuid) {
+      return defaultMiroirMetaModel;
+    } else {
       // log.info('selectEntityInstances for entityUuid', parentUuid, 'existing instances:', Object.keys(domainState[parentUuid]))
       return ({
         entities: (
@@ -122,8 +128,6 @@ export function selectCurrentDeploymentModel(
         ),
         applicationVersionCrossEntityDefinition: [],
       })
-    } else {
-      return defaultMiroirMetaModel;
     }
   }
 }

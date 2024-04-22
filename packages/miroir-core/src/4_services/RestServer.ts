@@ -81,15 +81,15 @@ export async function restMethodGetHandler
   const parentUuid: string =
     typeof params["parentUuid"] == "string" ? params["parentUuid"] : params["parentUuid"][0];
 
-  const localMiroirPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentMiroir.uuid);
-  const localAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentLibrary.uuid);
-  if (!localMiroirPersistenceStoreController || !localAppPersistenceStoreController) {
-    throw new Error("restMethodGetHandler could not find controller:" + localMiroirPersistenceStoreController + " " + localAppPersistenceStoreController);
-  } 
-
-  const targetPersistenceStoreController =
-    deploymentUuid == applicationDeploymentLibrary.uuid ? localAppPersistenceStoreController : localMiroirPersistenceStoreController;
-  // const targetProxy = deploymentUuid == applicationDeploymentLibrary.uuid?libraryAppFileSystemDataStore:miroirAppSqlServerProxy;
+  const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
+    deploymentUuid
+  );
+  // const domainController = persistenceStoreControllerManager.getDomainController();
+  if (!localPersistenceStoreController) {
+    throw new Error("restMethodGetHandler could not find controller for deployment:" + deploymentUuid);
+  }
+  
+  const targetPersistenceStoreController = localPersistenceStoreController
   log.info(
     "restMethodGetHandler get CRUD/ using",
     // (targetPersistenceStoreController as any)["applicationName"],
@@ -315,32 +315,41 @@ export async function queryHandler(
   // const query: DomainManyQueriesWithDeploymentUuid = body.query as DomainManyQueriesWithDeploymentUuid ;
   const queryAction: QueryAction = body as QueryAction ;
 
-  const localMiroirPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentMiroir.uuid);
-  const localAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentLibrary.uuid);
+  const deploymentUuid = params.deploymentUuid
+  const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
+    deploymentUuid
+  );
+  // const localMiroirPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
+  //   applicationDeploymentMiroir.uuid
+  // );
+  // const localAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
+  //   applicationDeploymentLibrary.uuid
+  // );
   const domainController = persistenceStoreControllerManager.getDomainController();
-  if (!localMiroirPersistenceStoreController || !localAppPersistenceStoreController) {
-    throw new Error("RestServer could not find controller:" + localMiroirPersistenceStoreController + " " + localAppPersistenceStoreController);
+  // if (!localMiroirPersistenceStoreController || !localAppPersistenceStoreController) {
+  if (!localPersistenceStoreController) {
+    throw new Error("RestServer could not find controller for deployment:" + deploymentUuid);
   }
   if (useDomainControllerToHandleModelAndInstanceActions) {
     // we are on the server, the action has been received from remote client
-    switch (queryAction.deploymentUuid) {
-      case applicationDeploymentMiroir.uuid: {
+    // switch (queryAction.deploymentUuid) {
+    //   case applicationDeploymentMiroir.uuid: {
         const result = await domainController.handleQuery(queryAction)
         log.info("RestServer queryHandler used applicationDeploymentMiroir domainController result=", JSON.stringify(result, undefined,2))
         return continuationFunction(response)(result)
-        break;
-      }
-      case applicationDeploymentLibrary.uuid: {
-        const result = await domainController.handleQuery(queryAction)
-        log.info("RestServer queryHandler used applicationDeploymentLibrary domainController result=", JSON.stringify(result, undefined,2))
-        return continuationFunction(response)(result)
-        break;
-      }
-      default: {
-        throw new Error("RestServer queryHandler could not handle query " + queryAction + " unknown deployment uuid=" + queryAction.deploymentUuid);
-        break;
-      }
-    }
+        // break;
+      // }
+      // case applicationDeploymentLibrary.uuid: {
+      //   const result = await domainController.handleQuery(queryAction)
+      //   log.info("RestServer queryHandler used applicationDeploymentLibrary domainController result=", JSON.stringify(result, undefined,2))
+      //   return continuationFunction(response)(result)
+      //   break;
+      // }
+      // default: {
+      //   throw new Error("RestServer queryHandler could not handle query " + queryAction + " unknown deployment uuid=" + queryAction.deploymentUuid);
+      //   break;
+      // }
+    // }
   } else {
     // we're on the client, called by RestServerStub
     // uses the local cache, needs to have done a Model "rollback" action on the client//, or a Model "remoteLocalCacheRollback" action on the server

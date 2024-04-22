@@ -1,0 +1,8 @@
+{
+  "uuid": "f3e04bb2-005f-484b-aaf2-072232f60f2c",
+  "parentName":"Application",
+  "parentUuid":"25d935e7-9e93-42c2-aade-0472b883492b",
+  "name":"Admin",
+  "defaultLabel": "The Admin application.",
+  "description": "The model and data of the Admin application."
+}

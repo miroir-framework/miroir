@@ -1,11 +1,11 @@
 {
-  "uuid": "27046fce-742f-4cc4-bb95-76b271f490a5",
+  "uuid": "53edf3b4-c8ff-4de5-9f28-2d1ecda2a02a",
   "parentName":"EntityDefinition",
   "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-  "entityUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+  "entityUuid": "ff3d211b-7eb6-473a-afbf-503bb70a5c26",
   "conceptLevel":"Model",
-  "name":"SelfApplicationVersion",
+  "name":"ApplicationVersion",
   "icon": "Interests",
   "jzodSchema": {
     "type": "object",
@@ -62,20 +62,26 @@
         "type": "simpleType",
         "definition": "string",
         "validations": [{ "type": "uuid" }],
-        "extra": { "id":9, "defaultLabel": "Application", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": false }
+        "extra": { "id":9, "defaultLabel": "Application", "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b", "editable": false }
       },
       "branch": {
         "type": "simpleType",
         "definition": "string",
         "validations": [{ "type": "uuid" }],
-        "extra": { "id":10, "defaultLabel": "Branch", "description":"The Branch of this Application Version", "targetEntity": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1", "editable": false }
+        "extra": { "id":10, "defaultLabel": "Branch", "description":"The Branch of this Application Version", "editable": false }
       },
       "previousVersion": {
         "type": "simpleType",
         "definition": "string",
         "optional": true,
         "validations": [{ "type": "uuid" }],
-        "extra": { "id":11, "defaultLabel": "Previous Application Version", "description":"Previous version of the application on this Branch.", "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24", "editable": false }
+        "extra": {
+          "id": 11,
+          "defaultLabel": "Previous Application Version",
+          "description": "Previous version of the application on this Branch.",
+          "targetEntity": "ff3d211b-7eb6-473a-afbf-503bb70a5c26",
+          "editable": false
+        }
       },
       "modelStructureMigration": {
         "type": "array",

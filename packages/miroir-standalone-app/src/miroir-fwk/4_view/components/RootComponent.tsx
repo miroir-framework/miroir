@@ -10,6 +10,7 @@ import { Outlet, Params, useParams } from 'react-router-dom';
 
 
 import {
+  applicationDeploymentAdmin,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   DomainControllerInterface,
@@ -220,8 +221,10 @@ export const RootComponent = (props: RootComponentProps) => {
                           actionName: "openStore",
                           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
                           configuration: {
-                            [applicationDeploymentMiroir.uuid]: miroirConfig.client.deploymentStorageConfig[applicationDeploymentMiroir.uuid],
-                            [applicationDeploymentLibrary.uuid]: miroirConfig.client.deploymentStorageConfig[applicationDeploymentLibrary.uuid],
+                            [applicationDeploymentMiroir.uuid]:
+                              miroirConfig.client.deploymentStorageConfig[applicationDeploymentMiroir.uuid],
+                            [applicationDeploymentLibrary.uuid]:
+                              miroirConfig.client.deploymentStorageConfig[applicationDeploymentLibrary.uuid],
                           },
                           deploymentUuid: applicationDeploymentMiroir.uuid,
                         });
@@ -271,6 +274,19 @@ export const RootComponent = (props: RootComponentProps) => {
                     }}
                   >
                     fetch Miroir & App configurations from database
+                  </button>
+                  <button
+                    onClick={async () => {
+                      log.info("fetching instances from datastore for deployment", applicationDeploymentMiroir);
+                      await domainController.handleAction({
+                        actionType: "modelAction",
+                        actionName: "rollback",
+                        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                        deploymentUuid: applicationDeploymentAdmin.uuid,
+                      });
+                    }}
+                  >
+                    fetch Admin configuration from database
                   </button>
                   <button
                     onClick={async () => {

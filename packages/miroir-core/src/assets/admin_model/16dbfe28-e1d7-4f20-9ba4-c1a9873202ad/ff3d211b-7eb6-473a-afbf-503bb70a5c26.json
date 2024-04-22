@@ -1,0 +1,10 @@
+{
+  "uuid":"ff3d211b-7eb6-473a-afbf-503bb70a5c26",
+  "parentName":"Entity",
+  "parentUuid":"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  "name":"ApplicationVersion",
+  "application": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+  "conceptLevel":"Model",
+  "description": "A Version of an Application"
+}

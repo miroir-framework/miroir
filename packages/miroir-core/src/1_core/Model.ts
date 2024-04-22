@@ -46,7 +46,7 @@ import instanceConfigurationReference from '../assets/miroir_data/7990c0c9-86c3-
 // import { Report, } from "../0_interfaces/1_core/Report.js";
 import { JzodSchemaDefinition } from "../0_interfaces/1_core/JzodSchemaDefinition.js";
 import { Entity, EntityDefinition, JzodSchema, Menu, MetaModel, Report } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { applicationDeploymentLibrary, applicationDeploymentMiroir, entityDefinitionMenu, entityMenu, menuDefaultMiroir, reportMenuList } from '..';
+import { applicationDeploymentAdmin, applicationDeploymentLibrary, applicationDeploymentMiroir, entityDefinitionMenu, entityMenu, menuDefaultMiroir, reportMenuList } from '..';
 import { DeploymentUuidToReportsEntitiesDefinitionsMapping } from '../0_interfaces/1_core/Model';
 
 // TODO: define current configuration!
@@ -173,6 +173,7 @@ const metaModelReports = [reportEntityList.uuid, reportEntityDefinitionList.uuid
 export function getDeploymentUuidToReportsEntitiesDefinitionsMapping(
   miroirMetaModel: MetaModel,
   libraryAppModel: MetaModel,
+  adminAppModel: MetaModel,
 ):DeploymentUuidToReportsEntitiesDefinitionsMapping {
   return { // displayedDeploymentDefinition, displayedApplicationSection
     [applicationDeploymentMiroir.uuid]: {
@@ -201,6 +202,18 @@ export function getDeploymentUuidToReportsEntitiesDefinitionsMapping(
         availableReports: libraryAppModel.reports,
         entities: libraryAppModel.entities,
         entityDefinitions: libraryAppModel.entityDefinitions,
+      },
+    },
+    [applicationDeploymentAdmin.uuid]: {
+      "model": {
+        availableReports: miroirMetaModel.reports,
+        entities: miroirMetaModel.entities,
+        entityDefinitions: miroirMetaModel.entityDefinitions,
+      },
+      "data": {
+        availableReports: adminAppModel.reports,
+        entities: adminAppModel.entities,
+        entityDefinitions: adminAppModel.entityDefinitions,
       },
     },
   }

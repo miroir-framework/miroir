@@ -7,11 +7,15 @@ import {
   LoggerFactoryInterface,
   LoggerInterface,
   MiroirConfigClient,
+  MiroirConfigForRestClient,
   MiroirConfigServer,
   MiroirLoggerFactory,
   PersistenceStoreControllerManager,
   RestClient,
   SpecificLoggerOptionsMap,
+  StoreOrBundleAction,
+  StoreUnitConfiguration,
+  applicationDeploymentAdmin,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   defaultLevels,
@@ -47,8 +51,8 @@ MiroirLoggerFactory.setEffectiveLoggerFactory(
   specificLoggerOptions,
 );
 
-const serverStoreConfig:MiroirConfigClient = {
-  "client": {
+const serverStoreConfig:MiroirConfigForRestClient = {
+  // "client": {
     "emulateServer": false,
     "serverConfig":{
       "rootApiUrl":"http://localhost:3080",
@@ -63,6 +67,20 @@ const serverStoreConfig:MiroirConfigClient = {
         }
       },
       "storeSectionConfiguration": {
+        [applicationDeploymentAdmin.uuid]: {
+          "admin": {
+            "emulatedServerType": "filesystem",
+            "directory":"../miroir-core/src/assets/admin"
+          },
+          "model": {
+            "emulatedServerType": "filesystem",
+            "directory":"../miroir-core/src/assets/admin_model"
+          },
+          "data": {
+            "emulatedServerType": "filesystem",
+            "directory":"../miroir-core/src/assets/admin_data"
+          }
+        },
         [applicationDeploymentMiroir.uuid]:{
           "admin": {
             "emulatedServerType": "filesystem",
@@ -97,7 +115,7 @@ const serverStoreConfig:MiroirConfigClient = {
     // "monoUserAutentification": false,
     // "monoUserVersionControl": false,
     // "versionControlForDataConceptLevel": false
-  }
+  // }
 }
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"Server");
@@ -148,6 +166,20 @@ persistenceSaga.run(localCache)
 
 persistenceStoreControllerManager.setPersistenceStore(persistenceSaga); // useless?
 persistenceStoreControllerManager.setLocalCache(localCache);
+
+const openStoreAction: StoreOrBundleAction = {
+  actionType: "storeManagementAction",
+  actionName: "openStore",
+  endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+  configuration: {
+    [applicationDeploymentAdmin.uuid]: serverStoreConfig.serverConfig.storeSectionConfiguration[
+      applicationDeploymentAdmin.uuid
+    ] as StoreUnitConfiguration,
+  },
+  deploymentUuid: applicationDeploymentAdmin.uuid,
+};
+await persistenceSaga.handlePersistenceAction(openStoreAction)
+
 
 // ##############################################################################################
 // CREATING ENDPOINTS SERVICING CRUD HANDLERS

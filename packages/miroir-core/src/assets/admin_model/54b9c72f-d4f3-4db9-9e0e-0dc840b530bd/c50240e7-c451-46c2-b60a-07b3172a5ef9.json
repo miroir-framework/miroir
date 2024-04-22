@@ -1,11 +1,11 @@
 {
-  "uuid": "bd303ae8-6bce-4b44-a63c-815b9ebf728b",
+  "uuid": "c50240e7-c451-46c2-b60a-07b3172a5ef9",
   "parentName":"EntityDefinition",
   "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-  "entityUuid": "35c5608a-7678-4f07-a4ec-76fc5bc35424",
+  "entityUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
   "conceptLevel":"Model",
-  "name":"SelfApplicationDeploymentConfiguration",
+  "name":"ApplicationDeployment",
   "icon": "Interests",
   "jzodSchema": {
     "type": "object",
@@ -14,19 +14,19 @@
         "type": "simpleType",
         "definition": "string",
         "validations": [{ "type": "uuid" }],
-        "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+        "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
       },
       "parentName": {
         "type": "simpleType",
         "definition": "string",
         "optional": true,
-        "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+        "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
       },
       "parentUuid": {
         "type": "simpleType",
         "definition": "string",
         "validations": [{ "type": "uuid" }],
-        "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
+        "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
       },
       "parentDefinitionVersionUuid": {
         "type": "simpleType",
@@ -38,38 +38,44 @@
       "name": {
         "type": "simpleType",
         "definition": "string",
-        "extra": { "id":5, "defaultLabel": "Name", "editable": true }
+        "extra": { "id": 5, "defaultLabel": "Name", "editable": true }
       },
       "defaultLabel": {
         "type": "simpleType",
         "definition": "string",
-        "extra": { "id":6, "defaultLabel": "Default Label", "editable": true }
+        "extra": { "id": 6, "defaultLabel": "Default Label", "editable": true }
       },
       "description": {
         "type": "simpleType",
         "definition": "string",
         "optional": true,
-        "extra": { "id":7, "defaultLabel": "Description", "editable": true }
+        "extra": { "id": 7, "defaultLabel": "Description", "editable": true }
       },
       "application": {
         "type": "simpleType",
         "definition": "string",
         "validations": [{ "type": "uuid" }],
-        "extra": { "id":8, "defaultLabel": "Application", "description": "The Application of the Branch.", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": false }
+        "extra": {
+          "id": 8,
+          "defaultLabel": "Application",
+          "description": "The Application of the Branch.",
+          "targetEntity": "ff3d211b-7eb6-473a-afbf-503bb70a5c26",
+          "editable": false
+        }
       },
       "model": {
         "type": "schemaReference",
         "optional": true,
-        "extra": { "id":9, "defaultLabel": "Application Deployment Model", "editable": true },
+        "extra": { "id": 9, "defaultLabel": "Application Deployment Model", "editable": true },
         "definition": {
           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-          "relativePath": "jzodObject" 
+          "relativePath": "jzodObject"
         }
       },
       "data": {
         "type": "schemaReference",
         "optional": true,
-        "extra": { "id":10, "defaultLabel": "Application Deployment Data", "editable": true },
+        "extra": { "id": 10, "defaultLabel": "Application Deployment Data", "editable": true },
         "definition": {
           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
           "relativePath": "jzodObject"

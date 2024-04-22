@@ -5,7 +5,7 @@
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "a659d350-dd97-4da9-91de-524fa01745dc",
   "conceptLevel":"Model",
-  "name":"Application",
+  "name":"SelfApplication",
   "icon": "Interests",
   "jzodSchema": {
     "type": "object",

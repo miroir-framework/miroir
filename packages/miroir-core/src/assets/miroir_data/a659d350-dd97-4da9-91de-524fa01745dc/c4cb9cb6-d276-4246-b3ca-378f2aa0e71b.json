@@ -1,0 +1,8 @@
+{
+  "uuid": "c4cb9cb6-d276-4246-b3ca-378f2aa0e71b",
+  "parentName":"Application",
+  "parentUuid":"a659d350-dd97-4da9-91de-524fa01745dc",
+  "name":"Admin",
+  "defaultLabel": "The Admin application.",
+  "description": "This application contains the admin information for the Miroir instance, in particular concerning the server and the available deployments on this server."
+}

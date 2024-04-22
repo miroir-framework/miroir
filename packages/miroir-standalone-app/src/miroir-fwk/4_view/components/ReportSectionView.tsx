@@ -14,6 +14,7 @@ import {
   ReportSection,
   RootReportSection,
   Uuid,
+  applicationDeploymentAdmin,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   getLoggerName
@@ -83,7 +84,15 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
 
   log.info("########################## props", props);
 
-  const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeploymentConfiguration[];
+  const deployments = [
+    applicationDeploymentMiroir,
+    applicationDeploymentLibrary,
+    applicationDeploymentAdmin,
+  ] as ApplicationDeploymentConfiguration[];
+
+  // const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
+  // const libraryAppModel: MetaModel = useCurrentModel(applicationDeploymentLibrary.uuid);
+  // const adminAppModel: MetaModel = useCurrentModel(applicationDeploymentAdmin.uuid);
 
   // ##############################################################################################
   const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(

@@ -19,6 +19,7 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   Report,
+  applicationDeploymentAdmin,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   defaultMiroirMetaModel,
@@ -74,7 +75,11 @@ export const HomePage = (props: RootComponentProps) => {
   const errorLog = useErrorLogService();
   const domainController: DomainControllerInterface = useDomainControllerService();
   
-  const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeploymentConfiguration[];
+  const deployments = [
+    applicationDeploymentMiroir,
+    applicationDeploymentLibrary,
+    applicationDeploymentAdmin,
+  ] as ApplicationDeploymentConfiguration[];
   // log.info("RootComponent deployments",deployments);
 
   // context utility functions
@@ -88,12 +93,16 @@ export const HomePage = (props: RootComponentProps) => {
 
   const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
   const libraryAppModel: MetaModel = useCurrentModel(displayedDeploymentUuid);
+  const adminAppModel: MetaModel = useCurrentModel(applicationDeploymentAdmin.uuid);
 
   // computing current state #####################################################################
-  const displayedDeploymentDefinition:ApplicationDeploymentConfiguration | undefined = deployments.find(d=>d.uuid == displayedDeploymentUuid);
+  const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(
+    (d) => d.uuid == displayedDeploymentUuid
+  );
   log.info("HomePage displayedDeploymentDefinition",displayedDeploymentDefinition);
 
-  const currentModel = displayedDeploymentUuid == applicationDeploymentLibrary.uuid? libraryAppModel:defaultMiroirMetaModel;
+  // TODO: adapt to Admin app deployment!
+  const currentModel = displayedDeploymentUuid == applicationDeploymentMiroir.uuid? defaultMiroirMetaModel:libraryAppModel;
   // const currentModel = libraryAppModel;
   log.info("HomePage currentModel",currentModel);
 
@@ -108,8 +117,12 @@ export const HomePage = (props: RootComponentProps) => {
   );
 
   const deploymentUuidToReportsEntitiesDefinitionsMapping = useMemo(
-    () => getDeploymentUuidToReportsEntitiesDefinitionsMapping(miroirMetaModel, libraryAppModel),
-    [miroirMetaModel, libraryAppModel]
+    () => getDeploymentUuidToReportsEntitiesDefinitionsMapping(
+      miroirMetaModel, 
+      libraryAppModel,
+      adminAppModel,
+    ),
+    [miroirMetaModel, libraryAppModel, adminAppModel]
   );
   useEffect(() =>
     context.setDeploymentUuidToReportsEntitiesDefinitionsMapping(deploymentUuidToReportsEntitiesDefinitionsMapping)

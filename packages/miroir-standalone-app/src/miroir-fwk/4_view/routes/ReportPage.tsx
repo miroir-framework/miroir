@@ -10,6 +10,7 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   Report,
+  applicationDeploymentAdmin,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   getDeploymentUuidToReportsEntitiesDefinitionsMapping,
@@ -68,6 +69,7 @@ export const ReportPage = () => {
 
   const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
   const libraryAppModel: MetaModel = useCurrentModel(applicationDeploymentLibrary.uuid);
+  const adminAppModel: MetaModel = useCurrentModel(applicationDeploymentAdmin.uuid);
 
   // log.info("ReportPage currentModel", currentModel);
 
@@ -101,7 +103,7 @@ export const ReportPage = () => {
   );
 
   const deploymentUuidToReportsEntitiesDefinitionsMapping = useMemo(
-    () => getDeploymentUuidToReportsEntitiesDefinitionsMapping(miroirMetaModel, libraryAppModel),
+    () => getDeploymentUuidToReportsEntitiesDefinitionsMapping(miroirMetaModel, libraryAppModel, adminAppModel),
     [miroirMetaModel, libraryAppModel]
   );
 

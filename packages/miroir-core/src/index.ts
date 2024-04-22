@@ -500,6 +500,7 @@ export { miroirCoreStartup } from './startup.js';
 export { stringTuple, circularReplacer, getLoggerName } from './tools.js';
 
 export {applicationDeploymentLibrary} from "./ApplicationDeploymentLibrary.js"
+export {applicationDeploymentAdmin} from "./ApplicationDeploymentAdmin.js"
 
 import entityApplication from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a659d350-dd97-4da9-91de-524fa01745dc.json';
 import entityApplicationDeploymentConfiguration from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/35c5608a-7678-4f07-a4ec-76fc5bc35424.json';

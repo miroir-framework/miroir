@@ -27,6 +27,7 @@ import {
   QuerySelector,
   QuerySelectorMap,
   QuerySelectorParams,
+  applicationDeploymentAdmin,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   applicationSection,
@@ -214,12 +215,37 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   )
 
   
-  const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeploymentConfiguration[];
+  const deployments = [
+    applicationDeploymentMiroir,
+    applicationDeploymentLibrary,
+    applicationDeploymentAdmin,
+  ] as ApplicationDeploymentConfiguration[];
 
   const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
   const libraryAppModel: MetaModel = useCurrentModel(applicationDeploymentLibrary.uuid);
+  const adminAppModel: MetaModel = useCurrentModel(applicationDeploymentAdmin.uuid);
   
-  const currentModel = props.deploymentUuid == applicationDeploymentLibrary.uuid? libraryAppModel:miroirMetaModel;
+  // const currentModel = props.deploymentUuid == applicationDeploymentLibrary.uuid? libraryAppModel:miroirMetaModel;
+  let currentModel: MetaModel
+  switch (props.deploymentUuid) {
+    case applicationDeploymentLibrary.uuid: {
+      currentModel = libraryAppModel
+      break;
+    }
+    case applicationDeploymentMiroir.uuid: {
+      currentModel = miroirMetaModel
+      break;
+    }
+    case applicationDeploymentAdmin.uuid: {
+      currentModel = adminAppModel
+      break;
+    }
+    default: {
+      throw new Error("ReportSectionListDisplay unknown deployment " + props.deploymentUuid);
+      break;
+    }
+  }
+
 
   const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(
     (d) => d.uuid == props.deploymentUuid

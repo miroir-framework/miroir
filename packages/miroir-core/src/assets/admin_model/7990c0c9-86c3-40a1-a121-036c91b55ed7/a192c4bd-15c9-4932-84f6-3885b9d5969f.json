@@ -1,0 +1,8 @@
+{
+  "uuid": "a192c4bd-15c9-4932-84f6-3885b9d5969f",
+  "parentName":"Configuration",
+  "parentUuid":"7990c0c9-86c3-40a1-a121-036c91b55ed7",
+  "name":"Reference",
+  "defaultLabel": "The reference configuration for the Admin application database schemas.",
+  "definition": {"currentApplicationVersion":"TBD"}
+}
