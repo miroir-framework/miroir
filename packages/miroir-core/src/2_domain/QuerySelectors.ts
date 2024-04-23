@@ -593,7 +593,7 @@ export const selectJzodSchemaBySingleSelectQuery = <StateType>(
       return undefined
     }
 
-    return selectorParams.selectorMap.selectEntityJzodSchema(deploymentEntityState, {
+    const result = selectorParams.selectorMap.selectEntityJzodSchema(deploymentEntityState, {
       selectorMap: selectorParams.selectorMap,
       query: {
         queryType: "getEntityDefinition",
@@ -603,7 +603,9 @@ export const selectJzodSchemaBySingleSelectQuery = <StateType>(
         deploymentUuid: selectorParams.query.singleSelectQuery.deploymentUuid ?? "",
         entityUuid: entityUuidDomainElement.elementValue,
       },
-    } as JzodSchemaQuerySelectorParams<DomainModelGetEntityDefinitionQueryParams,StateType>) as JzodObject | undefined;
+    } as JzodSchemaQuerySelectorParams<DomainModelGetEntityDefinitionQueryParams,StateType>) as JzodObject | undefined
+
+    return result;
   } 
 }
 

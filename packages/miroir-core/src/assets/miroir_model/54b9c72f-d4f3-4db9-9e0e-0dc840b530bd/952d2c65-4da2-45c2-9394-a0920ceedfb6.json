@@ -253,27 +253,25 @@
                 }
               },
               "definition": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "array",
-                    "definition": {
+                "type": "array",
+                "definition": {
+                  "type": "union",
+                  "discriminator": "type",
+                  "definition": [
+                    {
                       "type": "schemaReference",
                       "definition": {
                         "relativePath": "objectInstanceReportSection"
                       }
-                    }
-                  },
-                  {
-                    "type": "array",
-                    "definition": {
+                    },
+                    {
                       "type": "schemaReference",
                       "definition": {
                         "relativePath": "objectListReportSection"
                       }
                     }
-                  }
-                ]
+                  ]
+                }
               }
             }
           },

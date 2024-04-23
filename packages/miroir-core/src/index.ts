@@ -67,6 +67,8 @@ export {
   MetaModel,
   metaModel,
   InstanceAction,
+  DeploymentStorageConfig,
+  deploymentStorageConfig,
   EntityDefinition,
   entityDefinition,
   EntityInstance,

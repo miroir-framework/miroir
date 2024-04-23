@@ -82,7 +82,7 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
   const context = useMiroirContextService();
   // const errorLog = useErrorLogService();
 
-  log.info("########################## props", props);
+  log.info("########################## render with props", props);
 
   const deployments = [
     applicationDeploymentMiroir,

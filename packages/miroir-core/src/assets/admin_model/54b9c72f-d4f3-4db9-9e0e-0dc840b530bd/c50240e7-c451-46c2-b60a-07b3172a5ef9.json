@@ -5,8 +5,17 @@
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
   "conceptLevel":"Model",
-  "name":"ApplicationDeployment",
+  "name":"Deployment",
   "icon": "Interests",
+  "defaultInstanceDetailsReportUuid": "08acd6c2-710a-4b17-a92a-60b81c936cfc",
+  "viewAttributes": [
+    "name",
+    "defaultLabel",
+    "description",
+    "application",
+    "bundle",
+    "uuid"
+  ],
   "jzodSchema": {
     "type": "object",
     "definition": {
@@ -61,6 +70,27 @@
           "description": "The Application of the Branch.",
           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
           "editable": false
+        }
+      },
+      "bundle": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": {
+          "id": 8,
+          "defaultLabel": "Bundle",
+          "description": "The deployed bundle.",
+          "targetEntity": "",
+          "editable": false
+        }
+      },
+      "configuration": {
+        "type": "schemaReference",
+        "optional": true,
+        "extra": { "id": 9, "defaultLabel": "Deployment Configuration", "editable": true },
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "storeUnitConfiguration"
         }
       },
       "model": {

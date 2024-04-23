@@ -3,40 +3,24 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import Divider from '@mui/material/Divider';
 import MuiDrawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
 import { CSSObject, styled, Theme, useTheme } from '@mui/material/styles';
-import { Link } from 'react-router-dom';
 
 
 import { AutoStories } from '@mui/icons-material';
-import { Icon } from '@mui/material';
 import {
   applicationDeploymentAdmin,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
-  DeploymentEntityState,
-  DomainElementObject,
-  DomainManyQueriesWithDeploymentUuid,
-  getDeploymentEntityStateSelectorParams,
   getLoggerName,
   LoggerInterface,
   menuDefaultAdmin,
   menuDefaultLibrary,
   menuDefaultMiroir,
-  MiroirLoggerFactory,
-  MiroirSelectorQueryParams,
-  QuerySelectorMap,
-  QuerySelectorParams
+  MiroirLoggerFactory
 } from "miroir-core";
-import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
 import { FC, useMemo } from 'react';
 import { packageName } from '../../../constants';
 import { cleanLevel } from '../constants';
-import { useDeploymentEntityStateQuerySelector } from '../ReduxHooks';
 import { SidebarSection } from './SidebarSection';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"Sidebar");
@@ -206,6 +190,14 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
       count: {count}
       <Divider />
       <SidebarSection
+        deploymentUuid={applicationDeploymentAdmin.uuid}
+        menuUuid={menuDefaultAdmin.uuid}
+        open={props.open}
+        setOpen={props.setOpen}
+      >
+      </SidebarSection>
+      <Divider />
+      <SidebarSection
         deploymentUuid={applicationDeploymentMiroir.uuid}
         menuUuid={menuDefaultMiroir.uuid}
         open={props.open}
@@ -216,14 +208,6 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
       <SidebarSection
         deploymentUuid={applicationDeploymentLibrary.uuid}
         menuUuid={menuDefaultLibrary.uuid}
-        open={props.open}
-        setOpen={props.setOpen}
-      >
-      </SidebarSection>
-      <Divider />
-      <SidebarSection
-        deploymentUuid={applicationDeploymentAdmin.uuid}
-        menuUuid={menuDefaultAdmin.uuid}
         open={props.open}
         setOpen={props.setOpen}
       >

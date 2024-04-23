@@ -13,11 +13,39 @@
         "label": "admin",
         "items": [
           {
+            "label": "Admin Entities",
+            "section": "model",
+            "application": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+            "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+            "icon": "category"
+          },
+          {
+            "label": "Admin Entity Definitions",
+            "section": "model",
+            "application": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+            "reportUuid": "f9aff35d-8636-4519-8361-c7648e0ddc68",
+            "icon": "category"
+          },
+          {
+            "label": "Admin Reports",
+            "section": "model",
+            "application": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+            "reportUuid": "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
+            "icon": "list"
+          },
+          {
             "label": "Deployments",
             "section": "data",
             "application": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
             "reportUuid": "e4488cba-b743-4b46-80e5-18c441c9882c",
-            "icon": "storage"
+            "icon": "space_dashboard"
+          },
+          {
+            "label": "Bundles",
+            "section": "data",
+            "application": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+            "reportUuid": "2d690e4f-16f6-4332-be6c-45d5179b3981",
+            "icon": "folder"
           }
         ]
       }

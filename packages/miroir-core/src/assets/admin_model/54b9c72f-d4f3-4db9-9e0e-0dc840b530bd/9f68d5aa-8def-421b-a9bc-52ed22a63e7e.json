@@ -1,0 +1,57 @@
+{
+  "uuid": "9f68d5aa-8def-421b-a9bc-52ed22a63e7e",
+  "parentName":"EntityDefinition",
+  "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "9f9170da-538d-425c-8cb7-551640623eed",
+  "conceptLevel":"Model",
+  "name":"Bundle",
+  "icon": "Interests",
+  "defaultInstanceDetailsReportUuid": "faaf8c68-020a-48b1-b439-abc196855295",
+  "jzodSchema": {
+    "type": "object",
+    "definition": {
+      "uuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+      },
+      "parentName": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+      },
+      "parentUuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
+      },
+      "parentDefinitionVersionUuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }
+      },
+      "name": {
+        "type": "simpleType",
+        "definition": "string",
+        "extra": { "id":5, "defaultLabel": "Name", "editable": true }
+      },
+      "defaultLabel": {
+        "type": "simpleType",
+        "definition": "string",
+        "extra": { "id":6, "defaultLabel": "Default Label", "editable": true }
+      },
+      "description": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "extra": { "id":7, "defaultLabel": "Description", "editable": true }
+      }
+    }
+  }
+}

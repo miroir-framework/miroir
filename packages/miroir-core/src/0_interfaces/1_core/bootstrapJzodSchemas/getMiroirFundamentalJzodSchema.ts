@@ -704,6 +704,13 @@ export function getMiroirFundamentalJzodSchema(
             }
           }
         },
+        "deploymentStorageConfig": {
+          "type": "record",
+          "definition": {
+            "type": "schemaReference",
+            "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeUnitConfiguration"}
+          }
+        },
         "serverConfigForClientConfig": {
           "type": "object",
           "definition": {
@@ -736,11 +743,8 @@ export function getMiroirFundamentalJzodSchema(
               "definition": "string",
             },
             "deploymentStorageConfig": {
-              "type": "record",
-              "definition": {
-                "type": "schemaReference",
-                "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeUnitConfiguration"}
-              }
+              "type": "schemaReference",
+              "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "deploymentStorageConfig"}
             }
           }
         },

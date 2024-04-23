@@ -200,7 +200,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
 ) => {
   count++;
   prevProps = props;
-  log.info('ReportSectionListDisplay',count,props === prevProps, equal(props,prevProps));
+  log.info('@@@@@@@@@@@@@@@@@@@@@@@ ReportSectionListDisplay',count,props === prevProps, equal(props,prevProps));
   const context = useMiroirContextService();
   
   // log.info('ReportSectionListDisplay props.domainElement',props.domainElement);
@@ -311,7 +311,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     [instancesToDisplayJzodSchema, instancesToDisplayViewAttributes, currentReportTargetEntityDefinition]
   );
   log.info(
-    "@@@@@@@@@@@@@@@@@@@@@@@ ReportSectionListDisplay rendering",
+    "ReportSectionListDisplay rendering",
     count,
     "instancesToDisplayViewAttributes",
     instancesToDisplayViewAttributes,

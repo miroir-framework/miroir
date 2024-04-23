@@ -317,10 +317,18 @@ export const selectEntityJzodSchemaFromDeploymentEntityState = (
       deploymentEntityState[deploymentEntityStateIndex].entities[entityEntityDefinition.uuid] as EntityDefinition
     ).jzodSchema;
   
-    // log.info("DomainSelector selectEntityJzodSchemaFromDomainState result", result);
+    log.info("DomainSelector selectEntityJzodSchemaFromDeploymentEntityState selectorParams",selectorParams,"result", result);
   
     return result
   } else {
+    log.error("DomainSelector selectEntityJzodSchemaFromDeploymentEntityState selectorParams",selectorParams,"could not find entity", localQuery.deploymentUuid, "in state", deploymentEntityState);
+    // throw new Error(
+    //   "DomainSelector selectEntityJzodSchemaFromDeploymentEntityState could not find entity " +
+    //     entityEntityDefinition.uuid +
+    //     " in deployment " +
+    //     localQuery.deploymentUuid +
+    //     ""
+    // );
     return undefined;
   }
 }

@@ -1,10 +1,10 @@
 {
-  "uuid":"ff3d211b-7eb6-473a-afbf-503bb70a5c26",
+  "uuid":"9f9170da-538d-425c-8cb7-551640623eed",
   "parentName":"Entity",
   "parentUuid":"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-  "name":"ApplicationVersion",
+  "name":"bundle",
   "application": "55af124e-8c05-4bae-a3ef-0933d41daa92",
   "conceptLevel":"Model",
-  "description": "A Version of an Application"
+  "description": "A bundle for an Application Version"
 }

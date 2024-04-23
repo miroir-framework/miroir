@@ -50,7 +50,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const context = useMiroirContextService();
 
   log.info(
-    "++++++++++++++++++++++++++++++++ props",
+    "++++++++++++++++++++++++++++++++ render with props",
     props
   );
 

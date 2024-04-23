@@ -2568,6 +2568,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "definition": {
             "type": "union",
+            "discriminator": "type",
             "definition": [
               {
                 "type": "array",
@@ -3147,6 +3148,7 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "definition": {
                     "type": "union",
+                    "discriminator": "type",
                     "definition": [
                       {
                         "type": "array",
@@ -3516,6 +3518,16 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "deploymentStorageConfig": {
+        "type": "record",
+        "definition": {
+          "type": "schemaReference",
+          "definition": {
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "storeUnitConfiguration"
+          }
+        }
+      },
       "serverConfigForClientConfig": {
         "type": "object",
         "definition": {
@@ -3551,13 +3563,10 @@ export const miroirFundamentalJzodSchema = {
             "definition": "string"
           },
           "deploymentStorageConfig": {
-            "type": "record",
+            "type": "schemaReference",
             "definition": {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "storeUnitConfiguration"
-              }
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "deploymentStorageConfig"
             }
           }
         }

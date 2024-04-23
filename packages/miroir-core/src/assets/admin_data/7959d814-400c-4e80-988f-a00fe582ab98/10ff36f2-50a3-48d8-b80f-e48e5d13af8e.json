@@ -1,0 +1,23 @@
+{
+  "uuid":"10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+  "parentName":"ApplicationDeploymentConfiguration",
+  "parentUuid":"7959d814-400c-4e80-988f-a00fe582ab98",
+  "name":"DefaultMiroirApplicationDeployment",
+  "defaultLabel": "Miroir Application Deployment",
+  "application":"79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+  "description": "The default Deployment for Application Miroir",
+  "configuration": {
+    "admin": {
+      "emulatedServerType": "filesystem",
+      "directory":"../miroir-core/src/assets/admin"
+    },
+    "model": {
+      "emulatedServerType": "filesystem",
+      "directory":"../miroir-core/src/assets/miroir_model"
+    },
+    "data": {
+      "emulatedServerType": "filesystem",
+      "directory":"../miroir-core/src/assets/miroir_data"
+    }
+  }
+}

@@ -210,6 +210,7 @@ export function resolveReferencesForJzodSchemaAndValueObject(
               return [e[0],{ type: "simpleType", definition: "never" }]
             }
           } else {
+            // TODO: RETURN AN ERROR ResolvedJzodSchemaReturnTypeError
             log.warn({
               error: "resolveReferencesForJzodSchemaAndValueObject error on resolving object, valueObject attribute " +
                 e[0] +

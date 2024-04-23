@@ -11,7 +11,7 @@
       "select": {
         "ApplicationDeployments": {
           "queryType": "selectObjectListByEntity",
-          "parentName": "ApplicationDeployment",
+          "parentName": "Deployment",
           "parentUuid": {
             "referenceType": "constant",
             "referenceUuid": "35c5608a-7678-4f07-a4ec-76fc5bc35424"
@@ -23,7 +23,7 @@
       "type":"objectListReportSection",
       "definition": {
         "label": "Application Deployments",
-        "parentName": "ApplicationDeploymentConfiguration",
+        "parentName": "Deployment",
         "parentUuid": "35c5608a-7678-4f07-a4ec-76fc5bc35424",
         "fetchedDataReference": "ApplicationDeployments",
         "sortByAttribute": "name"
