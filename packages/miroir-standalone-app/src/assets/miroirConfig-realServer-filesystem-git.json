@@ -14,6 +14,20 @@
         }
       },
       "storeSectionConfiguration": {
+        "18db21bf-f8d3-4f6a-8296-84b69f6dc48b":{
+          "admin": {
+            "emulatedServerType": "filesystem",
+            "directory":"../miroir-core/src/assets/admin"
+          },
+          "model": {
+            "emulatedServerType": "filesystem",
+            "directory":"../miroir-core/src/assets/admin_model"
+          },
+          "data": {
+            "emulatedServerType": "filesystem",
+            "directory":"../miroir-core/src/assets/admin_data"
+          }
+        },
         "10ff36f2-50a3-48d8-b80f-e48e5d13af8e":{
           "admin": {
             "emulatedServerType": "filesystem",

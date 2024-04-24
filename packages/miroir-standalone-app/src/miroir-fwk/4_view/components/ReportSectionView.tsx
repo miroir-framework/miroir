@@ -90,10 +90,6 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
     applicationDeploymentAdmin,
   ] as ApplicationDeploymentConfiguration[];
 
-  // const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
-  // const libraryAppModel: MetaModel = useCurrentModel(applicationDeploymentLibrary.uuid);
-  // const adminAppModel: MetaModel = useCurrentModel(applicationDeploymentAdmin.uuid);
-
   // ##############################################################################################
   const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(
     (d) => d.uuid == props.deploymentUuid

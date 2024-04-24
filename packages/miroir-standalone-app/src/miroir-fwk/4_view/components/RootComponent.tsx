@@ -6,7 +6,7 @@ import { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 import { useEffect, useMemo, useState } from 'react';
-import { Outlet, Params, useParams } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 
 
 import {
@@ -44,14 +44,13 @@ import {
   undoRedoEndpointVersionV1
 } from "miroir-core";
 
-import { useDomainControllerService, useMiroirContext, useMiroirContextService } from '../MiroirContextReactProvider';
+import { useDomainControllerService, useMiroirContextService } from '../MiroirContextReactProvider';
 import AppBar from './AppBar';
-import { ReportUrlParamKeys } from '../routes/ReportPage';
 
 import { packageName } from '../../../constants';
 import { cleanLevel } from '../constants';
-import { SidebarSection, SidebarWidth } from "./SidebarSection";
 import { Sidebar } from "./Sidebar";
+import { SidebarWidth } from "./SidebarSection";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RootComponent");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -222,12 +221,7 @@ export const RootComponent = (props: RootComponentProps) => {
                           actionType: "storeManagementAction",
                           actionName: "openStore",
                           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-                          configuration: {
-                            [applicationDeploymentMiroir.uuid]:
-                              miroirConfig.client.deploymentStorageConfig[applicationDeploymentMiroir.uuid],
-                            [applicationDeploymentLibrary.uuid]:
-                              miroirConfig.client.deploymentStorageConfig[applicationDeploymentLibrary.uuid],
-                          },
+                          configuration: miroirConfig.client.deploymentStorageConfig,
                           deploymentUuid: applicationDeploymentMiroir.uuid,
                         });
                       } else {
@@ -236,12 +230,7 @@ export const RootComponent = (props: RootComponentProps) => {
                           actionType: "storeManagementAction",
                           actionName: "openStore",
                           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-                          configuration: {
-                            [applicationDeploymentMiroir.uuid]:
-                              localMiroirConfig.serverConfig.storeSectionConfiguration[applicationDeploymentMiroir.uuid],
-                            [applicationDeploymentLibrary.uuid]:
-                              localMiroirConfig.serverConfig.storeSectionConfiguration[applicationDeploymentLibrary.uuid],
-                          },
+                          configuration: localMiroirConfig.serverConfig.storeSectionConfiguration,
                           deploymentUuid: applicationDeploymentMiroir.uuid,
                         }
                         log.info("openStore openStoreAction",openStoreAction, "localMiroirConfig.serverConfig", localMiroirConfig.serverConfig);

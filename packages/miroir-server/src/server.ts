@@ -6,8 +6,6 @@ import {
   ConfigurationService,
   LoggerFactoryInterface,
   LoggerInterface,
-  MiroirConfigClient,
-  MiroirConfigForRestClient,
   MiroirConfigServer,
   MiroirLoggerFactory,
   PersistenceStoreControllerManager,
@@ -15,9 +13,9 @@ import {
   SpecificLoggerOptionsMap,
   StoreOrBundleAction,
   StoreUnitConfiguration,
-  applicationDeploymentAdmin,
-  applicationDeploymentLibrary,
-  applicationDeploymentMiroir,
+  adminConfigurationDeploymentAdmin,
+  adminConfigurationDeploymentLibrary,
+  adminConfigurationDeploymentMiroir,
   defaultLevels,
   getLoggerName,
   miroirCoreStartup,
@@ -51,72 +49,12 @@ MiroirLoggerFactory.setEffectiveLoggerFactory(
   specificLoggerOptions,
 );
 
-const serverStoreConfig:MiroirConfigForRestClient = {
-  // "client": {
-    "emulateServer": false,
-    "serverConfig":{
-      "rootApiUrl":"http://localhost:3080",
-      "dataflowConfiguration": {
-        "type":"singleNode",
-        "metaModel": {
-          "location": {
-            "side":"server",
-            "type": "filesystem",
-            "location":"../miroir-core/src/assets"
-          }
-        }
-      },
-      "storeSectionConfiguration": {
-        [applicationDeploymentAdmin.uuid]: {
-          "admin": {
-            "emulatedServerType": "filesystem",
-            "directory":"../miroir-core/src/assets/admin"
-          },
-          "model": {
-            "emulatedServerType": "filesystem",
-            "directory":"../miroir-core/src/assets/admin_model"
-          },
-          "data": {
-            "emulatedServerType": "filesystem",
-            "directory":"../miroir-core/src/assets/admin_data"
-          }
-        },
-        [applicationDeploymentMiroir.uuid]:{
-          "admin": {
-            "emulatedServerType": "filesystem",
-            "directory":"../miroir-core/src/assets/admin"
-          },
-          "model": {
-            "emulatedServerType": "filesystem",
-            "directory":"../miroir-core/src/assets/miroir_model"
-          },
-          "data": {
-            "emulatedServerType": "filesystem",
-            "directory":"../miroir-core/src/assets/miroir_data"
-          }
-        },
-        [applicationDeploymentLibrary.uuid]: {
-          "admin": {
-            "emulatedServerType": "filesystem",
-            "directory":"../miroir-core/src/assets/admin"
-          },
-          "model": {
-            "emulatedServerType": "filesystem",
-            "directory":"../miroir-core/src/assets/library_model"
-          },
-          "data": {
-            "emulatedServerType": "filesystem",
-            "directory":"../miroir-core/src/assets/library_data"
-          }
-        }
-      }
-    },
-    // "deploymentMode":"monoUser",
-    // "monoUserAutentification": false,
-    // "monoUserVersionControl": false,
-    // "versionControlForDataConceptLevel": false
-  // }
+const configurations = {
+  [adminConfigurationDeploymentAdmin.uuid]: adminConfigurationDeploymentAdmin.configuration as StoreUnitConfiguration,
+  [adminConfigurationDeploymentMiroir.uuid]: adminConfigurationDeploymentMiroir.configuration as StoreUnitConfiguration,
+  [adminConfigurationDeploymentLibrary.uuid]: adminConfigurationDeploymentLibrary.configuration as StoreUnitConfiguration,
 }
+
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"Server");
 let myLogger:LoggerInterface = console as any as LoggerInterface;
@@ -167,18 +105,19 @@ persistenceSaga.run(localCache)
 persistenceStoreControllerManager.setPersistenceStore(persistenceSaga); // useless?
 persistenceStoreControllerManager.setLocalCache(localCache);
 
-const openStoreAction: StoreOrBundleAction = {
-  actionType: "storeManagementAction",
-  actionName: "openStore",
-  endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-  configuration: {
-    [applicationDeploymentAdmin.uuid]: serverStoreConfig.serverConfig.storeSectionConfiguration[
-      applicationDeploymentAdmin.uuid
-    ] as StoreUnitConfiguration,
-  },
-  deploymentUuid: applicationDeploymentAdmin.uuid,
-};
-await persistenceSaga.handlePersistenceAction(openStoreAction)
+
+for (const c of Object.entries(configurations)) {
+  const openStoreAction: StoreOrBundleAction = {
+    actionType: "storeManagementAction",
+    actionName: "openStore",
+    endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+    configuration: {
+      [c[0]]: c[1] as StoreUnitConfiguration,
+    },
+    deploymentUuid: c[0],
+  };
+  await persistenceSaga.handlePersistenceAction(openStoreAction)
+}
 
 
 // ##############################################################################################

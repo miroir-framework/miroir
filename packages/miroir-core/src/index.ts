@@ -382,7 +382,7 @@ export {
   applicationModelEntities,
   defaultMiroirMetaModel,
   getCurrentEntityDefinition,
-  getDeploymentUuidToReportsEntitiesDefinitionsMapping,
+  getReportsAndEntitiesDefinitionsForDeploymentUuid,
   metaModelEntities,
   miroirModelEntities,
 } from './1_core/Model.js';
@@ -464,7 +464,6 @@ export {
 } from './3_controllers/ErrorHandling/ErrorModelStore.js';
 export {
   resetAndInitMiroirAndApplicationDatabase,
-  resetMiroirAndApplicationDatabases,
 } from './3_controllers/resetApplicationDatabase.js';
 export {
   storeActionOrBundleActionStoreRunner,
@@ -766,9 +765,15 @@ export {
 
 
 import menuDefaultAdmin from "./assets/admin_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/dd168e5a-2a21-4d2d-a443-032c6d15eb22.json";
+import adminConfigurationDeploymentAdmin from "./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/18db21bf-f8d3-4f6a-8296-84b69f6dc48b.json";
+import adminConfigurationDeploymentMiroir from "./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
+import adminConfigurationDeploymentLibrary from "./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
 
 export {
-  menuDefaultAdmin
+  adminConfigurationDeploymentAdmin,
+  adminConfigurationDeploymentLibrary,
+  adminConfigurationDeploymentMiroir,
+  menuDefaultAdmin,
 }
 
 // const myDefaultExport = "Miroir-core default export"

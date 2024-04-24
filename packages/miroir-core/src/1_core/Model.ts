@@ -40,7 +40,7 @@ import applicationVersionInitialMiroirVersionCrossEntityDefinitionReport from '.
 import applicationVersionInitialMiroirVersion from '../assets/miroir_data/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json';
 import jzodSchemajzodMiroirBootstrapSchema from "../assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json";
 
-import { MetaEntity } from "../0_interfaces/1_core/EntityDefinition.js";
+import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import instanceConfigurationReference from '../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
 
 // import { Report, } from "../0_interfaces/1_core/Report.js";
@@ -132,81 +132,52 @@ export const defaultMiroirMetaModel: MetaModel = {
   ]
 }
 
-// export const nodeConfigurationMetaModel:MiroirApplicationModel = {
-//   applicationVersions:[
-//     applicationVersionInitialMiroirVersion
-//   ],
-//   configuration: [instanceConfigurationReference],
-//   entities: [
-//     entityApplication as MetaEntity,
-//     entityApplicationDeploymentConfiguration as MetaEntity,
-//     entityApplicationModelBranch as MetaEntity,
-//     entityApplicationVersion as MetaEntity,
-//     entityEntity as MetaEntity,
-//     entityEntityDefinition as MetaEntity,
-//     entityReport as MetaEntity,
-//     entityStoreBasedConfiguration as MetaEntity,
-//     // entityApplicationVersion as MetaEntity,
-//   ],
-//   entityDefinitions: [
-//     entityDefinitionApplication as EntityDefinition,
-//     entityDefinitionApplicationDeploymentConfiguration as EntityDefinition,
-//     entityDefinitionApplicationModelBranch as EntityDefinition,
-//     entityDefinitionApplicationVersion as EntityDefinition,
-//     entityDefinitionEntity as EntityDefinition,
-//     entityDefinitionEntityDefinition as EntityDefinition,
-//     entityDefinitionStoreBasedConfiguration as EntityDefinition,
-//     entityDefinitionReport as EntityDefinition,
-//   ],
-//   jzodSchemas: [
-
-//   ],
-//   reports: [
-//     reportApplicationDeploymentConfigurationList as Report,
-//     reportApplicationList as Report,
-//     reportApplicationModelBranchList as Report,
-//     reportApplicationVersionList as Report,
-//     reportConfigurationList as Report,
-//     reportEntityDefinitionList as Report,
-//     reportEntityList as Report,
-//     reportReportList as Report,
-//   ],
-//   applicationVersionCrossEntityDefinition: [
-//     applicationVersionInitialMiroirVersionCrossEntityDefinitionApplication,
-//     applicationVersionInitialMiroirVersionCrossEntityDefinitionApplicationModelBranch,
-//     applicationVersionInitialMiroirVersionCrossEntityDefinitionApplicationVersion,
-//     applicationVersionInitialMiroirVersionCrossEntityDefinitionEntity,
-//     applicationVersionInitialMiroirVersionCrossEntityDefinitionEntityDefinition,
-//     applicationVersionInitialMiroirVersionCrossEntityDefinitionReport,
-//     applicationVersionInitialMiroirVersionCrossEntityDefinitionStoreBasedConfiguration,
-//   ]
-// }
-
-
-export function getCurrentEntityDefinition(metaModel:MetaModel,applicationUuid:string,entityUuid:string): EntityDefinition | undefined{
-  const currentApplicationVersionUuid:string = metaModel.configuration[0].definition.currentApplicationVersion;
-  const currentApplicationVersion = metaModel.applicationVersions.find(av=>av.uuid == currentApplicationVersionUuid);
-  const currentApplicationVersionCrossEntityDefinitions = metaModel.applicationVersionCrossEntityDefinition.filter(e=>e.applicationVersion == currentApplicationVersionUuid);
-  const currentEntityDefinitions = currentApplicationVersionCrossEntityDefinitions.map(e=>metaModel.entityDefinitions.find(x=>x.uuid == e.uuid));
-  return currentEntityDefinitions.find(e=>e?.entityUuid == entityUuid);
+export function getCurrentEntityDefinition(
+  metaModel: MetaModel,
+  applicationUuid: string,
+  entityUuid: string
+): EntityDefinition | undefined {
+  const currentApplicationVersionUuid: string = metaModel.configuration[0].definition.currentApplicationVersion;
+  const currentApplicationVersion = metaModel.applicationVersions.find(
+    (av) => av.uuid == currentApplicationVersionUuid
+  );
+  const currentApplicationVersionCrossEntityDefinitions = metaModel.applicationVersionCrossEntityDefinition.filter(
+    (e) => e.applicationVersion == currentApplicationVersionUuid
+  );
+  const currentEntityDefinitions = currentApplicationVersionCrossEntityDefinitions.map((e) =>
+    metaModel.entityDefinitions.find((x) => x.uuid == e.uuid)
+  );
+  return currentEntityDefinitions.find((e) => e?.entityUuid == entityUuid);
 }
 
 const metaModelReports = [reportEntityList.uuid, reportEntityDefinitionList.uuid, reportEntityDetails.uuid, reportEntityDefinitionDetails.uuid];
 
-export function getDeploymentUuidToReportsEntitiesDefinitionsMapping(
+// ################################################################################################
+export function getReportsAndEntitiesDefinitionsForDeploymentUuid(
+  deploymentUuid: Uuid,
   miroirMetaModel: MetaModel,
-  libraryAppModel: MetaModel,
-  adminAppModel: MetaModel,
-):DeploymentUuidToReportsEntitiesDefinitionsMapping {
-  return { // displayedDeploymentDefinition, displayedApplicationSection
-    [applicationDeploymentMiroir.uuid]: {
+  appModel: MetaModel,
+):{
+  model: {
+      availableReports: Report[];
+      entities: Entity[];
+      entityDefinitions: EntityDefinition[];
+  };
+  data: {
+      availableReports: Report[];
+      entities: Entity[];
+      entityDefinitions: EntityDefinition[];
+  };
+} {
+  if (deploymentUuid == applicationDeploymentMiroir.uuid) {
+    return {
       "model": {
         availableReports: miroirMetaModel.reports.filter(
           (r) => metaModelReports.includes(r.uuid)
-          ),
-          entities: miroirMetaModel.entities,
-          entityDefinitions: miroirMetaModel.entityDefinitions,
-        },
+        ),
+        entities: miroirMetaModel.entities,
+        entityDefinitions: miroirMetaModel.entityDefinitions,
+      },
       "data": {
         availableReports: miroirMetaModel.reports.filter(
           (r) => !metaModelReports.includes(r.uuid)
@@ -214,30 +185,19 @@ export function getDeploymentUuidToReportsEntitiesDefinitionsMapping(
         entities: miroirMetaModel.entities,
         entityDefinitions: miroirMetaModel.entityDefinitions,
       },
-    },
-    [applicationDeploymentLibrary.uuid]: {
+    };
+  } else {
+    return {
       "model": {
         availableReports: miroirMetaModel.reports,
         entities: miroirMetaModel.entities,
         entityDefinitions: miroirMetaModel.entityDefinitions,
       },
       "data": {
-        availableReports: libraryAppModel.reports,
-        entities: libraryAppModel.entities,
-        entityDefinitions: libraryAppModel.entityDefinitions,
+        availableReports: appModel.reports,
+        entities: appModel.entities,
+        entityDefinitions: appModel.entityDefinitions,
       },
-    },
-    [applicationDeploymentAdmin.uuid]: {
-      "model": {
-        availableReports: miroirMetaModel.reports,
-        entities: miroirMetaModel.entities,
-        entityDefinitions: miroirMetaModel.entityDefinitions,
-      },
-      "data": {
-        availableReports: adminAppModel.reports,
-        entities: adminAppModel.entities,
-        entityDefinitions: adminAppModel.entityDefinitions,
-      },
-    },
+    }
   }
 }

@@ -306,12 +306,13 @@ export const ToolsPage: React.FC<any> = (
           actionType: "storeManagementAction",
           actionName: "openStore",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-          configuration: {
-            [applicationDeploymentMiroir.uuid]: (submitMiroirConfig.client as MiroirConfigForRestClient).serverConfig
-              .storeSectionConfiguration[applicationDeploymentMiroir.uuid] as StoreUnitConfiguration,
-            [applicationDeploymentLibrary.uuid]: (submitMiroirConfig.client as MiroirConfigForRestClient).serverConfig
-              .storeSectionConfiguration[applicationDeploymentLibrary.uuid] as StoreUnitConfiguration,
-          },
+          configuration: (submitMiroirConfig.client as MiroirConfigForRestClient).serverConfig.storeSectionConfiguration,
+          // {
+          //   [applicationDeploymentMiroir.uuid]: (submitMiroirConfig.client as MiroirConfigForRestClient).serverConfig
+          //     .storeSectionConfiguration[applicationDeploymentMiroir.uuid] as StoreUnitConfiguration,
+          //   [applicationDeploymentLibrary.uuid]: (submitMiroirConfig.client as MiroirConfigForRestClient).serverConfig
+          //     .storeSectionConfiguration[applicationDeploymentLibrary.uuid] as StoreUnitConfiguration,
+          // },
           deploymentUuid: applicationDeploymentMiroir.uuid,
         });
   

@@ -1,9 +1,9 @@
 import {
-  StoreOrBundleAction,
+  ActionReturnType,
   ModelAction,
   ModelActionInitModel,
   ModelActionInitModelParams,
-  ActionReturnType
+  StoreOrBundleAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { PersistenceStoreControllerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
@@ -16,9 +16,8 @@ import { cleanLevel } from "./constants.js";
 import { applicationDeploymentLibrary } from "../ApplicationDeploymentLibrary";
 import applicationDeploymentMiroir from "../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 
-import { startLocalPersistenceStoreControllers } from "../4_services/PersistenceStoreControllerTools.js";
-import { ACTION_OK } from "../1_core/constants.js";
 import { defaultMiroirMetaModel } from "../1_core/Model.js";
+import { ACTION_OK } from "../1_core/constants.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "ActionRunner");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -199,30 +198,11 @@ export async function storeActionOrBundleActionStoreRunner(
         );
 
         const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(deployment[0]);
-        // await startLocalPersistenceStoreControllers(localMiroirPersistenceStoreController, localAppPersistenceStoreController);
         await localPersistenceStoreController?.open();
         await localPersistenceStoreController?.bootFromPersistedState(defaultMiroirMetaModel.entities,defaultMiroirMetaModel.entityDefinitions);
 
         log.info("storeActionOrBundleActionStoreRunner openStore for deployment",deployment[0], "DONE!", persistenceStoreControllerManager.getPersistenceStoreControllers());
       }
-      // await persistenceStoreControllerManager.deletePersistenceStoreController(applicationDeploymentMiroir.uuid);
-      // await persistenceStoreControllerManager.deletePersistenceStoreController(applicationDeploymentLibrary.uuid);
-      // await persistenceStoreControllerManager.addPersistenceStoreController(
-      //   applicationDeploymentMiroir.uuid,
-      //   action.configuration[applicationDeploymentMiroir.uuid]
-      // );
-      // await persistenceStoreControllerManager.addPersistenceStoreController(
-      //   applicationDeploymentLibrary.uuid,
-      //   action.configuration[applicationDeploymentLibrary.uuid]
-      // );
-      // // }
-      // const localMiroirPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentMiroir.uuid);
-      // const localAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentLibrary.uuid);
-      // if (!localMiroirPersistenceStoreController || !localAppPersistenceStoreController) {
-      //   throw new Error("could not find controller:" + localMiroirPersistenceStoreController + " " + localAppPersistenceStoreController);
-      // }
-
-      // await startLocalPersistenceStoreControllers(localMiroirPersistenceStoreController, localAppPersistenceStoreController);
 
       log.info("storeActionOrBundleActionStoreRunner openStore DONE!", persistenceStoreControllerManager.getPersistenceStoreControllers());
 
@@ -231,8 +211,21 @@ export async function storeActionOrBundleActionStoreRunner(
     case "closeStore": {
       log.info("storeActionOrBundleActionStoreRunner closeStore");
       // NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
-      await persistenceStoreControllerManager.deletePersistenceStoreController(applicationDeploymentLibrary.uuid);
-      await persistenceStoreControllerManager.deletePersistenceStoreController(applicationDeploymentMiroir.uuid);
+      await persistenceStoreControllerManager.deletePersistenceStoreController(action.deploymentUuid);
+      // await persistenceStoreControllerManager.deletePersistenceStoreController(applicationDeploymentMiroir.uuid);
+      // for (const deployment of Object.entries(action.configuration)) {
+      //   await persistenceStoreControllerManager.deletePersistenceStoreController(deployment[0]);
+      //   // await persistenceStoreControllerManager.addPersistenceStoreController(
+      //   //   deployment[0],
+      //   //   deployment[1]
+      //   // );
+
+      //   // const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(deployment[0]);
+      //   // await localPersistenceStoreController?.open();
+      //   // await localPersistenceStoreController?.bootFromPersistedState(defaultMiroirMetaModel.entities,defaultMiroirMetaModel.entityDefinitions);
+
+      //   log.info("storeActionOrBundleActionStoreRunner openStore for deployment",deployment[0], "DONE!", persistenceStoreControllerManager.getPersistenceStoreControllers());
+      // }
 
       log.info("storeActionOrBundleActionStoreRunner closeStore DONE!", persistenceStoreControllerManager.getPersistenceStoreControllers());
 

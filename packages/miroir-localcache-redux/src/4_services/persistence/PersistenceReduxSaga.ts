@@ -136,25 +136,22 @@ export class PersistenceReduxSaga implements PersistenceInterface {
               }
               case 'instanceAction':
               case 'modelAction': {
-                const localMiroirPersistenceStoreController = this.persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentMiroir.uuid);
-                const localAppPersistenceStoreController = this.persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentLibrary.uuid);
+                const localPersistenceStoreController =
+                  this.persistenceStoreControllerManager.getPersistenceStoreController(
+                    action.deploymentUuid
+                  );
 
-                if (!localMiroirPersistenceStoreController || !localAppPersistenceStoreController) {
-                  throw new Error("restMethodGetHandler could not find controller:" + localMiroirPersistenceStoreController + " " + localAppPersistenceStoreController);
+                if (!localPersistenceStoreController) {
+                  throw new Error("restMethodGetHandler could not find controller for deployment: " + action.deploymentUuid);
                 } 
-                if (action.deploymentUuid == applicationDeploymentMiroir.uuid) {
-                  const localStoreResult = yield* call(() =>localMiroirPersistenceStoreController.handleAction(action));
-                } else {
-                  const localStoreResult = yield* call(() =>localAppPersistenceStoreController.handleAction(action));
-                }
+                const localStoreResult = yield* call(() =>localPersistenceStoreController.handleAction(action));
                 break;
               }
               case 'RestPersistenceAction': {
-                const localMiroirPersistenceStoreController = this.persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentMiroir.uuid);
-                const localAppPersistenceStoreController = this.persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentLibrary.uuid);
+                const localPersistenceStoreController = this.persistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
 
-                if (!localMiroirPersistenceStoreController || !localAppPersistenceStoreController) {
-                  throw new Error("restMethodGetHandler could not find controller:" + localMiroirPersistenceStoreController + " " + localAppPersistenceStoreController);
+                if (!localPersistenceStoreController) {
+                  throw new Error("restMethodGetHandler could not find controller for deployment: " + action.deploymentUuid);
                 } 
                 const actionMap: {[k: string]: "createInstance" | "deleteInstance" | "updateInstance" | "getInstances"} = {
                   "create": "createInstance",
@@ -177,13 +174,13 @@ export class PersistenceReduxSaga implements PersistenceInterface {
                     instances: (Array.isArray(action.objects)?action.objects:[]) as EntityInstance[]
                   }]
                 } as PersistenceStoreControllerAction
-                log.info("PersistenceActionReduxSaga handlePersistenceAction handle RestPersistenceAction", JSON.stringify(action, undefined, 2), "localStoreAction=", JSON.stringify(localStoreAction,undefined, 2))
-                let localStoreResult: ActionReturnType
-                if (action.deploymentUuid == applicationDeploymentMiroir.uuid) {
-                  localStoreResult = yield* call(() =>localMiroirPersistenceStoreController.handleAction(localStoreAction));
-                } else {
-                  localStoreResult = yield* call(() =>localAppPersistenceStoreController.handleAction(localStoreAction));
-                }
+                log.info(
+                  "PersistenceActionReduxSaga handlePersistenceAction handle RestPersistenceAction",
+                  JSON.stringify(action, undefined, 2),
+                  "localStoreAction=",
+                  JSON.stringify(localStoreAction, undefined, 2)
+                );
+                const localStoreResult: ActionReturnType = yield* call(() =>localPersistenceStoreController.handleAction(localStoreAction));
                 log.info("PersistenceActionReduxSaga handlePersistenceAction handle RestPersistenceAction result", JSON.stringify(localStoreResult, undefined, 2))
                 return yield localStoreResult;
                 break;

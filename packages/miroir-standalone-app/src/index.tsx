@@ -288,6 +288,7 @@ async function start(root:Root) {
       new Endpoint(localCache)
     );
 
+    // ################################################
     if (currentMiroirConfig.client.emulateServer) {
       const {
         localDataStoreWorker, // browser
@@ -314,14 +315,7 @@ async function start(root:Root) {
         actionType: "storeManagementAction",
         actionName: "openStore",
         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        configuration: {
-          [applicationDeploymentMiroir.uuid]: currentMiroirConfig.client.deploymentStorageConfig[
-            applicationDeploymentMiroir.uuid
-          ] as StoreUnitConfiguration,
-          [applicationDeploymentLibrary.uuid]: currentMiroirConfig.client.deploymentStorageConfig[
-            applicationDeploymentLibrary.uuid
-          ] as StoreUnitConfiguration,
-        },
+        configuration: currentMiroirConfig.client.deploymentStorageConfig,
         deploymentUuid: applicationDeploymentMiroir.uuid,
       };
       await persistenceStore.handlePersistenceAction(openStoreAction)

@@ -8,10 +8,6 @@ import applicationMiroir from '../assets/miroir_data/a659d350-dd97-4da9-91de-524
 import applicationVersionInitialMiroirVersion from '../assets/miroir_data/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json';
 import applicationModelBranchMiroirMasterBranch from '../assets/miroir_data/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json';
 
-import applicationStoreBasedConfigurationLibrary from "../assets/library_model/7990c0c9-86c3-40a1-a121-036c91b55ed7/2e5b7948-ff33-4917-acac-6ae6e1ef364f.json";
-import applicationLibrary from "../assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
-import applicationVersionLibraryInitialVersion from "../assets/library_model/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/419773b4-a73c-46ca-8913-0ee27fb2ce0a.json";
-import applicationModelBranchLibraryMasterBranch from "../assets/library_model/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/Logger";
 import { packageName } from "../constants";
@@ -26,71 +22,45 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   }
 );
 
-export async function resetMiroirAndApplicationDatabases(
-  domainController: DomainControllerInterface
-) {
-  await domainController.handleAction({
-    actionType: "modelAction",
-    actionName: "resetModel",
-    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-    deploymentUuid: applicationDeploymentLibrary.uuid,
-  });
-  await domainController.handleAction({
-    actionType: "modelAction",
-    actionName: "resetModel",
-    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-    deploymentUuid: applicationDeploymentMiroir.uuid
-  });
-}
-
 export async function resetAndInitMiroirAndApplicationDatabase(
   domainController: DomainControllerInterface
 ) {
-  await resetMiroirAndApplicationDatabases(domainController)
-  await domainController.handleAction({
-    actionType: "modelAction",
-    actionName: "initModel",
-    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-    deploymentUuid: applicationDeploymentMiroir.uuid,
-    params: {
-      dataStoreType: "miroir",
-      metaModel: defaultMiroirMetaModel,
-      application: applicationMiroir,
-      applicationDeploymentConfiguration: applicationDeploymentMiroir,
-      applicationModelBranch: applicationModelBranchMiroirMasterBranch,
-      applicationStoreBasedConfiguration: applicationStoreBasedConfigurationMiroir,
-      applicationVersion: applicationVersionInitialMiroirVersion,
-    },
-  });
-  await domainController.handleAction({
-    actionType: "modelAction",
-    actionName: "initModel",
-    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-    deploymentUuid: applicationDeploymentLibrary.uuid,
-    params: {
-      dataStoreType: "app",
-      metaModel: defaultMiroirMetaModel,
-      application: applicationLibrary,
-      applicationDeploymentConfiguration: applicationDeploymentLibrary,
-      applicationModelBranch: applicationModelBranchLibraryMasterBranch,
-      applicationStoreBasedConfiguration: applicationStoreBasedConfigurationLibrary,
-      applicationVersion: applicationVersionLibraryInitialVersion,
-    },
-  });
+  const deployments = [applicationDeploymentLibrary, applicationDeploymentMiroir];
 
+  for (const d of deployments) {
+    await domainController.handleAction({
+      actionType: "modelAction",
+      actionName: "resetModel",
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      deploymentUuid: d.uuid,
+    });
+  }
+  for (const d of deployments) {
+    await domainController.handleAction({
+      actionType: "modelAction",
+      actionName: "initModel",
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      deploymentUuid: d.uuid,
+      params: {
+        dataStoreType: d.uuid == applicationDeploymentMiroir.uuid?"miroir":"app",
+        metaModel: defaultMiroirMetaModel,
+        application: applicationMiroir,
+        applicationDeploymentConfiguration: d,
+        applicationModelBranch: applicationModelBranchMiroirMasterBranch,
+        applicationStoreBasedConfiguration: applicationStoreBasedConfigurationMiroir,
+        applicationVersion: applicationVersionInitialMiroirVersion,
+      },
+    });
+  }
   log.info(
     "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ resetAndInitMiroirAndApplicationDatabase APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
   );
-  await domainController.handleAction({
-    actionType: "modelAction",
-    actionName: "rollback",
-    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-    deploymentUuid: applicationDeploymentLibrary.uuid,
-  });
-  await domainController.handleAction({
-    actionType: "modelAction",
-    actionName: "rollback",
-    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-    deploymentUuid: applicationDeploymentMiroir.uuid,
-  });
+  for (const d of deployments) {
+    await domainController.handleAction({
+      actionType: "modelAction",
+      actionName: "rollback",
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      deploymentUuid: d.uuid,
+    });
+  }
 }

@@ -427,10 +427,6 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             applicationSection: "data",
             instances: [
               newMenu
-              // Object.assign({}, reportReportList, {
-              //   name: "Report2List",
-              //   defaultLabel: "Modified List of Reports",
-              // }) as EntityInstance,
             ],
           },
         ],

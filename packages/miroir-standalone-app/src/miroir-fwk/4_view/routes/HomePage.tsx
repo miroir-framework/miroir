@@ -14,11 +14,14 @@ import {
   ApplicationDeploymentConfiguration,
   ApplicationSection,
   DomainControllerInterface,
+  Entity,
+  EntityDefinition,
   EntityInstance,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
   Report,
+  Uuid,
   applicationDeploymentAdmin,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
@@ -27,19 +30,23 @@ import {
   entityBook,
   entityDefinitionAuthor,
   entityDefinitionBook,
-  getDeploymentUuidToReportsEntitiesDefinitionsMapping,
   getLoggerName,
+  getReportsAndEntitiesDefinitionsForDeploymentUuid,
+  reportEntityDefinitionDetails,
+  reportEntityDefinitionList,
+  reportEntityDetails,
+  reportEntityList,
   reportReportList,
   resetAndInitMiroirAndApplicationDatabase
 } from "miroir-core";
 import { ReduxStateChanges } from "miroir-localcache-redux";
 
+import { Importer } from '../Importer';
 import {
   useDomainControllerService, useErrorLogService,
   useLocalCacheTransactions,
   useMiroirContextService
 } from "../MiroirContextReactProvider";
-import { Importer } from '../Importer';
 import { useCurrentModel } from "../ReduxHooks";
 
 
@@ -63,6 +70,9 @@ export interface RootComponentProps {
 function defaultToEntityList(value: string | undefined, miroirReports: Report[]): string | undefined {
   return value ? (value as string) : miroirReports.find((r) => r.name == "EntityList") ? "EntityList" : undefined;
 }
+
+const metaModelReports = [reportEntityList.uuid, reportEntityDefinitionList.uuid, reportEntityDetails.uuid, reportEntityDefinitionDetails.uuid];
+
 
 
 // ###################################################################################
@@ -117,10 +127,24 @@ export const HomePage = (props: RootComponentProps) => {
   );
 
   const deploymentUuidToReportsEntitiesDefinitionsMapping = useMemo(
-    () => getDeploymentUuidToReportsEntitiesDefinitionsMapping(
-      miroirMetaModel, 
-      libraryAppModel,
-      adminAppModel,
+    () => (
+      {
+        [applicationDeploymentAdmin.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+          applicationDeploymentAdmin.uuid,
+          miroirMetaModel, 
+          adminAppModel,
+        ),
+        [applicationDeploymentMiroir.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+          applicationDeploymentMiroir.uuid,
+          miroirMetaModel, 
+          miroirMetaModel, 
+        ),
+        [applicationDeploymentLibrary.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+          applicationDeploymentLibrary.uuid,
+          miroirMetaModel, 
+          libraryAppModel,
+        ),
+      }
     ),
     [miroirMetaModel, libraryAppModel, adminAppModel]
   );

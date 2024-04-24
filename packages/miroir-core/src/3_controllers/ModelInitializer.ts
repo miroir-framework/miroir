@@ -60,6 +60,7 @@ import { packageName } from '../constants';
 import { getLoggerName } from '../tools';
 import { cleanLevel } from './constants';
 import { Application, EntityDefinition, EntityInstance, MetaModel } from '../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
+import { menuDefaultLibrary } from '..';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ModelInitializer");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -201,28 +202,28 @@ export async function modelInitialize(
     );
     log.info(logHeader, "app initialized entity Definition", persistenceStoreController.getEntityUuids());
 
-    // bootstrap Application
+    // bootstrap Self Application
     await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityApplication as MetaEntity,
       entityDefinitionApplication as EntityDefinition
     );
     log.info(logHeader, "app initialized entity Application", persistenceStoreController.getEntityUuids());
 
-    // bootstrap ApplicationModelBranch
+    // bootstrap Self ApplicationModelBranch
     await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityApplicationModelBranch as MetaEntity,
       entityDefinitionApplicationModelBranch as EntityDefinition
     );
     log.info(logHeader, "app initialized entity ApplicationModelBranch", persistenceStoreController.getEntityUuids());
 
-    // bootstrap ApplicationVersion
+    // bootstrap Self ApplicationVersion
     await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityApplicationVersion as MetaEntity,
       entityDefinitionApplicationVersion as EntityDefinition
     );
     log.info(logHeader, "app initialized entity ApplicationVersion", persistenceStoreController.getEntityUuids());
 
-    // bootstrap Application
+    // bootstrap Self Deployment
     await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityApplicationDeploymentConfiguration as MetaEntity,
       entityDefinitionApplicationDeploymentConfiguration as EntityDefinition
@@ -230,6 +231,17 @@ export async function modelInitialize(
     log.info(
       logHeader,
       "app initialized entity ApplicationDeploymentConfiguration",
+      persistenceStoreController.getEntityUuids()
+    );
+
+    // bootstrap Self Menu
+    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+      entityMenu as MetaEntity,
+      entityDefinitionMenu as EntityDefinition
+    );
+    log.info(
+      logHeader,
+      "app initialized entity Menu",
       persistenceStoreController.getEntityUuids()
     );
 
@@ -263,6 +275,7 @@ export async function modelInitialize(
     await persistenceStoreController.upsertInstance("model", applicationModelBranch);
     await persistenceStoreController.upsertInstance("model", applicationVersion);
     await persistenceStoreController.upsertInstance("model", applicationStoreBasedConfiguration);
+    await persistenceStoreController.upsertInstance("model", menuDefaultLibrary);
   }
 
 

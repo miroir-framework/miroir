@@ -3,6 +3,20 @@
     "emulateServer": true,
     "rootApiUrl":"http://localhost:3080",
     "deploymentStorageConfig": {
+      "18db21bf-f8d3-4f6a-8296-84b69f6dc48b":{
+        "admin": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName":"admin-uuid-indexedDb_model"
+        },
+        "model": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName":"admin-uuid-indexedDb_model"
+        },
+        "data": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName":"admin-uuid-indexedDb_data"
+        }
+      },
       "10ff36f2-50a3-48d8-b80f-e48e5d13af8e":{
         "admin": {
           "emulatedServerType": "indexedDb",

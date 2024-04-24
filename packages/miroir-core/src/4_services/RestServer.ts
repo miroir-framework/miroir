@@ -95,8 +95,6 @@ export async function restMethodGetHandler
     // (targetPersistenceStoreController as any)["applicationName"],
     "deployment",
     deploymentUuid,
-    "applicationDeploymentLibrary.uuid",
-    applicationDeploymentLibrary.uuid
   );
 
   try {
@@ -125,8 +123,6 @@ export async function restMethodGetHandler
       effectiveUrl,
       "deployment",
       deploymentUuid,
-      "applicationDeploymentLibrary.uuid",
-      applicationDeploymentLibrary.uuid,
       "failed with error",
       error
     );
@@ -157,14 +153,14 @@ export async function restMethodsPostPutDeleteHandler(
     typeof foundParams["section"] == "string" ? foundParams["section"] : foundParams["section"][0]
   ) as ApplicationSection;
 
-  const localMiroirPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentMiroir.uuid);
-  const localAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentLibrary.uuid);
-  if (!localMiroirPersistenceStoreController || !localAppPersistenceStoreController) {
-    throw new Error("restMethodsPostPutDeleteHandler could not find controller:" + localMiroirPersistenceStoreController + " " + localAppPersistenceStoreController);
+  const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
+    deploymentUuid
+  );
+  if (!localPersistenceStoreController) {
+    throw new Error("restMethodsPostPutDeleteHandler could not find controller for deployment: " + deploymentUuid);
   } 
 
-  const targetDataStore =
-    deploymentUuid == applicationDeploymentLibrary.uuid ? localAppPersistenceStoreController : localMiroirPersistenceStoreController;
+  const targetDataStore = localPersistenceStoreController
 
   // THIS IS A COSTLY LOG!!!
   // log.trace(
@@ -229,53 +225,23 @@ export async function restActionHandler(
     }
     case "modelAction": 
     case "instanceAction": {
-      // TODO: code somewhat duplicated in PersistenceReduxSaga.handlePersistenceAction!
-      const localMiroirPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentMiroir.uuid);
-      const localAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentLibrary.uuid);
+      const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
       const domainController = persistenceStoreControllerManager.getDomainController();
-      if (!localMiroirPersistenceStoreController || !localAppPersistenceStoreController) {
-        throw new Error("could not find controller:" + localMiroirPersistenceStoreController + " " + localAppPersistenceStoreController);
+      if (!localPersistenceStoreController) {
+        throw new Error("could not find controller for deployment: " + action.deploymentUuid);
       }
       if (useDomainControllerToHandleModelAndInstanceActions) {
         // we are on the server, the action has been received from remote client
-        switch (action.deploymentUuid) {
-          case applicationDeploymentMiroir.uuid: {
-            const result = await domainController.handleAction(action)
-            return continuationFunction(response)(result)
-            break;
-          }
-          case applicationDeploymentLibrary.uuid: {
-            const result = await domainController.handleAction(action)
-            return continuationFunction(response)(result)
-            break;
-          }
-          default: {
-            throw new Error("RestServer restActionStoreRunner could not handle action " + action + " unknown deployment uuid=" + action.deploymentUuid);
-            break;
-          }
-        }
+        const result = await domainController.handleAction(action)
+        return continuationFunction(response)(result)
       } else {
         /**
          * we are on the client:
          * - the RestServerStub emulates the client,
          * - the client has direct access to the persistence store (which is emulated, too)
          *  */ 
-        switch (action.deploymentUuid) {
-          case applicationDeploymentMiroir.uuid: {
-            const result = await localMiroirPersistenceStoreController.handleAction(action)
-            return continuationFunction(response)(result)
-            break;
-          }
-          case applicationDeploymentLibrary.uuid: {
-            const result = await localAppPersistenceStoreController.handleAction(action)
-            return continuationFunction(response)(result)
-            break;
-          }
-          default: {
-            throw new Error("RestServer restActionStoreRunner could not handle action " + action + " unknown deployment uuid=" + action.deploymentUuid);
-            break;
-          }
-        }
+        const result = await localPersistenceStoreController.handleAction(action)
+        return continuationFunction(response)(result)
       }
       break;
     }
@@ -319,37 +285,16 @@ export async function queryHandler(
   const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
     deploymentUuid
   );
-  // const localMiroirPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
-  //   applicationDeploymentMiroir.uuid
-  // );
-  // const localAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
-  //   applicationDeploymentLibrary.uuid
-  // );
   const domainController = persistenceStoreControllerManager.getDomainController();
-  // if (!localMiroirPersistenceStoreController || !localAppPersistenceStoreController) {
   if (!localPersistenceStoreController) {
     throw new Error("RestServer could not find controller for deployment:" + deploymentUuid);
   }
   if (useDomainControllerToHandleModelAndInstanceActions) {
     // we are on the server, the action has been received from remote client
     // switch (queryAction.deploymentUuid) {
-    //   case applicationDeploymentMiroir.uuid: {
-        const result = await domainController.handleQuery(queryAction)
-        log.info("RestServer queryHandler used applicationDeploymentMiroir domainController result=", JSON.stringify(result, undefined,2))
-        return continuationFunction(response)(result)
-        // break;
-      // }
-      // case applicationDeploymentLibrary.uuid: {
-      //   const result = await domainController.handleQuery(queryAction)
-      //   log.info("RestServer queryHandler used applicationDeploymentLibrary domainController result=", JSON.stringify(result, undefined,2))
-      //   return continuationFunction(response)(result)
-      //   break;
-      // }
-      // default: {
-      //   throw new Error("RestServer queryHandler could not handle query " + queryAction + " unknown deployment uuid=" + queryAction.deploymentUuid);
-      //   break;
-      // }
-    // }
+    const result = await domainController.handleQuery(queryAction)
+    log.info("RestServer queryHandler used applicationDeploymentMiroir domainController result=", JSON.stringify(result, undefined,2))
+    return continuationFunction(response)(result)
   } else {
     // we're on the client, called by RestServerStub
     // uses the local cache, needs to have done a Model "rollback" action on the client//, or a Model "remoteLocalCacheRollback" action on the server

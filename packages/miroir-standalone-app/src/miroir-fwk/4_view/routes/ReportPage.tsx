@@ -13,8 +13,8 @@ import {
   applicationDeploymentAdmin,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
-  getDeploymentUuidToReportsEntitiesDefinitionsMapping,
-  getLoggerName
+  getLoggerName,
+  getReportsAndEntitiesDefinitionsForDeploymentUuid
 } from "miroir-core";
 import {
   useErrorLogService,
@@ -105,7 +105,25 @@ export const ReportPage = () => {
   );
 
   const deploymentUuidToReportsEntitiesDefinitionsMapping = useMemo(
-    () => getDeploymentUuidToReportsEntitiesDefinitionsMapping(miroirMetaModel, libraryAppModel, adminAppModel),
+    () => (
+      {
+        [applicationDeploymentAdmin.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+          applicationDeploymentAdmin.uuid,
+          miroirMetaModel, 
+          adminAppModel,
+        ),
+        [applicationDeploymentMiroir.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+          applicationDeploymentMiroir.uuid,
+          miroirMetaModel, 
+          miroirMetaModel, 
+        ),
+        [applicationDeploymentLibrary.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+          applicationDeploymentLibrary.uuid,
+          miroirMetaModel, 
+          libraryAppModel,
+        ),
+      }
+    ),
     [miroirMetaModel, libraryAppModel, adminAppModel]
   );
 
