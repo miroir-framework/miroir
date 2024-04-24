@@ -8,8 +8,8 @@ import { CSSObject, styled, Theme, useTheme } from '@mui/material/styles';
 
 import { AutoStories } from '@mui/icons-material';
 import {
-  applicationDeploymentAdmin,
-  applicationDeploymentLibrary,
+  adminConfigurationDeploymentAdmin,
+  adminConfigurationDeploymentLibrary,
   applicationDeploymentMiroir,
   getLoggerName,
   LoggerInterface,
@@ -190,7 +190,7 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
       count: {count}
       <Divider />
       <SidebarSection
-        deploymentUuid={applicationDeploymentAdmin.uuid}
+        deploymentUuid={adminConfigurationDeploymentAdmin.uuid}
         menuUuid={menuDefaultAdmin.uuid}
         open={props.open}
         setOpen={props.setOpen}
@@ -206,7 +206,7 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
       </SidebarSection>
       <Divider />
       <SidebarSection
-        deploymentUuid={applicationDeploymentLibrary.uuid}
+        deploymentUuid={adminConfigurationDeploymentLibrary.uuid}
         menuUuid={menuDefaultLibrary.uuid}
         open={props.open}
         setOpen={props.setOpen}

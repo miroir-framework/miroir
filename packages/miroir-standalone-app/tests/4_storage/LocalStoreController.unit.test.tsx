@@ -18,7 +18,7 @@ import {
   ModelActionRenameEntity,
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManagerInterface,
-  applicationDeploymentLibrary,
+  adminConfigurationDeploymentLibrary,
   applicationDeploymentMiroir,
   applicationLibrary,
   applicationMiroir,
@@ -174,30 +174,15 @@ function ignorePostgresExtraAttributes(instances: EntityInstance[]){
 
 describe.sequential("localPersistenceStoreController.unit.test", () => {
 
-  // // ################################################################################################
-  // // it(
-  // //   "Delete miroir2 store or remove existing store", async () => { // TODO: test failure cases!
-  // //     if (miroirConfig.client.emulateServer) {
-  // //       const testResult: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(miroirConfig.client[applicationDeploymentMiroir.uuid].model)
-  // //       const testResult2: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(miroirConfig.client[applicationDeploymentMiroir.uuid].data)
-  // //       expect(testResult).toEqual(ACTION_OK)
-  // //       expect(testResult2).toEqual(ACTION_OK)
-  // //     } else {
-  // //       expect(false, "could not test store creation, configuration can not specify to use a real server, only emulated server makes sense in this case")
-  // //     }
-  // //   }
-  // // );
-
   // ################################################################################################
-  it(
-    "Create miroir2 store", async () => { // TODO: test failure cases!
+  it("Create miroir2 store", async () => { // TODO: test failure cases!
       if (miroirConfig.client.emulateServer) {
         console.log("Create miroir2 store START")
-        const testResult: ActionReturnType = await localMiroirPersistenceStoreController.createStore(miroirConfig.client[applicationDeploymentMiroir.uuid].model)
-        const testResult2: ActionReturnType = await localMiroirPersistenceStoreController.createStore(miroirConfig.client[applicationDeploymentMiroir.uuid].data)
+        const testResult: ActionReturnType = await localMiroirPersistenceStoreController.createStore(miroirConfig.client.deploymentStorageConfig[applicationDeploymentMiroir.uuid].model)
+        const testResult2: ActionReturnType = await localMiroirPersistenceStoreController.createStore(miroirConfig.client.deploymentStorageConfig[applicationDeploymentMiroir.uuid].data)
         //cleanup
-        const testResult3: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(miroirConfig.client[applicationDeploymentMiroir.uuid].model)
-        const testResult4: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(miroirConfig.client[applicationDeploymentMiroir.uuid].data)
+        const testResult3: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(miroirConfig.client.deploymentStorageConfig[applicationDeploymentMiroir.uuid].model)
+        const testResult4: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(miroirConfig.client.deploymentStorageConfig[applicationDeploymentMiroir.uuid].data)
         // test
         expect(testResult).toEqual(ACTION_OK)
         expect(testResult2).toEqual(ACTION_OK)
@@ -220,7 +205,7 @@ describe.sequential("localPersistenceStoreController.unit.test", () => {
         const deployMiroir = await persistenceStoreControllerManager.deployModule(
           localMiroirPersistenceStoreController,
           newMiroirDeploymentUuid,
-          miroirConfig.client[applicationDeploymentMiroir.uuid],
+          miroirConfig.client.deploymentStorageConfig[applicationDeploymentMiroir.uuid],
           {
             metaModel: defaultMiroirMetaModel,
             dataStoreType: 'miroir',
@@ -234,12 +219,12 @@ describe.sequential("localPersistenceStoreController.unit.test", () => {
         const deployApp = await persistenceStoreControllerManager.deployModule(
           localMiroirPersistenceStoreController,
           newLibraryDeploymentUuid,
-          miroirConfig.client[applicationDeploymentLibrary.uuid],
+          miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid],
           {
             metaModel: defaultMiroirMetaModel,
             dataStoreType: 'app',
             application: applicationLibrary,
-            applicationDeploymentConfiguration: applicationDeploymentLibrary,
+            applicationDeploymentConfiguration: adminConfigurationDeploymentLibrary,
             applicationModelBranch: applicationModelBranchLibraryMasterBranch,
             applicationVersion: applicationVersionLibraryInitialVersion,
             applicationStoreBasedConfiguration: applicationStoreBasedConfigurationLibrary,
@@ -352,7 +337,7 @@ describe.sequential("localPersistenceStoreController.unit.test", () => {
     const modelActionRenameEntity:ModelActionRenameEntity =  {
       actionType: "modelAction",
       actionName: "renameEntity",
-      deploymentUuid:applicationDeploymentLibrary.uuid,
+      deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       entityUuid: entityAuthor.uuid, 
       entityName: entityAuthor.name,
@@ -437,7 +422,7 @@ describe.sequential("localPersistenceStoreController.unit.test", () => {
     const modelActionDropEntity:ModelActionDropEntity =  {
       actionType: "modelAction",
       actionName: "dropEntity",
-      deploymentUuid:applicationDeploymentLibrary.uuid,
+      deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       entityUuid: entityAuthor.uuid, 
       // entityName: entityAuthor.name,
@@ -503,7 +488,6 @@ describe.sequential("localPersistenceStoreController.unit.test", () => {
   });
 
   // ################################################################################################
-  // TODO
   it("alter Author Entity: alter Author Entity attribute", async () => {
 
     // setup
@@ -517,7 +501,7 @@ describe.sequential("localPersistenceStoreController.unit.test", () => {
     const modelActionAlterAttribute:ModelAction =  {
       actionType: "modelAction",
       actionName: "alterEntityAttribute",
-      deploymentUuid:applicationDeploymentLibrary.uuid,
+      deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       entityUuid: entityAuthor.uuid, 
       entityDefinitionUuid: entityDefinitionAuthor.uuid,

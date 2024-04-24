@@ -1,0 +1,24 @@
+{
+  "uuid":"15e2004a-e7a0-4b9e-8acd-6d3500a6c9ad",
+  "parentName":"Deployment",
+  "parentUuid":"7959d814-400c-4e80-988f-a00fe582ab98",
+  "type":"singleNode",
+  "name":"Test1ApplicationFilesystemDeployment",
+  "defaultLabel":"Test1ApplicationFilesystemDeployment",
+  "application":"1acc4342-8180-445b-9766-7cb91e55ca6c",
+  "description": "The default Filesystem Deployment for Application Test1",
+  "configuration": {
+    "admin": {
+      "emulatedServerType": "filesystem",
+      "directory":"../miroir-core/src/assets/admin"
+    },
+    "model": {
+      "emulatedServerType": "filesystem",
+      "directory":"../miroir-core/src/assets/test1_model"
+    },
+    "data": {
+      "emulatedServerType": "filesystem",
+      "directory":"../miroir-core/src/assets/test1_data"
+    }
+  }
+}

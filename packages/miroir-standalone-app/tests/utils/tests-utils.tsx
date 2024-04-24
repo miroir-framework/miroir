@@ -25,7 +25,7 @@ import {
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManager,
   StoreUnitConfiguration,
-  applicationDeploymentLibrary,
+  adminConfigurationDeploymentLibrary,
   applicationDeploymentMiroir,
   applicationLibrary,
   applicationMiroir,
@@ -206,8 +206,8 @@ export async function miroirBeforeAll(
           actionType: "storeManagementAction",
           actionName: "createStore",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-          deploymentUuid: applicationDeploymentLibrary.uuid,
-          configuration: miroirConfig.client.serverConfig.storeSectionConfiguration[applicationDeploymentLibrary.uuid]
+          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+          configuration: miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentLibrary.uuid]
         }
       )
       if (createdApplicationLibraryStore?.status != "ok") {
@@ -283,7 +283,7 @@ export async function miroirBeforeAll(
         );
       }
       const localMiroirPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentMiroir.uuid);
-      const localAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentLibrary.uuid);
+      const localAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(adminConfigurationDeploymentLibrary.uuid);
 
       if (!localMiroirPersistenceStoreController || !localAppPersistenceStoreController) {
         throw new Error("could not find controller:" + localMiroirPersistenceStoreController + " " + localAppPersistenceStoreController);
@@ -337,10 +337,10 @@ export async function miroirBeforeEach(
           miroirConfig.client.deploymentStorageConfig[applicationDeploymentMiroir.uuid].data
         );
         const libraryModelStoreCreated: ActionReturnType = await localMiroirPersistenceStoreController.createStore(
-          miroirConfig.client.deploymentStorageConfig[applicationDeploymentLibrary.uuid].model
+          miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid].model
         );
         const libraryDataStoreCreated: ActionReturnType = await localMiroirPersistenceStoreController.createStore(
-          miroirConfig.client.deploymentStorageConfig[applicationDeploymentLibrary.uuid].data
+          miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid].data
         );
         if (
           miroirModelStoreCreated.status != "ok" ||
@@ -390,7 +390,7 @@ export async function miroirBeforeEach(
           defaultMiroirMetaModel,
           'app',
           applicationLibrary,
-          applicationDeploymentLibrary,
+          adminConfigurationDeploymentLibrary,
           applicationModelBranchLibraryMasterBranch,
           applicationVersionLibraryInitialVersion,
           applicationStoreBasedConfigurationLibrary,
@@ -438,10 +438,10 @@ export async function miroirAfterEach(
         miroirConfig.client.deploymentStorageConfig[applicationDeploymentMiroir.uuid].data
       );
       const libraryModelStoreCreated: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(
-        miroirConfig.client.deploymentStorageConfig[applicationDeploymentLibrary.uuid].model
+        miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid].model
       );
       const libraryDataStoreCreated: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(
-        miroirConfig.client.deploymentStorageConfig[applicationDeploymentLibrary.uuid].data
+        miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid].data
       );
     } catch (error) {
       console.error('Error afterEach',error);
@@ -470,8 +470,8 @@ export async function miroirAfterAll(
           actionType: "storeManagementAction",
           actionName: "deleteStore",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-          deploymentUuid: applicationDeploymentLibrary.uuid,
-          configuration: miroirConfig.client.serverConfig.storeSectionConfiguration[applicationDeploymentLibrary.uuid]
+          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+          configuration: miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentLibrary.uuid]
         }
       )
       if (deletedApplicationLibraryStore?.status != "ok") {
@@ -496,7 +496,7 @@ export async function miroirAfterAll(
         actionType: "storeManagementAction",
         actionName: "closeStore",
         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        deploymentUuid: applicationDeploymentLibrary.uuid,
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       })
       await remoteStore.handlePersistenceAction({
         actionType: "storeManagementAction",

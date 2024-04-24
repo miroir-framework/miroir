@@ -16,11 +16,8 @@ import {
   PersistenceInterface,
   PersistenceStoreControllerAction,
   PersistenceStoreControllerManagerInterface,
-  RemoteStoreActionReturnType,
   RestClientCallReturnType,
   RestPersistenceClientAndRestClientInterface,
-  applicationDeploymentLibrary,
-  applicationDeploymentMiroir,
   getLoggerName,
   storeActionOrBundleActionStoreRunner
 } from "miroir-core";

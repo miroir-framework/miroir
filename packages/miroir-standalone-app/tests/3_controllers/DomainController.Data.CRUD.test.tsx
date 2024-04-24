@@ -8,7 +8,7 @@ import { describe, expect } from 'vitest';
 // import process from "process";
 
 import {
-  applicationDeploymentLibrary,
+  adminConfigurationDeploymentLibrary,
   applicationDeploymentMiroir,
   author1,
   author2,
@@ -186,7 +186,7 @@ describe.sequential('DomainController.Data.CRUD',
             const createAction: DomainAction = {
               actionType: "modelAction",
               actionName: "createEntity",
-              deploymentUuid:applicationDeploymentLibrary.uuid,
+              deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               entities: [
                 {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
@@ -198,16 +198,16 @@ describe.sequential('DomainController.Data.CRUD',
               async () => {
                 await domainController.handleAction(
                   createAction,
-                  localCache.currentModel(applicationDeploymentLibrary.uuid)
+                  localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
                 );
                 await domainController.handleAction(
                   {
                     actionName: "commit",
                     actionType: "modelAction",
-                    deploymentUuid: applicationDeploymentLibrary.uuid,
+                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   },
-                  localCache.currentModel(applicationDeploymentLibrary.uuid)
+                  localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
                 );
               }
             );
@@ -217,7 +217,7 @@ describe.sequential('DomainController.Data.CRUD',
               actionName: "createInstance",
               endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
               applicationSection: "data",
-              deploymentUuid: applicationDeploymentLibrary.uuid,
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               objects: [
                 {
                   parentName: entityAuthor.name,
@@ -258,7 +258,7 @@ describe.sequential('DomainController.Data.CRUD',
             <TestUtilsTableComponent
               entityUuid={entityBook.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
-              deploymentUuid={applicationDeploymentLibrary.uuid}
+              deploymentUuid={adminConfigurationDeploymentLibrary.uuid}
             />
             ,
             {store:localCache.getInnerStore()}
@@ -277,7 +277,7 @@ describe.sequential('DomainController.Data.CRUD',
               await domainController.handleAction({
                 actionType: "modelAction",
                 actionName: "rollback",
-                deploymentUuid:applicationDeploymentLibrary.uuid,
+                deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               });
             }
@@ -306,7 +306,7 @@ describe.sequential('DomainController.Data.CRUD',
             actionName: "createInstance",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             applicationSection: "data",
-            deploymentUuid: applicationDeploymentLibrary.uuid,
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             objects:[{parentName:book3.parentName,parentUuid:book3.parentUuid,applicationSection:'data',instances:[book3 as EntityInstance]}]
           };
 
@@ -343,7 +343,7 @@ describe.sequential('DomainController.Data.CRUD',
               await domainController.handleAction({
                 actionType: "modelAction",
                 actionName: "rollback",
-                deploymentUuid:applicationDeploymentLibrary.uuid,
+                deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               });
             }
@@ -399,7 +399,7 @@ describe.sequential('DomainController.Data.CRUD',
             const createAction: DomainAction = {
               actionType: "modelAction",
               actionName: "createEntity",
-              deploymentUuid:applicationDeploymentLibrary.uuid,
+              deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               entities: [
                 {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
@@ -409,15 +409,15 @@ describe.sequential('DomainController.Data.CRUD',
 
             await act(
               async () => {
-                await domainController.handleAction(createAction, localCache.currentModel(applicationDeploymentLibrary.uuid));
+                await domainController.handleAction(createAction, localCache.currentModel(adminConfigurationDeploymentLibrary.uuid));
                 await domainController.handleAction(
                   {
                     actionName: "commit",
                     actionType: "modelAction",
-                    deploymentUuid: applicationDeploymentLibrary.uuid,
+                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   },
-                  localCache.currentModel(applicationDeploymentLibrary.uuid)
+                  localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
                 );
               }
             );
@@ -427,7 +427,7 @@ describe.sequential('DomainController.Data.CRUD',
               actionName: "createInstance",
               endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
               applicationSection: "data",
-              deploymentUuid: applicationDeploymentLibrary.uuid,
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               objects: [
                 {
                   parentName: entityAuthor.name,
@@ -468,7 +468,7 @@ describe.sequential('DomainController.Data.CRUD',
               // parentName="Book"
               entityUuid={entityBook.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
-              deploymentUuid={applicationDeploymentLibrary.uuid}
+              deploymentUuid={adminConfigurationDeploymentLibrary.uuid}
             />
             ,
             {store:localCache.getInnerStore()}
@@ -487,7 +487,7 @@ describe.sequential('DomainController.Data.CRUD',
               await domainController.handleAction({
                 actionType: "modelAction",
                 actionName: "rollback",
-                deploymentUuid:applicationDeploymentLibrary.uuid,
+                deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               });
             }
@@ -516,7 +516,7 @@ describe.sequential('DomainController.Data.CRUD',
             actionName: "deleteInstance",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             applicationSection: "data",
-            deploymentUuid: applicationDeploymentLibrary.uuid,
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             objects:[{parentName:book3.parentName,parentUuid:book3.parentUuid,applicationSection:'data', instances:[book3 as EntityInstance]}]
           };
   
@@ -552,7 +552,7 @@ describe.sequential('DomainController.Data.CRUD',
               await domainController.handleAction({
                 actionType: "modelAction",
                 actionName: "rollback",
-                deploymentUuid: applicationDeploymentLibrary.uuid,
+                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               });
             }
@@ -609,7 +609,7 @@ describe.sequential('DomainController.Data.CRUD',
             const createAction: DomainAction = {
               actionType: "modelAction",
               actionName: "createEntity",
-              deploymentUuid:applicationDeploymentLibrary.uuid,
+              deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               entities: [
                 {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
@@ -619,15 +619,15 @@ describe.sequential('DomainController.Data.CRUD',
 
             await act(
               async () => {
-                await domainController.handleAction(createAction, localCache.currentModel(applicationDeploymentLibrary.uuid));
+                await domainController.handleAction(createAction, localCache.currentModel(adminConfigurationDeploymentLibrary.uuid));
                 await domainController.handleAction(
                   {
                     actionName: "commit",
                     actionType: "modelAction",
-                    deploymentUuid: applicationDeploymentLibrary.uuid,
+                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   },
-                  localCache.currentModel(applicationDeploymentLibrary.uuid)
+                  localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
                 );
               }
             );
@@ -637,7 +637,7 @@ describe.sequential('DomainController.Data.CRUD',
               actionName: "createInstance",
               endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
               applicationSection: "data",
-              deploymentUuid: applicationDeploymentLibrary.uuid,
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               objects: [
                 {
                   parentName: entityAuthor.name,
@@ -679,7 +679,7 @@ describe.sequential('DomainController.Data.CRUD',
               // parentName="Book"
               entityUuid={entityBook.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
-              deploymentUuid={applicationDeploymentLibrary.uuid}
+              deploymentUuid={adminConfigurationDeploymentLibrary.uuid}
             />
             ,
             {store:localCache.getInnerStore()}
@@ -692,7 +692,7 @@ describe.sequential('DomainController.Data.CRUD',
               await domainController.handleAction({
                 actionType: "modelAction",
                 actionName: "rollback",
-                deploymentUuid:applicationDeploymentLibrary.uuid,
+                deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               });
             }
@@ -721,7 +721,7 @@ describe.sequential('DomainController.Data.CRUD',
             actionName: "updateInstance",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             applicationSection: "data",
-            deploymentUuid: applicationDeploymentLibrary.uuid,
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             objects: [
               {
                 parentName: book4.parentName,
@@ -761,7 +761,7 @@ describe.sequential('DomainController.Data.CRUD',
               await domainController.handleAction({
                 actionType: "modelAction",
                 actionName: "rollback",
-                deploymentUuid:applicationDeploymentLibrary.uuid,
+                deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               });
             }

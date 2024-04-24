@@ -281,7 +281,7 @@
 //     //           label={label}
 //     //           initialValuesObject={""}
 //     //           showButton={true}
-//     //           currentDeploymentUuid={applicationDeploymentLibrary.uuid}
+//     //           currentDeploymentUuid={adminConfigurationDeploymentLibrary.uuid}
 //     //           currentApplicationSection="data"
 //     //           elementJzodSchema={{type:"simpleType", definition:"uuid", extra:{targetEntity:entityAuthor.uuid}}}
 //     //           rootJzodSchema={{} as JzodObject}

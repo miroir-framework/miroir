@@ -10,8 +10,8 @@ import { Outlet } from 'react-router-dom';
 
 
 import {
-  applicationDeploymentAdmin,
-  applicationDeploymentLibrary,
+  adminConfigurationDeploymentAdmin,
+  adminConfigurationDeploymentLibrary,
   applicationDeploymentMiroir,
   DomainControllerInterface,
   domainEndpointVersionV1,
@@ -260,7 +260,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         actionType: "modelAction",
                         actionName: "rollback",
                         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                        deploymentUuid: applicationDeploymentLibrary.uuid,
+                        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                       });
                     }}
                   >
@@ -273,7 +273,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         actionType: "modelAction",
                         actionName: "rollback",
                         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                        deploymentUuid: applicationDeploymentAdmin.uuid,
+                        deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                       });
                     }}
                   >
@@ -292,7 +292,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         actionType: "modelAction",
                         actionName: "remoteLocalCacheRollback",
                         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                        deploymentUuid: applicationDeploymentLibrary.uuid,
+                        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                       });
                     }}
                   >
@@ -326,13 +326,13 @@ export const RootComponent = (props: RootComponentProps) => {
                       await domainController.handleAction({
                         actionType: "modelAction",
                         actionName: "initModel",
-                        deploymentUuid:applicationDeploymentLibrary.uuid,
+                        deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                         params: {
                           dataStoreType: "app",
                           metaModel: defaultMiroirMetaModel,
                           application: applicationLibrary,
-                          applicationDeploymentConfiguration: applicationDeploymentLibrary,
+                          applicationDeploymentConfiguration: adminConfigurationDeploymentLibrary,
                           applicationModelBranch: applicationModelBranchLibraryMasterBranch,
                           applicationStoreBasedConfiguration: applicationStoreBasedConfigurationLibrary,
                           applicationVersion: applicationVersionLibraryInitialVersion,
@@ -353,7 +353,7 @@ export const RootComponent = (props: RootComponentProps) => {
                       await domainController.handleAction({
                         actionType: "modelAction",
                         actionName: "rollback",
-                        deploymentUuid:applicationDeploymentLibrary.uuid,
+                        deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e"
                       });
                 
@@ -370,7 +370,7 @@ export const RootComponent = (props: RootComponentProps) => {
                       await remoteStore.handlePersistenceAction({
                         actionType: "bundleAction",
                         actionName: "createBundle",
-                        deploymentUuid: applicationDeploymentLibrary.uuid
+                        deploymentUuid: adminConfigurationDeploymentLibrary.uuid
                       })
                     }
                   }
@@ -393,7 +393,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         actionType: "modelAction",
                         actionName: "remoteLocalCacheRollback",
                         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                        deploymentUuid:applicationDeploymentLibrary.uuid,
+                        deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                       });
                     }}
                   >
@@ -403,7 +403,7 @@ export const RootComponent = (props: RootComponentProps) => {
                     onClick={async () => {
                       const query:DomainManyQueriesWithDeploymentUuid = {
                         queryType: "DomainManyQueries",
-                        deploymentUuid: applicationDeploymentLibrary.uuid,
+                        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                         contextResults: {
                           elementType: "object",
                           elementValue: {}

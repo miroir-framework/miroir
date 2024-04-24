@@ -13,7 +13,6 @@ import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
 
-import { applicationDeploymentLibrary } from "../ApplicationDeploymentLibrary";
 import applicationDeploymentMiroir from "../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 
 import { defaultMiroirMetaModel } from "../1_core/Model.js";

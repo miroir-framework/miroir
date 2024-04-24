@@ -10,7 +10,7 @@ import {
   MiroirConfigForRestClient,
   MiroirLoggerFactory,
   StoreUnitConfiguration,
-  applicationDeploymentLibrary,
+  adminConfigurationDeploymentLibrary,
   applicationDeploymentMiroir,
   getLoggerName,
   resolveReferencesForJzodSchemaAndValueObject,
@@ -75,7 +75,7 @@ const miroirConfig: MiroirConfigClient = {
             "schema": "miroir"
           }
         },
-        [applicationDeploymentLibrary.uuid]: {
+        [adminConfigurationDeploymentLibrary.uuid]: {
           "admin": {
             "emulatedServerType": "sql",
             "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
@@ -268,7 +268,7 @@ export const ToolsPage: React.FC<any> = (
                     "schema": values.applicationName + "miroir"
                   }
                 },
-                [applicationDeploymentLibrary.uuid]: {
+                [adminConfigurationDeploymentLibrary.uuid]: {
                   "admin": {
                     "emulatedServerType": "sql",
                     "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
@@ -307,12 +307,6 @@ export const ToolsPage: React.FC<any> = (
           actionName: "openStore",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           configuration: (submitMiroirConfig.client as MiroirConfigForRestClient).serverConfig.storeSectionConfiguration,
-          // {
-          //   [applicationDeploymentMiroir.uuid]: (submitMiroirConfig.client as MiroirConfigForRestClient).serverConfig
-          //     .storeSectionConfiguration[applicationDeploymentMiroir.uuid] as StoreUnitConfiguration,
-          //   [applicationDeploymentLibrary.uuid]: (submitMiroirConfig.client as MiroirConfigForRestClient).serverConfig
-          //     .storeSectionConfiguration[applicationDeploymentLibrary.uuid] as StoreUnitConfiguration,
-          // },
           deploymentUuid: applicationDeploymentMiroir.uuid,
         });
   
@@ -322,8 +316,8 @@ export const ToolsPage: React.FC<any> = (
             actionType: "storeManagementAction",
             actionName: "createStore",
             endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-            deploymentUuid: applicationDeploymentLibrary.uuid,
-            configuration: (submitMiroirConfig.client as MiroirConfigForRestClient).serverConfig.storeSectionConfiguration[applicationDeploymentLibrary.uuid]
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+            configuration: (submitMiroirConfig.client as MiroirConfigForRestClient).serverConfig.storeSectionConfiguration[adminConfigurationDeploymentLibrary.uuid]
           }
         )
         if (createdApplicationLibraryStore?.status != "ok") {

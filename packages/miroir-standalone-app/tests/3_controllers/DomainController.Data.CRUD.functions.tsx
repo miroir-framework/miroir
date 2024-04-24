@@ -5,7 +5,7 @@ import React from "react";
 
 
 import {
-  applicationDeploymentLibrary,
+  adminConfigurationDeploymentLibrary,
   applicationDeploymentMiroir,
   author1,
   author2,
@@ -80,7 +80,7 @@ export async function refreshAllInstancesTest(
       const createAction: DomainAction = {
             actionType: "modelAction",
             actionName: "createEntity",
-            deploymentUuid:applicationDeploymentLibrary.uuid,
+            deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             entities: [
               {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
@@ -90,15 +90,15 @@ export async function refreshAllInstancesTest(
 
       await act(
         async () => {
-          await domainController.handleAction(createAction, localCache.currentModel(applicationDeploymentLibrary.uuid));
+          await domainController.handleAction(createAction, localCache.currentModel(adminConfigurationDeploymentLibrary.uuid));
           await domainController.handleAction(
             {
               actionType: "modelAction",
               actionName: "commit",
-              deploymentUuid: applicationDeploymentLibrary.uuid,
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             },
-            localCache.currentModel(applicationDeploymentLibrary.uuid)
+            localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
           );
         }
       );
@@ -108,7 +108,7 @@ export async function refreshAllInstancesTest(
         actionName: "createInstance",
         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
         applicationSection: "data",
-        deploymentUuid: applicationDeploymentLibrary.uuid,
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         objects: [
           {
             parentName: entityAuthor.name,
@@ -155,7 +155,7 @@ export async function refreshAllInstancesTest(
         entityName={entityBook.name}
         entityUuid={entityBook.uuid}
         DisplayLoadingInfo={displayLoadingInfo}
-        deploymentUuid={applicationDeploymentLibrary.uuid}
+        deploymentUuid={adminConfigurationDeploymentLibrary.uuid}
       />,
       { store: localCache.getInnerStore() }
     );
@@ -172,7 +172,7 @@ export async function refreshAllInstancesTest(
       await domainController.handleAction({
         actionType: "modelAction",
         actionName: "rollback",
-        deploymentUuid:applicationDeploymentLibrary.uuid,
+        deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       });
     });

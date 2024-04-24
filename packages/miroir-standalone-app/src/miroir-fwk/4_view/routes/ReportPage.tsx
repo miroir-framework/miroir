@@ -10,8 +10,8 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   Report,
-  applicationDeploymentAdmin,
-  applicationDeploymentLibrary,
+  adminConfigurationDeploymentAdmin,
+  adminConfigurationDeploymentLibrary,
   applicationDeploymentMiroir,
   getLoggerName,
   getReportsAndEntitiesDefinitionsForDeploymentUuid
@@ -65,13 +65,13 @@ export const ReportPage = () => {
   // TODO: REMOVE HARD-CODED LIST!!! WHAT IS IT USEFUL FOR???
   const deployments = [
     applicationDeploymentMiroir,
-    applicationDeploymentLibrary,
-    applicationDeploymentAdmin,
+    adminConfigurationDeploymentLibrary,
+    adminConfigurationDeploymentAdmin,
   ] as ApplicationDeploymentConfiguration[];
 
   const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
-  const libraryAppModel: MetaModel = useCurrentModel(applicationDeploymentLibrary.uuid);
-  const adminAppModel: MetaModel = useCurrentModel(applicationDeploymentAdmin.uuid);
+  const libraryAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentLibrary.uuid);
+  const adminAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
 
   // log.info("ReportPage currentModel", currentModel);
 
@@ -107,8 +107,8 @@ export const ReportPage = () => {
   const deploymentUuidToReportsEntitiesDefinitionsMapping = useMemo(
     () => (
       {
-        [applicationDeploymentAdmin.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-          applicationDeploymentAdmin.uuid,
+        [adminConfigurationDeploymentAdmin.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+          adminConfigurationDeploymentAdmin.uuid,
           miroirMetaModel, 
           adminAppModel,
         ),
@@ -117,8 +117,8 @@ export const ReportPage = () => {
           miroirMetaModel, 
           miroirMetaModel, 
         ),
-        [applicationDeploymentLibrary.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-          applicationDeploymentLibrary.uuid,
+        [adminConfigurationDeploymentLibrary.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+          adminConfigurationDeploymentLibrary.uuid,
           miroirMetaModel, 
           libraryAppModel,
         ),

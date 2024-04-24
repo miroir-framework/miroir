@@ -94,7 +94,30 @@ Time:        6.032 s, estimated 8 s
 Ran all test suites with tests matching "domainSelector".
 ```
 
+
+
 ### Miroir-standalone-app: Automated Integration Tests
+
+#### Unit tests
+
+The LocalStoreController can be tested:
+
+```sh
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run test -w miroir-standalone-app -- LocalStoreController
+```
+
+Should result in:
+
+```sh
+ ✓ 4_storage/LocalStoreController.unit.test.tsx  (12 tests) 1522ms
+
+ Test Files  1 passed (1)
+      Tests  12 passed (12)
+   Start at  15:48:36
+   Duration  10.38s (transform 943ms, setup 114ms, collect 3.30s, tests 1.52s, environment 480ms, prepare 260ms)
+```
+
+
 
 #### automated integration tests On File System
 

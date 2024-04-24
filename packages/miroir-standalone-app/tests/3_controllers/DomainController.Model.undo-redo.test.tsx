@@ -14,7 +14,7 @@ import {
   MiroirContext,
   MiroirLoggerFactory,
   PersistenceStoreControllerInterface,
-  applicationDeploymentLibrary,
+  adminConfigurationDeploymentLibrary,
   applicationDeploymentMiroir,
   defaultLevels,
   entityAuthor,
@@ -156,7 +156,7 @@ describe.sequential(
               entityName={entityEntity.name}
               entityUuid={entityEntity.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
-              deploymentUuid={applicationDeploymentLibrary.uuid}
+              deploymentUuid={adminConfigurationDeploymentLibrary.uuid}
               instancesApplicationSection="model"
             />,
             {store:localCache.getInnerStore(),}
@@ -176,7 +176,7 @@ describe.sequential(
                 actionType: "modelAction",
                 actionName: "rollback",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                deploymentUuid:applicationDeploymentLibrary.uuid,
+                deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
               });
             }
           );
@@ -201,7 +201,7 @@ describe.sequential(
             actionType: "modelAction",
             actionName: "createEntity",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            deploymentUuid:applicationDeploymentLibrary.uuid,
+            deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
             entities: [
               {
                 entity: entityAuthor as Entity,
@@ -213,7 +213,7 @@ describe.sequential(
             actionType: "modelAction",
             actionName: "createEntity",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            deploymentUuid:applicationDeploymentLibrary.uuid,
+            deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
             entities: [
               {
                 entity: entityBook as Entity,
@@ -226,11 +226,11 @@ describe.sequential(
             async () => {
               await domainController.handleAction(
                 createAuthorAction,
-                localCache.currentModel(applicationDeploymentLibrary.uuid)
+                localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
               );
               await domainController.handleAction(
                 createBookAction,
-                localCache.currentModel(applicationDeploymentLibrary.uuid)
+                localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
               );
             }
           );
@@ -268,7 +268,7 @@ describe.sequential(
                 actionType: "undoRedoAction",
                 actionName: "undo",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
-                deploymentUuid:applicationDeploymentLibrary.uuid
+                deploymentUuid:adminConfigurationDeploymentLibrary.uuid
               });
             }
           );
@@ -302,7 +302,7 @@ describe.sequential(
                 actionType: "undoRedoAction",
                 actionName: "redo",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
-                deploymentUuid:applicationDeploymentLibrary.uuid
+                deploymentUuid:adminConfigurationDeploymentLibrary.uuid
               });
             }
           );
@@ -340,19 +340,19 @@ describe.sequential(
                 actionType: "undoRedoAction",
                 actionName: "undo",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
-                deploymentUuid:applicationDeploymentLibrary.uuid
+                deploymentUuid:adminConfigurationDeploymentLibrary.uuid
               });
               await domainController.handleAction({
                 actionType: "undoRedoAction",
                 actionName: "undo",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
-                deploymentUuid:applicationDeploymentLibrary.uuid
+                deploymentUuid:adminConfigurationDeploymentLibrary.uuid
               });
               await domainController.handleAction({
                 actionType: "undoRedoAction",
                 actionName: "redo",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
-                deploymentUuid:applicationDeploymentLibrary.uuid
+                deploymentUuid:adminConfigurationDeploymentLibrary.uuid
               });
             }
           );
@@ -381,7 +381,7 @@ describe.sequential(
                 actionType: "undoRedoAction",
                 actionName: "redo",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
-                deploymentUuid:applicationDeploymentLibrary.uuid
+                deploymentUuid:adminConfigurationDeploymentLibrary.uuid
               });
             }
           );
@@ -394,25 +394,25 @@ describe.sequential(
                 actionType: "undoRedoAction",
                 actionName: "undo",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
-                deploymentUuid:applicationDeploymentLibrary.uuid
+                deploymentUuid:adminConfigurationDeploymentLibrary.uuid
               });
               await domainController.handleAction({
                 actionType: "undoRedoAction",
                 actionName: "undo",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
-                deploymentUuid:applicationDeploymentLibrary.uuid
+                deploymentUuid:adminConfigurationDeploymentLibrary.uuid
               });
               await domainController.handleAction({
                 actionType: "undoRedoAction",
                 actionName: "undo",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
-                deploymentUuid:applicationDeploymentLibrary.uuid
+                deploymentUuid:adminConfigurationDeploymentLibrary.uuid
               });
               await domainController.handleAction({
                 actionType: "undoRedoAction",
                 actionName: "redo",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
-                deploymentUuid:applicationDeploymentLibrary.uuid
+                deploymentUuid:adminConfigurationDeploymentLibrary.uuid
               });
             }
           );
@@ -441,7 +441,7 @@ describe.sequential(
                 actionType: "undoRedoAction",
                 actionName: "redo",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
-                deploymentUuid:applicationDeploymentLibrary.uuid
+                deploymentUuid:adminConfigurationDeploymentLibrary.uuid
               });
             }
           );
@@ -454,7 +454,7 @@ describe.sequential(
                 actionType: "undoRedoAction",
                 actionName: "redo",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
-                deploymentUuid:applicationDeploymentLibrary.uuid
+                deploymentUuid:adminConfigurationDeploymentLibrary.uuid
               });
             }
           );
@@ -480,9 +480,9 @@ describe.sequential(
                   actionName: "commit",
                   actionType: "modelAction",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: applicationDeploymentLibrary.uuid,
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 },
-                localCache.currentModel(applicationDeploymentLibrary.uuid)
+                localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
               );
             }
           );

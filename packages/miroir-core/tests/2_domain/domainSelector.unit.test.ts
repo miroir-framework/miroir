@@ -1,4 +1,4 @@
-import { applicationDeploymentLibrary } from "../../src/ApplicationDeploymentLibrary";
+import adminConfigurationDeploymentLibrary from "../../src/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
 
 import { DomainState } from "../../src/0_interfaces/2_domain/DomainControllerInterface";
 import {
@@ -22,7 +22,7 @@ describe("domainSelector", () => {
     () => {
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
-        deploymentUuid: applicationDeploymentLibrary.uuid,
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: { elementType: "object", elementValue: {} },
         pageParams: { elementType: "object", elementValue: {} },
         queryParams: { elementType: "object", elementValue: {} },
@@ -68,7 +68,7 @@ describe("domainSelector", () => {
     () => {
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
-        deploymentUuid: applicationDeploymentLibrary.uuid,
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: { elementType: "object", elementValue: {} },
         pageParams: { elementType: "object", elementValue: {} },
         queryParams: { elementType: "object", elementValue: {} },
@@ -115,7 +115,7 @@ describe("domainSelector", () => {
 
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
-        "deploymentUuid": applicationDeploymentLibrary.uuid,
+        "deploymentUuid": adminConfigurationDeploymentLibrary.uuid,
         "contextResults": { elementType: "object", elementValue: {} },
         pageParams: { elementType: "object", elementValue: {} },
         queryParams: { elementType: "object", elementValue: {} },
@@ -162,7 +162,7 @@ describe("domainSelector", () => {
 
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
-        "deploymentUuid": applicationDeploymentLibrary.uuid,
+        "deploymentUuid": adminConfigurationDeploymentLibrary.uuid,
         "contextResults": { elementType: "object", elementValue: {} },
         pageParams: { elementType: "object", elementValue: {} },
         queryParams: { elementType: "object", elementValue: {} },
@@ -186,7 +186,7 @@ describe("domainSelector", () => {
 
       const queryResult:any = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam));
 
-      expect(queryResult.elementValue.book.elementValue).toBe(domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"])
+      expect(queryResult.elementValue.book.elementValue).toBe(domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"])
     }
   )
 
@@ -197,7 +197,7 @@ describe("domainSelector", () => {
 
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
-        "deploymentUuid": applicationDeploymentLibrary.uuid,
+        "deploymentUuid": adminConfigurationDeploymentLibrary.uuid,
         "contextResults": { elementType: "object", elementValue: {} },
         pageParams: { elementType: "object", elementValue: {} },
         queryParams: { elementType: "object", elementValue: {} },
@@ -225,7 +225,7 @@ describe("domainSelector", () => {
 
       const queryResult:any = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam));
 
-      expect(queryResult.elementValue.book2.elementValue).toBe(domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"])
+      expect(queryResult.elementValue.book2.elementValue).toBe(domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"])
     }
   )
 
@@ -236,7 +236,7 @@ describe("domainSelector", () => {
 
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
-        deploymentUuid: applicationDeploymentLibrary.uuid,
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: { elementType: "object", elementValue: {} },
         pageParams: { elementType: "object", elementValue: {} },
         queryParams: { elementType: "object", elementValue: { wantedBookUuid: { elementType: "instanceUuid", elementValue:"caef8a59-39eb-48b5-ad59-a7642d3a1e8f" } } },
@@ -261,7 +261,7 @@ describe("domainSelector", () => {
       const queryResult:any = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam));
       console.log("queryResult", JSON.stringify(queryResult, circularReplacer(), 2));
 
-      expect(queryResult.elementValue.book.elementValue).toBe(domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"])
+      expect(queryResult.elementValue.book.elementValue).toBe(domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"])
     }    
   )
 
@@ -272,7 +272,7 @@ describe("domainSelector", () => {
 
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
-        "deploymentUuid": applicationDeploymentLibrary.uuid,
+        "deploymentUuid": adminConfigurationDeploymentLibrary.uuid,
         "contextResults": { elementType: "object", elementValue: {} },
         pageParams: { elementType: "object", elementValue: {} },
         queryParams: { elementType: "object", elementValue: {} },
@@ -313,7 +313,7 @@ describe("domainSelector", () => {
       
       expect(result.elementType).toBe("object")
       expect((result.elementValue as any)["publisher"].elementValue).toBe(
-        domainState[applicationDeploymentLibrary.uuid]["data"]["a027c379-8468-43a5-ba4d-bf618be25cab"][
+        domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["a027c379-8468-43a5-ba4d-bf618be25cab"][
           "516a7366-39e7-4998-82cb-80199a7fa667"
         ]
       );
@@ -327,7 +327,7 @@ describe("domainSelector", () => {
 
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
-        deploymentUuid: applicationDeploymentLibrary.uuid,
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: { elementType: "object", elementValue: {} },
         pageParams: {
           elementType: "object",
@@ -395,7 +395,7 @@ describe("domainSelector", () => {
 
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
-        deploymentUuid: applicationDeploymentLibrary.uuid,
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: { elementType: "object", elementValue: {} },
         pageParams: {
           elementType: "object",
@@ -456,9 +456,9 @@ describe("domainSelector", () => {
       console.log("result", result);
       
       expect((result.elementValue as any)["booksOfPublisher"].elementValue).toEqual({
-        "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7": domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
-        "c6852e89-3c3c-447f-b827-4b5b9d830975": domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
-        "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
+        "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7": domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
+        "c6852e89-3c3c-447f-b827-4b5b9d830975": domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
+        "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
       })
     }
   )
@@ -470,7 +470,7 @@ describe("domainSelector", () => {
 
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
-        deploymentUuid: applicationDeploymentLibrary.uuid,
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: { elementType: "object", elementValue: {} },
         pageParams: {
           elementType: "object",
@@ -545,9 +545,9 @@ describe("domainSelector", () => {
       const result:DomainElement = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam));
 
       const expectedValue = {
-        "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7": domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
-        "c6852e89-3c3c-447f-b827-4b5b9d830975": domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
-        "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
+        "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7": domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
+        "c6852e89-3c3c-447f-b827-4b5b9d830975": domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
+        "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
       };
 
       expect((result.elementValue as any)["result1"].elementValue["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"].elementValue).toEqual(expectedValue)
@@ -564,7 +564,7 @@ describe("domainSelector", () => {
 
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
-        deploymentUuid: applicationDeploymentLibrary.uuid,
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: { elementType: "object", elementValue: {} },
         pageParams: { elementType: "object", elementValue: {
           applicationSection: {
@@ -618,7 +618,7 @@ describe("domainSelector", () => {
       const expectedValue = {
         elementType: "object",
         elementValue: Object.fromEntries(
-          Object.entries(domainState[applicationDeploymentLibrary.uuid]["data"]).map((e) => [
+          Object.entries(domainState[adminConfigurationDeploymentLibrary.uuid]["data"]).map((e) => [
             e[0],
             { elementType: "instanceUuidIndex", elementValue: e[1] },
           ])
@@ -636,14 +636,14 @@ describe("domainSelector", () => {
   //     "contextResults": { elementType: "object", elementValue: {} },
   //     pageParams: { elementType: "object", elementValue: {} },
   //     queryParams: { elementType: "object", elementValue: {} },
-  //     deploymentUuid: applicationDeploymentLibrary.uuid,
+  //     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
   //     entityUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
   //   };
 
   //   const result: RecordOfJzodElement | JzodElement | undefined = selectJzodSchemaByDomainModelQueryFromDomainState(domainState, queryParam);
 
   //   expect(result).toBe(
-  //     (domainState[applicationDeploymentLibrary.uuid]["model"]["54b9c72f-d4f3-4db9-9e0e-0dc840b530bd"][
+  //     (domainState[adminConfigurationDeploymentLibrary.uuid]["model"]["54b9c72f-d4f3-4db9-9e0e-0dc840b530bd"][
   //       "797dd185-0155-43fd-b23f-f6d0af8cae06"
   //     ] as EntityDefinition).jzodSchema
   //   );

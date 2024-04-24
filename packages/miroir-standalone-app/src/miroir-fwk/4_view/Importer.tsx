@@ -19,7 +19,7 @@ import {
   MetaEntity,
   MiroirLoggerFactory,
   Report,
-  applicationDeploymentLibrary,
+  adminConfigurationDeploymentLibrary,
   applicationDeploymentMiroir,
   applicationLibrary,
   entityEntity,
@@ -402,7 +402,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               {
                 "label": newEntityListReport.defaultLabel,
                 "section": "data",
-                "application": applicationDeploymentLibrary.uuid,
+                "application": adminConfigurationDeploymentLibrary.uuid,
                 "reportUuid": newEntityListReport.uuid,
                 "icon": "local_drink"
               },
@@ -849,7 +849,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               {
                 "label": newEntityListReport.defaultLabel,
                 "section": "data",
-                "application": applicationDeploymentLibrary.uuid,
+                "application": adminConfigurationDeploymentLibrary.uuid,
                 "reportUuid": newEntityListReport.uuid,
                 "icon": "location_on"
               },

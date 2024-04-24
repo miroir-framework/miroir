@@ -3,13 +3,11 @@ import {
   ActionReturnType,
   ApplicationSection,
   DomainElement,
-  DomainManyQueriesWithDeploymentUuid,
-  EntityInstance as string,
+  EntityInstance,
   InstanceAction,
   ModelAction,
   QueryAction,
-  StoreOrBundleAction,
-  EntityInstance,
+  StoreOrBundleAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import {
@@ -22,14 +20,12 @@ import {
 } from "../3_controllers/ActionRunner";
 
 import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
-import { applicationDeploymentLibrary } from "../ApplicationDeploymentLibrary";
 import { packageName } from "../constants";
 import { getLoggerName } from "../tools";
 import { MiroirLoggerFactory } from "./Logger";
 import { generateRestServiceResponse } from "./RestTools";
 import { cleanLevel } from "./constants";
 
-import applicationDeploymentMiroir from "../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface";
 import { getSelectorParams, selectByDomainManyQueriesFromDomainState } from "../2_domain/DomainStateQuerySelectors";
 

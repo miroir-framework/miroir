@@ -11,7 +11,7 @@ import {
 import 'material-icons/iconfont/material-icons.css';
 
 import {
-  applicationDeploymentLibrary,
+  adminConfigurationDeploymentLibrary,
   applicationDeploymentMiroir,
   ConfigurationService,
   defaultLevels,

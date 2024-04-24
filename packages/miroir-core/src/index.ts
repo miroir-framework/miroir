@@ -503,8 +503,8 @@ export {
 export { miroirCoreStartup } from './startup.js';
 export { stringTuple, circularReplacer, getLoggerName } from './tools.js';
 
-export {applicationDeploymentLibrary} from "./ApplicationDeploymentLibrary.js"
-export {applicationDeploymentAdmin} from "./ApplicationDeploymentAdmin.js"
+// export {applicationDeploymentLibrary} from "./ApplicationDeploymentLibrary.js"
+// export {applicationDeploymentAdmin} from "./ApplicationDeploymentAdmin.js"
 
 import entityApplication from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a659d350-dd97-4da9-91de-524fa01745dc.json';
 import entityApplicationDeploymentConfiguration from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/35c5608a-7678-4f07-a4ec-76fc5bc35424.json';
@@ -768,11 +768,13 @@ import menuDefaultAdmin from "./assets/admin_model/dde4c883-ae6d-47c3-b6df-26bc6
 import adminConfigurationDeploymentAdmin from "./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/18db21bf-f8d3-4f6a-8296-84b69f6dc48b.json";
 import adminConfigurationDeploymentMiroir from "./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 import adminConfigurationDeploymentLibrary from "./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
+import adminConfigurationDeploymentTest1 from "./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/15e2004a-e7a0-4b9e-8acd-6d3500a6c9ad.json";
 
 export {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
+  adminConfigurationDeploymentTest1,
   menuDefaultAdmin,
 }
 

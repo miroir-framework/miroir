@@ -43,34 +43,6 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 });
 
 
-// const applicationDeploymentLibrary: ApplicationDeploymentConfiguration = {
-//   "uuid":"f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-//   "parentName":"ApplicationDeploymentConfiguration",
-//   "parentUuid":"35c5608a-7678-4f07-a4ec-76fc5bc35424",
-//   "type":"singleNode",
-//   "name":"LibraryApplicationPostgresDeployment",
-//   "defaultLabel":"LibraryApplicationPostgresDeployment",
-//   "application":"5af03c98-fe5e-490b-b08f-e1230971c57f",
-//   "description": "The default Postgres Deployment for Application Library",
-//   "applicationModelLevel": "model",
-//   "model": {
-//     "location": {
-//       "type": "sql",
-//       "side":"server",
-//       "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-//       "schema": "library"
-//     }
-//   },
-//   "data": {
-//     "location": {
-//       "type": "sql",
-//       "side":"server",
-//       "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-//       "schema": "library"
-//     }
-//   }
-// }
-
 let count=0
 let prevProps:TableComponentProps;
 const autoSizeStrategy = {

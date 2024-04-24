@@ -27,15 +27,11 @@ import {
   QuerySelector,
   QuerySelectorMap,
   QuerySelectorParams,
-  applicationDeploymentAdmin,
-  applicationDeploymentLibrary,
+  adminConfigurationDeploymentAdmin,
+  adminConfigurationDeploymentLibrary,
   applicationDeploymentMiroir,
   applicationSection,
   domainElementObject,
-  entityApplication,
-  entityEntity,
-  entityEntityDefinition,
-  entityReport,
   getApplicationSection,
   getDeploymentEntityStateSelectorParams,
   getLoggerName,
@@ -46,11 +42,6 @@ import {
 import { Button } from "@mui/material";
 import { getMemoizedDeploymentEntityStateSelectorMap } from "miroir-localcache-redux";
 import { packageName } from "../../../constants";
-import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "../getColumnDefinitionsFromEntityAttributes";
-import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from "./JsonObjectEditFormDialog";
-import { noValue } from "./JzodElementEditor";
-import { MTableComponent } from "./MTableComponent";
-import { TableComponentType, TableComponentTypeSchema } from "./MTableComponentInterface";
 import {
   useDomainControllerService,
   useMiroirContextInnerFormOutput,
@@ -58,7 +49,12 @@ import {
 } from "../MiroirContextReactProvider";
 import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from "../ReduxHooks";
 import { cleanLevel } from "../constants";
+import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "../getColumnDefinitionsFromEntityAttributes";
 import { deleteCascade } from "../scripts";
+import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from "./JsonObjectEditFormDialog";
+import { noValue } from "./JzodElementEditor";
+import { MTableComponent } from "./MTableComponent";
+import { TableComponentType, TableComponentTypeSchema } from "./MTableComponentInterface";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportSectionListDisplay");
@@ -218,8 +214,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   
   const deployments = [
     applicationDeploymentMiroir,
-    applicationDeploymentLibrary,
-    applicationDeploymentAdmin,
+    adminConfigurationDeploymentLibrary,
+    adminConfigurationDeploymentAdmin,
   ] as ApplicationDeploymentConfiguration[];
 
   const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);

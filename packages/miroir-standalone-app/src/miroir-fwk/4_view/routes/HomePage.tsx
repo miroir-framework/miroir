@@ -22,8 +22,8 @@ import {
   MiroirLoggerFactory,
   Report,
   Uuid,
-  applicationDeploymentAdmin,
-  applicationDeploymentLibrary,
+  adminConfigurationDeploymentAdmin,
+  adminConfigurationDeploymentLibrary,
   applicationDeploymentMiroir,
   defaultMiroirMetaModel,
   entityAuthor,
@@ -87,8 +87,8 @@ export const HomePage = (props: RootComponentProps) => {
   
   const deployments = [
     applicationDeploymentMiroir,
-    applicationDeploymentLibrary,
-    applicationDeploymentAdmin,
+    adminConfigurationDeploymentLibrary,
+    adminConfigurationDeploymentAdmin,
   ] as ApplicationDeploymentConfiguration[];
   // log.info("RootComponent deployments",deployments);
 
@@ -103,7 +103,7 @@ export const HomePage = (props: RootComponentProps) => {
 
   const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
   const libraryAppModel: MetaModel = useCurrentModel(displayedDeploymentUuid);
-  const adminAppModel: MetaModel = useCurrentModel(applicationDeploymentAdmin.uuid);
+  const adminAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
 
   // computing current state #####################################################################
   const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(
@@ -129,8 +129,8 @@ export const HomePage = (props: RootComponentProps) => {
   const deploymentUuidToReportsEntitiesDefinitionsMapping = useMemo(
     () => (
       {
-        [applicationDeploymentAdmin.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-          applicationDeploymentAdmin.uuid,
+        [adminConfigurationDeploymentAdmin.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+          adminConfigurationDeploymentAdmin.uuid,
           miroirMetaModel, 
           adminAppModel,
         ),
@@ -139,8 +139,8 @@ export const HomePage = (props: RootComponentProps) => {
           miroirMetaModel, 
           miroirMetaModel, 
         ),
-        [applicationDeploymentLibrary.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-          applicationDeploymentLibrary.uuid,
+        [adminConfigurationDeploymentLibrary.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+          adminConfigurationDeploymentLibrary.uuid,
           miroirMetaModel, 
           libraryAppModel,
         ),
@@ -281,7 +281,7 @@ export const HomePage = (props: RootComponentProps) => {
                 actionType: "modelAction",
                 actionName: "commit",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                deploymentUuid:applicationDeploymentLibrary.uuid,
+                deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
               },
               defaultMiroirMetaModel
             );
@@ -345,7 +345,7 @@ export const HomePage = (props: RootComponentProps) => {
               actionType: "modelAction",
               actionName: "resetData",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              deploymentUuid:applicationDeploymentLibrary.uuid,
+              deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
             });
             log.info(
               "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETDATA FOR LIBRARY APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
@@ -354,7 +354,7 @@ export const HomePage = (props: RootComponentProps) => {
               actionType: "modelAction",
               actionName: "rollback",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              deploymentUuid:applicationDeploymentLibrary.uuid,
+              deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
             });
           }}
         >
@@ -376,7 +376,7 @@ export const HomePage = (props: RootComponentProps) => {
               actionType: "modelAction",
               actionName: "rollback",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              deploymentUuid:applicationDeploymentLibrary.uuid,
+              deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
             });
           }}
         >
@@ -401,7 +401,7 @@ export const HomePage = (props: RootComponentProps) => {
               {
                 actionType: "modelAction",
                 actionName: "renameEntity",
-                deploymentUuid:applicationDeploymentLibrary.uuid,
+                deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 entityName: entityBook.name,
                 entityUuid: entityBook.uuid,
@@ -458,7 +458,7 @@ export const HomePage = (props: RootComponentProps) => {
               {
                 actionType: "modelAction",
                 actionName: "dropEntity",
-                deploymentUuid:applicationDeploymentLibrary.uuid,
+                deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 entityUuid: entityAuthor.uuid,
                 entityDefinitionUuid: entityDefinitionAuthor.uuid,

@@ -1,5 +1,5 @@
 import {
-  applicationDeploymentLibrary,
+  adminConfigurationDeploymentLibrary,
   MetaEntity,
   EntityDefinition,
   entityReport,
@@ -53,7 +53,7 @@ export async function uploadBooksAndReports(
     {
       actionType: "modelAction",
       actionName: "createEntity",
-      deploymentUuid:applicationDeploymentLibrary.uuid,
+      deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       entities: [
         { entity: entityAuthor as Entity, entityDefinition: entityDefinitionAuthor as EntityDefinition },
@@ -70,7 +70,7 @@ export async function uploadBooksAndReports(
     {
       actionName: "commit",
       actionType: "modelAction",
-      deploymentUuid: applicationDeploymentLibrary.uuid,
+      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
     },
     // { actionName: "commit", actionType: "modelAction", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e", label: "Adding Author and Book entities" },
@@ -84,7 +84,7 @@ export async function uploadBooksAndReports(
         actionType: "instanceAction",
         actionName: "createInstance",
         applicationSection: "model",
-        deploymentUuid: applicationDeploymentLibrary.uuid,
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
         objects: [
           {
@@ -111,7 +111,7 @@ export async function uploadBooksAndReports(
     {
       actionName: "commit",
       actionType: "modelAction",
-      deploymentUuid: applicationDeploymentLibrary.uuid,
+      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
     },
     // { actionName: "commit", actionType: "modelAction", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e", label: "Adding Author and Book entities" },
@@ -122,7 +122,7 @@ export async function uploadBooksAndReports(
     actionType: "instanceAction",
     actionName: "createInstance",
     applicationSection: "data",
-    deploymentUuid: applicationDeploymentLibrary.uuid,
+    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
     objects: [
       {
