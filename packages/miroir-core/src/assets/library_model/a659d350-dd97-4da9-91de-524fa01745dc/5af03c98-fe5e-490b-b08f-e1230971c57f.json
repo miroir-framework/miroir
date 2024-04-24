@@ -4,5 +4,6 @@
   "parentUuid":"a659d350-dd97-4da9-91de-524fa01745dc",
   "name":"Library",
   "defaultLabel": "The Library application.",
-  "description": "The model and data of the Library application."
+  "description": "The model and data of the Library application.",
+  "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f"
 }

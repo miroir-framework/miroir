@@ -7,6 +7,12 @@
   "conceptLevel":"Model",
   "name":"SelfApplication",
   "icon": "Interests",
+  "viewAttributes": [
+    "name",
+    "defaultLabel",
+    "selfApplication",
+    "uuid"
+  ],
   "jzodSchema": {
     "type": "object",
     "definition": {
@@ -50,6 +56,12 @@
         "definition": "string",
         "optional": true,
         "extra": { "id":7, "defaultLabel": "Description", "editable": true }
+      },
+      "selfApplication": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id":8, "defaultLabel": "Self Application", "editable": true }
       }
     }
   }

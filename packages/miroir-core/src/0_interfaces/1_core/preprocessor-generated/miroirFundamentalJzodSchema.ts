@@ -1418,6 +1418,20 @@ export const miroirFundamentalJzodSchema = {
               "defaultLabel": "Description",
               "editable": true
             }
+          },
+          "selfApplication": {
+            "type": "simpleType",
+            "definition": "string",
+            "validations": [
+              {
+                "type": "uuid"
+              }
+            ],
+            "extra": {
+              "id": 8,
+              "defaultLabel": "Description",
+              "editable": true
+            }
           }
         }
       },
@@ -2567,28 +2581,25 @@ export const miroirFundamentalJzodSchema = {
             }
           },
           "definition": {
-            "type": "union",
-            "discriminator": "type",
-            "definition": [
-              {
-                "type": "array",
-                "definition": {
+            "type": "array",
+            "definition": {
+              "type": "union",
+              "discriminator": "type",
+              "definition": [
+                {
                   "type": "schemaReference",
                   "definition": {
                     "relativePath": "objectInstanceReportSection"
                   }
-                }
-              },
-              {
-                "type": "array",
-                "definition": {
+                },
+                {
                   "type": "schemaReference",
                   "definition": {
                     "relativePath": "objectListReportSection"
                   }
                 }
-              }
-            ]
+              ]
+            }
           }
         }
       },
@@ -3147,28 +3158,25 @@ export const miroirFundamentalJzodSchema = {
                     }
                   },
                   "definition": {
-                    "type": "union",
-                    "discriminator": "type",
-                    "definition": [
-                      {
-                        "type": "array",
-                        "definition": {
+                    "type": "array",
+                    "definition": {
+                      "type": "union",
+                      "discriminator": "type",
+                      "definition": [
+                        {
                           "type": "schemaReference",
                           "definition": {
                             "relativePath": "objectInstanceReportSection"
                           }
-                        }
-                      },
-                      {
-                        "type": "array",
-                        "definition": {
+                        },
+                        {
                           "type": "schemaReference",
                           "definition": {
                             "relativePath": "objectListReportSection"
                           }
                         }
-                      }
-                    ]
+                      ]
+                    }
                   }
                 }
               },

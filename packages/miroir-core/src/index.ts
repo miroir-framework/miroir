@@ -775,6 +775,11 @@ export {
   menuDefaultAdmin,
 }
 
+import test1SelfApplication from "./assets/test1_model/a659d350-dd97-4da9-91de-524fa01745dc/70a866bd-a645-41be-8ec5-814451f12337.json"
+export {
+  test1SelfApplication
+}
+
 // const myDefaultExport = "Miroir-core default export"
 export default {
   // myDefaultExport
