@@ -343,14 +343,14 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     const miroirMenuPageParams: DomainElementObject = {
       elementType: "object",
       elementValue: {
-        deploymentUuid: { elementType: "string", elementValue: adminConfigurationDeploymentMiroir.uuid },
-        applicationSection: { elementType: "string", elementValue: "data" },
+        deploymentUuid: { elementType: "string", elementValue: props.currentDeploymentUuid },
+        applicationSection: { elementType: "string", elementValue: "model" },
       },
     };
 
     const miroirMenuInstancesQuery: DomainManyQueriesWithDeploymentUuid = {
       queryType: "DomainManyQueries",
-      deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+      deploymentUuid: props.currentDeploymentUuid,
       pageParams: miroirMenuPageParams,
       queryParams: { elementType: "object", elementValue: {} },
       contextResults: { elementType: "object", elementValue: {} },
@@ -358,7 +358,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         select: {
           menus: {
             queryType: "selectObjectListByEntity",
-            applicationSection: "data",
+            applicationSection: "model",
             parentName: "Menu",
             parentUuid: {
               referenceType: "constant",
@@ -373,7 +373,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         {
           actionType: "queryAction",
           actionName: "runQuery",
-          deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
+          deploymentUuid:props.currentDeploymentUuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           query: miroirMenuInstancesQuery
         }
@@ -418,14 +418,14 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       instanceAction: {
         actionType: "instanceAction",
         actionName: "updateInstance",
-        applicationSection: "data",
-        deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+        applicationSection: "model",
+        deploymentUuid: props.currentDeploymentUuid,
         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
         objects: [
           {
             parentName: entityMenu.name,
             parentUuid: entityMenu.uuid,
-            applicationSection: "data",
+            applicationSection: "model",
             instances: [
               newMenu
             ],
@@ -439,7 +439,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         actionName: "commit",
         actionType: "modelAction",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+        deploymentUuid: props.currentDeploymentUuid,
       },
       props.currentModel
     );
@@ -790,8 +790,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     const miroirMenuPageParams: DomainElementObject = {
       elementType: "object",
       elementValue: {
-        deploymentUuid: { elementType: "string", elementValue: adminConfigurationDeploymentMiroir.uuid },
-        applicationSection: { elementType: "string", elementValue: "data" },
+        deploymentUuid: { elementType: "string", elementValue: props.currentDeploymentUuid },
+        applicationSection: { elementType: "string", elementValue: "model" },
       },
     };
     
@@ -805,7 +805,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         select: {
           menus: {
             queryType: "selectObjectListByEntity",
-            applicationSection: "data",
+            applicationSection: "model",
             parentName: "Menu",
             parentUuid: {
               referenceType: "constant",
@@ -865,14 +865,14 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       instanceAction: {
         actionType: "instanceAction",
         actionName: "updateInstance",
-        applicationSection: "data",
-        deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+        applicationSection: "model",
+        deploymentUuid: props.currentDeploymentUuid,
         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
         objects: [
           {
             parentName: entityMenu.name,
             parentUuid: entityMenu.uuid,
-            applicationSection: "data",
+            applicationSection: "model",
             instances: [
               newMenu
               // Object.assign({}, reportReportList, {
@@ -890,7 +890,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         actionName: "commit",
         actionType: "modelAction",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+        deploymentUuid: props.currentDeploymentUuid,
       },
       props.currentModel
     );
