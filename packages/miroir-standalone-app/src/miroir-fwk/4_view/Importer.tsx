@@ -19,14 +19,14 @@ import {
   MetaEntity,
   MiroirLoggerFactory,
   Report,
-  adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  applicationLibrary,
+  adminConfigurationDeploymentTest1,
   entityEntity,
   entityEntityDefinition,
   entityMenu,
   getLoggerName,
-  metaModel
+  metaModel,
+  test1SelfApplication
 } from "miroir-core";
 import * as XLSX from 'xlsx';
 import { useDomainControllerService } from "./MiroirContextReactProvider";
@@ -48,6 +48,7 @@ export const ImporterCorePropsSchema = z.object({
   // currentModel: ApplicationModelSchema,
   currentModel: metaModel,
   currentDeploymentUuid: z.string().uuid(),
+  currentApplicationUuid: z.string().uuid(),
 })
 
 export type ImporterCoreProps = z.infer<typeof ImporterCorePropsSchema>;
@@ -121,7 +122,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     const newEntity: MetaEntity = {
       uuid: uuidv4(),
       parentUuid: entityEntity.uuid,
-      application: applicationLibrary.uuid,
+      application: props.currentApplicationUuid,
       description: newEntityDescription,
       name: newEntityName,
     }
@@ -398,11 +399,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           {
             ...oldMenu.definition.definition[1],
             items: [
-              ...(oldMenu.definition.definition[1] as any).items,
+              ...((oldMenu.definition.definition[1] as any)?.items??[]),
               {
                 "label": newEntityListReport.defaultLabel,
                 "section": "data",
-                "application": adminConfigurationDeploymentLibrary.uuid,
+                "application": adminConfigurationDeploymentTest1.uuid,
                 "reportUuid": newEntityListReport.uuid,
                 "icon": "local_drink"
               },
@@ -477,7 +478,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     const newEntity: MetaEntity = {
       uuid: uuidv4(),
       parentUuid: entityEntity.uuid,
-      application: applicationLibrary.uuid,
+      application: props.currentApplicationUuid,
       description: newEntityDescription,
       name: newEntityName,
     }
@@ -796,7 +797,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     
     const miroirMenuInstancesQuery: DomainManyQueriesWithDeploymentUuid = {
       queryType: "DomainManyQueries",
-      deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+      deploymentUuid: props.currentDeploymentUuid,
       pageParams: miroirMenuPageParams,
       queryParams: { elementType: "object", elementValue: {} },
       contextResults: { elementType: "object", elementValue: {} },
@@ -819,7 +820,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         {
           actionType: "queryAction",
           actionName: "runQuery",
-          deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
+          deploymentUuid:props.currentDeploymentUuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           query: miroirMenuInstancesQuery
         }
@@ -849,7 +850,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               {
                 "label": newEntityListReport.defaultLabel,
                 "section": "data",
-                "application": adminConfigurationDeploymentLibrary.uuid,
+                "application": adminConfigurationDeploymentTest1.uuid,
                 "reportUuid": newEntityListReport.uuid,
                 "icon": "location_on"
               },

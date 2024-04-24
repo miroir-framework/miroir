@@ -11,11 +11,13 @@ import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
+  adminConfigurationDeploymentTest1,
   getLoggerName,
   LoggerInterface,
   menuDefaultAdmin,
   menuDefaultLibrary,
   menuDefaultMiroir,
+  menuDefaultTest1,
   MiroirLoggerFactory
 } from "miroir-core";
 import { FC, useMemo } from 'react';
@@ -200,6 +202,14 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
       <SidebarSection
         deploymentUuid={adminConfigurationDeploymentMiroir.uuid}
         menuUuid={menuDefaultMiroir.uuid}
+        open={props.open}
+        setOpen={props.setOpen}
+      >
+      </SidebarSection>
+      <Divider />
+      <SidebarSection
+        deploymentUuid={adminConfigurationDeploymentTest1.uuid}
+        menuUuid={menuDefaultTest1.uuid}
         open={props.open}
         setOpen={props.setOpen}
       >

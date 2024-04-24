@@ -307,21 +307,54 @@ export const selectEntityJzodSchemaFromDeploymentEntityState = (
     entityEntityDefinition.uuid
   )
 
+  log.info("selectEntityJzodSchemaFromDeploymentEntityState called with selectorParams", selectorParams)
+
   if (
     deploymentEntityState &&
     deploymentEntityState[deploymentEntityStateIndex] &&
-    deploymentEntityState[deploymentEntityStateIndex].entities &&
-    deploymentEntityState[deploymentEntityStateIndex].entities[entityEntityDefinition.uuid]
+    deploymentEntityState[deploymentEntityStateIndex].entities
+    // deploymentEntityState[deploymentEntityStateIndex].entities[entityEntityDefinition.uuid]
+    // deploymentEntityState[deploymentEntityStateIndex].entities[selectorParams.query.entityUuid]
   ) {
-    const result: JzodObject = (
-      deploymentEntityState[deploymentEntityStateIndex].entities[entityEntityDefinition.uuid] as EntityDefinition
-    ).jzodSchema;
+    const entityDefinition: EntityDefinition | undefined = Object.values(
+      deploymentEntityState[deploymentEntityStateIndex].entities as Record<string, EntityDefinition>
+    ).find((e: EntityDefinition) => e.entityUuid == selectorParams.query.entityUuid);
+    if (!entityDefinition) {
+      log.error(
+        "selectEntityJzodSchemaFromDeploymentEntityState selectorParams",
+        selectorParams,
+        "could not find entity definition for index",
+        deploymentEntityStateIndex,
+        "in state",
+        deploymentEntityState,
+        "for entity",
+        selectorParams.query.entityUuid,
+        "in deployment",
+        localQuery.deploymentUuid,
+      );
+      return undefined;
+    }
+    const result: JzodObject = entityDefinition.jzodSchema
+    // const result: JzodObject = (
+    //   deploymentEntityState[deploymentEntityStateIndex].entities[selectorParams.query.entityUuid] as EntityDefinition
+    // ).jzodSchema;
   
-    log.info("DomainSelector selectEntityJzodSchemaFromDeploymentEntityState selectorParams",selectorParams,"result", result);
+    log.info("selectEntityJzodSchemaFromDeploymentEntityState selectorParams",selectorParams,"result", result);
   
     return result
   } else {
-    log.error("DomainSelector selectEntityJzodSchemaFromDeploymentEntityState selectorParams",selectorParams,"could not find entity", localQuery.deploymentUuid, "in state", deploymentEntityState);
+    log.error(
+      "selectEntityJzodSchemaFromDeploymentEntityState selectorParams",
+      selectorParams,
+      "could not find index",
+      deploymentEntityStateIndex,
+      "in state",
+      deploymentEntityState,
+      "for entity",
+      selectorParams.query.entityUuid,
+      "in deployment",
+      localQuery.deploymentUuid,
+    );
     // throw new Error(
     //   "DomainSelector selectEntityJzodSchemaFromDeploymentEntityState could not find entity " +
     //     entityEntityDefinition.uuid +

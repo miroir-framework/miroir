@@ -25,6 +25,7 @@ import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
+  adminConfigurationDeploymentTest1,
   defaultMiroirMetaModel,
   entityAuthor,
   entityBook,
@@ -37,7 +38,8 @@ import {
   reportEntityDetails,
   reportEntityList,
   reportReportList,
-  resetAndInitMiroirAndApplicationDatabase
+  resetAndInitMiroirAndApplicationDatabase,
+  test1SelfApplication
 } from "miroir-core";
 import { ReduxStateChanges } from "miroir-localcache-redux";
 
@@ -104,7 +106,8 @@ export const HomePage = (props: RootComponentProps) => {
   const setDisplayedApplicationSection = context.setApplicationSection;
 
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
-  const libraryAppModel: MetaModel = useCurrentModel(displayedDeploymentUuid);
+  const currentAppModel: MetaModel = useCurrentModel(displayedDeploymentUuid);
+  const test1AppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentTest1.uuid);
   const adminAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
 
   // computing current state #####################################################################
@@ -114,7 +117,7 @@ export const HomePage = (props: RootComponentProps) => {
   log.info("HomePage displayedDeploymentDefinition",displayedDeploymentDefinition);
 
   // TODO: adapt to Admin app deployment!
-  const currentModel = displayedDeploymentUuid == adminConfigurationDeploymentMiroir.uuid? defaultMiroirMetaModel:libraryAppModel;
+  const currentModel = displayedDeploymentUuid == adminConfigurationDeploymentMiroir.uuid? defaultMiroirMetaModel:currentAppModel;
   // const currentModel = libraryAppModel;
   log.info("HomePage currentModel",currentModel);
 
@@ -144,11 +147,16 @@ export const HomePage = (props: RootComponentProps) => {
         [adminConfigurationDeploymentLibrary.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
           adminConfigurationDeploymentLibrary.uuid,
           miroirMetaModel, 
-          libraryAppModel,
+          currentAppModel,
+        ),
+        [adminConfigurationDeploymentTest1.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+          adminConfigurationDeploymentTest1.uuid,
+          miroirMetaModel, 
+          test1AppModel,
         ),
       }
     ),
-    [miroirMetaModel, libraryAppModel, adminAppModel]
+    [miroirMetaModel, currentAppModel, adminAppModel]
   );
   useEffect(() =>
     context.setDeploymentUuidToReportsEntitiesDefinitionsMapping(deploymentUuidToReportsEntitiesDefinitionsMapping)
@@ -234,7 +242,7 @@ export const HomePage = (props: RootComponentProps) => {
               actionType: "undoRedoAction",
               actionName: "undo",
               endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
-              deploymentUuid:adminConfigurationDeploymentMiroir.uuid
+              deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
             });
           }}
         >
@@ -249,7 +257,7 @@ export const HomePage = (props: RootComponentProps) => {
               actionType: "undoRedoAction",
               actionName: "redo",
               endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
-              deploymentUuid:adminConfigurationDeploymentMiroir.uuid
+              deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
             });
           }}
         >
@@ -265,7 +273,7 @@ export const HomePage = (props: RootComponentProps) => {
                 actionType: "modelAction",
                 actionName: "commit",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
+                deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               },
               defaultMiroirMetaModel
             );
@@ -283,7 +291,7 @@ export const HomePage = (props: RootComponentProps) => {
                 actionType: "modelAction",
                 actionName: "commit",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
+                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               },
               defaultMiroirMetaModel
             );
@@ -300,7 +308,7 @@ export const HomePage = (props: RootComponentProps) => {
               actionType: "modelAction",
               actionName: "rollback",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
+              deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
             });
           }}
         >
@@ -312,29 +320,29 @@ export const HomePage = (props: RootComponentProps) => {
       <span>
         <button
           onClick={
-            async () =>resetAndInitMiroirAndApplicationDatabase.bind(domainController)
-          //   async () => {
-          //   await domainController.handleAction({
-          //     actionType: "DomainTransactionalInstanceAction",
-          //     actionName: "resetModel",
-          //   });
-          //   await domainController.handleAction({
-          //     actionType: "DomainTransactionalInstanceAction",
-          //     actionName: "resetModel",
-          //   });
-          //   log.info(
-          //     "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETMODEL APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-          //   );
-          //   await domainController.handleAction({
-          //     actionType: "DomainTransactionalInstanceAction",
-          //     actionName: "rollback",
-          //   });
-          //   await domainController.handleAction({
-          //     actionType: "DomainTransactionalInstanceAction",
-          //     actionName: "rollback",
-          //   });
-          // }
-        }
+            async () => resetAndInitMiroirAndApplicationDatabase.bind(domainController)
+            //   async () => {
+            //   await domainController.handleAction({
+            //     actionType: "DomainTransactionalInstanceAction",
+            //     actionName: "resetModel",
+            //   });
+            //   await domainController.handleAction({
+            //     actionType: "DomainTransactionalInstanceAction",
+            //     actionName: "resetModel",
+            //   });
+            //   log.info(
+            //     "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETMODEL APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+            //   );
+            //   await domainController.handleAction({
+            //     actionType: "DomainTransactionalInstanceAction",
+            //     actionName: "rollback",
+            //   });
+            //   await domainController.handleAction({
+            //     actionType: "DomainTransactionalInstanceAction",
+            //     actionName: "rollback",
+            //   });
+            // }
+          }
         >
           Reset Application database
         </button>
@@ -347,7 +355,7 @@ export const HomePage = (props: RootComponentProps) => {
               actionType: "modelAction",
               actionName: "resetData",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             });
             log.info(
               "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETDATA FOR LIBRARY APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
@@ -356,7 +364,7 @@ export const HomePage = (props: RootComponentProps) => {
               actionType: "modelAction",
               actionName: "rollback",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             });
           }}
         >
@@ -403,14 +411,14 @@ export const HomePage = (props: RootComponentProps) => {
               {
                 actionType: "modelAction",
                 actionName: "renameEntity",
-                deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
+                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 entityName: entityBook.name,
                 entityUuid: entityBook.uuid,
                 entityDefinitionUuid: entityDefinitionBook.uuid,
                 targetValue: "Bookss",
               },
-              libraryAppModel
+              currentAppModel
             );
           }}
         >
@@ -443,7 +451,7 @@ export const HomePage = (props: RootComponentProps) => {
                       ],
                     },
                   ],
-                }
+                },
               },
               defaultMiroirMetaModel // TODO replace with current Miroir model (as existing in the datastore)
             );
@@ -460,12 +468,12 @@ export const HomePage = (props: RootComponentProps) => {
               {
                 actionType: "modelAction",
                 actionName: "dropEntity",
-                deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
+                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 entityUuid: entityAuthor.uuid,
                 entityDefinitionUuid: entityDefinitionAuthor.uuid,
               },
-              libraryAppModel // TODO replace with current Miroir model (as existing in the datastore)
+              currentAppModel // TODO replace with current Miroir model (as existing in the datastore)
             );
           }}
         >
@@ -487,7 +495,12 @@ export const HomePage = (props: RootComponentProps) => {
         <h3>erreurs: {JSON.stringify(errorLog)}</h3>
       </Box>
       {/* <span>packages: {JSON.stringify(ConfigurationService.packages)}</span> */}
-      <Importer filename="" currentModel={currentModel} currentDeploymentUuid={displayedDeploymentUuid}></Importer>
+      <Importer
+        filename=""
+        currentModel={currentModel}
+        currentDeploymentUuid={adminConfigurationDeploymentTest1.uuid}
+        currentApplicationUuid={test1SelfApplication.uuid}
+      ></Importer>
       <p />
       <Box sx={{ minWidth: 50 }}>
         <FormControl fullWidth>
@@ -542,7 +555,7 @@ export const HomePage = (props: RootComponentProps) => {
             label="displayedReportUuid"
             onChange={handleChangeDisplayedReport}
           >
-            {availableReports.map((r:Report) => {
+            {availableReports.map((r: Report) => {
               return (
                 <MenuItem key={r.name} value={r.uuid}>
                   {r.defaultLabel}
@@ -552,37 +565,33 @@ export const HomePage = (props: RootComponentProps) => {
           </Select>
         </FormControl>
       </Box>
-      {
-        currentMiroirReport &&
-        displayedDeploymentUuid &&
-        displayedApplicationSection ? (
-          <div>
-            {/* <div>HomePage reportSection: {JSON.stringify(currentMiroirReport?.definition)}</div> */}
-            {/* <div>
+      {currentMiroirReport && displayedDeploymentUuid && displayedApplicationSection ? (
+        <div>
+          {/* <div>HomePage reportSection: {JSON.stringify(currentMiroirReport?.definition)}</div> */}
+          {/* <div>
               reportUuid: {displayedReportUuid}
             </div> */}
-            <RootReportSectionView
-              rootReportSection={currentMiroirReport?.definition}
-              applicationSection={displayedApplicationSection}
-              deploymentUuid={displayedDeploymentUuid}
-              pageParams={pageParams}
-            />
-          </div>
-        )
-        : (
-          <div>Oops, HomePage coule not be displayed:
-            <p>
-              currentMiroirReport: {currentMiroirReport?.name}, {currentMiroirReport?.uuid}
-            </p>
-            {/* <p>
+          <RootReportSectionView
+            rootReportSection={currentMiroirReport?.definition}
+            applicationSection={displayedApplicationSection}
+            deploymentUuid={displayedDeploymentUuid}
+            pageParams={pageParams}
+          />
+        </div>
+      ) : (
+        <div>
+          Oops, HomePage coule not be displayed:
+          <p>
+            currentMiroirReport: {currentMiroirReport?.name}, {currentMiroirReport?.uuid}
+          </p>
+          {/* <p>
               report section: {JSON.stringify(currentMiroirReportSectionObjectList)}
             </p> */}
-            {/* <p>
+          {/* <p>
               currentReportTargetEntity: {currentReportTargetEntity?.name}, {currentReportTargetEntity?.uuid}
             </p> */}
-          </div>
-        )
-      }
+        </div>
+      )}
       {/* </Box> */}
     </div>
   );

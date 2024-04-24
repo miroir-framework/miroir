@@ -1,0 +1,40 @@
+{
+  "uuid": "84c178cc-1b1b-497a-a035-9b3d756bb085",
+  "parentName": "Menu",
+  "parentUuid": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+  "name": "Test1Menu",
+  "defaultLabel": "Meta-Model",
+  "description": "This is the default menu allowing to explore the Test1 Application.",
+  "definition": {
+    "menuType": "complexMenu",
+    "definition": [
+      {
+        "title": "Test1",
+        "label": "Test1",
+        "items": [
+          {
+            "label": "Test1 Entities",
+            "section": "model",
+            "application": "15e2004a-e7a0-4b9e-8acd-6d3500a6c9ad",
+            "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+            "icon": "category"
+          },
+          {
+            "label": "Test1 Entity Definitions",
+            "section": "model",
+            "application": "15e2004a-e7a0-4b9e-8acd-6d3500a6c9ad",
+            "reportUuid": "f9aff35d-8636-4519-8361-c7648e0ddc68",
+            "icon": "category"
+          },
+          {
+            "label": "Test1 Reports",
+            "section": "model",
+            "application": "15e2004a-e7a0-4b9e-8acd-6d3500a6c9ad",
+            "reportUuid": "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
+            "icon": "list"
+          }
+        ]
+      }
+    ]
+  }
+}

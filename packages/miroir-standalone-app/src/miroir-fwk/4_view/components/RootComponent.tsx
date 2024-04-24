@@ -13,6 +13,7 @@ import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
+  adminConfigurationDeploymentTest1,
   DomainControllerInterface,
   domainEndpointVersionV1,
   EntityDefinition,
@@ -261,6 +262,12 @@ export const RootComponent = (props: RootComponentProps) => {
                         actionName: "rollback",
                         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      });
+                      await domainController.handleAction({
+                        actionType: "modelAction",
+                        actionName: "rollback",
+                        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                        deploymentUuid: adminConfigurationDeploymentTest1.uuid,
                       });
                     }}
                   >

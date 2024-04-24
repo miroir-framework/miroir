@@ -277,7 +277,7 @@ export async function queryHandler(
   // const query: DomainManyQueriesWithDeploymentUuid = body.query as DomainManyQueriesWithDeploymentUuid ;
   const queryAction: QueryAction = body as QueryAction ;
 
-  const deploymentUuid = params.deploymentUuid
+  const deploymentUuid = queryAction.deploymentUuid
   const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
     deploymentUuid
   );

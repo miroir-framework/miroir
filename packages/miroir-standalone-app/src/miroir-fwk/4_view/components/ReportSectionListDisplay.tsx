@@ -30,6 +30,7 @@ import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
+  adminConfigurationDeploymentTest1,
   applicationSection,
   domainElementObject,
   getApplicationSection,
@@ -216,6 +217,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     adminConfigurationDeploymentMiroir,
     adminConfigurationDeploymentLibrary,
     adminConfigurationDeploymentAdmin,
+    adminConfigurationDeploymentTest1,
   ] as any[]; //type for Admin Application Deployment Entity Definition
   // ] as ApplicationDeploymentConfiguration[];
 

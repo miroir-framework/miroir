@@ -13,6 +13,7 @@ import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
+  adminConfigurationDeploymentTest1,
   getLoggerName,
   getReportsAndEntitiesDefinitionsForDeploymentUuid
 } from "miroir-core";
@@ -64,16 +65,20 @@ export const ReportPage = () => {
 
   // TODO: REMOVE HARD-CODED LIST!!! WHAT IS IT USEFUL FOR???
   const deployments = [
-    adminConfigurationDeploymentMiroir,
-    adminConfigurationDeploymentLibrary,
     adminConfigurationDeploymentAdmin,
+    adminConfigurationDeploymentMiroir,
+
+    adminConfigurationDeploymentLibrary,
+    adminConfigurationDeploymentTest1,
   ] as any[]; //type for Admin Application Deployment Entity Definition
   // ] as ApplicationDeploymentConfiguration[];
 
-  
-  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
-  const libraryAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentLibrary.uuid);
+
   const adminAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
+  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+
+  const libraryAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentLibrary.uuid);
+  const test1AppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentTest1.uuid);
 
   // log.info("ReportPage currentModel", currentModel);
 
@@ -106,6 +111,8 @@ export const ReportPage = () => {
     (d) => d.uuid == pageParams.deploymentUuid
   );
 
+  log.info("displayedDeploymentDefinition", displayedDeploymentDefinition);
+
   const deploymentUuidToReportsEntitiesDefinitionsMapping = useMemo(
     () => (
       {
@@ -124,6 +131,11 @@ export const ReportPage = () => {
           miroirMetaModel, 
           libraryAppModel,
         ),
+        [adminConfigurationDeploymentTest1.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+          adminConfigurationDeploymentTest1.uuid,
+          miroirMetaModel, 
+          test1AppModel,
+        ),
       }
     ),
     [miroirMetaModel, libraryAppModel, adminAppModel]
@@ -133,6 +145,7 @@ export const ReportPage = () => {
     context.setDeploymentUuidToReportsEntitiesDefinitionsMapping(deploymentUuidToReportsEntitiesDefinitionsMapping)
   );
 
+  log.info("context.deploymentUuidToReportsEntitiesDefinitionsMapping", context.deploymentUuidToReportsEntitiesDefinitionsMapping);
 
   const { availableReports, entities, entityDefinitions } = useMemo(() => {
     return displayedDeploymentDefinition &&
@@ -148,12 +161,13 @@ export const ReportPage = () => {
     context.deploymentUuidToReportsEntitiesDefinitionsMapping,
     pageParams.applicationSection,
   ]);
-  log.info("displayedDeploymentDefinition", displayedDeploymentDefinition);
-  log.info("context.deploymentUuidToReportsEntitiesDefinitionsMapping", context.deploymentUuidToReportsEntitiesDefinitionsMapping);
+  // log.info("displayedDeploymentDefinition", displayedDeploymentDefinition);
   log.info("ReportPage availableReports", availableReports);
 
   const currentMiroirReport: Report =
     availableReports?.find((r: Report) => r.uuid == pageParams.reportUuid) ?? defaultReport;
+
+    log.info("currentMiroirReport", currentMiroirReport);
 
   if (pageParams.applicationSection) {
     log.info("ReportPage rendering count", count, "params", pageParams);

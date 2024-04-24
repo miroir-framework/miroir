@@ -573,40 +573,40 @@ export const selectJzodSchemaBySingleSelectQuery = <StateType>(
     selectorParams.query.singleSelectQuery.select.queryType=="queryCombiner" 
   ) {
     throw new Error(
-      "selectJzodSchemaBySingleSelectQueryFromDomainState can not deal with context reference: query=" +
+      "selectJzodSchemaBySingleSelectQuery can not deal with context reference: query=" +
         JSON.stringify(selectorParams.query, undefined, 2)
     );
-  } else {
-    const entityUuidDomainElement: DomainElement = resolveContextReference(
-      selectorParams.query.singleSelectQuery.select.parentUuid,
-      selectorParams.query.queryParams,
-      selectorParams.query.contextResults
-    );
-    log.info(
-      "selectJzodSchemaBySingleSelectQueryFromDomainState called",
-      selectorParams.query,
-      "found",
-      entityUuidDomainElement
-    );
+  }
 
-    if (typeof entityUuidDomainElement != "object" || entityUuidDomainElement.elementType != "instanceUuid") {
-      return undefined
-    }
+  const entityUuidDomainElement: DomainElement = resolveContextReference(
+    selectorParams.query.singleSelectQuery.select.parentUuid,
+    selectorParams.query.queryParams,
+    selectorParams.query.contextResults
+  );
+  log.info(
+    "selectJzodSchemaBySingleSelectQuery called",
+    selectorParams.query,
+    "found",
+    entityUuidDomainElement
+  );
 
-    const result = selectorParams.selectorMap.selectEntityJzodSchema(deploymentEntityState, {
-      selectorMap: selectorParams.selectorMap,
-      query: {
-        queryType: "getEntityDefinition",
-        contextResults: { elementType: "object", elementValue: {} },
-        pageParams: selectorParams.query.pageParams,
-        queryParams: selectorParams.query.queryParams,
-        deploymentUuid: selectorParams.query.singleSelectQuery.deploymentUuid ?? "",
-        entityUuid: entityUuidDomainElement.elementValue,
-      },
-    } as JzodSchemaQuerySelectorParams<DomainModelGetEntityDefinitionQueryParams,StateType>) as JzodObject | undefined
+  if (typeof entityUuidDomainElement != "object" || entityUuidDomainElement.elementType != "instanceUuid") {
+    return undefined
+  }
 
-    return result;
-  } 
+  const result = selectorParams.selectorMap.selectEntityJzodSchema(deploymentEntityState, {
+    selectorMap: selectorParams.selectorMap,
+    query: {
+      queryType: "getEntityDefinition",
+      contextResults: { elementType: "object", elementValue: {} },
+      pageParams: selectorParams.query.pageParams,
+      queryParams: selectorParams.query.queryParams,
+      deploymentUuid: selectorParams.query.singleSelectQuery.deploymentUuid ?? "",
+      entityUuid: entityUuidDomainElement.elementValue,
+    },
+  } as JzodSchemaQuerySelectorParams<DomainModelGetEntityDefinitionQueryParams,StateType>) as JzodObject | undefined
+
+  return result;
 }
 
 // ################################################################################################

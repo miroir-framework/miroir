@@ -776,10 +776,11 @@ export {
 }
 
 import test1SelfApplication from "./assets/test1_model/a659d350-dd97-4da9-91de-524fa01745dc/70a866bd-a645-41be-8ec5-814451f12337.json"
+import menuDefaultTest1 from "./assets/test1_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/84c178cc-1b1b-497a-a035-9b3d756bb085.json"
 export {
-  test1SelfApplication
+  test1SelfApplication,
+  menuDefaultTest1,
 }
-
 // const myDefaultExport = "Miroir-core default export"
 export default {
   // myDefaultExport

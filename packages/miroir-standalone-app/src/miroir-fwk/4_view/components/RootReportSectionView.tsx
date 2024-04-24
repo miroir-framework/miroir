@@ -64,7 +64,7 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
     }),
     [props.pageParams]
   );
-  log.info("########################## RootReportSectionView", count, "ReportSection", JSON.stringify(props.rootReportSection, null, 2));
+  log.info("########################## RootReportSectionView rendering", count, "props", JSON.stringify(props, null, 2));
 
   // log.info(
   //   "deploymentUuid",
@@ -192,12 +192,15 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
   ) as RecordOfJzodObject | undefined; // TODO: use correct return type
 
   log.info(
-    "RootReportSectionView props.reportSection?.fetchQuery",
+    "RootReportSectionView found",
+    "fetchedDataJzodSchema",
+    fetchedDataJzodSchema,
+    "fetchedDataJzodSchemaParams",
+    fetchedDataJzodSchemaParams,
+    "props.reportSection?.fetchQuery",
     props.rootReportSection?.fetchQuery,
     "props.deploymentEntityStateQueryResults",
     deploymentEntityStateQueryResults,
-    "fetchedDataJzodSchema",
-    fetchedDataJzodSchema
   );
   log.info('RootReportSectionView props.reportSection',props.rootReportSection);
 
@@ -227,19 +230,26 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
       }
     }
     return (
-      <div>
-        <div>RootReportSectionView rendered {count}</div>
-        <ReportSectionView
-          queryResults={deploymentEntityStateQueryResults}
-          fetchedDataJzodSchema={fetchedDataJzodSchema}
-          reportSection={props.rootReportSection?.section}
-          rootReportSection={props.rootReportSection}
-          applicationSection={props.applicationSection}
-          deploymentUuid={props.deploymentUuid}
-          paramsAsdomainElements={paramsAsdomainElements}
-          selectorMap={deploymentEntityStateSelectorMap}
-        />
-      </div>
+      <>
+      {
+        props.deploymentUuid?
+          <div>
+            <div>RootReportSectionView rendered {count}</div>
+            <ReportSectionView
+              queryResults={deploymentEntityStateQueryResults}
+              fetchedDataJzodSchema={fetchedDataJzodSchema}
+              reportSection={props.rootReportSection?.section}
+              rootReportSection={props.rootReportSection}
+              applicationSection={props.applicationSection}
+              deploymentUuid={props.deploymentUuid}
+              paramsAsdomainElements={paramsAsdomainElements}
+              selectorMap={deploymentEntityStateSelectorMap}
+            />
+          </div>
+        :
+        <div style={{color:"red"}}>no deployment found!</div>
+      }
+      </>
     );
   } else {
     return (
