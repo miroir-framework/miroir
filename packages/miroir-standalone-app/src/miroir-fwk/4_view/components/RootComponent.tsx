@@ -12,7 +12,7 @@ import { Outlet } from 'react-router-dom';
 import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
-  applicationDeploymentMiroir,
+  adminConfigurationDeploymentMiroir,
   DomainControllerInterface,
   domainEndpointVersionV1,
   EntityDefinition,
@@ -222,7 +222,7 @@ export const RootComponent = (props: RootComponentProps) => {
                           actionName: "openStore",
                           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
                           configuration: miroirConfig.client.deploymentStorageConfig,
-                          deploymentUuid: applicationDeploymentMiroir.uuid,
+                          deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                         });
                       } else {
                         const localMiroirConfig = miroirConfig.client as MiroirConfigForRestClient;
@@ -231,7 +231,7 @@ export const RootComponent = (props: RootComponentProps) => {
                           actionName: "openStore",
                           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
                           configuration: localMiroirConfig.serverConfig.storeSectionConfiguration,
-                          deploymentUuid: applicationDeploymentMiroir.uuid,
+                          deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                         }
                         log.info("openStore openStoreAction",openStoreAction, "localMiroirConfig.serverConfig", localMiroirConfig.serverConfig);
                         await remoteStore.handlePersistenceAction(openStoreAction);
@@ -249,12 +249,12 @@ export const RootComponent = (props: RootComponentProps) => {
                   </button>
                   <button
                     onClick={async () => {
-                      log.info("fetching instances from datastore for deployment", applicationDeploymentMiroir);
+                      log.info("fetching instances from datastore for deployment", adminConfigurationDeploymentMiroir);
                       await domainController.handleAction({
                         actionType: "modelAction",
                         actionName: "rollback",
                         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                        deploymentUuid: applicationDeploymentMiroir.uuid,
+                        deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                       });
                       await domainController.handleAction({
                         actionType: "modelAction",
@@ -268,7 +268,7 @@ export const RootComponent = (props: RootComponentProps) => {
                   </button>
                   <button
                     onClick={async () => {
-                      log.info("fetching instances from datastore for deployment", applicationDeploymentMiroir);
+                      log.info("fetching instances from datastore for deployment", adminConfigurationDeploymentMiroir);
                       await domainController.handleAction({
                         actionType: "modelAction",
                         actionName: "rollback",
@@ -286,7 +286,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         actionType: "modelAction",
                         actionName: "remoteLocalCacheRollback",
                         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                        deploymentUuid: applicationDeploymentMiroir.uuid,
+                        deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                       });
                       await domainController.handleAction({
                         actionType: "modelAction",
@@ -311,13 +311,13 @@ export const RootComponent = (props: RootComponentProps) => {
                       await domainController.handleAction({
                         actionType: "modelAction",
                         actionName: "initModel",
-                        deploymentUuid:applicationDeploymentMiroir.uuid,
+                        deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
                         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                         params: {
                           dataStoreType: "miroir",
                           metaModel: defaultMiroirMetaModel,
                           application: applicationMiroir,
-                          applicationDeploymentConfiguration: applicationDeploymentMiroir,
+                          applicationDeploymentConfiguration: adminConfigurationDeploymentMiroir,
                           applicationModelBranch: applicationModelBranchMiroirMasterBranch,
                           applicationStoreBasedConfiguration: applicationStoreBasedConfigurationMiroir,
                           applicationVersion: applicationVersionInitialMiroirVersion,
@@ -347,7 +347,7 @@ export const RootComponent = (props: RootComponentProps) => {
                       await domainController.handleAction({
                         actionType: "modelAction",
                         actionName: "rollback",
-                        deploymentUuid:applicationDeploymentMiroir.uuid,
+                        deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
                         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                       });
                       await domainController.handleAction({
@@ -387,7 +387,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         actionType: "modelAction",
                         actionName: "remoteLocalCacheRollback",
                         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                        deploymentUuid:applicationDeploymentMiroir.uuid,
+                        deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
                       });
                       await domainController.handleAction({
                         actionType: "modelAction",

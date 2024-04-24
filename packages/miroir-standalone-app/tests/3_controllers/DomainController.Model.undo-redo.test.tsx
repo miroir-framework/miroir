@@ -15,7 +15,7 @@ import {
   MiroirLoggerFactory,
   PersistenceStoreControllerInterface,
   adminConfigurationDeploymentLibrary,
-  applicationDeploymentMiroir,
+  adminConfigurationDeploymentMiroir,
   defaultLevels,
   entityAuthor,
   entityBook,
@@ -170,7 +170,7 @@ describe.sequential(
                 actionType: "modelAction",
                 actionName: "rollback",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                deploymentUuid:applicationDeploymentMiroir.uuid,
+                deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
               });
               await domainController.handleAction({
                 actionType: "modelAction",

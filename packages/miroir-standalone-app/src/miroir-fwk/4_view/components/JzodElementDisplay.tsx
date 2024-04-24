@@ -247,7 +247,7 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
               deploymentUuid={
                 context.deploymentUuid
                 // targetJzodSchema.extra?.targetEntityApplication == "metaModel"
-                //   ? applicationDeploymentMiroir.uuid
+                //   ? adminConfigurationDeploymentMiroir.uuid
                 //   : props.deploymentUuid
               }
               applicationSection={context.applicationSection}

@@ -10,7 +10,7 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   Uuid,
-  applicationDeploymentMiroir,
+  adminConfigurationDeploymentMiroir,
   getLoggerName,
   resolveReferencesForJzodSchemaAndValueObject
 } from "miroir-core";
@@ -55,7 +55,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   );
 
   const currentModel: MetaModel = useCurrentModel(
-    context.applicationSection == "data" ? context.deploymentUuid : applicationDeploymentMiroir.uuid
+    context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
   );
 
   const currentReportDeploymentSectionEntities: Entity[] = currentModel.entities; // Entities are always defined in the 'model' section
@@ -78,7 +78,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   const instance: any = props.instance;
 
-  const currentMiroirModel = useCurrentModel(applicationDeploymentMiroir.uuid);
+  const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
   const currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver = useMemo(
     () => getCurrentEnumJzodSchemaResolver(currentMiroirModel,context.miroirFundamentalJzodSchema),

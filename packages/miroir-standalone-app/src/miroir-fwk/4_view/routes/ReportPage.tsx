@@ -12,7 +12,7 @@ import {
   Report,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
-  applicationDeploymentMiroir,
+  adminConfigurationDeploymentMiroir,
   getLoggerName,
   getReportsAndEntitiesDefinitionsForDeploymentUuid
 } from "miroir-core";
@@ -64,12 +64,14 @@ export const ReportPage = () => {
 
   // TODO: REMOVE HARD-CODED LIST!!! WHAT IS IT USEFUL FOR???
   const deployments = [
-    applicationDeploymentMiroir,
+    adminConfigurationDeploymentMiroir,
     adminConfigurationDeploymentLibrary,
     adminConfigurationDeploymentAdmin,
-  ] as ApplicationDeploymentConfiguration[];
+  ] as any[]; //type for Admin Application Deployment Entity Definition
+  // ] as ApplicationDeploymentConfiguration[];
 
-  const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
+  
+  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
   const libraryAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentLibrary.uuid);
   const adminAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
 
@@ -112,8 +114,8 @@ export const ReportPage = () => {
           miroirMetaModel, 
           adminAppModel,
         ),
-        [applicationDeploymentMiroir.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-          applicationDeploymentMiroir.uuid,
+        [adminConfigurationDeploymentMiroir.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+          adminConfigurationDeploymentMiroir.uuid,
           miroirMetaModel, 
           miroirMetaModel, 
         ),

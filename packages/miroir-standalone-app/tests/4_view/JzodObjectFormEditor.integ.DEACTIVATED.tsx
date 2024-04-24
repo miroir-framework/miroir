@@ -9,7 +9,7 @@
 //   EntityInstance,
 //   MetaEntity,
 //   MiroirConfigClient,
-//   applicationDeploymentMiroir,
+//   adminConfigurationDeploymentMiroir,
 //   miroirCoreStartup
 // } from "miroir-core";
 
@@ -96,7 +96,7 @@
 // function JzodObjectFormEditorWrapper(props: JzodElementFormEditorProps) {
 //   const [result, setResult] = useState(undefined);
 
-//   const currentMiroirModel = useCurrentModel(applicationDeploymentMiroir.uuid);
+//   const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
 //   // const currentEnumJzodSchemaResolver: JzodElementRecord = useMemo(
 //   //   () => getCurrentEnumJzodSchemaResolver(currentMiroirModel),

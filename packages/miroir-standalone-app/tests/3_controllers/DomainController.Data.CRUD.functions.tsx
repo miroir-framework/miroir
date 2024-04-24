@@ -6,7 +6,7 @@ import React from "react";
 
 import {
   adminConfigurationDeploymentLibrary,
-  applicationDeploymentMiroir,
+  adminConfigurationDeploymentMiroir,
   author1,
   author2,
   author3,
@@ -166,7 +166,7 @@ export async function refreshAllInstancesTest(
       await domainController.handleAction({
         actionType: "modelAction",
         actionName: "rollback",
-        deploymentUuid:applicationDeploymentMiroir.uuid,
+        deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       });
       await domainController.handleAction({

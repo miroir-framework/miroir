@@ -10,7 +10,7 @@ import { AutoStories } from '@mui/icons-material';
 import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
-  applicationDeploymentMiroir,
+  adminConfigurationDeploymentMiroir,
   getLoggerName,
   LoggerInterface,
   menuDefaultAdmin,
@@ -98,7 +98,7 @@ const sideBarDefaultItems = [
   {
     label: "A Menu will be displayed here!",
     section: "model",
-    application: applicationDeploymentMiroir.uuid,
+    application: adminConfigurationDeploymentMiroir.uuid,
     reportUuid: "",
     "icon": "south",
   },
@@ -130,7 +130,7 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
   //   () => 
   //   getDeploymentEntityStateSelectorParams<DomainManyQueriesWithDeploymentUuid>({
   //     queryType: "DomainManyQueries",
-  //     deploymentUuid: applicationDeploymentMiroir.uuid,
+  //     deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
   //     // applicationSection: "data",
   //     pageParams: { elementType: "object", elementValue: {} },
   //     queryParams: { elementType: "object", elementValue: {} },
@@ -198,7 +198,7 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
       </SidebarSection>
       <Divider />
       <SidebarSection
-        deploymentUuid={applicationDeploymentMiroir.uuid}
+        deploymentUuid={adminConfigurationDeploymentMiroir.uuid}
         menuUuid={menuDefaultMiroir.uuid}
         open={props.open}
         setOpen={props.setOpen}

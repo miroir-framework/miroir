@@ -20,7 +20,7 @@ import {
   MiroirLoggerFactory,
   Report,
   adminConfigurationDeploymentLibrary,
-  applicationDeploymentMiroir,
+  adminConfigurationDeploymentMiroir,
   applicationLibrary,
   entityEntity,
   entityEntityDefinition,
@@ -342,14 +342,14 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     const miroirMenuPageParams: DomainElementObject = {
       elementType: "object",
       elementValue: {
-        deploymentUuid: { elementType: "string", elementValue: applicationDeploymentMiroir.uuid },
+        deploymentUuid: { elementType: "string", elementValue: adminConfigurationDeploymentMiroir.uuid },
         applicationSection: { elementType: "string", elementValue: "data" },
       },
     };
 
     const miroirMenuInstancesQuery: DomainManyQueriesWithDeploymentUuid = {
       queryType: "DomainManyQueries",
-      deploymentUuid: applicationDeploymentMiroir.uuid,
+      deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
       pageParams: miroirMenuPageParams,
       queryParams: { elementType: "object", elementValue: {} },
       contextResults: { elementType: "object", elementValue: {} },
@@ -372,7 +372,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         {
           actionType: "queryAction",
           actionName: "runQuery",
-          deploymentUuid:applicationDeploymentMiroir.uuid,
+          deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           query: miroirMenuInstancesQuery
         }
@@ -418,7 +418,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         actionType: "instanceAction",
         actionName: "updateInstance",
         applicationSection: "data",
-        deploymentUuid: applicationDeploymentMiroir.uuid,
+        deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
         objects: [
           {
@@ -438,7 +438,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         actionName: "commit",
         actionType: "modelAction",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        deploymentUuid: applicationDeploymentMiroir.uuid,
+        deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
       },
       props.currentModel
     );
@@ -789,14 +789,14 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     const miroirMenuPageParams: DomainElementObject = {
       elementType: "object",
       elementValue: {
-        deploymentUuid: { elementType: "string", elementValue: applicationDeploymentMiroir.uuid },
+        deploymentUuid: { elementType: "string", elementValue: adminConfigurationDeploymentMiroir.uuid },
         applicationSection: { elementType: "string", elementValue: "data" },
       },
     };
     
     const miroirMenuInstancesQuery: DomainManyQueriesWithDeploymentUuid = {
       queryType: "DomainManyQueries",
-      deploymentUuid: applicationDeploymentMiroir.uuid,
+      deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
       pageParams: miroirMenuPageParams,
       queryParams: { elementType: "object", elementValue: {} },
       contextResults: { elementType: "object", elementValue: {} },
@@ -819,7 +819,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         {
           actionType: "queryAction",
           actionName: "runQuery",
-          deploymentUuid:applicationDeploymentMiroir.uuid,
+          deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           query: miroirMenuInstancesQuery
         }
@@ -865,7 +865,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         actionType: "instanceAction",
         actionName: "updateInstance",
         applicationSection: "data",
-        deploymentUuid: applicationDeploymentMiroir.uuid,
+        deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
         objects: [
           {
@@ -889,7 +889,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         actionName: "commit",
         actionType: "modelAction",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        deploymentUuid: applicationDeploymentMiroir.uuid,
+        deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
       },
       props.currentModel
     );

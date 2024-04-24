@@ -19,7 +19,7 @@ import {
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
-  applicationDeploymentMiroir,
+  adminConfigurationDeploymentMiroir,
   getLoggerName
 } from "miroir-core";
 
@@ -76,7 +76,7 @@ export const MTableComponent = (props: TableComponentProps) => {
   // log.info("MTableComponent refreshing with dialogFormObject",dialogFormObject);
 
 
-  const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
+  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
   const currentModel: MetaModel = useCurrentModel(contextDeploymentUuid);
   // log.info("MTableComponent currentModel", currentModel);
 

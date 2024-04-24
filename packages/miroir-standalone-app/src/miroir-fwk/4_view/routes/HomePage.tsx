@@ -24,7 +24,7 @@ import {
   Uuid,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
-  applicationDeploymentMiroir,
+  adminConfigurationDeploymentMiroir,
   defaultMiroirMetaModel,
   entityAuthor,
   entityBook,
@@ -86,10 +86,12 @@ export const HomePage = (props: RootComponentProps) => {
   const domainController: DomainControllerInterface = useDomainControllerService();
   
   const deployments = [
-    applicationDeploymentMiroir,
+    adminConfigurationDeploymentMiroir,
     adminConfigurationDeploymentLibrary,
     adminConfigurationDeploymentAdmin,
-  ] as ApplicationDeploymentConfiguration[];
+  ] as any[]; //type for Admin Application Deployment Entity Definition
+  // ] as ApplicationDeploymentConfiguration[];
+
   // log.info("RootComponent deployments",deployments);
 
   // context utility functions
@@ -101,7 +103,7 @@ export const HomePage = (props: RootComponentProps) => {
   const displayedApplicationSection = context.applicationSection;
   const setDisplayedApplicationSection = context.setApplicationSection;
 
-  const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
+  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
   const libraryAppModel: MetaModel = useCurrentModel(displayedDeploymentUuid);
   const adminAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
 
@@ -112,7 +114,7 @@ export const HomePage = (props: RootComponentProps) => {
   log.info("HomePage displayedDeploymentDefinition",displayedDeploymentDefinition);
 
   // TODO: adapt to Admin app deployment!
-  const currentModel = displayedDeploymentUuid == applicationDeploymentMiroir.uuid? defaultMiroirMetaModel:libraryAppModel;
+  const currentModel = displayedDeploymentUuid == adminConfigurationDeploymentMiroir.uuid? defaultMiroirMetaModel:libraryAppModel;
   // const currentModel = libraryAppModel;
   log.info("HomePage currentModel",currentModel);
 
@@ -134,8 +136,8 @@ export const HomePage = (props: RootComponentProps) => {
           miroirMetaModel, 
           adminAppModel,
         ),
-        [applicationDeploymentMiroir.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-          applicationDeploymentMiroir.uuid,
+        [adminConfigurationDeploymentMiroir.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+          adminConfigurationDeploymentMiroir.uuid,
           miroirMetaModel, 
           miroirMetaModel, 
         ),
@@ -206,7 +208,7 @@ export const HomePage = (props: RootComponentProps) => {
     // // const bundleProducerQuery: MiroirSelectQuery = useMemo(()=>queryVersionBundleProducerV1.definition,[])
     // const bundleProducerQuery: DomainManyQueriesWithDeploymentUuid = useMemo(()=>({
     //   queryType: "DomainManyQueries",
-    //   deploymentUuid: applicationDeploymentMiroir.uuid,
+    //   deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
     //   applicationSection: "data",
     //   pageParams: { elementType: "object", elementValue: {} },
     //   contextResults: { elementType: "object", elementValue: {} },
@@ -232,7 +234,7 @@ export const HomePage = (props: RootComponentProps) => {
               actionType: "undoRedoAction",
               actionName: "undo",
               endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
-              deploymentUuid:applicationDeploymentMiroir.uuid
+              deploymentUuid:adminConfigurationDeploymentMiroir.uuid
             });
           }}
         >
@@ -247,7 +249,7 @@ export const HomePage = (props: RootComponentProps) => {
               actionType: "undoRedoAction",
               actionName: "redo",
               endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
-              deploymentUuid:applicationDeploymentMiroir.uuid
+              deploymentUuid:adminConfigurationDeploymentMiroir.uuid
             });
           }}
         >
@@ -263,7 +265,7 @@ export const HomePage = (props: RootComponentProps) => {
                 actionType: "modelAction",
                 actionName: "commit",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                deploymentUuid:applicationDeploymentMiroir.uuid,
+                deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
               },
               defaultMiroirMetaModel
             );
@@ -298,7 +300,7 @@ export const HomePage = (props: RootComponentProps) => {
               actionType: "modelAction",
               actionName: "rollback",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              deploymentUuid:applicationDeploymentMiroir.uuid,
+              deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
             });
           }}
         >
@@ -365,12 +367,12 @@ export const HomePage = (props: RootComponentProps) => {
       {/* <span>
         <button
           onClick={async () => {
-            log.info("fetching instances from datastore for deployment", applicationDeploymentMiroir);
+            log.info("fetching instances from datastore for deployment", adminConfigurationDeploymentMiroir);
             await domainController.handleAction({
               actionType: "modelAction",
               actionName: "rollback",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              deploymentUuid:applicationDeploymentMiroir.uuid,
+              deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
             });
             await domainController.handleAction({
               actionType: "modelAction",
@@ -426,7 +428,7 @@ export const HomePage = (props: RootComponentProps) => {
                   actionType: "instanceAction",
                   actionName: "updateInstance",
                   applicationSection: "data",
-                  deploymentUuid: applicationDeploymentMiroir.uuid,
+                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   objects: [
                     {

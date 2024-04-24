@@ -14,6 +14,7 @@ import {
   ActionReturnType,
   ApplicationSection,
   ApplicationVersion,
+  DeploymentEntityState,
   DomainState,
   EntityDefinition,
   EntityInstance,
@@ -23,6 +24,7 @@ import {
   JzodSchema,
   LocalCacheAction,
   LoggerInterface,
+  Menu,
   MetaEntity,
   MetaModel,
   MiroirLoggerFactory,
@@ -31,33 +33,20 @@ import {
   Report,
   StoreBasedConfiguration,
   Uuid,
-  applicationDeploymentMiroir,
+  adminConfigurationDeploymentMiroir,
   entityApplicationVersion,
   entityDefinitionEntityDefinition,
   entityEntity,
   entityEntityDefinition,
   entityJzodSchema,
   entityMenu,
-  Menu,
   entityReport,
   entityStoreBasedConfiguration,
-  getLoggerName,
-  Entity,
-  DeploymentEntityState,
+  getDeploymentEntityStateIndex,
   getLocalCacheIndexDeploymentSection,
   getLocalCacheIndexDeploymentUuid,
   getLocalCacheIndexEntityUuid,
-  getDeploymentEntityStateIndex,
-  JzodElement,
-  DomainManyQueriesWithDeploymentUuid,
-  getSelectorParams,
-  selectByDomainManyQueriesFromDomainState,
-  selectByDomainManyQueries,
-  getDeploymentEntityStateSelectorParams,
-  DomainElementObject,
-  cleanupResultsFromQuery,
-  entityInstance,
-  EntityInstanceWithName
+  getLoggerName
 } from "miroir-core";
 
 import { packageName } from "../../constants";
@@ -206,7 +195,7 @@ export function currentModel(deploymentUuid: string, state:LocalCacheSliceState)
     throw new Error("currentModel(deploymentUuid) parameter can not be undefined.");
   } else {
       const metaModelSection = "model";
-      const modelSection = deploymentUuid == applicationDeploymentMiroir.uuid?"data":"model";
+      const modelSection = deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model";
       const applicationVersions = state.current[getDeploymentEntityStateIndex(deploymentUuid, modelSection, entityApplicationVersion.uuid)];
       const configuration = state.current[getDeploymentEntityStateIndex(deploymentUuid, modelSection, entityStoreBasedConfiguration.uuid)];
       const entities = state.current[getDeploymentEntityStateIndex(deploymentUuid, metaModelSection, entityEntity.uuid)];

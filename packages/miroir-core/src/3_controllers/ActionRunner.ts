@@ -13,7 +13,7 @@ import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
 
-import applicationDeploymentMiroir from "../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
+import adminConfigurationDeploymentMiroir from "../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 
 import { defaultMiroirMetaModel } from "../1_core/Model.js";
 import { ACTION_OK } from "../1_core/constants.js";
@@ -49,7 +49,7 @@ export async function modelActionStoreRunnerNotUsed(
   );
   log.debug("modelActionStoreRunnerNotUsed getEntityUuids()", miroirDataPersistenceStoreController.getEntityUuids());
   const persistenceStoreController: PersistenceStoreControllerInterface =
-    deploymentUuid == applicationDeploymentMiroir.uuid ? miroirDataPersistenceStoreController : appDataPersistenceStoreController;
+    deploymentUuid == adminConfigurationDeploymentMiroir.uuid ? miroirDataPersistenceStoreController : appDataPersistenceStoreController;
   const modelAction: ModelAction = body;
   // log.info('modelActionStoreRunnerNotUsed action', JSON.stringify(update,undefined,2));
   log.info("modelActionStoreRunnerNotUsed action", modelAction);
@@ -211,7 +211,7 @@ export async function storeActionOrBundleActionStoreRunner(
       log.info("storeActionOrBundleActionStoreRunner closeStore");
       // NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
       await persistenceStoreControllerManager.deletePersistenceStoreController(action.deploymentUuid);
-      // await persistenceStoreControllerManager.deletePersistenceStoreController(applicationDeploymentMiroir.uuid);
+      // await persistenceStoreControllerManager.deletePersistenceStoreController(adminConfigurationDeploymentMiroir.uuid);
       // for (const deployment of Object.entries(action.configuration)) {
       //   await persistenceStoreControllerManager.deletePersistenceStoreController(deployment[0]);
       //   // await persistenceStoreControllerManager.addPersistenceStoreController(

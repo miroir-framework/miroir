@@ -29,7 +29,7 @@ import {
   QuerySelectorParams,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
-  applicationDeploymentMiroir,
+  adminConfigurationDeploymentMiroir,
   applicationSection,
   domainElementObject,
   getApplicationSection,
@@ -213,12 +213,13 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
 
   
   const deployments = [
-    applicationDeploymentMiroir,
+    adminConfigurationDeploymentMiroir,
     adminConfigurationDeploymentLibrary,
     adminConfigurationDeploymentAdmin,
-  ] as ApplicationDeploymentConfiguration[];
+  ] as any[]; //type for Admin Application Deployment Entity Definition
+  // ] as ApplicationDeploymentConfiguration[];
 
-  const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
+  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
   const currentModel: MetaModel = useCurrentModel(props.deploymentUuid)
 
 

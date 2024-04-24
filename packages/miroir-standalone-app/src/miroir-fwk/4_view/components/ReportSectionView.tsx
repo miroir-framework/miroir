@@ -16,7 +16,7 @@ import {
   Uuid,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
-  applicationDeploymentMiroir,
+  adminConfigurationDeploymentMiroir,
   getLoggerName
 } from "miroir-core";
 
@@ -85,10 +85,11 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
   log.info("########################## render with props", props);
 
   const deployments = [
-    applicationDeploymentMiroir,
+    adminConfigurationDeploymentMiroir,
     adminConfigurationDeploymentLibrary,
     adminConfigurationDeploymentAdmin,
-  ] as ApplicationDeploymentConfiguration[];
+  ] as any[]; //type for Admin Application Deployment Entity Definition
+  // ] as ApplicationDeploymentConfiguration[];
 
   // ##############################################################################################
   const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(

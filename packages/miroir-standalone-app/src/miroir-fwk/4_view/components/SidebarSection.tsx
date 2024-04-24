@@ -15,7 +15,7 @@ import { Link } from 'react-router-dom';
 import { AutoStories } from '@mui/icons-material';
 import { Icon } from '@mui/material';
 import {
-  applicationDeploymentMiroir,
+  adminConfigurationDeploymentMiroir,
   DeploymentEntityState,
   DomainElementObject,
   DomainManyQueriesWithDeploymentUuid,
@@ -112,7 +112,7 @@ const sideBarDefaultItems = [
   {
     label: "A Menu will be displayed here!",
     section: "model",
-    application: applicationDeploymentMiroir.uuid,
+    application: adminConfigurationDeploymentMiroir.uuid,
     reportUuid: "",
     "icon": "south",
   },

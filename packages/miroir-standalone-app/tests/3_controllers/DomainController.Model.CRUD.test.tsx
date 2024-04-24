@@ -18,7 +18,7 @@ import {
   MiroirContext,
   MiroirLoggerFactory,
   adminConfigurationDeploymentLibrary,
-  applicationDeploymentMiroir,
+  adminConfigurationDeploymentMiroir,
   author1,
   author2,
   author3,
@@ -151,7 +151,7 @@ describe.sequential(
               entityName={entityEntity.name}
               entityUuid={entityEntity.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
-              deploymentUuid={applicationDeploymentMiroir.uuid}
+              deploymentUuid={adminConfigurationDeploymentMiroir.uuid}
               instancesApplicationSection="model"
             />
             ,
@@ -163,7 +163,7 @@ describe.sequential(
               await domainController.handleAction({
                 actionType: "modelAction",
                 actionName: "rollback",
-                deploymentUuid:applicationDeploymentMiroir.uuid,
+                deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               });
               await domainController.handleAction({
@@ -232,7 +232,7 @@ describe.sequential(
               await domainController.handleAction({
                 actionType: "modelAction",
                 actionName: "rollback",
-                deploymentUuid:applicationDeploymentMiroir.uuid,
+                deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               });
               await domainController.handleAction({
@@ -372,7 +372,7 @@ describe.sequential(
               await domainController.handleAction({
                 actionType: "modelAction",
                 actionName: "rollback",
-                deploymentUuid:applicationDeploymentMiroir.uuid,
+                deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               });
               await domainController.handleAction({
@@ -532,7 +532,7 @@ describe.sequential(
               await domainController.handleAction({
                 actionType: "modelAction",
                 actionName: "rollback",
-                deploymentUuid:applicationDeploymentMiroir.uuid,
+                deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               });
               await domainController.handleAction({
@@ -851,7 +851,7 @@ describe.sequential(
               await domainController.handleAction({
                 actionType: "modelAction",
                 actionName: "rollback",
-                deploymentUuid:applicationDeploymentMiroir.uuid,
+                deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               });
               await domainController.handleAction({
@@ -1273,7 +1273,7 @@ describe.sequential(
               entityName={entityReport.name}
               entityUuid={entityReport.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
-              deploymentUuid={applicationDeploymentMiroir.uuid}
+              deploymentUuid={adminConfigurationDeploymentMiroir.uuid}
               instancesApplicationSection="data"
             />,
             {store:localCache.getInnerStore(),}
@@ -1286,7 +1286,7 @@ describe.sequential(
               await domainController.handleAction({
                 actionType: "modelAction",
                 actionName: "rollback",
-                deploymentUuid:applicationDeploymentMiroir.uuid,
+                deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               });
             }
@@ -1317,7 +1317,7 @@ describe.sequential(
               actionType: "instanceAction",
               actionName: "updateInstance",
               applicationSection: "data",
-              deploymentUuid: applicationDeploymentMiroir.uuid,
+              deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
               objects: [
                 {
@@ -1337,7 +1337,7 @@ describe.sequential(
 
           await act(
             async () => {
-              await domainController.handleAction(updateAction, localCache.currentModel(applicationDeploymentMiroir.uuid));
+              await domainController.handleAction(updateAction, localCache.currentModel(adminConfigurationDeploymentMiroir.uuid));
             }
           );
   
@@ -1373,10 +1373,10 @@ describe.sequential(
                 {
                   actionName: "commit",
                   actionType: "modelAction",
-                  deploymentUuid: applicationDeploymentMiroir.uuid,
+                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 },
-                localCache.currentModel(applicationDeploymentMiroir.uuid)
+                localCache.currentModel(adminConfigurationDeploymentMiroir.uuid)
               );
             }
           );
@@ -1400,7 +1400,7 @@ describe.sequential(
               await domainController.handleAction({
                 actionType: "modelAction",
                 actionName: "rollback",
-                deploymentUuid:applicationDeploymentMiroir.uuid,
+                deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               });
             }

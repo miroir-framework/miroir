@@ -7,10 +7,10 @@ import entityApplication from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1
 import entityMenu from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/dde4c883-ae6d-47c3-b6df-26bc6e3c1842.json';
 
 
-import applicationDeploymentMiroir from '../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json';
+import adminConfigurationDeploymentMiroir from "../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 
 export const getApplicationSection = (deploymentUUid: string, entityUuid: string): ApplicationSection => {
-  if (deploymentUUid == applicationDeploymentMiroir.uuid) {
+  if (deploymentUUid == adminConfigurationDeploymentMiroir.uuid) {
     return entityUuid == entityEntity.uuid || entityUuid == entityEntityDefinition.uuid ? "model" : "data";
   } else {
     return entityUuid == entityEntity.uuid ||

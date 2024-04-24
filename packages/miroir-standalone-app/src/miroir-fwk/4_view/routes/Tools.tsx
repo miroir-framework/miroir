@@ -11,7 +11,7 @@ import {
   MiroirLoggerFactory,
   StoreUnitConfiguration,
   adminConfigurationDeploymentLibrary,
-  applicationDeploymentMiroir,
+  adminConfigurationDeploymentMiroir,
   getLoggerName,
   resolveReferencesForJzodSchemaAndValueObject,
 } from "miroir-core";
@@ -58,7 +58,7 @@ const miroirConfig: MiroirConfigClient = {
         }
       },
       "storeSectionConfiguration": {
-        [applicationDeploymentMiroir.uuid]:{
+        [adminConfigurationDeploymentMiroir.uuid]:{
           "admin": {
             "emulatedServerType": "sql",
             "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
@@ -146,7 +146,7 @@ export const ToolsPage: React.FC<any> = (
   const context = useMiroirContextService();
   const domainController: DomainControllerInterface = useDomainControllerService();
 
-  const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
+  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
   const handleAddObjectDialogFormSubmit = useCallback(
     async (data:any, source?: string) => {
@@ -251,7 +251,7 @@ export const ToolsPage: React.FC<any> = (
                 }
               },
               "storeSectionConfiguration": {
-                [applicationDeploymentMiroir.uuid]:{
+                [adminConfigurationDeploymentMiroir.uuid]:{
                   "admin": {
                     "emulatedServerType": "sql",
                     "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
@@ -307,7 +307,7 @@ export const ToolsPage: React.FC<any> = (
           actionName: "openStore",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           configuration: (submitMiroirConfig.client as MiroirConfigForRestClient).serverConfig.storeSectionConfiguration,
-          deploymentUuid: applicationDeploymentMiroir.uuid,
+          deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
         });
   
         console.log("miroirBeforeAll: real server, sending remote storeManagementAction to server for test store creation")
@@ -329,8 +329,8 @@ export const ToolsPage: React.FC<any> = (
             actionType: "storeManagementAction",
             actionName: "createStore",
             endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-            deploymentUuid: applicationDeploymentMiroir.uuid,
-            configuration: (submitMiroirConfig.client as MiroirConfigForRestClient).serverConfig.storeSectionConfiguration[applicationDeploymentMiroir.uuid]
+            deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+            configuration: (submitMiroirConfig.client as MiroirConfigForRestClient).serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid]
           }
         )
         if (createdMiroirStore?.status != "ok") {

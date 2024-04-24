@@ -289,7 +289,7 @@ export async function queryHandler(
     // we are on the server, the action has been received from remote client
     // switch (queryAction.deploymentUuid) {
     const result = await domainController.handleQuery(queryAction)
-    log.info("RestServer queryHandler used applicationDeploymentMiroir domainController result=", JSON.stringify(result, undefined,2))
+    log.info("RestServer queryHandler used adminConfigurationDeploymentMiroir domainController result=", JSON.stringify(result, undefined,2))
     return continuationFunction(response)(result)
   } else {
     // we're on the client, called by RestServerStub

@@ -12,7 +12,7 @@ import 'material-icons/iconfont/material-icons.css';
 
 import {
   adminConfigurationDeploymentLibrary,
-  applicationDeploymentMiroir,
+  adminConfigurationDeploymentMiroir,
   ConfigurationService,
   defaultLevels,
   DomainController,
@@ -316,7 +316,7 @@ async function start(root:Root) {
         actionName: "openStore",
         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         configuration: currentMiroirConfig.client.deploymentStorageConfig,
-        deploymentUuid: applicationDeploymentMiroir.uuid,
+        deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
       };
       await persistenceStore.handlePersistenceAction(openStoreAction)
     }

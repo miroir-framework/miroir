@@ -14,7 +14,7 @@ import {
 import { PersistenceInterface } from '../0_interfaces/4-services/PersistenceInterface.js';
 
 
-import applicationDeploymentMiroir from '../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json';
+import adminConfigurationDeploymentMiroir from "../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 import instanceConfigurationReference from '../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
 import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
 import entityApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
@@ -254,7 +254,7 @@ export class DomainController implements DomainControllerInterface {
             );
           } else {
             const sectionOfapplicationEntities: ApplicationSection =
-              modelAction.deploymentUuid == applicationDeploymentMiroir.uuid ? "data" : "model";
+              modelAction.deploymentUuid == adminConfigurationDeploymentMiroir.uuid ? "data" : "model";
             const newModelVersionUuid = uuidv4();
             // const newModelVersion: MiroirApplicationVersionOLD_DO_NOT_USE = {
             const newModelVersion: ApplicationVersion = {
@@ -474,9 +474,9 @@ export class DomainController implements DomainControllerInterface {
           }
           // TODO: information has to come from localCacheSlice, not from hard-coded source!
           const modelEntitiesToFetch: MetaEntity[] =
-            deploymentUuid == applicationDeploymentMiroir.uuid ? miroirModelEntities : metaModelEntities;
+            deploymentUuid == adminConfigurationDeploymentMiroir.uuid ? miroirModelEntities : metaModelEntities;
           const dataEntitiesToFetch: MetaEntity[] =
-            deploymentUuid == applicationDeploymentMiroir.uuid
+            deploymentUuid == adminConfigurationDeploymentMiroir.uuid
               ? (context.dataEntitiesFromModelSection.returnedDomainElement?.elementValue.instances ?? []).filter(
                   (dataEntity: EntityInstance) =>
                     modelEntitiesToFetch.filter((modelEntity) => dataEntity.uuid == modelEntity.uuid).length == 0

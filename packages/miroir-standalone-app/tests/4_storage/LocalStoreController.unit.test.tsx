@@ -19,7 +19,7 @@ import {
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManagerInterface,
   adminConfigurationDeploymentLibrary,
-  applicationDeploymentMiroir,
+  adminConfigurationDeploymentMiroir,
   applicationLibrary,
   applicationMiroir,
   applicationModelBranchLibraryMasterBranch,
@@ -178,11 +178,11 @@ describe.sequential("localPersistenceStoreController.unit.test", () => {
   it("Create miroir2 store", async () => { // TODO: test failure cases!
       if (miroirConfig.client.emulateServer) {
         console.log("Create miroir2 store START")
-        const testResult: ActionReturnType = await localMiroirPersistenceStoreController.createStore(miroirConfig.client.deploymentStorageConfig[applicationDeploymentMiroir.uuid].model)
-        const testResult2: ActionReturnType = await localMiroirPersistenceStoreController.createStore(miroirConfig.client.deploymentStorageConfig[applicationDeploymentMiroir.uuid].data)
+        const testResult: ActionReturnType = await localMiroirPersistenceStoreController.createStore(miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].model)
+        const testResult2: ActionReturnType = await localMiroirPersistenceStoreController.createStore(miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].data)
         //cleanup
-        const testResult3: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(miroirConfig.client.deploymentStorageConfig[applicationDeploymentMiroir.uuid].model)
-        const testResult4: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(miroirConfig.client.deploymentStorageConfig[applicationDeploymentMiroir.uuid].data)
+        const testResult3: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].model)
+        const testResult4: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].data)
         // test
         expect(testResult).toEqual(ACTION_OK)
         expect(testResult2).toEqual(ACTION_OK)
@@ -205,12 +205,12 @@ describe.sequential("localPersistenceStoreController.unit.test", () => {
         const deployMiroir = await persistenceStoreControllerManager.deployModule(
           localMiroirPersistenceStoreController,
           newMiroirDeploymentUuid,
-          miroirConfig.client.deploymentStorageConfig[applicationDeploymentMiroir.uuid],
+          miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid],
           {
             metaModel: defaultMiroirMetaModel,
             dataStoreType: 'miroir',
             application: applicationMiroir,
-            applicationDeploymentConfiguration: applicationDeploymentMiroir,
+            applicationDeploymentConfiguration: adminConfigurationDeploymentMiroir,
             applicationModelBranch: applicationModelBranchMiroirMasterBranch,
             applicationVersion: applicationVersionInitialMiroirVersion,
             applicationStoreBasedConfiguration: applicationStoreBasedConfigurationMiroir,
