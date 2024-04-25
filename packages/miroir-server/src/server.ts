@@ -107,7 +107,7 @@ persistenceSaga.run(localCache)
 persistenceStoreControllerManager.setPersistenceStore(persistenceSaga); // useless?
 persistenceStoreControllerManager.setLocalCache(localCache);
 
-
+// open all configured stores
 for (const c of Object.entries(configurations)) {
   const openStoreAction: StoreOrBundleAction = {
     actionType: "storeManagementAction",

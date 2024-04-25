@@ -39,7 +39,8 @@ import {
   getLoggerName,
   resetAndInitMiroirAndApplicationDatabase,
   restServerDefaultHandlers,
-  startLocalPersistenceStoreControllers
+  startLocalPersistenceStoreControllers,
+  StoreOrBundleAction
 } from "miroir-core";
 import { PersistenceReduxSaga, LocalCache, ReduxStoreWithUndoRedo, RestPersistenceClientAndRestClient } from 'miroir-localcache-redux';
 import { createMswRestServer } from 'miroir-server-msw-stub';
@@ -190,15 +191,19 @@ export async function miroirBeforeAll(
 
     if (!miroirConfig.client.emulateServer) {
       console.warn('miroirBeforeAll: emulateServer is true in miroirConfig, a real server is used, tests results depend on the availability of the server.');
-
-      // const remoteStore:PersistenceInterface = domainController.getRemoteStore();
-      await domainController.handleAction({
-        actionType: "storeManagementAction",
-        actionName: "openStore",
-        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        configuration: miroirConfig.client.serverConfig.storeSectionConfiguration,
-        deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-      })
+      for (const c of Object.entries(miroirConfig.client.serverConfig.storeSectionConfiguration)) {
+        const openStoreAction: StoreOrBundleAction = {
+          actionType: "storeManagementAction",
+          actionName: "openStore",
+          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+          configuration: {
+            [c[0]]: c[1] as StoreUnitConfiguration,
+          },
+          deploymentUuid: c[0],
+        };
+        await domainController.handleAction(openStoreAction)
+      }
+      
 
       console.log("miroirBeforeAll: real server, sending remote storeManagementAction to server for test store creation")
       const createdApplicationLibraryStore = await domainController?.handleAction(

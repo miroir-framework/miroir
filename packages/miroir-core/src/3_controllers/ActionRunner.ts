@@ -132,18 +132,18 @@ export async function storeActionOrBundleActionStoreRunner(
       }
 
       // await persistenceStoreControllerManager.addPersistenceStoreController(action.deploymentUuid, action.configuration)
-      const miroirModelStoreCreated: ActionReturnType = await localAppPersistenceStoreController.createStore(action.configuration.model)
-      const miroirDataStoreCreated: ActionReturnType = await localAppPersistenceStoreController.createStore(action.configuration.data)
+      const appModelStoreCreated: ActionReturnType = await localAppPersistenceStoreController.createStore(action.configuration.model)
+      const appDataStoreCreated: ActionReturnType = await localAppPersistenceStoreController.createStore(action.configuration.data)
 
-      if (miroirModelStoreCreated.status != "ok" || miroirDataStoreCreated.status != "ok") {
+      if (appModelStoreCreated.status != "ok" || appDataStoreCreated.status != "ok") {
         return {
           status: "error",
           error: {
             errorType: "FailedToCreateStore",
             errorMessage:
-              (miroirModelStoreCreated.status != "ok" ? miroirModelStoreCreated.error : "model store created OK") +
+              (appModelStoreCreated.status != "ok" ? appModelStoreCreated.error : "model store created OK") +
               " --- " +
-              (miroirDataStoreCreated.status != "ok" ? miroirDataStoreCreated.error : "data store created OK"),
+              (appDataStoreCreated.status != "ok" ? appDataStoreCreated.error : "data store created OK"),
           },
         };
       }
@@ -167,18 +167,18 @@ export async function storeActionOrBundleActionStoreRunner(
       }
 
       // await persistenceStoreControllerManager.addPersistenceStoreController(action.deploymentUuid, action.configuration)
-      const miroirModelStoreDeleted: ActionReturnType = await localAppPersistenceStoreController.deleteStore(action.configuration.model)
-      const miroirDataStoreDeleted: ActionReturnType = await localAppPersistenceStoreController.deleteStore(action.configuration.data)
+      const appModelStoreDeleted: ActionReturnType = await localAppPersistenceStoreController.deleteStore(action.configuration.model)
+      const appDataStoreDeleted: ActionReturnType = await localAppPersistenceStoreController.deleteStore(action.configuration.data)
 
-      if (miroirModelStoreDeleted.status != "ok" || miroirDataStoreDeleted.status != "ok") {
+      if (appModelStoreDeleted.status != "ok" || appDataStoreDeleted.status != "ok") {
         return {
           status: "error",
           error: {
             errorType: "FailedToDeleteStore",
             errorMessage:
-              (miroirModelStoreDeleted.status != "ok" ? miroirModelStoreDeleted.error : "model store deleted OK") +
+              (appModelStoreDeleted.status != "ok" ? appModelStoreDeleted.error : "model store deleted OK") +
               " --- " +
-              (miroirDataStoreDeleted.status != "ok" ? miroirDataStoreDeleted.error : "data store deleted OK"),
+              (appDataStoreDeleted.status != "ok" ? appDataStoreDeleted.error : "data store deleted OK"),
           },
         };
       }
@@ -189,19 +189,29 @@ export async function storeActionOrBundleActionStoreRunner(
 
       // TODO: NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
       // TODO: addPersistenceStoreController takes deploymentUuid, not ApplicationSection as 1st parameter!
-      for (const deployment of Object.entries(action.configuration)) {
-        await persistenceStoreControllerManager.deletePersistenceStoreController(deployment[0]);
-        await persistenceStoreControllerManager.addPersistenceStoreController(
-          deployment[0],
-          deployment[1]
-        );
-
-        const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(deployment[0]);
-        await localPersistenceStoreController?.open();
-        await localPersistenceStoreController?.bootFromPersistedState(defaultMiroirMetaModel.entities,defaultMiroirMetaModel.entityDefinitions);
-
-        log.info("storeActionOrBundleActionStoreRunner openStore for deployment",deployment[0], "DONE!", persistenceStoreControllerManager.getPersistenceStoreControllers());
+      // for (const deployment of Object.entries(action.configuration)) {
+      if (!action.configuration[action.deploymentUuid]) {
+        return {
+          status: "error",
+          error: {
+            errorType: "FailedToOpenStore",
+            errorMessage:"no configuration entry found for deployment uuid " + action.deploymentUuid + " configuration: " + JSON.stringify(action.configuration, null, 2)
+          },
+        };
       }
+
+      await persistenceStoreControllerManager.deletePersistenceStoreController(action.deploymentUuid);
+      await persistenceStoreControllerManager.addPersistenceStoreController(
+        action.deploymentUuid,
+        action.configuration[action.deploymentUuid]
+      );
+
+      const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
+      await localPersistenceStoreController?.open();
+      await localPersistenceStoreController?.bootFromPersistedState(defaultMiroirMetaModel.entities,defaultMiroirMetaModel.entityDefinitions);
+
+      log.info("storeActionOrBundleActionStoreRunner openStore for deployment",action.deploymentUuid, "DONE!", persistenceStoreControllerManager.getPersistenceStoreControllers());
+      // }
 
       log.info("storeActionOrBundleActionStoreRunner openStore DONE!", persistenceStoreControllerManager.getPersistenceStoreControllers());
 
@@ -211,21 +221,6 @@ export async function storeActionOrBundleActionStoreRunner(
       log.info("storeActionOrBundleActionStoreRunner closeStore");
       // NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
       await persistenceStoreControllerManager.deletePersistenceStoreController(action.deploymentUuid);
-      // await persistenceStoreControllerManager.deletePersistenceStoreController(adminConfigurationDeploymentMiroir.uuid);
-      // for (const deployment of Object.entries(action.configuration)) {
-      //   await persistenceStoreControllerManager.deletePersistenceStoreController(deployment[0]);
-      //   // await persistenceStoreControllerManager.addPersistenceStoreController(
-      //   //   deployment[0],
-      //   //   deployment[1]
-      //   // );
-
-      //   // const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(deployment[0]);
-      //   // await localPersistenceStoreController?.open();
-      //   // await localPersistenceStoreController?.bootFromPersistedState(defaultMiroirMetaModel.entities,defaultMiroirMetaModel.entityDefinitions);
-
-      //   log.info("storeActionOrBundleActionStoreRunner openStore for deployment",deployment[0], "DONE!", persistenceStoreControllerManager.getPersistenceStoreControllers());
-      // }
-
       log.info("storeActionOrBundleActionStoreRunner closeStore DONE!", persistenceStoreControllerManager.getPersistenceStoreControllers());
 
       break;

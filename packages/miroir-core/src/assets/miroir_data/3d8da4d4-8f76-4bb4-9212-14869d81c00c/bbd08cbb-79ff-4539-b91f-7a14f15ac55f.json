@@ -71,6 +71,9 @@
               "extra": { "defaultLabel": "Module Deployment Uuid", "editable": false }
             }
           }
+        },
+        "actionErrors": {
+          "type":"literal", "definition": "FailedToOpenStore"
         }
       },
       {
@@ -87,6 +90,9 @@
               "extra": { "defaultLabel": "Module Deployment Uuid", "editable": false }
             }
           }
+        },
+        "actionErrors": {
+          "type":"literal", "definition": "FailedToCloseStore"
         }
       }
     ],

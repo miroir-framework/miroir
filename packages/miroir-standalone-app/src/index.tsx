@@ -310,15 +310,18 @@ async function start(root:Root) {
         
       }
 
-      const persistenceStore:PersistenceInterface = domainController.getRemoteStore();
-      const openStoreAction: StoreOrBundleAction = {
-        actionType: "storeManagementAction",
-        actionName: "openStore",
-        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        configuration: currentMiroirConfig.client.deploymentStorageConfig,
-        deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-      };
-      await persistenceStore.handlePersistenceAction(openStoreAction)
+      for (const c of Object.entries(currentMiroirConfig.client.deploymentStorageConfig)) {
+        const openStoreAction: StoreOrBundleAction = {
+          actionType: "storeManagementAction",
+          actionName: "openStore",
+          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+          configuration: {
+            [c[0]]: c[1] as StoreUnitConfiguration,
+          },
+          deploymentUuid: c[0],
+        };
+        await domainController.handleAction(openStoreAction)
+      }
     }
 
     const theme = createTheme(themeParams);

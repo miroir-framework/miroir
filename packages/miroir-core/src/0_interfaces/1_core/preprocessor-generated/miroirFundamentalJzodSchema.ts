@@ -1429,7 +1429,7 @@ export const miroirFundamentalJzodSchema = {
             ],
             "extra": {
               "id": 8,
-              "defaultLabel": "Description",
+              "defaultLabel": "Self Application",
               "editable": true
             }
           }
@@ -5257,6 +5257,14 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "literal",
                     "definition": "FailedToDeleteStore"
+                  },
+                  {
+                    "type": "literal",
+                    "definition": "FailedToOpenStore"
+                  },
+                  {
+                    "type": "literal",
+                    "definition": "FailedToCloseStore"
                   },
                   {
                     "type": "literal",

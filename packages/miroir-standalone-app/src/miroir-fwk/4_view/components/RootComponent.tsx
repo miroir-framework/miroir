@@ -42,6 +42,8 @@ import {
   queryEndpointVersionV1,
   StoreManagementAction,
   storeManagementEndpoint,
+  StoreOrBundleAction,
+  StoreUnitConfiguration,
   undoRedoEndpointVersionV1
 } from "miroir-core";
 
@@ -218,29 +220,34 @@ export const RootComponent = (props: RootComponentProps) => {
                         );
                       }
                       if (miroirConfig && miroirConfig.client.emulateServer) {
-                        await remoteStore.handlePersistenceAction({
-                          actionType: "storeManagementAction",
-                          actionName: "openStore",
-                          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-                          configuration: miroirConfig.client.deploymentStorageConfig,
-                          deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                        });
+                        for (const c of Object.entries(miroirConfig.client.deploymentStorageConfig)) {
+                          const openStoreAction: StoreOrBundleAction = {
+                            actionType: "storeManagementAction",
+                            actionName: "openStore",
+                            endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+                            configuration: {
+                              [c[0]]: c[1] as StoreUnitConfiguration,
+                            },
+                            deploymentUuid: c[0],
+                          };
+                          await domainController.handleAction(openStoreAction)
+                        }
+                  
                       } else {
                         const localMiroirConfig = miroirConfig.client as MiroirConfigForRestClient;
-                        const openStoreAction:StoreManagementAction = {
-                          actionType: "storeManagementAction",
-                          actionName: "openStore",
-                          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-                          configuration: localMiroirConfig.serverConfig.storeSectionConfiguration,
-                          deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                        for (const c of Object.entries(localMiroirConfig.serverConfig.storeSectionConfiguration)) {
+                          const openStoreAction: StoreOrBundleAction = {
+                            actionType: "storeManagementAction",
+                            actionName: "openStore",
+                            endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+                            configuration: {
+                              [c[0]]: c[1] as StoreUnitConfiguration,
+                            },
+                            deploymentUuid: c[0],
+                          };
+                          await domainController.handleAction(openStoreAction)
                         }
-                        log.info("openStore openStoreAction",openStoreAction, "localMiroirConfig.serverConfig", localMiroirConfig.serverConfig);
-                        await remoteStore.handlePersistenceAction(openStoreAction);
                       }
-
-                      // TODO: transactional action must not autocommit! initModel neither?!
-                      // .then(
-                      // async () => {
                       log.info(
                         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ OPENSTORE DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
                       );
@@ -250,25 +257,22 @@ export const RootComponent = (props: RootComponentProps) => {
                   </button>
                   <button
                     onClick={async () => {
+                      if (!miroirConfig) {
+                        throw new Error(
+                          "no miroirConfig given, it has to be given on the command line starting the server!"
+                        );
+                      }
+
                       log.info("fetching instances from datastore for deployment", adminConfigurationDeploymentMiroir);
-                      await domainController.handleAction({
-                        actionType: "modelAction",
-                        actionName: "rollback",
-                        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                        deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                      });
-                      await domainController.handleAction({
-                        actionType: "modelAction",
-                        actionName: "rollback",
-                        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                      });
-                      await domainController.handleAction({
-                        actionType: "modelAction",
-                        actionName: "rollback",
-                        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                        deploymentUuid: adminConfigurationDeploymentTest1.uuid,
-                      });
+                      const localMiroirConfig = miroirConfig.client as MiroirConfigForRestClient;
+                      for (const c of Object.entries(localMiroirConfig.serverConfig.storeSectionConfiguration)) {
+                        await domainController.handleAction({
+                          actionType: "modelAction",
+                          actionName: "rollback",
+                          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                          deploymentUuid: c[0],
+                        });
+                      }
                     }}
                   >
                     fetch Miroir & App configurations from database
