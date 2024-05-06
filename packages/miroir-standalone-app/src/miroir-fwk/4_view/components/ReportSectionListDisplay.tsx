@@ -56,6 +56,7 @@ import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from "./Json
 import { noValue } from "./JzodElementEditor";
 import { MTableComponent } from "./MTableComponent";
 import { TableComponentType, TableComponentTypeSchema } from "./MTableComponentInterface";
+import { adminConfigurationDeploymentTest4, deployments } from "../routes/ReportPage";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportSectionListDisplay");
@@ -212,18 +213,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     []
   )
 
-  
-  const deployments = [
-    adminConfigurationDeploymentMiroir,
-    adminConfigurationDeploymentLibrary,
-    adminConfigurationDeploymentAdmin,
-    adminConfigurationDeploymentTest1,
-  ] as any[]; //type for Admin Application Deployment Entity Definition
-  // ] as ApplicationDeploymentConfiguration[];
-
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
   const currentModel: MetaModel = useCurrentModel(props.deploymentUuid)
-
 
   const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(
     (d) => d.uuid == props.deploymentUuid

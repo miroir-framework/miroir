@@ -10,12 +10,14 @@ import { Outlet } from 'react-router-dom';
 
 
 import {
+  ActionReturnType,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  adminConfigurationDeploymentTest1,
   DomainControllerInterface,
+  DomainElementObject,
   domainEndpointVersionV1,
+  DomainManyQueriesWithDeploymentUuid,
   EntityDefinition,
   entityDefinitionApplication,
   entityDefinitionApplicationVersion,
@@ -27,6 +29,7 @@ import {
   entityDefinitionMenu,
   entityDefinitionQueryVersionV1,
   entityDefinitionReport,
+  entityDeployment,
   getLoggerName,
   getMiroirFundamentalJzodSchema,
   instanceEndpointVersionV1,
@@ -34,13 +37,11 @@ import {
   jzodSchemajzodMiroirBootstrapSchema,
   localCacheEndpointVersionV1,
   LoggerInterface,
-  MiroirConfigForRestClient,
   MiroirLoggerFactory,
   modelEndpointV1,
   persistenceEndpointVersionV1,
   PersistenceInterface,
   queryEndpointVersionV1,
-  StoreManagementAction,
   storeManagementEndpoint,
   StoreOrBundleAction,
   StoreUnitConfiguration,
@@ -60,6 +61,8 @@ let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;
 });
+
+export const emptyDomainElementObject: DomainElementObject = { elementType: "object", elementValue: {} }
 
 export interface RootComponentProps {
   // store:any;
@@ -219,34 +222,18 @@ export const RootComponent = (props: RootComponentProps) => {
                           "no miroirConfig given, it has to be given on the command line starting the server!"
                         );
                       }
-                      if (miroirConfig && miroirConfig.client.emulateServer) {
-                        for (const c of Object.entries(miroirConfig.client.deploymentStorageConfig)) {
-                          const openStoreAction: StoreOrBundleAction = {
-                            actionType: "storeManagementAction",
-                            actionName: "openStore",
-                            endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-                            configuration: {
-                              [c[0]]: c[1] as StoreUnitConfiguration,
-                            },
-                            deploymentUuid: c[0],
-                          };
-                          await domainController.handleAction(openStoreAction)
-                        }
-                  
-                      } else {
-                        const localMiroirConfig = miroirConfig.client as MiroirConfigForRestClient;
-                        for (const c of Object.entries(localMiroirConfig.serverConfig.storeSectionConfiguration)) {
-                          const openStoreAction: StoreOrBundleAction = {
-                            actionType: "storeManagementAction",
-                            actionName: "openStore",
-                            endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-                            configuration: {
-                              [c[0]]: c[1] as StoreUnitConfiguration,
-                            },
-                            deploymentUuid: c[0],
-                          };
-                          await domainController.handleAction(openStoreAction)
-                        }
+                      const configurations = miroirConfig.client.emulateServer?miroirConfig.client.deploymentStorageConfig:miroirConfig.client.serverConfig.storeSectionConfiguration;
+                      for (const c of Object.entries(configurations)) {
+                        const openStoreAction: StoreOrBundleAction = {
+                          actionType: "storeManagementAction",
+                          actionName: "openStore",
+                          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+                          configuration: {
+                            [c[0]]: c[1] as StoreUnitConfiguration,
+                          },
+                          deploymentUuid: c[0],
+                        };
+                        await domainController.handleAction(openStoreAction)
                       }
                       log.info(
                         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ OPENSTORE DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
@@ -264,13 +251,86 @@ export const RootComponent = (props: RootComponentProps) => {
                       }
 
                       log.info("fetching instances from datastore for deployment", adminConfigurationDeploymentMiroir);
-                      const localMiroirConfig = miroirConfig.client as MiroirConfigForRestClient;
-                      for (const c of Object.entries(localMiroirConfig.serverConfig.storeSectionConfiguration)) {
+                      // const localMiroirConfig = miroirConfig.client as MiroirConfigForRestClient;
+                      const configurations = miroirConfig.client.emulateServer
+                        ? miroirConfig.client.deploymentStorageConfig
+                        : miroirConfig.client.serverConfig.storeSectionConfiguration;
+                      // ADMIN ONLY!!
+
+                      if (!configurations[adminConfigurationDeploymentAdmin.uuid]) {
+                        throw new Error(
+                          "no configuration for Admin application Deployment given, can not fetch data. Admin deployment uuid=" +
+                            adminConfigurationDeploymentAdmin.uuid +
+                            " configurations=" +
+                            JSON.stringify(configurations, null, 2)
+                        );
+                      }
+                      await domainController.handleAction({
+                        actionType: "modelAction",
+                        actionName: "rollback",
+                        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                        deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                      });
+
+                      const adminDeploymentsQuery: DomainManyQueriesWithDeploymentUuid = {
+                        queryType: "DomainManyQueries",
+                        deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                        pageParams: emptyDomainElementObject,
+                        queryParams: emptyDomainElementObject,
+                        contextResults: { elementType: "object", elementValue: {} },
+                        fetchQuery: {
+                          select: {
+                            deployments: {
+                              queryType: "selectObjectListByEntity",
+                              applicationSection: "data",
+                              parentName: "Deployment",
+                              parentUuid: {
+                                referenceType: "constant",
+                                referenceUuid: entityDeployment.uuid,
+                              },
+                            },
+                          }
+                        },
+                      };
+                      const adminDeployments: ActionReturnType = 
+                        await domainController.handleQuery(
+                          {
+                            actionType: "queryAction",
+                            actionName: "runQuery",
+                            deploymentUuid:adminConfigurationDeploymentAdmin.uuid,
+                            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                            query: adminDeploymentsQuery
+                          }
+                        )
+                      ;
+                      
+                      if (adminDeployments.status != "ok") {
+                        throw new Error("found adminDeployments with error " + adminDeployments.error);
+                      }
+                  
+                      if (adminDeployments.returnedDomainElement.elementType != "entityInstanceCollection") {
+                        throw new Error("found adminDeployments not an instance collection " + adminDeployments.returnedDomainElement);
+                      }
+                      log.info("found adminDeployments", JSON.stringify(adminDeployments));
+                  
+                      // open and refresh found deployments
+                      for (const c of Object.values(adminDeployments.returnedDomainElement.elementValue.instances)) {
+                        const openStoreAction: StoreOrBundleAction = {
+                          actionType: "storeManagementAction",
+                          actionName: "openStore",
+                          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+                          configuration: {
+                            [c.uuid]: (c as any /** Deployment */).configuration as StoreUnitConfiguration,
+                          },
+                          deploymentUuid: c.uuid,
+                        };
+                        await domainController.handleAction(openStoreAction)
+
                         await domainController.handleAction({
                           actionType: "modelAction",
                           actionName: "rollback",
                           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                          deploymentUuid: c[0],
+                          deploymentUuid: c.uuid,
                         });
                       }
                     }}

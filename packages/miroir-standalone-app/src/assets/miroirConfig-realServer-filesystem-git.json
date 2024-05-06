@@ -27,54 +27,8 @@
             "emulatedServerType": "filesystem",
             "directory":"../miroir-core/src/assets/admin_data"
           }
-        },
-        "15e2004a-e7a0-4b9e-8acd-6d3500a6c9ad": {
-          "admin": {
-            "emulatedServerType": "filesystem",
-            "directory":"../miroir-core/src/assets/admin"
-          },
-          "model": {
-            "emulatedServerType": "filesystem",
-            "directory":"../miroir-core/src/assets/test1_model"
-          },
-          "data": {
-            "emulatedServerType": "filesystem",
-            "directory":"../miroir-core/src/assets/test1_data"
-          }
-        },
-        "10ff36f2-50a3-48d8-b80f-e48e5d13af8e":{
-          "admin": {
-            "emulatedServerType": "filesystem",
-            "directory":"../miroir-core/src/assets/admin"
-          },
-          "model": {
-            "emulatedServerType": "filesystem",
-            "directory":"../miroir-core/src/assets/miroir_model"
-          },
-          "data": {
-            "emulatedServerType": "filesystem",
-            "directory":"../miroir-core/src/assets/miroir_data"
-          }
-        },
-        "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": {
-          "admin": {
-            "emulatedServerType": "filesystem",
-            "directory":"../miroir-core/src/assets/admin"
-          },
-          "model": {
-            "emulatedServerType": "filesystem",
-            "directory":"../miroir-core/src/assets/library_model"
-          },
-          "data": {
-            "emulatedServerType": "filesystem",
-            "directory":"../miroir-core/src/assets/library_data"
-          }
         }
       }
-    },
-    "deploymentMode":"monoUser",
-    "monoUserAutentification": false,
-    "monoUserVersionControl": false,
-    "versionControlForDataConceptLevel": false
+    }
   }
 }

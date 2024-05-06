@@ -28,6 +28,7 @@ import { useMiroirContextService } from '../MiroirContextReactProvider';
 import { ReportSectionEntityInstance } from './ReportSectionEntityInstance';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay';
 import { cleanLevel } from '../constants';
+import { adminConfigurationDeploymentTest4, deployments } from '../routes/ReportPage';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportSectionView");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -85,13 +86,6 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
 
   log.info("########################## render with props", props);
 
-  const deployments = [
-    adminConfigurationDeploymentMiroir,
-    adminConfigurationDeploymentLibrary,
-    adminConfigurationDeploymentAdmin,
-    adminConfigurationDeploymentTest1,
-  ] as any[]; //type for Admin Application Deployment Entity Definition
-  // ] as ApplicationDeploymentConfiguration[];
 
   // ##############################################################################################
   const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(

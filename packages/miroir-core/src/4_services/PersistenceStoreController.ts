@@ -570,7 +570,18 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   
   // ##############################################################################################
   async upsertInstance(section: ApplicationSection, instance:EntityInstance):Promise<ActionVoidReturnType>{
-    log.info(this.logHeader,'upsertInstance','section',section,'instance',instance,'model entities',this.getModelEntities(),'data entities',this.getEntityUuids());
+    log.info(
+      this.logHeader,
+      "upsertInstance",
+      "section",
+      section,
+      "instance",
+      instance,
+      "model entities",
+      this.getModelEntities(),
+      "data entities",
+      this.getEntityUuids()
+    );
     
     if (section == 'data') {
       await this.dataStoreSection.upsertInstance(instance.parentUuid,instance);

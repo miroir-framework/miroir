@@ -1,6 +1,5 @@
 import { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface";
 import { defaultMiroirMetaModel } from '../1_core/Model';
-import adminConfigurationDeploymentLibrary from "../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
 
 import adminConfigurationDeploymentMiroir from "../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 import applicationStoreBasedConfigurationMiroir from '../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
@@ -23,9 +22,10 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 );
 
 export async function resetAndInitMiroirAndApplicationDatabase(
-  domainController: DomainControllerInterface
+  domainController: DomainControllerInterface,
+  deployments: any[] // TODO: use Deployment Entity Type!
 ) {
-  const deployments = [adminConfigurationDeploymentLibrary, adminConfigurationDeploymentMiroir];
+  // const deployments = [adminConfigurationDeploymentLibrary, adminConfigurationDeploymentMiroir];
 
   for (const d of deployments) {
     await domainController.handleAction({

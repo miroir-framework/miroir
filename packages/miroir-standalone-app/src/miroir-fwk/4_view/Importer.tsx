@@ -19,14 +19,11 @@ import {
   MetaEntity,
   MiroirLoggerFactory,
   Report,
-  adminConfigurationDeploymentMiroir,
-  adminConfigurationDeploymentTest1,
   entityEntity,
   entityEntityDefinition,
   entityMenu,
   getLoggerName,
-  metaModel,
-  test1SelfApplication
+  metaModel
 } from "miroir-core";
 import * as XLSX from 'xlsx';
 import { useDomainControllerService } from "./MiroirContextReactProvider";
@@ -118,11 +115,14 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   const createEntity = async () => {
     const newEntityName = "Fountain";
     const newEntityDescription = "Drinking Fountains of Paris";
+    const newEntityUuid = uuidv4();
+    const currentApplicationUuid = props.currentApplicationUuid
+    const currentDeploymentUuid = props.currentDeploymentUuid;
 
     const newEntity: MetaEntity = {
-      uuid: uuidv4(),
+      uuid: newEntityUuid,
       parentUuid: entityEntity.uuid,
-      application: props.currentApplicationUuid,
+      application: currentApplicationUuid,
       description: newEntityDescription,
       name: newEntityName,
     }
@@ -157,6 +157,18 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             validations: [{ type: "uuid" }],
             extra: { id: 1, defaultLabel: "Uuid", editable: false },
           },
+          parentName: {
+            type: "simpleType",
+            definition: "string",
+            optional: true,
+            extra: { id: 1, defaultLabel: "Uuid", editable: false },
+          },
+          parentUuid: {
+            type: "simpleType",
+            definition: "string",
+            validations: [{ type: "uuid" }],
+            extra: { id: 1, defaultLabel: "parentUuid", editable: false },
+          },
         },
         ...(
           fileData[0]?
@@ -176,6 +188,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         )
       ),
     };
+    // create new Entity
     const newEntityDetailsReportUuid: string = uuidv4();
     const newEntityDefinition:EntityDefinition = {
       name: newEntityName,
@@ -190,13 +203,14 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     const createEntityAction: DomainAction = {
       actionType: "modelAction",
       actionName: "createEntity",
-      deploymentUuid:props.currentDeploymentUuid,
+      deploymentUuid:currentDeploymentUuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       entities: [
         {entity: newEntity, entityDefinition:newEntityDefinition},
       ],
     };
     await domainController.handleAction(createEntityAction, props.currentModel);
+    // list of instances Report Definition
     const newEntityListReport: Report = {
       uuid: uuidv4(),
       parentName: "Report",
@@ -229,6 +243,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         },
       },
     };
+    // details of an Instance Report Definition
     const newEntityDetailsReport: Report = {
       uuid: newEntityDetailsReportUuid,
       parentName: "Report",
@@ -269,13 +284,14 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       }
     };
 
+    // add reports for new Entity: List of Instances and Details of an Instance
     const createReportAction: DomainAction = {
       actionType: "transactionalInstanceAction",
       instanceAction: {
         actionType: "instanceAction",
         actionName: "createInstance",
         applicationSection: "model",
-        deploymentUuid: props.currentDeploymentUuid,
+        deploymentUuid: currentDeploymentUuid,
         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
         objects: [{
           parentName: newEntityListReport.parentName,
@@ -295,7 +311,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         actionName: "commit",
         actionType: "modelAction",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        deploymentUuid: props.currentDeploymentUuid,
+        deploymentUuid: currentDeploymentUuid,
       },
       props.currentModel
     );
@@ -307,14 +323,15 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       fileData
       .map(
         (fileDataRow:any) => {
-          return Object.fromEntries(
-            [
-              ...Object.entries(fileDataRow).map((e:[string, any],index:number)=>([objectAttributeNames[(e as any)[0]],e[1]])),
-              ['uuid',uuidv4()],
-              ['parentName',newEntity.name],
-              ['parentUuid',newEntity.uuid],
-            ]
-          ) as EntityInstance
+          return Object.fromEntries([
+            ...Object.entries(fileDataRow).map((e: [string, any], index: number) => [
+              objectAttributeNames[(e as any)[0]],
+              e[1],
+            ]),
+            ["uuid", uuidv4()],
+            ["parentName", newEntity.name],
+            ["parentUuid", newEntity.uuid],
+          ]) as EntityInstance;
         }
       ) 
     ;
@@ -324,7 +341,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       actionType: 'instanceAction',
       actionName: "createInstance",
       applicationSection: "data",
-      deploymentUuid: props.currentDeploymentUuid,
+      deploymentUuid: currentDeploymentUuid,
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       objects:[
         {
@@ -343,14 +360,14 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     const miroirMenuPageParams: DomainElementObject = {
       elementType: "object",
       elementValue: {
-        deploymentUuid: { elementType: "string", elementValue: props.currentDeploymentUuid },
+        deploymentUuid: { elementType: "string", elementValue: currentDeploymentUuid },
         applicationSection: { elementType: "string", elementValue: "model" },
       },
     };
 
     const miroirMenuInstancesQuery: DomainManyQueriesWithDeploymentUuid = {
       queryType: "DomainManyQueries",
-      deploymentUuid: props.currentDeploymentUuid,
+      deploymentUuid: currentDeploymentUuid,
       pageParams: miroirMenuPageParams,
       queryParams: { elementType: "object", elementValue: {} },
       contextResults: { elementType: "object", elementValue: {} },
@@ -373,7 +390,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         {
           actionType: "queryAction",
           actionName: "runQuery",
-          deploymentUuid:props.currentDeploymentUuid,
+          deploymentUuid:currentDeploymentUuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           query: miroirMenuInstancesQuery
         }
@@ -403,7 +420,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               {
                 "label": newEntityListReport.defaultLabel,
                 "section": "data",
-                "application": adminConfigurationDeploymentTest1.uuid,
+                "application": currentDeploymentUuid,
                 "reportUuid": newEntityListReport.uuid,
                 "icon": "local_drink"
               },
@@ -419,7 +436,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         actionType: "instanceAction",
         actionName: "updateInstance",
         applicationSection: "model",
-        deploymentUuid: props.currentDeploymentUuid,
+        deploymentUuid: currentDeploymentUuid,
         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
         objects: [
           {
@@ -439,7 +456,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         actionName: "commit",
         actionType: "modelAction",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        deploymentUuid: props.currentDeploymentUuid,
+        deploymentUuid: currentDeploymentUuid,
       },
       props.currentModel
     );
@@ -457,10 +474,14 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     const splittedEntityAttribute = "Commune"
     const newEntityName = "Municipality";
     const newEntityDescription = "Municipalities";
+    const newEntityUuid = uuidv4();
+    const currentApplicationUuid = props.currentApplicationUuid;
+    const currentDeploymentUuid = props.currentDeploymentUuid;
+
 
     const splittedEntityDefinition = props.currentModel.entityDefinitions.find(e=>e.name == splittedEntityName)
 
-    log.info("splitEntity started for", splittedEntityName, splittedEntityDefinition)
+    log.info("splitEntity started for", splittedEntityName, splittedEntityDefinition, "props", props)
 
     if (!splittedEntityDefinition?.entityUuid) {
       throw new Error("splitEntity found definition with undefined entityUuid " + JSON.stringify(splittedEntityDefinition));
@@ -469,48 +490,22 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     const pageParams: DomainElementObject = {
       elementType: "object",
       elementValue: {
-        deploymentUuid: { elementType: "string", elementValue: props.currentDeploymentUuid },
+        deploymentUuid: { elementType: "string", elementValue: currentDeploymentUuid },
         applicationSection: { elementType: "string", elementValue: "data" },
       },
     };
 
 
     const newEntity: MetaEntity = {
-      uuid: uuidv4(),
+      uuid: newEntityUuid,
       parentUuid: entityEntity.uuid,
-      application: props.currentApplicationUuid,
+      application: currentApplicationUuid,
       description: newEntityDescription,
       name: newEntityName,
     }
 
 
     // UPDATE MODEL ###############################################################################
-    const updateSplittedEntityAction: DomainAction = {
-      actionType:"modelAction",
-      actionName: "alterEntityAttribute",
-      deploymentUuid:props.currentDeploymentUuid,
-      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      entityName: splittedEntityName,
-      entityUuid: splittedEntityDefinition.entityUuid,
-      entityDefinitionUuid: splittedEntityDefinition.uuid,
-      // targetValue: "Authorsss",
-      addColumns: [
-        {
-          "name": newEntityName,
-          "definition": {
-            type: "simpleType",
-            "validations": [{ "type": "uuid" }],
-            extra: { defaultLabel: "Municipality", targetEntity: newEntity.uuid},
-            definition: "string"
-          }
-        }
-      ],
-    };
-
-    await domainController.handleAction(
-      updateSplittedEntityAction,
-      props.currentModel
-    );
 
     // log.info("createEntity fileData", fileData);
     const newEntityJzodSchema:JzodObject = {
@@ -549,7 +544,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     const createEntityAction: DomainAction = {
       actionType: "modelAction",
       actionName: "createEntity",
-      deploymentUuid:props.currentDeploymentUuid,
+      deploymentUuid:currentDeploymentUuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       entities: [
         {entity: newEntity, entityDefinition:newEntityDefinition},
@@ -557,6 +552,48 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     };
     await domainController.handleAction(createEntityAction, props.currentModel);
 
+    log.info("splitEntity added new Entity", newEntityName, createEntityAction)
+
+    const updateSplittedEntityAction: DomainAction = {
+      actionType:"modelAction",
+      actionName: "alterEntityAttribute",
+      deploymentUuid:currentDeploymentUuid,
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      entityName: splittedEntityName,
+      entityUuid: splittedEntityDefinition.entityUuid,
+      entityDefinitionUuid: splittedEntityDefinition.uuid,
+      addColumns: [
+        {
+          "name": newEntityName,
+          "definition": {
+            type: "simpleType",
+            "validations": [{ "type": "uuid" }],
+            nullable: true, // TODO: make non-nullable and enforce FK after migration has been done!
+            extra: { defaultLabel: "Municipality", targetEntity: newEntity.uuid},
+            definition: "string"
+          }
+        }
+      ],
+    };
+
+    await domainController.handleAction(
+      updateSplittedEntityAction,
+      props.currentModel
+    );
+
+    await domainController.handleAction(
+      {
+        actionName: "commit",
+        actionType: "modelAction",
+        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        deploymentUuid: currentDeploymentUuid,
+      },
+      props.currentModel
+    );
+
+    log.info("splitEntity added new FK attribute to", splittedEntityName, updateSplittedEntityAction)
+
+    // ############################################################################################
     // Reports creation
     const newEntityListReport: Report = {
       uuid: uuidv4(),
@@ -565,6 +602,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       conceptLevel: "Model",
       name: newEntityName + "List",
       defaultLabel: "List of " + newEntityDescription,
+      application: currentApplicationUuid,
       type: "list",
       definition: {
         fetchQuery: {
@@ -612,22 +650,45 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                 referenceName: "instanceUuid",
               },
             },
+            fountainsOfMunicipality: {
+              queryType: "selectObjectListByRelation",
+              parentName: "Fountain",
+              parentUuid: {
+                referenceType: "constant",
+                referenceUuid: splittedEntityDefinition.entityUuid,
+              },
+              objectReference: {
+                referenceName: "elementToDisplay",
+                referenceType: "queryContextReference",
+              },
+              AttributeOfListObjectToCompareToReferenceUuid: newEntityName,
+            },
           },
         },
         section: {
           type: "list",
           definition: [
             {
-              "type":"objectInstanceReportSection",
-              "definition": {
-                "label": "My " + newEntityName,
-                "parentUuid": newEntity.uuid,
-                "fetchedDataReference": "elementToDisplay"
-              }
-            }
-          ]
+              type: "objectInstanceReportSection",
+              definition: {
+                label: "My " + newEntityName,
+                parentUuid: newEntity.uuid,
+                fetchedDataReference: "elementToDisplay",
+              },
+            },
+            {
+              type: "objectListReportSection",
+              definition: {
+                label: newEntityName + "'s (${elementToDisplay.name}) " + splittedEntityName + "s",
+                parentName: splittedEntityName,
+                parentUuid: splittedEntityDefinition.entityUuid,
+                fetchedDataReference: "fountainsOfMunicipality",
+                sortByAttribute: "name",
+              },
+            },
+          ],
         },
-      }
+      },
     };
     const createNewEntityListReportAction: DomainAction = {
       actionType: "transactionalInstanceAction",
@@ -635,7 +696,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         actionType: "instanceAction",
         actionName: "createInstance",
         applicationSection: "model",
-        deploymentUuid: props.currentDeploymentUuid,
+        deploymentUuid: currentDeploymentUuid,
         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
         objects: [
           {
@@ -657,7 +718,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         actionName: "commit",
         actionType: "modelAction",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        deploymentUuid: props.currentDeploymentUuid,
+        deploymentUuid: currentDeploymentUuid,
       },
       props.currentModel
     );
@@ -666,10 +727,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
 
 
 
+    // ############################################################################################
     // insert / update instances
     const splittedEntityInstancesQuery: DomainManyQueriesWithDeploymentUuid = {
       queryType: "DomainManyQueries",
-      deploymentUuid: props.currentDeploymentUuid,
+      deploymentUuid: currentDeploymentUuid,
       pageParams,
       queryParams: { elementType: "object", elementValue: {} },
       contextResults: { elementType: "object", elementValue: {} },
@@ -692,7 +754,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         {
           actionType: "queryAction",
           actionName: "runQuery",
-          deploymentUuid:props.currentDeploymentUuid,
+          deploymentUuid:currentDeploymentUuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           query: splittedEntityInstancesQuery
         }
@@ -742,7 +804,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       actionType: 'instanceAction',
       actionName: "createInstance",
       applicationSection: "data",
-      deploymentUuid: props.currentDeploymentUuid,
+      deploymentUuid: currentDeploymentUuid,
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       objects:[
         {
@@ -754,6 +816,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       ]
     };
     await domainController.handleAction(createNewEntityInstancesAction);
+    log.info("splitEntity newEntityInstances", createNewEntityInstancesAction);
 
     // update splitted entity instances with new reference
     const splitInstancesNewValues = splittedEntityInstances.returnedDomainElement.elementValue.instances.map(
@@ -771,7 +834,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       actionName: "updateInstance",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       applicationSection: "data",
-      deploymentUuid: props.currentDeploymentUuid,
+      deploymentUuid: currentDeploymentUuid,
       objects: [
         {
           parentName: splittedEntityName,
@@ -783,21 +846,23 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     };
 
     await domainController.handleAction(updateSplittedEntityInstancesAction);
+    log.info("splitEntity updateSplittedEntityInstancesAction", updateSplittedEntityInstancesAction);
     // modify split Entity List Report to display new Entity Attribute?
 
 
+    // ############################################################################################
     // modify menu
     const miroirMenuPageParams: DomainElementObject = {
       elementType: "object",
       elementValue: {
-        deploymentUuid: { elementType: "string", elementValue: props.currentDeploymentUuid },
+        deploymentUuid: { elementType: "string", elementValue: currentDeploymentUuid },
         applicationSection: { elementType: "string", elementValue: "model" },
       },
     };
     
     const miroirMenuInstancesQuery: DomainManyQueriesWithDeploymentUuid = {
       queryType: "DomainManyQueries",
-      deploymentUuid: props.currentDeploymentUuid,
+      deploymentUuid: currentDeploymentUuid,
       pageParams: miroirMenuPageParams,
       queryParams: { elementType: "object", elementValue: {} },
       contextResults: { elementType: "object", elementValue: {} },
@@ -820,7 +885,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         {
           actionType: "queryAction",
           actionName: "runQuery",
-          deploymentUuid:props.currentDeploymentUuid,
+          deploymentUuid:currentDeploymentUuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           query: miroirMenuInstancesQuery
         }
@@ -850,7 +915,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               {
                 "label": newEntityListReport.defaultLabel,
                 "section": "data",
-                "application": adminConfigurationDeploymentTest1.uuid,
+                "application": currentDeploymentUuid,
                 "reportUuid": newEntityListReport.uuid,
                 "icon": "location_on"
               },
@@ -866,7 +931,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         actionType: "instanceAction",
         actionName: "updateInstance",
         applicationSection: "model",
-        deploymentUuid: props.currentDeploymentUuid,
+        deploymentUuid: currentDeploymentUuid,
         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
         objects: [
           {
@@ -890,14 +955,14 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         actionName: "commit",
         actionType: "modelAction",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        deploymentUuid: props.currentDeploymentUuid,
+        deploymentUuid: currentDeploymentUuid,
       },
       props.currentModel
     );
 
-    log.info("splitEntity updated miroirMenu DONE", JSON.stringify(newMenu));
+    log.info("splitEntity updated miroirMenu DONE");
     
-  }
+  } // end splitEntity
 
   return (
     <>

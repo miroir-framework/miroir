@@ -73,7 +73,7 @@ export function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
               ? dataTypesMapping[a[1].type]
               : DataTypes.STRING,
           // allowNull: a[1].type == "simpleType" ? a[1].optional : false,
-          allowNull: (a[1] as any)["optional"] ?? false,
+          allowNull: ((a[1] as any)["optional"] || (a[1] as any)["nullable"]) ?? false,
           primaryKey: a[0] == "uuid",
         },
       ];

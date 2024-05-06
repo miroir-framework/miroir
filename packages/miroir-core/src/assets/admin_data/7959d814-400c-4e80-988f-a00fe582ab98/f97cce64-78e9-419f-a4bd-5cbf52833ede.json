@@ -1,0 +1,26 @@
+{
+  "parentName": "Deployment",
+  "parentUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
+  "uuid": "f97cce64-78e9-419f-a4bd-5cbf52833ede",
+  "name": "test4ApplicationSqlDeployment",
+  "defaultLabel": "test4ApplicationSqlDeployment",
+  "application": "0e7e56a9-ef59-4bf1-b17e-c710444d969e",
+  "description": "The default Sql Deployment for Application test4",
+  "configuration": {
+    "admin": {
+      "emulatedServerType": "sql",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "miroirAdmin"
+    },
+    "model": {
+      "emulatedServerType": "sql",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "test4Model"
+    },
+    "data": {
+      "emulatedServerType": "sql",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "test4Data"
+    }
+  }
+}

@@ -15,6 +15,7 @@ import {
   ModelActionAlterEntityAttribute,
   ModelActionRenameEntity,
   StoreDataSectionInterface,
+  adminConfigurationDeploymentMiroir,
   entityEntity,
   entityEntityDefinition,
   getLoggerName
@@ -240,64 +241,78 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
     // ############################################################################################
     async alterEntityAttribute(update: ModelActionAlterEntityAttribute): Promise<ActionVoidReturnType> {
       log.info(this.logHeader, "alterEntityAttribute", update);
-      // const currentEntity: ActionEntityInstanceReturnType = await this.getInstance(
-      //   entityEntity.uuid,
-      //   update.entityUuid
-      // );
-      // if (currentEntity.status != "ok") {
-      //   return currentEntity
-      // }
+      const currentEntity: ActionEntityInstanceReturnType = await this.getInstance(
+        entityEntity.uuid,
+        update.entityUuid
+      );
+      if (currentEntity.status != "ok") {
+        // todo: THROW???
+        return currentEntity;
+      }
       const currentEntityDefinition: ActionEntityInstanceReturnType = await this.getInstance(
         entityEntityDefinition.uuid,
         update.entityDefinitionUuid
       );
       if (currentEntityDefinition.status != "ok") {
-        return currentEntityDefinition
+        // todo: THROW???
+        return currentEntityDefinition;
       }
-      const localEntityDefinition: EntityDefinition = currentEntityDefinition.returnedDomainElement.elementValue as EntityDefinition;
-      const localEntityJzodSchemaDefinition = update.removeColumns != undefined && Array.isArray(update.removeColumns)?
-        Object.fromEntries(
-          Object.entries(localEntityDefinition.jzodSchema.definition).filter((i) => update.removeColumns??([] as string[]).includes(i[0]))
-        )
-        : localEntityDefinition.jzodSchema.definition;
-      const modifiedEntityDefinition: EntityDefinition = Object.assign(
-        {},
-        localEntityDefinition,
-        {
-          jzodSchema: {
-            type: "object",
-            definition: {
-              ...localEntityJzodSchemaDefinition,
-              ...(update.addColumns?Object.fromEntries(update.addColumns.map(c=>[c.name, c.definition])):{})
-            },
+      const localEntityDefinition: EntityDefinition = currentEntityDefinition.returnedDomainElement
+        .elementValue as EntityDefinition;
+      const localEntityJzodSchemaDefinition =
+        update.removeColumns != undefined && Array.isArray(update.removeColumns)
+          ? Object.fromEntries(
+              Object.entries(localEntityDefinition.jzodSchema.definition).filter(
+                (i) => update.removeColumns ?? ([] as string[]).includes(i[0])
+              )
+            )
+          : localEntityDefinition.jzodSchema.definition;
+      const modifiedEntityDefinition: EntityDefinition = Object.assign({}, localEntityDefinition, {
+        jzodSchema: {
+          type: "object",
+          definition: {
+            ...localEntityJzodSchemaDefinition,
+            ...(update.addColumns ? Object.fromEntries(update.addColumns.map((c) => [c.name, c.definition])) : {}),
           },
-        }
-      );
+        },
+      });
 
       log.info("alterEntityAttribute modifiedEntityDefinition", JSON.stringify(modifiedEntityDefinition, undefined, 2));
-    
+
       await this.upsertInstance(entityEntityDefinition.uuid, modifiedEntityDefinition);
-      // if (this.sqlSchemaTableAccess && this.sqlSchemaTableAccess[update.entityUuid]) {
-      //   const model = this.sqlSchemaTableAccess[update.entityUuid];
-        // await model.sequelizeModel.u
-      const queryInterface = this.sequelize.getQueryInterface();
-      // if (update.update && (update.update as any).type == "simpleType") {
-      // const simpleTypeDefinition:any = update.update;
+      // TODO: HACK HACK HACK UGLY!!!! add applicationSection to update action?
+      // const queryInterface =
+      //   update.deploymentUuid == adminConfigurationDeploymentMiroir.uuid
+      //     ? this.sequelize.getQueryInterface()
+      //     : (this.dataStore as any).sequelize.getQueryInterface()
+      // ;
+
       log.info(
         "alterEntityAttribute table",
         update.entityName,
         "addColumns",
-        JSON.stringify(update.addColumns, null, 2),
+        JSON.stringify(update.addColumns, null, 2)
       );
-      for (const c of update.addColumns??[]) {
-        const columnOptions = fromMiroirAttributeDefinitionToSequelizeModelAttributeColumnOptions(c.definition)
-        log.info("alterEntityAttribute adding column", c.name, "options", JSON.stringify(columnOptions, null, 2))
-        await queryInterface.addColumn(
-          update.entityName,
-          c.name,
-          columnOptions.options
-        );
-      }
+      // for (const c of update.addColumns ?? []) {
+      //   const columnOptions = fromMiroirAttributeDefinitionToSequelizeModelAttributeColumnOptions(c.definition);
+      //   log.info("alterEntityAttribute adding column", c.name, "options", JSON.stringify(columnOptions, null, 2));
+      //   await queryInterface.addColumn(update.entityName, c.name, columnOptions.options);
+      // }
+
+      // TODO: relies on implementation, IT SHOULD NOT! does side effect, to worsen the insult
+      (this.dataStore as any as SqlDbStoreSection).sqlSchemaTableAccess = {
+        ...(this.dataStore as any as SqlDbStoreSection).sqlSchemaTableAccess,
+        ...(this.dataStore as any as SqlDbStoreSection).getAccessToDataSectionEntity(
+          currentEntity.returnedDomainElement.elementValue as MetaEntity,
+          modifiedEntityDefinition
+        ),
+      };
+      log.info("alterEntityAttribute added columns", update.addColumns, this.sequelize.json);
+
+      await(this.dataStore as any as SqlDbStoreSection).sqlSchemaTableAccess[
+        currentEntity.returnedDomainElement.elementValue.uuid
+      ].sequelizeModel.sync({ alter: true }); // TODO: replace sync!
+
       // } else {
       //   // throw new Error("");
       //   return Promise.resolve({
@@ -307,14 +322,14 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
       //       errorMessage: "alterEntityAttribute could not handle wanted attribute modification: " + JSON.stringify(update.update)
       //     }
       //   });
-        
-      // }
-        // if (update.entityAttributeRename) {
-        //   await queryInterface.renameColumn(update.entityName, update.entityAttributeName, update.entityAttributeRename)
-          
-        // }
 
-      // }  
+      // }
+      // if (update.entityAttributeRename) {
+      //   await queryInterface.renameColumn(update.entityName, update.entityAttributeName, update.entityAttributeRename)
+
+      // }
+
+      // }
       // await this.dataStore.createStorageSpaceForInstancesOfEntity(
       //   // (currentEntity.returnedDomainElement.elementValue as EntityInstanceWithName).name,
       //   // update.targetValue,

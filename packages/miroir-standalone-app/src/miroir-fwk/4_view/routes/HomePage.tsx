@@ -14,14 +14,11 @@ import {
   ApplicationDeploymentConfiguration,
   ApplicationSection,
   DomainControllerInterface,
-  Entity,
-  EntityDefinition,
   EntityInstance,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
   Report,
-  Uuid,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
@@ -38,8 +35,7 @@ import {
   reportEntityDetails,
   reportEntityList,
   reportReportList,
-  resetAndInitMiroirAndApplicationDatabase,
-  test1SelfApplication
+  resetAndInitMiroirAndApplicationDatabase
 } from "miroir-core";
 import { ReduxStateChanges } from "miroir-localcache-redux";
 
@@ -56,7 +52,7 @@ import { useCurrentModel } from "../ReduxHooks";
 import { packageName } from "../../../constants";
 import { RootReportSectionView } from "../components/RootReportSectionView";
 import { cleanLevel } from "../constants";
-import { ReportUrlParamKeys } from "./ReportPage";
+import { ReportUrlParamKeys, adminConfigurationDeploymentParis, adminConfigurationDeploymentTest4, deployments, selfApplicationParis } from "./ReportPage";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"HomePage");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -87,13 +83,6 @@ export const HomePage = (props: RootComponentProps) => {
   const errorLog = useErrorLogService();
   const domainController: DomainControllerInterface = useDomainControllerService();
   
-  const deployments = [
-    adminConfigurationDeploymentMiroir,
-    adminConfigurationDeploymentLibrary,
-    adminConfigurationDeploymentAdmin,
-  ] as any[]; //type for Admin Application Deployment Entity Definition
-  // ] as ApplicationDeploymentConfiguration[];
-
   // log.info("RootComponent deployments",deployments);
 
   // context utility functions
@@ -105,10 +94,15 @@ export const HomePage = (props: RootComponentProps) => {
   const displayedApplicationSection = context.applicationSection;
   const setDisplayedApplicationSection = context.setApplicationSection;
 
-  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
-  const currentAppModel: MetaModel = useCurrentModel(displayedDeploymentUuid);
-  const test1AppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentTest1.uuid);
   const adminAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
+  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+
+  const currentAppModel: MetaModel = useCurrentModel(displayedDeploymentUuid);
+  const libraryAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentLibrary.uuid);
+
+  const test1AppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentTest1.uuid);
+  const test4AppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentTest4.uuid);
+  const parisAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentParis.uuid);
 
   // computing current state #####################################################################
   const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(
@@ -147,17 +141,28 @@ export const HomePage = (props: RootComponentProps) => {
         [adminConfigurationDeploymentLibrary.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
           adminConfigurationDeploymentLibrary.uuid,
           miroirMetaModel, 
-          currentAppModel,
+          libraryAppModel,
         ),
         [adminConfigurationDeploymentTest1.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
           adminConfigurationDeploymentTest1.uuid,
           miroirMetaModel, 
           test1AppModel,
         ),
+        [adminConfigurationDeploymentTest4.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+          adminConfigurationDeploymentTest4.uuid,
+          miroirMetaModel, 
+          test4AppModel,
+        ),
+        [adminConfigurationDeploymentParis.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+          adminConfigurationDeploymentParis.uuid,
+          miroirMetaModel, 
+          parisAppModel,
+        ),
       }
     ),
-    [miroirMetaModel, currentAppModel, adminAppModel]
+    [miroirMetaModel, libraryAppModel, adminAppModel, test1AppModel, test4AppModel, parisAppModel]
   );
+
   useEffect(() =>
     context.setDeploymentUuidToReportsEntitiesDefinitionsMapping(deploymentUuidToReportsEntitiesDefinitionsMapping)
   );
@@ -320,28 +325,7 @@ export const HomePage = (props: RootComponentProps) => {
       <span>
         <button
           onClick={
-            async () => resetAndInitMiroirAndApplicationDatabase.bind(domainController)
-            //   async () => {
-            //   await domainController.handleAction({
-            //     actionType: "DomainTransactionalInstanceAction",
-            //     actionName: "resetModel",
-            //   });
-            //   await domainController.handleAction({
-            //     actionType: "DomainTransactionalInstanceAction",
-            //     actionName: "resetModel",
-            //   });
-            //   log.info(
-            //     "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETMODEL APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-            //   );
-            //   await domainController.handleAction({
-            //     actionType: "DomainTransactionalInstanceAction",
-            //     actionName: "rollback",
-            //   });
-            //   await domainController.handleAction({
-            //     actionType: "DomainTransactionalInstanceAction",
-            //     actionName: "rollback",
-            //   });
-            // }
+            async () => resetAndInitMiroirAndApplicationDatabase.bind(domainController, [adminConfigurationDeploymentLibrary, adminConfigurationDeploymentMiroir] as any)
           }
         >
           Reset Application database
@@ -498,8 +482,14 @@ export const HomePage = (props: RootComponentProps) => {
       <Importer
         filename=""
         currentModel={currentModel}
-        currentDeploymentUuid={adminConfigurationDeploymentTest1.uuid}
-        currentApplicationUuid={test1SelfApplication.uuid}
+        // currentDeploymentUuid={adminConfigurationDeploymentTest1.uuid}
+        // currentDeploymentUuid="f97cce64-78e9-419f-a4bd-5cbf52833ede" // test4
+        // currentDeploymentUuid="f1b74341-129b-474c-affa-e910d6cba01d" // Paris
+        currentDeploymentUuid={adminConfigurationDeploymentParis.uuid}
+        // currentApplicationUuid={test1SelfApplication.uuid}
+        // currentApplicationUuid="478d3a5d-d866-41c8-944c-121aca3ab87f" // test4
+        // currentApplicationUuid="2c1d14d5-691f-42cf-9850-887122170a43" // Paris
+        currentApplicationUuid={selfApplicationParis.uuid} // Paris
       ></Importer>
       <p />
       <Box sx={{ minWidth: 50 }}>

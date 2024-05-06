@@ -220,7 +220,7 @@ export class DomainController implements DomainControllerInterface {
         case 'dropEntity': {
           if (modelAction.transactional == false) {
             // the modelAction is not transactional, we update the persistentStore directly
-            log.info("handleModelAction running for non-transactional action!")
+            log.warn("handleModelAction running for non-transactional action!")
             await this.callUtil.callPersistenceAction(
               {}, // context
               {}, // context update

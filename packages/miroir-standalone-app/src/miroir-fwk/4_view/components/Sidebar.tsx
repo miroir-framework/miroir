@@ -11,19 +11,18 @@ import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  adminConfigurationDeploymentTest1,
   getLoggerName,
   LoggerInterface,
   menuDefaultAdmin,
   menuDefaultLibrary,
   menuDefaultMiroir,
-  menuDefaultTest1,
   MiroirLoggerFactory
 } from "miroir-core";
 import { FC, useMemo } from 'react';
 import { packageName } from '../../../constants';
 import { cleanLevel } from '../constants';
 import { SidebarSection } from './SidebarSection';
+import { adminConfigurationDeploymentParis, defaultMenuParisUuid } from '../routes/ReportPage';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"Sidebar");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -206,10 +205,26 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
         setOpen={props.setOpen}
       >
       </SidebarSection>
-      <Divider />
+      {/* <Divider />
+      <SidebarSection
+        deploymentUuid="f97cce64-78e9-419f-a4bd-5cbf52833ede"
+        menuUuid="84c178cc-1b1b-497a-a035-9b3d756bb085"
+        open={props.open}
+        setOpen={props.setOpen}
+      >
+      </SidebarSection> */}
+      {/* <Divider />
       <SidebarSection
         deploymentUuid={adminConfigurationDeploymentTest1.uuid}
         menuUuid={menuDefaultTest1.uuid}
+        open={props.open}
+        setOpen={props.setOpen}
+      >
+      </SidebarSection> */}
+      <Divider />
+      <SidebarSection
+        deploymentUuid={adminConfigurationDeploymentParis.uuid}
+        menuUuid={defaultMenuParisUuid}
         open={props.open}
         setOpen={props.setOpen}
       >

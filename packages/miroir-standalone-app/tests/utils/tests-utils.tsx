@@ -328,7 +328,7 @@ export async function miroirBeforeEach(
   if (!miroirConfig.client.emulateServer) {
     // throw new Error('emulateServer must be true in miroirConfig, tests must be independent of server.'); // TODO: really???
     if (domainController) {
-      await resetAndInitMiroirAndApplicationDatabase(domainController);
+      await resetAndInitMiroirAndApplicationDatabase(domainController, [adminConfigurationDeploymentLibrary, adminConfigurationDeploymentMiroir]);
     } else {
       throw new Error("miroirBeforeEach could not send commands to reset remote datastore because no domain controller has been provided.");
     }
