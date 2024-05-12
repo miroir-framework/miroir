@@ -202,6 +202,8 @@ export {
   objectInstanceReportSection,
   ObjectListReportSection,
   objectListReportSection,
+  QueryObjectReference,
+  queryObjectReference,
   Report,
   report,
   ReportSection,
@@ -443,6 +445,17 @@ export{
 export {
   ModelEntityActionTransformer
 } from './2_domain/ModelEntityActionTransformer.js';
+export {
+  ActionTemplate,
+  ObjectTemplate,
+  ObjectTemplateInnerReference,
+  actionTemplateToAction,
+  domainElementTemplateSchema,
+  objectTemplateSchema,
+  objectTemplateToObject,
+  resolveActionTemplateContextReference,
+  runActionTemplate,
+} from './2_domain/Templates.js';
 export {
   cacheFetchPolicy,
   cacheInvalidationPolicy,

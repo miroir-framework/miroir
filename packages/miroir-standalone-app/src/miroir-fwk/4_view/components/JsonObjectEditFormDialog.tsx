@@ -338,82 +338,78 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
   return (
     <div className="JsonObjectEditFormDialog">
       {/* <span> */}
-        {props.showButton ? (
-          <h3>
-            Show Button! (Button is no more supported by JzonsObjectFormEditorDialog, this is a bug)
-          </h3>
-        ) : (
-          <div></div>
-        )}
+      {props.showButton ? (
+        <h3>Show Button! (Button is no more supported by JzonsObjectFormEditorDialog, this is a bug)</h3>
+      ) : (
+        <div></div>
+      )}
       {/* </span> */}
       {/* {props.currentDeploymentUuid && props.currentApplicationSection && !props.showButton && props?.isOpen && props.defaultFormValuesObject ? ( */}
-      {props.currentDeploymentUuid && props.currentApplicationSection && !props.showButton && props?.isOpen && dialogOuterFormObject ? (
+      {props.currentDeploymentUuid &&
+      props.currentApplicationSection &&
+      !props.showButton &&
+      props?.isOpen &&
+      dialogOuterFormObject ? (
         <Formik
           // initialValues={props.defaultFormValuesObject}
           enableReinitialize={true}
           initialValues={dialogOuterFormObject}
-          onSubmit={
-            async (values, { setSubmitting, setErrors }) => {
-              try {
-                //  Send values somehow
-                if (props.onCreateFormObject) {
-                  log.info("onSubmit formik onCreateFormObject", values)
-                  await props.onCreateFormObject(values)
-                  await props.onSubmit(values);
-                } else {
-                  log.info("onSubmit formik handleAddObjectDialogFormSubmit", values)
-                  setformHelperState(values);
-                  // setdialogOuterFormObject(values)
-                  await handleAddObjectDialogFormSubmit(values,"param")
-                }
-              } catch (e) {
-                log.error(e)
-                //  Map and show the errors in your form
-                // const [formErrors, unknownErrors] = mapErrorsFromRequest(e)
-          
-                // setErrors(formErrors)
-                // this.setState({
-                //   unknownErrors,
-                // })
-              } finally {
-                setSubmitting(false)
+          onSubmit={async (values, { setSubmitting, setErrors }) => {
+            try {
+              //  Send values somehow
+              if (props.onCreateFormObject) {
+                log.info("onSubmit formik onCreateFormObject", values);
+                await props.onCreateFormObject(values);
+                await props.onSubmit(values);
+              } else {
+                log.info("onSubmit formik handleAddObjectDialogFormSubmit", values);
+                setformHelperState(values);
+                // setdialogOuterFormObject(values)
+                await handleAddObjectDialogFormSubmit(values, "param");
               }
-            }
-          }
-          handleChange= {
-            async (e: ChangeEvent<any>) => {
-              log.info("onChange formik", e);
-              // try {
-              //   //  Send values somehow
-              //   if (props.onCreateFormObject) {
-              //     await props.onCreateFormObject(values)
-              //     await props.onSubmit(values);
-              //   } else {
-              //     await handleAddObjectDialogFormSubmit(values)
-              //   }
-              // } catch (e) {
-              //   log.error(e)
-              //   //  Map and show the errors in your form
-              //   // const [formErrors, unknownErrors] = mapErrorsFromRequest(e)
-          
-              //   // setErrors(formErrors)
-              //   // this.setState({
-              //   //   unknownErrors,
-              //   // })
-              // } finally {
-              //   setSubmitting(false)
-              // }
-            }
+            } catch (e) {
+              log.error(e);
+              //  Map and show the errors in your form
+              // const [formErrors, unknownErrors] = mapErrorsFromRequest(e)
 
-          }
+              // setErrors(formErrors)
+              // this.setState({
+              //   unknownErrors,
+              // })
+            } finally {
+              setSubmitting(false);
+            }
+          }}
+          handleChange={async (e: ChangeEvent<any>) => {
+            log.info("onChange formik", e);
+            // try {
+            //   //  Send values somehow
+            //   if (props.onCreateFormObject) {
+            //     await props.onCreateFormObject(values)
+            //     await props.onSubmit(values);
+            //   } else {
+            //     await handleAddObjectDialogFormSubmit(values)
+            //   }
+            // } catch (e) {
+            //   log.error(e)
+            //   //  Map and show the errors in your form
+            //   // const [formErrors, unknownErrors] = mapErrorsFromRequest(e)
+
+            //   // setErrors(formErrors)
+            //   // this.setState({
+            //   //   unknownErrors,
+            //   // })
+            // } finally {
+            //   setSubmitting(false)
+            // }
+          }}
         >
-        {
-          (
-            formik
-          ) => (
+          {(formik) => (
             <Dialog onClose={handleAddObjectDialogFormClose} open={formIsOpen} fullScreen>
               <DialogTitle>{props.label} add / edit Element</DialogTitle>
-              <span>form: {"form." + props.label}, JsonObjectEditFormDialog count {count}</span>
+              <span>
+                form: {"form." + props.label}, JsonObjectEditFormDialog count {count}
+              </span>
               <form
                 id={"form." + props.label}
                 // onSubmit={handleSubmit(handleAddObjectDialogFormSubmit)}
@@ -421,32 +417,40 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
               >
                 {
                   // props.defaultFormValuesObject?
-                  dialogOuterFormObject?
-                  <CodeMirror value={JSON.stringify(dialogOuterFormObject, null, 2)} height="200px" extensions={[javascript({ jsx: true })]} onChange={onCodeEditorChange} />
-                  :<></>
+                  dialogOuterFormObject ? (
+                    <CodeMirror
+                      value={JSON.stringify(dialogOuterFormObject, null, 2)}
+                      height="200px"
+                      extensions={[javascript({ jsx: true })]}
+                      onChange={onCodeEditorChange}
+                    />
+                  ) : (
+                    <></>
+                  )
                 }
-                
+
                 <JzodElementEditor
-                  name={'ROOT'}
-                  listKey={'ROOT'}
+                  name={"ROOT"}
+                  listKey={"ROOT"}
                   rootLesslistKey=""
                   rootLesslistKeyArray={[]}
                   label={props.label}
                   currentDeploymentUuid={props.currentDeploymentUuid}
                   currentApplicationSection={props.currentApplicationSection}
-                  resolvedJzodSchema={resolvedJzodSchema?.status == "ok"?resolvedJzodSchema.element:undefined}
+                  resolvedJzodSchema={resolvedJzodSchema?.status == "ok" ? resolvedJzodSchema.element : undefined}
                   foreignKeyObjects={props.foreignKeyObjects}
                   formik={formik}
                 />
                 {/* {errors.exampleRequired && <span>This field is required</span>} */}
-                <button type="submit" name={props.label} form={"form." + props.label}>submit form.{props.label}</button>
+                <button type="submit" name={props.label} form={"form." + props.label}>
+                  submit form.{props.label}
+                </button>
               </form>
             </Dialog>
-          )
-        }
+          )}
         </Formik>
-        // </FormProvider>
       ) : (
+        // </FormProvider>
         <></>
         // <span>No form to display!</span>
       )}

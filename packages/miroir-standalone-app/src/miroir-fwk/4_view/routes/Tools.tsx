@@ -1,17 +1,22 @@
+import { v4 as uuidv4 } from 'uuid';
 import { Formik } from "formik";
 import _ from "lodash";
 import {
   Application,
+  DomainAction,
   DomainControllerInterface,
+  DomainElement,
   EntityInstance,
   InstanceAction,
   JzodElement,
   JzodObject,
+  JzodReference,
   LoggerInterface,
   Menu,
   MiroirConfigClient,
   MiroirConfigForRestClient,
   MiroirLoggerFactory,
+  QueryObjectReference,
   StoreUnitConfiguration,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
@@ -21,11 +26,12 @@ import {
   entityDeployment,
   entityMenu,
   getLoggerName,
+  objectTemplateToObject,
   resetAndInitMiroirAndApplicationDatabase,
-  resolveReferencesForJzodSchemaAndValueObject
+  resolveReferencesForJzodSchemaAndValueObject,
+  runActionTemplate
 } from "miroir-core";
 import { useCallback, useMemo } from "react";
-import { v4 as uuidv4 } from 'uuid';
 import { packageName } from "../../../constants";
 import {
   useDomainControllerService,
@@ -148,7 +154,12 @@ const initialValues = {
   "configuration": miroirConfig.client
 }
 
+// export interface ActionObjectReference extends QueryObjectReference {
 
+// }
+
+
+  
 export const ToolsPage: React.FC<any> = (
   props: any
 ) => {
@@ -260,7 +271,7 @@ export const ToolsPage: React.FC<any> = (
         const newAdminAppApplicationUuid = applicationParis.uuid;//uuidv4();
         const newSelfApplicationUuid = applicationParis.selfApplication; //uuidv4()
         const newDeploymentUuid = adminConfigurationDeploymentParis.uuid; //values.deploymentUuid
-        const newDeploymentStoreConfiguration: StoreUnitConfiguration = {
+        const newDeploymentStoreConfigurationTemplate = {
           "admin": {
             "emulatedServerType": "sql",
             "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
@@ -269,14 +280,31 @@ export const ToolsPage: React.FC<any> = (
           "model": {
             "emulatedServerType": "sql",
             "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-            "schema": newApplicationName + "Model"
+            "schema": {
+              templateType: "queryParameterReference",
+              referenceName: "newApplicationName",
+              applyFunction: (a:string) => (a + "Model")
+            }
           },
           "data": {
             "emulatedServerType": "sql",
             "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-            "schema": newApplicationName + "Data"
+            "schema": {
+              templateType: "queryParameterReference",
+              referenceName: "newApplicationName",
+              applyFunction: (a:string) => (a + "Data")
+            }
+            // "schema": newApplicationName + "Data"
           }
         }
+
+        const newDeploymentStoreConfiguration: StoreUnitConfiguration = objectTemplateToObject(
+          "ROOT",
+          newDeploymentStoreConfigurationTemplate as any,
+          {newApplicationName},
+          undefined
+        );
+        log.info("newDeploymentStoreConfiguration", newDeploymentStoreConfiguration)
         const submitMiroirConfig: MiroirConfigClient = {
           "client": {
             "emulateServer": false,
@@ -299,6 +327,16 @@ export const ToolsPage: React.FC<any> = (
           }
         };
         
+        const actionParams = {
+          newApplicationName,
+          newAdminAppApplicationUuid,
+          newSelfApplicationUuid,
+          newDeploymentUuid,
+          newDeploymentStoreConfiguration,
+          submitMiroirConfig,
+        }
+
+
         log.info(
           "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ onSubmit formik values",
           values,
@@ -307,13 +345,49 @@ export const ToolsPage: React.FC<any> = (
           "submitMiroirConfig",
           submitMiroirConfig
         );
-        await domainController.handleAction({
-          actionType: "storeManagementAction",
-          actionName: "openStore",
-          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-          configuration: (submitMiroirConfig.client as MiroirConfigForRestClient).serverConfig.storeSectionConfiguration,
-          deploymentUuid: newDeploymentUuid,
-        });
+        // await runActionTemplate(domainController, undefined, actionParams);
+        await runActionTemplate(domainController, 
+          {
+            actionType: "storeManagementAction",
+            actionName: "openStore",
+            endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+            configuration: {
+              // [newDeploymentUuid]: newDeploymentStoreConfiguration
+              templateType: "fullObjectTemplate",
+              definition: [
+                [
+                  {
+                    templateType: "parameterReference",
+                    referenceName: "newDeploymentUuid"
+                  },
+                  {
+                    templateType: "parameterReference",
+                    referenceName: "newDeploymentStoreConfigurationTemplate"
+                  },
+                ]
+              ]
+              // [newDeploymentUuid]: newDeploymentStoreConfigurationTemplate
+            },
+            // configuration: {
+            //   // [newDeploymentUuid]: newDeploymentStoreConfiguration
+            //   [newDeploymentUuid]: newDeploymentStoreConfigurationTemplate
+            // },
+            // configuration: (actionParams.submitMiroirConfig.client as MiroirConfigForRestClient).serverConfig
+            //   .storeSectionConfiguration,
+            // deploymentUuid: actionParams.newDeploymentUuid,
+            deploymentUuid: {
+              templateType: "queryParameterReference",
+              referenceName: "newDeploymentUuid"
+            }
+          }
+        , actionParams);
+        // await domainController.handleAction({
+        //   actionType: "storeManagementAction",
+        //   actionName: "openStore",
+        //   endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+        //   configuration: (submitMiroirConfig.client as MiroirConfigForRestClient).serverConfig.storeSectionConfiguration,
+        //   deploymentUuid: newDeploymentUuid,
+        // });
   
         log.info("store opened with uuid", newDeploymentUuid)
         const createdApplicationStore = await domainController?.handleAction(

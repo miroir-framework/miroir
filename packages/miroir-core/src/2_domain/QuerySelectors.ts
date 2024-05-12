@@ -122,6 +122,13 @@ export const resolveContextReference = (
 }
 
 
+
+
+
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 /**
  * returns an Entity Instance List, from a ListQuery
  * @param deploymentEntityState 
@@ -168,7 +175,7 @@ export const selectEntityInstanceListFromListQuery
     }
     case "selectObjectListByRelation": {
       const relationQuery: SelectObjectListByRelationQuery = selectorParams.query.singleSelectQuery.select;
-      const reference: DomainElement = resolveContextReference(relationQuery.objectReference, selectorParams.query.queryParams, selectorParams.query.contextResults);
+      // const reference: DomainElement = resolveContextReference(relationQuery.objectReference, selectorParams.query.queryParams, selectorParams.query.contextResults);
 
       // log.info("selectEntityInstanceListFromListQuery selectObjectListByRelation", JSON.stringify(selectedInstances))
       log.info("selectEntityInstanceListFromListQuery selectObjectListByRelation", selectedInstances)
