@@ -129,6 +129,8 @@ import entityDefinitionQueryVersionV1 from "../../src/assets/miroir_model/54b9c7
 import entityDefinitionReportV1 from "../../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json";
 
 
+import entityDefinitionDeployment from "../../src/assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c50240e7-c451-46c2-b60a-07b3172a5ef9.json" assert { type: "json" };
+
 export const defaultMiroirMetaModel: MetaModel = {
   configuration: [instanceConfigurationReference],
   entities: [
@@ -209,6 +211,7 @@ const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
   jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
   entityDefinitionApplication as EntityDefinition,
   entityDefinitionApplicationVersion as EntityDefinition,
+  entityDefinitionDeployment as EntityDefinition,
   entityDefinitionEntity as EntityDefinition,
   entityDefinitionEntityDefinition as EntityDefinition,
   entityDefinitionJzodSchema as EntityDefinition,

@@ -1714,6 +1714,163 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "deployment": {
+        "type": "object",
+        "definition": {
+          "uuid": {
+            "type": "simpleType",
+            "definition": "string",
+            "validations": [
+              {
+                "type": "uuid"
+              }
+            ],
+            "extra": {
+              "id": 1,
+              "defaultLabel": "Uuid",
+              "editable": false
+            }
+          },
+          "parentName": {
+            "type": "simpleType",
+            "definition": "string",
+            "optional": true,
+            "extra": {
+              "id": 2,
+              "defaultLabel": "Entity Name",
+              "editable": false
+            }
+          },
+          "parentUuid": {
+            "type": "simpleType",
+            "definition": "string",
+            "validations": [
+              {
+                "type": "uuid"
+              }
+            ],
+            "extra": {
+              "id": 3,
+              "defaultLabel": "Entity Uuid",
+              "editable": false
+            }
+          },
+          "parentDefinitionVersionUuid": {
+            "type": "simpleType",
+            "definition": "string",
+            "optional": true,
+            "validations": [
+              {
+                "type": "uuid"
+              }
+            ],
+            "extra": {
+              "id": 4,
+              "defaultLabel": "Entity Definition Version Uuid",
+              "editable": false
+            }
+          },
+          "name": {
+            "type": "simpleType",
+            "definition": "string",
+            "extra": {
+              "id": 5,
+              "defaultLabel": "Name",
+              "editable": true
+            }
+          },
+          "defaultLabel": {
+            "type": "simpleType",
+            "definition": "string",
+            "extra": {
+              "id": 6,
+              "defaultLabel": "Default Label",
+              "editable": true
+            }
+          },
+          "description": {
+            "type": "simpleType",
+            "definition": "string",
+            "optional": true,
+            "extra": {
+              "id": 7,
+              "defaultLabel": "Description",
+              "editable": true
+            }
+          },
+          "application": {
+            "type": "simpleType",
+            "definition": "string",
+            "validations": [
+              {
+                "type": "uuid"
+              }
+            ],
+            "extra": {
+              "id": 8,
+              "defaultLabel": "Application",
+              "description": "The Application of the Branch.",
+              "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+              "editable": false
+            }
+          },
+          "bundle": {
+            "type": "simpleType",
+            "definition": "string",
+            "validations": [
+              {
+                "type": "uuid"
+              }
+            ],
+            "extra": {
+              "id": 8,
+              "defaultLabel": "Bundle",
+              "description": "The deployed bundle.",
+              "targetEntity": "",
+              "editable": false
+            }
+          },
+          "configuration": {
+            "type": "schemaReference",
+            "optional": true,
+            "extra": {
+              "id": 9,
+              "defaultLabel": "Deployment Configuration",
+              "editable": true
+            },
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "storeUnitConfiguration"
+            }
+          },
+          "model": {
+            "type": "schemaReference",
+            "optional": true,
+            "extra": {
+              "id": 9,
+              "defaultLabel": "Application Deployment Model",
+              "editable": true
+            },
+            "definition": {
+              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+              "relativePath": "jzodObject"
+            }
+          },
+          "data": {
+            "type": "schemaReference",
+            "optional": true,
+            "extra": {
+              "id": 10,
+              "defaultLabel": "Application Deployment Data",
+              "editable": true
+            },
+            "definition": {
+              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+              "relativePath": "jzodObject"
+            }
+          }
+        }
+      },
       "entity": {
         "type": "object",
         "definition": {
@@ -5260,6 +5417,10 @@ export const miroirFundamentalJzodSchema = {
                   },
                   {
                     "type": "literal",
+                    "definition": "FailedToResetAndInitMiroirAndApplicationDatabase"
+                  },
+                  {
+                    "type": "literal",
                     "definition": "FailedToOpenStore"
                   },
                   {
@@ -7328,6 +7489,46 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "storeUnitConfiguration"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "storeManagementAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "resetAndInitMiroirAndApplicationDatabase"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
+              },
+              "deployments": {
+                "type": "array",
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "deployment"
+                  }
+                }
+              },
+              "deploymentUuid": {
+                "type": "simpleType",
+                "definition": "string",
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "extra": {
+                  "defaultLabel": "Module Deployment Uuid",
+                  "editable": false
                 }
               }
             }

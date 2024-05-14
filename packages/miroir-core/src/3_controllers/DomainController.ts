@@ -41,10 +41,11 @@ import { packageName } from '../constants.js';
 import { getLoggerName } from '../tools';
 import { Endpoint } from './Endpoint.js';
 import { CallUtils } from './ErrorHandling/CallUtils.js';
-import { metaModelEntities, miroirModelEntities } from '../1_core/Model.js';
+import { defaultMiroirMetaModel, metaModelEntities, miroirModelEntities } from '../1_core/Model.js';
 import { cleanLevel } from './constants.js';
 import { ACTION_OK } from '../1_core/constants.js';
 import { resolveContextReference } from '../2_domain/QuerySelectors.js';
+import { applicationMiroir, applicationModelBranchMiroirMasterBranch, applicationStoreBasedConfigurationMiroir, applicationVersionInitialMiroirVersion } from '../index.js';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -55,6 +56,55 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 );
 
 
+// ################################################################################################
+async function resetAndInitMiroirAndApplicationDatabase(
+  domainController: DomainControllerInterface,
+  deployments: any[] // TODO: use Deployment Entity Type!
+) {
+  // const deployments = [adminConfigurationDeploymentLibrary, adminConfigurationDeploymentMiroir];
+
+  for (const d of deployments) {
+    await domainController.handleAction({
+      actionType: "modelAction",
+      actionName: "resetModel",
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      deploymentUuid: d.uuid,
+    });
+  }
+  for (const d of deployments) {
+    await domainController.handleAction({
+      actionType: "modelAction",
+      actionName: "initModel",
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      deploymentUuid: d.uuid,
+      params: {
+        dataStoreType: d.uuid == adminConfigurationDeploymentMiroir.uuid?"miroir":"app",
+        metaModel: defaultMiroirMetaModel,
+        application: applicationMiroir,
+        applicationDeploymentConfiguration: d,
+        applicationModelBranch: applicationModelBranchMiroirMasterBranch,
+        applicationStoreBasedConfiguration: applicationStoreBasedConfigurationMiroir,
+        applicationVersion: applicationVersionInitialMiroirVersion,
+      },
+    });
+  }
+  log.info(
+    "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ resetAndInitMiroirAndApplicationDatabase APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+  );
+  for (const d of deployments) {
+    await domainController.handleAction({
+      actionType: "modelAction",
+      actionName: "rollback",
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      deploymentUuid: d.uuid,
+    });
+  }
+}
+
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 /**
  * domain level contains "business" logic related to concepts defined whithin the
  * application: entities, reports, reducers, users, etc.
@@ -713,7 +763,33 @@ export class DomainController implements DomainControllerInterface {
           domainAction
         );
       }
-      case 'storeManagementAction':
+      case 'storeManagementAction': {
+        if (domainAction.actionName == "resetAndInitMiroirAndApplicationDatabase") {
+          await resetAndInitMiroirAndApplicationDatabase(this,domainAction.deployments)          
+        } else {
+          try {
+            await this.callUtil.callPersistenceAction(
+            {}, // context
+            {}, // context update
+            // deploymentUuid,
+            domainAction
+          );
+          } catch (error) {
+            log.warn(
+              "DomainController handleAction caught exception when handling",
+              domainAction.actionType,
+              "deployment",
+              domainAction.deploymentUuid,
+              "action",
+              domainAction,
+              "exception",
+              error
+            );
+          }
+        }
+        return Promise.resolve(ACTION_OK);
+        break;
+      }
       case 'bundleAction': {
         try {
           await this.callUtil.callPersistenceAction(
@@ -722,20 +798,20 @@ export class DomainController implements DomainControllerInterface {
           // deploymentUuid,
           domainAction
         );
-      } catch (error) {
-        log.warn(
-          "DomainController handleAction caught exception when handling",
-          domainAction.actionType,
-          "deployment",
-          domainAction.deploymentUuid,
-          "action",
-          domainAction,
-          "exception",
-          error
-        );
-      }
-      return Promise.resolve(ACTION_OK);
-      break;
+        } catch (error) {
+          log.warn(
+            "DomainController handleAction caught exception when handling",
+            domainAction.actionType,
+            "deployment",
+            domainAction.deploymentUuid,
+            "action",
+            domainAction,
+            "exception",
+            error
+          );
+        }
+        return Promise.resolve(ACTION_OK);
+        break;
       }
       case "undoRedoAction": {
         return this.handleDomainUndoRedoAction(
