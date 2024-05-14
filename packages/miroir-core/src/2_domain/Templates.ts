@@ -1,7 +1,11 @@
+// import { render } from "mustache";
+import Mustache from "mustache";
+
 import {
   DomainElement,
   DomainAction,
   JzodReference,
+  ActionReturnType,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -77,6 +81,19 @@ export const objectTemplateSchema: JzodReference = {
           definition: {
             templateType: {
               type: "literal",
+              definition: "mustacheString",
+            },
+            definition: {
+              type: "simpleType",
+              definition: "string",
+            },
+          },
+        },
+        {
+          type: "object",
+          definition: {
+            templateType: {
+              type: "literal",
               definition: "fullObjectTemplate",
             },
             definition: {
@@ -110,17 +127,18 @@ export const objectTemplateSchema: JzodReference = {
 };
 export type ObjectTemplateInnerReference =
   | {
-      templateType: "constant";
-      referenceUuid: string;
+      templateType: "constant",
+      referenceUuid: string,
     }
   | {
-      templateType: "contextReference";
-      referenceName: string;
+      templateType: "contextReference",
+      referenceName: string,
     }
   | {
-      templateType: "parameterReference";
-      referenceName: string;
-    };
+      templateType: "parameterReference",
+      referenceName: string,
+    }
+;
 // | {
 //   templateType: "fullObjectTemplate",
 //   definition: [ObjectTemplate, ObjectTemplate][]
@@ -138,18 +156,19 @@ export type ObjectTemplate =
   // }
   | ObjectTemplateInnerReference
   | {
-      templateType: "fullObjectTemplate";
-      definition: [ObjectTemplateInnerReference, ObjectTemplate][];
+    templateType: "mustacheStringTemplate",
+    definition: string
+  }
+  | {
+      templateType: "fullObjectTemplate",
+      definition: [ObjectTemplateInnerReference, ObjectTemplate][],
     };
 
 // ################################################################################################
 export const resolveActionTemplateContextReference = (
   queryObjectReference: ObjectTemplateInnerReference,
-  // queryParams: DomainElementObject,
   queryParams: any,
-  // contextResults: DomainElement,
   contextResults: any
-  // ) : DomainElement => {
 ): any => {
   // log.info("resolveContextReference for queryObjectReference=", queryObjectReference, "queryParams=", queryParams,"contextResults=", contextResults)
   if (
@@ -198,101 +217,96 @@ export const resolveActionTemplateContextReference = (
   return reference;
 };
 
-// export type ActionTemplate = ObjectTemplate;
-// export type ActionTemplate = ObjectTemplate | DomainAction;
 export type ActionTemplate = any;
 
 export function objectTemplateToObject(
   objectName: string,
   objectTemplate: ObjectTemplate,
-  // queryObjectReference: QueryObjectReference,
-  // queryParams: DomainElementObject,
   queryParams: any,
-  // contextResults: DomainElement,
   contextResults?: any
-  // ): any {
 ): any {
   log.info("objectTemplateToObject called for object named", objectName,"template", objectTemplate, "queryParams", queryParams);
-  // log.info("objectTemplateToObject called for template", objectTemplate, "with params", queryParams);
-  // const result = Object.fromEntries(
-  //   Object.entries(objectTemplate).map((objectTemplateEntry: [string, any]) => {
   if (typeof objectTemplate == "object") {
     log.info("objectTemplateToObject for template object named", objectName, "templateType", objectTemplate.templateType);
-    if (objectTemplate.templateType) {
-      switch (objectTemplate.templateType) {
-        case "fullObjectTemplate": {
-          const result = Object.fromEntries(
-            objectTemplate.definition.map((innerEntry: [ObjectTemplateInnerReference, ObjectTemplate]) => {
-              log.info("objectTemplateToObject for object named",objectName,"innerEntry index", innerEntry[0], "innerEntry value", innerEntry[1]);
-
-              const rawLeftValue = innerEntry[0].templateType
-                ? resolveActionTemplateContextReference(innerEntry[0], queryParams, contextResults)
-                : innerEntry[0];
-              const leftValue =
-                typeof innerEntry[0] == "object" && (innerEntry[0] as any).applyFunction
-                  ? (innerEntry[0] as any).applyFunction(rawLeftValue)
-                  : rawLeftValue;
-
-              const rawRightValue = innerEntry[1].templateType
-                ? objectTemplateToObject(rawLeftValue, innerEntry[1], queryParams, contextResults)
-                : innerEntry[1];
-              const rightValue =
-                typeof innerEntry[1] == "object" && (innerEntry[1] as any).applyFunction
-                  ? (innerEntry[1] as any).applyFunction(rawRightValue)
-                  : rawRightValue;
-              log.info(
-                "objectTemplateToObject fullObjectTemplate for ",
-                objectTemplate,
-                "rawLeftvalue",
-                rawLeftValue,
-                "leftValue",
-                leftValue,
-                "rawRightvalue",
-                rawRightValue,
-                "rightValue",
-                rightValue
-              );
-              return [leftValue, rightValue];
-            })
-          );
-          return result;
-          // return [objectTemplate, result];
-          break;
-        }
-        default: {
-          const rawValue = objectTemplate.templateType
-            ? resolveActionTemplateContextReference(objectTemplate, queryParams, contextResults)
-            : objectTemplate;
-          const value =
-            typeof objectTemplate == "object" && (objectTemplate as any).applyFunction
-              ? (objectTemplate as any).applyFunction(rawValue)
-              : rawValue;
-          log.info("objectTemplateToObject default case for", objectTemplate, "rawvalue", rawValue, "value", value);
-          // return [objectTemplate, value];
-          return value;
-          break;
-        }
-      }
+    if (Array.isArray(objectTemplate)) {
+      return objectTemplate.map(
+        (e,index)=>objectTemplateToObject(index.toString(), e, queryParams, contextResults)
+      )
     } else {
-      log.info("objectTemplateToObject converting plain object", objectTemplate);
-      const result = Object.fromEntries(
-        Object.entries(objectTemplate).map(
-          (objectTemplateEntry: [string, any]) => {
-            return [objectTemplateEntry[0], objectTemplateToObject(objectTemplateEntry[0], objectTemplateEntry[1], queryParams, contextResults)];
+      if (objectTemplate.templateType) {
+        switch (objectTemplate.templateType) {
+          case "fullObjectTemplate": {
+            const result = Object.fromEntries(
+              objectTemplate.definition.map((innerEntry: [ObjectTemplateInnerReference, ObjectTemplate]) => {
+                log.info("objectTemplateToObject for object named",objectName,"innerEntry index", innerEntry[0], "innerEntry value", innerEntry[1]);
+  
+                const rawLeftValue = innerEntry[0].templateType
+                  ? resolveActionTemplateContextReference(innerEntry[0], queryParams, contextResults)
+                  : innerEntry[0];
+                const leftValue =
+                  typeof innerEntry[0] == "object" && (innerEntry[0] as any).applyFunction
+                    ? (innerEntry[0] as any).applyFunction(rawLeftValue)
+                    : rawLeftValue;
+  
+                const rawRightValue = objectTemplateToObject(leftValue, innerEntry[1], queryParams, contextResults);
+                const rightValue =
+                  typeof innerEntry[1] == "object" && (innerEntry[1] as any).applyFunction
+                    ? (innerEntry[1] as any).applyFunction(rawRightValue)
+                    : rawRightValue;
+                log.info(
+                  "objectTemplateToObject fullObjectTemplate for ",
+                  objectTemplate,
+                  "rawLeftvalue",
+                  rawLeftValue,
+                  "leftValue",
+                  leftValue,
+                  "rawRightvalue",
+                  rawRightValue,
+                  "rightValue",
+                  rightValue
+                );
+                return [leftValue, rightValue];
+              })
+            );
+            return result;
+            break;
           }
-        )
-      );
-      return result;
+          case "mustacheStringTemplate": {
+            const result = Mustache.render(objectTemplate.definition, queryParams);
+            return result;
+            break;
+          }
+          case "constant":
+          case "contextReference":
+          case "parameterReference":
+          default: {
+            const rawValue = objectTemplate.templateType
+              ? resolveActionTemplateContextReference(objectTemplate, queryParams, contextResults)
+              : objectTemplate;
+            const value =
+              typeof objectTemplate == "object" && (objectTemplate as any).applyFunction
+                ? (objectTemplate as any).applyFunction(rawValue)
+                : rawValue;
+            log.info("objectTemplateToObject default case for", objectTemplate, "rawvalue", rawValue, "value", value);
+            return value;
+            break;
+          }
+        }
+      } else {
+        log.info("objectTemplateToObject converting plain object", objectTemplate);
+        const result = Object.fromEntries(
+          Object.entries(objectTemplate).map(
+            (objectTemplateEntry: [string, any]) => {
+              return [objectTemplateEntry[0], objectTemplateToObject(objectTemplateEntry[0], objectTemplateEntry[1], queryParams, contextResults)];
+            }
+          )
+        );
+        return result;
+      }
     }
   } else { // plain value
-    // log.error("objectTemplateToObject returning given entry for", objectTemplate)
-    // throw("objectTemplateToObject returning given entry for" + JSON.stringify(objectTemplate))
     return objectTemplate;
   }
-    // }
-  // );
-  // log.info("objectTemplateToObject for template",objectTemplate, "returned result", result);
-  // return result;
 }
 export function actionTemplateToAction(
   actionTemplate: ActionTemplate,
@@ -306,11 +320,11 @@ export async function runActionTemplate(
   domainController: DomainControllerInterface,
   actionTemplate: ActionTemplate,
   params: any
-) {
+): Promise<ActionReturnType> {
   log.info("runActionTemplate", "actionTemplate", actionTemplate, "params", params);
   const actionToRun = actionTemplateToAction("ROOT",actionTemplate, params);
   log.info("runActionTemplate actionToRun", actionToRun);
-  await domainController.handleAction(
+  return domainController.handleAction(
     actionToRun
     // {
     //   actionType: "storeManagementAction",

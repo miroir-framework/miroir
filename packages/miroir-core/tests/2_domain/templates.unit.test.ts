@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 // import { describe, expect } from 'vitest';
 
-import { objectTemplateToObject } from "../../src/2_domain/Templates";
+import { ObjectTemplate, objectTemplateToObject } from "../../src/2_domain/Templates";
 import {
   DomainAction,
   StoreUnitConfiguration,
@@ -57,25 +57,25 @@ describe("templates.unit.test", () => {
         undefined
       );
 
-      console.log("test result", newDeploymentStoreConfiguration)
-      // test
-      expect(newDeploymentStoreConfiguration).toEqual({
-        admin: {
-          emulatedServerType: 'sql',
-          connectionString: 'postgres://postgres:postgres@localhost:5432/postgres',
-          schema: 'miroirAdmin'
-        },
-        model: {
-          emulatedServerType: 'sql',
-          connectionString: 'postgres://postgres:postgres@localhost:5432/postgres',
-          schema: 'testModel'
-        },
-        data: {
-          emulatedServerType: 'sql',
-          connectionString: 'postgres://postgres:postgres@localhost:5432/postgres',
-          schema: 'testData'
-        }
-      })
+      // console.log("test result", newDeploymentStoreConfiguration)
+      // // test
+      // expect(newDeploymentStoreConfiguration).toEqual({
+      //   admin: {
+      //     emulatedServerType: 'sql',
+      //     connectionString: 'postgres://postgres:postgres@localhost:5432/postgres',
+      //     schema: 'miroirAdmin'
+      //   },
+      //   model: {
+      //     emulatedServerType: 'sql',
+      //     connectionString: 'postgres://postgres:postgres@localhost:5432/postgres',
+      //     schema: 'testModel'
+      //   },
+      //   data: {
+      //     emulatedServerType: 'sql',
+      //     connectionString: 'postgres://postgres:postgres@localhost:5432/postgres',
+      //     schema: 'testData'
+      //   }
+      // })
 
       // ##########################################################################################
       const actionParams = {
@@ -83,7 +83,7 @@ describe("templates.unit.test", () => {
         newAdminAppApplicationUuid,
         newSelfApplicationUuid,
         newDeploymentUuid,
-        newDeploymentStoreConfiguration,
+        // newDeploymentStoreConfiguration,
         // submitMiroirConfig,
       }
 
@@ -92,7 +92,6 @@ describe("templates.unit.test", () => {
         actionName: "openStore",
         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         configuration: {
-          // [newDeploymentUuid]: newDeploymentStoreConfiguration
           templateType: "fullObjectTemplate",
           definition: [
             [
@@ -100,21 +99,14 @@ describe("templates.unit.test", () => {
                 templateType: "parameterReference",
                 referenceName: "newDeploymentUuid"
               },
-              {
-                templateType: "parameterReference",
-                referenceName: "newDeploymentStoreConfiguration"
-              },
+              newDeploymentStoreConfigurationTemplate
+              // {
+              //   templateType: "parameterReference",
+              //   referenceName: "newDeploymentStoreConfiguration"
+              // },
             ]
           ]
-          // [newDeploymentUuid]: newDeploymentStoreConfigurationTemplate
         },
-        // configuration: {
-        //   // [newDeploymentUuid]: newDeploymentStoreConfiguration
-        //   [newDeploymentUuid]: newDeploymentStoreConfigurationTemplate
-        // },
-        // configuration: (actionParams.submitMiroirConfig.client as MiroirConfigForRestClient).serverConfig
-        //   .storeSectionConfiguration,
-        // deploymentUuid: actionParams.newDeploymentUuid,
         deploymentUuid: {
           templateType: "parameterReference",
           referenceName: "newDeploymentUuid"
@@ -143,6 +135,31 @@ describe("templates.unit.test", () => {
 
 
       console.log("convert basic template END")
+    }
+  );
+
+  // ################################################################################################
+  it("convert mustache string template", async () => { // TODO: test failure cases!
+      // if (miroirConfig.client.emulateServer) {
+      console.log("convert mustache string START")
+      const newApplicationName = "test";
+
+      const mustacheTemplate:ObjectTemplate = {
+        templateType: "mustacheStringTemplate",
+        definition: "{{newApplicationName}}Application"
+      }
+
+      const testResult: string = objectTemplateToObject(
+        "ROOT",
+        mustacheTemplate,
+        {newApplicationName},
+        undefined
+      );
+
+
+      console.log("################################ converted template", testResult)
+      expect(testResult).toEqual("testApplication");
+    console.log("convert mustache string END")
     }
   );
 
