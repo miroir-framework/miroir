@@ -7376,6 +7376,44 @@ export const miroirFundamentalJzodSchema = {
                 }
               }
             }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "compositeAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "sequence"
+              },
+              "deploymentUuid": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "extra": {
+                  "defaultLabel": "Module Deployment Uuid",
+                  "editable": false
+                }
+              },
+              "definition": {
+                "type": "array",
+                "definition": {
+                  "type": "schemaReference",
+                  "optional": false,
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "domainAction"
+                  }
+                }
+              }
+            }
           }
         ]
       },

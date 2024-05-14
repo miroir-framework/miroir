@@ -342,8 +342,9 @@ export const ToolsPage: React.FC<any> = (
           "submitMiroirConfig",
           submitMiroirConfig
         );
-        // await runActionTemplate(domainController, undefined, actionParams);
-        await runActionTemplate(domainController,
+
+        const openStoreAction: DomainAction = objectTemplateToObject(
+          "ROOT",
           {
             actionType: "storeManagementAction",
             actionName: "openStore",
@@ -364,11 +365,54 @@ export const ToolsPage: React.FC<any> = (
               templateType: "parameterReference",
               referenceName: "newDeploymentUuid"
             }
-          }
-        , actionParams);
+          } as any,
+          actionParams,
+          undefined
+        );
+
+
+        // ########################################################################################
+        // await domainController.handleAction(openStoreAction); // put into sequence!!!
+        // ########################################################################################
+
+        // await runActionTemplate(domainController,
+        //   {
+        //     actionType: "storeManagementAction",
+        //     actionName: "openStore",
+        //     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+        //     configuration: {
+        //       templateType: "fullObjectTemplate",
+        //       definition: [
+        //         [
+        //           {
+        //             templateType: "parameterReference",
+        //             referenceName: "newDeploymentUuid"
+        //           },
+        //           newDeploymentStoreConfigurationTemplate,
+        //         ]
+        //       ]
+        //     },
+        //     deploymentUuid: {
+        //       templateType: "parameterReference",
+        //       referenceName: "newDeploymentUuid"
+        //     }
+        //   }
+        // , actionParams);
   
         log.info("store opened with uuid", newDeploymentUuid)
-        const createdApplicationStore = await runActionTemplate(domainController,
+        // const createStoreTemplate:any = {
+        //   actionType: "storeManagementAction",
+        //   actionName: "createStore",
+        //   endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+        //   deploymentUuid: {
+        //     templateType: "parameterReference",
+        //     referenceName: "newDeploymentUuid"
+        //   },
+        //   configuration: newDeploymentStoreConfigurationTemplate
+        // }
+
+        const createStoreAction: DomainAction = objectTemplateToObject(
+          "ROOT",
           {
             actionType: "storeManagementAction",
             actionName: "createStore",
@@ -378,12 +422,41 @@ export const ToolsPage: React.FC<any> = (
               referenceName: "newDeploymentUuid"
             },
             configuration: newDeploymentStoreConfigurationTemplate
-          }
-        , actionParams);
+          } as any,
+          actionParams,
+          undefined
+        );
 
-        if (createdApplicationStore?.status != "ok") {
-          log.error('Error afterEach',JSON.stringify(createdApplicationStore, null, 2));
-        }
+        // const createdApplicationStore = await domainController.handleAction(createStoreAction)
+
+        // const createdApplicationStore = await runActionTemplate(domainController,
+        //   {
+        //     actionType: "storeManagementAction",
+        //     actionName: "createStore",
+        //     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+        //     deploymentUuid: {
+        //       templateType: "parameterReference",
+        //       referenceName: "newDeploymentUuid"
+        //     },
+        //     configuration: newDeploymentStoreConfigurationTemplate
+        //   }
+        // , actionParams);
+
+
+        // if (createdApplicationStore?.status != "ok") {
+        //   log.error('Error afterEach',JSON.stringify(createdApplicationStore, null, 2));
+        // }
+
+        // await domainController.handleAction(
+        //   {
+        //     actionType: "compositeAction",
+        //     actionName: "sequence",
+        //     definition: [
+        //       openStoreAction,
+        //       createStoreAction
+        //     ]
+        //   }
+        // )
 
         log.info("application store created with uuid", newDeploymentUuid)
 
@@ -533,8 +606,20 @@ export const ToolsPage: React.FC<any> = (
         log.info("found resetAndInitAction", resetAndInitAction);
 
         // create storage structures for Miroir metamodel Entities in new application deployment
-        await domainController.handleAction(resetAndInitAction);
+        // await domainController.handleAction(resetAndInitAction);
         // await resetAndInitMiroirAndApplicationDatabase(domainController, [ newDeployment ])
+
+        // await domainController.handleAction(
+        //   {
+        //     actionType: "compositeAction",
+        //     actionName: "sequence",
+        //     definition: [
+        //       openStoreAction,
+        //       createStoreAction,
+        //       resetAndInitAction,
+        //     ]
+        //   }
+        // )
 
         log.info("application store initialized, deployment uuid", newDeploymentUuid)
 
@@ -578,7 +663,20 @@ export const ToolsPage: React.FC<any> = (
         )
         log.info("found createSelfApplicationAction", createSelfApplicationAction);
 
-        await domainController.handleAction(createSelfApplicationAction);
+        // await domainController.handleAction(createSelfApplicationAction);
+        // await domainController.handleAction(
+        //   {
+        //     actionType: "compositeAction",
+        //     actionName: "sequence",
+        //     definition: [
+        //       openStoreAction,
+        //       createStoreAction,
+        //       resetAndInitAction,
+        //       createSelfApplicationAction
+        //     ]
+        //   }
+        // )
+
 
         log.info("application self Application instance created for deployment uuid", newDeploymentUuid, createSelfApplicationAction)
 
@@ -755,7 +853,20 @@ export const ToolsPage: React.FC<any> = (
         //   ]
         // };
 
-        await domainController.handleAction(createNewApplicationMenuAction);
+        // await domainController.handleAction(createNewApplicationMenuAction);
+        // await domainController.handleAction(
+        //   {
+        //     actionType: "compositeAction",
+        //     actionName: "sequence",
+        //     definition: [
+        //       openStoreAction,
+        //       createStoreAction,
+        //       resetAndInitAction,
+        //       createSelfApplicationAction,
+        //       createNewApplicationMenuAction
+        //     ]
+        //   }
+        // )
                 
         // #################### ADMIN
         // create application in Admin application deployment
@@ -812,7 +923,22 @@ export const ToolsPage: React.FC<any> = (
         //   ]
         // };
 
-        await domainController.handleAction(createApplicationForAdminAction);
+        // await domainController.handleAction(createApplicationForAdminAction);
+        // await domainController.handleAction(
+        //   {
+        //     actionType: "compositeAction",
+        //     actionName: "sequence",
+        //     definition: [
+        //       openStoreAction,
+        //       createStoreAction,
+        //       resetAndInitAction,
+        //       createSelfApplicationAction,
+        //       createNewApplicationMenuAction,
+        //       createApplicationForAdminAction,
+        //     ]
+        //   }
+        // )
+
 
         log.info("Application instance created in Admin data for deployment uuid", newDeploymentUuid, createApplicationForAdminAction)
 
@@ -869,7 +995,22 @@ export const ToolsPage: React.FC<any> = (
         //     }
         //   ]
         // };
-        await domainController.handleAction(createAdminDeploymentAction);
+        // await domainController.handleAction(createAdminDeploymentAction);
+        await domainController.handleAction(
+          {
+            actionType: "compositeAction",
+            actionName: "sequence",
+            definition: [
+              openStoreAction,
+              createStoreAction,
+              resetAndInitAction,
+              createSelfApplicationAction,
+              createNewApplicationMenuAction,
+              createApplicationForAdminAction,
+              createAdminDeploymentAction,
+            ]
+          }
+        )
 
         log.info("created Deployment instance in Admin App deployment", createAdminDeploymentAction)
 

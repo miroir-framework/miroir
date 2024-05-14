@@ -754,6 +754,16 @@ export class DomainController implements DomainControllerInterface {
     log.debug("DomainController handleAction domainAction", domainAction);
 
     switch (domainAction.actionType) {
+      case 'compositeAction':{
+        for (const a of domainAction.definition) {
+          const actionResult = await this.handleAction(a, currentModel)
+          if (actionResult?.status != "ok") {
+            log.error('Error afterEach',JSON.stringify(actionResult, null, 2));
+          }
+        }
+        return Promise.resolve(ACTION_OK);
+        break;
+      }
       case "modelAction": {
         return this.handleModelAction(domainAction.deploymentUuid, domainAction, currentModel);
       }

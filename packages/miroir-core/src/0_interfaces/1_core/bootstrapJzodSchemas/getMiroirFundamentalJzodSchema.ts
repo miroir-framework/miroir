@@ -1776,6 +1776,20 @@ export function getMiroirFundamentalJzodSchema(
             }
           ]
         },
+        // "compositeDomainAction": {
+        //   "type": "object",
+        //   "definition": {
+        //     "actionType": {
+        //       "type": "literal",
+        //       "definition": "composite"
+        //     },
+        //     "actionName": {
+        //       "type": "literal",
+        //       "definition": "sequence"
+        //     },
+
+        //   }
+        // },
         "bundleAction": {
           "type": "union",
           "definition": [
