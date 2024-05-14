@@ -45,7 +45,13 @@ import { defaultMiroirMetaModel, metaModelEntities, miroirModelEntities } from '
 import { cleanLevel } from './constants.js';
 import { ACTION_OK } from '../1_core/constants.js';
 import { resolveContextReference } from '../2_domain/QuerySelectors.js';
-import { applicationMiroir, applicationModelBranchMiroirMasterBranch, applicationStoreBasedConfigurationMiroir, applicationVersionInitialMiroirVersion } from '../index.js';
+import {
+  applicationMiroir,
+  applicationModelBranchMiroirMasterBranch,
+  applicationStoreBasedConfigurationMiroir,
+  applicationVersionInitialMiroirVersion,
+} from "../index.js";
+import { objectTemplateToObject } from "../2_domain/Templates.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -755,8 +761,29 @@ export class DomainController implements DomainControllerInterface {
 
     switch (domainAction.actionType) {
       case 'compositeAction':{
+        // resolve templates
+        const resolvedTemplates: any = {}
+        // going imperatively to handle inner references
+        if (domainAction.templates) {
+          for (const t of Object.entries(domainAction.templates)) {
+            const resolvedTemplate = objectTemplateToObject(
+              t[0],
+              t[1],
+              {...domainAction.params,...resolvedTemplates},
+              undefined
+            );
+            resolvedTemplates[t[0]] = resolvedTemplate
+          }
+        }
+        // resolve domainAction array templates
         for (const a of domainAction.definition) {
-          const actionResult = await this.handleAction(a, currentModel)
+          const currentAction = objectTemplateToObject(
+            "ROOT",
+            a,
+            resolvedTemplates,
+            undefined
+          )
+          const actionResult = await this.handleAction(currentAction, currentModel)
           if (actionResult?.status != "ok") {
             log.error('Error afterEach',JSON.stringify(actionResult, null, 2));
           }

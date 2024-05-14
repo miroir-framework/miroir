@@ -7402,15 +7402,27 @@ export const miroirFundamentalJzodSchema = {
                   "editable": false
                 }
               },
+              "params": {
+                "type": "record",
+                "optional": true,
+                "definition": {
+                  "type": "simpleType",
+                  "definition": "any"
+                }
+              },
+              "templates": {
+                "type": "record",
+                "optional": true,
+                "definition": {
+                  "type": "simpleType",
+                  "definition": "any"
+                }
+              },
               "definition": {
                 "type": "array",
                 "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "domainAction"
-                  }
+                  "type": "simpleType",
+                  "definition": "any"
                 }
               }
             }

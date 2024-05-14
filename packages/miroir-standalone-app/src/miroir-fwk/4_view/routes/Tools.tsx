@@ -259,10 +259,32 @@ export const ToolsPage: React.FC<any> = (
 
         // create new Application
         // deploy new Application
+        // ########################################################################################
+        // IDENTIFIERS / ACTION PARAMETERS
+        // ########################################################################################
         const newApplicationName = values.applicationName;
         const newAdminAppApplicationUuid = applicationParis.uuid;//uuidv4();
         const newSelfApplicationUuid = applicationParis.selfApplication; //uuidv4()
         const newDeploymentUuid = adminConfigurationDeploymentParis.uuid; //values.deploymentUuid
+
+        log.info(
+          "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ onSubmit formik values",
+          values,
+          "newApplicationName",
+          newApplicationName,
+          "newDeploymentUuid",
+          newDeploymentUuid,
+          "newSelfApplicationUuid",
+          newSelfApplicationUuid,
+          "newAdminAppApplicationUuid",
+          newAdminAppApplicationUuid,
+        );
+
+
+
+        // ########################################################################################
+        // TEMPLATES / BUSINESS OBJECTS
+        // ########################################################################################
         const newDeploymentStoreConfigurationTemplate = {
           "admin": {
             "emulatedServerType": "sql",
@@ -290,177 +312,42 @@ export const ToolsPage: React.FC<any> = (
           }
         }
 
-        const newDeploymentStoreConfiguration: StoreUnitConfiguration = objectTemplateToObject(
-          "ROOT",
-          newDeploymentStoreConfigurationTemplate as any,
-          {newApplicationName},
-          undefined
-        );
-        log.info("newDeploymentStoreConfiguration", newDeploymentStoreConfiguration)
-        const submitMiroirConfig: MiroirConfigClient = {
-          "client": {
-            "emulateServer": false,
-            "serverConfig":{
-              "rootApiUrl":"http://localhost:3080",
-              "dataflowConfiguration": {
-                "type":"singleNode",
-                "metaModel": {
-                  "location": {
-                    "side":"server",
-                    "type": "filesystem",
-                    "location":"C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/assets"
-                  }
-                }
-              },
-              "storeSectionConfiguration": {
-                [newDeploymentUuid]: newDeploymentStoreConfiguration,
-              }
-            },
-          }
-        };
-        
-        const actionParams = {
+        // ########################################################################################
+        // const submitMiroirConfig: MiroirConfigClient = {
+        //   "client": {
+        //     "emulateServer": false,
+        //     "serverConfig":{
+        //       "rootApiUrl":"http://localhost:3080",
+        //       "dataflowConfiguration": {
+        //         "type":"singleNode",
+        //         "metaModel": {
+        //           "location": {
+        //             "side":"server",
+        //             "type": "filesystem",
+        //             "location":"C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/assets"
+        //           }
+        //         }
+        //       },
+        //       "storeSectionConfiguration": {
+        //         [newDeploymentUuid]: newDeploymentStoreConfiguration,
+        //       }
+        //     },
+        //   }
+        // };
+
+        const templateConversionParams = {
           adminConfigurationDeploymentAdmin,
           newApplicationName,
           newAdminAppApplicationUuid,
           newSelfApplicationUuid,
           newDeploymentUuid,
-          newDeploymentStoreConfiguration,
-          submitMiroirConfig,
           entityApplication,
           entityApplicationForAdmin,
           entityDeployment,
           entityMenu,
         }
 
-
-        log.info(
-          "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ onSubmit formik values",
-          values,
-          "newApplicationName",
-          newApplicationName,
-          "submitMiroirConfig",
-          submitMiroirConfig
-        );
-
-        const openStoreAction: DomainAction = objectTemplateToObject(
-          "ROOT",
-          {
-            actionType: "storeManagementAction",
-            actionName: "openStore",
-            endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-            configuration: {
-              templateType: "fullObjectTemplate",
-              definition: [
-                [
-                  {
-                    templateType: "parameterReference",
-                    referenceName: "newDeploymentUuid"
-                  },
-                  newDeploymentStoreConfigurationTemplate,
-                ]
-              ]
-            },
-            deploymentUuid: {
-              templateType: "parameterReference",
-              referenceName: "newDeploymentUuid"
-            }
-          } as any,
-          actionParams,
-          undefined
-        );
-
-
         // ########################################################################################
-        // await domainController.handleAction(openStoreAction); // put into sequence!!!
-        // ########################################################################################
-
-        // await runActionTemplate(domainController,
-        //   {
-        //     actionType: "storeManagementAction",
-        //     actionName: "openStore",
-        //     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        //     configuration: {
-        //       templateType: "fullObjectTemplate",
-        //       definition: [
-        //         [
-        //           {
-        //             templateType: "parameterReference",
-        //             referenceName: "newDeploymentUuid"
-        //           },
-        //           newDeploymentStoreConfigurationTemplate,
-        //         ]
-        //       ]
-        //     },
-        //     deploymentUuid: {
-        //       templateType: "parameterReference",
-        //       referenceName: "newDeploymentUuid"
-        //     }
-        //   }
-        // , actionParams);
-  
-        log.info("store opened with uuid", newDeploymentUuid)
-        // const createStoreTemplate:any = {
-        //   actionType: "storeManagementAction",
-        //   actionName: "createStore",
-        //   endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        //   deploymentUuid: {
-        //     templateType: "parameterReference",
-        //     referenceName: "newDeploymentUuid"
-        //   },
-        //   configuration: newDeploymentStoreConfigurationTemplate
-        // }
-
-        const createStoreAction: DomainAction = objectTemplateToObject(
-          "ROOT",
-          {
-            actionType: "storeManagementAction",
-            actionName: "createStore",
-            endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-            deploymentUuid: {
-              templateType: "parameterReference",
-              referenceName: "newDeploymentUuid"
-            },
-            configuration: newDeploymentStoreConfigurationTemplate
-          } as any,
-          actionParams,
-          undefined
-        );
-
-        // const createdApplicationStore = await domainController.handleAction(createStoreAction)
-
-        // const createdApplicationStore = await runActionTemplate(domainController,
-        //   {
-        //     actionType: "storeManagementAction",
-        //     actionName: "createStore",
-        //     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        //     deploymentUuid: {
-        //       templateType: "parameterReference",
-        //       referenceName: "newDeploymentUuid"
-        //     },
-        //     configuration: newDeploymentStoreConfigurationTemplate
-        //   }
-        // , actionParams);
-
-
-        // if (createdApplicationStore?.status != "ok") {
-        //   log.error('Error afterEach',JSON.stringify(createdApplicationStore, null, 2));
-        // }
-
-        // await domainController.handleAction(
-        //   {
-        //     actionType: "compositeAction",
-        //     actionName: "sequence",
-        //     definition: [
-        //       openStoreAction,
-        //       createStoreAction
-        //     ]
-        //   }
-        // )
-
-        log.info("application store created with uuid", newDeploymentUuid)
-
-
         const newApplicationForAdminTemplate: any = {
           "uuid": {
             templateType: "parameterReference",
@@ -492,22 +379,7 @@ export const ToolsPage: React.FC<any> = (
           },
         };
         
-        const newApplicationForAdmin: Application = objectTemplateToObject(
-          "ROOT",
-          newApplicationForAdminTemplate,
-          actionParams,
-          undefined
-        )
-        // const newApplicationForAdmin: Application = {
-        //   "uuid": newAdminAppApplicationUuid,
-        //   "parentName": entityApplicationForAdmin.name,
-        //   "parentUuid": entityApplicationForAdmin.uuid,
-        //   "name": newApplicationName,
-        //   "defaultLabel": `The ${newApplicationName} application.`,
-        //   "description": `This application contains the ${newApplicationName} model and data`,
-        //   "selfApplication": newSelfApplicationUuid,
-        // }
-        log.info("newApplicationForAdmin", newApplicationForAdmin);
+        // ########################################################################################
         const newSelfApplicationTemplate: any = {
           "uuid": {
             templateType: "parameterReference",
@@ -533,14 +405,7 @@ export const ToolsPage: React.FC<any> = (
           },
         };
 
-        const newSelfApplication: Application = objectTemplateToObject(
-          "ROOT",
-          newSelfApplicationTemplate,
-          actionParams,
-          undefined
-        )
-        log.info("newSelfApplication", newSelfApplication);
-
+        // ########################################################################################
         const newDeploymentTemplate: any = {
           "uuid": {
             templateType: "parameterReference",
@@ -576,111 +441,7 @@ export const ToolsPage: React.FC<any> = (
           },
         }
 
-        const newDeployment = objectTemplateToObject(
-          "ROOT",
-          newDeploymentTemplate,
-          {...actionParams, newApplicationForAdmin},
-          undefined
-        ) as EntityInstance
-        log.info("found newDeployment", newDeployment);
-
-        const resetAndInitActionTemplate: any = {
-          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-          actionType: "storeManagementAction",
-          actionName: "resetAndInitMiroirAndApplicationDatabase",
-          deploymentUuid: "",
-          deployments: [ 
-            {
-              templateType: "parameterReference",
-              referenceName: "newDeployment"
-            }
-          ],
-        }
-
-        const resetAndInitAction: DomainAction = objectTemplateToObject(
-          "ROOT",
-          resetAndInitActionTemplate,
-          {...actionParams, newDeployment},
-          undefined
-        )
-        log.info("found resetAndInitAction", resetAndInitAction);
-
-        // create storage structures for Miroir metamodel Entities in new application deployment
-        // await domainController.handleAction(resetAndInitAction);
-        // await resetAndInitMiroirAndApplicationDatabase(domainController, [ newDeployment ])
-
-        // await domainController.handleAction(
-        //   {
-        //     actionType: "compositeAction",
-        //     actionName: "sequence",
-        //     definition: [
-        //       openStoreAction,
-        //       createStoreAction,
-        //       resetAndInitAction,
-        //     ]
-        //   }
-        // )
-
-        log.info("application store initialized, deployment uuid", newDeploymentUuid)
-
-        // create self Application in new Application model
-        // TODO: do it in a transaction??
-        const createSelfApplicationActionTemplate: any = {
-          actionType: 'instanceAction',
-          actionName: "createInstance",
-          applicationSection: "model",
-          deploymentUuid: {
-            templateType: "parameterReference",
-            referenceName: "newDeploymentUuid"
-          },
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          objects:[
-            {
-              parentName: {
-                templateType: "mustacheStringTemplate",
-                definition: "{{entityApplication.name}}"
-              },
-              parentUuid: {
-                templateType: "mustacheStringTemplate",
-                definition: "{{entityApplication.uuid}}"
-              },
-              applicationSection:'model',
-              instances: [ 
-                {
-                  templateType: "parameterReference",
-                  referenceName: "newSelfApplication"
-                }
-              ],
-            }
-          ]
-        }
-
-        const createSelfApplicationAction: InstanceAction = objectTemplateToObject(
-          "ROOT",
-          createSelfApplicationActionTemplate,
-          {...actionParams, newSelfApplication},
-          undefined
-        )
-        log.info("found createSelfApplicationAction", createSelfApplicationAction);
-
-        // await domainController.handleAction(createSelfApplicationAction);
-        // await domainController.handleAction(
-        //   {
-        //     actionType: "compositeAction",
-        //     actionName: "sequence",
-        //     definition: [
-        //       openStoreAction,
-        //       createStoreAction,
-        //       resetAndInitAction,
-        //       createSelfApplicationAction
-        //     ]
-        //   }
-        // )
-
-
-        log.info("application self Application instance created for deployment uuid", newDeploymentUuid, createSelfApplicationAction)
-
-        // create new Application default Menu
+        // ########################################################################################
         const newApplicationMenuTemplate: any = {
           "uuid": "84c178cc-1b1b-497a-a035-9b3d756bb085",
           "parentName": "Menu",
@@ -751,55 +512,96 @@ export const ToolsPage: React.FC<any> = (
             ]
           }
         }
-        const newApplicationMenu: Menu = objectTemplateToObject(
-          "ROOT",
-          newApplicationMenuTemplate,
-          actionParams,
-          undefined
-        )
-        log.info("found newApplicationMenu", newApplicationMenu);
+        
+        // ########################################################################################
+        // ########################################################################################
+        // ########################################################################################
+        // ACTIONS
+        // ########################################################################################
+        const openStoreActionTemplate: any = {
+            actionType: "storeManagementAction",
+            actionName: "openStore",
+            endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+            configuration: {
+              templateType: "fullObjectTemplate",
+              definition: [
+                [
+                  {
+                    templateType: "parameterReference",
+                    referenceName: "newDeploymentUuid"
+                  },
+                  newDeploymentStoreConfigurationTemplate,
+                ]
+              ]
+            },
+            deploymentUuid: {
+              templateType: "parameterReference",
+              referenceName: "newDeploymentUuid"
+            }
+          };
 
-        // const newApplicationMenu: Menu = {
-        //   "uuid": "84c178cc-1b1b-497a-a035-9b3d756bb085",
-        //   "parentName": "Menu",
-        //   "parentUuid": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
-        //   "name": newApplicationName + "Menu",
-        //   "defaultLabel": "Meta-Model",
-        //   "description": `This is the default menu allowing to explore the ${newApplicationName} Application.`,
-        //   "definition": {
-        //     "menuType": "complexMenu",
-        //     "definition": [
-        //       {
-        //         "title": newApplicationName,
-        //         "label": newApplicationName,
-        //         "items": [
-        //           {
-        //             "label": newApplicationName + " Entities",
-        //             "section": "model",
-        //             "application": newDeploymentUuid,
-        //             "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
-        //             "icon": "category"
-        //           },
-        //           {
-        //             "label": newApplicationName + " Entity Definitions",
-        //             "section": "model",
-        //             "application": newDeploymentUuid,
-        //             "reportUuid": "f9aff35d-8636-4519-8361-c7648e0ddc68",
-        //             "icon": "category"
-        //           },
-        //           {
-        //             "label": newApplicationName + " Reports",
-        //             "section": "model",
-        //             "application": newDeploymentUuid,
-        //             "reportUuid": "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
-        //             "icon": "list"
-        //           }
-        //         ]
-        //       }
-        //     ]
-        //   }
-        // }
+        log.info("store opened with uuid", newDeploymentUuid)
+
+        // ########################################################################################
+        const createStoreActionTemplate: any = {
+          actionType: "storeManagementAction",
+          actionName: "createStore",
+          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+          deploymentUuid: {
+            templateType: "parameterReference",
+            referenceName: "newDeploymentUuid"
+          },
+          configuration: newDeploymentStoreConfigurationTemplate
+        };
+
+        log.info("application store created with uuid", newDeploymentUuid)
+
+
+        const resetAndInitActionTemplate: any = {
+          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+          actionType: "storeManagementAction",
+          actionName: "resetAndInitMiroirAndApplicationDatabase",
+          deploymentUuid: "",
+          deployments: [ 
+            {
+              templateType: "parameterReference",
+              referenceName: "newDeployment"
+            }
+          ],
+        }
+
+        // create self Application in new Application model
         // TODO: do it in a transaction??
+        const createSelfApplicationActionTemplate: any = {
+          actionType: 'instanceAction',
+          actionName: "createInstance",
+          applicationSection: "model",
+          deploymentUuid: {
+            templateType: "parameterReference",
+            referenceName: "newDeploymentUuid"
+          },
+          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          objects:[
+            {
+              parentName: {
+                templateType: "mustacheStringTemplate",
+                definition: "{{entityApplication.name}}"
+              },
+              parentUuid: {
+                templateType: "mustacheStringTemplate",
+                definition: "{{entityApplication.uuid}}"
+              },
+              applicationSection:'model',
+              instances: [ 
+                {
+                  templateType: "parameterReference",
+                  referenceName: "newSelfApplication"
+                }
+              ],
+            }
+          ]
+        }
+
         const createNewApplicationMenuActionTemplate: any = {
           actionType: 'instanceAction',
           actionName: "createInstance",
@@ -829,46 +631,11 @@ export const ToolsPage: React.FC<any> = (
             }
           ]
         };
-        const createNewApplicationMenuAction: InstanceAction = objectTemplateToObject(
-          "ROOT",
-          createNewApplicationMenuActionTemplate,
-          {...actionParams, newApplicationMenu},
-          undefined
-        )
-        log.info("found newApplicationMenu", newApplicationMenu);
-
-        // const createNewApplicationMenuAction: InstanceAction = {
-        //   actionType: 'instanceAction',
-        //   actionName: "createInstance",
-        //   applicationSection: "model",
-        //   deploymentUuid: newDeploymentUuid,
-        //   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-        //   objects:[
-        //     {
-        //       parentName:entityMenu.name,
-        //       parentUuid:entityMenu.uuid,
-        //       applicationSection:'model',
-        //       instances: [ newApplicationMenu ],
-        //     }
-        //   ]
-        // };
-
-        // await domainController.handleAction(createNewApplicationMenuAction);
-        // await domainController.handleAction(
-        //   {
-        //     actionType: "compositeAction",
-        //     actionName: "sequence",
-        //     definition: [
-        //       openStoreAction,
-        //       createStoreAction,
-        //       resetAndInitAction,
-        //       createSelfApplicationAction,
-        //       createNewApplicationMenuAction
-        //     ]
-        //   }
-        // )
                 
-        // #################### ADMIN
+        // #################### ADMIN #############################################################
+        // #################### ADMIN #############################################################
+        // #################### ADMIN #############################################################
+        // #################### ADMIN #############################################################
         // create application in Admin application deployment
         const createApplicationForAdminActionTemplate: any = {
           actionType: 'instanceAction',
@@ -899,48 +666,7 @@ export const ToolsPage: React.FC<any> = (
             }
           ]
         };
-        const createApplicationForAdminAction: InstanceAction = objectTemplateToObject(
-          "ROOT",
-          createApplicationForAdminActionTemplate,
-          {...actionParams, newApplicationForAdmin},
-          undefined
-        )
-        log.info("found createApplicationForAdminAction", createApplicationForAdminAction);
-
-        // const createApplicationForAdminAction: InstanceAction = {
-        //   actionType: 'instanceAction',
-        //   actionName: "createInstance",
-        //   applicationSection: "data",
-        //   deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-        //   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-        //   objects:[
-        //     {
-        //       parentName:entityApplicationForAdmin.name,
-        //       parentUuid:entityApplicationForAdmin.uuid,
-        //       applicationSection:'data',
-        //       instances: [ newApplicationForAdmin ],
-        //     }
-        //   ]
-        // };
-
-        // await domainController.handleAction(createApplicationForAdminAction);
-        // await domainController.handleAction(
-        //   {
-        //     actionType: "compositeAction",
-        //     actionName: "sequence",
-        //     definition: [
-        //       openStoreAction,
-        //       createStoreAction,
-        //       resetAndInitAction,
-        //       createSelfApplicationAction,
-        //       createNewApplicationMenuAction,
-        //       createApplicationForAdminAction,
-        //     ]
-        //   }
-        // )
-
-
-        log.info("Application instance created in Admin data for deployment uuid", newDeploymentUuid, createApplicationForAdminAction)
+        // log.info("found createApplicationForAdminAction", createApplicationForAdminAction);
 
 
         // add Deployment to Admin application deployment
@@ -973,62 +699,67 @@ export const ToolsPage: React.FC<any> = (
             }
           ]
         };
-        const createAdminDeploymentAction: InstanceAction = objectTemplateToObject(
-          "ROOT",
-          createAdminDeploymentActionTemplate,
-          {...actionParams, newDeployment},
-          undefined
-        )
-        log.info("found createAdminDeploymentAction", createAdminDeploymentAction);
-        // const createAdminDeploymentAction: InstanceAction = {
-        //   actionType: 'instanceAction',
-        //   actionName: "createInstance",
-        //   applicationSection: "data",
-        //   deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-        //   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-        //   objects:[
-        //     {
-        //       parentName:entityDeployment.name,
-        //       parentUuid:entityDeployment.uuid,
-        //       applicationSection:'data',
-        //       instances: [ newDeployment ],
-        //     }
-        //   ]
-        // };
-        // await domainController.handleAction(createAdminDeploymentAction);
+        // log.info("found createAdminDeploymentAction", createAdminDeploymentAction);
+
+        // ########################################################################################
+        // ########################################################################################
+        // ########################################################################################
+        // ########################################################################################
+        // ########################################################################################
+        // ########################################################################################
         await domainController.handleAction(
           {
             actionType: "compositeAction",
             actionName: "sequence",
+            params: templateConversionParams,
+            templates: {
+              newDeploymentStoreConfigurationTemplate: newDeploymentStoreConfigurationTemplate,
+              newApplicationForAdmin: newApplicationForAdminTemplate,
+              newSelfApplication: newSelfApplicationTemplate,
+              newDeployment: newDeploymentTemplate,
+              newApplicationMenu: newApplicationMenuTemplate,
+              openStoreAction: openStoreActionTemplate,
+              createStoreAction: createStoreActionTemplate,
+              resetAndInitAction: resetAndInitActionTemplate,
+              createSelfApplicationAction: createSelfApplicationActionTemplate,
+              createNewApplicationMenuAction: createNewApplicationMenuActionTemplate,
+              createApplicationForAdminAction: createApplicationForAdminActionTemplate,
+              createAdminDeploymentAction: createAdminDeploymentActionTemplate,
+            },
             definition: [
-              openStoreAction,
-              createStoreAction,
-              resetAndInitAction,
-              createSelfApplicationAction,
-              createNewApplicationMenuAction,
-              createApplicationForAdminAction,
-              createAdminDeploymentAction,
+              {
+                templateType: "parameterReference",
+                referenceName: "openStoreAction"
+              },
+              {
+                templateType: "parameterReference",
+                referenceName: "createStoreAction"
+              },
+              {
+                templateType: "parameterReference",
+                referenceName: "resetAndInitAction"
+              },
+              {
+                templateType: "parameterReference",
+                referenceName: "createSelfApplicationAction"
+              },
+              {
+                templateType: "parameterReference",
+                referenceName: "createNewApplicationMenuAction"
+              },
+              {
+                templateType: "parameterReference",
+                referenceName: "createApplicationForAdminAction"
+              },
+              {
+                templateType: "parameterReference",
+                referenceName: "createAdminDeploymentAction"
+              },
             ]
           }
         )
 
-        log.info("created Deployment instance in Admin App deployment", createAdminDeploymentAction)
-
-        // const createdMiroirStore = await domainController?.handleAction(
-        //   {
-        //     actionType: "storeManagementAction",
-        //     actionName: "createStore",
-        //     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        //     deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-        //     configuration: (submitMiroirConfig.client as MiroirConfigForRestClient).serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid]
-        //   }
-        // )
-        // if (createdMiroirStore?.status != "ok") {
-        //   console.error('Error afterEach',JSON.stringify(createdMiroirStore, null, 2));
-        // }
-  
-
-
+        log.info("created Deployment instance in Admin App deployment")
       } catch (e) {
         log.error(e)
         //  Map and show the errors in your form
