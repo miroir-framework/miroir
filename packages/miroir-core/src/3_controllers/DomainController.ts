@@ -772,6 +772,7 @@ export class DomainController implements DomainControllerInterface {
               {...domainAction.params,...resolvedTemplates},
               undefined
             );
+            log.info("handleAction compositeAction resolved template", t[0], resolvedTemplate)
             resolvedTemplates[t[0]] = resolvedTemplate
           }
         }
@@ -780,9 +781,10 @@ export class DomainController implements DomainControllerInterface {
           const currentAction = objectTemplateToObject(
             "ROOT",
             a,
-            resolvedTemplates,
+            {...domainAction.params, ...resolvedTemplates},
             undefined
           )
+          log.info("handleAction compositeAction resolved action", currentAction)
           const actionResult = await this.handleAction(currentAction, currentModel)
           if (actionResult?.status != "ok") {
             log.error('Error afterEach',JSON.stringify(actionResult, null, 2));
