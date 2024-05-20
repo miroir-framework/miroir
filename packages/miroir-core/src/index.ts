@@ -395,11 +395,14 @@ export {
   // getReportSectionTargetEntityUuid,
   resolveJzodSchemaReference,
   resolveReferencesForJzodSchemaAndValueObject,
-  resolveJzodSchemaReference2,
+  resolveJzodSchemaReferenceInContext,
   ResolvedJzodSchemaReturnType,
   ResolvedJzodSchemaReturnTypeError,
   ResolvedJzodSchemaReturnTypeOK,
-} from './1_core/Jzod.js';
+} from './1_core/JzodUnfoldSchemaForValue.js';
+export {
+  unfoldJzodSchemaOnce
+} from './1_core/JzodUnfoldSchemaOnce.js';
 export {
   selectEntityInstances,
   selectEntityInstancesFromJzodAttribute,

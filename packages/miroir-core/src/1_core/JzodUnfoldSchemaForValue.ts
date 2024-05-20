@@ -51,8 +51,8 @@ export function resolveObjectExtendClause(
 ): JzodObject {
   // if (j.type == "object") {
     if (jzodObject.extend) {
-      // const extension = resolveJzodSchemaReference2(
-      const extension:JzodElement = resolveJzodSchemaReference2(
+      // const extension = resolveJzodSchemaReferenceInContext(
+      const extension:JzodElement = resolveJzodSchemaReferenceInContext(
         miroirFundamentalJzodSchema,
         jzodObject.extend,
         currentModel,
@@ -89,6 +89,12 @@ export function resolveObjectExtendClause(
   //   return j;
   // }
 }
+
+
+// #####################################################################################################
+// #####################################################################################################
+// #####################################################################################################
+// #####################################################################################################
 // #####################################################################################################
 export function resolveReferencesForJzodSchemaAndValueObject(
   miroirFundamentalJzodSchema: JzodSchema,
@@ -107,7 +113,7 @@ export function resolveReferencesForJzodSchemaAndValueObject(
   switch (jzodSchema?.type) {
     case "schemaReference": {
       const newContext = {...relativeReferenceJzodContext, ...jzodSchema.context}
-      const resultJzodSchema = resolveJzodSchemaReference2(
+      const resultJzodSchema = resolveJzodSchemaReferenceInContext(
         miroirFundamentalJzodSchema,
         jzodSchema,
         currentModel,
@@ -143,8 +149,8 @@ export function resolveReferencesForJzodSchemaAndValueObject(
 
       let extendedJzodSchema: JzodObject
       if (jzodSchema.extend) {
-        // const extension = resolveJzodSchemaReference2(
-        const extension = resolveJzodSchemaReference2(
+        // const extension = resolveJzodSchemaReferenceInContext(
+        const extension = resolveJzodSchemaReferenceInContext(
           miroirFundamentalJzodSchema,
           jzodSchema.extend,
           currentModel,
@@ -237,7 +243,7 @@ export function resolveReferencesForJzodSchemaAndValueObject(
     case "union":{
       const concreteJzodSchemas: JzodElement[] = jzodSchema.definition.map((a: JzodElement) =>
         a.type == "schemaReference"
-          ? resolveJzodSchemaReference2(
+          ? resolveJzodSchemaReferenceInContext(
               miroirFundamentalJzodSchema,
               a,
               currentModel,
@@ -553,7 +559,7 @@ export function resolveReferencesForJzodSchemaAndValueObject(
         }
       }
       const innerSchema = jzodSchema.definition.type == "schemaReference"?
-        resolveJzodSchemaReference2(
+        resolveJzodSchemaReferenceInContext(
           miroirFundamentalJzodSchema,
           jzodSchema.definition,
           currentModel,
@@ -642,7 +648,7 @@ export function resolveReferencesForJzodSchemaAndValueObject(
 }
 
 // ################################################################################################
-export function resolveJzodSchemaReference2(
+export function resolveJzodSchemaReferenceInContext(
   miroirFundamentalJzodSchema: JzodSchema,
   jzodReference: JzodReference,
   currentModel?: MetaModel,
@@ -664,7 +670,7 @@ export function resolveJzodSchemaReference2(
 
 
     // console.log(
-    //   "resolveJzodSchemaReference2 for reference",
+    //   "resolveJzodSchemaReferenceInContext for reference",
     //   jzodReference.definition.absolutePath,
     //   jzodReference.definition.relativePath,
     //   "result",
@@ -680,24 +686,24 @@ export function resolveJzodSchemaReference2(
     // );
 
   if (!targetJzodSchema) {
-    console.error(
-      "resolveJzodSchemaReference2 failed for jzodSchema",
-      jzodReference,
-      "result",
-      targetJzodSchema,
-      "absoluteReferences",
-      absoluteReferences,
-      "currentModel",
-      currentModel,
-      "miroirFundamentalJzodSchema", 
-      miroirFundamentalJzodSchema,
-      "absoluteReferenceTargetJzodSchema",
-      absoluteReferenceTargetJzodSchema,
-      "relativeReferenceJzodContext",
-      relativeReferenceJzodContext
-    );
+    // console.error(
+    //   "resolveJzodSchemaReferenceInContext failed for jzodSchema",
+    //   jzodReference,
+    //   "result",
+    //   targetJzodSchema,
+    //   "absoluteReferences",
+    //   absoluteReferences,
+    //   "currentModel",
+    //   currentModel,
+    //   "miroirFundamentalJzodSchema", 
+    //   miroirFundamentalJzodSchema,
+    //   "absoluteReferenceTargetJzodSchema",
+    //   absoluteReferenceTargetJzodSchema,
+    //   "relativeReferenceJzodContext",
+    //   relativeReferenceJzodContext
+    // );
     throw new Error(
-      "resolveJzodSchemaReference2 could not resolve reference " +
+      "resolveJzodSchemaReferenceInContext could not resolve reference " +
         JSON.stringify(jzodReference) +
         // " absoluteReferences" +
         // JSON.stringify(absoluteReferences)

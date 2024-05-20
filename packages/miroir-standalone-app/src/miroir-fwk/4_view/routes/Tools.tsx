@@ -1,6 +1,12 @@
 import { Formik } from "formik";
 import _ from "lodash";
+import ReactCodeMirror from "@uiw/react-codemirror";
+import { useCallback, useMemo, useState } from "react";
+import { v4 as uuidv4 } from 'uuid';
+
+
 import {
+  DomainAction,
   DomainControllerInterface,
   JzodElement,
   JzodObject,
@@ -17,8 +23,6 @@ import {
   getLoggerName,
   resolveReferencesForJzodSchemaAndValueObject
 } from "miroir-core";
-import { useCallback, useMemo } from "react";
-import { v4 as uuidv4 } from 'uuid';
 import { packageName } from "../../../constants";
 import {
   useDomainControllerService,
@@ -30,6 +34,7 @@ import {
 import { JzodElementEditor } from "../components/JzodElementEditor";
 import { cleanLevel } from "../constants";
 import { adminConfigurationDeploymentParis, applicationParis } from './ReportPage';
+import { javascript } from "@codemirror/lang-javascript";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ToolsPage");
@@ -145,6 +150,10 @@ const initialValues = {
 
 // }
 
+export interface MiroirForm {
+  formSchema: JzodElement,
+  formAction: DomainAction,
+}
 
   
 export const ToolsPage: React.FC<any> = (
@@ -157,6 +166,29 @@ export const ToolsPage: React.FC<any> = (
   const context = useMiroirContextService();
   const domainController: DomainControllerInterface = useDomainControllerService();
 
+  const [rawSchema, setRawSchema] = useState<JzodElement>(
+    {
+      type: "object",
+      definition: {
+        "applicationName": {
+          type: "simpleType",
+          definition: "string"
+        },
+        "selfApplicationUuid": {
+          type: "simpleType",
+          definition: "string"
+        },
+        "deploymentUuid": {
+          type: "simpleType",
+          definition: "string"
+        },
+        "configuration": {
+          "type": "schemaReference",
+          "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "miroirConfigForRestClient"}
+        }
+      }
+    }
+  );
   // const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
   const handleAddObjectDialogFormSubmit = useCallback(
@@ -202,39 +234,18 @@ export const ToolsPage: React.FC<any> = (
       } else {
         const configuration = resolveReferencesForJzodSchemaAndValueObject(
           context.miroirFundamentalJzodSchema,
-          {
-            type: "object",
-            definition: {
-              "applicationName": {
-                type: "simpleType",
-                definition: "string"
-              },
-              "selfApplicationUuid": {
-                type: "simpleType",
-                definition: "string"
-              },
-              "deploymentUuid": {
-                type: "simpleType",
-                definition: "string"
-              },
-              "configuration": {
-                "type": "schemaReference",
-                "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "miroirConfigForRestClient"}
-              }
-            }
-          }
-          ,
+          rawSchema,
           initialValues
         )
 
         return configuration.status == "ok"? configuration.element : defaultObject;
       }
     },
-    [context.miroirFundamentalJzodSchema]
+    [context.miroirFundamentalJzodSchema,rawSchema]
   )
 ;
 
-  log.info("resolvedJzodSchema", resolvedJzodSchema)
+  log.info("resolvedJzodSchema", resolvedJzodSchema, context.miroirFundamentalJzodSchema.name, "rawSchema", rawSchema)
   // ##############################################################################################
   const onSubmit = useCallback(
     async (values: any /* actually follows formJzodSchema */, formikFunctions:{ setSubmitting:any, setErrors:any }) => {
@@ -684,12 +695,34 @@ export const ToolsPage: React.FC<any> = (
     },
     []
   )
+  const onCodeEditorChange = useCallback((values:any, viewUpdate:any) => {
+    log.info('edit code received value:', values);
+    setRawSchema(JSON.parse(values))
+    log.info('edit code done');
+  }, []);
+
   return (
     <>
-    <div>
-      Hello World!
-    </div>
-    <Formik
+      <div>
+        Hello World!
+      </div>
+      <div>
+        {
+          // props.defaultFormValuesObject?
+          dialogOuterFormObject ? (
+            <ReactCodeMirror
+              value={JSON.stringify(rawSchema, null, 2)}
+              height="400px"
+              extensions={[javascript({ jsx: true })]}
+              onChange={onCodeEditorChange}
+            />
+          ) : (
+            <></>
+          )
+        }
+      </div>
+      <div>
+        <Formik
           enableReinitialize={true}
           // initialValues={dialogOuterFormObject}
           initialValues={initialValues}
@@ -749,49 +782,51 @@ export const ToolsPage: React.FC<any> = (
 
           // }
         >
-        {
-          (
-            formik
-          ) => (
-            <>
-              <span>Tools</span>
-              <form
-                id={"form." + pageLabel}
-                // onSubmit={handleSubmit(handleAddObjectDialogFormSubmit)}
-                onSubmit={formik.handleSubmit}
-              >
-                {/* {
-                  // props.defaultFormValuesObject?
-                  dialogOuterFormObject?
-                  <CodeMirror value={JSON.stringify(dialogOuterFormObject, null, 2)} height="200px" extensions={[javascript({ jsx: true })]} onChange={onCodeEditorChange} />
-                  :<></>
-                } */}
-                {
-                  resolvedJzodSchema === defaultObject?
-                  <div>no object definition found!</div>
-                  :
-                  <>
-                    <JzodElementEditor
-                      name={'ROOT'}
-                      listKey={'ROOT'}
-                      rootLesslistKey={emptyString}
-                      rootLesslistKeyArray={emptyList}
-                      label={pageLabel}
-                      currentDeploymentUuid={emptyString}
-                      currentApplicationSection={dataSection}
-                      // resolvedJzodSchema={actionsJzodSchema}
-                      resolvedJzodSchema={resolvedJzodSchema}
-                      foreignKeyObjects={emptyObject}
-                      formik={formik}
-                    />
-                    <button type="submit" name={pageLabel} form={"form." + pageLabel}>submit form.{pageLabel}</button>
-                  </>
-                }
-              </form>
-            </>
-          )
-        }
+          {
+            (
+              formik
+            ) => (
+              <>
+                <span>Tools</span>
+                <form
+                  id={"form." + pageLabel}
+                  // onSubmit={handleSubmit(handleAddObjectDialogFormSubmit)}
+                  onSubmit={formik.handleSubmit}
+                >
+                  {/* {
+                    // props.defaultFormValuesObject?
+                    dialogOuterFormObject?
+                    <CodeMirror value={JSON.stringify(dialogOuterFormObject, null, 2)} height="200px" extensions={[javascript({ jsx: true })]} onChange={onCodeEditorChange} />
+                    :<></>
+                  } */}
+                  {
+                    resolvedJzodSchema === defaultObject?
+                    <div>no object definition found!</div>
+                    :
+                    <>
+                      <JzodElementEditor
+                        name={'ROOT'}
+                        listKey={'ROOT'}
+                        rootLesslistKey={emptyString}
+                        rootLesslistKeyArray={emptyList}
+                        label={pageLabel}
+                        currentDeploymentUuid={emptyString}
+                        currentApplicationSection={dataSection}
+                        // resolvedJzodSchema={actionsJzodSchema}
+                        rawJzodSchema={rawSchema}
+                        resolvedJzodSchema={resolvedJzodSchema}
+                        foreignKeyObjects={emptyObject}
+                        formik={formik}
+                      />
+                      <button type="submit" name={pageLabel} form={"form." + pageLabel}>submit form.{pageLabel}</button>
+                    </>
+                  }
+                </form>
+              </>
+            )
+          }
         </Formik>
+      </div>
     </>
   )
 }
