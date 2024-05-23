@@ -381,6 +381,21 @@ export { ACTION_OK } from './1_core/constants.js';
 export { DomainController } from './3_controllers/DomainController';
 export { DomainInstanceUuidIndexToArray } from './1_core/DomainState.js';
 export {
+  getDefaultValueForJzodSchema
+} from './1_core/jzod/getDefaultValueForJzodSchema.js';
+export {
+  // getReportSectionTargetEntityUuid,
+  resolveJzodSchemaReference,
+  resolveReferencesForJzodSchemaAndValueObject,
+  resolveJzodSchemaReferenceInContext,
+  ResolvedJzodSchemaReturnType,
+  ResolvedJzodSchemaReturnTypeError,
+  ResolvedJzodSchemaReturnTypeOK,
+} from './1_core/jzod/JzodUnfoldSchemaForValue.js';
+export {
+  unfoldJzodSchemaOnce
+} from './1_core/jzod/JzodUnfoldSchemaOnce.js';
+export {
   applicationModelEntities,
   defaultMiroirMetaModel,
   getCurrentEntityDefinition,
@@ -391,18 +406,6 @@ export {
 export {
   // getReportSectionTargetEntityUuid,
 } from './1_core/Report.js';
-export {
-  // getReportSectionTargetEntityUuid,
-  resolveJzodSchemaReference,
-  resolveReferencesForJzodSchemaAndValueObject,
-  resolveJzodSchemaReferenceInContext,
-  ResolvedJzodSchemaReturnType,
-  ResolvedJzodSchemaReturnTypeError,
-  ResolvedJzodSchemaReturnTypeOK,
-} from './1_core/JzodUnfoldSchemaForValue.js';
-export {
-  unfoldJzodSchemaOnce
-} from './1_core/JzodUnfoldSchemaOnce.js';
 export {
   selectEntityInstances,
   selectEntityInstancesFromJzodAttribute,

@@ -8,10 +8,10 @@ import {
   Menu,
   MetaModel,
   Report,
-} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { MiroirModel } from '../../src/0_interfaces/1_core/Model.js';
 
-import { localizeJzodSchemaReferenceContext, unfoldJzodSchemaOnce} from "../../src/1_core/JzodUnfoldSchemaOnce";
+import { localizeJzodSchemaReferenceContext, unfoldJzodSchemaOnce} from "../../src/1_core/jzod/JzodUnfoldSchemaOnce";
 // import { resolveReferencesForJzodSchemaAndValueObject} from "../../tmp/src/1_core/Jzod.js";
 
 
@@ -104,7 +104,6 @@ import entityDefinitionReportV1 from "../../src/assets/miroir_model/54b9c72f-d4f
 
 // import entityDefinitionDeployment from "../../src/assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c50240e7-c451-46c2-b60a-07b3172a5ef9.json" assert { type: "json" };
 import entityDefinitionDeployment from "../../src/assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c50240e7-c451-46c2-b60a-07b3172a5ef9.json";
-import { resolveJzodSchemaReferenceInContext } from "../../src/1_core/JzodUnfoldSchemaForValue";
 
 export const defaultMiroirMetaModel: MetaModel = {
   configuration: [instanceConfigurationReference],

@@ -38,7 +38,7 @@ import {
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { MiroirModel } from '../../src/0_interfaces/1_core/Model.js';
 
-import { resolveReferencesForJzodSchemaAndValueObject} from "../../src/1_core/JzodUnfoldSchemaForValue";
+import { resolveReferencesForJzodSchemaAndValueObject} from "../../src/1_core/jzod/JzodUnfoldSchemaForValue";
 // import { resolveReferencesForJzodSchemaAndValueObject} from "../../tmp/src/1_core/Jzod.js";
 
 

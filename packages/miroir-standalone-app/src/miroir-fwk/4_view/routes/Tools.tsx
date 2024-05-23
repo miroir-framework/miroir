@@ -130,10 +130,10 @@ const formJzodSchema:JzodObject = {
       type: "simpleType",
       definition: "string"
     },
-    "configuration": {
-      "type": "schemaReference",
-      "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "miroirConfigForRestClient"}
-    },
+    // "configuration": {
+    //   "type": "schemaReference",
+    //   "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "miroirConfigForRestClient"}
+    // },
   }
 };
 // miroirConfigForRestClient
@@ -143,7 +143,7 @@ const initialValues = {
   applicationName: "placeholder...",
   selfApplicationUuid: uuidv4(),
   deploymentUuid: uuidv4(),
-  "configuration": miroirConfig.client
+  // "configuration": miroirConfig.client
 }
 
 // export interface ActionObjectReference extends QueryObjectReference {
@@ -155,16 +155,18 @@ export interface MiroirForm {
   formAction: DomainAction,
 }
 
-  
+let count = 0;
 export const ToolsPage: React.FC<any> = (
   props: any
 ) => {
+  count++;
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
   const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
 
   const errorLog = useErrorLogService();
   const context = useMiroirContextService();
   const domainController: DomainControllerInterface = useDomainControllerService();
+  const [formState,setFormState] = useState<{[k:string]:any}>(initialValues)
 
   const [rawSchema, setRawSchema] = useState<JzodElement>(
     {
@@ -182,10 +184,20 @@ export const ToolsPage: React.FC<any> = (
           type: "simpleType",
           definition: "string"
         },
-        "configuration": {
-          "type": "schemaReference",
-          "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "miroirConfigForRestClient"}
-        }
+        "deploymentUuid2": {
+          type: "simpleType",
+          optional: true,
+          definition: "string"
+        },
+        "deploymentUuid3": {
+          type: "simpleType",
+          optional: true,
+          definition: "string"
+        },
+        // "configuration": {
+        //   "type": "schemaReference",
+        //   "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "miroirConfigForRestClient"}
+        // }
       }
     }
   );
@@ -235,13 +247,13 @@ export const ToolsPage: React.FC<any> = (
         const configuration = resolveReferencesForJzodSchemaAndValueObject(
           context.miroirFundamentalJzodSchema,
           rawSchema,
-          initialValues
+          formState
         )
 
         return configuration.status == "ok"? configuration.element : defaultObject;
       }
     },
-    [context.miroirFundamentalJzodSchema,rawSchema]
+    [context.miroirFundamentalJzodSchema, rawSchema, formState]
   )
 ;
 
@@ -694,7 +706,9 @@ export const ToolsPage: React.FC<any> = (
       }
     },
     []
-  )
+  ) // end onSubmit()
+
+  // ##############################################################################################
   const onCodeEditorChange = useCallback((values:any, viewUpdate:any) => {
     log.info('edit code received value:', values);
     setRawSchema(JSON.parse(values))
@@ -725,7 +739,7 @@ export const ToolsPage: React.FC<any> = (
         <Formik
           enableReinitialize={true}
           // initialValues={dialogOuterFormObject}
-          initialValues={initialValues}
+          initialValues={formState}
           onSubmit={
             onSubmit
             // async (values, { setSubmitting, setErrors }) => {
@@ -787,7 +801,11 @@ export const ToolsPage: React.FC<any> = (
               formik
             ) => (
               <>
-                <span>Tools</span>
+                {/* <span>Tools: {count}</span> */}
+                {/* <br /> */}
+                {/* <span>formState: {JSON.stringify(formState)}</span> */}
+                {/* <br /> */}
+                {/* <span>resolvedJzodSchema:{JSON.stringify(resolvedJzodSchema)}</span> */}
                 <form
                   id={"form." + pageLabel}
                   // onSubmit={handleSubmit(handleAddObjectDialogFormSubmit)}
@@ -817,6 +835,8 @@ export const ToolsPage: React.FC<any> = (
                         resolvedJzodSchema={resolvedJzodSchema}
                         foreignKeyObjects={emptyObject}
                         formik={formik}
+                        setFormState={setFormState}
+                        formState={formState}
                       />
                       <button type="submit" name={pageLabel} form={"form." + pageLabel}>submit form.{pageLabel}</button>
                     </>

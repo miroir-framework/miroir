@@ -10,7 +10,7 @@ import {
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { MiroirModel } from '../../src/0_interfaces/1_core/Model.js';
 
-import { unfoldJzodSchemaOnce} from "../../src/1_core/JzodUnfoldSchemaOnce";
+import { unfoldJzodSchemaOnce} from "../../src/1_core/jzod/JzodUnfoldSchemaOnce";
 // import { resolveReferencesForJzodSchemaAndValueObject} from "../../tmp/src/1_core/Jzod.js";
 
 

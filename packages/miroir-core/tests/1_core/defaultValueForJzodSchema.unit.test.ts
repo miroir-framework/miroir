@@ -3,15 +3,14 @@ import {
   EntityDefinition,
   EntityInstance,
   JzodElement,
-  JzodReference,
   JzodSchema,
   Menu,
   MetaModel,
   Report,
-} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { MiroirModel } from '../../src/0_interfaces/1_core/Model.js';
 
-import { unfoldJzodSchemaOnce} from "../../src/1_core/jzod/JzodUnfoldSchemaOnce";
+import { getDefaultValueForJzodSchema } from "../../src/1_core/jzod/getDefaultValueForJzodSchema";
 // import { resolveReferencesForJzodSchemaAndValueObject} from "../../tmp/src/1_core/Jzod.js";
 
 
@@ -104,7 +103,6 @@ import entityDefinitionReportV1 from "../../src/assets/miroir_model/54b9c72f-d4f
 
 // import entityDefinitionDeployment from "../../src/assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c50240e7-c451-46c2-b60a-07b3172a5ef9.json" assert { type: "json" };
 import entityDefinitionDeployment from "../../src/assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c50240e7-c451-46c2-b60a-07b3172a5ef9.json";
-import { resolveJzodSchemaReferenceInContext } from "../../src/1_core/jzod/JzodUnfoldSchemaForValue";
 
 export const defaultMiroirMetaModel: MetaModel = {
   configuration: [instanceConfigurationReference],
@@ -196,20 +194,16 @@ const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
   // jzodSchemajzodMiroirBootstrapSchema as any,
 );
 
-function testResolveReferenceInContext(
+function testResolve(
   testId: string,
-  testSchema: JzodReference,
+  testSchema: JzodElement,
   // testValueObject: any,
   expectedResult: JzodElement,
 ){
   console.log("######################################### running test", testId, "...")
-  const testResult = resolveJzodSchemaReferenceInContext(
-    miroirFundamentalJzodSchema,
+  const testResult = getDefaultValueForJzodSchema(
+    // miroirFundamentalJzodSchema,
     testSchema,
-    // testValueObject,
-    defaultMiroirMetaModel,
-    defaultMiroirMetaModel,
-    testSchema.context
   )
   // if (testResult.status == "ok") {
     // expect(testResult.status).toEqual("ok");
@@ -223,10 +217,9 @@ function testResolveReferenceInContext(
 
 interface testFormat {
   // testId: string,
-  // testSchema: JzodElement,
-  testSchema: JzodReference,
+  testSchema: JzodElement,
   // testValueObject: any,
-  expectedResult: JzodElement,
+  expectedResult: any,
 }
 
 // ################################################################################################
@@ -235,7 +228,7 @@ interface testFormat {
 // ################################################################################################
 // ################################################################################################
 describe(
-  'resolveReferenceInContext',
+  'defaultValueForJzodSchema',
   () => {
 
     // ###########################################################################################
@@ -245,231 +238,195 @@ describe(
 
         const tests: { [k: string]: testFormat } = {
           // // plain literal!
-          // test010: {
-          //   testSchema: {
-          //     type: "literal",
-          //     definition: "myLiteral",
-          //   },
-          //   expectedResult: {
-          //     type: "literal",
-          //     definition: "myLiteral",
-          //   },
-          // },
-          // // simpleType
-          // test020: {
-          //   testSchema: {
-          //     type: "simpleType",
-          //     definition: "string",
-          //   },
-          //   expectedResult: {
-          //     type: "simpleType",
-          //     definition: "string",
-          //   },
-          // },
-          // schemaReference (plain, simpleType, non-recursive)
-          test030: {
+          test010: {
             testSchema: {
-              type: "schemaReference",
-              context: {
-                a: {
-                  type: "simpleType",
-                  definition: "string"
-                }
-              },
-              definition: {
-                "relativePath": "a"
-              }
+              type: "literal",
+              definition: "myLiteral",
             },
-            expectedResult: {
+            expectedResult: "myLiteral"
+          },
+          // simpleType
+          test020: {
+            testSchema: {
               type: "simpleType",
-              definition: "string"
+              definition: "string",
             },
+            expectedResult: "",
           },
+          // // schemaReference (plain, simpleType, non-recursive)
+          // test030: {
+          //   testSchema: {
+          //     type: "schemaReference",
+          //     context: {
+          //       a: {
+          //         type: "simpleType",
+          //         definition: "string"
+          //       }
+          //     },
+          //     definition: {
+          //       "relativePath": "a"
+          //     }
+          //   },
+          //   expectedResult: {
+          //     type: "simpleType",
+          //     definition: "string"
+          //   },
+          // },
           // schemaReference: object, recursive, 1-level valueObject
-          test040: {
-            testSchema: {
-              type: "schemaReference",
-              context: {
-                "myObject": {
-                  type: "object",
-                  definition: {
-                    a: {
-                      type: "union",
-                      definition: [
-                        {
-                          type: "simpleType",
-                          definition: "string",
-                        },
-                        {
-                          type: "schemaReference",
-                          definition: { relativePath: "myObject"}
-                        }
-                      ]
-                    }
-                  }
-                }
-              },
-              definition: { relativePath: "myObject" }
-            },
-            expectedResult: { // context is omitted, has dangling "myObject" reference
-              "type": "object",
-              "definition": {
-                "a": {
-                  "type": "union",
-                  "definition": [
-                    {
-                      "type": "simpleType",
-                      "definition": "string"
-                    },
-                    {
-                      "type": "schemaReference",
-                      "definition": {
-                        "relativePath": "myObject"
-                      }
-                    }
-                  ]
-                }
-              }
-            },
-          },
-          // schemaReference: object, recursive, 2 members
-          test050: {
-            testSchema: {
-              type: "schemaReference",
-              context: {
-                "myObject": {
-                  type: "object",
-                  definition: {
-                    a: {
-                      type: "union",
-                      discriminator: "type",
-                      definition: [
-                        {
-                          type: "simpleType",
-                          definition: "string",
-                        },
-                        {
-                          type: "schemaReference",
-                          definition: { relativePath: "myObject"}
-                        }
-                      ]
-                    },
-                    b: {
-                      type: "union",
-                      discriminator: "type",
-                      definition: [
-                        {
-                          type: "simpleType",
-                          definition: "number",
-                        },
-                        {
-                          type: "schemaReference",
-                          definition: { relativePath: "myObject"}
-                        }
-                      ]
-                    }
-                  }
-                }
-              },
-              definition: { relativePath: "myObject" }
-            },
-            expectedResult: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "union",
-                  discriminator: "type",
-                  definition: [
-                    {
-                      type: "simpleType",
-                      definition: "string",
-                    },
-                    {
-                      type: "schemaReference",
-                      definition: { relativePath: "myObject"}
-                    },
-                  ]
-                },
-                b: {
-                  type: "union",
-                  discriminator: "type",
-                  definition: [
-                    {
-                      type: "simpleType",
-                      definition: "number",
-                    },
-                    {
-                      type: "schemaReference",
-                      definition: { relativePath: "myObject"}
-                    }
-                  ]
-                }
-              }
-            },
-          },
-          // schemaReference: 2-entries context, object, mutually-recursive
-          test060: {
-            testSchema: {
-              type: "schemaReference",
-              context: {
-                "myObject1": {
-                  type: "object",
-                  definition: {
-                    a: {
-                      type: "union",
-                      definition: [
-                        {
-                          type: "simpleType",
-                          definition: "string",
-                        },
-                        {
-                          type: "schemaReference",
-                          definition: { relativePath: "myObject2"}
-                        }
-                      ]
-                    }
-                  }
-                },
-                "myObject2": {
-                  type: "object",
-                  definition: {
-                    b: {
-                      type: "union",
-                      definition: [
-                        {
-                          type: "simpleType",
-                          definition: "number",
-                        },
-                        {
-                          type: "schemaReference",
-                          definition: { relativePath: "myObject1"}
-                        }
-                      ]
-                    }
-                  }
-                }
-              },
-              definition: { relativePath: "myObject2" }
-            },
-            expectedResult: { // non-referenced contexted entry is omitted, shall be taken in global contest for resolution
-              type: "object",
-              definition: {
-                b: {
-                  type: "union",
-                  definition: [
-                    {
-                      type: "simpleType",
-                      definition: "number",
-                    },
-                    {
-                      type: "schemaReference",
-                      definition: { relativePath: "myObject1"}
-                    }
-                  ]
-                }
-              }
-            },
-          },
+          // test040: {
+          //   testSchema: {
+          //     type: "schemaReference",
+          //     context: {
+          //       "myObject": {
+          //         type: "object",
+          //         definition: {
+          //           a: {
+          //             type: "union",
+          //             definition: [
+          //               {
+          //                 type: "simpleType",
+          //                 definition: "string",
+          //               },
+          //               {
+          //                 type: "schemaReference",
+          //                 definition: { relativePath: "myObject"}
+          //               }
+          //             ]
+          //           }
+          //         }
+          //       }
+          //     },
+          //     definition: { relativePath: "myObject" }
+          //   },
+          //   expectedResult: {
+          //     type: "object",
+          //     definition: {
+          //       a: {
+          //         type: "union",
+          //         definition: [
+          //           {
+          //             type: "simpleType",
+          //             definition: "string",
+          //           },
+          //           {
+          //             type: "schemaReference",
+          //             context: {
+          //               "myObject": {
+          //                 type: "object",
+          //                 definition: {
+          //                   a: {
+          //                     type: "union",
+          //                     definition: [
+          //                       {
+          //                         type: "simpleType",
+          //                         definition: "string",
+          //                       },
+          //                       {
+          //                         type: "schemaReference",
+          //                         definition: { relativePath: "myObject"}
+          //                       }
+          //                     ]
+          //                   }
+          //                 }
+          //               }
+          //             },
+          //             definition: { relativePath: "myObject" }
+          //           }
+          //         ]
+          //       }
+          //     }
+          //   },
+          // },
+          // // schemaReference: object, recursive, 2-level valueObject
+          // test050: {
+          //   testSchema: {
+          //     type: "schemaReference",
+          //     context: {
+          //       "myObject": {
+          //         type: "object",
+          //         definition: {
+          //           a: {
+          //             type: "union",
+          //             discriminator: "type",
+          //             definition: [
+          //               {
+          //                 type: "simpleType",
+          //                 definition: "string",
+          //               },
+          //               {
+          //                 type: "schemaReference",
+          //                 definition: { relativePath: "myObject"}
+          //               }
+          //             ]
+          //           }
+          //         }
+          //       }
+          //     },
+          //     definition: { relativePath: "myObject" }
+          //   },
+          //   expectedResult: {
+          //     type: "object",
+          //     definition: {
+          //       a: {
+          //         type: "object",
+          //         definition: {
+          //           a: {
+          //             type: "simpleType",
+          //             definition: "string"
+          //           }
+          //         }
+          //       }
+          //     }
+          //   },
+          //   testValueObject: {a: {a: "myString"}},
+          // },
+          // // schemaReference: object, recursive, 3-level valueObject
+          // test060: {
+          //   testSchema: {
+          //     type: "schemaReference",
+          //     context: {
+          //       "myObject": {
+          //         type: "object",
+          //         definition: {
+          //           a: {
+          //             type: "union",
+          //             definition: [
+          //               {
+          //                 type: "simpleType",
+          //                 definition: "string",
+          //               },
+          //               {
+          //                 type: "schemaReference",
+          //                 definition: { relativePath: "myObject"}
+          //               }
+          //             ]
+          //           }
+          //         }
+          //       }
+          //     },
+          //     definition: { relativePath: "myObject" }
+          //   },
+          //   expectedResult: {
+          //     type: "object",
+          //     definition: {
+          //       a: {
+          //         type: "object",
+          //         definition: {
+          //           a: {
+          //             type: "object",
+          //             definition: {
+          //               a: {
+          //                 type: "simpleType",
+          //                 definition: "string"
+          //               }
+          //             }
+          //           }
+          //         }
+          //       }
+          //     }
+          //   },
+          //   testValueObject: { a: { a: { a: "myString" } } },
+          // },
           // // schemaReference: record of recursive object, with 2-level valueObject
           // test070: {
           //   testSchema: {
@@ -2065,7 +2022,7 @@ describe(
         };
 
         for (const test of Object.entries(tests)) {
-          testResolveReferenceInContext(test[0], test[1].testSchema, test[1].expectedResult)
+          testResolve(test[0], test[1].testSchema, test[1].expectedResult)
           
         }
       }
