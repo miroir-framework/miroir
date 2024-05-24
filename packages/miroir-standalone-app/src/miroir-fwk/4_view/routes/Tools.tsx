@@ -143,6 +143,10 @@ const initialValues = {
   applicationName: "placeholder...",
   selfApplicationUuid: uuidv4(),
   deploymentUuid: uuidv4(),
+  testUnion: {
+    type: "A",
+    a: "test!"
+  }
   // "configuration": miroirConfig.client
 }
 
@@ -184,16 +188,43 @@ export const ToolsPage: React.FC<any> = (
           type: "simpleType",
           definition: "string"
         },
-        "deploymentUuid2": {
-          type: "simpleType",
-          optional: true,
-          definition: "string"
+        "testUnion": {
+          type: "union",
+          discriminator: "type",
+          definition: [
+            {
+              type: "object",
+              definition: {
+                type: {
+                  type: "literal",
+                  definition: "A"
+                },
+                a: {
+                  type: "simpleType",
+                  definition: "string"
+                }
+              }
+            },
+            {
+              type: "object",
+              definition: {
+                type: {
+                  type: "literal",
+                  definition: "B"
+                },
+                b: {
+                  type: "simpleType",
+                  definition: "string"
+                }
+              }
+            }
+          ]
         },
-        "deploymentUuid3": {
-          type: "simpleType",
-          optional: true,
-          definition: "string"
-        },
+        // "deploymentUuid3": {
+        //   type: "simpleType",
+        //   optional: true,
+        //   definition: "string"
+        // },
         // "configuration": {
         //   "type": "schemaReference",
         //   "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "miroirConfigForRestClient"}

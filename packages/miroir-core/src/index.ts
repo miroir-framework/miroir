@@ -396,6 +396,9 @@ export {
   unfoldJzodSchemaOnce
 } from './1_core/jzod/JzodUnfoldSchemaOnce.js';
 export {
+  alterObject
+} from './1_core/alterObject.js';
+export {
   applicationModelEntities,
   defaultMiroirMetaModel,
   getCurrentEntityDefinition,
