@@ -3,7 +3,7 @@ import {
   JzodElement,
   JzodObject,
   JzodSchema,
-  MetaModel
+  MetaModel,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../../4_services/Logger";
@@ -255,9 +255,10 @@ let dummy: any;
 // #####################################################################################################
 // #####################################################################################################
 // #####################################################################################################
+// NOT CONSISTENT AT ALL, SHOULD RETURN ONLY ERROR CODES, NOT THROW EXCEPTIONS!
 export function unfoldJzodSchemaOnce(
   miroirFundamentalJzodSchema: JzodSchema,
-  jzodSchema: JzodElement,
+  jzodSchema: JzodElement | undefined,
   currentModel?: MetaModel,
   miroirMetaModel?: MetaModel,
   relativeReferenceJzodContext?: {[k:string]: JzodElement},
@@ -266,6 +267,10 @@ export function unfoldJzodSchemaOnce(
     "unfoldJzodSchemaOnce called for schema",
     JSON.stringify(jzodSchema, null, 2)
   );
+
+  if (!jzodSchema) {
+    return { status: "ok", element: { type: "simpleType", definition: "never" } }
+  }
 
   switch (jzodSchema?.type) {
     case "schemaReference": {
@@ -375,9 +380,9 @@ export function unfoldJzodSchemaOnce(
             } else {
               // return resultSchemaTmp;
               log.warn(
-                "unfoldJzodSchemaOnce error on resolving object attribute " +
+                "unfoldJzodSchemaOnce error on resolving object attribute '" +
                   e[0] +
-                  " not present in definition of (extend resolved) type " +
+                  "', not present in definition of (extend resolved) type " +
                   JSON.stringify(extendedJzodSchema) +
                   // " valueObject " +
                   // JSON.stringify(valueObject) +
@@ -697,12 +702,13 @@ export function unfoldJzodSchemaOnce(
       break;
     }
     case "enum": {
-      return {
-        status: "error",
-        error:
-          "unfoldJzodSchemaOnce not implemented case for enum " +
-          JSON.stringify(jzodSchema, null, 2),
-      };
+      return { status: "ok", element: jzodSchema };
+      // return {
+      //   status: "error",
+      //   error:
+      //     "unfoldJzodSchemaOnce not implemented case for enum " +
+      //     JSON.stringify(jzodSchema, null, 2),
+      // };
 
       // if (jzodSchema.definition.includes(valueObject)) {
       //   // return { status: "ok", element: { type: "literal", definition: valueObject} };
@@ -727,12 +733,39 @@ export function unfoldJzodSchemaOnce(
       break;
     }
     case "array": {
-      return {
-        status: "error",
-        error:
-          "unfoldJzodSchemaOnce not implemented case for array " +
-          JSON.stringify(jzodSchema, null, 2),
-      };
+      const subType = unfoldJzodSchemaOnce(
+        miroirFundamentalJzodSchema,
+        jzodSchema.definition,
+        currentModel,
+        miroirMetaModel,
+        relativeReferenceJzodContext
+      );
+
+      if (subType.status == "ok") {
+        return {
+          status: "ok",
+          element: {
+            ...jzodSchema,
+            definition: subType.element
+          }
+        }
+      } else {
+        // return resultSchemaTmp;
+        log.warn(
+          "unfoldJzodSchemaOnce error on resolving array type for " +
+            JSON.stringify(jzodSchema) +
+            // " valueObject " +
+            // JSON.stringify(valueObject) +
+            " found error: " + subType.error
+        );
+        return { status: "ok", element: { type: "simpleType", definition: "never" }}
+      }
+      // return {
+      //   status: "error",
+      //   error:
+      //     "unfoldJzodSchemaOnce not implemented case for array " +
+      //     JSON.stringify(jzodSchema, null, 2),
+      // };
       // if ( !Array.isArray(valueObject)) {
       //   return {
       //     status: "error",

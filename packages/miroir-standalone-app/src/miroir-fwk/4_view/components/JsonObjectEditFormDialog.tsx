@@ -179,8 +179,14 @@ const reorderArrayField = (
   }
 };
 
-let count = 0;
 // #####################################################################################################
+// #####################################################################################################
+// #####################################################################################################
+// #####################################################################################################
+// #####################################################################################################
+// #####################################################################################################
+let count = 0;
+
 export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
   count++;
   log.info(
@@ -437,8 +443,11 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
                   label={props.label}
                   currentDeploymentUuid={props.currentDeploymentUuid}
                   currentApplicationSection={props.currentApplicationSection}
+                  rawJzodSchema={props.entityDefinitionJzodSchema}
                   resolvedJzodSchema={resolvedJzodSchema?.status == "ok" ? resolvedJzodSchema.element : undefined}
                   foreignKeyObjects={props.foreignKeyObjects}
+                  formState={dialogOuterFormObject}
+                  setFormState={setdialogOuterFormObject}
                   formik={formik}
                 />
                 {/* {errors.exampleRequired && <span>This field is required</span>} */}
