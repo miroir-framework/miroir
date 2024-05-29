@@ -1,10 +1,12 @@
+import { ChangeEvent, useCallback, useMemo, useState } from "react";
+import {ErrorBoundary, withErrorBoundary} from 'react-error-boundary';
+
 import styled from "@emotion/styled";
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import { Button, Checkbox, MenuItem, Select } from "@mui/material";
 
-import { useCallback, useMemo, useState } from "react";
 
 // import { FieldValues, UseFormRegister, UseFormSetValue, useFormContext } from "react-hook-form";
 
@@ -16,6 +18,7 @@ import {
   EntityInstanceWithName,
   EntityInstancesUuidIndex,
   JzodElement,
+  JzodEnum,
   JzodObject,
   LoggerInterface,
   MetaModel,
@@ -46,6 +49,17 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 export const noValue = { uuid: "31f3a03a-f150-416d-9315-d3a752cb4eb4", name: "no value", parentUuid: "" } as EntityInstance;
 
 
+const StyledSelect = styled(Select)(({ theme }) => ({
+  // backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
+  // ...theme.typography.body2,
+  // padding: theme.spacing(1),
+  // textAlign: "left",
+  // display: "flex",
+  maxHeight: "1.5em",
+  // height: '80vh',
+  // color: theme.palette.text.secondary,
+}));
+
 // #####################################################################################################
 export type JzodObjectFormEditorInputs = { [a: string]: any };
 
@@ -55,6 +69,7 @@ export interface EditorAttribute {
 }
 
 export interface JzodElementEditorProps {
+  forceTestingMode?: boolean,
   label?: string;
   name: string,
   listKey: string,
@@ -76,6 +91,7 @@ export interface JzodElementEditorProps {
   currentDeploymentUuid?: Uuid,
   currentApplicationSection?: ApplicationSection,
   formik: any,
+  handleChange: (e: ChangeEvent<any>) => Promise<void>,
   setFormState: React.Dispatch<React.SetStateAction<{
     [k: string]: any;
   }>>,
@@ -210,16 +226,36 @@ function getItemsOrder(currentValue:any, resolvedJzodSchema: JzodElement | undef
 }
 
 // #####################################################################################################
+function Fallback({ error, resetErrorBoundary }:any) {
+  // Call resetErrorBoundary() to reset the error boundary and retry the render.
+
+  return (
+    <div role="alert">
+      <p>Something went wrong:</p>
+      <pre style={{ color: "red" }}>{error.message}</pre>
+    </div>
+  );
+}
+
+
+// #####################################################################################################
 const objectTypes: string[] = ["record", "object", "union"];
 const enumTypes: string[] = ["enum", "literal"]; 
 
 let count = 0;
 // #####################################################################################################
-export const JzodElementEditor = (
+// #####################################################################################################
+// #####################################################################################################
+// #####################################################################################################
+// #####################################################################################################
+// #####################################################################################################
+// #####################################################################################################
+
+
+export const JzodObjectEditor = (
   props: JzodElementEditorProps
 ): JSX.Element => {
   count++;
-  // log.info("####### JzodElementEditor", props.listKey, "count", count, props.rawJzodSchema?.type, props.rawJzodSchema);
   const context = useMiroirContextService();
 
   // const [selectedOption, setSelectedOption] = useState({label:props.name,value:props.initialValuesObject});
@@ -245,6 +281,10 @@ export const JzodElementEditor = (
   // );
 
   const currentValue = getValue(props.formState,props.rootLesslistKeyArray);
+  log.info("#####################################################################################");
+  log.info("JzodElementEditor", props.listKey, "count", count, "currentValue", JSON.stringify(currentValue, null, 2));
+  log.info("JzodElementEditor", props.listKey, "count", count, "resolvedJzodSchema", JSON.stringify(props.resolvedJzodSchema, null, 2));
+  log.info("JzodElementEditor", props.listKey, "count", count, "rawJzodSchema", props.rawJzodSchema?.type, JSON.stringify(props.rawJzodSchema, null, 2));
   // log.info(
   //   "rendering",
   //   props.listKey,
@@ -269,7 +309,7 @@ export const JzodElementEditor = (
   try {
     unfoldedRawSchemaReturnType = useMemo(
       ()=> {
-        log.info("unfolding rawJzodSchema for", props.listKey, "rawJzodSchema", props.rawJzodSchema)
+        // log.info("unfolding rawJzodSchema for", props.listKey, "rawJzodSchema", props.rawJzodSchema)
         const result = unfoldJzodSchemaOnce(
           context.miroirFundamentalJzodSchema,
           // props.rawJzodSchema?.type == "object"?props.rawJzodSchema.definition[attribute[0]]:props.rawJzodSchema?.definition as any,
@@ -277,7 +317,7 @@ export const JzodElementEditor = (
           currentModel,
           miroirMetaModel
         );
-        log.info("unfolded rawJzodSchema for", props.listKey, "props.rawJzodSchema", props.rawJzodSchema, "result", result)
+        // log.info("unfolded rawJzodSchema for", props.listKey, "props.rawJzodSchema", props.rawJzodSchema, "result", result)
         return result
       },
       [props.rawJzodSchema, props.listKey, context.miroirFundamentalJzodSchema, currentModel, miroirMetaModel]
@@ -599,8 +639,9 @@ export const JzodElementEditor = (
                           if (attribute[0] == discriminator || (currentValue[discriminator] == "simpleType" && attribute[0] == subDiscriminator)) {
                             attributeRawJzodSchema = { type: "literal", definition: "literal"}; // definition is not taken into account, possible values come from unionInformation
                           } else {
-                            const discriminatorValue = (props.resolvedJzodSchema?.definition as any)[discriminator].definition;
-                            const subDiscriminatorValue = (props.resolvedJzodSchema?.definition as any)[subDiscriminator].definition;
+                            const discriminatorValue = (props.resolvedJzodSchema?.definition as any)[discriminator]?.definition;
+                            const subDiscriminatorValue = (props.resolvedJzodSchema?.definition as any)[subDiscriminator]?.definition;
+                            log.info("discriminator", discriminator, "subDiscriminator", subDiscriminator)
                             // const compareValue = attribute[0] == discriminator?(props.resolvedJzodSchema?.definition as any)[discriminator].definition:
                             // (props.resolvedJzodSchema?.definition as any)[discriminator].definition
 
@@ -610,7 +651,9 @@ export const JzodElementEditor = (
                             //   .definition
                             if (subDiscriminator) {
                               concreteObjectRawJzodSchema = unfoldedRawSchema.definition.find(
-                                (a) => (a.definition as any)[discriminator].definition == discriminatorValue && (a.definition as any)[subDiscriminator].definition == subDiscriminatorValue
+                                (a) =>
+                                  (a.definition as any)[discriminator].definition == discriminatorValue &&
+                                  (a.definition as any)[subDiscriminator].definition == subDiscriminatorValue
                               ) as any;
                             } else {
                               // discriminator only
@@ -623,24 +666,24 @@ export const JzodElementEditor = (
                             }
                             attributeRawJzodSchema = concreteObjectRawJzodSchema.definition[attribute[0]]
                           }
-                          log.info(
-                            "JzodElementEditor attribute for object",
-                            currentValue,
-                            "listKey",
-                            props.listKey,
-                            "attribute",
-                            attribute[0],
-                            "attributeListkey",
-                            attributeListKey,
-                            "props.resolvedJzodSchema",
-                            props.resolvedJzodSchema,
-                            "unfoldedRawSchema",
-                            unfoldedRawSchema,
-                            "concreteObjectRawJzodSchema",
-                            concreteObjectRawJzodSchema,
-                            "attributeRawJzodSchema",
-                            attributeRawJzodSchema,
-                          );
+                          // log.info(
+                          //   "JzodElementEditor attribute for object",
+                          //   currentValue,
+                          //   "listKey",
+                          //   props.listKey,
+                          //   "attribute",
+                          //   attribute[0],
+                          //   "attributeListkey",
+                          //   attributeListKey,
+                          //   "props.resolvedJzodSchema",
+                          //   props.resolvedJzodSchema,
+                          //   "unfoldedRawSchema",
+                          //   unfoldedRawSchema,
+                          //   "concreteObjectRawJzodSchema",
+                          //   concreteObjectRawJzodSchema,
+                          //   "attributeRawJzodSchema",
+                          //   attributeRawJzodSchema,
+                          // );
                           // log.info("unfoldedRawSchema",unfoldedRawSchema,"attributeRawJzodSchema", attributeRawJzodSchema)
                           break;
                         }
@@ -666,12 +709,14 @@ export const JzodElementEditor = (
                         attribute[0],
                         "attributeListkey",
                         attributeListKey,
+                        "currentValue",
+                        JSON.stringify(currentValue, null, 2),
                         "resolvedJzodSchema",
                         props.resolvedJzodSchema,
                         "rawJzodSchema",
                         props.rawJzodSchema,
                         "unfoldedRawSchema",
-                        unfoldedRawSchema,
+                        JSON.stringify(unfoldedRawSchema, null, 2),
                         "currentAttributeDefinition",
                         currentAttributeDefinition,
                         "attributeRawJzodSchema",
@@ -679,10 +724,33 @@ export const JzodElementEditor = (
                         // "currentAttributeRawDefinition",
                         // currentAttributeRawDefinition.element
                       );
+
                       return (
                         <div key={attributeListKey} style={{ marginLeft: `calc((${usedIndentLevel} + 1)*(${indentShift}))` }}>
                           <div>
-                            <JzodElementEditor
+                          <ErrorBoundary
+                            // FallbackComponent={Fallback}
+                            FallbackComponent={
+                              ({ error, resetErrorBoundary }:any) => {
+                                // Call resetErrorBoundary() to reset the error boundary and retry the render.
+                              
+                                return (
+                                  <div role="alert">
+                                    <p>Something went wrong:</p>
+                                    <pre style={{ color: "red" }}>
+                                      object {props.listKey}
+                                      attribute {attributeListKey}
+                                      error {error.message}
+                                    </pre>
+                                  </div>
+                                );
+                              }
+                            }
+                            // onReset={(details:any) => {
+                            //   // Reset the state of your app so the error doesn't happen again
+                            // }}
+                          >
+                            <JzodObjectEditor
                               name={attribute[0]}
                               listKey={props.listKey + "." + attribute[0]}
                               rootLesslistKey={
@@ -699,10 +767,12 @@ export const JzodElementEditor = (
                               currentApplicationSection={props.currentApplicationSection}
                               resolvedJzodSchema={currentAttributeDefinition}
                               foreignKeyObjects={props.foreignKeyObjects}
+                              handleChange={props.handleChange}
                               formik={props.formik}
                               setFormState={props.setFormState}
                               formState={props.formState}
                             />
+                          </ErrorBoundary>;
                           </div>
                         </div>
                       );
@@ -853,7 +923,7 @@ export const JzodElementEditor = (
                       >
                         {"^"}
                       </button>
-                      <JzodElementEditor
+                      <JzodObjectEditor
                         name={"" + index}
                         listKey={props.listKey + "." + index}
                         // currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
@@ -866,6 +936,7 @@ export const JzodElementEditor = (
                         rawJzodSchema={currentArrayElementRawDefinition.element}
                         resolvedJzodSchema={props.resolvedJzodSchema?.definition as any} // TODO: wrong type seen for props.resolvedJzodSchema! (cannot be undefined, really)
                         foreignKeyObjects={props.foreignKeyObjects}
+                        handleChange={props.handleChange}
                         formik={props.formik}
                         setFormState={props.setFormState}
                         formState={props.formState}
@@ -892,7 +963,7 @@ export const JzodElementEditor = (
                   id={props.rootLesslistKey}
                   name={props.name}
                   {...props.formik.getFieldProps(props.rootLesslistKey)}
-                  onChange={props.formik.handleChange}
+                  onChange={props.handleChange}
                   value={currentValue}
                 >
                   {/* <option id={props.rootLesslistKey+".undefined"} value=""></option> */}
@@ -911,10 +982,11 @@ export const JzodElementEditor = (
                 <label htmlFor={props.listKey}>{displayedLabel}: </label>
                 <input
                   type="text"
+                  {...props.formik.getFieldProps(props.rootLesslistKey)}
                   id={props.rootLesslistKey}
                   name={props.name}
-                  {...props.formik.getFieldProps(props.rootLesslistKey)}
-                  onChange={props.formik.handleChange}
+                  role={props.listKey}
+                  onChange={props.handleChange}
                   value={currentValue}
                 />
               </>
@@ -934,12 +1006,12 @@ export const JzodElementEditor = (
                     <td>
                       <Checkbox 
                         // {...register(props.listKey)}
-                        name={props.listKey}
-                        id={props.listKey}
                         defaultChecked={props.formik.values[props.rootLesslistKey]}
                         // defaultChecked={props.initialValuesObject}
                         {...props.formik.getFieldProps(props.listKey)}
-                        // onChange={props.formik.handleChange}
+                        name={props.listKey}
+                        id={props.listKey}
+                        onChange={props.handleChange}
                         // value={props.formik.values[props.rootLesslistKey]}
                       />
                     </td>
@@ -959,9 +1031,10 @@ export const JzodElementEditor = (
                 {displayedLabel}:{" "}
                 <input
                   form={"form." + props.name}
-                  name={props.name}
                   {...props.formik.getFieldProps(props.rootLesslistKey)}
-                  // onChange={props.formik.handleChange}
+                  id={props.listKey}
+                  name={props.name}
+                  onChange={props.handleChange}
                   // value={props.formik.values[props.rootLesslistKey]}
                   // onChange={(e) => {
                   //   log.info("JzodElementEditor number onChange!", props.name, e.target.value);
@@ -1104,6 +1177,11 @@ export const JzodElementEditor = (
           props.unionInformation.setItemsOrder(newItemsOrder)
           // changing the current Jzod Schema for the whole object (at ROOT! Redraw / recreate everything!)
         };
+        log.info(
+          "rendering literal",
+          props.listKey
+        );
+
         if (props.unionInformation) {
           log.info(
             "literal with unionInformation",
@@ -1119,78 +1197,109 @@ export const JzodElementEditor = (
         return (
           <>
             <label htmlFor={props.listKey}>{displayedLabel}: </label>
-            {
-              props.unionInformation?
-              (
-                <>
-                  {
-                    props.unionInformation.subDiscriminator && props.unionInformation.subDiscriminatorValues && props.name == props.unionInformation.subDiscriminator?
-                    (
-                      <>
-                        <Select
-                          labelId="demo-simple-select-label"
-                          id={props.listKey}
-                          value={currentValue}
-                          label={props.name}
-                          onChange={handleSelectChange}
-                        >
-                          {props.unionInformation.subDiscriminatorValues.map((v) => {
-                            return (
-                              <MenuItem key={v} value={v}>
-                                {v}
-                              </MenuItem>
-                            );
-                          })}
-                        </Select>
-                      </>
-                    )
-                    :
-                    props.unionInformation.discriminator && props.unionInformation.discriminatorValues && props.name == props.unionInformation.discriminator?
-                    (
-                      <Select
-                      labelId="demo-simple-select-label"
-                      id={props.listKey}
-                      value={currentValue}
-                      label={props.name}
-                      onChange={handleSelectChange}
-                    >
-                      {props.unionInformation.discriminatorValues.map((v) => {
-                        return (
-                          <MenuItem key={v} value={v}>
-                            {v}
-                          </MenuItem>
-                        );
-                      })}
-                    </Select>
-                    )
-                    :
+            {props.unionInformation ? (
+              <>
+                {
+                  props.unionInformation.subDiscriminator &&
+                  props.unionInformation.subDiscriminatorValues &&
+                  props.name == props.unionInformation.subDiscriminator ? (
                     <>
-                      <input
+                      <StyledSelect
+                        variant="standard"
+                        labelId="demo-simple-select-label"
                         id={props.listKey}
-                        form={"form." + props.name}
-                        name={props.name}
-                        {...props.formik.getFieldProps(props.rootLesslistKey)}
-                      /> {JSON.stringify(unfoldedRawSchema)}
+                        value={currentValue}
+                        label={props.name}
+                        onChange={handleSelectChange}
+                      >
+                        {props.unionInformation.subDiscriminatorValues.map((v) => {
+                          return (
+                            <MenuItem key={v} value={v}>
+                              {v}
+                            </MenuItem>
+                          );
+                        })}
+                      </StyledSelect>
                     </>
-                  }
-                </>
-              )
-              :
-              (
-                <>
-                  <input
+                ) : props.unionInformation.discriminator &&
+                  props.unionInformation.discriminatorValues &&
+                  props.name == props.unionInformation.discriminator ? (
+                  <StyledSelect
+                    variant="standard"
+                    labelId="demo-simple-select-label"
                     id={props.listKey}
-                    form={"form." + props.name}
-                    name={props.name}
-                    {...props.formik.getFieldProps(props.rootLesslistKey)}
-                  /> {JSON.stringify(unfoldedRawSchema)}
-                </>
-              )
-            }
+                    value={currentValue}
+                    label={props.name}
+                    onChange={handleSelectChange}
+                  >
+                    {props.unionInformation.discriminatorValues.map((v) => {
+                      return (
+                        <MenuItem key={v} value={v}>
+                          {v}
+                        </MenuItem>
+                      );
+                    })}
+                  </StyledSelect>
+                ) : (
+                  <>
+                    <input
+                      id={props.listKey}
+                      form={"form." + props.name}
+                      name={props.name}
+                      {...props.formik.getFieldProps(props.rootLesslistKey)}
+                      onChange={props.handleChange}
+                    />{" "}
+                    {JSON.stringify(unfoldedRawSchema)}
+                  </>
+                )}
+              </>
+            ) : (
+              <>
+                <input
+                  id={props.listKey}
+                  form={"form." + props.name}
+                  name={props.name}
+                  {...props.formik.getFieldProps(props.rootLesslistKey)}
+                />{" "}
+                {JSON.stringify(unfoldedRawSchema)}
+              </>
+            )}
           </>
         );
       }
-      case "enum":
+      case "enum": {
+        return (
+          <>
+          <StyledSelect
+            variant="standard"
+            labelId="demo-simple-select-label"
+            id={props.listKey}
+            role={props.listKey}
+            value={currentValue}
+            label={props.name}
+            // onChange={handleSelectChange}
+          >
+            {(props.rawJzodSchema as JzodEnum).definition.map((v) => {
+              return (
+                <MenuItem key={v} value={v}>
+                  {v}
+                </MenuItem>
+              );
+            })}
+          </StyledSelect>
+          {
+            props.forceTestingMode?
+            <div>
+              enumValues={JSON.stringify(props.rawJzodSchema.definition)}
+            </div>
+            :
+            <>
+            </>
+          }
+        </>
+        )
+      break;
+      }
       case "function":
       case "lazy":
       case "intersection":
@@ -1229,3 +1338,12 @@ export const JzodElementEditor = (
     )
   }
 }
+
+export const JzodElementEditorWithErrorBoundary = withErrorBoundary(JzodObjectEditor, {
+  fallback: <div>Something went wrong</div>,
+  onError(error, info) {
+    log.error("JzodElementEditor error", error)
+    // Do something with the error
+    // E.g. log to an error logging client here
+  },
+})

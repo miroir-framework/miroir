@@ -320,7 +320,7 @@ export const selectEntityJzodSchemaFromDeploymentEntityState = (
       deploymentEntityState[deploymentEntityStateIndex].entities as Record<string, EntityDefinition>
     ).find((e: EntityDefinition) => e.entityUuid == selectorParams.query.entityUuid);
     if (!entityDefinition) {
-      log.error(
+      log.warn(
         "selectEntityJzodSchemaFromDeploymentEntityState selectorParams",
         selectorParams,
         "could not find entity definition for index",
@@ -343,7 +343,7 @@ export const selectEntityJzodSchemaFromDeploymentEntityState = (
   
     return result
   } else {
-    log.error(
+    log.warn(
       "selectEntityJzodSchemaFromDeploymentEntityState selectorParams",
       selectorParams,
       "could not find index",

@@ -137,9 +137,12 @@ export async function miroirIntegrationTestEnvironmentFactory(miroirConfig: Miro
       miroirConfig as MiroirConfigClient,
       setupServer,
     );
-    if (wrapped) {
+    if (wrapped) { // why hide a part of the miroirBeforeAll result?
       result.localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
       result.localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
+      result.domainController = wrapped.domainController;
+      result.localCache = wrapped.localCache;
+      result.miroirContext = wrapped.miroirContext;
     }
   // }
 

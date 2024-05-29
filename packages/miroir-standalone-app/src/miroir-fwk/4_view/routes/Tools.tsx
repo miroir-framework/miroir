@@ -1,7 +1,7 @@
 import { Formik } from "formik";
 import _ from "lodash";
 import ReactCodeMirror from "@uiw/react-codemirror";
-import { useCallback, useMemo, useState } from "react";
+import { ChangeEvent, useCallback, useMemo, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 
 
@@ -31,7 +31,7 @@ import {
   useMiroirContextService,
   useMiroirContextformHelperState,
 } from "../MiroirContextReactProvider";
-import { JzodElementEditor } from "../components/JzodElementEditor";
+import { JzodObjectEditor } from "../components/JzodObjectEditor";
 import { cleanLevel } from "../constants";
 import { adminConfigurationDeploymentParis, applicationParis } from './ReportPage';
 import { javascript } from "@codemirror/lang-javascript";
@@ -800,9 +800,9 @@ export const ToolsPage: React.FC<any> = (
             //   }
             // }
           }
-          // handleChange= {
-          //   async (e: ChangeEvent<any>) => {
-          //     log.info("onChange formik", e);
+          handleChange= {
+            async (e: ChangeEvent<any>):Promise<void> => {
+              log.info("onChange formik", e);
           //     // try {
           //     //   //  Send values somehow
           //     //   if (props.onCreateFormObject) {
@@ -823,9 +823,8 @@ export const ToolsPage: React.FC<any> = (
           //     // } finally {
           //     //   setSubmitting(false)
           //     // }
-          //   }
-
-          // }
+            }
+          }
         >
           {
             (
@@ -853,7 +852,7 @@ export const ToolsPage: React.FC<any> = (
                     <div>no object definition found!</div>
                     :
                     <>
-                      <JzodElementEditor
+                      <JzodObjectEditor
                         name={'ROOT'}
                         listKey={'ROOT'}
                         rootLesslistKey={emptyString}
@@ -865,6 +864,7 @@ export const ToolsPage: React.FC<any> = (
                         rawJzodSchema={rawSchema}
                         resolvedJzodSchema={resolvedJzodSchema}
                         foreignKeyObjects={emptyObject}
+                        handleChange={formik.handleChange as any}
                         formik={formik}
                         setFormState={setFormState}
                         formState={formState}

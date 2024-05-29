@@ -53,7 +53,7 @@ import { cleanLevel } from "../constants";
 import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "../getColumnDefinitionsFromEntityAttributes";
 import { deleteCascade } from "../scripts";
 import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from "./JsonObjectEditFormDialog";
-import { noValue } from "./JzodElementEditor";
+import { noValue } from "./JzodObjectEditor";
 import { MTableComponent } from "./MTableComponent";
 import { TableComponentType, TableComponentTypeSchema } from "./MTableComponentInterface";
 import { adminConfigurationDeploymentTest4, deployments } from "../routes/ReportPage";

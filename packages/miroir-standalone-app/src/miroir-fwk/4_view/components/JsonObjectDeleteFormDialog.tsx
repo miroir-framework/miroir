@@ -21,7 +21,7 @@ import {
 } from "miroir-core";
 
 import { packageName } from "../../../constants";
-import { JzodElementEditor } from "./JzodElementEditor";
+import { JzodObjectEditor } from "./JzodObjectEditor";
 import { useMiroirContextInnerFormOutput, useMiroirContextService, useMiroirContextformHelperState } from "../MiroirContextReactProvider";
 import { cleanLevel } from "../constants";
 

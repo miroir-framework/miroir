@@ -21,7 +21,7 @@ import {
 } from "miroir-core";
 
 import { packageName } from "../../../constants";
-import { JzodElementEditor } from "./JzodElementEditor";
+import { JzodObjectEditor } from "./JzodObjectEditor";
 import { useMiroirContextInnerFormOutput, useMiroirContextService, useMiroirContextformHelperState } from "../MiroirContextReactProvider";
 import { cleanLevel } from "../constants";
 
@@ -435,7 +435,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
                   )
                 }
 
-                <JzodElementEditor
+                <JzodObjectEditor
                   name={"ROOT"}
                   listKey={"ROOT"}
                   rootLesslistKey=""
@@ -448,6 +448,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
                   foreignKeyObjects={props.foreignKeyObjects}
                   formState={dialogOuterFormObject}
                   setFormState={setdialogOuterFormObject}
+                  handleChange={formik.handleChange as any}
                   formik={formik}
                 />
                 {/* {errors.exampleRequired && <span>This field is required</span>} */}
