@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState } from "react";
+import { ReactNode, createContext, useContext, useMemo, useState } from "react";
 
 import { useSelector } from "react-redux";
 
@@ -56,13 +56,13 @@ const miroirReactContext = createContext<MiroirReactContext>({} as MiroirReactCo
 export function MiroirContextReactProvider(props: {
   miroirContext: MiroirContextInterface;
   domainController: DomainControllerInterface;
-  children:
-    | string
-    | number
-    | boolean
-    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
-    | React.ReactFragment
-    | React.ReactPortal;
+  children: ReactNode
+    // | string
+    // | number
+    // | boolean
+    // | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+    // | React.ReactFragment
+    // | React.ReactPortal;
 }) {
   const [deploymentUuid, setDeploymentUuid] = useState("");
   const [reportUuid, setReportUuid] = useState("");
@@ -93,7 +93,7 @@ export function MiroirContextReactProvider(props: {
       deploymentUuidToReportsEntitiesDefinitionsMapping,
       setDeploymentUuidToReportsEntitiesDefinitionsMapping,
       miroirFundamentalJzodSchema,
-      setMiroirFundamentalJzodSchema,
+      setMiroirFundamentalJzodSchema: (a: any) => {log.info("setMiroirFundamentalJzodSchema called with", a);setMiroirFundamentalJzodSchema(a)},
     }),
     [
       deploymentUuid,

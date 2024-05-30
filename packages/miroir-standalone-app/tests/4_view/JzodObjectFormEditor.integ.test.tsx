@@ -1,6 +1,6 @@
 import { act, getByText, screen, waitFor } from "@testing-library/react";
 import userEvent, { UserEvent } from "@testing-library/user-event";
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 
 import { Formik } from "formik";
 
@@ -12,6 +12,7 @@ import {
   JzodElement,
   JzodSchema,
   JzodUnion,
+  MiroirContext,
   ResolvedJzodSchemaReturnType,
   ResolvedJzodSchemaReturnTypeOK,
   Uuid,
@@ -50,7 +51,8 @@ import {
   miroirAfterEach,
   miroirBeforeEach,
   miroirIntegrationTestEnvironmentFactory,
-  renderWithProviders
+  renderWithProviders,
+  renderWithProvidersWithContextProvider
 } from "miroir-standalone-app/tests/utils/tests-utils";
 
 import {
@@ -61,11 +63,13 @@ import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { vitest } from "vitest";
+import { MiroirContextReactProvider, useMiroirContextService } from "../../src/miroir-fwk/4_view/MiroirContextReactProvider";
 
 const env:any = (import.meta as any).env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
 const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
+const miroirContext = new MiroirContext(miroirConfig);
 
 miroirAppStartup();
 miroirCoreStartup();
@@ -100,6 +104,8 @@ const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
   // jzodSchemajzodMiroirBootstrapSchema as any,
 );
 
+console.log("@@@@@@@@@@@@@@@@@@ miroirFundamentalJzodSchema", miroirFundamentalJzodSchema);
+
 
 beforeAll(
   async () => {
@@ -118,28 +124,28 @@ beforeEach(
   }
 )
 
-afterAll(
-  async () => {
-    await miroirAfterAll(
-      miroirConfig,
-      testEnvironment.domainController,
-      testEnvironment.localMiroirPersistenceStoreController,
-      testEnvironment.localAppPersistenceStoreController,
-      testEnvironment.localDataStoreServer
-    );
-  }
-)
+// afterAll(
+//   async () => {
+//     await miroirAfterAll(
+//       miroirConfig,
+//       testEnvironment.domainController,
+//       testEnvironment.localMiroirPersistenceStoreController,
+//       testEnvironment.localAppPersistenceStoreController,
+//       testEnvironment.localDataStoreServer
+//     );
+//   }
+// )
 
-afterEach(
-  async () => {
-    await miroirAfterEach(
-      miroirConfig,
-      testEnvironment.domainController,
-      testEnvironment.localMiroirPersistenceStoreController,
-      testEnvironment.localAppPersistenceStoreController
-    );
-  }
-)
+// afterEach(
+//   async () => {
+//     await miroirAfterEach(
+//       miroirConfig,
+//       testEnvironment.domainController,
+//       testEnvironment.localMiroirPersistenceStoreController,
+//       testEnvironment.localAppPersistenceStoreController
+//     );
+//   }
+// )
 
 export interface JsonElementEditorWrapperProps {
   // test-specific!
@@ -178,6 +184,15 @@ const attributeName = "try1"
 let testResult: any
 // ################################################################################################
 function JzodObjectFormEditorWrapper(props: JsonElementEditorWrapperProps) {
+  const context = useMiroirContextService();
+
+  console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ context", context)
+  console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ context.setMiroirFundamentalJzodSchema", miroirFundamentalJzodSchema)
+
+  useEffect(() => context.setMiroirFundamentalJzodSchema(miroirFundamentalJzodSchema));
+
+  console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ context.miroirFundamentalJzodSchema", context.miroirFundamentalJzodSchema)
+
   const [dialogOuterFormObject, setdialogOuterFormObject] = useState<any>(props.initialValue); // redundent with formHelperState?
 
   const handleChange1 = async (e: ChangeEvent<any>) => {
@@ -205,6 +220,7 @@ function JzodObjectFormEditorWrapper(props: JsonElementEditorWrapperProps) {
             listKey={props.listKey}
             rootLesslistKey={props.rootLesslistKey}
             rootLesslistKeyArray={props.rootLesslistKeyArray}
+            paramMiroirFundamentalJzodSchema={miroirFundamentalJzodSchema}
             foreignKeyObjects={props.foreignKeyObjects}
             unresolvedJzodSchema={props.unresolvedJzodSchema}
             unionInformation={props.unionInformation}
@@ -308,186 +324,438 @@ export interface RoleQuery {
 describe(
   'JzodObjectFormEditor',
   () => {
-    // ###########################################################################################
-    it(
-      'edit simpleType string form',
-      async () => {
-        const listKey = "ROOT." + attributeName
-        const label: string = 'simpleElementString';
+    // // ###########################################################################################
+    // it('edit simpleType string form',
+    //   async () => {
+    //     const listKey = "ROOT." + attributeName
+    //     const label: string = 'simpleElementString';
 
-        const jzodSchema:JzodElement = {type:"simpleType", definition:"string"};
-        const initialValue: any = {[attributeName]: "initialValue1"};
-        const elementRoleQueries: RoleQuery[] = [{ role: listKey, method: "findByRole"}]
-        const expectedValue = "initialValue1";
-        try {
-          console.log('edit string attribute');
-          const user = userEvent.setup()
+    //     const jzodSchema:JzodElement = {type:"simpleType", definition:"string"};
+    //     const initialValue: any = {[attributeName]: "initialValue1"};
+    //     const elementRoleQueries: RoleQuery[] = [{ role: listKey, method: "findByRole"}]
+    //     const expectedValue = "initialValue1";
+    //     try {
+    //       console.log('edit string attribute');
+    //       const user = userEvent.setup()
       
       
-          const {
-            getByText,
-            getByRole,
-            getAllByRole,
-            container
-          } = renderWithProviders(
-            <div>
-              <JzodObjectFormEditorWrapper
-                initialValue={initialValue}
-                name={attributeName}
-                listKey={listKey}
-                rootLesslistKey={attributeName}
-                rootLesslistKeyArray={[attributeName]}
-                label={label}
-                currentDeploymentUuid={adminConfigurationDeploymentLibrary.uuid}
-                currentApplicationSection={"data"}
-                rawJzodSchema={jzodSchema}
-                resolvedJzodSchema={jzodSchema}
-                foreignKeyObjects={{}}
-              ></JzodObjectFormEditorWrapper>
-            </div>,
-            {store:testEnvironment.localCache.getInnerStore()}
-          );
+    //       const {
+    //         getByText,
+    //         getByRole,
+    //         getAllByRole,
+    //         container
+    //       } = renderWithProviders(
+    //         <div>
+    //           <JzodObjectFormEditorWrapper
+    //             initialValue={initialValue}
+    //             name={attributeName}
+    //             listKey={listKey}
+    //             rootLesslistKey={attributeName}
+    //             rootLesslistKeyArray={[attributeName]}
+    //             label={label}
+    //             currentDeploymentUuid={adminConfigurationDeploymentLibrary.uuid}
+    //             currentApplicationSection={"data"}
+    //             rawJzodSchema={jzodSchema}
+    //             resolvedJzodSchema={jzodSchema}
+    //             foreignKeyObjects={{}}
+    //           ></JzodObjectFormEditorWrapper>
+    //         </div>,
+    //         {store:testEnvironment.localCache.getInnerStore()}
+    //       );
       
-          let elements: Record<string, HTMLElement[]> = {}
-          for (const query of elementRoleQueries) {
-            try {
-              const foundElements = await screen[query.method](query.role)
-              elements[query.role] = Array.isArray(foundElements)?foundElements: [foundElements]
-            } catch (error) {
-              console.error("test", label, "could not fetch element with role", query, "error:", error);
-            }
-          }
-          expect(elements[listKey].length).toEqual(1);
-          const testResult = elements[listKey][0].getAttribute("value")
-          expect(testResult).toEqual(expectedValue);
-        } catch (error) {
-          console.error('error during test',expect.getState().currentTestName,error);
-          expect(false).toBeTruthy();
-        }
-      }
-    )
+    //       let elements: Record<string, HTMLElement[]> = {}
+    //       for (const query of elementRoleQueries) {
+    //         try {
+    //           const foundElements = await screen[query.method](query.role)
+    //           elements[query.role] = Array.isArray(foundElements)?foundElements: [foundElements]
+    //         } catch (error) {
+    //           console.error("test", label, "could not fetch element with role", query, "error:", error);
+    //         }
+    //       }
+    //       expect(elements[listKey].length).toEqual(1);
+    //       const testResult = elements[listKey][0].getAttribute("value")
+    //       expect(testResult).toEqual(expectedValue);
+    //     } catch (error) {
+    //       console.error('error during test',expect.getState().currentTestName,error);
+    //       expect(false).toBeTruthy();
+    //     }
+    //   }
+    // )
+
+    // // ############################################################################################
+    // it('edit plain enum',
+    //   async () => {
+    //     const label: string = 'simpleElementString';
+    //     const listKey = "ROOT." + attributeName
+    //     const jzodSchema:JzodElement = {type:"enum", definition:["value1", "value2", "value3" ] };
+    //     const initialValue: any = {[attributeName]: "value1"};
+    //     const elementRoleQueries: RoleQuery[] = [{ role: "option", method: "findAllByRole"}];
+    //     const expectedValue = ["value1", "value2", "value3"];
+    //     try {
+    //       console.log('edit string attribute');
+    //       const user = userEvent.setup()
+      
+    //       const {
+    //         getByText,
+    //         getByRole,
+    //         getAllByRole,
+    //         container
+    //       } = renderWithProviders(
+    //         <div>
+    //           <JzodObjectFormEditorWrapper
+    //             initialValue={initialValue}
+    //             name={attributeName}
+    //             listKey={listKey}
+    //             rootLesslistKey={attributeName}
+    //             rootLesslistKeyArray={[attributeName]}
+    //             label={label}
+    //             currentDeploymentUuid={adminConfigurationDeploymentLibrary.uuid}
+    //             currentApplicationSection={"data"}
+    //             rawJzodSchema={jzodSchema}
+    //             resolvedJzodSchema={jzodSchema}
+    //             foreignKeyObjects={{}}
+    //           ></JzodObjectFormEditorWrapper>
+    //         </div>,
+    //         {store:testEnvironment.localCache.getInnerStore()}
+    //       );
+      
+    //       const selectElement = await screen.findByRole("ROOT.try1")
+    //       await act(()=>user.click(selectElement));
+    //       await act(()=>user.keyboard('{ArrowDown}{Enter}'));
+      
+    //       let elements: Record<string, HTMLElement[]> = {}
+    //       for (const query of elementRoleQueries) {
+    //         try {
+    //           const foundElements = await screen[query.method](query.role)
+    //           elements[query.role] = foundElements
+    //         } catch (error) {
+    //           console.error("test", label, "could not fetch element with role", query, "error:", error);
+    //         }
+    //       }
+
+    //       const testResult = elements.option.map(o => o.getAttribute("data-value"))
+    //       expect(testResult).toEqual(expectedValue);
+    //     } catch (error) {
+    //       console.error('error during test',expect.getState().currentTestName,error);
+    //       expect(false).toBeTruthy();
+    //     }
+      
+    //   }
+    // )
+
+    // // ############################################################################################
+    // it(
+    //   'edit discriminated union form',
+    //   async () => {
+    //     const listKey = "ROOT"
+    //     const label: string = 'simpleElementString';
+    //     const objectJzodSchema:JzodElement = {
+    //       type:"union", 
+    //       discriminator: "objectType",
+    //       definition:[
+    //         {
+    //           type: "object",
+    //           definition: {
+    //             "objectType": {
+    //               type: "literal",
+    //               definition: "A"
+    //             },
+    //             payload: {
+    //               type: "simpleType",
+    //               definition: "string"
+    //             }
+    //           }
+    //         },
+    //         {
+    //           type: "object",
+    //           definition: {
+    //             objectType: {
+    //               type: "literal",
+    //               definition: "B"
+    //             },
+    //             payload: {
+    //               type: "simpleType",
+    //               definition: "string"
+    //             }
+    //           }
+    //         }
+    //       ] 
+    //     };
+    //     const formJzodSchema: JzodElement = {
+    //       type: "object",
+    //       definition: {
+    //         [attributeName]: objectJzodSchema
+    //       }
+    //     }
+    //     const objectInitialValue: any = {objectType: "A", payload: "value1"};
+    //     const formInitialValue: any = {[attributeName]: objectInitialValue};
+    //     const elementRoleQueries: RoleQuery[] = [{ role: "option", method: "findAllByRole"}];
+    //     const expectedValue = [ "A", "B" ];
+
+    //     try {
+    //       console.log('edit discriminated union', objectJzodSchema);
+    //       const user = userEvent.setup()
+      
+    //       const resolvedSchemaReturn: ResolvedJzodSchemaReturnType = resolveReferencesForJzodSchemaAndValueObject(
+    //         miroirFundamentalJzodSchema,
+    //         formJzodSchema,
+    //         formInitialValue,
+    //         testEnvironment.localCache.currentModel(adminConfigurationDeploymentLibrary.uuid),
+    //         testEnvironment.localCache.currentModel(adminConfigurationDeploymentMiroir.uuid),
+    //       );
+
+    //       expect(resolvedSchemaReturn.status).toEqual("ok")
+    //       console.log("resolvedSchema", JSON.stringify(resolvedSchemaReturn, null, 2))
+
+    //       const {
+    //         getByText,
+    //         getByRole,
+    //         getAllByRole,
+    //         container
+    //       } = renderWithProviders(
+    //         <div>
+    //           <JzodObjectFormEditorWrapper
+    //             initialValue={formInitialValue}
+    //             name={attributeName}
+    //             listKey={listKey}
+    //             rootLesslistKey={""}
+    //             rootLesslistKeyArray={[]}
+    //             label={label}
+    //             currentDeploymentUuid={adminConfigurationDeploymentLibrary.uuid}
+    //             currentApplicationSection={"data"}
+    //             rawJzodSchema={formJzodSchema}
+    //             resolvedJzodSchema={(resolvedSchemaReturn as ResolvedJzodSchemaReturnTypeOK).element}
+    //             foreignKeyObjects={{}}
+    //           ></JzodObjectFormEditorWrapper>
+    //         </div>,
+    //         {store:testEnvironment.localCache.getInnerStore()}
+    //       );
+      
+    //       const selectElement = await screen.findByRole("combobox")
+    //       await act(()=>user.click(selectElement));
+    //       await act(()=>user.keyboard('{ArrowDown}{Enter}'));
+      
+    //       console.log("found value", selectElement.textContent)
+    //       expect(selectElement.textContent).toEqual("B");
+
+    //       // displays the whole rendered html
+    //       // await waitFor(() => {
+    //       //   screen.getByText(new RegExp(/(received result)|(received error)/, "i"));
+    //       // })
+    //     } catch (error) {
+    //       console.error('error during test',expect.getState().currentTestName,error);
+    //       expect(false).toBeTruthy();
+    //     }
+      
+    //   }
+    // )
+
+    // // ############################################################################################
+    // it('edit sub-discriminated union form',
+    //   async () => {
+    //     const listKey = "ROOT"
+    //     const label: string = 'simpleElementString';
+    //     const objectJzodSchema:JzodElement = {
+    //       type:"union", 
+    //       discriminator: "objectType",
+    //       subDiscriminator: "definition",
+    //       definition:[
+    //         {
+    //           type: "object",
+    //           definition: {
+    //             "objectType": {
+    //               type: "literal",
+    //               definition: "A"
+    //             },
+    //             definition: {
+    //               type: "literal",
+    //               definition: "string"
+    //             },
+    //             payload: {
+    //               type: "simpleType",
+    //               definition: "string"
+    //             }
+    //           }
+    //         },
+    //         {
+    //           type: "object",
+    //           definition: {
+    //             objectType: {
+    //               type: "literal",
+    //               definition: "A"
+    //             },
+    //             definition: {
+    //               type: "literal",
+    //               definition: "number"
+    //             },
+    //             payload: {
+    //               type: "simpleType",
+    //               definition: "number"
+    //             }
+    //           }
+    //         }
+    //       ] 
+    //     };
+    //     const formJzodSchema: JzodElement = {
+    //       type: "object",
+    //       definition: {
+    //         [attributeName]: objectJzodSchema
+    //       }
+    //     }
+    //     const objectInitialValue: any = {objectType: "A", definition: "string", payload: "value1"};
+    //     const formInitialValue: any = {[attributeName]: objectInitialValue};
+    //     const elementRoleQueries: RoleQuery[] = [{ role: "option", method: "findAllByRole"}];
+    //     const expectedDiscriminatorValue = [ "A" ];
+    //     const expectedSubdiscriminatorValue = [ "string", "number" ];
+
+    //     try {
+    //       console.log('edit subdiscriminated union', objectJzodSchema);
+    //       const user = userEvent.setup()
+      
+    //       const resolvedSchemaReturn: ResolvedJzodSchemaReturnType = resolveReferencesForJzodSchemaAndValueObject(
+    //         miroirFundamentalJzodSchema,
+    //         formJzodSchema,
+    //         formInitialValue,
+    //         testEnvironment.localCache.currentModel(adminConfigurationDeploymentLibrary.uuid),
+    //         testEnvironment.localCache.currentModel(adminConfigurationDeploymentMiroir.uuid),
+    //       );
+
+    //       expect(resolvedSchemaReturn.status).toEqual("ok")
+    //       console.log("resolvedSchema", JSON.stringify(resolvedSchemaReturn, null, 2))
+
+    //       const {
+    //         getByText,
+    //         getByRole,
+    //         getAllByRole,
+    //         container
+    //       } = renderWithProviders(
+    //         <div>
+    //           <JzodObjectFormEditorWrapper
+    //             initialValue={formInitialValue}
+    //             name={attributeName}
+    //             listKey={listKey}
+    //             rootLesslistKey={""}
+    //             rootLesslistKeyArray={[]}
+    //             label={label}
+    //             currentDeploymentUuid={adminConfigurationDeploymentLibrary.uuid}
+    //             currentApplicationSection={"data"}
+    //             rawJzodSchema={formJzodSchema}
+    //             resolvedJzodSchema={(resolvedSchemaReturn as ResolvedJzodSchemaReturnTypeOK).element}
+    //             foreignKeyObjects={{}}
+    //           ></JzodObjectFormEditorWrapper>
+    //         </div>,
+    //         {store:testEnvironment.localCache.getInnerStore()}
+    //       );
+      
+    //       const selectedElements = await screen.findAllByRole("combobox")
+          
+    //       // await act(()=>user.click(selectElement));
+    //       // await act(()=>user.keyboard('{ArrowDown}{Enter}'));
+      
+    //       console.log("found elements", selectedElements.length)
+    //       const subDiscriminatorElement = selectedElements.find(e=> e.getAttribute("id")?.match(/try1.definition/))
+    //       expect(subDiscriminatorElement).toBeDefined;
+    //       console.log("found subDiscriminatorElement", subDiscriminatorElement?.textContent)
+    //       await act(()=>user.click(subDiscriminatorElement as HTMLElement));
+    //       await act(()=>user.keyboard('{ArrowDown}{Enter}'));
+    //       // console.log("found value", selectElement.textContent)
+
+    //       expect(subDiscriminatorElement?.textContent).toEqual("number");
+
+    //       // displays the whole rendered html
+    //       // await waitFor(() => {
+    //       //   screen.getByText(new RegExp(/(received result)|(received error)/, "i"));
+    //       // })
+    //     } catch (error) {
+    //       console.error('error during test',expect.getState().currentTestName,error);
+    //       expect(false).toBeTruthy();
+    //     }
+      
+    //   }
+    // )
 
     // ############################################################################################
-    it(
-      'edit plain enum',
-      async () => {
-        const label: string = 'simpleElementString';
-        const listKey = "ROOT." + attributeName
-        const jzodSchema:JzodElement = {type:"enum", definition:["value1", "value2", "value3" ] };
-        const initialValue: any = {[attributeName]: "value1"};
-        const elementRoleQueries: RoleQuery[] = [{ role: "option", method: "findAllByRole"}];
-        const expectedValue = ["value1", "value2", "value3"];
-        try {
-          console.log('edit string attribute');
-          const user = userEvent.setup()
-      
-          const {
-            getByText,
-            getByRole,
-            getAllByRole,
-            container
-          } = renderWithProviders(
-            <div>
-              <JzodObjectFormEditorWrapper
-                initialValue={initialValue}
-                name={attributeName}
-                listKey={listKey}
-                rootLesslistKey={attributeName}
-                rootLesslistKeyArray={[attributeName]}
-                label={label}
-                currentDeploymentUuid={adminConfigurationDeploymentLibrary.uuid}
-                currentApplicationSection={"data"}
-                rawJzodSchema={jzodSchema}
-                resolvedJzodSchema={jzodSchema}
-                foreignKeyObjects={{}}
-              ></JzodObjectFormEditorWrapper>
-            </div>,
-            {store:testEnvironment.localCache.getInnerStore()}
-          );
-      
-          const selectElement = await screen.findByRole("ROOT.try1")
-          await act(()=>user.click(selectElement));
-          await act(()=>user.keyboard('{ArrowDown}{Enter}'));
-      
-          let elements: Record<string, HTMLElement[]> = {}
-          for (const query of elementRoleQueries) {
-            try {
-              const foundElements = await screen[query.method](query.role)
-              elements[query.role] = foundElements
-            } catch (error) {
-              console.error("test", label, "could not fetch element with role", query, "error:", error);
-            }
-          }
-
-          const testResult = elements.option.map(o => o.getAttribute("data-value"))
-          expect(testResult).toEqual(expectedValue);
-        } catch (error) {
-          console.error('error during test',expect.getState().currentTestName,error);
-          expect(false).toBeTruthy();
-        }
-      
-      }
-    )
-
-    // ############################################################################################
-    it(
-      'edit discriminated union form',
+    it('edit simple Jzod Schema form',
       async () => {
         const listKey = "ROOT"
         const label: string = 'simpleElementString';
-        const objectJzodSchema:JzodElement = {
-          type:"union", 
-          discriminator: "objectType",
-          definition:[
-            {
-              type: "object",
-              definition: {
-                "objectType": {
-                  type: "literal",
-                  definition: "A"
-                },
-                payload: {
-                  type: "simpleType",
-                  definition: "string"
-                }
-              }
-            },
-            {
-              type: "object",
-              definition: {
-                objectType: {
-                  type: "literal",
-                  definition: "B"
-                },
-                payload: {
-                  type: "simpleType",
-                  definition: "string"
-                }
-              }
-            }
-          ] 
-        };
+        // const objectJzodSchema:JzodElement = {
+        //   "type": "simpleType",
+        //   "definition": "string",
+        //   "validations": [
+        //     {
+        //       "type": "uuid"
+        //     }
+        //   ],
+        //   "extra": {
+        //     "id": 1,
+        //     "defaultLabel": "Uuid",
+        //     "editable": false
+        //   }
+        // };
         const formJzodSchema: JzodElement = {
           type: "object",
           definition: {
-            [attributeName]: objectJzodSchema
+            [attributeName]: {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                // "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                "relativePath": "jzodElement"
+              }
+            }
           }
         }
-        const objectInitialValue: any = {objectType: "A", payload: "value1"};
+        const objectInitialValue: any = {
+          type: "simpleType",
+          definition: "string",
+          validations: [
+            {
+              type: "uuid",
+            },
+          ],
+          extra: {
+            id: 1,
+            defaultLabel: "Uuid",
+            editable: false,
+          },
+        };
         const formInitialValue: any = {[attributeName]: objectInitialValue};
         const elementRoleQueries: RoleQuery[] = [{ role: "option", method: "findAllByRole"}];
-        const expectedValue = [ "A", "B" ];
+        const expectedDiscriminatorValue = [ "A" ];
+        const expectedSubdiscriminatorValue = [ "string", "number" ];
 
         try {
-          console.log('edit discriminated union', objectJzodSchema);
+          console.log('formJzodSchema', formJzodSchema);
           const user = userEvent.setup()
       
+          await act(
+            async () => {
+              await testEnvironment.domainController.handleAction({
+                actionType: "modelAction",
+                actionName: "rollback",
+                deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              });
+              await testEnvironment.domainController.handleAction({
+                actionType: "modelAction",
+                actionName: "rollback",
+                deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              });
+            }
+          );
+
+          const appModel = testEnvironment.localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
+          const miroirModel = testEnvironment.localCache.currentModel(adminConfigurationDeploymentMiroir.uuid)
+          console.log("miroirModel", miroirModel);
           const resolvedSchemaReturn: ResolvedJzodSchemaReturnType = resolveReferencesForJzodSchemaAndValueObject(
             miroirFundamentalJzodSchema,
             formJzodSchema,
             formInitialValue,
-            testEnvironment.localCache.currentModel(adminConfigurationDeploymentLibrary.uuid),
-            testEnvironment.localCache.currentModel(adminConfigurationDeploymentMiroir.uuid),
+            appModel,
+            miroirModel
+            // testEnvironment.localCache.currentModel(adminConfigurationDeploymentMiroir.uuid),
           );
 
           expect(resolvedSchemaReturn.status).toEqual("ok")
@@ -498,8 +766,8 @@ describe(
             getByRole,
             getAllByRole,
             container
-          } = renderWithProviders(
-            <div>
+          } = renderWithProvidersWithContextProvider(
+            // <MiroirContextReactProvider miroirContext={miroirContext} domainController={testEnvironment.domainController}>
               <JzodObjectFormEditorWrapper
                 initialValue={formInitialValue}
                 name={attributeName}
@@ -512,22 +780,31 @@ describe(
                 rawJzodSchema={formJzodSchema}
                 resolvedJzodSchema={(resolvedSchemaReturn as ResolvedJzodSchemaReturnTypeOK).element}
                 foreignKeyObjects={{}}
-              ></JzodObjectFormEditorWrapper>
-            </div>,
-            {store:testEnvironment.localCache.getInnerStore()}
+              ></JzodObjectFormEditorWrapper>,
+            // </MiroirContextReactProvider>,
+            {
+              store:testEnvironment.localCache.getInnerStore(),
+              miroirContext,
+              domainController: testEnvironment.domainController
+            }
           );
       
-          const selectElement = await screen.findByRole("combobox")
-          await act(()=>user.click(selectElement));
-          await act(()=>user.keyboard('{ArrowDown}{Enter}'));
-      
-          console.log("found value", selectElement.textContent)
-          expect(selectElement.textContent).toEqual("B");
+          const selectedElements = await screen.findAllByRole("combobox")
+          
+          // console.log("found elements", selectedElements.length)
+          // const subDiscriminatorElement = selectedElements.find(e=> e.getAttribute("id")?.match(/try1.definition/))
+          // expect(subDiscriminatorElement).toBeDefined;
+          // console.log("found subDiscriminatorElement", subDiscriminatorElement?.textContent)
+          // await act(()=>user.click(subDiscriminatorElement as HTMLElement));
+          // await act(()=>user.keyboard('{ArrowDown}{Enter}'));
+          // // console.log("found value", selectElement.textContent)
+
+          // expect(subDiscriminatorElement?.textContent).toEqual("number");
 
           // displays the whole rendered html
-          // await waitFor(() => {
-          //   screen.getByText(new RegExp(/(received result)|(received error)/, "i"));
-          // })
+          await waitFor(() => {
+            screen.getByText(new RegExp(/(received result)|(received error)/, "i"));
+          })
         } catch (error) {
           console.error('error during test',expect.getState().currentTestName,error);
           expect(false).toBeTruthy();

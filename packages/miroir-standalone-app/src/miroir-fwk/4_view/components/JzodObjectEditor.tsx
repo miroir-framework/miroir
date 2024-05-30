@@ -20,6 +20,7 @@ import {
   JzodElement,
   JzodEnum,
   JzodObject,
+  JzodSchema,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
@@ -77,6 +78,7 @@ export interface JzodElementEditorProps {
   rootLesslistKeyArray: string[],
   indentLevel?:number,
   unresolvedJzodSchema?: JzodElement | undefined,
+  paramMiroirFundamentalJzodSchema?: JzodSchema, //used only for testing, trouble with using MiroirContextReactProvider
   unionInformation?: {
     jzodSchema: JzodUnion,
     discriminator: string,
@@ -257,7 +259,7 @@ export const JzodObjectEditor = (
 ): JSX.Element => {
   count++;
   const context = useMiroirContextService();
-
+  const currentMiroirFundamentalJzodSchema = props.paramMiroirFundamentalJzodSchema??context.miroirFundamentalJzodSchema;
   // const [selectedOption, setSelectedOption] = useState({label:props.name,value:props.initialValuesObject});
   const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
 
@@ -307,21 +309,24 @@ export const JzodObjectEditor = (
   }
   let unfoldedRawSchemaReturnType:ResolvedJzodSchemaReturnType | undefined
   try {
-    unfoldedRawSchemaReturnType = useMemo(
-      ()=> {
-        // log.info("unfolding rawJzodSchema for", props.listKey, "rawJzodSchema", props.rawJzodSchema)
-        const result = unfoldJzodSchemaOnce(
-          context.miroirFundamentalJzodSchema,
-          // props.rawJzodSchema?.type == "object"?props.rawJzodSchema.definition[attribute[0]]:props.rawJzodSchema?.definition as any,
-          props.rawJzodSchema,
-          currentModel,
-          miroirMetaModel
-        );
-        // log.info("unfolded rawJzodSchema for", props.listKey, "props.rawJzodSchema", props.rawJzodSchema, "result", result)
-        return result
-      },
-      [props.rawJzodSchema, props.listKey, context.miroirFundamentalJzodSchema, currentModel, miroirMetaModel]
-    ) ;
+    unfoldedRawSchemaReturnType = useMemo(() => {
+      // log.info("unfolding rawJzodSchema for", props.listKey, "rawJzodSchema", props.rawJzodSchema)
+      const result = unfoldJzodSchemaOnce(
+        currentMiroirFundamentalJzodSchema, // context.miroirFundamentalJzodSchema,
+        // props.rawJzodSchema?.type == "object"?props.rawJzodSchema.definition[attribute[0]]:props.rawJzodSchema?.definition as any,
+        props.rawJzodSchema,
+        currentModel,
+        miroirMetaModel
+      );
+      // log.info("unfolded rawJzodSchema for", props.listKey, "props.rawJzodSchema", props.rawJzodSchema, "result", result)
+      return result;
+    }, [
+      props.rawJzodSchema,
+      props.listKey,
+      currentMiroirFundamentalJzodSchema, /*context.miroirFundamentalJzodSchema,*/ 
+      currentModel,
+      miroirMetaModel,
+    ]);
   } catch (e) {
     log.info("found never!", props.rootLesslistKey)
   }
@@ -331,7 +336,9 @@ export const JzodObjectEditor = (
       "JzodElementEditor could not unfold raw schema " +
         JSON.stringify(props.rawJzodSchema, null, 2) +
         " result " +
-        JSON.stringify(unfoldedRawSchemaReturnType, null, 2)
+        JSON.stringify(unfoldedRawSchemaReturnType, null, 2) + 
+        " miroirFundamentalJzodSchema " +
+        JSON.stringify(currentMiroirFundamentalJzodSchema, null, 2)
     );
   }
   const unfoldedRawSchema:JzodElement = unfoldedRawSchemaReturnType.element
@@ -372,15 +379,44 @@ export const JzodObjectEditor = (
         props.resolvedJzodSchema?.type == "object" &&
         unfoldedRawSchema &&
         unfoldedRawSchema.type == "union" &&
+        unfoldedRawSchema.discriminator &&
         unfoldedRawSchema.subDiscriminator
       ) {
         const subDiscriminator: string = (unfoldedRawSchema as any).subDiscriminator;
-        return unfoldedRawSchema.definition
-          .filter(
-            (a) => typeof (a.definition as any)[subDiscriminator].definition == "string"
+        const discriminatedBranches = unfoldedRawSchema.definition
+        .filter(
+          (a) => (a.definition as any)[unfoldedRawSchema.discriminator as string].definition == currentValue[unfoldedRawSchema.discriminator as string]
+        );
+        const resultForLiterals:string[] = discriminatedBranches
+          .filter( // TODO: AD-HOC CODE, SUBDISCRIMINATOR IS USED ONLY IN MIROIRFUNDAMENTALJZODSCHEMA
+            (a) => (a.definition as any)[subDiscriminator].type == "literal"
           ).map(
           (a) => (a.definition as any)[subDiscriminator].definition
         );
+        const resultForEnum:string[] = discriminatedBranches
+          .filter( // TODO: AD-HOC CODE, SUBDISCRIMINATOR IS USED ONLY IN MIROIRFUNDAMENTALJZODSCHEMA
+            (a) => (a.definition as any)[subDiscriminator].type == "enum"
+          ).flatMap(
+          (a) => (a.definition as any)[subDiscriminator].definition
+        );
+        const result:string[] = [
+          ...new Set(
+            [...resultForLiterals, ...resultForEnum]
+          ),
+        ];
+        log.info(
+          "computing objectUnionSubDiscriminatorValues",
+          unfoldedRawSchema,
+          "discriminatedBranches",
+          discriminatedBranches,//JSON.stringify(discriminatedBranches, null, 2),
+          "resultForLiterals",
+          resultForLiterals,
+          "resultForEnum",
+          resultForEnum,
+          "result",
+          result
+        );
+        return result;
       } else {
         return []
       }      
@@ -761,6 +797,7 @@ export const JzodObjectEditor = (
                               rootLesslistKeyArray={[...props.rootLesslistKeyArray, attribute[0]]}
                               indentLevel={usedIndentLevel}
                               label={currentAttributeDefinition?.extra?.defaultLabel}
+                              paramMiroirFundamentalJzodSchema={props.paramMiroirFundamentalJzodSchema}
                               currentDeploymentUuid={props.currentDeploymentUuid}
                               rawJzodSchema={attributeRawJzodSchema}
                               unionInformation={unionInformation}
@@ -772,7 +809,7 @@ export const JzodObjectEditor = (
                               setFormState={props.setFormState}
                               formState={props.formState}
                             />
-                          </ErrorBoundary>;
+                          </ErrorBoundary>
                           </div>
                         </div>
                       );
@@ -929,6 +966,7 @@ export const JzodObjectEditor = (
                         // currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
                         indentLevel={usedIndentLevel}
                         label={props.resolvedJzodSchema?.extra?.defaultLabel}
+                        paramMiroirFundamentalJzodSchema={props.paramMiroirFundamentalJzodSchema}
                         currentDeploymentUuid={props.currentDeploymentUuid}
                         currentApplicationSection={props.currentApplicationSection}
                         rootLesslistKey={props.rootLesslistKey.length > 0? (props.rootLesslistKey + "." + index):("" +index)}
@@ -1104,14 +1142,25 @@ export const JzodObjectEditor = (
             props.rootLesslistKeyArray,
           );
 
-          const newJzodSchema: JzodElement | undefined = (
-            props.unionInformation.jzodSchema.definition as JzodObject[]
-          ).find(
-            (a: JzodObject) =>
-              a.type == "object" &&
-              a.definition[(props.unionInformation as any).jzodSchema.discriminator].type == "literal" &&
-              a.definition[(props.unionInformation as any).jzodSchema.discriminator].definition == event.target.value
-          );
+          const newJzodSchema: JzodElement | undefined = 
+          props.name == props.unionInformation.subDiscriminator?
+            (
+              props.unionInformation.jzodSchema.definition as JzodObject[]
+            ).find(
+              (a: JzodObject) =>
+                a.type == "object" &&
+                a.definition[(props.unionInformation as any).jzodSchema.subDiscriminator].type == "literal" &&
+                a.definition[(props.unionInformation as any).jzodSchema.subDiscriminator].definition == event.target.value
+            )
+            :
+            (
+              props.unionInformation.jzodSchema.definition as JzodObject[]
+            ).find(
+              (a: JzodObject) =>
+                a.type == "object" &&
+                a.definition[(props.unionInformation as any).jzodSchema.discriminator].type == "literal" &&
+                a.definition[(props.unionInformation as any).jzodSchema.discriminator].definition == event.target.value
+            );
 
           if (!newJzodSchema) {
             throw new Error(
@@ -1150,7 +1199,7 @@ export const JzodObjectEditor = (
           // );
 
           const newResolvedJzodSchema = resolveReferencesForJzodSchemaAndValueObject(
-            context.miroirFundamentalJzodSchema,
+            currentMiroirFundamentalJzodSchema, //context.miroirFundamentalJzodSchema,
             props.unionInformation?.jzodSchema as any, // not undefined here!
             currentParentValue
           )
@@ -1217,29 +1266,37 @@ export const JzodObjectEditor = (
                             <MenuItem key={v} value={v}>
                               {v}
                             </MenuItem>
-                          );
+                          )
                         })}
                       </StyledSelect>
+                      {/* <div>
+                        subDiscriminator: {JSON.stringify(props.unionInformation.subDiscriminatorValues)}
+                      </div> */}
                     </>
                 ) : props.unionInformation.discriminator &&
                   props.unionInformation.discriminatorValues &&
                   props.name == props.unionInformation.discriminator ? (
-                  <StyledSelect
-                    variant="standard"
-                    labelId="demo-simple-select-label"
-                    id={props.listKey}
-                    value={currentValue}
-                    label={props.name}
-                    onChange={handleSelectChange}
-                  >
-                    {props.unionInformation.discriminatorValues.map((v) => {
-                      return (
-                        <MenuItem key={v} value={v}>
-                          {v}
-                        </MenuItem>
-                      );
-                    })}
-                  </StyledSelect>
+                    <>
+                      <StyledSelect
+                        variant="standard"
+                        labelId="demo-simple-select-label"
+                        id={props.listKey}
+                        value={currentValue}
+                        label={props.name}
+                        onChange={handleSelectChange}
+                      >
+                        {props.unionInformation.discriminatorValues.map((v) => {
+                          return (
+                            <MenuItem key={v} value={v}>
+                              {v}
+                            </MenuItem>
+                          );
+                        })}
+                      </StyledSelect>
+                      {/* <div>
+                        discriminator: {JSON.stringify(props.unionInformation.discriminatorValues)}
+                      </div> */}
+                    </>
                 ) : (
                   <>
                     <input

@@ -19,11 +19,13 @@ import {
   LoggerInterface,
   MiroirConfigClient,
   MiroirContext,
+  MiroirContextInterface,
   MiroirLoggerFactory,
   PersistenceInterface,
-  RestClient,
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManager,
+  RestClient,
+  StoreOrBundleAction,
   StoreUnitConfiguration,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
@@ -39,13 +41,13 @@ import {
   getLoggerName,
   resetAndInitMiroirAndApplicationDatabase,
   restServerDefaultHandlers,
-  startLocalPersistenceStoreControllers,
-  StoreOrBundleAction
+  startLocalPersistenceStoreControllers
 } from "miroir-core";
-import { PersistenceReduxSaga, LocalCache, ReduxStoreWithUndoRedo, RestPersistenceClientAndRestClient } from 'miroir-localcache-redux';
+import { LocalCache, PersistenceReduxSaga, ReduxStoreWithUndoRedo, RestPersistenceClientAndRestClient } from 'miroir-localcache-redux';
 import { createMswRestServer } from 'miroir-server-msw-stub';
 import path from 'path';
 import { packageName } from '../../src/constants';
+import { MiroirContextReactProvider } from '../../src/miroir-fwk/4_view/MiroirContextReactProvider';
 import { cleanLevel } from '../../src/miroir-fwk/4_view/constants';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"tests-utils");
@@ -86,6 +88,11 @@ export interface MiroirIntegrationTestEnvironment {
 interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {
   store: ReduxStoreWithUndoRedo | undefined,
 }
+interface ExtendedRenderOptionsWithContextProvider extends Omit<RenderOptions, 'queries'> {
+  store: ReduxStoreWithUndoRedo | undefined,
+  miroirContext: MiroirContextInterface,
+  domainController: DomainControllerInterface,
+}
 
 export function renderWithProviders(
   ui: React.ReactElement,
@@ -95,7 +102,34 @@ export function renderWithProviders(
   }: ExtendedRenderOptions
 ) {
   function Wrapper({ children }: PropsWithChildren<{}>): JSX.Element {
-    return store?<Provider store={store}>{children}</Provider>:<div>{children}</div>
+    return store ? (
+    <Provider store={store}>
+      {children}
+      </Provider>
+    ) : <div>{children}</div>;
+  }
+
+  // Return an object with the store and all of RTL's query functions
+  return render(ui, { wrapper: Wrapper, ...renderOptions })
+}
+
+export function renderWithProvidersWithContextProvider(
+  ui: React.ReactElement,
+  {
+    store,
+    miroirContext,
+    domainController,
+    ...renderOptions
+  }: ExtendedRenderOptionsWithContextProvider
+) {
+  function Wrapper({ children }: PropsWithChildren<{}>): JSX.Element {
+    return store ? (
+      <Provider store={store}> 
+        <MiroirContextReactProvider miroirContext={miroirContext} domainController={domainController}>
+          {children}
+        </MiroirContextReactProvider>
+      </Provider>
+    ) : <div>{children}</div>;
   }
 
   // Return an object with the store and all of RTL's query functions

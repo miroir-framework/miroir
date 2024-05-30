@@ -705,9 +705,9 @@ export function resolveJzodSchemaReferenceInContext(
     throw new Error(
       "resolveJzodSchemaReferenceInContext could not resolve reference " +
         JSON.stringify(jzodReference) +
-        // " absoluteReferences" +
-        // JSON.stringify(absoluteReferences)
-        "relativeReferenceJzodContext" +
+        " absoluteReferences keys " +
+        JSON.stringify(absoluteReferences.map(r => r.uuid)) +
+        " relativeReferenceJzodContext keys " +
         JSON.stringify(relativeReferenceJzodContext)
   
     );
