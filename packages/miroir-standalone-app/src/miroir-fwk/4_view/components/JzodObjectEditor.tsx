@@ -310,7 +310,7 @@ export const JzodObjectEditor = (
   let unfoldedRawSchemaReturnType:ResolvedJzodSchemaReturnType | undefined
   try {
     unfoldedRawSchemaReturnType = useMemo(() => {
-      // log.info("unfolding rawJzodSchema for", props.listKey, "rawJzodSchema", props.rawJzodSchema)
+      log.info("unfolding rawJzodSchema for", props.listKey, "rawJzodSchema", props.rawJzodSchema)
       const result = unfoldJzodSchemaOnce(
         currentMiroirFundamentalJzodSchema, // context.miroirFundamentalJzodSchema,
         // props.rawJzodSchema?.type == "object"?props.rawJzodSchema.definition[attribute[0]]:props.rawJzodSchema?.definition as any,
@@ -318,7 +318,7 @@ export const JzodObjectEditor = (
         currentModel,
         miroirMetaModel
       );
-      // log.info("unfolded rawJzodSchema for", props.listKey, "props.rawJzodSchema", props.rawJzodSchema, "result", result)
+      log.info("unfolded rawJzodSchema for", props.listKey, "props.rawJzodSchema", props.rawJzodSchema, "result", result)
       return result;
     }, [
       props.rawJzodSchema,
@@ -773,11 +773,17 @@ export const JzodObjectEditor = (
                                 return (
                                   <div role="alert">
                                     <p>Something went wrong:</p>
-                                    <pre style={{ color: "red" }}>
-                                      object {props.listKey}
-                                      attribute {attributeListKey}
-                                      error {error.message}
-                                    </pre>
+                                    <div style={{ color: "red" }}>
+                                      <div>
+                                        object {props.listKey}
+                                      </div>
+                                      <div>
+                                        attribute {attributeListKey}
+                                      </div>
+                                      <div>
+                                        error {error.message}
+                                      </div>
+                                    </div>
                                   </div>
                                 );
                               }
@@ -1126,16 +1132,22 @@ export const JzodObjectEditor = (
             throw new Error("handleSelectChange called but current object does not have a discriminated union type!");
           }
 
+          const currentAttributeName = props.rootLesslistKeyArray[props.rootLesslistKeyArray.length - 1]
+
           const parentPath = props.rootLesslistKeyArray.slice(0,props.rootLesslistKeyArray.length - 1)
           log.info(
             "handleSelectChange event",
             event,
+            "attribute",
+            currentAttributeName,
+            "props.name",
+            props.name,
             "parentPath",
             parentPath,
             "props.unionInformation?.jzodSchema",
             props.unionInformation.jzodSchema,
             "jzodSchema.discriminator",
-            (props.unionInformation as any).jzodSchema.discriminator,
+            "'" + (props.unionInformation as any).jzodSchema.discriminator + "'",
             "props.formik.values",
             props.formik.values,
             "props.rootLesslistKeyArray",
@@ -1144,6 +1156,7 @@ export const JzodObjectEditor = (
 
           const newJzodSchema: JzodElement | undefined = 
           props.name == props.unionInformation.subDiscriminator?
+          // props.name == currentAttributeName == props.unionInformation.subDiscriminator?
             (
               props.unionInformation.jzodSchema.definition as JzodObject[]
             ).find(
@@ -1201,7 +1214,10 @@ export const JzodObjectEditor = (
           const newResolvedJzodSchema = resolveReferencesForJzodSchemaAndValueObject(
             currentMiroirFundamentalJzodSchema, //context.miroirFundamentalJzodSchema,
             props.unionInformation?.jzodSchema as any, // not undefined here!
-            currentParentValue
+            currentParentValue,
+            currentModel,
+            miroirMetaModel,
+            {}
           )
 
           if (newResolvedJzodSchema.status != "ok") {

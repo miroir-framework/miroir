@@ -114,13 +114,24 @@ beforeAll(
 
 beforeEach(
   async () => {
-    await miroirBeforeEach(miroirConfig, domainController, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
+    await miroirBeforeEach(
+      miroirConfig,
+      domainController,
+      localMiroirPersistenceStoreController,
+      localAppPersistenceStoreController
+    );
   }
 )
 
 afterAll(
   async () => {
-    await miroirAfterAll(miroirConfig, domainController, localMiroirPersistenceStoreController,localAppPersistenceStoreController,localDataStoreServer);
+    await miroirAfterAll(
+      miroirConfig,
+      domainController,
+      localMiroirPersistenceStoreController,
+      localAppPersistenceStoreController,
+      localDataStoreServer
+    );
   }
 )
 

@@ -153,11 +153,11 @@ export const HomePage = (props: RootComponentProps) => {
           miroirMetaModel, 
           test4AppModel,
         ),
-        [adminConfigurationDeploymentParis.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-          adminConfigurationDeploymentParis.uuid,
-          miroirMetaModel, 
-          parisAppModel,
-        ),
+        // [adminConfigurationDeploymentParis.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+        //   adminConfigurationDeploymentParis.uuid,
+        //   miroirMetaModel, 
+        //   parisAppModel,
+        // ),
       }
     ),
     [miroirMetaModel, libraryAppModel, adminAppModel, test1AppModel, test4AppModel, parisAppModel]

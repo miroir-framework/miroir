@@ -1,9 +1,10 @@
 // ##############################################################################################
 
-import { JzodElement, JzodObject } from "@miroir-framework/jzod-ts";
 import {
   EntityDefinition,
   LoggerInterface,
+  JzodElement,
+  JzodObject,
   MiroirLoggerFactory,
   getLoggerName
 } from "miroir-core";

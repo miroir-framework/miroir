@@ -1,4 +1,3 @@
-// import { JzodElement, JzodObject, JzodReference } from "@miroir-framework/jzod-ts";
 import {
   JzodElement,
   JzodObject,
@@ -100,9 +99,12 @@ export function resolveReferencesForJzodSchemaAndValueObject(
   miroirFundamentalJzodSchema: JzodSchema,
   jzodSchema: JzodElement,
   valueObject: any,
-  currentModel?: MetaModel,
-  miroirMetaModel?: MetaModel,
-  relativeReferenceJzodContext?: {[k:string]: JzodElement},
+  currentModel: MetaModel,
+  miroirMetaModel: MetaModel,
+  relativeReferenceJzodContext: {[k:string]: JzodElement},
+  // currentModel?: MetaModel,
+  // miroirMetaModel?: MetaModel,
+  // relativeReferenceJzodContext?: {[k:string]: JzodElement},
 ): ResolvedJzodSchemaReturnType {
   // log.info(
   //   "resolveReferencesForJzodSchemaAndValueObject called for valueObject",
@@ -149,7 +151,6 @@ export function resolveReferencesForJzodSchemaAndValueObject(
 
       let extendedJzodSchema: JzodObject
       if (jzodSchema.extend) {
-        // const extension = resolveJzodSchemaReferenceInContext(
         const extension = resolveJzodSchemaReferenceInContext(
           miroirFundamentalJzodSchema,
           jzodSchema.extend,
@@ -707,6 +708,9 @@ export function resolveJzodSchemaReferenceInContext(
         JSON.stringify(jzodReference) +
         " absoluteReferences keys " +
         JSON.stringify(absoluteReferences.map(r => r.uuid)) +
+        " current Model " + Object.keys(currentModel??{}) + 
+        // " currentModel schemas " +
+        // Object.keys((currentModel as any).jzodSchemas) +
         " relativeReferenceJzodContext keys " +
         JSON.stringify(relativeReferenceJzodContext)
   

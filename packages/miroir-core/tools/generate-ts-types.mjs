@@ -1,27 +1,7 @@
 import { jzodToTsCode } from "@miroir-framework/jzod-ts";
-// require JzodElement, jzodToTsCode from "@miroir-framework/jzod-ts";
-// import * as fs from "fs";
 import { existsSync, readFileSync, writeFileSync } from 'fs';
-// import ModelEntityUpdateCreateMetaModelInstanceSchema from "../dist/src/0_interfaces/2_domain/ModelUpdateInterface.js";
-// import * as f from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema.js";
-// import * as miroirFundamentalJzodSchema from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema.js";
-// import miroirFundamentalJzodSchema from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema.js";
-// import miroirFundamentalJzodSchema from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema.js";
-// import miroirFundamentalJzodSchema from "../src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema.js";
-// import {miroirFundamentalJzodSchema} from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema.js";
-// import {miroirFundamentalJzodSchema} from "miroir-core";
 import path from "path";
-// import { ModelEntityUpdateCreateMetaModelInstanceSchema } from "../dist//0_interfaces/2_domain/ModelUpdateInterface.ts";
 
-// import { getLoggerName, LoggerInterface, MiroirLoggerFactory } from "miroir-core";
-
-// import miroirFundamentalJzodSchema from "./0_interfaces/1_core/bootstrapJzodSchemas/fe9b7d99-f216-44de-bb6e-60e1a1ebb739.json"  assert { type: "json" };
-
-// const localMiroirFundamentalJzodSchema = JSON.parse(miroirFundamentalJzodSchema).toString();
-// const miroirFundamentalJzodSchema = JSON.parse(readFileSync(new URL('./0_interfaces/1_core/bootstrapJzodSchemas/fe9b7d99-f216-44de-bb6e-60e1a1ebb739.json', import.meta.url)).toString());
-// const test = JSON.parse(readFileSync(new URL('./0_interfaces/1_core/bootstrapJzodSchemas/4721c050-71a0-4f9d-beb4-6520817594e0.json', import.meta.url)).toString());
-
-// import { getMiroirFundamentalJzodSchema} from "../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.ts"
 import { getMiroirFundamentalJzodSchema} from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.js"
 
 import entityDefinitionBundleV1 from "../src/assets/miroirAdmin/model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/01a051d8-d43c-430d-a98e-739048f54942.json" assert { type: "json" };
@@ -108,7 +88,6 @@ export async function generateZodSchemaFileFromJzodSchema(
     jzodSchemaVariableName,
     generateTypeAnotationsForSchema,
   );
-  // const newFileContents = `import { JzodObject, jzodObject } from "@miroir-framework/jzod-ts";
   const newFileContents = newFileContentsNotFormated;
 
   console.log("generateZodSchemaFileFromJzodSchema targetFileName:", targetFileName);

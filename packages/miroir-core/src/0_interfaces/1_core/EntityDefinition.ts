@@ -3,12 +3,10 @@ import { z } from "zod";
 import {
   ZodSchemaAndDescription, jzodElementSchemaToZodSchemaAndDescription,
 } from "@miroir-framework/jzod";
-import {
-  JzodElement
-} from "@miroir-framework/jzod-ts";
 import { EntityInstanceWithNameSchema } from "../../0_interfaces/1_core/Instance.js";
 
 import miroirJzodSchemaBootstrap from '../../../src/assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json';
+import { JzodElement } from "./preprocessor-generated/miroirFundamentalType.js";
 
 
 // ##########################################################################################

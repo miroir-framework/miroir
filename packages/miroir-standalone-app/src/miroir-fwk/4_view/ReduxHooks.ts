@@ -2,7 +2,6 @@ import { useMemo } from "react";
 
 import { useSelector } from "react-redux";
 
-// import { JzodAttribute } from "@miroir-framework/jzod-ts";
 import {
   ApplicationSection,
   DeploymentEntityState,

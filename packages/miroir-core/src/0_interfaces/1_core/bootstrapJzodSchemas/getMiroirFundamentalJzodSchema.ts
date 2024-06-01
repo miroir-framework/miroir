@@ -1,8 +1,8 @@
-import { JzodObject } from "@miroir-framework/jzod-ts";
 import {
   EntityDefinition,
   JzodElement,
-  JzodSchema
+  JzodObject,
+  JzodSchema,
 } from "../preprocessor-generated/miroirFundamentalType";
 // import { Endpoint } from "../../../3_controllers/Endpoint";
 

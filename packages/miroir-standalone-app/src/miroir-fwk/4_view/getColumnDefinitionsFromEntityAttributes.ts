@@ -1,8 +1,16 @@
 import { ColDef } from "ag-grid-community";
 
-import { JzodElement } from "@miroir-framework/jzod-ts";
 
-import { EntityDefinition, JzodObject, LoggerInterface, MiroirLoggerFactory, entityAuthor, entityPublisher, getLoggerName } from "miroir-core";
+import {
+  EntityDefinition,
+  JzodElement,
+  JzodObject,
+  LoggerInterface,
+  MiroirLoggerFactory,
+  entityAuthor,
+  entityPublisher,
+  getLoggerName,
+} from "miroir-core";
 
 import { GenderCellEditor } from "./components/GenderCellEditor";
 import {

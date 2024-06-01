@@ -221,7 +221,8 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
         setOpen={props.setOpen}
       >
       </SidebarSection> */}
-      <Divider />
+      {/* ################################################################################### */}
+      {/* <Divider />
       <SidebarSection
         deploymentUuid={adminConfigurationDeploymentParis.uuid}
         menuUuid={defaultMenuParisUuid}
@@ -236,7 +237,8 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
         open={props.open}
         setOpen={props.setOpen}
       >
-      </SidebarSection>
+      </SidebarSection> */}
+      {/* ################################################################################### */}
 
         {/* {sideBarDefaultItems.map((i: any, index: number) => ( */}
         {/* TODO: DRY the menuSection display!*/}

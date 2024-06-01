@@ -4,7 +4,8 @@ import {
   ApplicationSection, 
   EntityDefinition, 
   EntityInstance, 
-  EntityInstanceWithName, 
+  EntityInstanceWithName,
+  JzodElement,
   MetaEntity, 
   LocalCacheQueryParams, 
   Report, 
@@ -19,7 +20,6 @@ import {
   MetaModel,
   Entity,
 } from 'miroir-core';
-import { JzodElement } from "@miroir-framework/jzod-ts";
 import { ReduxStateWithUndoRedo, selectInstanceArrayForDeploymentSectionEntity, selectModelForDeploymentFromReduxState } from "miroir-localcache-redux";
 import { useSelector } from "react-redux";
 

@@ -59,6 +59,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
     async clear(): Promise<ActionVoidReturnType> {
       // drop data anq model Entities
       // await this.dataStore.clear();
+      log.info("clearing data for entities:",this.getEntityUuids())
       await this.localUuidIndexedDb.removeSubLevels(this.getEntityUuids());
       log.info(this.logHeader, "clear DONE", this.getEntityUuids());
       return Promise.resolve(ACTION_OK);

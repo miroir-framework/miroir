@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
 
-import { JzodElement } from '@miroir-framework/jzod-ts';
 import {
   ApplicationSection,
   Entity,
   EntityDefinition,
   EntityInstance,
   LoggerInterface,
+  JzodElement,
   MetaModel,
   MiroirLoggerFactory,
   Uuid,

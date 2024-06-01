@@ -1,5 +1,3 @@
-import { JzodAttribute } from "@miroir-framework/jzod-ts";
-
 import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import {
   DomainState,
@@ -20,6 +18,7 @@ import {
   ApplicationVersion,
   EntityDefinition,
   EntityInstance,
+  JzodAttribute,
   JzodSchema,
   Menu,
   MetaModel,

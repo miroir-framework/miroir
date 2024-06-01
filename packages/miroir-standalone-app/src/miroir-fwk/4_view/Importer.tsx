@@ -14,6 +14,7 @@ import {
   EntityInstance,
   InstanceAction,
   JzodAttribute,
+  JzodObject,
   LoggerInterface,
   Menu,
   MetaEntity,
@@ -28,11 +29,8 @@ import {
 } from "miroir-core";
 import * as XLSX from 'xlsx';
 import { useDomainControllerService } from "./MiroirContextReactProvider";
-// import { JzodObject } from "@miroir-framework/jzod-ts";
-import { JzodObject } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { packageName } from "../../constants";
 import { cleanLevel } from "./constants";
-// import { JzodObject } from "@miroir-framework/jzod-ts";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"importer");
