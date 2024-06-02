@@ -10,8 +10,8 @@
       "jzodArray": {
         "type": "object",
         "definition": {
-          "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
-          "extra": { "type": "record", "definition": { "type": "simpleType", "definition": "any" }, "optional": true },
+          "optional": { "type": "boolean", "optional": true },
+          "extra": { "type": "record", "definition": { "type": "any" }, "optional": true },
           "type": { "type": "literal", "definition": "array" },
           "definition": { "type": "schemaReference",  "definition": { "relativePath": "jzodElement" } }
         }
@@ -19,8 +19,8 @@
       "jzodAttribute": {
         "type": "object",
         "definition": {
-          "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
-          "extra": { "type": "record", "definition": { "type": "simpleType", "definition": "any" }, "optional": true },
+          "optional": { "type": "boolean", "optional": true },
+          "extra": { "type": "record", "definition": { "type": "any" }, "optional": true },
           "type": { "type": "literal", "definition": "simpleType" },
           "definition": { "type": "schemaReference",  "definition": { "relativePath": "jzodEnumAttributeTypes" } }
         }
@@ -28,8 +28,8 @@
       "jzodAttributeStringWithValidations": {
         "type": "object",
         "definition": {
-          "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
-          "extra": { "type": "record", "definition": { "type": "simpleType", "definition": "any" }, "optional": true },
+          "optional": { "type": "boolean", "optional": true },
+          "extra": { "type": "record", "definition": { "type": "any" }, "optional": true },
           "type": { "type": "literal", "definition": "simpleType" },
           "definition": { "type": "literal", "definition": "string" },
           "validations": {
@@ -41,7 +41,7 @@
       "jzodAttributeStringValidations": {
         "type": "object",
         "definition": {
-          "extra": { "type": "record", "definition": { "type": "simpleType", "definition": "any" }, "optional": true },
+          "extra": { "type": "record", "definition": { "type": "any" }, "optional": true },
           "type": {
             "type": "enum",
             "definition": [
@@ -63,7 +63,7 @@
               "ip"
             ]
           },
-          "parameter": { "type": "simpleType", "definition": "any" }
+          "parameter": { "type": "any" }
         }
       },
       "jzodElement": {
@@ -93,10 +93,10 @@
       "jzodEnum": {
         "type": "object",
         "definition": {
-          "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
-          "extra": { "type": "record", "definition": { "type": "simpleType", "definition": "any" }, "optional": true },
+          "optional": { "type": "boolean", "optional": true },
+          "extra": { "type": "record", "definition": { "type": "any" }, "optional": true },
           "type": { "type": "literal", "definition": "enum" },
-          "definition": { "type": "array", "definition": { "type": "simpleType", "definition": "string" } }
+          "definition": { "type": "array", "definition": { "type": "string" } }
         }
       },
       "jzodEnumAttributeTypes": {
@@ -124,17 +124,17 @@
       "jzodLiteral": {
         "type": "object",
         "definition": {
-          "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
-          "extra": { "type": "record", "definition": { "type": "simpleType", "definition": "any" }, "optional": true },
+          "optional": { "type": "boolean", "optional": true },
+          "extra": { "type": "record", "definition": { "type": "any" }, "optional": true },
           "type": { "type": "literal", "definition": "literal" },
-          "definition": { "type": "simpleType", "definition": "string" }
+          "definition": { "type": "string" }
         }
       },
       "jzodObject": {
         "type": "object",
         "definition": {
-          "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
-          "extra": { "type": "record", "definition": { "type": "simpleType", "definition": "any" }, "optional": true },
+          "optional": { "type": "boolean", "optional": true },
+          "extra": { "type": "record", "definition": { "type": "any" }, "optional": true },
           "type": { "type": "literal", "definition": "object" },
           "definition": {
             "type": "record",
@@ -145,8 +145,8 @@
       "jzodRecord": {
         "type": "object",
         "definition": {
-          "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
-          "extra": { "type": "record", "definition": { "type": "simpleType", "definition": "any" }, "optional": true },
+          "optional": { "type": "boolean", "optional": true },
+          "extra": { "type": "record", "definition": { "type": "any" }, "optional": true },
           "type": { "type": "literal", "definition": "record" },
           "definition": { "type": "schemaReference",  "definition": { "relativePath": "jzodElement" } }
         }
@@ -154,20 +154,20 @@
       "jzodReference": {
         "type": "object",
         "definition": {
-          "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
-          "extra": { "type": "record", "definition": { "type": "simpleType", "definition": "any" }, "optional": true },
+          "optional": { "type": "boolean", "optional": true },
+          "extra": { "type": "record", "definition": { "type": "any" }, "optional": true },
           "type": { "type": "literal", "definition": "schemaReference" },
           "definition": { "type": "object", "definition": {
-            "relativePath": { "type": "simpleType", "definition": "string", "optional": true },
-            "absolutePath": { "type": "simpleType", "definition": "string", "optional": true }
+            "relativePath": { "type": "string", "optional": true },
+            "absolutePath": { "type": "string", "optional": true }
           } }
         }
       },
       "jzodUnion": {
         "type": "object",
         "definition": {
-          "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
-          "extra": { "type": "record", "definition": { "type": "simpleType", "definition": "any" }, "optional": true },
+          "optional": { "type": "boolean", "optional": true },
+          "extra": { "type": "record", "definition": { "type": "any" }, "optional": true },
           "type": { "type": "literal", "definition": "union" },
           "definition": {
             "type": "array",

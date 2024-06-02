@@ -9,7 +9,7 @@
     "parameterSchema": {
       "type": "object",
       "definition": {
-        "applicationVersion": { "type": "simpleType", "definition": "string" }
+        "applicationVersion": { "type": "string" }
       }
     },
     "select": {

@@ -11,70 +11,53 @@
     "type": "object",
     "definition": {
       "uuid": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
+        "type": "uuid",
         "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
       },
       "parentName": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "optional": true,
         "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
       },
       "parentUuid": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
+        "type": "uuid",
         "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
       },
       "parentDefinitionVersionUuid": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "uuid",
         "optional": true,
-        "validations": [{ "type": "uuid" }],
         "extra": { "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }
       },
       "name": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "extra": { "id":5, "defaultLabel": "Name", "editable": true }
       },
       "defaultLabel": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "optional": true,
         "extra": { "id":6, "defaultLabel": "Default Label", "editable": true }
       },
       "description": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "optional": true,
         "extra": { "id":7, "defaultLabel": "Description", "editable": true }
       },
       "type": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "optional": true,
         "extra": { "id":8, "defaultLabel": "Type of Report", "editable": true }
       },
       "application": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
+        "type": "uuid",
         "extra": { "id":9, "defaultLabel": "Application", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": false }
       },
       "branch": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
+        "type": "uuid",
         "extra": { "id":10, "defaultLabel": "Branch", "description":"The Branch of this Application Version", "targetEntity": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1", "editable": false }
       },
       "previousVersion": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "uuid",
         "optional": true,
-        "validations": [{ "type": "uuid" }],
         "extra": { "id":11, "defaultLabel": "Previous Application Version", "description":"Previous version of the application on this Branch.", "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24", "editable": false }
       },
       "modelStructureMigration": {
@@ -84,8 +67,7 @@
         "definition": {
           "type": "record",
           "definition": {
-            "type": "simpleType",
-            "definition": "any"
+            "type": "any"
           }
         }
       },
@@ -96,8 +78,7 @@
         "definition": {
           "type": "record",
           "definition": {
-            "type": "simpleType",
-            "definition": "any" 
+            "type": "any" 
           }
         }
       }

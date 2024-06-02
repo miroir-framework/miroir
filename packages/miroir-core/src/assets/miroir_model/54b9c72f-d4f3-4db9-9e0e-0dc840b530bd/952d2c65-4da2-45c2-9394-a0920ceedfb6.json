@@ -19,28 +19,21 @@
     "type": "object",
     "definition": {
       "uuid": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
+        "type": "uuid",
         "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
       },
       "parentName": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "optional": true,
         "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
       },
       "parentUuid": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
+        "type": "uuid",
         "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
       },
       "parentDefinitionVersionUuid": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "uuid",
         "optional": true,
-        "validations": [{ "type": "uuid" }],
         "extra": { "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }
       },
       "conceptLevel": {
@@ -50,13 +43,11 @@
         "extra": { "id": 5, "defaultLabel": "Concept Level", "editable": false }
       },
       "name": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "extra": { "id":6, "defaultLabel": "Name", "editable": true }
       },
       "defaultLabel": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "extra": { "id":7, "defaultLabel": "Default Label", "editable": true }
       },
       "type": {
@@ -66,9 +57,7 @@
         "extra": { "id":8, "defaultLabel": "Type of Report", "editable": true }
       },
       "application": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
+        "type": "uuid",
         "optional": true,
         "extra": { "id":9, "defaultLabel": "Application", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": true }
       },
@@ -94,20 +83,17 @@
                 "type": "object",
                 "definition": {
                   "label": {
-                    "type": "simpleType",
-                    "definition": "string",
+                    "type": "string",
                     "optional": true,
                     "extra": { "id":1, "defaultLabel": "Label", "editable": false }
                   },
                   "parentUuid": {
-                    "type": "simpleType",
-                    "definition": "string",
+                    "type": "string",
                     "validations": [{ "type": "uuid" }],
                     "extra": { "id":2, "defaultLabel": "Entity Uuid", "editable": false }
                   },
                   "fetchedDataReference": {
-                    "type": "simpleType",
-                    "definition": "string",
+                    "type": "string",
                     "optional": true,
                     "extra": { "id": 3, "defaultLabel": "Fetched Data Reference", "editable": false }
                   },
@@ -134,27 +120,23 @@
                 "type": "object",
                 "definition": {
                   "label": {
-                    "type": "simpleType",
-                    "definition": "string",
+                    "type": "string",
                     "optional": true,
                     "extra": { "id":1, "defaultLabel": "Label", "editable": false }
                   },
                   "parentName": {
-                    "type": "simpleType",
-                    "definition": "string",
+                    "type": "string",
                     "optional": true,
                     "validations": [{ "type": "uuid" }],
                     "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
                   },
                   "parentUuid": {
-                    "type": "simpleType",
-                    "definition": "string",
+                    "type": "string",
                     "validations": [{ "type": "uuid" }],
                     "extra": { "id":2, "defaultLabel": "Entity Uuid", "editable": false }
                   },
                   "fetchedDataReference": {
-                    "type": "simpleType",
-                    "definition": "string",
+                    "type": "string",
                     "optional": true,
                     "extra": { "id": 3, "defaultLabel": "Fetched Data Reference", "editable": false }
                   },
@@ -167,9 +149,8 @@
                     }
                   },
                   "sortByAttribute": {
-                    "type": "simpleType",
-                    "optional": true,
-                    "definition": "string"
+                    "type": "string",
+                    "optional": true
                   }
                 }
               }
@@ -306,8 +287,7 @@
             ]
           },
           "parameterTransformer": {
-            "type": "simpleType",
-            "definition": "string"
+            "type": "string"
           },
           "rootReportSection": {
             "type": "object",
@@ -316,16 +296,14 @@
                 "type": "record",
                 "optional": true,
                 "definition": {
-                  "type": "simpleType",
-                  "definition": "string"
+                  "type": "string"
                 }
               },
               "reportParameters": {
                 "type": "record",
                 "optional": true,
                 "definition": {
-                  "type": "simpleType",
-                  "definition": "string"
+                  "type": "string"
                 }
               },
               "fetchQuery": {

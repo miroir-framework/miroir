@@ -16,9 +16,7 @@
             "actionName": {"type": "literal", "definition":"initModel"},
             "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
             "deploymentUuid": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [{ "type": "uuid" }],
+              "type": "uuid",
               "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
             },
             "params": {
@@ -86,9 +84,7 @@
             "actionName": {"type": "literal", "definition":"commit"},
             "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
             "deploymentUuid": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [{ "type": "uuid" }],
+              "type": "uuid",
               "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
             }
           }
@@ -102,9 +98,7 @@
             "actionName": {"type": "literal", "definition":"rollback"},
             "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
             "deploymentUuid": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [{ "type": "uuid" }],
+              "type": "uuid",
               "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
             }
           }
@@ -118,9 +112,7 @@
             "actionName": {"type": "literal", "definition":"remoteLocalCacheRollback"},
             "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
             "deploymentUuid": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [{ "type": "uuid" }],
+              "type": "uuid",
               "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
             }
           }
@@ -134,9 +126,7 @@
             "actionName": {"type": "literal", "definition":"resetModel"},
             "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
             "deploymentUuid": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [{ "type": "uuid" }],
+              "type": "uuid",
               "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
             }
           }
@@ -150,9 +140,7 @@
             "actionName": {"type": "literal", "definition":"resetData"},
             "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
             "deploymentUuid": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [{ "type": "uuid" }],
+              "type": "uuid",
               "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
             }
           }
@@ -165,25 +153,20 @@
             "actionType": {"type": "literal", "definition":"modelAction"},
             "actionName": {"type": "literal", "definition":"alterEntityAttribute"},
             "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
-            "transactional": { "type": "simpleType", "definition": "boolean", "optional": true },
+            "transactional": { "type": "boolean", "optional": true },
             "deploymentUuid": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [{ "type": "uuid" }],
+              "type": "uuid",
               "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
             },
             "entityName": {
-              "type": "simpleType",
-              "definition": "string"
+              "type": "string"
             },
             "entityUuid": {
-              "type": "simpleType",
-              "definition": "string",
+              "type": "string",
               "validations": [{ "type": "uuid" }]
             },
             "entityDefinitionUuid": {
-              "type": "simpleType",
-              "definition": "string",
+              "type": "string",
               "validations": [{ "type": "uuid" }]
             },
             "addColumns": {
@@ -193,8 +176,7 @@
                 "type": "object",
                 "definition": {
                   "name": {
-                    "type": "simpleType",
-                    "definition": "string"
+                    "type": "string"
                   },
                   "definition": {
                     "type": "schemaReference",
@@ -210,8 +192,7 @@
               "type": "array",
               "optional": true,
               "definition": {
-                "type": "simpleType",
-                "definition": "string"
+                "type": "string"
               }
             },
             "update": {
@@ -232,31 +213,25 @@
             "actionType": {"type": "literal", "definition":"modelAction"},
             "actionName": {"type": "literal", "definition":"renameEntity"},
             "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
-            "transactional": { "type": "simpleType", "definition": "boolean", "optional": true },
+            "transactional": { "type": "boolean", "optional": true },
             "deploymentUuid": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [{ "type": "uuid" }],
+              "type": "uuid",
               "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
             },
             "entityName": {
-              "type": "simpleType",
-              "optional": true,
-              "definition": "string"
+              "type": "string",
+              "optional": true
             },
             "entityUuid": {
-              "type": "simpleType",
-              "definition": "string",
+              "type": "string",
               "validations": [{ "type": "uuid" }]
             },
             "entityDefinitionUuid": {
-              "type": "simpleType",
-              "definition": "string",
+              "type": "string",
               "validations": [{ "type": "uuid" }]
             },
             "targetValue": {
-              "type": "simpleType",
-              "definition": "string"
+              "type": "string"
             }
           }
         }
@@ -268,11 +243,9 @@
             "actionType": {"type": "literal", "definition":"modelAction"},
             "actionName": {"type": "literal", "definition":"createEntity"},
             "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
-            "transactional": { "type": "simpleType", "definition": "boolean", "optional": true },
+            "transactional": { "type": "boolean", "optional": true },
             "deploymentUuid": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [{ "type": "uuid" }],
+              "type": "uuid",
               "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
             },
             "entities": {
@@ -306,21 +279,17 @@
           "definition": {
             "actionType": {"type": "literal", "definition":"modelAction"},
             "actionName": {"type": "literal", "definition":"dropEntity"},
-            "transactional": { "type": "simpleType", "definition": "boolean", "optional": true },
+            "transactional": { "type": "boolean", "optional": true },
             "deploymentUuid": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [{ "type": "uuid" }],
+              "type": "uuid",
               "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
             },
             "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
             "entityUuid": {
-              "type": "simpleType",
-              "definition": "string"
+              "type": "string"
             },
             "entityDefinitionUuid": {
-              "type": "simpleType",
-              "definition": "string"
+              "type": "string"
             }
           }
         }

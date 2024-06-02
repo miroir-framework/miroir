@@ -19,28 +19,21 @@
     "type": "object",
     "definition": {
       "uuid": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
+        "type": "uuid",
         "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
       },
       "parentName": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "optional": true,
         "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
       },
       "parentUuid": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
+        "type": "uuid",
         "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
       },
       "parentDefinitionVersionUuid": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "uuid",
         "optional": true,
-        "validations": [{ "type": "uuid" }],
         "extra": { "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }
       },
       "conceptLevel": {
@@ -50,27 +43,21 @@
         "extra": { "id": 5, "defaultLabel": "Concept Level", "editable": false }
       },
       "application": {
-        "type": "simpleType",
+        "type": "uuid",
         "optional": true,
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
         "extra": { "id": 6, "defaultLabel": "Application", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": false }
       },
       "name": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "extra": { "id":7, "defaultLabel": "Name", "editable": true }
       },
       "author": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
+        "type": "uuid",
         "optional": true,
         "extra": { "id":8, "defaultLabel": "Application", "editable": true }
       },
       "description": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "optional": true,
         "extra": { "id": 9, "defaultLabel": "Description", "editable": true }
       }

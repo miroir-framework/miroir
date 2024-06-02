@@ -18,8 +18,7 @@
       "type": "object",
       "definition": {
         "optional": {
-          "type": "simpleType",
-          "definition": "boolean",
+          "type": "boolean",
           "optional": false
         },
         "extra": {
@@ -27,16 +26,13 @@
           "type": "object",
           "definition": {
             "id": {
-              "type": "simpleType",
-              "definition": "number"
+              "type": "number"
             },
             "defaultLabel": {
-              "type": "simpleType",
-              "definition": "string"
+              "type": "string"
             },
             "editable": {
-              "type": "simpleType",
-              "definition": "boolean"
+              "type": "boolean"
             }
           }
         },

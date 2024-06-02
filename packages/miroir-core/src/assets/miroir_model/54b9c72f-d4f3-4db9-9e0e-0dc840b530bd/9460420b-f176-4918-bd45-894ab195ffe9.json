@@ -17,50 +17,38 @@
     "type": "object",
     "definition": {
       "uuid": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
+        "type": "uuid",
         "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
       },
       "parentName": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "optional": true,
         "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
       },
       "parentUuid": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
+        "type": "uuid",
         "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
       },
       "parentDefinitionVersionUuid": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "uuid",
         "optional": true,
-        "validations": [{ "type": "uuid" }],
         "extra": { "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }
       },
       "name": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "extra": { "id":5, "defaultLabel": "Name", "editable": true }
       },
       "defaultLabel": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "extra": { "id":6, "defaultLabel": "Default Label", "editable": true }
       },
       "description": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "optional": true,
         "extra": { "id":7, "defaultLabel": "Description", "editable": true }
       },
       "selfApplication": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
+        "type": "uuid",
         "extra": { "id":8, "defaultLabel": "Self Application", "editable": true }
       }
     }

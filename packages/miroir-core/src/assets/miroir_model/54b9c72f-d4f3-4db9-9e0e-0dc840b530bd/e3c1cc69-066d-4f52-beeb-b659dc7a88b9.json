@@ -17,48 +17,37 @@
     "type": "object",
     "definition": {
       "uuid": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
+        "type": "uuid",
         "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
       },
       "parentName": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
       },
       "parentUuid": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
+        "type": "uuid",
         "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
       },
       "parentDefinitionVersionUuid": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "uuid",
         "optional": true,
-        "validations": [{ "type": "uuid" }],
         "extra": { "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }
       },
       "name": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "extra": { "id": 6, "defaultLabel": "Name", "editable": false }
       },
       "version": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "extra": { "id": 7, "defaultLabel": "Version", "editable": false }
       },
       "description": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "optional": true,
         "extra": { "id": 8, "defaultLabel": "Description", "editable": true }
       },
       "transactionalEndpoint": {
-        "type": "simpleType",
-        "definition": "boolean",
+        "type": "boolean",
         "optional": true,
         "extra": { "id": 9, "defaultLabel": "Transactional Endpoint", "editable": true }
       },
@@ -153,8 +142,7 @@
                     "definition": "union"
                   },
                   "discriminator": {
-                    "type": "simpleType",
-                    "definition": "string",
+                    "type": "string",
                     "optional": true
                   },
                   "definition": {
@@ -184,14 +172,12 @@
             "extra": { "id": 11, "defaultLabel": "Endpoint Definition", "editable": true }
           },
           "actionTransformer": {
-            "type": "simpleType",
-            "optional": true,
-            "definition": "any"
+            "type": "any",
+            "optional": true
           },
           "actionMigrations": {
-            "type": "simpleType", 
-            "optional": true,
-            "definition": "any"
+            "type": "any", 
+            "optional": true
           }
         }
       }

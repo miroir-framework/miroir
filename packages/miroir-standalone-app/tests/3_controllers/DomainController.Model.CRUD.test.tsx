@@ -1149,7 +1149,7 @@ describe.sequential(
           console.log('Update Report definition step 2: update reportReportList, modified version must then be present in the report list.')
           // const updatedReport = 
           const iconsDefinition: JzodElement = {
-            "type": "simpleType", "definition": "number", "optional": true, "extra": { "id":6, "defaultLabel": "Gender (narrow-minded)", "editable": true }
+            "type": "number", "optional": true, "extra": { "id":6, "defaultLabel": "Gender (narrow-minded)", "editable": true }
           };
       
           const updateAction: DomainAction = 
@@ -1319,7 +1319,7 @@ describe.sequential(
           console.log('Alter Miroir Model Report definition step 2: update reportReportList, modified version must then be present in the report list.')
           // const updatedReport = 
           // const iconsDefinition: JzodElement = {
-          //   "type": "simpleType", "definition": "number", "optional": true, "extra": { "id":6, "defaultLabel": "Gender (narrow-minded)", "editable": true }
+          //   "type": "number", "optional": true, "extra": { "id":6, "defaultLabel": "Gender (narrow-minded)", "editable": true }
           // };
 
           const updateAction: DomainAction = {

@@ -11,22 +11,20 @@
         "type": "object",
         "definition": {
           "optional": {
-            "type": "simpleType",
-            "definition": "boolean",
+            "type": "boolean",
             "optional": true
           },
           "nullable": {
-            "type": "simpleType",
-            "definition": "boolean",
+            "type": "boolean",
             "optional": true
           },
           "extra": {
             "type": "object",
             "definition": {
-              "id": { "type": "simpleType", "definition": "number", "optional": true },
-              "defaultLabel": { "type": "simpleType", "definition": "string", "optional": true },
-              "targetEntity": { "type": "simpleType", "definition": "string", "optional": true },
-              "editable": { "type": "simpleType", "definition": "boolean", "optional": true }
+              "id": { "type": "number", "optional": true },
+              "defaultLabel": { "type": "string", "optional": true },
+              "targetEntity": { "type": "string", "optional": true },
+              "editable": { "type": "boolean", "optional": true }
             },
             "optional": true
           }
@@ -72,8 +70,7 @@
             "definition": "simpleType"
           },
           "coerce": {
-            "type": "simpleType",
-            "definition": "boolean",
+            "type": "boolean",
             "optional": true
           },
           "definition": {
@@ -115,8 +112,7 @@
           "extra": {
             "type": "record",
             "definition": {
-              "type": "simpleType",
-              "definition": "any"
+              "type": "any"
             },
             "optional": true
           },
@@ -125,8 +121,7 @@
             "definition": ["min", "max"]
           },
           "parameter": {
-            "type": "simpleType",
-            "definition": "any"
+            "type": "any"
           }
         }
       },
@@ -149,7 +144,7 @@
             "type": "literal",
             "definition": "date"
           },
-          "coerce": { "type": "simpleType", "definition": "boolean", "optional": true },
+          "coerce": { "type": "boolean", "optional": true },
           "validations": {
             "type": "array",
             "optional": true,
@@ -198,8 +193,7 @@
           "extra": {
             "type": "record",
             "definition": {
-              "type": "simpleType",
-              "definition": "any"
+              "type": "any"
             },
             "optional": true
           },
@@ -221,8 +215,7 @@
             ]
           },
           "parameter": {
-            "type": "simpleType",
-            "definition": "any"
+            "type": "any"
           }
         }
       },
@@ -274,7 +267,7 @@
             "type": "literal",
             "definition": "number"
           },
-          "coerce": { "type": "simpleType", "definition": "boolean", "optional": true },
+          "coerce": { "type": "boolean", "optional": true },
           "validations": {
             "type": "array",
             "optional": true,
@@ -294,8 +287,7 @@
           "extra": {
             "type": "record",
             "definition": {
-              "type": "simpleType",
-              "definition": "any"
+              "type": "any"
             },
             "optional": true
           },
@@ -321,8 +313,7 @@
             ]
           },
           "parameter": {
-            "type": "simpleType",
-            "definition": "any"
+            "type": "any"
           }
         }
       },
@@ -345,7 +336,7 @@
             "type": "literal",
             "definition": "string"
           },
-          "coerce": { "type": "simpleType", "definition": "boolean", "optional": true },
+          "coerce": { "type": "boolean", "optional": true },
           "validations": {
             "type": "array",
             "optional": true,
@@ -374,7 +365,7 @@
             "type": "literal",
             "definition": "string"
           },
-          "coerce": { "type": "simpleType", "definition": "boolean", "optional": true },
+          "coerce": { "type": "boolean", "optional": true },
           "validations": {
             "type": "array",
             "optional": true,
@@ -567,8 +558,7 @@
           "definition": {
             "type": "array",
             "definition": {
-              "type": "simpleType",
-              "definition": "string"
+              "type": "string"
             }
           }
         }
@@ -695,10 +685,10 @@
           "definition": {
             "type": "union",
             "definition": [
-              { "type": "simpleType", "definition": "string" },
-              { "type": "simpleType", "definition": "number" },
-              { "type": "simpleType", "definition": "bigint" },
-              { "type": "simpleType", "definition": "boolean" }
+              { "type": "string" },
+              { "type": "number" },
+              { "type": "bigint" },
+              { "type": "boolean" }
             ]
           }
         }
@@ -799,11 +789,10 @@
             "definition": "object"
           },
           "nonStrict": {
-            "type": "simpleType",
-            "definition": "boolean",
+            "type": "boolean",
             "optional": true
           },
-          "partial": { "type": "simpleType", "definition": "boolean", "optional": true },
+          "partial": { "type": "boolean", "optional": true },
           "definition": {
             "type": "record",
             "definition": {
@@ -894,19 +883,16 @@
             "type": "object",
             "definition": {
               "eager": {
-                "type": "simpleType",
-                "definition": "boolean",
+                "type": "boolean",
                 "optional": true
               },
-              "partial": { "type": "simpleType", "definition": "boolean", "optional": true },
+              "partial": { "type": "boolean", "optional": true },
               "relativePath": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "optional": true
               },
               "absolutePath": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "optional": true
               }
             }
@@ -980,13 +966,11 @@
             "definition": "union"
           },
           "discriminator": {
-            "type": "simpleType",
-            "definition": "string",
+            "type": "string",
             "optional": true
           },
           "subDiscriminator": {
-            "type": "simpleType",
-            "definition": "string",
+            "type": "string",
             "optional": true
           },
           "definition": {

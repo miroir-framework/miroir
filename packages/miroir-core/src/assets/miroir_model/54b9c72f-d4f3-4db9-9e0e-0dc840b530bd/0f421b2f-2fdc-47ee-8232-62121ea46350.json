@@ -17,13 +17,7 @@
     "type": "object",
     "definition": {
       "uuid": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [
-          {
-            "type": "uuid"
-          }
-        ],
+        "type": "uuid",
         "extra": {
           "id": 1,
           "defaultLabel": "Uuid",
@@ -31,8 +25,7 @@
         }
       },
       "parentName": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "optional": true,
         "extra": {
           "id": 2,
@@ -41,13 +34,7 @@
         }
       },
       "parentUuid": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [
-          {
-            "type": "uuid"
-          }
-        ],
+        "type": "uuid",
         "extra": {
           "id": 3,
           "defaultLabel": "Entity Uuid",
@@ -55,14 +42,7 @@
         }
       },
       "parentDefinitionVersionUuid": {
-        "type": "simpleType",
-        "definition": "string",
-        "optional": true,
-        "validations": [
-          {
-            "type": "uuid"
-          }
-        ],
+        "type": "uuid",
         "extra": {
           "id": 4,
           "defaultLabel": "Entity Definition Version Uuid",
@@ -70,8 +50,7 @@
         }
       },
       "name": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "extra": {
           "id": 5,
           "defaultLabel": "Name",
@@ -79,8 +58,7 @@
         }
       },
       "defaultLabel": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "extra": {
           "id": 6,
           "defaultLabel": "Default Label",
@@ -88,8 +66,7 @@
         }
       },
       "description": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "optional": true,
         "extra": {
           "id": 7,
@@ -104,8 +81,7 @@
             "type": "object",
             "definition": {
               "label": {
-                "type": "simpleType",
-                "definition": "string"
+                "type": "string"
               },
               "section": {
                 "type": "schemaReference",
@@ -115,8 +91,7 @@
                 }
               },
               "application": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "validations": [
                   {
                     "type": "uuid"
@@ -129,8 +104,7 @@
                 }
               },
               "reportUuid": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "validations": [
                   {
                     "type": "uuid"
@@ -143,8 +117,7 @@
                 }
               },
               "instanceUuid": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "optional": true,
                 "validations": [
                   {
@@ -158,8 +131,7 @@
                 }
               },
               "icon": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "validations": [
                   {
                     "type": "uuid"
@@ -181,12 +153,10 @@
             "type": "object",
             "definition": {
               "title": {
-                "type": "simpleType",
-                "definition": "string"
+                "type": "string"
               },
               "label": {
-                "type": "simpleType",
-                "definition": "string"
+                "type": "string"
               },
               "items": {
                 "type": "schemaReference",

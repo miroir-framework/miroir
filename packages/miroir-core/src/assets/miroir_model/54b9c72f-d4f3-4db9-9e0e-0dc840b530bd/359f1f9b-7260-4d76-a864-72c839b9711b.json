@@ -11,37 +11,28 @@
     "type": "object",
     "definition": {
       "uuid": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
+        "type": "uuid",
         "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
       },
       "parentName": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
       },
       "parentUuid": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
+        "type": "uuid",
         "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
       },
       "parentDefinitionVersionUuid": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "uuid",
         "optional": true,
-        "validations": [{ "type": "uuid" }],
         "extra": { "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }
       },
       "name": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "extra": { "id": 5, "defaultLabel": "Name", "editable": false }
       },
       "description": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "optional": true,
         "extra": { "id": 6, "defaultLabel": "Description", "editable": true }
       },
@@ -68,29 +59,24 @@
                 ]
               },
               "query": {
-                "type": "simpleType",
-                "optional": true,
-                "definition": "string"
+                "type": "string",
+                "optional": true
               },
               "queryReference": {
-                "type": "simpleType",
-                "optional": true,
-                "definition": "string"
+                "type": "string",
+                "optional": true
               },
               "queryParameters": {
-                "type": "simpleType",
-                "optional": true,
-                "definition": "string"
+                "type": "string",
+                "optional": true
               },
               "queryContext": {
-                "type": "simpleType",
-                "optional": true,
-                "definition": "string"
+                "type": "string",
+                "optional": true
               },
               "deploymentUuid": {
-                "type": "simpleType",
-                "optional": true,
-                "definition": "string"
+                "type": "string",
+                "optional": true
               },
               "applicationSection": {
                 "type": "schemaReference",
@@ -101,14 +87,12 @@
                 }
               },
               "entityUuid": {
-                "type": "simpleType",
-                "optional": true,
-                "definition": "string"
+                "type": "string",
+                "optional": true
               },
               "instanceUuid": {
-                "type": "simpleType",
-                "optional": true,
-                "definition": "string"
+                "type": "string",
+                "optional": true
               }
             }
           },
@@ -124,8 +108,7 @@
                     "definition": "constant"
                   },
                   "referenceUuid": {
-                    "type": "simpleType",
-                    "definition": "string"
+                    "type": "string"
                   }
                 }
               },
@@ -137,8 +120,7 @@
                     "definition": "queryContextReference"
                   },
                   "referenceName": {
-                    "type": "simpleType",
-                    "definition": "string"
+                    "type": "string"
                   }
                 }
               },
@@ -150,8 +132,7 @@
                     "definition": "queryParameterReference"
                   },
                   "referenceName": {
-                    "type": "simpleType",
-                    "definition": "string"
+                    "type": "string"
                   }
                 }
               }
@@ -161,8 +142,7 @@
             "type": "object",
             "definition": {
               "label": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "optional": true,
                 "extra": { "id":1, "defaultLabel": "Label", "editable": false }
               },
@@ -176,8 +156,7 @@
                 }
               },
               "parentName": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "optional": true,
                 "extra": { "id":3, "defaultLabel": "Parent Name", "editable": false }
               },
@@ -211,8 +190,7 @@
                 }
               },
               "AttributeOfObjectToCompareToReferenceUuid": {
-                "type": "simpleType",
-                "definition": "string"
+                "type": "string"
               }
             }
           },
@@ -293,13 +271,11 @@
                 }
               },
               "objectReferenceAttribute": {
-                "type": "simpleType",
-                "optional": true,
-                "definition": "string"
+                "type": "string",
+                "optional": true
               },
               "AttributeOfListObjectToCompareToReferenceUuid": {
-                "type": "simpleType",
-                "definition": "string"
+                "type": "string"
               }
             }
           },
@@ -324,14 +300,12 @@
                 }
               },
               "objectListReferenceAttribute": {
-                "type": "simpleType",
-                "optional": true,
-                "definition": "string"
+                "type": "string",
+                "optional": true
               },
               "AttributeOfRootListObjectToCompareToListReferenceUuid": {
-                "type": "simpleType",
-                "optional": true,
-                "definition": "string"
+                "type": "string",
+                "optional": true
               }
             }
           },
@@ -438,7 +412,7 @@
                 "type": "object",
                 "definition": {
                   "queryType": { "type": "literal", "definition": "literal" },
-                  "definition": { "type": "simpleType", "definition": "string" }
+                  "definition": { "type": "string" }
                 }
               },
               {
@@ -450,8 +424,7 @@
                     "definition": "queryContextReference"
                   },
                   "queryReference": {
-                    "type": "simpleType",
-                    "definition": "string"
+                    "type": "string"
                   }
                 }
               },
@@ -512,8 +485,8 @@
                 "type": "literal",
                 "definition": "combineQuery"
               },
-              "a": { "type": "simpleType", "definition": "string"},
-              "b": { "type": "simpleType", "definition": "string"}
+              "a": { "type": "string"},
+              "b": { "type": "string"}
             }
           },
           "miroirFetchQuery": {

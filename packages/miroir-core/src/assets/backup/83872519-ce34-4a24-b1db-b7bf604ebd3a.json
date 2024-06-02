@@ -15,20 +15,17 @@
         "type": "object",
         "definition": {
           "a": {
-            "type": "simpleType",
-            "definition": "string",
+            "type": "string",
             "extra": { "id":1, "defaultLabel": "A", "editable": true }
           },
           "b": {
             "type": "object",
             "definition": {
               "inB1": {
-                "type":"simpleType",
-                "definition": "string"
+                "type": "string"
               },
               "inB2": {
-                "type":"simpleType",
-                "definition": "string"
+                "type": "string"
               }
             },
             "extra": { "id":2, "defaultLabel": "B", "editable": true }
@@ -36,8 +33,7 @@
           "c": {
             "type": "array",
             "definition": {
-              "type":"simpleType",
-              "definition": "string"
+              "type":"string"
             },
             "extra": { "id":3, "defaultLabel": "C", "editable": true }
           },
@@ -71,29 +67,23 @@
         }
       },
       "uuid": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
+        "type": "uuid",
         "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
       },
       "parentName": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "optional": true,
         "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
       },
       "parentUuid": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
+        "type": "uuid",
         "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
       },
       "name": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "extra": { "id":4, "defaultLabel": "Name", "editable": true }
       },
-      "icon": { "type": "simpleType", "definition": "string", "extra": { "id":5, "defaultLabel": "Icon", "editable": true } }
+      "icon": { "type": "string", "extra": { "id":5, "defaultLabel": "Icon", "editable": true } }
     }
   }
 }

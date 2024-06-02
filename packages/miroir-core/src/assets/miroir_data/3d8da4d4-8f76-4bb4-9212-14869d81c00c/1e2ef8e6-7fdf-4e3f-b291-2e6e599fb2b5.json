@@ -66,10 +66,8 @@
           "definition": {
             "actionType": { "type":"literal", "definition":"transactionalInstanceAction"},
             "deploymentUuid": {
-              "type": "simpleType",
-              "definition": "string",
+              "type": "uuid",
               "optional": true,
-              "validations": [{ "type": "uuid" }],
               "extra": { "defaultLabel": "Module Deployment Uuid", "editable": false }
             },
             "instanceAction": {
@@ -93,33 +91,28 @@
             "actionType": { "type":"literal", "definition":"compositeAction"},
             "actionName": { "type":"literal", "definition":"sequence"},
             "deploymentUuid": {
-              "type": "simpleType",
-              "definition": "string",
+              "type": "uuid",
               "optional": true,
-              "validations": [{ "type": "uuid" }],
               "extra": { "defaultLabel": "Module Deployment Uuid", "editable": false }
             },
             "params": {
               "type": "record",
               "optional": true,
               "definition": {
-                "type": "simpleType",
-                "definition": "any"
+                "type": "any"
               }
             },
             "templates": {
               "type": "record",
               "optional": true,
               "definition": {
-                "type": "simpleType",
-                "definition": "any"
+                "type": "any"
               }
             },
             "definition": {
               "type": "array",
               "definition": {
-                "type": "simpleType",
-                "definition": "any"
+                "type": "any"
               }
             }
           }

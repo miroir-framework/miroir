@@ -136,25 +136,19 @@
             "type": "object",
             "definition": {
               "uuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
               },
               "parentName": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
               },
               "parentUuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
               },
               "name": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "extra": { "id": 4, "defaultLabel": "Name", "editable": false }
               },
               "conceptLevel": {
@@ -164,14 +158,12 @@
                 "extra": { "id": 5, "defaultLabel": "Concept Level", "editable": false }
               },
               "defaultLabel": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "optional": true,
                 "extra": { "id": 6, "defaultLabel": "Default Label", "editable": true }
               },
               "description": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "optional": true,
                 "extra": { "id": 7, "description": "Description", "editable": true }
               },
@@ -217,49 +209,38 @@
             "type": "object",
             "definition": {
               "uuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
               },
               "parentName": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "optional": true,
                 "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
               },
               "parentUuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
               },
               "name": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "extra": { "id": 4, "defaultLabel": "Name", "editable": true }
               },
               "defaultLabel": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "extra": { "id": 5, "defaultLabel": "Default Label", "editable": true }
               },
               "description": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "optional": true,
                 "extra": { "id": 6, "defaultLabel": "Description", "editable": true }
               },
               "type": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "optional": true,
                 "extra": { "id": 7, "defaultLabel": "Type of Report", "editable": true }
               },
               "application": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": {
                   "id": 8,
                   "defaultLabel": "Application",
@@ -268,9 +249,7 @@
                 }
               },
               "branch": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": {
                   "id": 9,
                   "defaultLabel": "Branch",
@@ -280,9 +259,7 @@
                 }
               },
               "previousVersion": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": {
                   "id": 10,
                   "defaultLabel": "Previous Application Version",
@@ -328,21 +305,16 @@
             "type": "object",
             "definition": {
               "uuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
               },
               "parentName": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "optional": true,
                 "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
               },
               "parentUuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
               },
               "conceptLevel": {
@@ -352,14 +324,11 @@
                 "extra": { "id": 4, "defaultLabel": "Concept Level", "editable": false }
               },
               "name": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "extra": { "id": 5, "defaultLabel": "Name", "editable": true }
               },
               "author": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "optional": true,
                 "extra": {
                   "id": 6,
@@ -369,8 +338,7 @@
                 }
               },
               "description": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "optional": true,
                 "extra": { "id": 7, "defaultLabel": "Description", "editable": true }
               }
@@ -389,21 +357,16 @@
             "type": "object",
             "definition": {
               "uuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
               },
               "parentName": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "optional": true,
                 "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
               },
               "parentUuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": {
                   "id": 3,
                   "defaultLabel": "Entity Uuid",
@@ -419,19 +382,15 @@
                 "extra": { "id": 4, "defaultLabel": "Concept Level", "editable": false }
               },
               "name": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "extra": { "id": 5, "defaultLabel": "Name", "editable": true }
               },
               "defaultLabel": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "extra": { "id": 6, "defaultLabel": "Name", "editable": true }
               },
               "application": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": {
                   "id": 7,
                   "defaultLabel": "Application",
@@ -440,9 +399,7 @@
                 }
               },
               "headVersion": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "optional": true,
                 "extra": {
                   "id": 8,
@@ -452,8 +409,7 @@
                 }
               },
               "description": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "optional": true,
                 "extra": { "id": 9, "defaultLabel": "Description", "editable": true }
               }
@@ -472,36 +428,28 @@
             "type": "object",
             "definition": {
               "uuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
               },
               "parentName": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "optional": true,
                 "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
               },
               "parentUuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
               },
               "name": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "extra": { "id": 4, "defaultLabel": "Name", "editable": true }
               },
               "defaultLabel": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "extra": { "id": 5, "defaultLabel": "Default Label", "editable": true }
               },
               "description": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "optional": true,
                 "extra": { "id": 6, "defaultLabel": "Description", "editable": true }
               }
@@ -520,21 +468,16 @@
             "type": "object",
             "definition": {
               "uuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
               },
               "parentName": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "optional": true,
                 "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
               },
               "parentUuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
               },
               "conceptLevel": {
@@ -544,13 +487,11 @@
                 "extra": { "id": 4, "defaultLabel": "Concept Level", "editable": false }
               },
               "name": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "extra": { "id": 5, "defaultLabel": "Name", "editable": true }
               },
               "defaultLabel": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "extra": { "id": 6, "defaultLabel": "Default Label", "editable": true }
               },
               "type": {
@@ -560,9 +501,7 @@
                 "extra": { "id": 7, "defaultLabel": "Type of Report", "editable": true }
               },
               "application": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "optional": true,
                 "extra": {
                   "id": 8,
@@ -771,43 +710,33 @@
             "type": "object",
             "definition": {
               "uuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
               },
               "parentName": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "optional": true,
                 "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
               },
               "parentUuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
               },
               "name": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "extra": { "id": 4, "defaultLabel": "Name", "editable": true }
               },
               "defaultLabel": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "extra": { "id": 5, "defaultLabel": "Default Label", "editable": true }
               },
               "description": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "optional": true,
                 "extra": { "id": 6, "defaultLabel": "Description", "editable": true }
               },
               "application": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": {
                   "id": 7,
                   "defaultLabel": "Application",
@@ -849,25 +778,19 @@
             "type": "object",
             "definition": {
               "uuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
               },
               "parentName": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
               },
               "parentUuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
               },
               "name": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "extra": { "id": 4, "defaultLabel": "Name", "editable": false }
               },
               "conceptLevel": {
@@ -877,8 +800,7 @@
                 "extra": { "id": 5, "defaultLabel": "Concept Level", "editable": false }
               },
               "description": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "optional": true,
                 "extra": { "id": 6, "defaultLabel": "Description", "editable": true }
               },
@@ -907,21 +829,16 @@
             "type": "object",
             "definition": {
               "uuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
               },
               "parentName": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "optional": true,
                 "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
               },
               "parentUuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": {
                   "id": 3,
                   "defaultLabel": "Entity Uuid",
@@ -931,25 +848,20 @@
                 }
               },
               "name": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "extra": { "id": 4, "defaultLabel": "Name", "editable": true }
               },
               "defaultLabel": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "extra": { "id": 5, "defaultLabel": "Default Label", "editable": true }
               },
               "description": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "optional": true,
                 "extra": { "id": 6, "defaultLabel": "Description", "editable": true }
               },
               "application": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": {
                   "id": 7,
                   "defaultLabel": "Application",
@@ -959,9 +871,7 @@
                 }
               },
               "applicationVersion": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": {
                   "id": 7,
                   "defaultLabel": "Application Version",
@@ -971,9 +881,7 @@
                 }
               },
               "entity": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": {
                   "id": 7,
                   "defaultLabel": "Entity",
@@ -997,31 +905,24 @@
             "type": "object",
             "definition": {
               "uuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
               },
               "parentName": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "optional": true,
                 "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
               },
               "parentUuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
               },
               "name": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "extra": { "id": 4, "defaultLabel": "Name", "editable": true }
               },
               "defaultLabel": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "extra": { "id": 5, "defaultLabel": "Default Label", "editable": true }
               },
               "definition": {
@@ -1203,10 +1104,10 @@
               "jzodArray": {
                 "type": "object",
                 "definition": {
-                  "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
+                  "optional": { "type": "boolean", "optional": true },
                   "extra": {
                     "type": "record",
-                    "definition": { "type": "simpleType", "definition": "any" },
+                    "definition": { "type": "any" },
                     "optional": true
                   },
                   "type": { "type": "literal", "definition": "array" },
@@ -1216,10 +1117,10 @@
               "jzodAttribute": {
                 "type": "object",
                 "definition": {
-                  "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
+                  "optional": { "type": "boolean", "optional": true },
                   "extra": {
                     "type": "record",
-                    "definition": { "type": "simpleType", "definition": "any" },
+                    "definition": { "type": "any" },
                     "optional": true
                   },
                   "type": { "type": "literal", "definition": "simpleType" },
@@ -1232,10 +1133,10 @@
               "jzodAttributeStringWithValidations": {
                 "type": "object",
                 "definition": {
-                  "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
+                  "optional": { "type": "boolean", "optional": true },
                   "extra": {
                     "type": "record",
-                    "definition": { "type": "simpleType", "definition": "any" },
+                    "definition": { "type": "any" },
                     "optional": true
                   },
                   "type": { "type": "literal", "definition": "simpleType" },
@@ -1254,7 +1155,7 @@
                 "definition": {
                   "extra": {
                     "type": "record",
-                    "definition": { "type": "simpleType", "definition": "any" },
+                    "definition": { "type": "any" },
                     "optional": true
                   },
                   "type": {
@@ -1278,7 +1179,7 @@
                       "ip"
                     ]
                   },
-                  "parameter": { "type": "simpleType", "definition": "any" }
+                  "parameter": { "type": "any" }
                 }
               },
               "jzodElement": {
@@ -1308,14 +1209,14 @@
               "jzodEnum": {
                 "type": "object",
                 "definition": {
-                  "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
+                  "optional": { "type": "boolean", "optional": true },
                   "extra": {
                     "type": "record",
-                    "definition": { "type": "simpleType", "definition": "any" },
+                    "definition": { "type": "any" },
                     "optional": true
                   },
                   "type": { "type": "literal", "definition": "enum" },
-                  "definition": { "type": "array", "definition": { "type": "simpleType", "definition": "string" } }
+                  "definition": { "type": "array", "definition": { "type": "string" } }
                 }
               },
               "jzodEnumAttributeTypes": {
@@ -1347,23 +1248,23 @@
               "jzodLiteral": {
                 "type": "object",
                 "definition": {
-                  "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
+                  "optional": { "type": "boolean", "optional": true },
                   "extra": {
                     "type": "record",
-                    "definition": { "type": "simpleType", "definition": "any" },
+                    "definition": { "type": "any" },
                     "optional": true
                   },
                   "type": { "type": "literal", "definition": "literal" },
-                  "definition": { "type": "simpleType", "definition": "string" }
+                  "definition": { "type": "string" }
                 }
               },
               "jzodObject": {
                 "type": "object",
                 "definition": {
-                  "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
+                  "optional": { "type": "boolean", "optional": true },
                   "extra": {
                     "type": "record",
-                    "definition": { "type": "simpleType", "definition": "any" },
+                    "definition": { "type": "any" },
                     "optional": true
                   },
                   "type": { "type": "literal", "definition": "object" },
@@ -1376,10 +1277,10 @@
               "jzodRecord": {
                 "type": "object",
                 "definition": {
-                  "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
+                  "optional": { "type": "boolean", "optional": true },
                   "extra": {
                     "type": "record",
-                    "definition": { "type": "simpleType", "definition": "any" },
+                    "definition": { "type": "any" },
                     "optional": true
                   },
                   "type": { "type": "literal", "definition": "record" },
@@ -1389,18 +1290,18 @@
               "jzodReference": {
                 "type": "object",
                 "definition": {
-                  "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
+                  "optional": { "type": "boolean", "optional": true },
                   "extra": {
                     "type": "record",
-                    "definition": { "type": "simpleType", "definition": "any" },
+                    "definition": { "type": "any" },
                     "optional": true
                   },
                   "type": { "type": "literal", "definition": "schemaReference" },
                   "definition": {
                     "type": "object",
                     "definition": {
-                      "relativePath": { "type": "simpleType", "definition": "string", "optional": true },
-                      "absolutePath": { "type": "simpleType", "definition": "string", "optional": true }
+                      "relativePath": { "type": "string", "optional": true },
+                      "absolutePath": { "type": "string", "optional": true }
                     }
                   }
                 }
@@ -1408,10 +1309,10 @@
               "jzodUnion": {
                 "type": "object",
                 "definition": {
-                  "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
+                  "optional": { "type": "boolean", "optional": true },
                   "extra": {
                     "type": "record",
-                    "definition": { "type": "simpleType", "definition": "any" },
+                    "definition": { "type": "any" },
                     "optional": true
                   },
                   "type": { "type": "literal", "definition": "union" },
@@ -1436,14 +1337,14 @@
               "jzodBaseObject": {
                 "type": "object",
                 "definition": {
-                  "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
-                  "nullable": { "type": "simpleType", "definition": "boolean", "optional": true },
+                  "optional": { "type": "boolean", "optional": true },
+                  "nullable": { "type": "boolean", "optional": true },
                   "extra": {
                     "type": "object",
                     "definition": {
-                      "id": { "type": "simpleType", "definition": "number" },
-                      "defaultLabel": { "type": "simpleType", "definition": "string" },
-                      "editable": { "type": "simpleType", "definition": "boolean" }
+                      "id": { "type": "number" },
+                      "defaultLabel": { "type": "string" },
+                      "editable": { "type": "boolean" }
                     },
                     "optional": true
                   }
@@ -1482,7 +1383,7 @@
                 },
                 "definition": {
                   "type": { "type": "literal", "definition": "simpleType" },
-                  "coerce": { "type": "simpleType", "definition": "boolean", "optional": true },
+                  "coerce": { "type": "boolean", "optional": true },
                   "definition": {
                     "type": "schemaReference",
                     "definition": {
@@ -1497,11 +1398,11 @@
                 "definition": {
                   "extra": {
                     "type": "record",
-                    "definition": { "type": "simpleType", "definition": "any" },
+                    "definition": { "type": "any" },
                     "optional": true
                   },
                   "type": { "type": "enum", "definition": ["min", "max"] },
-                  "parameter": { "type": "simpleType", "definition": "any" }
+                  "parameter": { "type": "any" }
                 }
               },
               "jzodAttributeDateWithValidations": {
@@ -1535,7 +1436,7 @@
                 "definition": {
                   "extra": {
                     "type": "record",
-                    "definition": { "type": "simpleType", "definition": "any" },
+                    "definition": { "type": "any" },
                     "optional": true
                   },
                   "type": {
@@ -1555,7 +1456,7 @@
                       "safe"
                     ]
                   },
-                  "parameter": { "type": "simpleType", "definition": "any" }
+                  "parameter": { "type": "any" }
                 }
               },
               "jzodAttributeNumberWithValidations": {
@@ -1589,7 +1490,7 @@
                 "definition": {
                   "extra": {
                     "type": "record",
-                    "definition": { "type": "simpleType", "definition": "any" },
+                    "definition": { "type": "any" },
                     "optional": true
                   },
                   "type": {
@@ -1613,7 +1514,7 @@
                       "ip"
                     ]
                   },
-                  "parameter": { "type": "simpleType", "definition": "any" }
+                  "parameter": { "type": "any" }
                 }
               },
               "jzodAttributeStringWithValidations": {
@@ -1786,7 +1687,7 @@
                 },
                 "definition": {
                   "type": { "type": "literal", "definition": "enum" },
-                  "definition": { "type": "array", "definition": { "type": "simpleType", "definition": "string" } }
+                  "definition": { "type": "array", "definition": { "type": "string" } }
                 }
               },
               "jzodEnumAttributeTypes": {
@@ -1896,7 +1797,7 @@
                 },
                 "definition": {
                   "type": { "type": "literal", "definition": "literal" },
-                  "definition": { "type": "simpleType", "definition": "string" }
+                  "definition": { "type": "string" }
                 }
               },
               "jzodIntersection": {
@@ -1997,7 +1898,7 @@
                     ]
                   },
                   "type": { "type": "literal", "definition": "object" },
-                  "nonStrict": { "type": "simpleType", "definition": "boolean", "optional": true },
+                  "nonStrict": { "type": "boolean", "optional": true },
                   "definition": {
                     "type": "record",
                     "definition": {
@@ -2078,9 +1979,9 @@
                   "definition": {
                     "type": "object",
                     "definition": {
-                      "eager": { "type": "simpleType", "definition": "boolean", "optional": true },
-                      "relativePath": { "type": "simpleType", "definition": "string", "optional": true },
-                      "absolutePath": { "type": "simpleType", "definition": "string", "optional": true }
+                      "eager": { "type": "boolean", "optional": true },
+                      "relativePath": { "type": "string", "optional": true },
+                      "absolutePath": { "type": "string", "optional": true }
                     }
                   }
                 }
@@ -2142,7 +2043,7 @@
                 },
                 "definition": {
                   "type": { "type": "literal", "definition": "union" },
-                  "discriminator": { "type": "simpleType", "definition": "string", "optional": true },
+                  "discriminator": { "type": "string", "optional": true },
                   "definition": {
                     "type": "array",
                     "definition": {
@@ -2387,32 +2288,24 @@
             "type": "object",
             "definition": {
               "uuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
               },
               "parentName": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "optional": true,
                 "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
               },
               "parentUuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
               },
               "name": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "extra": { "id": 4, "defaultLabel": "Name", "editable": true }
               },
               "author": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "optional": true,
                 "extra": {
                   "id": 5,
@@ -2422,9 +2315,7 @@
                 }
               },
               "publisher": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "optional": true,
                 "extra": {
                   "id": 5,
@@ -2449,32 +2340,25 @@
             "type": "object",
             "definition": {
               "uuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
               },
               "parentName": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "optional": true,
                 "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
               },
               "parentUuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
               },
               "name": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "extra": { "id": 4, "defaultLabel": "Name", "editable": true }
               },
               "icon": {
                 "id": 5,
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "optional": true,
                 "extra": { "defaultLabel": "Icon", "editable": true }
               }
@@ -2497,21 +2381,20 @@
                 "type": "object",
                 "definition": {
                   "a": {
-                    "type": "simpleType",
-                    "definition": "string",
+                    "type": "string",
                     "extra": { "id": 1, "defaultLabel": "A", "editable": true }
                   },
                   "b": {
                     "type": "object",
                     "definition": {
-                      "inB1": { "type": "simpleType", "definition": "string" },
-                      "inB2": { "type": "simpleType", "definition": "string" }
+                      "inB1": { "type": "string" },
+                      "inB2": { "type": "string" }
                     },
                     "extra": { "id": 2, "defaultLabel": "B", "editable": true }
                   },
                   "c": {
                     "type": "array",
-                    "definition": { "type": "simpleType", "definition": "string" },
+                    "definition": { "type": "string" },
                     "extra": { "id": 3, "defaultLabel": "C", "editable": true }
                   },
                   "d": {
@@ -2544,32 +2427,25 @@
                 }
               },
               "uuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
               },
               "parentName": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "optional": true,
                 "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
               },
               "parentUuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
               },
               "name": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "extra": { "id": 4, "defaultLabel": "Name", "editable": true }
               },
               "icon": {
                 "id": 5,
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "extra": { "defaultLabel": "Icon", "editable": true }
               }
             }
@@ -2588,32 +2464,25 @@
             "type": "object",
             "definition": {
               "uuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
               },
               "parentName": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "optional": true,
                 "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
               },
               "parentUuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
+                "type": "uuid",
                 "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
               },
               "name": {
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "extra": { "id": 4, "defaultLabel": "Name", "editable": true }
               },
               "icon": {
                 "id": 5,
-                "type": "simpleType",
-                "definition": "string",
+                "type": "string",
                 "extra": { "defaultLabel": "Gender (narrow-minded)", "editable": true }
               }
             }
@@ -2741,14 +2610,14 @@
             "d": {
               "type": "object",
               "definition": {
-                "optional": { "type": "simpleType", "definition": "boolean", "optional": false },
+                "optional": { "type": "boolean", "optional": false },
                 "extra": {
                   "optional": true,
                   "type": "object",
                   "definition": {
-                    "id": { "type": "simpleType", "definition": "number" },
-                    "defaultLabel": { "type": "simpleType", "definition": "string" },
-                    "editable": { "type": "simpleType", "definition": "boolean" }
+                    "id": { "type": "number" },
+                    "defaultLabel": { "type": "string" },
+                    "editable": { "type": "boolean" }
                   }
                 },
                 "type": { "type": "literal", "definition": "object" },

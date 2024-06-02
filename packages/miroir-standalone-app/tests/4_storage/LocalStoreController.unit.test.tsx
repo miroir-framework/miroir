@@ -496,7 +496,7 @@ describe.sequential("localPersistenceStoreController.unit.test", () => {
     expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK)
     // test starts
     const iconsDefinition: JzodElement = {
-      "type": "simpleType", "definition": "number", "optional": true, "extra": { "id":6, "defaultLabel": "Gender (narrow-minded)", "editable": true }
+      "type": "number", "optional": true, "extra": { "id":6, "defaultLabel": "Gender (narrow-minded)", "editable": true }
     };
     const modelActionAlterAttribute:ModelAction =  {
       actionType: "modelAction",
@@ -516,7 +516,7 @@ describe.sequential("localPersistenceStoreController.unit.test", () => {
         }
       ],
       // update: {
-      //   "type": "simpleType", "definition": "number", "optional": true, "extra": { "id":6, "defaultLabel": "Gender (narrow-minded)", "editable": true }
+      //   "type": "number", "optional": true, "extra": { "id":6, "defaultLabel": "Gender (narrow-minded)", "editable": true }
       // }
     };
 

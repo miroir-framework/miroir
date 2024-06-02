@@ -1168,12 +1168,12 @@ export function getMiroirFundamentalJzodSchema(
             "entityUuid": {
               "type": "uuid",
               "optional": true,
-              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+              "extra": { "id":1, "defaultLabel": "Entity", "editable": false }
             },
             "instanceUuid": {
               "type": "uuid",
               "optional": true,
-              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+              "extra": { "id":1, "defaultLabel": "Instance", "editable": false }
             }
           }
         },

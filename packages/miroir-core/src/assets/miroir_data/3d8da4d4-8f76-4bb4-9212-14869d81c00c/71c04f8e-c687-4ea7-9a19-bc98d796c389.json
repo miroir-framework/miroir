@@ -16,9 +16,7 @@
             "actionName": {"type": "literal", "definition":"undo"},
             "endpoint": {"type": "literal", "definition":"71c04f8e-c687-4ea7-9a19-bc98d796c389"},
             "deploymentUuid": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [{ "type": "uuid" }],
+              "type": "uuid",
               "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
             }
           }
@@ -35,9 +33,7 @@
             "actionName": {"type": "literal", "definition":"redo"},
             "endpoint": {"type": "literal", "definition":"71c04f8e-c687-4ea7-9a19-bc98d796c389"},
             "deploymentUuid": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [{ "type": "uuid" }],
+              "type": "uuid",
               "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
             }
           }

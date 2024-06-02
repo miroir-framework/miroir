@@ -587,8 +587,7 @@ describe(
                 "type": "object",
                 "definition": {
                   "a": {
-                    "type": "simpleType",
-                    "definition": "string"
+                    "type": "string"
                   }
                 }
               }

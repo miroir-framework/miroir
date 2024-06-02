@@ -16,9 +16,7 @@
             "actionName": {"type": "literal", "definition":"runQuery"},
             "endpoint": {"type": "literal", "definition":"9e404b3c-368c-40cb-be8b-e3c28550c25e"},
             "deploymentUuid": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [{ "type": "uuid" }],
+              "type": "uuid",
               "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
             },
             "query": {
