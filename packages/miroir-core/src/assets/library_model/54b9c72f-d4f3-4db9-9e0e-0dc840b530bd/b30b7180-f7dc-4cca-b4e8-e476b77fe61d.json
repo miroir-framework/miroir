@@ -18,13 +18,7 @@
     "type": "object",
     "definition": {
       "uuid": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [
-          {
-            "type": "uuid"
-          }
-        ],
+        "type": "uuid",
         "extra": {
           "id": 1,
           "defaultLabel": "Uuid",
@@ -32,8 +26,7 @@
         }
       },
       "parentName": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "optional": true,
         "extra": {
           "id": 2,
@@ -42,8 +35,7 @@
         }
       },
       "parentUuid": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "validations": [
           {
             "type": "uuid"
@@ -70,8 +62,7 @@
         }
       },
       "name": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "extra": {
           "id": 4,
           "defaultLabel": "Name",
@@ -79,13 +70,7 @@
         }
       },
       "country": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [
-          {
-            "type": "uuid"
-          }
-        ],
+        "type": "uuid",
         "optional": true,
         "extra": {
           "id": 5,
@@ -95,8 +80,7 @@
         }
       },
       "icon": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "optional": true,
         "extra": {
           "id": 6,
@@ -105,8 +89,7 @@
         }
       },
       "icons": {
-        "type": "simpleType",
-        "definition": "number",
+        "type": "number",
         "optional": true,
         "extra": {
           "id": 6,

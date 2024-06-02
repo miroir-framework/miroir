@@ -148,8 +148,7 @@ export function getMiroirFundamentalJzodSchema(
       "context": {
         ...(jzodSchemajzodMiroirBootstrapSchema as any).definition.context,
         "______________________________________________miroirMetaModel_____________________________________________": {
-          "type": "simpleType",
-          "definition": "never"
+          "type": "never"
   
   
   
@@ -192,12 +191,12 @@ export function getMiroirFundamentalJzodSchema(
         "entityAttributeUntypedCore": {
           "type": "object",
           "definition": {
-            "id": { "type": "simpleType", "definition": "number" },
-            "name": { "type": "simpleType", "definition": "string" },
-            "defaultLabel": { "type": "simpleType", "definition": "string" },
-            "description": { "type": "simpleType", "optional": true, "definition": "string" },
-            "editable": { "type": "simpleType", "definition": "boolean" },
-            "nullable": { "type": "simpleType", "definition": "boolean" }
+            "id": { "type": "number" },
+            "name": { "type": "string" },
+            "defaultLabel": { "type": "string" },
+            "description": { "type": "string", "optional": true },
+            "editable": { "type": "boolean" },
+            "nullable": { "type": "boolean" }
           }
         },
         "entityAttributeCore": {
@@ -271,9 +270,7 @@ export function getMiroirFundamentalJzodSchema(
               }
             },
             "entityUuid": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [{ "type": "uuid" }],
+              "type": "uuid",
               "extra": { "id": 1, "defaultLabel": "Entity Uuid", "editable": false }
             }
           }
@@ -336,21 +333,16 @@ export function getMiroirFundamentalJzodSchema(
           "type": "object",
           "definition": {
             "uuid": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [{ "type": "uuid" }],
+              "type": "uuid",
               "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
             },
             "parentName": {
-              "type": "simpleType",
-              "definition": "string",
+              "type": "string",
               "optional": true,
               "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
             },
             "parentUuid": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [{ "type": "uuid" }],
+              "type": "uuid",
               "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
             },
             "conceptLevel": {
@@ -360,18 +352,14 @@ export function getMiroirFundamentalJzodSchema(
               "extra": { "id": 4, "defaultLabel": "Concept Level", "editable": false }
             },
             "defaultLabel": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [{ "type": "uuid" }],
+              "type": "uuid",
               "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
             },
             "definition": {
               "type": "object",
               "definition": {
                 "currentApplicationVersion": {
-                  "type": "simpleType",
-                  "definition": "string",
-                  "validations": [{ "type": "uuid" }],
+                  "type": "uuid",
                   "extra": { "id":1, "defaultLabel": "Current Application Version", "editable": false }
                 }
               }
@@ -383,21 +371,16 @@ export function getMiroirFundamentalJzodSchema(
           "nonStrict": true,
           "definition": {
             "uuid": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [{ "type": "uuid" }],
+              "type": "uuid",
               "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
             },
             "parentName": {
-              "type": "simpleType",
-              "definition": "string",
+              "type": "string",
               "optional": true,
               "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
             },
             "parentUuid": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [{ "type": "uuid" }],
+              "type": "uuid",
               "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
             },
             "conceptLevel": {
@@ -412,13 +395,11 @@ export function getMiroirFundamentalJzodSchema(
           "type": "object",
           "definition": {
             "parentName": {
-              "type": "simpleType",
-              "definition": "string",
+              "type": "string",
               "optional": true
             },
             "parentUuid": {
-              "type": "simpleType",
-              "definition": "string"
+              "type": "string"
             },
             "applicationSection": {
               "type": "schemaReference",
@@ -456,8 +437,7 @@ export function getMiroirFundamentalJzodSchema(
           ]
         },
         "entityInstanceUuid": {
-          "type": "simpleType",
-          "definition": "string"
+          "type": "string"
         },
         "entityInstancesUuidIndex": {
           "type": "record",
@@ -480,8 +460,7 @@ export function getMiroirFundamentalJzodSchema(
           }
         },
         "______________________________________________entities_____________________________________________": {
-          "type": "simpleType",
-          "definition": "never"
+          "type": "never"
   
   
   
@@ -535,21 +514,16 @@ export function getMiroirFundamentalJzodSchema(
                 "type": "object",
                 "definition": {
                   "uuid": {
-                    "type": "simpleType",
-                    "definition": "string",
-                    "validations": [{ "type": "uuid" }],
+                    "type": "uuid",
                     "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
                   },
                   "parentName": {
-                    "type": "simpleType",
-                    "definition": "string",
+                    "type": "string",
                     "optional": true,
                     "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
                   },
                   "parentUuid": {
-                    "type": "simpleType",
-                    "definition": "string",
-                    "validations": [{ "type": "uuid" }],
+                    "type": "uuid",
                     "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
                   },
                   "conceptLevel": {
@@ -559,15 +533,11 @@ export function getMiroirFundamentalJzodSchema(
                     "extra": { "id": 4, "defaultLabel": "Concept Level", "editable": false }
                   },
                   "applicationVersion": {
-                    "type": "simpleType",
-                    "definition": "string",
-                    "validations": [{ "type": "uuid" }],
+                    "type": "uuid",
                     "extra": { "id":1, "defaultLabel": "Application Version", "editable": false }
                   },
                   "entityDefinition": {
-                    "type": "simpleType",
-                    "definition": "string",
-                    "validations": [{ "type": "uuid" }],
+                    "type": "uuid",
                     "extra": { "id":1, "defaultLabel": "Entity Definition", "editable": false }
                   }
                 }
@@ -636,8 +606,7 @@ export function getMiroirFundamentalJzodSchema(
           }
         },
         "_________________________________configuration_and_bundles_________________________________": {
-          "type": "simpleType",
-          "definition": "never"
+          "type": "never"
   
   
   
@@ -653,22 +622,22 @@ export function getMiroirFundamentalJzodSchema(
           "type": "object",
           "definition": {
             "emulatedServerType": { "type":"literal", "definition": "indexedDb" },
-            "indexedDbName": { "type": "simpleType", "definition": "string" }
+            "indexedDbName": { "type": "string" }
           }
         },
         "filesystemDbStoreSectionConfiguration": {
           "type": "object",
           "definition": {
             "emulatedServerType": { "type":"literal", "definition": "filesystem" },
-            "directory": { "type": "simpleType", "definition": "string" }
+            "directory": { "type": "string" }
           }
         },
         "sqlDbStoreSectionConfiguration": {
           "type": "object",
           "definition": {
             "emulatedServerType": { "type":"literal", "definition": "sql" },
-            "connectionString": { "type": "simpleType", "definition": "string" },
-            "schema": { "type": "simpleType", "definition": "string" }
+            "connectionString": { "type": "string" },
+            "schema": { "type": "string" }
           }
         },
         "storeSectionConfiguration": {
@@ -717,12 +686,10 @@ export function getMiroirFundamentalJzodSchema(
           "type": "object",
           "definition": {
             "rootApiUrl": {
-              "type": "simpleType",
-              "definition": "string",
+              "type": "string",
             },
             "dataflowConfiguration": {
-              "type": "simpleType",
-              "definition": "any",
+              "type": "any",
             },
             "storeSectionConfiguration": {
               "type": "record",
@@ -741,8 +708,7 @@ export function getMiroirFundamentalJzodSchema(
               "definition": true,
             },
             "rootApiUrl": {
-              "type": "simpleType",
-              "definition": "string",
+              "type": "string",
             },
             "deploymentStorageConfig": {
               "type": "schemaReference",
@@ -788,8 +754,7 @@ export function getMiroirFundamentalJzodSchema(
               "type": "object",
               "definition": {
                 "rootApiUrl": {
-                  "type": "simpleType",
-                  "definition": "string",
+                  "type": "string",
                 }
               }
             }
@@ -818,9 +783,7 @@ export function getMiroirFundamentalJzodSchema(
                 "type": "object",
                 "definition": {
                   "endpoint": {
-                    "type": "simpleType",
-                    "definition": "string",
-                    "validations": [{ "type": "uuid" }],
+                    "type": "uuid",
                     "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
                   },
                   "actionArguments": {
@@ -836,8 +799,7 @@ export function getMiroirFundamentalJzodSchema(
             "patches": {
               "type": "array", 
               "definition": {
-                "type": "simpleType",
-                "definition": "any"
+                "type": "any"
               }
             },
           }
@@ -876,8 +838,7 @@ export function getMiroirFundamentalJzodSchema(
           ]
         },
         "______________________________________________queries_____________________________________________": {
-          "type": "simpleType",
-          "definition": "never"
+          "type": "never"
   
   
   
@@ -899,8 +860,7 @@ export function getMiroirFundamentalJzodSchema(
               "definition": "void"
             },
             "elementValue": {
-              "type": "simpleType",
-              "definition": "void"
+              "type": "void"
             }
           }
         },
@@ -1104,8 +1064,7 @@ export function getMiroirFundamentalJzodSchema(
                 },
                 "elementValue": 
                 {
-                  "type": "simpleType",
-                  "definition": "string"
+                  "type": "string"
                 }
               }
             },
@@ -1161,8 +1120,7 @@ export function getMiroirFundamentalJzodSchema(
                   "definition": "objectTransformer"
                 },
                 "attributeName": {
-                  "type": "simpleType",
-                  "definition": "string"
+                  "type": "string"
                 }
               }
             },
@@ -1187,8 +1145,7 @@ export function getMiroirFundamentalJzodSchema(
               "definition": "jsonata"
             },
             "definition": {
-              "type": "simpleType",
-              "definition": "string"
+              "type": "string"
             }
           }
         },
@@ -1196,10 +1153,8 @@ export function getMiroirFundamentalJzodSchema(
           "type": "object",
           "definition": {
             "deploymentUuid": {
-              "type": "simpleType",
-              "definition": "string",
+              "type": "uuid",
               "optional": true,
-              "validations": [{ "type": "uuid" }],
               "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
             },
             "applicationSection": {
@@ -1211,17 +1166,13 @@ export function getMiroirFundamentalJzodSchema(
               }
             },
             "entityUuid": {
-              "type": "simpleType",
-              "definition": "string",
+              "type": "uuid",
               "optional": true,
-              "validations": [{ "type": "uuid" }],
               "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
             },
             "instanceUuid": {
-              "type": "simpleType",
-              "definition": "string",
+              "type": "uuid",
               "optional": true,
-              "validations": [{ "type": "uuid" }],
               "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
             }
           }
@@ -1250,9 +1201,7 @@ export function getMiroirFundamentalJzodSchema(
               "definition": "domainSingleSelectQueryWithDeployment",
             },
             "deploymentUuid": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [{ "type": "uuid" }],
+              "type": "uuid",
               "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
             },
             "select": {
@@ -1272,9 +1221,7 @@ export function getMiroirFundamentalJzodSchema(
               "definition": "domainSingleSelectQueryWithDeployment",
             },
             "deploymentUuid": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [{ "type": "uuid" }],
+              "type": "uuid",
               "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
             },
             "select": {
@@ -1294,9 +1241,7 @@ export function getMiroirFundamentalJzodSchema(
               "definition": "domainSingleSelectQueryWithDeployment",
             },
             "deploymentUuid": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [{ "type": "uuid" }],
+              "type": "uuid",
               "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
             },
             "select": {
@@ -1422,9 +1367,7 @@ export function getMiroirFundamentalJzodSchema(
               "definition": "DomainManyQueries",
             },
             "deploymentUuid": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [{ "type": "uuid" }],
+              "type": "uuid",
               "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
             },
             "fetchQuery": {
@@ -1452,15 +1395,11 @@ export function getMiroirFundamentalJzodSchema(
               "definition": "getEntityDefinition",
             },
             "deploymentUuid": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [{ "type": "uuid" }],
+              "type": "uuid",
               "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
             },
             "entityUuid": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [{ "type": "uuid" }],
+              "type": "uuid",
               "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
             }
           }
@@ -1622,8 +1561,7 @@ export function getMiroirFundamentalJzodSchema(
           ]
         },
         "______________________________________________actions_____________________________________________": {
-          "type": "simpleType",
-          "definition": "never"
+          "type": "never"
   
   
   
@@ -1653,12 +1591,12 @@ export function getMiroirFundamentalJzodSchema(
                     ...((instanceEndpointVersionV1 as any).definition.actions.filter((e: any)=>!!e.actionErrors).map((e: any) =>e.actionErrors)),
                   ]
                 },
-                "errorMessage": { "type": "simpleType", "optional": true, "definition": "string" },
+                "errorMessage": { "type": "string", "optional": true },
                 "error": { "type": "object", "optional": true, "definition": {
-                  "errorMessage": { "type": "simpleType", "optional": true, "definition": "string" },
+                  "errorMessage": { "type": "string", "optional": true },
                   "stack": {
                     "type": "array",
-                    "definition": { "type": "simpleType", "optional": true, "definition": "string" }
+                    "definition": { "type": "string", "optional": true }
                   }
                 }
                }
@@ -1805,9 +1743,7 @@ export function getMiroirFundamentalJzodSchema(
                   "definition": "createBundle"
                 },
                 "deploymentUuid": {
-                  "type": "simpleType",
-                  "definition": "string",
-                  "validations": [{ "type": "uuid" }],
+                  "type": "uuid",
                   "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
                 }
               }
@@ -1824,9 +1760,7 @@ export function getMiroirFundamentalJzodSchema(
                   "definition": "deleteBundle"
                 },
                 "deploymentUuid": {
-                  "type": "simpleType",
-                  "definition": "string",
-                  "validations": [{ "type": "uuid" }],
+                  "type": "uuid",
                   "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
                 },
               }

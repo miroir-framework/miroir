@@ -284,69 +284,241 @@ describe(
           // },
           // schemaReference: object, recursive, 1-level valueObject
           test040: {
-            testSchema: {
-              type: "schemaReference",
-              context: {
-                "myObject": {
-                  type: "object",
-                  definition: {
-                    a: {
-                      type: "union",
-                      definition: [
-                        {
-                          type: "simpleType",
-                          definition: "string",
-                        },
-                        {
-                          type: "schemaReference",
-                          definition: { relativePath: "myObject"}
-                        }
-                      ]
-                    }
+            // testSchema: miroirFundamentalJzodSchema.jzodSchema,
+            testSchema: defaultMiroirMetaModel.jzodSchemas[0].definition as JzodElement,
+            expectedResult: {
+              "type": "union",
+              "discriminator": "type",
+              "subDiscriminator": "definition",
+              "definition": [
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    "relativePath": "jzodArray"
+                  }
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    "relativePath": "jzodAttribute"
+                  }
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    "relativePath": "jzodPlainAttribute"
+                  }
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    "relativePath": "jzodAttributeDateWithValidations"
+                  }
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    "relativePath": "jzodAttributePlainDateWithValidations"
+                  }
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    "relativePath": "jzodAttributeNumberWithValidations"
+                  }
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    "relativePath": "jzodAttributePlainNumberWithValidations"
+                  }
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    "relativePath": "jzodAttributeStringWithValidations"
+                  }
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    "relativePath": "jzodAttributePlainStringWithValidations"
+                  }
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    "relativePath": "jzodEnum"
+                  }
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    "relativePath": "jzodFunction"
+                  }
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    "relativePath": "jzodLazy"
+                  }
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    "relativePath": "jzodLiteral"
+                  }
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    "relativePath": "jzodIntersection"
+                  }
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    "relativePath": "jzodMap"
+                  }
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    "relativePath": "jzodObject"
+                  }
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    "relativePath": "jzodPromise"
+                  }
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    "relativePath": "jzodRecord"
+                  }
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    "relativePath": "jzodReference"
+                  }
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    "relativePath": "jzodSet"
+                  }
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    "relativePath": "jzodTuple"
+                  }
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    "relativePath": "jzodUnion"
                   }
                 }
-              },
-              definition: { relativePath: "myObject" }
-            },
-            expectedResult: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "union",
-                  definition: [
-                    {
-                      type: "simpleType",
-                      definition: "string",
-                    },
-                    {
-                      type: "schemaReference",
-                      context: {
-                        "myObject": {
-                          type: "object",
-                          definition: {
-                            a: {
-                              type: "union",
-                              definition: [
-                                {
-                                  type: "simpleType",
-                                  definition: "string",
-                                },
-                                {
-                                  type: "schemaReference",
-                                  definition: { relativePath: "myObject"}
-                                }
-                              ]
-                            }
-                          }
-                        }
-                      },
-                      definition: { relativePath: "myObject" }
-                    }
-                  ]
-                }
-              }
-            },
+              ]
+            }
           },
+          // // schemaReference: object, recursive, 1-level valueObject
+          // test050: {
+          //   testSchema: {
+          //     type: "schemaReference",
+          //     context: {
+          //       "myObject": {
+          //         type: "object",
+          //         definition: {
+          //           a: {
+          //             type: "union",
+          //             definition: [
+          //               {
+          //                 type: "simpleType",
+          //                 definition: "string",
+          //               },
+          //               {
+          //                 type: "schemaReference",
+          //                 definition: { relativePath: "myObject"}
+          //               }
+          //             ]
+          //           }
+          //         }
+          //       }
+          //     },
+          //     definition: { relativePath: "myObject" }
+          //   },
+          //   expectedResult: {
+          //     type: "object",
+          //     definition: {
+          //       a: {
+          //         type: "union",
+          //         definition: [
+          //           {
+          //             type: "simpleType",
+          //             definition: "string",
+          //           },
+          //           {
+          //             type: "schemaReference",
+          //             context: {
+          //               "myObject": {
+          //                 type: "object",
+          //                 definition: {
+          //                   a: {
+          //                     type: "union",
+          //                     definition: [
+          //                       {
+          //                         type: "simpleType",
+          //                         definition: "string",
+          //                       },
+          //                       {
+          //                         type: "schemaReference",
+          //                         definition: { relativePath: "myObject"}
+          //                       }
+          //                     ]
+          //                   }
+          //                 }
+          //               }
+          //             },
+          //             definition: { relativePath: "myObject" }
+          //           }
+          //         ]
+          //       }
+          //     }
+          //   },
+          // },
+          // 
+          // 
+          // 
+          // 
+          // 
+
           // // schemaReference: object, recursive, 2-level valueObject
           // test050: {
           //   testSchema: {

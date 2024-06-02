@@ -18,21 +18,16 @@
     "type": "object",
     "definition": {
       "uuid": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
+        "type": "uuid",
         "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
       },
       "parentName": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "optional": true,
         "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
       },
       "parentUuid": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
+        "type": "uuid",
         "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
       },
       "conceptLevel": {
@@ -42,21 +37,16 @@
         "extra": { "id": 5, "defaultLabel": "Concept Level", "editable": false }
       },
       "name": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "extra": { "id":4, "defaultLabel": "Name", "editable": true }
       },
       "author": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
+        "type": "uuid",
         "optional": true,
         "extra": { "id":5, "defaultLabel": "Author", "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733", "editable": true }
       },
       "publisher": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
+        "type": "uuid",
         "optional": true,
         "extra": { "id":5, "defaultLabel": "Publisher", "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab", "editable": true }
       }

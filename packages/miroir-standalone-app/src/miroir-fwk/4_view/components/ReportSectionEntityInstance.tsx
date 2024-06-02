@@ -99,6 +99,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       instance,
       currentModel,
       currentMiroirModel,
+      {}
     ): undefined,
     [props]
   )

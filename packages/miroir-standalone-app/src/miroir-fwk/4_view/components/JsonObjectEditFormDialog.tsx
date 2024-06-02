@@ -224,6 +224,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
       props.defaultFormValuesObject,
       props.currentAppModel,
       props.currentMiroirModel,
+      {}
     ): undefined,
     [props, context.miroirFundamentalJzodSchema]
   )

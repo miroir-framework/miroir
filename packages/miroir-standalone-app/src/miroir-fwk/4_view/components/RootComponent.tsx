@@ -8,6 +8,8 @@ import { styled } from '@mui/material/styles';
 import { useEffect, useMemo, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
+import { v4 as uuidv4 } from 'uuid';
+
 
 import {
   ActionReturnType,
@@ -49,13 +51,14 @@ import {
   undoRedoEndpointVersionV1
 } from "miroir-core";
 
-import { useDomainControllerService, useMiroirContextService } from '../MiroirContextReactProvider';
+import { useDomainControllerService, useLocalCacheTransactions, useMiroirContextService } from '../MiroirContextReactProvider';
 import AppBar from './AppBar';
 
 import { packageName } from '../../../constants';
 import { cleanLevel } from '../constants';
 import { Sidebar } from "./Sidebar";
 import { SidebarWidth } from "./SidebarSection";
+import { ReduxStateChanges } from "miroir-localcache-redux";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RootComponent");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -152,6 +155,7 @@ export const RootComponent = (props: RootComponentProps) => {
 
   const domainController: DomainControllerInterface = useDomainControllerService();
   const context = useMiroirContextService();
+  const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   const miroirConfig = context.miroirContext.getMiroirConfig();
 
 
@@ -212,6 +216,11 @@ export const RootComponent = (props: RootComponentProps) => {
             </Grid>
             <Grid item>
               <StyledMain open={drawerIsOpen}>
+                <p />
+                  <div>uuid: {uuidv4()}</div>
+                  <div>transactions: {JSON.stringify(transactions)}</div>
+                <p />
+
                 <span>
                   <button
                     onClick={async () => {

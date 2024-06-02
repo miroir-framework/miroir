@@ -24,68 +24,102 @@
     "type": "object",
     "definition": {
       "uuid": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
-        "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+        "type": "uuid",
+        "extra": {
+          "id": 1,
+          "defaultLabel": "Uuid",
+          "editable": false
+        }
       },
       "parentName": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "optional": true,
-        "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
+        "extra": {
+          "id": 2,
+          "defaultLabel": "Entity Name",
+          "editable": false
+        }
       },
       "parentUuid": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
-        "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
+        "type": "uuid",
+        "extra": {
+          "id": 3,
+          "defaultLabel": "Entity Uuid",
+          "editable": false
+        }
       },
       "conceptLevel": {
         "type": "enum",
-        "definition": ["MetaModel", "Model", "Data"],
+        "definition": [
+          "MetaModel",
+          "Model",
+          "Data"
+        ],
         "optional": true,
-        "extra": { "id": 5, "defaultLabel": "Concept Level", "editable": false }
+        "extra": {
+          "id": 5,
+          "defaultLabel": "Concept Level",
+          "editable": false
+        }
       },
       "name": {
-        "type": "simpleType",
-        "definition": "string",
-        "extra": { "id": 4, "defaultLabel": "Name", "editable": true }
+        "type": "string",
+        "extra": {
+          "id": 4,
+          "defaultLabel": "Name",
+          "editable": true
+        }
       },
       "firstName": {
-        "type": "simpleType",
-        "definition": "string",
-        "extra": { "id": 4, "defaultLabel": "First Name", "editable": true }
+        "type": "string",
+        "extra": {
+          "id": 4,
+          "defaultLabel": "First Name",
+          "editable": true
+        }
       },
       "lastName": {
-        "type": "simpleType",
-        "definition": "string",
-        "extra": { "id": 4, "defaultLabel": "Last Name", "editable": true }
+        "type": "string",
+        "extra": {
+          "id": 4,
+          "defaultLabel": "Last Name",
+          "editable": true
+        }
       },
       "street": {
-        "type": "simpleType",
-        "definition": "string",
-        "extra": { "id": 4, "defaultLabel": "Street Adress", "editable": true }
+        "type": "string",
+        "extra": {
+          "id": 4,
+          "defaultLabel": "Street Adress",
+          "editable": true
+        }
       },
       "postalCode": {
-        "type": "simpleType",
-        "definition": "string",
-        "extra": { "id": 4, "defaultLabel": "Postal Code", "editable": true }
+        "type": "string",
+        "extra": {
+          "id": 4,
+          "defaultLabel": "Postal Code",
+          "editable": true
+        }
       },
       "city": {
-        "type": "simpleType",
-        "definition": "string",
-        "extra": { "id": 4, "defaultLabel": "City", "editable": true }
+        "type": "string",
+        "extra": {
+          "id": 4,
+          "defaultLabel": "City",
+          "editable": true
+        }
       },
       "state": {
-        "type": "simpleType",
-        "definition": "string",
-        "extra": { "id": 4, "defaultLabel": "State", "editable": true }
+        "type": "string",
+        "extra": {
+          "id": 4,
+          "defaultLabel": "State",
+          "editable": true
+        }
       },
       "country": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
+        "type": "uuid",
         "optional": true,
         "extra": {
           "id": 5,

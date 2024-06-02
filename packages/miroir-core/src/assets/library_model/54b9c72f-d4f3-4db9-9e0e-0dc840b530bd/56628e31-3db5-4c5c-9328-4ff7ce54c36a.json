@@ -18,21 +18,16 @@
     "type": "object",
     "definition": {
       "uuid": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
+        "type": "uuid",
         "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
       },
       "parentName": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "optional": true,
         "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
       },
       "parentUuid": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
+        "type": "uuid",
         "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
       },
       "conceptLevel": {
@@ -42,19 +37,16 @@
         "extra": { "id": 5, "defaultLabel": "Concept Level", "editable": false }
       },
       "name": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "extra": { "id": 4, "defaultLabel": "Name", "editable": true }
       },
       "iso3166-1Alpha-2": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "optional": true,
         "extra": { "id": 5, "defaultLabel": "Country Code", "editable": true }
       },
       "icon": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "string",
         "optional": true,
         "extra": { "id": 6, "defaultLabel": "Icon", "editable": true }
       }

@@ -8,8 +8,8 @@ import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../../4_services/Logger";
 import { packageName } from "../../constants";
 import { getLoggerName } from "../../tools";
-import { resolveJzodSchemaReferenceInContext, resolveObjectExtendClause } from "./JzodUnfoldSchemaForValue";
 import { cleanLevel } from "../constants";
+import { resolveJzodSchemaReferenceInContext } from "./JzodUnfoldSchemaForValue";
 
 // export const miroirFundamentalJzodSchema2 = miroirFundamentalJzodSchema;
 // import { miroirFundamentalJzodSchema } from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema.js";
@@ -32,54 +32,6 @@ export interface ResolvedJzodSchemaReturnTypeError {
 }
 export type ResolvedJzodSchemaReturnType = ResolvedJzodSchemaReturnTypeError | ResolvedJzodSchemaReturnTypeOK;
 
-
-// export function resolveObjectExtendClause(
-//   miroirFundamentalJzodSchema: JzodSchema,
-//   jzodObject: JzodObject,
-//   currentModel?: MetaModel,
-//   miroirMetaModel?: MetaModel,
-//   relativeReferenceJzodContext?: {[k:string]: JzodElement},
-// ): JzodObject {
-//   // if (j.type == "object") {
-//     if (jzodObject.extend) {
-//       // const extension = resolveJzodSchemaReferenceInContext(
-//       const extension:JzodElement = resolveJzodSchemaReferenceInContext(
-//         miroirFundamentalJzodSchema,
-//         jzodObject.extend,
-//         currentModel,
-//         miroirMetaModel,
-//         relativeReferenceJzodContext
-//       )
-//       if (extension.type == "object") {
-//         return {
-//           type: "object",
-//           definition: {
-//             ...extension.definition,
-//             ...jzodObject.definition
-//           }
-//         }
-//       } else {
-//         throw new Error(
-//           "unfoldJzodSchemaOnce object extend clause schema " +
-//             JSON.stringify(jzodObject) +
-//             " is not an object " +
-//             JSON.stringify(extension)
-//         );
-//         // return ({
-//         //   status: "error",
-//         //   error: "unfoldJzodSchemaOnce object extend clause schema " +
-//         //       JSON.stringify(jzodSchema) +
-//         //       " is not an object " +
-//         //       JSON.stringify(extension)
-//         // })
-//       }
-//     } else {
-//       return jzodObject
-//     }
-//   // } else {
-//   //   return j;
-//   // }
-// }
 
 // ################################################################################################
 export function localizeJzodSchemaReferenceContext<T extends JzodElement>(
@@ -450,6 +402,20 @@ export function unfoldJzodSchemaOnce(
       }
       break;
     }
+    // JzodPlainAttribute types
+    case "string":
+    case "number":
+    case "bigint":
+    case "boolean":
+    case "undefined":
+    case "uuid":
+    case "any":
+    case "date":
+    case "never":
+    case "null":
+    case "unknown":
+    case "void":
+    // other types
     case "intersection":
     case "promise":
     case "set":

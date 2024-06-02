@@ -229,7 +229,7 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
         open={props.open}
         setOpen={props.setOpen}
       >
-      </SidebarSection>
+      </SidebarSection> */}
       <Divider />
       <SidebarSection
         deploymentUuid={adminConfigurationDeploymentLibrary.uuid}
@@ -237,7 +237,7 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
         open={props.open}
         setOpen={props.setOpen}
       >
-      </SidebarSection> */}
+      </SidebarSection>
       {/* ################################################################################### */}
 
         {/* {sideBarDefaultItems.map((i: any, index: number) => ( */}
