@@ -282,9 +282,8 @@ describe(
           //     definition: "string"
           //   },
           // },
-          // schemaReference: object, recursive, 1-level valueObject
-          test040: {
-            // testSchema: miroirFundamentalJzodSchema.jzodSchema,
+          // testSchema: miroirFundamentalJzodSchema.jzodSchema,
+          test900: {
             testSchema: defaultMiroirMetaModel.jzodSchemas[0].definition as JzodElement,
             expectedResult: {
               "type": "union",

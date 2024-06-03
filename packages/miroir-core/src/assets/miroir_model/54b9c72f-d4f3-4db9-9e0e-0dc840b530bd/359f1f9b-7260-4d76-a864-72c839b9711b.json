@@ -108,7 +108,7 @@
                     "definition": "constant"
                   },
                   "referenceUuid": {
-                    "type": "string"
+                    "type": "uuid"
                   }
                 }
               },
@@ -164,6 +164,7 @@
                 "type": "schemaReference",
                 "extra": { "id":4, "defaultLabel": "Parent Uuid", "editable": false },
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "queryObjectReference"
                 }
               }
@@ -175,6 +176,7 @@
               "type": "schemaReference",
               "definition": {
                 "eager": true,
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                 "relativePath": "selectRootQuery"
               }
             },
@@ -186,6 +188,7 @@
               "objectReference": {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "queryObjectReference"
                 }
               },
@@ -200,6 +203,7 @@
               "type": "schemaReference",
               "definition": {
                 "eager": true,
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                 "relativePath": "selectRootQuery"
               }
             },
@@ -211,6 +215,7 @@
               "instanceUuid": {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "queryObjectReference"
                 }
               }
@@ -223,12 +228,14 @@
               {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "selectObjectByRelationQuery"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "selectObjectByDirectReferenceQuery"
                 }
               }
@@ -240,6 +247,7 @@
               "type": "schemaReference",
               "definition": {
                 "eager": true,
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                 "relativePath": "selectRootQuery"
               }
             },
@@ -256,6 +264,7 @@
               "type": "schemaReference",
               "definition": {
                 "eager": true,
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                 "relativePath": "selectRootQuery"
               }
             },
@@ -267,6 +276,7 @@
               "objectReference": {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "queryObjectReference"
                 }
               },
@@ -285,6 +295,7 @@
               "type": "schemaReference",
               "definition": {
                 "eager": true,
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                 "relativePath": "selectRootQuery"
               }
             },
@@ -296,6 +307,7 @@
               "objectListReference": {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "queryObjectReference"
                 }
               },
@@ -351,18 +363,21 @@
               {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "selectObjectListByEntityQuery"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "selectObjectListByRelationQuery"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "selectObjectListByManyToManyRelationQuery"
                 }
               }
@@ -375,36 +390,42 @@
               {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "selectObjectListByEntityQuery"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "selectObjectListByRelationQuery"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "selectObjectListByManyToManyRelationQuery"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "selectQueryCombinerQuery"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "selectObjectByRelationQuery"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "selectObjectByDirectReferenceQuery"
                 }
               },

@@ -217,16 +217,17 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
     () => context.miroirFundamentalJzodSchema &&
     props.entityDefinitionJzodSchema &&
     props.defaultFormValuesObject &&
+    dialogOuterFormObject &&
     props.currentAppModel ?
     resolveReferencesForJzodSchemaAndValueObject(
       context.miroirFundamentalJzodSchema,
       props.entityDefinitionJzodSchema,
-      props.defaultFormValuesObject,
+      dialogOuterFormObject,// props.defaultFormValuesObject,
       props.currentAppModel,
       props.currentMiroirModel,
       {}
     ): undefined,
-    [props, context.miroirFundamentalJzodSchema]
+    [props, dialogOuterFormObject, context.miroirFundamentalJzodSchema]
   )
   log.info(
     "called resolveReferencesForJzodSchemaAndValueObject for valueObject",

@@ -381,7 +381,8 @@ export { ACTION_OK } from './1_core/constants.js';
 export { DomainController } from './3_controllers/DomainController';
 export { DomainInstanceUuidIndexToArray } from './1_core/DomainState.js';
 export {
-  getDefaultValueForJzodSchema
+  getDefaultValueForJzodSchema,
+  getDefaultValueForJzodSchemaWithResolution,
 } from './1_core/jzod/getDefaultValueForJzodSchema.js';
 export {
   // getReportSectionTargetEntityUuid,

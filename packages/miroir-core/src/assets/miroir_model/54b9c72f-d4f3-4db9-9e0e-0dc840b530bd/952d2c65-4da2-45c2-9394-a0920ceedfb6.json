@@ -242,12 +242,14 @@
                     {
                       "type": "schemaReference",
                       "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                         "relativePath": "objectInstanceReportSection"
                       }
                     },
                     {
                       "type": "schemaReference",
                       "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                         "relativePath": "objectListReportSection"
                       }
                     }
@@ -263,24 +265,28 @@
               {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "gridReportSection"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "listReportSection"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "objectListReportSection"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "objectInstanceReportSection"
                 }
               }

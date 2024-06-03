@@ -31,6 +31,7 @@ import {
   adminConfigurationDeploymentMiroir,
   alterObject,
   getDefaultValueForJzodSchema,
+  getDefaultValueForJzodSchemaWithResolution,
   getLoggerName,
   resolveReferencesForJzodSchemaAndValueObject,
   unfoldJzodSchemaOnce
@@ -580,13 +581,6 @@ export const JzodObjectEditor = (
               "formik",
               props.formik.values
             );
-            const defaultValue = getDefaultValueForJzodSchema(
-              {
-                type: "simpleType",
-                definition: "string"
-              }
-            );
-            // useEffect(()=>props.setFormState({...props.formik.values, "deploymentUuid2": "test!"}))
             const newFormState: any =
               missingAttributes.length > 0
                 ? { ...props.formik.values, [missingAttributes[0]]: "test!" }
@@ -699,6 +693,7 @@ export const JzodObjectEditor = (
                           //   props.rawJzodSchema,
                           // );
                           let concreteObjectRawJzodSchema: JzodObject | undefined
+                          let resolvedConcreteObjectJzodSchema: JzodObject | undefined
                           if (attribute[0] == discriminator || (currentValue[discriminator] == "simpleType" && attribute[0] == subDiscriminator)) {
                             attributeRawJzodSchema =
                               currentAttributeDefinition.type == "enum"
@@ -753,7 +748,33 @@ export const JzodObjectEditor = (
                                   attributeListKey
                               );
                             }
-                            attributeRawJzodSchema = concreteObjectRawJzodSchema.definition[attribute[0]]
+                            if (concreteObjectRawJzodSchema.type == "object" && concreteObjectRawJzodSchema.extend) {
+                              const resolvedConcreteObjectJzodSchemaTmp = unfoldJzodSchemaOnce(
+                                currentMiroirFundamentalJzodSchema,
+                                concreteObjectRawJzodSchema,
+                                currentModel,
+                                miroirMetaModel
+                              );
+
+                              if (resolvedConcreteObjectJzodSchemaTmp.status != "ok") {
+                                throw new Error(
+                                  "JzodObjectEditor resolve 'extend' clause for concrete raw schema for " +
+                                    props.listKey +
+                                    " attribute " +
+                                    attribute[0] +
+                                    " listKey " +
+                                    attributeListKey +
+                                    " concreteObjectRawJzodSchema " +
+                                    JSON.stringify(concreteObjectRawJzodSchema) + 
+                                    " error " + resolvedConcreteObjectJzodSchemaTmp.error
+                                );
+                              }
+                              resolvedConcreteObjectJzodSchema = resolvedConcreteObjectJzodSchemaTmp.element as JzodObject;
+                            } else {
+                              resolvedConcreteObjectJzodSchema = concreteObjectRawJzodSchema
+                            }
+    
+                            attributeRawJzodSchema = resolvedConcreteObjectJzodSchema.definition[attribute[0]]
                           }
                           // log.info(
                           //   "JzodObjectEditor attribute for object",
@@ -768,8 +789,8 @@ export const JzodObjectEditor = (
                           //   props.resolvedJzodSchema,
                           //   "unfoldedRawSchema",
                           //   unfoldedRawSchema,
-                          //   "concreteObjectRawJzodSchema",
-                          //   concreteObjectRawJzodSchema,
+                          //   "resolvedConcreteObjectJzodSchema",
+                          //   resolvedConcreteObjectJzodSchema,
                           //   "attributeRawJzodSchema",
                           //   attributeRawJzodSchema,
                           // );
@@ -1303,7 +1324,12 @@ export const JzodObjectEditor = (
           //   newJzodSchema
           // );
 
-          const defaultValue = getDefaultValueForJzodSchema(newJzodSchema)
+          const defaultValue = getDefaultValueForJzodSchemaWithResolution(
+            newJzodSchema,
+            currentMiroirFundamentalJzodSchema, // context.miroirFundamentalJzodSchema,
+            currentModel,
+            miroirMetaModel
+          );
           // log.info(
           //   "handleSelectChange defaultValue",
           //   defaultValue
@@ -1549,9 +1575,9 @@ export const JzodObjectEditor = (
         <br />
         value {props.formik.values[props.rootLesslistKey]} 
         <br />
-        raw schema {JSON.stringify(props.rawJzodSchema)}
+        raw Jzod schema: {JSON.stringify(props.rawJzodSchema)}
         <br />
-        schema {JSON.stringify(props.resolvedJzodSchema)}
+        resolved schema: {JSON.stringify(props.resolvedJzodSchema)}
       </div>
     )
   }

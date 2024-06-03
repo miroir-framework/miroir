@@ -43,8 +43,8 @@ export type ResolvedJzodSchemaReturnType = ResolvedJzodSchemaReturnTypeError | R
 
 
 export function resolveObjectExtendClauseAndDefinition(
-  miroirFundamentalJzodSchema: JzodSchema,
   jzodObject: JzodObject,
+  miroirFundamentalJzodSchema: JzodSchema,
   currentModel?: MetaModel,
   miroirMetaModel?: MetaModel,
   relativeReferenceJzodContext?: {[k:string]: JzodElement},
@@ -271,8 +271,8 @@ export function resolveReferencesForJzodSchemaAndValueObject(
       const concreteUnrolledJzodSchemas: JzodElement[] = concreteJzodSchemas.map((j: JzodElement) => {
         if (j.type == "object") {
           return resolveObjectExtendClauseAndDefinition(
-            miroirFundamentalJzodSchema,
             j,
+            miroirFundamentalJzodSchema,
             currentModel,
             miroirMetaModel,
             relativeReferenceJzodContext
