@@ -600,6 +600,17 @@ export const JzodObjectEditor = (
       [props.resolvedJzodSchema, foreignKeyObjectsFetchQueryParams]
     );
 
+    const handleSelectValueChange = useCallback(
+        (event: any) => {
+        // const parentPath = props.rootLesslistKeyArray.slice(0,props.rootLesslistKeyArray.length - 1)
+        // identical to handleSelectEnumChange?
+        const newFormState: any = alterObject(props.formik.values, props.rootLesslistKeyArray, event.target.value);
+        log.info("handleSelectUuidChange called with event", event, "current Value",props.formik.values,"newFormState", newFormState)
+        props.setFormState(newFormState);
+      },
+      [props.formik.values, props.rootLesslistKeyArray, props.setFormState]
+    )
+
     // ############################################################################################
     // ############################################################################################
     // ############################################################################################
@@ -651,23 +662,10 @@ export const JzodObjectEditor = (
         // const allSchemaObjectAttributes = unfoldedRawSchema.type == "record"?["ANY"]:
         return (
           <div style={{ marginLeft: `calc(${usedIndentLevel}*(${indentShift}))` }}>
-            {/* <div>
-            JzodObjectEditor rendered! {count}
-            </div> */}
-            {/* {props.listKey}:{'\{'} */}
             {displayedLabel}:{" {"}
-            {/* <SizedButton variant="text" onClick={onClick}>
-              <SizedAddBoxIcon/>
-            </SizedButton> */}
-            {/* {" "}{props.listKey} */}
-            {" "}{count}
-            {/* <br />
-            {" unfoldedRawSchema:"} {JSON.stringify(unfoldedRawSchema)} 
-            <br />
-            {"resolvedSchema:"} {JSON.stringify(props.resolvedJzodSchema)} 
-            <br />
-            itemsOrder: {JSON.stringify(itemsOrder)} */}
-            {/* {" "} {JSON.stringify(allSchemaObjectAttributes)} {JSON.stringify(missingAttributes)} */}
+            {/* {" "}{count} */}
+            {/* <br /> */}
+            {/* itemsOrder: {JSON.stringify(itemsOrder)} */}
             <ExpandOrFold
               hiddenFormItems={hiddenFormItems}
               setHiddenFormItems={setHiddenFormItems}
@@ -880,28 +878,29 @@ export const JzodObjectEditor = (
 
                       return (
                         <div key={attributeListKey} style={{ marginLeft: `calc((${usedIndentLevel} + 1)*(${indentShift}))` }}>
+                          {/* <div>key: {attributeListKey}</div> */}
                           <div>
                           <ErrorBoundary
                             // FallbackComponent={Fallback}
                             FallbackComponent={
                               ({ error, resetErrorBoundary }:any) => {
                                 // Call resetErrorBoundary() to reset the error boundary and retry the render.
-                              
+                                log.error("Object errorboundary for", attributeListKey, "currentValue", currentValue)
                                 return (
                                   <div role="alert">
                                     <p>Something went wrong:</p>
                                     <div style={{ color: "red" }}>
-                                      <div>
+                                      <div key="1">
                                         object {props.listKey}
                                       </div>
-                                      <div>
+                                      <div key="2">
                                         attribute {attributeListKey}
                                       </div>
                                         value {JSON.stringify(currentValue)}
-                                      <div>
+                                      <div key="3">
                                       </div>
                                         resolved type {JSON.stringify(resolvedJzodSchema)}
-                                      <div>
+                                      <div key="4">
                                         error {error.message}
                                       </div>
                                     </div>
@@ -1116,6 +1115,35 @@ export const JzodObjectEditor = (
         break;
 
       }
+      case "boolean":{
+        // log.info("JzodObjectEditor boolean!",props.listKey,"formState",props.formState)
+        return (
+          <>
+          <table>
+            <tbody>
+              <tr>
+                <td>
+                {displayedLabel}:{" "} 
+                </td>
+                <td>
+                  <Checkbox 
+                    defaultChecked={props.formik.values[props.rootLesslistKey]}
+                    {...props.formik.getFieldProps(props.listKey)}
+                    name={props.listKey}
+                    id={props.listKey}
+                    onChange={handleSelectValueChange}
+                    // value={props.formik.values[props.rootLesslistKey]}
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          </>
+        );
+        break;
+      }
+      case "number":
+      case "bigint":
       case "string":{
         // log.info("selectList for targetEntity", props.resolvedJzodSchema.extra?.targetEntity, "value", selectList, "props.foreignKeyObjects", props.foreignKeyObjects);
         return (
@@ -1127,7 +1155,7 @@ export const JzodObjectEditor = (
               id={props.rootLesslistKey}
               name={props.name}
               role={props.listKey}
-              onChange={props.handleChange}
+              onChange={handleSelectValueChange}
               value={currentValue}
             />
           </>
@@ -1158,7 +1186,7 @@ export const JzodObjectEditor = (
             >
               {/* <option id={props.rootLesslistKey+".undefined"} value=""></option> */}
               {stringSelectList.map((e: [string, EntityInstance], index: number) => (
-                <option id={props.rootLesslistKey + "." + index} value={e[1].uuid}>
+                <option id={props.rootLesslistKey + "." + index} key={e[1].uuid} value={e[1].uuid}>
                   {(e[1] as EntityInstanceWithName).name}
                 </option>
               ))}
