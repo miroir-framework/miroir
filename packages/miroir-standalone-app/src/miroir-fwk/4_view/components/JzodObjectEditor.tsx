@@ -13,6 +13,9 @@ import { Button, Checkbox, MenuItem, Select } from "@mui/material";
 
 import {
   ApplicationSection,
+  DeploymentEntityState,
+  DomainElement,
+  DomainManyQueriesWithDeploymentUuid,
   EntityAttribute,
   EntityInstance,
   EntityInstanceWithName,
@@ -26,12 +29,18 @@ import {
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
+  QuerySelector,
+  QuerySelectorMap,
+  QuerySelectorParams,
   ResolvedJzodSchemaReturnType,
   Uuid,
   adminConfigurationDeploymentMiroir,
   alterObject,
+  dummyDomainManyQueriesWithDeploymentUuid,
+  getApplicationSection,
   getDefaultValueForJzodSchema,
   getDefaultValueForJzodSchemaWithResolution,
+  getDeploymentEntityStateSelectorParams,
   getLoggerName,
   resolveReferencesForJzodSchemaAndValueObject,
   unfoldJzodSchemaOnce
@@ -40,8 +49,9 @@ import {
 import { JzodUnion } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 import { packageName } from "../../../constants";
 import { useMiroirContextService, useMiroirContextformHelperState } from "../MiroirContextReactProvider";
-import { useCurrentModel } from '../ReduxHooks';
+import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from '../ReduxHooks';
 import { cleanLevel } from "../constants";
+import { getMemoizedDeploymentEntityStateSelectorMap } from "miroir-localcache-redux";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"JzodObjectEditor");
@@ -262,6 +272,11 @@ export const JzodObjectEditor = (
 ): JSX.Element => {
   count++;
   const context = useMiroirContextService();
+  const deploymentEntityStateSelectorMap: QuerySelectorMap<DeploymentEntityState> = useMemo(
+    () => getMemoizedDeploymentEntityStateSelectorMap(),
+    []
+  );
+
   const currentMiroirFundamentalJzodSchema = props.paramMiroirFundamentalJzodSchema??context.miroirFundamentalJzodSchema;
   // const [selectedOption, setSelectedOption] = useState({label:props.name,value:props.initialValuesObject});
   const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
@@ -274,6 +289,7 @@ export const JzodObjectEditor = (
   const displayedLabel: string = props.label??props.name;
 
   const usedIndentLevel: number = props.indentLevel?props.indentLevel:0;
+  
   // log.info(
   //   "rendering",
   //   props.listKey,
@@ -433,20 +449,6 @@ export const JzodObjectEditor = (
     [props.resolvedJzodSchema, unfoldedRawSchema]
   );
 
-  // const unionPlainAttributeSchema:JzodElement = useMemo(
-  //   () => {
-  //     if (
-  //       props.resolvedJzodSchema?.type == "object" &&
-  //       unfoldedRawSchema &&
-  //       unfoldedRawSchema.type == "union" &&
-  //       unfoldedRawSchema.discriminator
-  //     ) {
-  //       return unfoldedRawSchema.definition.find(
-  //         (a) => (a.definition as any)[(unfoldedRawSchema as any).discriminator].definition
-  //       )
-  //     }
-  //   }
-  // )
 
   if (props.resolvedJzodSchema && props.rawJzodSchema) {
     if (
@@ -471,48 +473,89 @@ export const JzodObjectEditor = (
       );
     }
 
-    // const allObjectUnionAttributes: string[] = useMemo(
-    //   () => {
-    //     if (props.resolvedJzodSchema?.type == "object") {
-    //       switch (unfoldedRawSchema.type) {
-    //         case "record": {
-    //           return ["ANY"]
-    //           break;
-    //         }
-    //         case "union": {
-    //           return unfoldedRawSchema.definition.map(
-    //             (a: any) => a.definition[(unfoldedRawSchema as any).discriminator as string].definition
-    //           );
-    //           break;
-    //         }
-    //         case "object": {
-    //           return Object.keys(unfoldedRawSchema.definition);
-    //           break;
-    //         }
-    //         case "function":
-    //         case "array":
-    //         case "simpleType":
-    //         case "enum":
-    //         case "lazy":
-    //         case "literal":
-    //         case "intersection":
-    //         case "map":
-    //         case "promise":
-    //         case "schemaReference":
-    //         case "set":
-    //         case "tuple":
-    //         default: {
-    //           return Object.keys(unfoldedRawSchema.definition) // really???
-    //           break;
-    //         }
-    //       }
-    //     } else {
-    //       return []
-    //     }
-    //   },
-    //   [props.resolvedJzodSchema, unfoldedRawSchema]
+
+    // ############################################################################################
+    // finding foreign objects for uuid schema with targetEntity estra
+    const foreignKeyObjectsFetchQueryParams: QuerySelectorParams<
+      DomainManyQueriesWithDeploymentUuid,
+      DeploymentEntityState
+    > = useMemo(
+      () =>
+        getDeploymentEntityStateSelectorParams<DomainManyQueriesWithDeploymentUuid>(
+          props.currentDeploymentUuid &&
+          unfoldedRawSchema.type == "uuid" &&
+          unfoldedRawSchema.extra?.targetEntity
+          ?
+          {
+            queryType: "DomainManyQueries",
+            deploymentUuid: props.currentDeploymentUuid,
+            // applicationSection: props.applicationSection,
+            // pageParams: props.paramsAsdomainElements,
+            pageParams: { elementType: "object", elementValue: {} },
+            queryParams: { elementType: "object", elementValue: {} },
+            contextResults: { elementType: "object", elementValue: {} },
+            fetchQuery: {
+              select: {
+                [unfoldedRawSchema.extra?.targetEntity]:
+                {
+                  queryType: "selectObjectListByEntity",
+                  applicationSection: getApplicationSection(props.currentDeploymentUuid,unfoldedRawSchema.extra?.targetEntity),
+                  parentName: "",
+                  parentUuid: {
+                    referenceType: "constant",
+                    referenceUuid: unfoldedRawSchema.extra?.targetEntity,
+                  },
+                }
+              }
+            }
+          }
+          :
+          dummyDomainManyQueriesWithDeploymentUuid
+          ,
+          deploymentEntityStateSelectorMap
+        ),
+      [
+        deploymentEntityStateSelectorMap,
+        props.currentDeploymentUuid,
+        unfoldedRawSchema,
+      ]
+    );
+
+    // log.info(
+    //   "foreignKeyObjectsFetchQueryParams",
+    //   foreignKeyObjectsFetchQueryParams,
+    //   "props.currentDeploymentUuid",
+    //   props.currentDeploymentUuid,
+    //   "unfoldedRawSchema",
+    //   unfoldedRawSchema
     // )
 
+    // const foreignKeyObjects:  = useDeploymentEntityStateQuerySelectorForCleanedResult(
+    const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = useDeploymentEntityStateQuerySelectorForCleanedResult(
+      deploymentEntityStateSelectorMap.selectByDomainManyQueries as QuerySelector<DomainManyQueriesWithDeploymentUuid, DeploymentEntityState, DomainElement>,
+      foreignKeyObjectsFetchQueryParams
+    );
+
+    // log.info("foreignKeyObjects", foreignKeyObjects);
+    if (unfoldedRawSchema.type == "uuid") {
+      log.info(
+        "JzodObjectEditor computed foreign keys for uuid schema:",
+        props.listKey,
+        "currentValue",
+        currentValue,
+        "foreignKeyObjectsFetchQueryParams",
+        foreignKeyObjectsFetchQueryParams,
+        "props.currentDeploymentUuid",
+        props.currentDeploymentUuid,
+        "unfoldedRawSchema",
+        unfoldedRawSchema,
+        "foreignKeyObjects", foreignKeyObjects
+      )
+      
+    }
+
+
+    // ############################################################################################
     const missingAttributes: string[] = useMemo(
       () => {
         if (props.resolvedJzodSchema?.type == "object" && unfoldedRawSchema.type == "object") {
@@ -548,12 +591,13 @@ export const JzodObjectEditor = (
         ) {
           return [
             [noValue.uuid, noValue] as [string, EntityInstance],
-            ...(Object.entries(props.foreignKeyObjects[props.resolvedJzodSchema.extra.targetEntity] ?? {}))
+            ...(Object.entries(foreignKeyObjects[props.resolvedJzodSchema.extra.targetEntity] ?? {}))
+            // ...(Object.entries(props.foreignKeyObjects[props.resolvedJzodSchema.extra.targetEntity] ?? {}))
           ]
         }
         return []
       },
-      [props.resolvedJzodSchema, ]
+      [props.resolvedJzodSchema, foreignKeyObjectsFetchQueryParams]
     );
 
     // ############################################################################################
@@ -1094,6 +1138,14 @@ export const JzodObjectEditor = (
       //   break;
       // }
       case "uuid": {
+        const handleSelectUuidChange = (event: any) => {
+          // const parentPath = props.rootLesslistKeyArray.slice(0,props.rootLesslistKeyArray.length - 1)
+          // identical to handleSelectEnumChange?
+          const newFormState: any = alterObject(props.formik.values, props.rootLesslistKeyArray, event.target.value);
+          log.info("handleSelectUuidChange called with event", event, "current Value",props.formik.values,"newFormState", newFormState)
+          props.setFormState(newFormState);
+        }
+
         return props.resolvedJzodSchema.extra?.targetEntity ? (
           <>
             <label htmlFor={props.listKey}>{displayedLabel}: </label>
@@ -1101,7 +1153,7 @@ export const JzodObjectEditor = (
               id={props.rootLesslistKey}
               name={props.name}
               {...props.formik.getFieldProps(props.rootLesslistKey)}
-              onChange={props.handleChange}
+              onChange={handleSelectUuidChange}
               value={currentValue}
             >
               {/* <option id={props.rootLesslistKey+".undefined"} value=""></option> */}

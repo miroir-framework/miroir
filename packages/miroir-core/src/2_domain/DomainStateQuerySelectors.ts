@@ -6,6 +6,7 @@ import {
   DomainElementObject,
   DomainManyQueriesWithDeploymentUuid,
   DomainModelGetEntityDefinitionQueryParams,
+  DomainModelGetFetchParamJzodSchemaQueryParams,
   DomainModelGetSingleSelectObjectListQueryQueryParams,
   DomainModelGetSingleSelectObjectQueryQueryParams,
   EntityDefinition,
@@ -43,6 +44,40 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
     log = value;
   }
 );
+
+const emptyDomainObject:DomainElementObject = { elementType: "object", elementValue: {} }
+
+export const dummyDomainManyQueriesWithDeploymentUuid: DomainManyQueriesWithDeploymentUuid = {
+  queryType: "DomainManyQueries",
+  deploymentUuid: "",
+  pageParams: emptyDomainObject,
+  queryParams: emptyDomainObject,
+  contextResults: emptyDomainObject,
+  fetchQuery: { select: {} },
+};
+
+export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: DomainModelGetFetchParamJzodSchemaQueryParams = {
+  queryType: "getFetchParamsJzodSchema",
+  pageParams: {
+    elementType: "object",
+    elementValue: {
+      applicationSection: { elementType: "string", elementValue: "data" },
+      deploymentUuid: { elementType: "string", elementValue: "" },
+      instanceUuid: { elementType: "string", elementValue: "" },
+    },
+  },
+  queryParams: { elementType: "object", elementValue: {} },
+  contextResults: { elementType: "object", elementValue: {} },
+  fetchParams: {
+    queryType: "DomainManyQueries",
+    deploymentUuid: "",
+    pageParams: emptyDomainObject,
+    queryParams: emptyDomainObject,
+    contextResults: emptyDomainObject,
+    fetchQuery: { select: {} },
+  },
+};
+
 
 // ################################################################################################
 // ACCESSES DOMAIN STATE

@@ -127,13 +127,11 @@
                   "parentName": {
                     "type": "string",
                     "optional": true,
-                    "validations": [{ "type": "uuid" }],
                     "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
                   },
                   "parentUuid": {
-                    "type": "string",
-                    "validations": [{ "type": "uuid" }],
-                    "extra": { "id":2, "defaultLabel": "Entity Uuid", "editable": false }
+                    "type": "uuid",
+                    "extra": { "id":2, "defaultLabel": "Entity Uuid", "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad", "editable": false }
                   },
                   "fetchedDataReference": {
                     "type": "string",

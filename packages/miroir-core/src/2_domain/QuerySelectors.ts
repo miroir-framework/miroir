@@ -45,6 +45,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   }
 );
 
+
 // ################################################################################################
 export function cleanupResultsFromQuery(r:DomainElement): any {
   switch (r.elementType) {

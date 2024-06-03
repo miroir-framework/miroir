@@ -2441,11 +2441,6 @@ export const miroirFundamentalJzodSchema = {
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "validations": [
-                  {
-                    "type": "uuid"
-                  }
-                ],
                 "extra": {
                   "id": 2,
                   "defaultLabel": "Entity Name",
@@ -2453,15 +2448,11 @@ export const miroirFundamentalJzodSchema = {
                 }
               },
               "parentUuid": {
-                "type": "string",
-                "validations": [
-                  {
-                    "type": "uuid"
-                  }
-                ],
+                "type": "uuid",
                 "extra": {
                   "id": 2,
                   "defaultLabel": "Entity Uuid",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                   "editable": false
                 }
               },
@@ -2965,11 +2956,6 @@ export const miroirFundamentalJzodSchema = {
                       "parentName": {
                         "type": "string",
                         "optional": true,
-                        "validations": [
-                          {
-                            "type": "uuid"
-                          }
-                        ],
                         "extra": {
                           "id": 2,
                           "defaultLabel": "Entity Name",
@@ -2977,15 +2963,11 @@ export const miroirFundamentalJzodSchema = {
                         }
                       },
                       "parentUuid": {
-                        "type": "string",
-                        "validations": [
-                          {
-                            "type": "uuid"
-                          }
-                        ],
+                        "type": "uuid",
                         "extra": {
                           "id": 2,
                           "defaultLabel": "Entity Uuid",
+                          "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                           "editable": false
                         }
                       },
