@@ -436,27 +436,28 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
                     <></>
                   )
                 }
-
-                <JzodObjectEditor
-                  name={"ROOT"}
-                  listKey={"ROOT"}
-                  rootLesslistKey=""
-                  rootLesslistKeyArray={[]}
-                  label={props.label}
-                  currentDeploymentUuid={props.currentDeploymentUuid}
-                  currentApplicationSection={props.currentApplicationSection}
-                  rawJzodSchema={props.entityDefinitionJzodSchema}
-                  resolvedJzodSchema={resolvedJzodSchema?.status == "ok" ? resolvedJzodSchema.element : undefined}
-                  foreignKeyObjects={props.foreignKeyObjects}
-                  formState={dialogOuterFormObject}
-                  setFormState={setdialogOuterFormObject}
-                  handleChange={formik.handleChange as any}
-                  formik={formik}
-                />
-                {/* {errors.exampleRequired && <span>This field is required</span>} */}
-                <button type="submit" name={props.label} form={"form." + props.label}>
-                  submit form.{props.label}
-                </button>
+                <span style={{paddingTop: 0, paddingBottom: 0}}>
+                  <JzodObjectEditor
+                    name={"ROOT"}
+                    listKey={"ROOT"}
+                    rootLesslistKey=""
+                    rootLesslistKeyArray={[]}
+                    label={props.label}
+                    currentDeploymentUuid={props.currentDeploymentUuid}
+                    currentApplicationSection={props.currentApplicationSection}
+                    rawJzodSchema={props.entityDefinitionJzodSchema}
+                    resolvedJzodSchema={resolvedJzodSchema?.status == "ok" ? resolvedJzodSchema.element : undefined}
+                    foreignKeyObjects={props.foreignKeyObjects}
+                    formState={dialogOuterFormObject}
+                    setFormState={setdialogOuterFormObject}
+                    handleChange={formik.handleChange as any}
+                    formik={formik}
+                  />
+                  {/* {errors.exampleRequired && <span>This field is required</span>} */}
+                  <button type="submit" name={props.label} form={"form." + props.label}>
+                    submit form.{props.label}
+                  </button>
+                </span>
               </form>
             </Dialog>
           )}

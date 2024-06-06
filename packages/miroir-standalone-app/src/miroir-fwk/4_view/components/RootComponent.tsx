@@ -16,6 +16,7 @@ import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
+  defaultMiroirMetaModel,
   DomainControllerInterface,
   DomainElementObject,
   domainEndpointVersionV1,
@@ -380,6 +381,42 @@ export const RootComponent = (props: RootComponentProps) => {
                   >
                     Load server local cache
                   </button>
+                  {/* commit miroir */}
+                  <span>
+                    <button
+                      onClick={async () => {
+                        await domainController.handleAction(
+                          {
+                            actionType: "modelAction",
+                            actionName: "commit",
+                            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                            deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                          },
+                          defaultMiroirMetaModel
+                        );
+                      }}
+                    >
+                      Commit Miroir
+                    </button>
+                  </span>
+                  {/* Commit Library app */}
+                  <span>
+                    <button
+                      onClick={async () => {
+                        await domainController.handleAction(
+                          {
+                            actionType: "modelAction",
+                            actionName: "commit",
+                            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                          },
+                          defaultMiroirMetaModel
+                        );
+                      }}
+                    >
+                      Commit Library app
+                    </button>
+                  </span>
 
                   {/* <button
                     onClick={async () => {

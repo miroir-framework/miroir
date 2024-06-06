@@ -270,7 +270,7 @@ export const HomePage = (props: RootComponentProps) => {
         </button>
       </span>
       {/* commit miroir */}
-      <span>
+      {/* <span>
         <button
           onClick={async () => {
             await domainController.handleAction(
@@ -286,9 +286,9 @@ export const HomePage = (props: RootComponentProps) => {
         >
           Commit Miroir
         </button>
-      </span>
+      </span> */}
       {/* Commit Library app */}
-      <span>
+      {/* <span>
         <button
           onClick={async () => {
             await domainController.handleAction(
@@ -304,7 +304,7 @@ export const HomePage = (props: RootComponentProps) => {
         >
           Commit Library app
         </button>
-      </span>
+      </span> */}
       {/* rollback */}
       <span>
         <button

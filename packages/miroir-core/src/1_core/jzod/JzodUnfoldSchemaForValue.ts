@@ -583,19 +583,19 @@ export function resolveReferencesForJzodSchemaAndValueObject(
       break;
     }
     case "enum": {
-      if (jzodSchema.definition.includes(valueObject)) {
+      // if (jzodSchema.definition.includes(valueObject)) {
         // return { status: "ok", element: { type: "literal", definition: valueObject} };
         return { status: "ok", element: jzodSchema };
-      } else {
-        return {
-          status: "error",
-          error:
-            "resolveReferencesForJzodSchemaAndValueObject enum could not find string type in resolved union " +
-            JSON.stringify(jzodSchema.definition, null, 2) +
-            " valueObject " +
-            valueObject,
-        };
-      }
+      // } else {
+      //   return {
+      //     status: "error",
+      //     error:
+      //       "resolveReferencesForJzodSchemaAndValueObject enum could not find string type in resolved union " +
+      //       JSON.stringify(jzodSchema.definition, null, 2) +
+      //       " valueObject " +
+      //       valueObject,
+      //   };
+      // }
     }
     case "tuple": {
       return {

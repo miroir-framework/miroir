@@ -64,11 +64,38 @@
           "editable": true
         }
       },
+      "language": {
+        "type": "string",
+        "optional": true,
+        "extra": {
+          "id": 5,
+          "defaultLabel": "Language",
+          "editable": true
+        }
+      },
+      "birthDate": {
+        "type": "date",
+        "optional": true,
+        "extra": {
+          "id": 6,
+          "defaultLabel": "Birth",
+          "editable": true
+        }
+      },
+      "deathDate": {
+        "type": "date",
+        "optional": true,
+        "extra": {
+          "id": 7,
+          "defaultLabel": "D0eath",
+          "editable": true
+        }
+      },
       "country": {
         "type": "uuid",
         "optional": true,
         "extra": {
-          "id": 5,
+          "id": 8,
           "defaultLabel": "Country",
           "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
           "editable": true
@@ -78,7 +105,7 @@
         "type": "string",
         "optional": true,
         "extra": {
-          "id": 6,
+          "id": 9,
           "defaultLabel": "Gender (narrow-minded)",
           "editable": true
         }
@@ -87,7 +114,7 @@
         "type": "number",
         "optional": true,
         "extra": {
-          "id": 6,
+          "id": 10,
           "defaultLabel": "Gender (narrow-minded)",
           "editable": true
         }
