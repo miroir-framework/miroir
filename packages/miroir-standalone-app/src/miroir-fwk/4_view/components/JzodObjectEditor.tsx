@@ -704,8 +704,6 @@ export const JzodObjectEditor = (
         // ########################################################################################
         // const allSchemaObjectAttributes = unfoldedRawSchema.type == "record"?["ANY"]:
         return (
-          // <div style={{ marginLeft: `calc(${usedIndentLevel}*(${indentShift}))` }}>
-          // <span style={{lineHeight:"3em"}}>
           <>
             <span style={{}}>
               <span>
@@ -952,7 +950,8 @@ export const JzodObjectEditor = (
                         <>
                           <div
                             key={attributeListKey}
-                            style={{ marginLeft: `calc((${usedIndentLevel} + 1)*(${indentShift}))`}}
+                            // style={{ marginLeft: `calc(${usedIndentLevel}*(${indentShift}))`}}
+                            style={{ marginLeft: `calc(${indentShift})`}}
                           >
                             <SmallIconButton
                               onClick={() => removeOptionalAttribute(attributeRootLessListKey)}
@@ -998,7 +997,7 @@ export const JzodObjectEditor = (
                                 listKey={attributeListKey}
                                 rootLesslistKey={attributeRootLessListKey}
                                 rootLesslistKeyArray={[...props.rootLesslistKeyArray, attribute[0]]}
-                                indentLevel={usedIndentLevel}
+                                indentLevel={usedIndentLevel + 1}
                                 label={currentAttributeDefinition?.extra?.defaultLabel}
                                 paramMiroirFundamentalJzodSchema={props.paramMiroirFundamentalJzodSchema}
                                 currentDeploymentUuid={props.currentDeploymentUuid}
@@ -1030,7 +1029,9 @@ export const JzodObjectEditor = (
                     <></>
                   )
                 }
-                <div style={{ marginLeft: `calc((${usedIndentLevel} + 2)*(${indentShift}))`}}>
+                {/* <div style={{ marginLeft: `calc((${usedIndentLevel})*(${indentShift}))`}}> */}
+                <div style={{ marginLeft: `calc(${indentShift})`}}>
+                {/* <div> */}
                   {"}"}
                 </div>
               </div>
@@ -1067,8 +1068,10 @@ export const JzodObjectEditor = (
 
         
         return (
-          <div style={{ marginLeft: `calc(${usedIndentLevel}*(${indentShift}))` }}>
-            {displayedLabel}:{" ["}{" "}
+          // <div style={{ marginLeft: `calc(${usedIndentLevel}*(${indentShift}))` }}>
+          // <div style={{ marginLeft: `calc(${indentShift})` }}>
+          <span>
+            {" ["}{" "}
             <ExpandOrFoldObjectAttributes
               hiddenFormItems={hiddenFormItems}
               setHiddenFormItems={setHiddenFormItems}
@@ -1110,7 +1113,8 @@ export const JzodObjectEditor = (
                   return (
                     <div
                       key={props.listKey + "." + index}
-                      style={{ marginLeft: `calc((${usedIndentLevel} + 1)*(${indentShift}))` }}
+                      // style={{ marginLeft: `calc((${usedIndentLevel})*(${indentShift}))` }}
+                      style={{ marginLeft: `calc(${indentShift})` }}
                     >
                       <button
                         style={{ border: 0, backgroundColor: "transparent" }}
@@ -1170,7 +1174,7 @@ export const JzodObjectEditor = (
                         name={"" + index}
                         listKey={props.listKey + "." + index}
                         // currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
-                        indentLevel={usedIndentLevel}
+                        indentLevel={usedIndentLevel + 1}
                         label={props.resolvedJzodSchema?.extra?.defaultLabel}
                         paramMiroirFundamentalJzodSchema={props.paramMiroirFundamentalJzodSchema}
                         currentDeploymentUuid={props.currentDeploymentUuid}
@@ -1189,8 +1193,10 @@ export const JzodObjectEditor = (
                   );
                 })}
             </div>
-            {"]"}
-          </div>
+            <div style={{ marginLeft: `calc(${indentShift})`}}>
+              {"]"}
+            </div>
+          </span>
         );
         break;
 
