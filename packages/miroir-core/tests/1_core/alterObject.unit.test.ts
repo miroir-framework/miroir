@@ -10,7 +10,7 @@ import {
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { MiroirModel } from '../../src/0_interfaces/1_core/Model';
 
-import { alterObject } from "../../src/1_core/alterObject";
+import { alterObjectAtPath } from "../../src/1_core/alterObjectAtPath";
 // import { resolveReferencesForJzodSchemaAndValueObject} from "../../tmp/src/1_core/Jzod.js";
 
 
@@ -202,7 +202,7 @@ function testResolve(
   expectedResult: JzodElement,
 ){
   console.log("######################################### running test", testId, "...")
-  const testResult = alterObject(
+  const testResult = alterObjectAtPath(
     object,
     path,
     value
@@ -230,7 +230,7 @@ interface testFormat {
 // ################################################################################################
 // ################################################################################################
 describe(
-  'alterObject',
+  'alterObjectAtPath',
   () => {
 
     // ###########################################################################################

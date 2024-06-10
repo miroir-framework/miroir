@@ -29,6 +29,10 @@ export const miroirFundamentalJzodSchema = {
                 "type": "string",
                 "optional": true
               },
+              "initializeTo": {
+                "type": "any",
+                "optional": true
+              },
               "targetEntity": {
                 "type": "string",
                 "optional": true
@@ -416,6 +420,11 @@ export const miroirFundamentalJzodSchema = {
         "type": "union",
         "discriminator": "type",
         "subDiscriminator": "definition",
+        "extra": {
+          "initializeTo": {
+            "type": "string"
+          }
+        },
         "definition": [
           {
             "type": "schemaReference",
@@ -1574,36 +1583,6 @@ export const miroirFundamentalJzodSchema = {
               "description": "Previous version of the application on this Branch.",
               "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
               "editable": false
-            }
-          },
-          "modelStructureMigration": {
-            "type": "array",
-            "optional": true,
-            "extra": {
-              "id": 12,
-              "defaultLabel": "Structure Migration from Previous Version",
-              "editable": true
-            },
-            "definition": {
-              "type": "record",
-              "definition": {
-                "type": "any"
-              }
-            }
-          },
-          "modelCUDMigration": {
-            "type": "array",
-            "optional": true,
-            "extra": {
-              "id": 13,
-              "defaultLabel": "Create-Update-Delete Migration from Previous Version",
-              "editable": true
-            },
-            "definition": {
-              "type": "record",
-              "definition": {
-                "type": "any"
-              }
             }
           }
         }

@@ -64,7 +64,8 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
     }),
     [props.pageParams]
   );
-  log.info("########################## RootReportSectionView rendering", count, "props", JSON.stringify(props, null, 2));
+  // log.info("########################## RootReportSectionView rendering", count, "props", JSON.stringify(props, null, 2));
+  log.info("########################## RootReportSectionView rendering", count, "props", props);
 
   // log.info(
   //   "deploymentUuid",

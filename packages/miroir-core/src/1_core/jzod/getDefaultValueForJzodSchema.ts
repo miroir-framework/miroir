@@ -125,7 +125,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
   miroirMetaModel?: MetaModel,
   relativeReferenceJzodContext?: {[k:string]: JzodElement},
 ): any {
-  log.info("getDefaultValueForJzodSchemaWithResolution called with jzodSchema", jzodSchema)
+  log.info("getDefaultValueForJzodSchemaWithResolution handleSelectLiteralChange called with jzodSchema", jzodSchema)
   if (jzodSchema.optional) {
     return undefined
   }
@@ -139,6 +139,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
         miroirMetaModel,
         relativeReferenceJzodContext
       )
+      log.info("getDefaultValueForJzodSchemaWithResolution handleSelectLiteralChange called with resolvedObjectType", resolvedObjectType)
       const result = Object.fromEntries(
         // Object.entries(jzodSchema.definition)
         Object.entries(resolvedObjectType.definition)
@@ -154,6 +155,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
             relativeReferenceJzodContext,
           )]
       ));
+      log.info("getDefaultValueForJzodSchemaWithResolution handleSelectLiteralChange result", result)
       return result;
     }
     case "string": {
@@ -255,13 +257,17 @@ export function getDefaultValueForJzodSchemaWithResolution(
       if (jzodSchema.definition.length == 0) {
         throw new Error("getDefaultValueForJzodSchemaWithResolution union definition is empty for jzodSchema="  + JSON.stringify(jzodSchema, null, 2));
       }
-      return getDefaultValueForJzodSchemaWithResolution(
-        jzodSchema.definition[0],
-        miroirFundamentalJzodSchema,
-        currentModel,
-        miroirMetaModel,
-        relativeReferenceJzodContext,
-      )
+      if (jzodSchema.extra?.initializeTo) {
+        return jzodSchema.extra?.initializeTo
+      } else {
+        return getDefaultValueForJzodSchemaWithResolution(
+          jzodSchema.definition[0],
+          miroirFundamentalJzodSchema,
+          currentModel,
+          miroirMetaModel,
+          relativeReferenceJzodContext,
+        )
+      }
       break;
     }
     case "function":

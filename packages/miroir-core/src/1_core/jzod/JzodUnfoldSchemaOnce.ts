@@ -188,13 +188,36 @@ export function unfoldJzodSchemaOnce(
       );
 
       // log.info("unfoldJzodSchemaOnce unfoldedReferenceJzodSchema", JSON.stringify(unfoldedReferenceJzodSchema, null, 2));
-      const resultJzodSchema = resolveJzodSchemaReferenceInContext(
+      const resolvedJzodSchema = resolveJzodSchemaReferenceInContext(
         miroirFundamentalJzodSchema,
         {type: "schemaReference", context: unfoldedReferenceJzodSchema.context, definition:jzodSchema.definition},
         currentModel,
         miroirMetaModel,
         {...relativeReferenceJzodContext, ...unfoldedReferenceJzodSchema.context} // local context (unfoldedReferenceJzodSchema.context) is not taken into account by resolveJzodSchemaReferenceInContext
       )
+
+      log.info("unfoldJzodSchemaOnce resolvedJzodSchema", JSON.stringify(resolvedJzodSchema, null, 2));
+      const resultJzodSchema = {...resolvedJzodSchema}
+      // {
+        // ...jzodSchema, // could be an issue if resolvedJzodSchema forces a value for an attribute already in jzodSchema (example: jzodSchema.optional = true, resolvedJzodSchema.optional=false)
+        // optional: jzodSchema.optional, // TODO: what is the semantics of optional for a schema reference? COMPARE WITH JZOD TO ZOD!!!!!!!!!!
+        // nullable: jzodSchema.nullable,
+        // extra: jzodSchema.extra,
+      //   ...resolvedJzodSchema
+      // }
+      if (jzodSchema.optional) {
+        resultJzodSchema.optional = true;
+      }
+      if (jzodSchema.nullable) {
+        resultJzodSchema.optional = true;
+      }
+      if (jzodSchema.extra) {
+        resultJzodSchema.extra = jzodSchema.extra;
+      }
+
+      if (resultJzodSchema.optional != jzodSchema.optional) {
+        throw new Error("unfoldJzodSchemaOnce mismatch on optional " + JSON.stringify(jzodSchema));
+      }
       // log.info(
       //   "unfoldJzodSchemaOnce schemaReference resultJzodSchema",
       //   JSON.stringify(resultJzodSchema, null, 2),
@@ -235,7 +258,7 @@ export function unfoldJzodSchemaOnce(
       } else {
         extendedJzodSchema = jzodSchema
       }
-      // log.info("unfoldJzodSchemaOnce object extendedJzodSchema",extendedJzodSchema)
+      log.info("unfoldJzodSchemaOnce object extendedJzodSchema",extendedJzodSchema)
 
       const resolvedObjectEntries:[string, JzodElement][] = Object.entries(extendedJzodSchema.definition).map(
         (e: [string, any]) => {
@@ -251,7 +274,11 @@ export function unfoldJzodSchemaOnce(
             if (resultSchemaTmp.status == "ok") {
               return [
                 e[0],
-                resultSchemaTmp.element,
+                // {
+                //   ...e[1], // all properties of JzodSchema extra, optional, nullable...
+                  // ...resultSchemaTmp.element,
+                // }
+                resultSchemaTmp.element
               ]
             } else {
               log.warn(

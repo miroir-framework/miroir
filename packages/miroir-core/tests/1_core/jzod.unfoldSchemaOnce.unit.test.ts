@@ -282,170 +282,32 @@ describe(
           //     definition: "string"
           //   },
           // },
-          // testSchema: miroirFundamentalJzodSchema.jzodSchema,
-          test900: {
-            testSchema: defaultMiroirMetaModel.jzodSchemas[0].definition as JzodElement,
-            expectedResult: {
-              "type": "union",
-              "discriminator": "type",
-              "subDiscriminator": "definition",
-              "definition": [
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    "relativePath": "jzodArray"
-                  }
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    "relativePath": "jzodAttribute"
-                  }
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    "relativePath": "jzodPlainAttribute"
-                  }
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    "relativePath": "jzodAttributeDateWithValidations"
-                  }
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    "relativePath": "jzodAttributePlainDateWithValidations"
-                  }
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    "relativePath": "jzodAttributeNumberWithValidations"
-                  }
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    "relativePath": "jzodAttributePlainNumberWithValidations"
-                  }
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    "relativePath": "jzodAttributeStringWithValidations"
-                  }
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    "relativePath": "jzodAttributePlainStringWithValidations"
-                  }
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    "relativePath": "jzodEnum"
-                  }
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    "relativePath": "jzodFunction"
-                  }
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    "relativePath": "jzodLazy"
-                  }
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    "relativePath": "jzodLiteral"
-                  }
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    "relativePath": "jzodIntersection"
-                  }
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    "relativePath": "jzodMap"
-                  }
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    "relativePath": "jzodObject"
-                  }
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    "relativePath": "jzodPromise"
-                  }
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    "relativePath": "jzodRecord"
-                  }
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    "relativePath": "jzodReference"
-                  }
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    "relativePath": "jzodSet"
-                  }
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    "relativePath": "jzodTuple"
-                  }
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    "relativePath": "jzodUnion"
-                  }
+          // object, simple
+          test040: {
+            testSchema: {
+              type: "object",
+              definition: {
+                a: {
+                  type: "schemaReference",
+                  optional: true,
+                  context: {
+                    "myString": {
+                      type: "string",
+                    }
+                  },
+                  definition: { relativePath: "myString" }
                 }
-              ]
-            }
+              }
+            },
+            expectedResult: {
+              type: "object",
+              definition: {
+                a: {
+                  type: "string",
+                  optional: true,
+                }
+              }
+            },
           },
           // // schemaReference: object, recursive, 1-level valueObject
           // test050: {
@@ -457,6 +319,7 @@ describe(
           //         definition: {
           //           a: {
           //             type: "union",
+          //             optional: true,
           //             definition: [
           //               {
           //                 type: "simpleType",
@@ -478,6 +341,7 @@ describe(
           //     definition: {
           //       a: {
           //         type: "union",
+          //         optional: true,
           //         definition: [
           //           {
           //             type: "simpleType",
@@ -491,6 +355,7 @@ describe(
           //                 definition: {
           //                   a: {
           //                     type: "union",
+          //                     optional: true,
           //                     definition: [
           //                       {
           //                         type: "simpleType",
@@ -512,6 +377,180 @@ describe(
           //     }
           //   },
           // },
+          // // testSchema: miroirFundamentalJzodSchema.jzodSchema,
+          // test900: {
+          //   testSchema: defaultMiroirMetaModel.jzodSchemas[0].definition as JzodElement,
+          //   expectedResult: {
+          //     "type": "union",
+          //     "discriminator": "type",
+          //     "subDiscriminator": "definition",
+          //     "definition": [
+          //       {
+          //         "type": "schemaReference",
+          //         "definition": {
+          //           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          //           "relativePath": "jzodArray"
+          //         }
+          //       },
+          //       {
+          //         "type": "schemaReference",
+          //         "definition": {
+          //           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          //           "relativePath": "jzodAttribute"
+          //         }
+          //       },
+          //       {
+          //         "type": "schemaReference",
+          //         "definition": {
+          //           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          //           "relativePath": "jzodPlainAttribute"
+          //         }
+          //       },
+          //       {
+          //         "type": "schemaReference",
+          //         "definition": {
+          //           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          //           "relativePath": "jzodAttributeDateWithValidations"
+          //         }
+          //       },
+          //       {
+          //         "type": "schemaReference",
+          //         "definition": {
+          //           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          //           "relativePath": "jzodAttributePlainDateWithValidations"
+          //         }
+          //       },
+          //       {
+          //         "type": "schemaReference",
+          //         "definition": {
+          //           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          //           "relativePath": "jzodAttributeNumberWithValidations"
+          //         }
+          //       },
+          //       {
+          //         "type": "schemaReference",
+          //         "definition": {
+          //           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          //           "relativePath": "jzodAttributePlainNumberWithValidations"
+          //         }
+          //       },
+          //       {
+          //         "type": "schemaReference",
+          //         "definition": {
+          //           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          //           "relativePath": "jzodAttributeStringWithValidations"
+          //         }
+          //       },
+          //       {
+          //         "type": "schemaReference",
+          //         "definition": {
+          //           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          //           "relativePath": "jzodAttributePlainStringWithValidations"
+          //         }
+          //       },
+          //       {
+          //         "type": "schemaReference",
+          //         "definition": {
+          //           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          //           "relativePath": "jzodEnum"
+          //         }
+          //       },
+          //       {
+          //         "type": "schemaReference",
+          //         "definition": {
+          //           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          //           "relativePath": "jzodFunction"
+          //         }
+          //       },
+          //       {
+          //         "type": "schemaReference",
+          //         "definition": {
+          //           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          //           "relativePath": "jzodLazy"
+          //         }
+          //       },
+          //       {
+          //         "type": "schemaReference",
+          //         "definition": {
+          //           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          //           "relativePath": "jzodLiteral"
+          //         }
+          //       },
+          //       {
+          //         "type": "schemaReference",
+          //         "definition": {
+          //           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          //           "relativePath": "jzodIntersection"
+          //         }
+          //       },
+          //       {
+          //         "type": "schemaReference",
+          //         "definition": {
+          //           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          //           "relativePath": "jzodMap"
+          //         }
+          //       },
+          //       {
+          //         "type": "schemaReference",
+          //         "definition": {
+          //           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          //           "relativePath": "jzodObject"
+          //         }
+          //       },
+          //       {
+          //         "type": "schemaReference",
+          //         "definition": {
+          //           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          //           "relativePath": "jzodPromise"
+          //         }
+          //       },
+          //       {
+          //         "type": "schemaReference",
+          //         "definition": {
+          //           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          //           "relativePath": "jzodRecord"
+          //         }
+          //       },
+          //       {
+          //         "type": "schemaReference",
+          //         "definition": {
+          //           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          //           "relativePath": "jzodReference"
+          //         }
+          //       },
+          //       {
+          //         "type": "schemaReference",
+          //         "definition": {
+          //           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          //           "relativePath": "jzodSet"
+          //         }
+          //       },
+          //       {
+          //         "type": "schemaReference",
+          //         "definition": {
+          //           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          //           "relativePath": "jzodTuple"
+          //         }
+          //       },
+          //       {
+          //         "type": "schemaReference",
+          //         "definition": {
+          //           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          //           "relativePath": "jzodUnion"
+          //         }
+          //       }
+          //     ]
+          //   }
+          // },
+          // 
+          // 
+          // 
+          // 
+          // 
+          // 
+          // 
+          // 
+          // 
           // 
           // 
           // 

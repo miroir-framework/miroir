@@ -11,6 +11,7 @@ import {
   JzodElement,
   JzodObject,
   LoggerInterface,
+  MetaModel,
   MiroirConfigClient,
   MiroirLoggerFactory,
   adminConfigurationDeploymentAdmin,
@@ -35,6 +36,7 @@ import { JzodObjectEditor } from "../components/JzodObjectEditor";
 import { cleanLevel } from "../constants";
 import { adminConfigurationDeploymentParis, applicationParis } from './ReportPage';
 import { javascript } from "@codemirror/lang-javascript";
+import { useCurrentModel } from "../ReduxHooks";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ToolsPage");
@@ -170,6 +172,11 @@ export const ToolsPage: React.FC<any> = (
   const errorLog = useErrorLogService();
   const context = useMiroirContextService();
   const domainController: DomainControllerInterface = useDomainControllerService();
+  const currentModel: MetaModel = useCurrentModel(
+    context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
+  );
+  const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+
   const [formState,setFormState] = useState<{[k:string]:any}>(initialValues)
 
   const [rawSchema, setRawSchema] = useState<JzodElement>(
@@ -278,7 +285,10 @@ export const ToolsPage: React.FC<any> = (
         const configuration = resolveReferencesForJzodSchemaAndValueObject(
           context.miroirFundamentalJzodSchema,
           rawSchema,
-          formState
+          formState,
+          currentModel,
+          currentMiroirModel,
+          emptyObject,
         )
 
         return configuration.status == "ok"? configuration.element : defaultObject;

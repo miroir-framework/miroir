@@ -321,14 +321,9 @@ export class DomainController implements DomainControllerInterface {
               description: "TODO: no description yet",
               name: "TODO: No label was given to this version.",
               previousVersion: currentModel?.configuration[0]?.definition?.currentApplicationVersion,
-              // branch: applicationModelBranchMiroirMasterBranch.uuid,
               branch: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // TODO: this is wrong, application, application version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
-              // application:applicationMiroir.uuid, // TODO: this is wrong, application, application version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
               application: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // TODO: this is wrong, application, application version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
-              modelStructureMigration: this.localCache.currentTransaction(),
-              // .map((t: LocalCacheModelActionWithDeployment | DomainTransactionalInstanceAction) =>
-              //   t.actionType == "localCacheModelActionWithDeployment" ? t : t.update
-              // ),
+              // modelStructureMigration: this.localCache.currentTransaction(),
             };
 
             log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit create new version", newModelVersion);
