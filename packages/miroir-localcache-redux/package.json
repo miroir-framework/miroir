@@ -6,6 +6,37 @@
   "main": "dist/bundle.js",
   "types": "dist/bundle.d.ts",
   "type": "module",
+  "scripts": {
+    "watch": "lerna watch --scope='miroir-localcache-redux' --include-dependencies -- lerna run build --scope='miroir-localcache-redux'",
+    "tsbuild": "tsc ./src/index.ts --rootDir . --baseUrl . --target ES2015 --module commonjs --skipLibCheck --strict --moduleResolution node --allowSyntheticDefaultImports --resolveJsonModule --outdir ./dist",
+    "build": "tsup",
+    "build3": "npm run build",
+    "build4": "npm run build",
+    "build5": "npm run build",
+    "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
+    "test": "cross-env NODE_ENV=test jest --verbose --debug --silent=false -t",
+    "vitest": "vitest run --poolOptions.threads.singleThread --passWithNoTests"
+  },
+  "tsup": {
+    "dts": true,
+    "clean": false,
+    "bundle": true,
+    "treeshake": true,
+    "target": "node20",
+    "format": [
+      "esm"
+    ],
+    "entry": [
+      "src/index.ts"
+    ]
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "dependencies": {
     "@reduxjs/toolkit": "2.2.1",
     "@teroneko/redux-saga-promise": "^3.0.0",
@@ -22,21 +53,17 @@
     "@rollup/plugin-json": "^6.0.0",
     "@types/jest": "^29.2.4",
     "copyfiles": "^2.4.1",
+    "cross-env": "^7.0.3",
     "rimraf": "^4.1.1",
     "rollup": "^3.10.1",
     "rollup-plugin-dts": "^5.1.1",
     "rollup-plugin-typescript2": "^0.34.1",
     "tsconfig-paths": "^4.1.2",
-    "typescript": "^4.9.4"
-  },
-  "scripts": {
-    "watch": "lerna watch --scope='miroir-localcache-redux' --include-dependencies -- lerna run build --scope='miroir-localcache-redux'",
-    "build": "rollup --config",
-    "build3": "npm run build",
-    "build4": "npm run build",
-    "build5": "npm run build",
-    "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
-    "test": "jest --verbose --silent=false -t"
+    "tsup": "^8.0.1",
+    "typescript": "^4.9.4",
+    "vite": "4.5.0",
+    "vite-plugin-node-polyfills": "^0.19.0",
+    "vitest": "1.0.0"
   },
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "license": "MIT"

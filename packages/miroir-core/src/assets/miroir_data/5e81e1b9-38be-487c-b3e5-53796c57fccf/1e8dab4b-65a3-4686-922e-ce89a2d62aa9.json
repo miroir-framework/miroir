@@ -55,34 +55,6 @@
           }
         }
       },
-      "jzodAttribute": {
-        "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-            "relativePath": "jzodBaseObject"
-          }
-        },
-        "definition": {
-          "type": {
-            "type": "literal",
-            "definition": "simpleType"
-          },
-          "coerce": {
-            "type": "boolean",
-            "optional": true
-          },
-          "definition": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodEnumAttributeTypes"
-            }
-          }
-        }
-      },
       "jzodPlainAttribute": {
         "type": "object",
         "extend": {
@@ -100,11 +72,8 @@
               "any",
               "bigint",
               "boolean",
-              "date",
               "never",
               "null",
-              "number",
-              "string",
               "uuid",
               "undefined",
               "unknown",
@@ -133,39 +102,6 @@
           },
           "parameter": {
             "type": "any"
-          }
-        }
-      },
-      "jzodAttributeDateWithValidations": {
-        "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-            "relativePath": "jzodBaseObject"
-          }
-        },
-        "definition": {
-          "type": {
-            "type": "literal",
-            "definition": "simpleType"
-          },
-          "definition": {
-            "type": "literal",
-            "definition": "date"
-          },
-          "coerce": { "type": "boolean", "optional": true },
-          "validations": {
-            "type": "array",
-            "optional": true,
-            "definition": {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                "relativePath": "jzodAttributeDateValidations"
-              }
-            }
           }
         }
       },
@@ -259,39 +195,6 @@
           }
         }
       },
-      "jzodAttributeNumberWithValidations": {
-        "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-            "relativePath": "jzodBaseObject"
-          }
-        },
-        "definition": {
-          "type": {
-            "type": "literal",
-            "definition": "simpleType"
-          },
-          "definition": {
-            "type": "literal",
-            "definition": "number"
-          },
-          "coerce": { "type": "boolean", "optional": true },
-          "validations": {
-            "type": "array",
-            "optional": true,
-            "definition": {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                "relativePath": "jzodAttributeNumberValidations"
-              }
-            }
-          }
-        }
-      },
       "jzodAttributeStringValidations": {
         "type": "object",
         "definition": {
@@ -328,39 +231,6 @@
           }
         }
       },
-      "jzodAttributeStringWithValidations": {
-        "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-            "relativePath": "jzodBaseObject"
-          }
-        },
-        "definition": {
-          "type": {
-            "type": "literal",
-            "definition": "simpleType"
-          },
-          "definition": {
-            "type": "literal",
-            "definition": "string"
-          },
-          "coerce": { "type": "boolean", "optional": true },
-          "validations": {
-            "type": "array",
-            "optional": true,
-            "definition": {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                "relativePath": "jzodAttributeStringValidations"
-              }
-            }
-          }
-        }
-      },
       "jzodAttributePlainStringWithValidations": {
         "type": "object",
         "extend": {
@@ -393,7 +263,6 @@
       "jzodElement": {
         "type": "union",
         "discriminator": "type",
-        "subDiscriminator": "definition",
         "extra": {"initializeTo": { "type": "string" } },
         "definition": [
           {
@@ -407,21 +276,7 @@
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodAttribute"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
               "relativePath": "jzodPlainAttribute"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodAttributeDateWithValidations"
             }
           },
           {
@@ -435,21 +290,7 @@
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodAttributeNumberWithValidations"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
               "relativePath": "jzodAttributePlainNumberWithValidations"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodAttributeStringWithValidations"
             }
           },
           {
@@ -609,7 +450,6 @@
           "record",
           "schemaReference",
           "set",
-          "simpleType",
           "string",
           "tuple",
           "union"
@@ -978,10 +818,6 @@
             "definition": "union"
           },
           "discriminator": {
-            "type": "string",
-            "optional": true
-          },
-          "subDiscriminator": {
             "type": "string",
             "optional": true
           },

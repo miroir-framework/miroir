@@ -119,7 +119,7 @@ describe("templates.unit.test", () => {
         undefined
       );
 
-      console.log("################################ convertedAction", JSON.stringify(convertedAction,null,2))
+      // console.log("################################ convertedAction", JSON.stringify(convertedAction,null,2))
       expect(convertedAction).toEqual(
         {
           "actionType": "storeManagementAction",

@@ -98,7 +98,7 @@ function makeReferencesAbsolute(jzodSchema:JzodElement, absolutePath: string):Jz
       }
       break;
     }
-    case "simpleType":
+    // case "simpleType":
     case "enum":
     case "literal":
     default: {

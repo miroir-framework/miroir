@@ -211,10 +211,10 @@ function testResolve(
   )
   if (testResult.status == "ok") {
     expect(testResult.status).toEqual("ok");
-    // console.log("test", testId, "has result", JSON.stringify(testResult.element, null, 2));
+    console.log("test", testId, "has result", JSON.stringify(testResult.element, null, 2));
     expect(testResult.element).toEqual(expectedResult);
   } else {
-    console.log("test", testId, "has result", JSON.stringify(testResult, null, 2));
+    console.log("test", testId, "failed with error", testResult.error);
     expect(testResult.status).toEqual("ok");
   }
 }
@@ -256,12 +256,10 @@ describe(
           // simpleType
           test020: {
             testSchema: {
-              type: "simpleType",
-              definition: "string",
+              type: "string",
             },
             expectedResult: {
-              type: "simpleType",
-              definition: "string",
+              type: "string",
             },
             testValueObject: "myString",
           },
@@ -271,8 +269,7 @@ describe(
               type: "schemaReference",
               context: {
                 a: {
-                  type: "simpleType",
-                  definition: "string"
+                  type: "string"
                 }
               },
               definition: {
@@ -280,8 +277,7 @@ describe(
               }
             },
             expectedResult: {
-              type: "simpleType",
-              definition: "string"
+              type: "string"
             },
             testValueObject: "myString",
           },
@@ -297,8 +293,7 @@ describe(
                       type: "union",
                       definition: [
                         {
-                          type: "simpleType",
-                          definition: "string",
+                          type: "string",
                         },
                         {
                           type: "schemaReference",
@@ -315,8 +310,7 @@ describe(
               type: "object",
               definition: {
                 a: {
-                  type: "simpleType",
-                  definition: "string"
+                  type: "string"
                 }
               }
             },
@@ -335,8 +329,7 @@ describe(
                       discriminator: "type",
                       definition: [
                         {
-                          type: "simpleType",
-                          definition: "string",
+                          type: "string",
                         },
                         {
                           type: "schemaReference",
@@ -356,8 +349,7 @@ describe(
                   type: "object",
                   definition: {
                     a: {
-                      type: "simpleType",
-                      definition: "string"
+                      type: "string"
                     }
                   }
                 }
@@ -377,8 +369,7 @@ describe(
                       type: "union",
                       definition: [
                         {
-                          type: "simpleType",
-                          definition: "string",
+                          type: "string",
                         },
                         {
                           type: "schemaReference",
@@ -401,8 +392,7 @@ describe(
                       type: "object",
                       definition: {
                         a: {
-                          type: "simpleType",
-                          definition: "string"
+                          type: "string"
                         }
                       }
                     }
@@ -424,8 +414,7 @@ describe(
                       type: "union",
                       definition: [
                         {
-                          type: "simpleType",
-                          definition: "string",
+                          type: "string",
                         },
                         {
                           type: "schemaReference",
@@ -455,8 +444,7 @@ describe(
                       type: "object",
                       definition: {
                         a: {
-                          type: "simpleType",
-                          definition: "string",
+                          type: "string",
                         },
                       },
                     },
@@ -466,8 +454,7 @@ describe(
                   type: "object",
                   definition: {
                     a: {
-                      type: "simpleType",
-                      definition: "string",
+                      type: "string",
                     },
                   },
                 },
@@ -489,8 +476,7 @@ describe(
                         type: "union",
                         definition: [
                           {
-                            type: "simpleType",
-                            definition: "string",
+                            type: "string",
                           },
                           {
                             type: "schemaReference",
@@ -514,8 +500,7 @@ describe(
                       type: "object",
                       definition: {
                         a: {
-                          type: "simpleType",
-                          definition: "string"
+                          type: "string"
                         }
                       }
                     }
@@ -525,8 +510,7 @@ describe(
                   type: "object",
                   definition: {
                     a: {
-                      type: "simpleType",
-                      definition: "string"
+                      type: "string"
                     }
                   }
                 }
@@ -539,15 +523,13 @@ describe(
             testSchema: {
               type: "array",
               definition: {
-                type: "simpleType",
-                definition: "string"
+                type: "string"
               }
             },
             expectedResult: {
               type: "array",
               definition: {
-                type: "simpleType",
-                definition: "string"
+                type: "string"
               }
             },
             testValueObject: ["1", "2", "3"],
@@ -566,8 +548,7 @@ describe(
                         type: "union",
                         definition: [
                           {
-                            type: "simpleType",
-                            definition: "string",
+                            type: "string",
                           },
                           {
                             type: "schemaReference",
@@ -582,15 +563,35 @@ describe(
               },
             },
             expectedResult: {
-              "type": "array",
-              "definition": {
-                "type": "object",
-                "definition": {
-                  "a": {
-                    "type": "string"
-                  }
-                }
-              }
+              type: "array",
+              definition: {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "union",
+                    definition: [
+                      {
+                        type: "string",
+                      },
+                      {
+                        type: "schemaReference",
+                        definition: {
+                          relativePath: "myObject",
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+              // "type": "array",
+              // "definition": {
+              //   "type": "object",
+              //   "definition": {
+              //     "a": {
+              //       "type": "string"
+              //     }
+              //   }
+              // }
             },
             testValueObject: [
               { a: "myString" },
@@ -607,8 +608,7 @@ describe(
                   type: "object",
                   definition: {
                     a: {
-                      type: "simpleType",
-                      definition: "string",
+                      type: "string",
                     },
                   },
                 },
@@ -622,8 +622,7 @@ describe(
                   },
                   definition: {
                     b: {
-                      type: "simpleType",
-                      definition: "string",
+                      type: "string",
                     },
                   },
                 },
@@ -634,12 +633,10 @@ describe(
               "type": "object",
               "definition": {
                 "a": {
-                  "type": "simpleType",
-                  "definition": "string"
+                  "type": "string"
                 },
                 "b": {
-                  "type": "simpleType",
-                  "definition": "string"
+                  "type": "string"
                 }
               }
             },
@@ -662,8 +659,7 @@ describe(
                   definition: "literal"
                 },
                 definition: {
-                  type: "simpleType",
-                  definition: "string"
+                  type: "string"
                 }
               }
             },
@@ -683,15 +679,11 @@ describe(
               definition: {
                 type: {
                   type: "literal",
-                  definition: "simpleType"
-                },
-                definition: {
-                  type: "literal",
                   definition: "string"
                 }
               }
             },
-            testValueObject: { type: "simpleType", definition: "string"},
+            testValueObject: { type: "string"},
           },
           // JzodSchema: object, simpleType attributes
           test520: {
@@ -717,19 +709,15 @@ describe(
                       definition: {
                         type: {
                           type: "literal",
-                          definition: "simpleType",
-                        },
-                        definition: {
-                          type: "literal",
                           definition: "string",
-                        },
+                        }
                       },
                     },
                   },
                 },
               },
             },
-            testValueObject: { type: "object", definition: { a: { type: "simpleType", definition: "string" } } },
+            testValueObject: { type: "object", definition: { a: { type: "string" } } },
           },
           // JzodSchema: schema reference with simple attribute
           test530: {
@@ -751,13 +739,11 @@ describe(
                   type: "object",
                   definition: {
                     absolutePath: {
-                      type: "simpleType",
-                      definition: "string",
+                      type: "string",
                       optional: true,
                     },
                     relativePath: {
-                      type: "simpleType",
-                      definition: "string",
+                      type: "string",
                       optional: true
                     },
                   },
@@ -793,12 +779,8 @@ describe(
                       definition: {
                         type: {
                           type: "literal",
-                          definition: "simpleType",
-                        },
-                        definition: {
-                          type: "literal",
                           definition: "string",
-                        },
+                        }
                       },
                     },
                   },
@@ -807,8 +789,7 @@ describe(
                   type: "object",
                   definition: {
                     relativePath: {
-                      type: "simpleType",
-                      definition: "string",
+                      type: "string",
                       optional: true,
                     },
                   },
@@ -819,8 +800,7 @@ describe(
               type: "schemaReference",
               context: {
                 a: {
-                  type: "simpleType",
-                  definition: "string",
+                  type: "string",
                 },
               },
               definition: {
@@ -828,14 +808,14 @@ describe(
               },
             },
           },
+          // 
           // based on "real" cases
           test900: {
             testSchema: {
               type: "object",
               definition: {
                 uuid: {
-                  type: "simpleType",
-                  definition: "string",
+                  type: "string",
                   validations: [
                     {
                       type: "uuid",
@@ -848,8 +828,7 @@ describe(
                   },
                 },
                 parentName: {
-                  type: "simpleType",
-                  definition: "string",
+                  type: "string",
                   optional: true,
                   extra: {
                     id: 2,
@@ -858,8 +837,7 @@ describe(
                   },
                 },
                 parentUuid: {
-                  type: "simpleType",
-                  definition: "string",
+                  type: "string",
                   validations: [
                     {
                       type: "uuid",
@@ -872,8 +850,7 @@ describe(
                   },
                 },
                 name: {
-                  type: "simpleType",
-                  definition: "string",
+                  type: "string",
                   extra: {
                     id: 4,
                     defaultLabel: "Name",
@@ -881,8 +858,7 @@ describe(
                   },
                 },
                 author: {
-                  type: "simpleType",
-                  definition: "string",
+                  type: "string",
                   validations: [
                     {
                       type: "uuid",
@@ -897,8 +873,7 @@ describe(
                   },
                 },
                 publisher: {
-                  type: "simpleType",
-                  definition: "string",
+                  type: "string",
                   validations: [
                     {
                       type: "uuid",
@@ -918,8 +893,7 @@ describe(
               type: "object",
               definition: {
                 uuid: {
-                  type: "simpleType",
-                  definition: "string",
+                  type: "string",
                   validations: [
                     {
                       type: "uuid",
@@ -932,8 +906,7 @@ describe(
                   },
                 },
                 parentName: {
-                  type: "simpleType",
-                  definition: "string",
+                  type: "string",
                   optional: true,
                   extra: {
                     id: 2,
@@ -942,8 +915,7 @@ describe(
                   },
                 },
                 parentUuid: {
-                  type: "simpleType",
-                  definition: "string",
+                  type: "string",
                   validations: [
                     {
                       type: "uuid",
@@ -956,8 +928,7 @@ describe(
                   },
                 },
                 name: {
-                  type: "simpleType",
-                  definition: "string",
+                  type: "string",
                   extra: {
                     id: 4,
                     defaultLabel: "Name",
@@ -965,8 +936,7 @@ describe(
                   },
                 },
                 author: {
-                  type: "simpleType",
-                  definition: "string",
+                  type: "string",
                   validations: [
                     {
                       type: "uuid",
@@ -981,8 +951,7 @@ describe(
                   },
                 },
                 publisher: {
-                  type: "simpleType",
-                  definition: "string",
+                  type: "string",
                   validations: [
                     {
                       type: "uuid",
@@ -1016,8 +985,7 @@ describe(
                   type: "object",
                   definition: {
                     label: {
-                      type: "simpleType",
-                      definition: "string",
+                      type: "string",
                     },
                     section: {
                       type: "schemaReference",
@@ -1027,8 +995,7 @@ describe(
                       },
                     },
                     application: {
-                      type: "simpleType",
-                      definition: "string",
+                      type: "string",
                       validations: [
                         {
                           type: "uuid",
@@ -1041,8 +1008,7 @@ describe(
                       },
                     },
                     reportUuid: {
-                      type: "simpleType",
-                      definition: "string",
+                      type: "string",
                       validations: [
                         {
                           type: "uuid",
@@ -1055,8 +1021,7 @@ describe(
                       },
                     },
                     instanceUuid: {
-                      type: "simpleType",
-                      definition: "string",
+                      type: "string",
                       optional: true,
                       validations: [
                         {
@@ -1070,8 +1035,7 @@ describe(
                       },
                     },
                     icon: {
-                      type: "simpleType",
-                      definition: "string",
+                      type: "string",
                       validations: [
                         {
                           type: "uuid",
@@ -1093,12 +1057,10 @@ describe(
                   type: "object",
                   definition: {
                     title: {
-                      type: "simpleType",
-                      definition: "string",
+                      type: "string",
                     },
                     label: {
-                      type: "simpleType",
-                      definition: "string",
+                      type: "string",
                     },
                     items: {
                       type: "schemaReference",
@@ -1177,66 +1139,66 @@ describe(
                     type: "object",
                     definition: {
                       title: {
-                        type: "simpleType",
-                        definition: "string",
+                        type: "string",
                       },
                       label: {
-                        type: "simpleType",
-                        definition: "string",
+                        type: "string",
                       },
-                      items: {
-                        type: "array",
-                        definition: {
-                          type: "object",
-                          definition: {
-                            label: {
-                              type: "simpleType",
-                              definition: "string",
-                            },
-                            section: {
-                              type: "literal",
-                              definition: "model",
-                            },
-                            application: {
-                              type: "simpleType",
-                              definition: "string",
-                              validations: [
-                                {
-                                  type: "uuid",
-                                },
-                              ],
-                              extra: {
-                                id: 1,
-                                defaultLabel: "Uuid",
-                                editable: false,
-                              },
-                            },
-                            reportUuid: {
-                              type: "simpleType",
-                              definition: "string",
-                              validations: [
-                                {
-                                  type: "uuid",
-                                },
-                              ],
-                              extra: {
-                                id: 1,
-                                defaultLabel: "Uuid",
-                                editable: false,
-                              },
-                            },
-                            icon: {
-                              type: "simpleType",
-                              definition: "string",
-                              validations: [
-                                {
-                                  type: "uuid",
-                                },
-                              ],
-                            },
-                          },
-                        },
-                      },
+                      items:  {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "menuItemArray"
+                        }
+                      }
+                      // {
+                      //   type: "array",
+                      //   definition: {
+                      //     type: "object",
+                      //     definition: {
+                      //       label: {
+                      //         type: "string",
+                      //       },
+                      //       section: {
+                      //         type: "literal",
+                      //         definition: "model",
+                      //       },
+                      //       application: {
+                      //         type: "string",
+                      //         validations: [
+                      //           {
+                      //             type: "uuid",
+                      //           },
+                      //         ],
+                      //         extra: {
+                      //           id: 1,
+                      //           defaultLabel: "Uuid",
+                      //           editable: false,
+                      //         },
+                      //       },
+                      //       reportUuid: {
+                      //         type: "string",
+                      //         validations: [
+                      //           {
+                      //             type: "uuid",
+                      //           },
+                      //         ],
+                      //         extra: {
+                      //           id: 1,
+                      //           defaultLabel: "Uuid",
+                      //           editable: false,
+                      //         },
+                      //       },
+                      //       icon: {
+                      //         type: "string",
+                      //         validations: [
+                      //           {
+                      //             type: "uuid",
+                      //           },
+                      //         ],
+                      //       },
+                      //     },
+                      //   },
+                      // },
                     },
                   },
                 },
@@ -1337,13 +1299,7 @@ describe(
               type: "object",
               definition: {
                 uuid: {
-                  type: "simpleType",
-                  definition: "string",
-                  validations: [
-                    {
-                      type: "uuid",
-                    },
-                  ],
+                  type: "uuid",
                   extra: {
                     id: 1,
                     defaultLabel: "Uuid",
@@ -1351,8 +1307,7 @@ describe(
                   },
                 },
                 parentName: {
-                  type: "simpleType",
-                  definition: "string",
+                  type: "string",
                   extra: {
                     id: 2,
                     defaultLabel: "Entity Name",
@@ -1360,13 +1315,7 @@ describe(
                   },
                 },
                 parentUuid: {
-                  type: "simpleType",
-                  definition: "string",
-                  validations: [
-                    {
-                      type: "uuid",
-                    },
-                  ],
+                  type: "uuid",
                   extra: {
                     id: 3,
                     defaultLabel: "Entity Uuid",
@@ -1374,14 +1323,8 @@ describe(
                   },
                 },
                 parentDefinitionVersionUuid: {
-                  type: "simpleType",
-                  definition: "string",
+                  type: "uuid",
                   optional: true,
-                  validations: [
-                    {
-                      type: "uuid",
-                    },
-                  ],
                   extra: {
                     id: 4,
                     defaultLabel: "Entity Definition Version Uuid",
@@ -1389,13 +1332,7 @@ describe(
                   },
                 },
                 entityUuid: {
-                  type: "simpleType",
-                  definition: "string",
-                  validations: [
-                    {
-                      type: "uuid",
-                    },
-                  ],
+                  type: "uuid",
                   extra: {
                     id: 6,
                     defaultLabel: "Entity Uuid of the Entity which this definition is the definition",
@@ -1403,8 +1340,7 @@ describe(
                   },
                 },
                 name: {
-                  type: "simpleType",
-                  definition: "string",
+                  type: "string",
                   extra: {
                     id: 5,
                     defaultLabel: "Name",
@@ -1422,8 +1358,7 @@ describe(
                   },
                 },
                 description: {
-                  type: "simpleType",
-                  definition: "string",
+                  type: "string",
                   optional: true,
                   extra: {
                     id: 8,
@@ -1431,12 +1366,19 @@ describe(
                     editable: true,
                   },
                 },
+                defaultInstanceDetailsReportUuid: {
+                  type: "uuid",
+                  optional: true,
+                  extra: {
+                    id: 9,
+                    defaultLabel: "Default Report used to display instances of this Entity",
+                    editable: false,
+                  },
+                },
                 viewAttributes: {
                   type: "array",
-                  optional: true,
                   definition: {
-                    type: "simpleType",
-                    definition: "string",
+                    type: "string",
                   },
                 },
                 jzodSchema: {
@@ -1453,58 +1395,32 @@ describe(
                           type: "object",
                           definition: {
                             type: {
-                              type: "literal",
-                              definition: "simpleType",
-                            },
-                            definition: {
-                              type: "literal",
-                              definition: "string",
-                            },
-                            validations: {
-                              type: "array",
-                              definition: {
-                                type: "object",
-                                definition: {
-                                  type: {
-                                    type: "enum",
-                                    definition: [
-                                      "max",
-                                      "min",
-                                      "length",
-                                      "email",
-                                      "url",
-                                      "emoji",
-                                      "uuid",
-                                      "cuid",
-                                      "cuid2",
-                                      "ulid",
-                                      "regex",
-                                      "includes",
-                                      "startsWith",
-                                      "endsWith",
-                                      "datetime",
-                                      "ip",
-                                    ],
-                                  },
-                                },
-                              },
+                              type: "enum",
+                              definition: [
+                                "any",
+                                "bigint",
+                                "boolean",
+                                "never",
+                                "null",
+                                "uuid",
+                                "undefined",
+                                "unknown",
+                                "void",
+                              ],
                             },
                             extra: {
                               type: "object",
                               definition: {
                                 id: {
-                                  type: "simpleType",
-                                  definition: "number",
+                                  type: "number",
                                   optional: true,
                                 },
                                 defaultLabel: {
-                                  type: "simpleType",
-                                  definition: "string",
+                                  type: "string",
                                   optional: true,
                                 },
                                 editable: {
-                                  type: "simpleType",
-                                  definition: "boolean",
+                                  type: "boolean",
                                   optional: true,
                                 },
                               },
@@ -1517,28 +1433,21 @@ describe(
                           definition: {
                             type: {
                               type: "literal",
-                              definition: "simpleType",
-                            },
-                            definition: {
-                              type: "literal",
                               definition: "string",
                             },
                             extra: {
                               type: "object",
                               definition: {
                                 id: {
-                                  type: "simpleType",
-                                  definition: "number",
+                                  type: "number",
                                   optional: true,
                                 },
                                 defaultLabel: {
-                                  type: "simpleType",
-                                  definition: "string",
+                                  type: "string",
                                   optional: true,
                                 },
                                 editable: {
-                                  type: "simpleType",
-                                  definition: "boolean",
+                                  type: "boolean",
                                   optional: true,
                                 },
                               },
@@ -1550,58 +1459,32 @@ describe(
                           type: "object",
                           definition: {
                             type: {
-                              type: "literal",
-                              definition: "simpleType",
-                            },
-                            definition: {
-                              type: "literal",
-                              definition: "string",
-                            },
-                            validations: {
-                              type: "array",
-                              definition: {
-                                type: "object",
-                                definition: {
-                                  type: {
-                                    type: "enum",
-                                    definition: [
-                                      "max",
-                                      "min",
-                                      "length",
-                                      "email",
-                                      "url",
-                                      "emoji",
-                                      "uuid",
-                                      "cuid",
-                                      "cuid2",
-                                      "ulid",
-                                      "regex",
-                                      "includes",
-                                      "startsWith",
-                                      "endsWith",
-                                      "datetime",
-                                      "ip",
-                                    ],
-                                  },
-                                },
-                              },
+                              type: "enum",
+                              definition: [
+                                "any",
+                                "bigint",
+                                "boolean",
+                                "never",
+                                "null",
+                                "uuid",
+                                "undefined",
+                                "unknown",
+                                "void",
+                              ],
                             },
                             extra: {
                               type: "object",
                               definition: {
                                 id: {
-                                  type: "simpleType",
-                                  definition: "number",
+                                  type: "number",
                                   optional: true,
                                 },
                                 defaultLabel: {
-                                  type: "simpleType",
-                                  definition: "string",
+                                  type: "string",
                                   optional: true,
                                 },
                                 editable: {
-                                  type: "simpleType",
-                                  definition: "boolean",
+                                  type: "boolean",
                                   optional: true,
                                 },
                               },
@@ -1613,63 +1496,36 @@ describe(
                           type: "object",
                           definition: {
                             type: {
-                              type: "literal",
-                              definition: "simpleType",
-                            },
-                            definition: {
-                              type: "literal",
-                              definition: "string",
+                              type: "enum",
+                              definition: [
+                                "any",
+                                "bigint",
+                                "boolean",
+                                "never",
+                                "null",
+                                "uuid",
+                                "undefined",
+                                "unknown",
+                                "void",
+                              ],
                             },
                             optional: {
-                              type: "simpleType",
-                              definition: "boolean",
+                              type: "boolean",
                               optional: true,
-                            },
-                            validations: {
-                              type: "array",
-                              definition: {
-                                type: "object",
-                                definition: {
-                                  type: {
-                                    type: "enum",
-                                    definition: [
-                                      "max",
-                                      "min",
-                                      "length",
-                                      "email",
-                                      "url",
-                                      "emoji",
-                                      "uuid",
-                                      "cuid",
-                                      "cuid2",
-                                      "ulid",
-                                      "regex",
-                                      "includes",
-                                      "startsWith",
-                                      "endsWith",
-                                      "datetime",
-                                      "ip",
-                                    ],
-                                  },
-                                },
-                              },
                             },
                             extra: {
                               type: "object",
                               definition: {
                                 id: {
-                                  type: "simpleType",
-                                  definition: "number",
+                                  type: "number",
                                   optional: true,
                                 },
                                 defaultLabel: {
-                                  type: "simpleType",
-                                  definition: "string",
+                                  type: "string",
                                   optional: true,
                                 },
                                 editable: {
-                                  type: "simpleType",
-                                  definition: "boolean",
+                                  type: "boolean",
                                   optional: true,
                                 },
                               },
@@ -1682,28 +1538,21 @@ describe(
                           definition: {
                             type: {
                               type: "literal",
-                              definition: "simpleType",
-                            },
-                            definition: {
-                              type: "literal",
                               definition: "string",
                             },
                             extra: {
                               type: "object",
                               definition: {
                                 id: {
-                                  type: "simpleType",
-                                  definition: "number",
+                                  type: "number",
                                   optional: true,
                                 },
                                 defaultLabel: {
-                                  type: "simpleType",
-                                  definition: "string",
+                                  type: "string",
                                   optional: true,
                                 },
                                 editable: {
-                                  type: "simpleType",
-                                  definition: "boolean",
+                                  type: "boolean",
                                   optional: true,
                                 },
                               },
@@ -1715,58 +1564,32 @@ describe(
                           type: "object",
                           definition: {
                             type: {
-                              type: "literal",
-                              definition: "simpleType",
-                            },
-                            definition: {
-                              type: "literal",
-                              definition: "string",
-                            },
-                            validations: {
-                              type: "array",
-                              definition: {
-                                type: "object",
-                                definition: {
-                                  type: {
-                                    type: "enum",
-                                    definition: [
-                                      "max",
-                                      "min",
-                                      "length",
-                                      "email",
-                                      "url",
-                                      "emoji",
-                                      "uuid",
-                                      "cuid",
-                                      "cuid2",
-                                      "ulid",
-                                      "regex",
-                                      "includes",
-                                      "startsWith",
-                                      "endsWith",
-                                      "datetime",
-                                      "ip",
-                                    ],
-                                  },
-                                },
-                              },
+                              type: "enum",
+                              definition: [
+                                "any",
+                                "bigint",
+                                "boolean",
+                                "never",
+                                "null",
+                                "uuid",
+                                "undefined",
+                                "unknown",
+                                "void",
+                              ],
                             },
                             extra: {
                               type: "object",
                               definition: {
                                 id: {
-                                  type: "simpleType",
-                                  definition: "number",
+                                  type: "number",
                                   optional: true,
                                 },
                                 defaultLabel: {
-                                  type: "simpleType",
-                                  definition: "string",
+                                  type: "string",
                                   optional: true,
                                 },
                                 editable: {
-                                  type: "simpleType",
-                                  definition: "boolean",
+                                  type: "boolean",
                                   optional: true,
                                 },
                               },
@@ -1784,31 +1607,26 @@ describe(
                             definition: {
                               type: "array",
                               definition: {
-                                type: "simpleType",
-                                definition: "string",
+                                type: "string",
                               },
                             },
                             optional: {
-                              type: "simpleType",
-                              definition: "boolean",
+                              type: "boolean",
                               optional: true,
                             },
                             extra: {
                               type: "object",
                               definition: {
                                 id: {
-                                  type: "simpleType",
-                                  definition: "number",
+                                  type: "number",
                                   optional: true,
                                 },
                                 defaultLabel: {
-                                  type: "simpleType",
-                                  definition: "string",
+                                  type: "string",
                                   optional: true,
                                 },
                                 editable: {
-                                  type: "simpleType",
-                                  definition: "boolean",
+                                  type: "boolean",
                                   optional: true,
                                 },
                               },
@@ -1821,33 +1639,25 @@ describe(
                           definition: {
                             type: {
                               type: "literal",
-                              definition: "simpleType",
-                            },
-                            definition: {
-                              type: "literal",
                               definition: "string",
                             },
                             optional: {
-                              type: "simpleType",
-                              definition: "boolean",
+                              type: "boolean",
                               optional: true,
                             },
                             extra: {
                               type: "object",
                               definition: {
                                 id: {
-                                  type: "simpleType",
-                                  definition: "number",
+                                  type: "number",
                                   optional: true,
                                 },
                                 defaultLabel: {
-                                  type: "simpleType",
-                                  definition: "string",
+                                  type: "string",
                                   optional: true,
                                 },
                                 editable: {
-                                  type: "simpleType",
-                                  definition: "boolean",
+                                  type: "boolean",
                                   optional: true,
                                 },
                               },
@@ -1859,63 +1669,36 @@ describe(
                           type: "object",
                           definition: {
                             type: {
-                              type: "literal",
-                              definition: "simpleType",
-                            },
-                            definition: {
-                              type: "literal",
-                              definition: "string",
+                              type: "enum",
+                              definition: [
+                                "any",
+                                "bigint",
+                                "boolean",
+                                "never",
+                                "null",
+                                "uuid",
+                                "undefined",
+                                "unknown",
+                                "void",
+                              ],
                             },
                             optional: {
-                              type: "simpleType",
-                              definition: "boolean",
+                              type: "boolean",
                               optional: true,
-                            },
-                            validations: {
-                              type: "array",
-                              definition: {
-                                type: "object",
-                                definition: {
-                                  type: {
-                                    type: "enum",
-                                    definition: [
-                                      "max",
-                                      "min",
-                                      "length",
-                                      "email",
-                                      "url",
-                                      "emoji",
-                                      "uuid",
-                                      "cuid",
-                                      "cuid2",
-                                      "ulid",
-                                      "regex",
-                                      "includes",
-                                      "startsWith",
-                                      "endsWith",
-                                      "datetime",
-                                      "ip",
-                                    ],
-                                  },
-                                },
-                              },
                             },
                             extra: {
                               type: "object",
                               definition: {
                                 id: {
-                                  type: "simpleType",
-                                  definition: "number",
+                                  type: "number",
                                   optional: true,
                                 },
                                 defaultLabel: {
-                                  type: "simpleType",
-                                  definition: "string",
+                                  type: "string",
                                   optional: true,
                                 },
                                 editable: {
-                                  type: "simpleType",
-                                  definition: "boolean",
+                                  type: "boolean",
                                   optional: true,
                                 },
                               },
@@ -1931,18 +1714,13 @@ describe(
                               definition: "array",
                             },
                             optional: {
-                              type: "simpleType",
-                              definition: "boolean",
+                              type: "boolean",
                               optional: true,
                             },
                             definition: {
                               type: "object",
                               definition: {
                                 type: {
-                                  type: "literal",
-                                  definition: "simpleType",
-                                },
-                                definition: {
                                   type: "literal",
                                   definition: "string",
                                 },
@@ -1961,13 +1739,11 @@ describe(
                               type: "object",
                               definition: {
                                 absolutePath: {
-                                  type: "simpleType",
-                                  definition: "string",
+                                  type: "string",
                                   optional: true,
                                 },
                                 relativePath: {
-                                  type: "simpleType",
-                                  definition: "string",
+                                  type: "string",
                                   optional: true,
                                 },
                               },
@@ -1976,18 +1752,15 @@ describe(
                               type: "object",
                               definition: {
                                 id: {
-                                  type: "simpleType",
-                                  definition: "number",
+                                  type: "number",
                                   optional: true,
                                 },
                                 defaultLabel: {
-                                  type: "simpleType",
-                                  definition: "string",
+                                  type: "string",
                                   optional: true,
                                 },
                                 editable: {
-                                  type: "simpleType",
-                                  definition: "boolean",
+                                  type: "boolean",
                                   optional: true,
                                 },
                               },

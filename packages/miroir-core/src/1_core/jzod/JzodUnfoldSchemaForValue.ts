@@ -229,7 +229,7 @@ export function resolveReferencesForJzodSchemaAndValueObject(
                   JSON.stringify(valueObject) +
                   " found error: " + resultSchemaTmp.error
               );
-              return [e[0],{ type: "simpleType", definition: "never" }]
+              return [e[0],{ type: "never" }]
             }
           } else {
             // TODO: RETURN AN ERROR ResolvedJzodSchemaReturnTypeError
@@ -241,7 +241,7 @@ export function resolveReferencesForJzodSchemaAndValueObject(
                 " valueObject " + 
                 JSON.stringify(valueObject)
             })
-            return [e[0],{ type: "simpleType", definition: "never" }]
+            return [e[0],{ type: "never" }]
           }
         } 
       );
@@ -264,7 +264,7 @@ export function resolveReferencesForJzodSchemaAndValueObject(
               a,
               currentModel,
               miroirMetaModel,
-              relativeReferenceJzodContext
+              {...relativeReferenceJzodContext, ...a.context}
             )
           : a
       );
@@ -292,7 +292,7 @@ export function resolveReferencesForJzodSchemaAndValueObject(
           // TODO: the following line may introduce some non-determinism, in the case many records actually match the "find" predicate! BAD!
           const resultJzodSchema = concreteJzodSchemas.find(
             (a) =>
-              (a.type == "simpleType" && a.definition == "string") ||
+              (a.type == "string") ||
               (a.type == "literal" && a.definition == valueObject)
           );
           if (resultJzodSchema) {
@@ -302,28 +302,24 @@ export function resolveReferencesForJzodSchemaAndValueObject(
             return {
               status: "error",
               error:
-                "resolveReferencesForJzodSchemaAndValueObject could not find string type in resolved union " +
+                "resolveReferencesForJzodSchemaAndValueObject could not find string or literal type for value" +
+                valueObject +
+                " in resolved union " +
                 JSON.stringify(concreteJzodSchemas, null, 2),
             };
           }
           break;
         }
         case "object": {
-          const discriminator = jzodSchema.discriminator??"_undefined_"
-          const subDiscriminator = jzodSchema.subDiscriminator??"_undefined_"
-
-          // log.info(
-          //   "resolveReferencesForJzodSchemaAndValueObject called for union-type value object with discriminator=",
-          //   discriminator,
-          //   " subdiscriminator=",
-          //   subDiscriminator,
-          //   ", valueObject[discriminator]=",
-          //   valueObject[discriminator],
-          //   ", valueObject[subDiscriminator]=",
-          //   valueObject[subDiscriminator]
-          // );
-
           const objectUnionChoices = concreteUnrolledJzodSchemas.filter(j => j.type == "object")
+
+          log.info(
+            "resolveReferencesForJzodSchemaAndValueObject called for union-type value object found", objectUnionChoices.length, "object branches is the union",
+            // JSON.stringify(objectUnionChoices),
+            // objectUnionChoices,
+          );
+
+          // if there is only one object candidate, use this one
           if (objectUnionChoices.length == 1) {
             // only possible object choice, no need for a discriminator
             const subElementSchema = resolveReferencesForJzodSchemaAndValueObject(
@@ -336,6 +332,22 @@ export function resolveReferencesForJzodSchemaAndValueObject(
             );
             return subElementSchema;
           }
+          
+          // many options for an object, must use a discriminator
+          const discriminator = jzodSchema.discriminator??"_undefined_"
+          // const subDiscriminator = jzodSchema.subDiscriminator??"_undefined_"
+
+          // log.info(
+          //   "resolveReferencesForJzodSchemaAndValueObject called for union-type value object with discriminator=",
+          //   discriminator,
+          //   " subdiscriminator=",
+          //   subDiscriminator,
+          //   ", valueObject[discriminator]=",
+          //   valueObject[discriminator],
+          //   ", valueObject[subDiscriminator]=",
+          //   valueObject[subDiscriminator]
+          // );
+
 
           if (!valueObject[discriminator]) {
             throw new Error(
@@ -366,101 +378,103 @@ export function resolveReferencesForJzodSchemaAndValueObject(
                 (a.definition[discriminator] as JzodEnum).definition.includes(valueObject[discriminator])
               )
             )
-          ) // TDOD: use discriminator attribute for object, not "type"!
+          ) // TODO: use discriminator attribute for object, not "type"!
           ; // TODO: this works only if there is exactly one object type in the union!
 
-          log.info(
-            "resolveReferencesForJzodSchemaAndValueObject found for value object",
-            valueObject,
-            "union object resolved type: ",
-            // JSON.stringify(currentDiscriminatedObjectJzodSchemas, null, 2),
-            currentDiscriminatedObjectJzodSchemas,
-            "concreteUnrolledJzodSchemas",
-            concreteUnrolledJzodSchemas
-          );
+          // log.info(
+          //   "resolveReferencesForJzodSchemaAndValueObject found", currentDiscriminatedObjectJzodSchemas.length, " potentially matching object types for value object",
+          //   valueObject,
+          //   "discriminator", discriminator,
+          //   "discriminator value", valueObject[discriminator],
+          //   "##### union object resolved type: ",
+          //   JSON.stringify(currentDiscriminatedObjectJzodSchemas, null, 2),
+          // );
 
           if (currentDiscriminatedObjectJzodSchemas.length == 0) {
             throw new Error("resolveReferencesForJzodSchemaAndValueObject called for union-type value object with discriminator=" +
             jzodSchema.discriminator + " valueObject[discriminator]=" + valueObject[discriminator] + " found no match!");
-            
+          }
+          if (currentDiscriminatedObjectJzodSchemas.length > 1 ) {
+            throw new Error("resolveReferencesForJzodSchemaAndValueObject called for union-type value object with discriminator=" +
+            jzodSchema.discriminator + " valueObject[discriminator]=" + valueObject[discriminator] + " found many matches: " + currentDiscriminatedObjectJzodSchemas.length);
           }
 
-          if (currentDiscriminatedObjectJzodSchemas.length > 1 && (!jzodSchema.subDiscriminator || !valueObject[subDiscriminator])) {
-            // HACK HACK HACK
-            /**
-             * TODO: remove it! bypass before migration to Jzod 0.8.0, because in 0.7.0 dates, numbers and strings can be defined either
-             * as a JzodPlainAttribute (type definition uses enum) or as a JzodAttribute (type definition uses literal).
-             */
-            const enumDefn = currentDiscriminatedObjectJzodSchemas.find(
-              (a)=>(
-                a.type == "object" &&
-                a.definition[discriminator].type == "enum" &&
-                (a.definition[discriminator] as JzodEnum).definition.includes(valueObject[discriminator])
-              )
-            )
-            if (enumDefn) {
-              currentDiscriminatedObjectJzodSchemas = [ enumDefn ]
-            } else {
-              throw new Error(
-                "resolveReferencesForJzodSchemaAndValueObject called for union-type value object with discriminator=" +
-                jzodSchema.discriminator +
-                " valueObject[discriminator]=" +
-                valueObject[discriminator] +
-                " found many matches=" +
-                currentDiscriminatedObjectJzodSchemas +
-                " and no subDiscriminator because " +
-                "subDiscriminator=" +
-                subDiscriminator + 
-                " and valueObject[subDiscriminator]=" +
-                valueObject[subDiscriminator]
-              );
-            }
-          }
+          // if (currentDiscriminatedObjectJzodSchemas.length > 1 && (!jzodSchema.subDiscriminator || !valueObject[subDiscriminator])) {
+          //   // HACK HACK HACK
+          //   /**
+          //    * TODO: remove it! bypass before migration to Jzod 0.8.0, because in 0.7.0 dates, numbers and strings can be defined either
+          //    * as a JzodPlainAttribute (type definition uses enum) or as a JzodAttribute (type definition uses literal).
+          //    */
+          //   const enumDefn = currentDiscriminatedObjectJzodSchemas.find(
+          //     (a)=>(
+          //       a.type == "object" &&
+          //       a.definition[discriminator].type == "enum" &&
+          //       (a.definition[discriminator] as JzodEnum).definition.includes(valueObject[discriminator])
+          //     )
+          //   )
+          //   if (enumDefn) {
+          //     currentDiscriminatedObjectJzodSchemas = [ enumDefn ]
+          //   } else {
+          //     throw new Error(
+          //       "resolveReferencesForJzodSchemaAndValueObject called for union-type value object with discriminator=" +
+          //       jzodSchema.discriminator +
+          //       " valueObject[discriminator]=" +
+          //       valueObject[discriminator] +
+          //       " found many matches=" +
+          //       currentDiscriminatedObjectJzodSchemas +
+          //       " and no subDiscriminator because " +
+          //       "subDiscriminator=" +
+          //       subDiscriminator + 
+          //       " and valueObject[subDiscriminator]=" +
+          //       valueObject[subDiscriminator]
+          //     );
+          //   }
+          // }
 
-          const currentSubDiscriminatedObjectJzodSchemas =
-            currentDiscriminatedObjectJzodSchemas.length == 1
-              ? currentDiscriminatedObjectJzodSchemas
-              : currentDiscriminatedObjectJzodSchemas.filter(
-                  (a) =>
-                    a.type == "object" &&
-                    a.definition[subDiscriminator]?.type == "literal" &&
-                    (a.definition[subDiscriminator] as JzodLiteral)?.definition == valueObject[subDiscriminator]
-                );
+          const currentSubDiscriminatedObjectJzodSchemas = currentDiscriminatedObjectJzodSchemas
+            // currentDiscriminatedObjectJzodSchemas.length == 1
+            //   ? currentDiscriminatedObjectJzodSchemas
+            //   : currentDiscriminatedObjectJzodSchemas.filter(
+            //       (a) =>
+            //         a.type == "object" &&
+            //         a.definition[subDiscriminator]?.type == "literal" &&
+            //         (a.definition[subDiscriminator] as JzodLiteral)?.definition == valueObject[subDiscriminator]
+            //     );
 
-          if (currentSubDiscriminatedObjectJzodSchemas.length != 1) {
-            throw new Error(
-              "resolveReferencesForJzodSchemaAndValueObject called for union-type value object with discriminator=" +
-                discriminator +
-                " subDiscriminator=" +
-                subDiscriminator + 
-                ", valueObject[discriminator]=" +
-                valueObject[discriminator] +
-                ", valueObject[subDiscriminator]=" +
-                valueObject[subDiscriminator] +
-                " found no match or too many matches " +
-                JSON.stringify(currentSubDiscriminatedObjectJzodSchemas)
-            );
-          }
+          // if (currentSubDiscriminatedObjectJzodSchemas.length != 1) {
+          //   throw new Error(
+          //     "resolveReferencesForJzodSchemaAndValueObject called for union-type value object with discriminator=" +
+          //       discriminator +
+          //       " subDiscriminator=" +
+          //       subDiscriminator + 
+          //       ", valueObject[discriminator]=" +
+          //       valueObject[discriminator] +
+          //       ", valueObject[subDiscriminator]=" +
+          //       valueObject[subDiscriminator] +
+          //       " found no match or too many matches " +
+          //       JSON.stringify(currentSubDiscriminatedObjectJzodSchemas)
+          //   );
+          // }
 
-          if (currentSubDiscriminatedObjectJzodSchemas[0].type != "object") {
-            throw new Error(
-              "resolveReferencesForJzodSchemaAndValueObject called for union-type value object with discriminator=" +
-                discriminator +
-                + " subDiscriminator=" +
-                subDiscriminator + 
-                " valueObject[discriminator]=" +
-                valueObject[discriminator] +
-                " valueObject[subDiscriminator]=" +
-                valueObject[subDiscriminator] +
-                " found non-object schema " +
-                JSON.stringify(currentSubDiscriminatedObjectJzodSchemas[0])
-            );
-          }
+          // if (currentSubDiscriminatedObjectJzodSchemas[0].type != "object") {
+          //   throw new Error(
+          //     "resolveReferencesForJzodSchemaAndValueObject called for union-type value object with discriminator=" +
+          //       discriminator +
+          //       + " subDiscriminator=" +
+          //       subDiscriminator + 
+          //       " valueObject[discriminator]=" +
+          //       valueObject[discriminator] +
+          //       " valueObject[subDiscriminator]=" +
+          //       valueObject[subDiscriminator] +
+          //       " found non-object schema " +
+          //       JSON.stringify(currentSubDiscriminatedObjectJzodSchemas[0])
+          //   );
+          // }
 
-          const currentSubDiscriminatedObjectJzodSchema: JzodObject = currentSubDiscriminatedObjectJzodSchemas[0];
+          const currentDiscriminatedObjectJzodSchema: JzodObject = currentDiscriminatedObjectJzodSchemas[0] as JzodObject;
           const objectJzodSchemaDefintion = Object.fromEntries(
             Object.entries(valueObject).map((a: [string, any]) => {
-              const foundAttributeJzodSchema = (currentSubDiscriminatedObjectJzodSchema?.definition ?? ({} as any))[a[0]];
+              const foundAttributeJzodSchema = (currentDiscriminatedObjectJzodSchema?.definition ?? ({} as any))[a[0]];
               // log.info(
               //   "resolveReferencesForJzodSchemaAndValueObject for union called on object attribute '"+
               //   a[0] +
@@ -488,20 +502,20 @@ export function resolveReferencesForJzodSchemaAndValueObject(
                     a[0] +
                     "' error:", JSON.stringify(subSchema, null, 2)
                   );
-                  return [a[0], { type: "simpleType", definition: "never" }];
+                  return [a[0], { type: "never" } as JzodElement];
                 }
               } else {
                 log.warn(
                   "resolveReferencesForJzodSchemaAndValueObject union object could not find schema for attribute '" +
                   a[0] +
-                  "' object Schema:", JSON.stringify(currentSubDiscriminatedObjectJzodSchema, null, 2)
+                  "' object Schema:", JSON.stringify(currentDiscriminatedObjectJzodSchema, null, 2)
                 );
-              return [a[0], { type: "simpleType", definition: "never" }];
+              return [a[0], { type: "never" } as JzodElement];
               }
             })
           );
 
-          if (currentSubDiscriminatedObjectJzodSchema) {
+          if (currentDiscriminatedObjectJzodSchemas) {
             return { status: "ok", element: { type: "object", definition: objectJzodSchemaDefintion } };
           } else {
             return {
@@ -559,7 +573,7 @@ export function resolveReferencesForJzodSchemaAndValueObject(
                 e[0] +
                 "' error:", JSON.stringify(resultSchemaTmp, null, 2)
               );
-            return [e[0],{ type: "simpleType", definition: "never" }]
+            return [e[0],{ type: "never" }]
             }
           }
         ) as [string, JzodElement][]
@@ -623,10 +637,12 @@ export function resolveReferencesForJzodSchemaAndValueObject(
           jzodSchema.definition,
           currentModel,
           miroirMetaModel,
-          relativeReferenceJzodContext
+          {...relativeReferenceJzodContext, ...jzodSchema.definition.context}
         )
       : jzodSchema.definition
       ;
+
+      log.info("resolveJzodSchemaReferenceInContext for array found innerSchema", JSON.stringify(innerSchema, null, 2));
 
       if (innerSchema.type != "union") {
         return { status: "ok", element: { type: "array", definition: innerSchema } }
@@ -651,7 +667,7 @@ export function resolveReferencesForJzodSchemaAndValueObject(
               e +
               "' error:", JSON.stringify(resultSchemaTmp, null, 2)
             );
-            return { type: "simpleType", definition: "never" }
+            return { type: "never" }
           }
         }
       );
@@ -704,7 +720,7 @@ export function resolveReferencesForJzodSchemaAndValueObject(
     case "set":
     case "function":
     case "map":
-    case "simpleType":
+    // case "simpleType":
     case "lazy": {
       return {status: "ok", element: jzodSchema}
     }
@@ -728,6 +744,9 @@ export function resolveJzodSchemaReferenceInContext(
   miroirMetaModel?: MetaModel,
   relativeReferenceJzodContext?: {[k:string]: JzodElement},
 ): JzodElement {
+  if (!jzodReference.definition.absolutePath && !relativeReferenceJzodContext) {
+    throw new Error("resolveJzodSchemaReferenceInContext can not find relative reference " + JSON.stringify(jzodReference.definition) + " for empty relative reference set!");
+  }
   const absoluteReferences = (currentModel
     ? [miroirFundamentalJzodSchema, ...(currentModel as any).jzodSchemas, ...(miroirMetaModel as any).jzodSchemas] // very inefficient!
     : [miroirFundamentalJzodSchema]
@@ -742,21 +761,23 @@ export function resolveJzodSchemaReferenceInContext(
     : { type: "object", definition: absoluteReferenceTargetJzodSchema };
 
 
-    // console.log(
-    //   "resolveJzodSchemaReferenceInContext for reference",
-    //   jzodReference.definition.absolutePath,
-    //   jzodReference.definition.relativePath,
-    //   "result",
-    //   targetJzodSchema,
-    //   // "currentModel",
-    //   // currentModel,
-    //   // "miroirFundamentalJzodSchema", 
-    //   // miroirFundamentalJzodSchema,
-    //   // "absoluteReferenceTargetJzodSchema",
-    //   // absoluteReferenceTargetJzodSchema,
-    //   // "relativeReferenceJzodContext",
-    //   // relativeReferenceJzodContext
-    // );
+    console.log(
+      "resolveJzodSchemaReferenceInContext for reference",
+      "absolutePath",
+      jzodReference.definition.absolutePath,
+      "relativePath",
+      jzodReference.definition.relativePath,
+      "relativeReferenceJzodContext",
+      Object.keys(relativeReferenceJzodContext??{}),
+      "result",
+      targetJzodSchema,
+      // "currentModel",
+      // currentModel,
+      // "miroirFundamentalJzodSchema", 
+      // miroirFundamentalJzodSchema,
+      // "absoluteReferenceTargetJzodSchema",
+      // absoluteReferenceTargetJzodSchema,
+    );
 
   if (!targetJzodSchema) {
     // console.error(
@@ -777,7 +798,7 @@ export function resolveJzodSchemaReferenceInContext(
     // );
     throw new Error(
       "resolveJzodSchemaReferenceInContext could not resolve reference " +
-        JSON.stringify(jzodReference) +
+        JSON.stringify(jzodReference.definition) +
         " absoluteReferences keys " +
         JSON.stringify(absoluteReferences.map(r => r.uuid)) +
         " current Model " + Object.keys(currentModel??{}) + 

@@ -2,15 +2,20 @@ import {
   getLocalCacheIndexDeploymentSection,
   getLocalCacheIndexDeploymentUuid,
   getLocalCacheIndexEntityUuid,
+} from "miroir-core";
+
+import {
   getLocalCacheKeysDeploymentSectionEntitiesList,
   getLocalCacheKeysDeploymentSectionList,
   getDeploymentUuidListFromLocalCacheKeys,
   getLocalCacheKeysForDeploymentSection,
   getLocalCacheKeysForDeploymentUuid,
   localCacheStateToDomainState,
-} from "../dist/src/4_services/localCache/LocalCacheSlice";
-// import { LocalCacheSliceState } from "../src/4_services/localCache/localCacheReduxSliceInterface";
-import { LocalCacheSliceState } from "../dist/src/4_services/localCache/localCacheReduxSliceInterface";
+} from "../src/4_services/localCache/LocalCacheSlice";
+
+import { LocalCacheSliceState } from "../src/4_services/localCache/localCacheReduxSliceInterface";
+// import { LocalCacheSliceState } from "../dist/src/4_services/localCache/localCacheReduxSliceInterface";
+// import { LocalCacheSliceState } from "../dist/index";
 
 
 // ################################################################################################
@@ -22,7 +27,6 @@ import domainStateReference from "./domainStateReference.json";
 // ################################################################################################
 
 describe("localCacheSlice.unit.test", () => {
-
   // ##############################################################################################
   it("getLocalCacheIndexEntityUuid", () => {
     expect(
@@ -51,7 +55,7 @@ describe("localCacheSlice.unit.test", () => {
   // ##############################################################################################
   it("getLocalCacheKeysForDeploymentUuid", () => {
     const result = getLocalCacheKeysForDeploymentUuid(
-      Object.keys(sliceStateReference),
+      Object.keys(sliceStateReference.current),
       "10ff36f2-50a3-48d8-b80f-e48e5d13af8e"
     );
     // console.log("keys",Object.keys(exampleSliceState));
@@ -73,7 +77,7 @@ describe("localCacheSlice.unit.test", () => {
 
   // ##############################################################################################
   it("getLocalCacheKeysForDeploymentSection", () => {
-    const result = getLocalCacheKeysForDeploymentSection(Object.keys(sliceStateReference), "model");
+    const result = getLocalCacheKeysForDeploymentSection(Object.keys(sliceStateReference.current), "model");
     // console.log("keys",Object.keys(exampleSliceState));
     // console.log("result",result);
 
@@ -93,7 +97,7 @@ describe("localCacheSlice.unit.test", () => {
 
   // ##############################################################################################
   it("getLocalCacheKeysDeploymentUuidList", () => {
-    const result = getDeploymentUuidListFromLocalCacheKeys(Object.keys(sliceStateReference));
+    const result = getDeploymentUuidListFromLocalCacheKeys(Object.keys(sliceStateReference.current));
     // console.log("keys",Object.keys(exampleSliceState));
     // console.log("result",result);
 
@@ -103,7 +107,7 @@ describe("localCacheSlice.unit.test", () => {
   // ##############################################################################################
   it("getLocalCacheKeysDeploymentSectionList", () => {
     const result = getLocalCacheKeysDeploymentSectionList(
-      Object.keys(sliceStateReference),
+      Object.keys(sliceStateReference.current),
       "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
     );
     // console.log("keys",Object.keys(exampleSliceState));
@@ -115,12 +119,12 @@ describe("localCacheSlice.unit.test", () => {
   // ##############################################################################################
   it("getLocalCacheKeysDeploymentSectionEntitiesList", () => {
     const result = getLocalCacheKeysDeploymentSectionEntitiesList(
-      Object.keys(sliceStateReference),
+      Object.keys(sliceStateReference.current),
       "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
       "model"
     );
     // console.log("keys",Object.keys(exampleSliceState));
-    console.log("result", result);
+    // console.log("result", result);
 
     expect(result).toEqual([
       "a659d350-dd97-4da9-91de-524fa01745dc",
@@ -137,6 +141,7 @@ describe("localCacheSlice.unit.test", () => {
   // ##############################################################################################
   it("localCacheStateToDomainState", () => {
     const result = localCacheStateToDomainState(sliceStateReference as LocalCacheSliceState);
+    // const result = localCacheStateToDomainState(sliceStateReference as any);
     // console.log("keys",Object.keys(exampleSliceState));
     // console.log("exampleSliceState",JSON.stringify(exampleSliceState));
     // console.log("result",JSON.stringify(result));

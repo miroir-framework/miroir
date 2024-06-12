@@ -272,8 +272,7 @@ describe(
               type: "schemaReference",
               context: {
                 a: {
-                  type: "simpleType",
-                  definition: "string"
+                  type: "string"
                 }
               },
               definition: {
@@ -281,8 +280,7 @@ describe(
               }
             },
             expectedResult: {
-              type: "simpleType",
-              definition: "string"
+              type: "string"
             },
           },
           // schemaReference: object, recursive, 1-level valueObject
@@ -297,8 +295,7 @@ describe(
                       type: "union",
                       definition: [
                         {
-                          type: "simpleType",
-                          definition: "string",
+                          type: "string",
                         },
                         {
                           type: "schemaReference",
@@ -318,8 +315,7 @@ describe(
                   "type": "union",
                   "definition": [
                     {
-                      "type": "simpleType",
-                      "definition": "string"
+                      "type": "string"
                     },
                     {
                       "type": "schemaReference",
@@ -345,8 +341,7 @@ describe(
                       discriminator: "type",
                       definition: [
                         {
-                          type: "simpleType",
-                          definition: "string",
+                          type: "string",
                         },
                         {
                           type: "schemaReference",
@@ -359,8 +354,7 @@ describe(
                       discriminator: "type",
                       definition: [
                         {
-                          type: "simpleType",
-                          definition: "number",
+                          type: "number",
                         },
                         {
                           type: "schemaReference",
@@ -381,8 +375,7 @@ describe(
                   discriminator: "type",
                   definition: [
                     {
-                      type: "simpleType",
-                      definition: "string",
+                      type: "string",
                     },
                     {
                       type: "schemaReference",
@@ -395,8 +388,7 @@ describe(
                   discriminator: "type",
                   definition: [
                     {
-                      type: "simpleType",
-                      definition: "number",
+                      type: "number",
                     },
                     {
                       type: "schemaReference",
@@ -419,8 +411,7 @@ describe(
                       type: "union",
                       definition: [
                         {
-                          type: "simpleType",
-                          definition: "string",
+                          type: "string",
                         },
                         {
                           type: "schemaReference",
@@ -437,8 +428,7 @@ describe(
                       type: "union",
                       definition: [
                         {
-                          type: "simpleType",
-                          definition: "number",
+                          type: "number",
                         },
                         {
                           type: "schemaReference",
@@ -458,8 +448,7 @@ describe(
                   type: "union",
                   definition: [
                     {
-                      type: "simpleType",
-                      definition: "number",
+                      type: "number",
                     },
                     {
                       type: "schemaReference",

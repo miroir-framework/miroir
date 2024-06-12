@@ -7,7 +7,7 @@ import {
 } from "@reduxjs/toolkit";
 import equal from "fast-deep-equal";
 import lodash from 'lodash';
-const { memoize: _memoize } = lodash;
+// const { memoize: _memoize } = lodash;
 
 import {
   ACTION_OK,

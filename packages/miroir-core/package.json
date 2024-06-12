@@ -19,7 +19,7 @@
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
     "preBuild": "copyfiles -u 1 src/**/*.json tmp/ && tsc ./src/index.ts --rootDir . --baseUrl . --target ES2017 --module ES2022 --strict --moduleResolution node --allowSyntheticDefaultImports --resolveJsonModule --outdir ./tmp/ || node ./tools/generate-ts-types.mjs",
     "preTest": "tsc ./tests/1_core/jzod.unit.test.ts --rootDir . --baseUrl . --target ES2017 --module ES2022 --moduleResolution node --allowSyntheticDefaultImports --resolveJsonModule --outdir ./tmp/",
-    "test": "cross-env NODE_ENV=test jest --verbose --silent=false -t"
+    "test": "cross-env NODE_ENV=test jest --verbose --silent=false --debug -t"
   },
   "tsup": {
     "dts": true,
@@ -33,13 +33,6 @@
     "entry": [
       "src/index.ts"
     ]
-  },
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./package.json": "./package.json"
   },
   "dependencies": {
     "@miroir-framework/jzod": "0.7.0",

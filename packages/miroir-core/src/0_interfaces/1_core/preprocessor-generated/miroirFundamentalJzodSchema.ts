@@ -70,34 +70,6 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "jzodAttribute": {
-        "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-            "relativePath": "jzodBaseObject"
-          }
-        },
-        "definition": {
-          "type": {
-            "type": "literal",
-            "definition": "simpleType"
-          },
-          "coerce": {
-            "type": "boolean",
-            "optional": true
-          },
-          "definition": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodEnumAttributeTypes"
-            }
-          }
-        }
-      },
       "jzodPlainAttribute": {
         "type": "object",
         "extend": {
@@ -110,11 +82,18 @@ export const miroirFundamentalJzodSchema = {
         },
         "definition": {
           "type": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodEnumAttributeTypes"
-            }
+            "type": "enum",
+            "definition": [
+              "any",
+              "bigint",
+              "boolean",
+              "never",
+              "null",
+              "uuid",
+              "undefined",
+              "unknown",
+              "void"
+            ]
           },
           "coerce": {
             "type": "boolean",
@@ -141,42 +120,6 @@ export const miroirFundamentalJzodSchema = {
           },
           "parameter": {
             "type": "any"
-          }
-        }
-      },
-      "jzodAttributeDateWithValidations": {
-        "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-            "relativePath": "jzodBaseObject"
-          }
-        },
-        "definition": {
-          "type": {
-            "type": "literal",
-            "definition": "simpleType"
-          },
-          "definition": {
-            "type": "literal",
-            "definition": "date"
-          },
-          "coerce": {
-            "type": "boolean",
-            "optional": true
-          },
-          "validations": {
-            "type": "array",
-            "optional": true,
-            "definition": {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                "relativePath": "jzodAttributeDateValidations"
-              }
-            }
           }
         }
       },
@@ -276,42 +219,6 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "jzodAttributeNumberWithValidations": {
-        "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-            "relativePath": "jzodBaseObject"
-          }
-        },
-        "definition": {
-          "type": {
-            "type": "literal",
-            "definition": "simpleType"
-          },
-          "definition": {
-            "type": "literal",
-            "definition": "number"
-          },
-          "coerce": {
-            "type": "boolean",
-            "optional": true
-          },
-          "validations": {
-            "type": "array",
-            "optional": true,
-            "definition": {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                "relativePath": "jzodAttributeNumberValidations"
-              }
-            }
-          }
-        }
-      },
       "jzodAttributeStringValidations": {
         "type": "object",
         "definition": {
@@ -345,42 +252,6 @@ export const miroirFundamentalJzodSchema = {
           },
           "parameter": {
             "type": "any"
-          }
-        }
-      },
-      "jzodAttributeStringWithValidations": {
-        "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-            "relativePath": "jzodBaseObject"
-          }
-        },
-        "definition": {
-          "type": {
-            "type": "literal",
-            "definition": "simpleType"
-          },
-          "definition": {
-            "type": "literal",
-            "definition": "string"
-          },
-          "coerce": {
-            "type": "boolean",
-            "optional": true
-          },
-          "validations": {
-            "type": "array",
-            "optional": true,
-            "definition": {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                "relativePath": "jzodAttributeStringValidations"
-              }
-            }
           }
         }
       },
@@ -419,7 +290,6 @@ export const miroirFundamentalJzodSchema = {
       "jzodElement": {
         "type": "union",
         "discriminator": "type",
-        "subDiscriminator": "definition",
         "extra": {
           "initializeTo": {
             "type": "string"
@@ -437,21 +307,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodAttribute"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
               "relativePath": "jzodPlainAttribute"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodAttributeDateWithValidations"
             }
           },
           {
@@ -465,21 +321,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodAttributeNumberWithValidations"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
               "relativePath": "jzodAttributePlainNumberWithValidations"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodAttributeStringWithValidations"
             }
           },
           {
@@ -1022,10 +864,6 @@ export const miroirFundamentalJzodSchema = {
             "definition": "union"
           },
           "discriminator": {
-            "type": "string",
-            "optional": true
-          },
-          "subDiscriminator": {
             "type": "string",
             "optional": true
           },
@@ -1583,6 +1421,36 @@ export const miroirFundamentalJzodSchema = {
               "description": "Previous version of the application on this Branch.",
               "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
               "editable": false
+            }
+          },
+          "modelStructureMigration": {
+            "type": "array",
+            "optional": true,
+            "extra": {
+              "id": 12,
+              "defaultLabel": "Structure Migration from Previous Version",
+              "editable": true
+            },
+            "definition": {
+              "type": "record",
+              "definition": {
+                "type": "any"
+              }
+            }
+          },
+          "modelCUDMigration": {
+            "type": "array",
+            "optional": true,
+            "extra": {
+              "id": 13,
+              "defaultLabel": "Create-Update-Delete Migration from Previous Version",
+              "editable": true
+            },
+            "definition": {
+              "type": "record",
+              "definition": {
+                "type": "any"
+              }
             }
           }
         }

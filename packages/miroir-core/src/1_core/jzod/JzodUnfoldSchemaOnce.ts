@@ -133,7 +133,7 @@ export function localizeJzodSchemaReferenceContext<T extends JzodElement>(
     }
     case "function":
     case "map":
-    case "simpleType":
+    // case "simpleType":
     case "enum":
     case "lazy":
     case "literal":
@@ -174,7 +174,7 @@ export function unfoldJzodSchemaOnce(
   // );
 
   if (!jzodSchema) {
-    return { status: "ok", element: { type: "simpleType", definition: "never" } }
+    return { status: "ok", element: { type: "never" } }
   }
 
   switch (jzodSchema?.type) {
@@ -288,7 +288,7 @@ export function unfoldJzodSchemaOnce(
                   JSON.stringify(extendedJzodSchema) +
                   " found error: " + resultSchemaTmp.error
               );
-              return [e[0],{ type: "simpleType", definition: "never" }]
+              return [e[0],{ type: "never" }]
             }
           } else {
             // TODO: RETURN AN ERROR ResolvedJzodSchemaReturnTypeError
@@ -299,7 +299,7 @@ export function unfoldJzodSchemaOnce(
                 " not present in definition of type " +
                 JSON.stringify(extendedJzodSchema)
               })
-            return [e[0],{ type: "simpleType", definition: "never" }]
+            return [e[0],{ type: "never" }]
           }
         } 
       );
@@ -361,7 +361,7 @@ export function unfoldJzodSchemaOnce(
           jzodSchema.definition +
           "' error:", JSON.stringify(resultSchemaTmp, null, 2)
         );
-        return { status: "ok", element: { type: "simpleType", definition: "never" } }
+        return { status: "ok", element: { type: "never" } }
       }
       break;
     }
@@ -425,7 +425,7 @@ export function unfoldJzodSchemaOnce(
             // JSON.stringify(valueObject) +
             " found error: " + subType.error
         );
-        return { status: "ok", element: { type: "simpleType", definition: "never" }}
+        return { status: "ok", element: { type: "never" }}
       }
       break;
     }
@@ -448,7 +448,7 @@ export function unfoldJzodSchemaOnce(
     case "set":
     case "function":
     case "map":
-    case "simpleType":
+    // case "simpleType":
     case "lazy": {
       return {status: "ok", element: jzodSchema}
     }

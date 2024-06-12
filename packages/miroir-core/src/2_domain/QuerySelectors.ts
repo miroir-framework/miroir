@@ -137,19 +137,16 @@ export const resolveContextReference = (
  * @returns 
  */
 export const selectEntityInstanceListFromListQuery
-// : QuerySelector<
-//   DomainModelGetSingleSelectObjectListQueryQueryParams, DeploymentEntityState, DomainElement
-// > 
 = <StateType>(
   deploymentEntityState: StateType,
   selectorParams: QuerySelectorParams<DomainModelGetSingleSelectObjectListQueryQueryParams, StateType>
 ): DomainElement => {
-  log.info(
-    "selectEntityInstanceListFromListQuery called with queryType",
-    selectorParams.query.singleSelectQuery.select.queryType,
-    "selectorParams",
-    selectorParams
-  );
+  // log.info(
+  //   "selectEntityInstanceListFromListQuery called with queryType",
+  //   selectorParams.query.singleSelectQuery.select.queryType,
+  //   "selectorParams",
+  //   selectorParams
+  // );
   const emptySelectorMap = {
     selectByDomainManyQueries: {} as QuerySelector<MiroirSelectorQueryParams, StateType, DomainElementObject>, 
     selectEntityInstanceFromObjectQuery: {} as QuerySelector<MiroirSelectorQueryParams, StateType, DomainElement>,
@@ -164,9 +161,9 @@ export const selectEntityInstanceListFromListQuery
     selectorParams
   );
 
-  log.info(
-    "selectEntityInstanceListFromListQuery found selectedInstances", selectedInstances
-  );
+  // log.info(
+  //   "selectEntityInstanceListFromListQuery found selectedInstances", selectedInstances
+  // );
 
 
   switch (selectorParams.query.singleSelectQuery.select.queryType) {
@@ -176,10 +173,9 @@ export const selectEntityInstanceListFromListQuery
     }
     case "selectObjectListByRelation": {
       const relationQuery: SelectObjectListByRelationQuery = selectorParams.query.singleSelectQuery.select;
-      // const reference: DomainElement = resolveContextReference(relationQuery.objectReference, selectorParams.query.queryParams, selectorParams.query.contextResults);
 
       // log.info("selectEntityInstanceListFromListQuery selectObjectListByRelation", JSON.stringify(selectedInstances))
-      log.info("selectEntityInstanceListFromListQuery selectObjectListByRelation", selectedInstances)
+      // log.info("selectEntityInstanceListFromListQuery selectObjectListByRelation", selectedInstances)
       switch (selectedInstances.elementType) {
         case "instanceUuidIndex": {
           return { "elementType": "instanceUuidIndex", "elementValue": Object.fromEntries(
@@ -496,7 +492,7 @@ export const selectByDomainManyQueries
   selectorParams: QuerySelectorParams<DomainManyQueriesWithDeploymentUuid, StateType>,
 ): DomainElementObject => {
 
-  log.info("########## selectByDomainManyQueriesFromDomainState begin, query", selectorParams);
+  // log.info("########## selectByDomainManyQueries begin, query", selectorParams);
   const emptySelectorMap = {
     selectByDomainManyQueries: {} as QuerySelector<MiroirSelectorQueryParams, StateType, DomainElementObject>, 
     selectEntityInstanceFromObjectQuery: {} as QuerySelector<MiroirSelectorQueryParams, StateType, DomainElement>,
@@ -508,8 +504,7 @@ export const selectByDomainManyQueries
     elementType: "object",
     elementValue: { ...selectorParams.query.contextResults.elementValue },
   };
-  // log.info("########## DomainSelector selectByDomainManyQueriesFromDomainState will use context", context);
-  // const localSelectorMap: QuerySelectorMap<DomainManyQueriesWithDeploymentUuid, DeploymentEntityState> =
+  // log.info("########## DomainSelector selectByDomainManyQueries will use context", context);
   const localSelectorMap: QuerySelectorMap<StateType> =
     selectorParams?.selectorMap ?? emptySelectorMap;
 
@@ -530,11 +525,11 @@ export const selectByDomainManyQueries
       entry[1]
     );
     context.elementValue[entry[0]] = result;
-    log.info("selectByDomainManyQueriesFromDomainState done for entry", entry[0], "query", entry[1], "result=", result);
+    // log.info("selectByDomainManyQueries done for entry", entry[0], "query", entry[1], "result=", result);
   }
 
   if (selectorParams.query.fetchQuery?.crossJoin) {
-    // log.info("DomainSelector selectByDomainManyQueriesFromDomainState fetchQuery?.crossJoin", selectorParams.query.fetchQuery?.crossJoin);
+    // log.info("DomainSelector selectByDomainManyQueries fetchQuery?.crossJoin", selectorParams.query.fetchQuery?.crossJoin);
 
     // performs a cross-join
     // TODO: NOT USED, REALLY? DO WE REALLY NEED THIS?
@@ -552,15 +547,15 @@ export const selectByDomainManyQueries
     )};
   }
 
-  log.info(
-    "selectByDomainManyQueriesFromDomainState",
-    "query",
-    selectorParams,
-    "domainState",
-    deploymentEntityState,
-    "newFetchedData",
-    context
-  );
+  // log.info(
+  //   "selectByDomainManyQueries",
+  //   "query",
+  //   selectorParams,
+  //   "domainState",
+  //   deploymentEntityState,
+  //   "newFetchedData",
+  //   context
+  // );
   return context;
 };
 

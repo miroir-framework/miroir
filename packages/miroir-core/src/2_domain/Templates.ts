@@ -45,8 +45,7 @@ export const objectTemplateSchema: JzodReference = {
               definition: "constant",
             },
             referenceUuid: {
-              type: "simpleType",
-              definition: "string",
+              type: "string",
             },
           },
         },
@@ -58,8 +57,7 @@ export const objectTemplateSchema: JzodReference = {
               definition: "contextReference",
             },
             referenceName: {
-              type: "simpleType",
-              definition: "string",
+              type: "string",
             },
           },
         },
@@ -71,8 +69,7 @@ export const objectTemplateSchema: JzodReference = {
               definition: "parameterReference",
             },
             referenceName: {
-              type: "simpleType",
-              definition: "string",
+              type: "string",
             },
           },
         },
@@ -84,8 +81,7 @@ export const objectTemplateSchema: JzodReference = {
               definition: "mustacheString",
             },
             definition: {
-              type: "simpleType",
-              definition: "string",
+              type: "string",
             },
           },
         },
@@ -205,14 +201,14 @@ export const resolveActionTemplateContextReference = (
       ? { elementType: "instanceUuid", elementValue: queryObjectReference.referenceUuid } // new object
       : undefined; /* this should not happen. Provide "error" value instead?*/
 
-  log.info(
-    "resolveActionTemplateContextReference for queryObjectReference=",
-    queryObjectReference,
-    "resolved as",
-    reference,
-    "for queryParams",
-    queryParams
-  );
+  // log.info(
+  //   "resolveActionTemplateContextReference for queryObjectReference=",
+  //   queryObjectReference,
+  //   "resolved as",
+  //   reference,
+  //   "for queryParams",
+  //   queryParams
+  // );
 
   return reference;
 };
@@ -225,9 +221,9 @@ export function objectTemplateToObject(
   queryParams: any,
   contextResults?: any
 ): any {
-  log.info("objectTemplateToObject called for object named", objectName,"template", objectTemplate, "queryParams", queryParams);
+  // log.info("objectTemplateToObject called for object named", objectName,"template", objectTemplate, "queryParams", queryParams);
   if (typeof objectTemplate == "object") {
-    log.info("objectTemplateToObject for template object named", objectName, "templateType", objectTemplate.templateType);
+    // log.info("objectTemplateToObject for template object named", objectName, "templateType", objectTemplate.templateType);
     if (Array.isArray(objectTemplate)) {
       return objectTemplate.map(
         (e,index)=>objectTemplateToObject(index.toString(), e, queryParams, contextResults)
@@ -238,7 +234,7 @@ export function objectTemplateToObject(
           case "fullObjectTemplate": {
             const result = Object.fromEntries(
               objectTemplate.definition.map((innerEntry: [ObjectTemplateInnerReference, ObjectTemplate]) => {
-                log.info("objectTemplateToObject for object named",objectName,"innerEntry index", innerEntry[0], "innerEntry value", innerEntry[1]);
+                // log.info("objectTemplateToObject for object named",objectName,"innerEntry index", innerEntry[0], "innerEntry value", innerEntry[1]);
   
                 const rawLeftValue = innerEntry[0].templateType
                   ? resolveActionTemplateContextReference(innerEntry[0], queryParams, contextResults)
@@ -253,18 +249,18 @@ export function objectTemplateToObject(
                   typeof innerEntry[1] == "object" && (innerEntry[1] as any).applyFunction
                     ? (innerEntry[1] as any).applyFunction(rawRightValue)
                     : rawRightValue;
-                log.info(
-                  "objectTemplateToObject fullObjectTemplate for ",
-                  objectTemplate,
-                  "rawLeftvalue",
-                  rawLeftValue,
-                  "leftValue",
-                  leftValue,
-                  "rawRightvalue",
-                  rawRightValue,
-                  "rightValue",
-                  rightValue
-                );
+                // log.info(
+                //   "objectTemplateToObject fullObjectTemplate for ",
+                //   objectTemplate,
+                //   "rawLeftvalue",
+                //   rawLeftValue,
+                //   "leftValue",
+                //   leftValue,
+                //   "rawRightvalue",
+                //   rawRightValue,
+                //   "rightValue",
+                //   rightValue
+                // );
                 return [leftValue, rightValue];
               })
             );
@@ -287,13 +283,13 @@ export function objectTemplateToObject(
               typeof objectTemplate == "object" && (objectTemplate as any).applyFunction
                 ? (objectTemplate as any).applyFunction(rawValue)
                 : rawValue;
-            log.info("objectTemplateToObject default case for", objectTemplate, "rawvalue", rawValue, "value", value);
+            // log.info("objectTemplateToObject default case for", objectTemplate, "rawvalue", rawValue, "value", value);
             return value;
             break;
           }
         }
       } else {
-        log.info("objectTemplateToObject converting plain object", objectTemplate);
+        // log.info("objectTemplateToObject converting plain object", objectTemplate);
         const result = Object.fromEntries(
           Object.entries(objectTemplate).map(
             (objectTemplateEntry: [string, any]) => {
@@ -321,18 +317,10 @@ export async function runActionTemplate(
   actionTemplate: ActionTemplate,
   params: any
 ): Promise<ActionReturnType> {
-  log.info("runActionTemplate", "actionTemplate", actionTemplate, "params", params);
+  // log.info("runActionTemplate", "actionTemplate", actionTemplate, "params", params);
   const actionToRun = actionTemplateToAction("ROOT",actionTemplate, params);
-  log.info("runActionTemplate actionToRun", actionToRun);
+  // log.info("runActionTemplate actionToRun", actionToRun);
   return domainController.handleAction(
     actionToRun
-    // {
-    //   actionType: "storeManagementAction",
-    //   actionName: "openStore",
-    //   endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-    //   configuration: (params.submitMiroirConfig.client as MiroirConfigForRestClient).serverConfig
-    //     .storeSectionConfiguration,
-    //   deploymentUuid: params.newDeploymentUuid,
-    // }
   );
 }

@@ -183,9 +183,13 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:QuerySelector<
     selectorParams.query.contextResults
   );
 
-  log.info("selectEntityInstanceFromObjectQueryAndDomainState params", querySelectorParams, deploymentUuid, applicationSection, entityUuidReference);
-
-  // log.info("selectEntityInstanceFromObjectQueryAndDomainState found entityUuidReference", JSON.stringify(entityUuidReference))
+  // log.info(
+  //   "selectEntityInstanceFromObjectQueryAndDomainState params",
+  //   querySelectorParams,
+  //   deploymentUuid,
+  //   applicationSection,
+  //   entityUuidReference
+  // );
   if (entityUuidReference.elementType != "string" && entityUuidReference.elementType != "instanceUuid") {
     return { elementType: "failure", elementValue: { queryFailure: "IncorrectParameters", queryReference: JSON.stringify(querySelectorParams.parentUuid) } }
   }
@@ -261,14 +265,13 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:QuerySelector<
     }
     case "selectObjectByDirectReference": {
       const instanceUuid = resolveContextReference(querySelectorParams.instanceUuid, selectorParams.query.queryParams, selectorParams.query.contextResults);
-      // log.info("selectEntityInstanceFromObjectQueryAndDomainState selectObjectByDirectReference found domainState", JSON.stringify(domainState))
 
-      log.info("selectEntityInstanceFromObjectQueryAndDomainState found instanceUuid", JSON.stringify(instanceUuid))
+      // log.info("selectEntityInstanceFromObjectQueryAndDomainState found instanceUuid", JSON.stringify(instanceUuid))
 
       if (instanceUuid.elementType != "string" && instanceUuid.elementType != "instanceUuid") {
         return instanceUuid /* QueryResults, elementType == "failure" */
       }
-      log.info("selectEntityInstanceFromObjectQueryAndDomainState resolved instanceUuid =", instanceUuid);
+      // log.info("selectEntityInstanceFromObjectQueryAndDomainState resolved instanceUuid =", instanceUuid);
       if (!domainState) {
         return { elementType: "failure", elementValue: { queryFailure: "DomainStateNotLoaded" } };
       }
@@ -305,19 +308,19 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:QuerySelector<
         };
       }
       
-        log.info("selectEntityInstanceFromObjectQueryAndDomainState selectObjectByDirectReference, ############# reference",
-        querySelectorParams,
-        "entityUuidReference",
-        entityUuidReference,
-        "######### context entityUuid",
-        entityUuidReference,
-        "######### queryParams",
-        JSON.stringify(selectorParams.query.queryParams, undefined, 2),
-        "######### contextResults",
-        JSON.stringify(selectorParams.query.contextResults, undefined, 2),
-        "domainState",
-        domainState
-      );
+      // log.info("selectEntityInstanceFromObjectQueryAndDomainState selectObjectByDirectReference, ############# reference",
+      //   querySelectorParams,
+      //   "entityUuidReference",
+      //   entityUuidReference,
+      //   "######### context entityUuid",
+      //   entityUuidReference,
+      //   "######### queryParams",
+      //   JSON.stringify(selectorParams.query.queryParams, undefined, 2),
+      //   "######### contextResults",
+      //   JSON.stringify(selectorParams.query.contextResults, undefined, 2),
+      //   "domainState",
+      //   domainState
+      // );
       return {
         elementType: "instance",
         elementValue:

@@ -5,23 +5,35 @@
 // module.exports = {
 //   // [...]
 // }
-const esModules = ['uuid'].join('|');
+// const esModules = ['uuid'].join('|');
 
 export default (path, options) =>({
   "verbose": true,
+  "testPathIgnorePatterns": [
+    "./node_modules/",
+    "./.cache/"
+  ],
   // "verbose": false,
   "rootDir": ".",
-  "moduleDirectories": [
+  modulePaths: [
+    "./src",
+    // "<rootDir>/src",
+    // "<rootDir>/dist",
+    "<rootDir>/node_modules",
+    // // "<rootDir>/../..",
+    "<rootDir>/../../node_modules",
+  ], // <-- This will be set to 'baseUrl' value
+  moduleDirectories: [
     "node_modules",
-    "packages/miroir-standalone-app/node_modules",
+    // "<rootDir>/../../node_modules",
+    // "packages/miroir-localcache-redux/node_modules",
     // "packages/miroir-core",
 
   ],
-  transformIgnorePatterns: [`<rootDir>\/(?!(/node_modules/(?!${esModules})))\/`],
+  // transformIgnorePatterns: [`<rootDir>\/(?!(/node_modules/(?!${esModules})))\/`],
   // transformIgnorePatterns: ['node_modules','miroir-core'],
   // roots: ["."],
-  // modulePaths: ["./packages/miroir-standalone-app/src/"], // <-- This will be set to 'baseUrl' value
-  modulePaths: ["./src/"], // <-- This will be set to 'baseUrl' value
+  // modulePaths: ["./src/"], // <-- This will be set to 'baseUrl' value
   // modulePaths: [compilerOptions.baseUrl], // <-- This will be set to 'baseUrl' value
   moduleNameMapper: 
     // Object.assign(
@@ -40,7 +52,7 @@ export default (path, options) =>({
   ],
   // preset:'ts-jest/presets/default-esm',
   "transform": {
-    "^.+\\.tsx?$": [
+    "^.+\\.ts": [
       "ts-jest",
       {
         // useESM:true,
@@ -52,11 +64,14 @@ export default (path, options) =>({
           allowSyntheticDefaultImports:true,
           allowJs: true,
           moduleResolution: "node",
-          // module: "ESNext",
-          // target: "ES2017",
+          module:"ES2017",
+          target: "ES2017",
+          // target: "ES6",
+          // module:"ES2020",
+          // module: "ES2017",
+          // pl
                 // rootDir: "./src/",
-          traceResolution: true,
-          module:"commonjs"
+          traceResolution: true
         },
       }
     ],
@@ -66,8 +81,5 @@ export default (path, options) =>({
   //   "^miroir-fwk\/(.+)$": "<rootDir>/src/$1",
   //   '\\.(css|scss|sass)$': 'identity-obj-proxy',
   // },
-  "testPathIgnorePatterns": [
-    "./node_modules/",
-    "./.cache/"
-  ],
+  
 })

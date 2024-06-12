@@ -18,7 +18,8 @@ import {
   ApplicationVersion,
   EntityDefinition,
   EntityInstance,
-  JzodAttribute,
+  JzodPlainAttribute,
+  // JzodAttribute,
   JzodSchema,
   Menu,
   MetaModel,
@@ -130,8 +131,10 @@ export function selectCurrentDeploymentModel(
 }
 
 // ################################################################################################
-export function selectEntityInstancesFromJzodAttribute(jzodSchema:JzodAttribute | undefined):EntitiesDomainStateEntityInstanceArraySelector{
-  return (domainState:EntitiesDomainState):EntityInstance[] => {
+export function selectEntityInstancesFromJzodAttribute(
+  jzodSchema: JzodPlainAttribute | undefined
+): EntitiesDomainStateEntityInstanceArraySelector {
+  return (domainState: EntitiesDomainState): EntityInstance[] => {
     // log.info('selectEntityInstances for entityUuid', parentUuid, 'existing entities:', Object.keys(domainState))
     if (jzodSchema?.extra?.targetEntity && domainState[jzodSchema?.extra?.targetEntity]) {
       // log.info('selectEntityInstances for entityUuid', parentUuid, 'existing instances:', Object.keys(domainState[parentUuid]))
@@ -139,11 +142,11 @@ export function selectEntityInstancesFromJzodAttribute(jzodSchema:JzodAttribute 
     } else {
       return [];
     }
-  }
+  };
 }
 
 // ################################################################################################
-export function selectEntityUuidFromJzodAttribute(jzodSchema:JzodAttribute | undefined):Uuid | undefined{
+export function selectEntityUuidFromJzodAttribute(jzodSchema:JzodPlainAttribute | undefined):Uuid | undefined{
   return jzodSchema?.extra?.targetEntity;
 }
 

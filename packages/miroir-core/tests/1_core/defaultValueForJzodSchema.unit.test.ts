@@ -248,8 +248,7 @@ describe(
           // simpleType
           test020: {
             testSchema: {
-              type: "simpleType",
-              definition: "string",
+              type: "string",
             },
             expectedResult: "",
           },

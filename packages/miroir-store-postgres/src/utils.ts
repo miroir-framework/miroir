@@ -66,9 +66,36 @@ export function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
         [a[0]],
         {
           type:
-            a[1].type == "simpleType"
-              ? dataTypesMapping[a[1].definition]
-              : a[1].type == "schemaReference"
+            (
+              [
+                // "any",
+                // "bigint",
+                // "boolean",
+                "date",
+                // "never",
+                // "null",
+                "number",
+                "string",
+                "uuid",
+                // "undefined",
+                // "unknown",
+                // "void",
+                "array",
+                // "enum",
+                // "function",
+                // "lazy",
+                // "literal",
+                // "intersection",
+                // "map",
+                "object",
+                // "promise",
+                "record",
+                "schemaReference",
+                // "set",
+                // "simpleType",
+                // "tuple",
+                // "union"
+              ].includes(a[1].type))
               ? dataTypesMapping[a[1].type]
               : a[1].type == "array" || a[1].type == "object"
               ? dataTypesMapping[a[1].type]
@@ -83,27 +110,27 @@ export function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
   // log.info("miroir-store-postgres fromMiroirEntityDefinitionToSequelizeEntityDefinition",entityDefinition.name, "jzodSchema",entityDefinition.jzodSchema, "result", result);
   return result;
 }
-// ##############################################################################################
-export function fromMiroirAttributeDefinitionToSequelizeModelAttributeColumnOptions(
-  attributeDefinition: JzodElement
-): {dataType: DataTypes.AbstractDataTypeConstructor, options:ModelAttributeColumnOptions} {
+// // ##############################################################################################
+// export function fromMiroirAttributeDefinitionToSequelizeModelAttributeColumnOptions(
+//   attributeDefinition: JzodElement
+// ): {dataType: DataTypes.AbstractDataTypeConstructor, options:ModelAttributeColumnOptions} {
 
-  const dataType =  dataTypesMapping[attributeDefinition.definition as string]
-  const result: { dataType: DataTypes.AbstractDataTypeConstructor, options:ModelAttributeColumnOptions } = {
-    "dataType": dataType,
-    "options": {
-      "type": dataType,
-      "allowNull": attributeDefinition.optional || attributeDefinition.nullable,
-    }
-  };
-  log.info(
-    "fromMiroirAttributeDefinitionToSequelizeModelAttributeColumnOptions attributeDefinition=",
-    JSON.stringify(attributeDefinition),
-    "dataType=",
-    dataType,
-    "result",
-    result
-  );
+//   const dataType =  dataTypesMapping[attributeDefinition?.definition as string]
+//   const result: { dataType: DataTypes.AbstractDataTypeConstructor, options:ModelAttributeColumnOptions } = {
+//     "dataType": dataType,
+//     "options": {
+//       "type": dataType,
+//       "allowNull": attributeDefinition.optional || attributeDefinition.nullable,
+//     }
+//   };
+//   log.info(
+//     "fromMiroirAttributeDefinitionToSequelizeModelAttributeColumnOptions attributeDefinition=",
+//     JSON.stringify(attributeDefinition),
+//     "dataType=",
+//     dataType,
+//     "result",
+//     result
+//   );
 
-  return result;
-}
+//   return result;
+// }

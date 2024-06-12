@@ -39,41 +39,69 @@ export function getDefaultValueForJzodSchema(
       ));
       return result;
     }
-    case "simpleType": {
-      if (jzodSchema.nullable) {
-        return undefined;
-      }
-      switch (jzodSchema.definition) {
-        case "string": {
-          return "";
-        }
-        case "number":
-        case "bigint": {
-          return 0;
-        }
-        case "boolean": {
-          return false;
-        }
-        case "date": {
-          return new Date();
-        }
-        case "any": 
-        case "undefined":
-        case "null": {
-          return undefined;
-        }
-        case "uuid":
-        case "unknown":
-        case "never":
-        case "void": {
-          throw new Error("getDefaultValueForJzodSchema can not generate value for schema type " + jzodSchema.type +  " definition " + jzodSchema.definition);
-          break;
-        }
-        default:{
-          throw new Error("getDefaultValueForJzodSchema default case, can not generate value for schema type " + JSON.stringify(jzodSchema, null, 2));
-          break;
-        }
-      }
+    // case "simpleType": {
+    //   if (jzodSchema.nullable) {
+    //     return undefined;
+    //   }
+    //   switch (jzodSchema.definition) {
+    //     case "string": {
+    //       return "";
+    //     }
+    //     case "number":
+    //     case "bigint": {
+    //       return 0;
+    //     }
+    //     case "boolean": {
+    //       return false;
+    //     }
+    //     case "date": {
+    //       return new Date();
+    //     }
+    //     case "any": 
+    //     case "undefined":
+    //     case "null": {
+    //       return undefined;
+    //     }
+    //     case "uuid":
+    //     case "unknown":
+    //     case "never":
+    //     case "void": {
+    //       throw new Error("getDefaultValueForJzodSchema can not generate value for schema type " + jzodSchema.type +  " definition " + jzodSchema.definition);
+    //       break;
+    //     }
+    //     default:{
+    //       throw new Error("getDefaultValueForJzodSchema default case, can not generate value for schema type " + JSON.stringify(jzodSchema, null, 2));
+    //       break;
+    //     }
+    //   }
+    // }
+    case "string": {
+      return "";
+    }
+    case "number":
+    case "bigint": {
+      return 0;
+    }
+    case "boolean": {
+      return false;
+    }
+    case "date": {
+      return new Date();
+    }
+    case "any": 
+    case "undefined":
+    case "null": {
+      return undefined;
+    }
+    case "uuid":
+    case "unknown":
+    case "never":
+    case "void": {
+      throw new Error(
+        "getDefaultValueForJzodSchema can not generate value for schema type " +
+          jzodSchema.type
+      );
+      break;
     }
     case "literal": {
       return jzodSchema.definition
@@ -91,13 +119,18 @@ export function getDefaultValueForJzodSchema(
       return {}
     }
     case "schemaReference": {
-      throw new Error("getDefaultValueForJzodSchema does not support schema references, please resolve schema in advance: " + JSON.stringify(jzodSchema, null, 2));
+      throw new Error(
+        "getDefaultValueForJzodSchema does not support schema references, please resolve schema in advance: " +
+          JSON.stringify(jzodSchema, null, 2)
+      );
     }
     case "union": {
       // throw new Error("getDefaultValueForJzodSchema does not handle type: " + jzodSchema.type + " for jzodSchema="  + JSON.stringify(jzodSchema, null, 2));
       // just take the first choice for default value
       if (jzodSchema.definition.length == 0) {
-        throw new Error("getDefaultValueForJzodSchema union definition is empty for jzodSchema="  + JSON.stringify(jzodSchema, null, 2));
+        throw new Error(
+          "getDefaultValueForJzodSchema union definition is empty for jzodSchema=" + JSON.stringify(jzodSchema, null, 2)
+        );
       }
       return getDefaultValueForJzodSchema(jzodSchema.definition[0])
       break;
@@ -108,11 +141,19 @@ export function getDefaultValueForJzodSchema(
     case "intersection":
     case "promise":
     case "tuple": {
-      throw new Error("getDefaultValueForJzodSchema does not handle type: " + jzodSchema.type + " for jzodSchema="  + JSON.stringify(jzodSchema, null, 2));
+      throw new Error(
+        "getDefaultValueForJzodSchema does not handle type: " +
+          jzodSchema.type +
+          " for jzodSchema=" +
+          JSON.stringify(jzodSchema, null, 2)
+      );
       break;
     }
     default: {
-      throw new Error("getDefaultValueForJzodSchema reached default case for type, this is a bug: " + JSON.stringify(jzodSchema, null, 2));
+      throw new Error(
+        "getDefaultValueForJzodSchema reached default case for type, this is a bug: " +
+          JSON.stringify(jzodSchema, null, 2)
+      );
       break;
     }
   }
@@ -183,42 +224,42 @@ export function getDefaultValueForJzodSchemaWithResolution(
       throw new Error("getDefaultValueForJzodSchemaWithResolution can not generate value for schema type " + jzodSchema.type);
       break;
     }
-    case "simpleType": {
-      if (jzodSchema.nullable) {
-        return undefined;
-      }
-      switch (jzodSchema.definition) {
-        case "string": {
-          return "";
-        }
-        case "number":
-        case "bigint": {
-          return 0;
-        }
-        case "boolean": {
-          return false;
-        }
-        case "date": {
-          return new Date();
-        }
-        case "any": 
-        case "undefined":
-        case "null": {
-          return undefined;
-        }
-        case "uuid":
-        case "unknown":
-        case "never":
-        case "void": {
-          throw new Error("getDefaultValueForJzodSchemaWithResolution can not generate value for schema type " + jzodSchema.type +  " definition " + jzodSchema.definition);
-          break;
-        }
-        default:{
-          throw new Error("getDefaultValueForJzodSchemaWithResolution default case, can not generate value for schema type " + JSON.stringify(jzodSchema, null, 2));
-          break;
-        }
-      }
-    }
+    // case "simpleType": {
+    //   if (jzodSchema.nullable) {
+    //     return undefined;
+    //   }
+    //   switch (jzodSchema.definition) {
+    //     case "string": {
+    //       return "";
+    //     }
+    //     case "number":
+    //     case "bigint": {
+    //       return 0;
+    //     }
+    //     case "boolean": {
+    //       return false;
+    //     }
+    //     case "date": {
+    //       return new Date();
+    //     }
+    //     case "any": 
+    //     case "undefined":
+    //     case "null": {
+    //       return undefined;
+    //     }
+    //     case "uuid":
+    //     case "unknown":
+    //     case "never":
+    //     case "void": {
+    //       throw new Error("getDefaultValueForJzodSchemaWithResolution can not generate value for schema type " + jzodSchema.type +  " definition " + jzodSchema.definition);
+    //       break;
+    //     }
+    //     default:{
+    //       throw new Error("getDefaultValueForJzodSchemaWithResolution default case, can not generate value for schema type " + JSON.stringify(jzodSchema, null, 2));
+    //       break;
+    //     }
+    //   }
+    // }
     case "literal": {
       return jzodSchema.definition
     }

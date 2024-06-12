@@ -15,12 +15,11 @@ import {
   ModelActionAlterEntityAttribute,
   ModelActionRenameEntity,
   StoreDataSectionInterface,
-  adminConfigurationDeploymentMiroir,
   entityEntity,
   entityEntityDefinition,
   getLoggerName
 } from "miroir-core";
-import { EntityUuidIndexedSequelizeModel, fromMiroirAttributeDefinitionToSequelizeModelAttributeColumnOptions, fromMiroirEntityDefinitionToSequelizeEntityDefinition } from "../utils.js";
+import { EntityUuidIndexedSequelizeModel, fromMiroirEntityDefinitionToSequelizeEntityDefinition } from "../utils.js";
 import { SqlDbStoreSection } from "./SqlDbStoreSection.js";
 import { MixedSqlDbInstanceStoreSection, SqlDbInstanceStoreSectionMixin } from "./sqlDbInstanceStoreSectionMixin.js";
 

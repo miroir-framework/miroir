@@ -296,8 +296,7 @@ describe(
                       type: "union",
                       definition: [
                         {
-                          type: "simpleType",
-                          definition: "string",
+                          type: "string",
                         },
                         {
                           type: "schemaReference",
@@ -320,8 +319,7 @@ describe(
                       type: "union",
                       definition: [
                         {
-                          type: "simpleType",
-                          definition: "string",
+                          type: "string",
                         },
                         {
                           type: "schemaReference",
@@ -333,8 +331,7 @@ describe(
                                   type: "union",
                                   definition: [
                                     {
-                                      type: "simpleType",
-                                      definition: "string",
+                                      type: "string",
                                     },
                                     {
                                       type: "schemaReference",

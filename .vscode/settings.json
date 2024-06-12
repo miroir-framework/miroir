@@ -1,18 +1,50 @@
 {
-  "audioCues.diffLineDeleted": "off",
-  "audioCues.diffLineInserted": "off",
-  "audioCues.diffLineModified": "off",
-  "audioCues.lineHasBreakpoint": "off",
-  "audioCues.lineHasError": "off",
-  "audioCues.lineHasFoldedArea": "off",
-  "audioCues.lineHasInlineSuggestion": "off",
-  "audioCues.noInlayHints": "off",
-  "audioCues.notebookCellCompleted": "off",
-  "audioCues.notebookCellFailed": "off",
-  "audioCues.onDebugBreak": "off",
-  "audioCues.taskCompleted": "off",
-  "audioCues.taskFailed": "on",
-  "audioCues.terminalCommandFailed": "on",
-  "audioCues.terminalQuickFix": "off",
-  "audioCues.volume": 20
+  "accessibility.signalOptions": {
+    "volume": 20
+  },
+  "accessibility.signals.lineHasError": {
+    "sound": "off"
+  },
+  "accessibility.signals.lineHasFoldedArea": {
+    "sound": "off"
+  },
+  "accessibility.signals.lineHasBreakpoint": {
+    "sound": "off"
+  },
+  "accessibility.signals.lineHasInlineSuggestion": {
+    "sound": "off"
+  },
+  "accessibility.signals.terminalQuickFix": {
+    "sound": "off"
+  },
+  "accessibility.signals.onDebugBreak": {
+    "sound": "off"
+  },
+  "accessibility.signals.taskCompleted": {
+    "sound": "off"
+  },
+  "accessibility.signals.taskFailed": {
+    "sound": "on"
+  },
+  "accessibility.signals.terminalCommandFailed": {
+    "sound": "on"
+  },
+  "accessibility.signals.notebookCellCompleted": {
+    "sound": "off"
+  },
+  "accessibility.signals.notebookCellFailed": {
+    "sound": "off"
+  },
+  "accessibility.signals.diffLineInserted": {
+    "sound": "off"
+  },
+  "accessibility.signals.diffLineDeleted": {
+    "sound": "off"
+  },
+  "accessibility.signals.diffLineModified": {
+    "sound": "off"
+  },
+  "accessibility.signals.noInlayHints": {
+    "sound": "off"
+  }
 }

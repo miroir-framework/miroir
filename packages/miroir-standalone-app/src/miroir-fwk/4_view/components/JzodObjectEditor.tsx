@@ -27,6 +27,7 @@ import {
   JzodLiteral,
   JzodObject,
   JzodSchema,
+  JzodUnion,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
@@ -49,7 +50,6 @@ import {
   unfoldJzodSchemaOnce
 } from "miroir-core";
 
-import { JzodUnion } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 import { packageName } from "../../../constants";
 import { useMiroirContextService, useMiroirContextformHelperState } from "../MiroirContextReactProvider";
 import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from '../ReduxHooks';
@@ -90,8 +90,8 @@ export interface JzodObjectEditorProps {
     jzodSchema: JzodUnion,
     discriminator: string,
     discriminatorValues: string[],
-    subDiscriminator?: string,
-    subDiscriminatorValues?: string[],
+    // subDiscriminator?: string,
+    // subDiscriminatorValues?: string[],
     setItemsOrder: React.Dispatch<React.SetStateAction<any[]>>;
   } | undefined,
   rawJzodSchema: JzodElement | undefined,
@@ -820,7 +820,9 @@ export const JzodObjectEditor = (
       //   : props.formik.values;
       // const parentPath = props.rootLesslistKey.substring(0,props.rootLesslistKey.lastIndexOf("."))
       if (!props.unionInformation) {
-        throw new Error("handleSelectLiteralChange called but current object does not have information about the discriminated union type it must be part of!");
+        throw new Error(
+          "handleSelectLiteralChange called but current object does not have information about the discriminated union type it must be part of!"
+        );
       }
       if (!props.unionInformation.jzodSchema.discriminator) {
         throw new Error("handleSelectLiteralChange called but current object does not have a discriminated union type!");
@@ -849,16 +851,17 @@ export const JzodObjectEditor = (
       );
 
       const newJzodSchema: JzodElement | undefined = // attribute is either discriminator or sub-discriminator
-        props.name == props.unionInformation.subDiscriminator
-          ? // props.name == currentAttributeName == props.unionInformation.subDiscriminator?
-            (props.unionInformation.jzodSchema.definition as JzodObject[]).find(
-              (a: JzodObject) =>
-                a.type == "object" &&
-                a.definition[(props.unionInformation as any).jzodSchema.subDiscriminator].type == "literal" &&
-                (a.definition[(props.unionInformation as any).jzodSchema.subDiscriminator] as JzodLiteral).definition ==
-                  event.target.value
-            )
-          : (props.unionInformation.jzodSchema.definition as JzodObject[]).find(
+        // props.name == props.unionInformation.subDiscriminator
+        //   ? // props.name == currentAttributeName == props.unionInformation.subDiscriminator?
+        //     (props.unionInformation.jzodSchema.definition as JzodObject[]).find(
+        //       (a: JzodObject) =>
+        //         a.type == "object" &&
+        //         a.definition[(props.unionInformation as any).jzodSchema.subDiscriminator].type == "literal" &&
+        //         (a.definition[(props.unionInformation as any).jzodSchema.subDiscriminator] as JzodLiteral).definition ==
+        //           event.target.value
+        //     )
+          // :
+           (props.unionInformation.jzodSchema.definition as JzodObject[]).find(
               (a: JzodObject) =>
                 a.type == "object" &&
                 a.definition[(props.unionInformation as any).jzodSchema.discriminator].type == "literal" &&
@@ -1978,8 +1981,8 @@ export const JzodObjectEditor = (
             props.listKey,
             "discriminator=",
             props.unionInformation.discriminator,
-            "subDiscriminator=",
-            props.unionInformation.subDiscriminator,
+            // "subDiscriminator=",
+            // props.unionInformation.subDiscriminator,
             "unionInformation=",
             props.unionInformation
           );
@@ -1990,31 +1993,29 @@ export const JzodObjectEditor = (
             {props.unionInformation ? (
               <>
                 {
-                  props.unionInformation.subDiscriminator &&
-                  props.unionInformation.subDiscriminatorValues &&
-                  props.name == props.unionInformation.subDiscriminator ? (
-                    <>
-                      <StyledSelect
-                        variant="standard"
-                        labelId="demo-simple-select-label"
-                        id={props.listKey}
-                        value={currentValue}
-                        label={props.name}
-                        onChange={handleSelectLiteralChange}
-                      >
-                        {props.unionInformation.subDiscriminatorValues.map((v) => {
-                          return (
-                            <MenuItem key={v} value={v}>
-                              {v}
-                            </MenuItem>
-                          )
-                        })}
-                      </StyledSelect> literal subDiscriminator
-                      {/* <div>
-                        subDiscriminator: {JSON.stringify(props.unionInformation.subDiscriminatorValues)}
-                      </div> */}
-                    </>
-                ) : props.unionInformation.discriminator &&
+                //   props.unionInformation.subDiscriminator &&
+                //   props.unionInformation.subDiscriminatorValues &&
+                //   props.name == props.unionInformation.subDiscriminator ? (
+                //     <>
+                //       <StyledSelect
+                //         variant="standard"
+                //         labelId="demo-simple-select-label"
+                //         id={props.listKey}
+                //         value={currentValue}
+                //         label={props.name}
+                //         onChange={handleSelectLiteralChange}
+                //       >
+                //         {props.unionInformation.subDiscriminatorValues.map((v) => {
+                //           return (
+                //             <MenuItem key={v} value={v}>
+                //               {v}
+                //             </MenuItem>
+                //           )
+                //         })}
+                //       </StyledSelect> literal subDiscriminator
+                //     </>
+                // ) : 
+                props.unionInformation.discriminator &&
                   props.unionInformation.discriminatorValues &&
                   props.name == props.unionInformation.discriminator ? (
                     <>
