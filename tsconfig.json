@@ -2,7 +2,7 @@
   "compilerOptions": {  
     "types": ["node", "jest"],
     "removeComments": true,
-    "module": "ES2020",
+    "module": "NodeNext",
     "target": "ES2017",
     "jsx": "react-jsx",
     "moduleResolution": "Node",

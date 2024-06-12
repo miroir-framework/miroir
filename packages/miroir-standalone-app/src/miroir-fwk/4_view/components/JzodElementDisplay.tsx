@@ -13,12 +13,12 @@ import {
   getLoggerName
 } from "miroir-core";
 
-import { packageName } from "../../../constants";
-import { JzodEnumSchemaToJzodElementResolver } from "../../JzodTools";
-import { EntityInstanceLink } from "./EntityInstanceLink";
-import { useMiroirContextService } from "../MiroirContextReactProvider";
-import { cleanLevel } from "../constants";
-import { getColumnDefinitionsFromEntityDefinitionAttribute } from "../getColumnDefinitionsFromEntityAttributes";
+import { packageName } from "../../../constants.js";
+import { JzodEnumSchemaToJzodElementResolver } from "../../JzodTools.js";
+import { EntityInstanceLink } from "./EntityInstanceLink.js";
+import { useMiroirContextService } from "../MiroirContextReactProvider.js";
+import { cleanLevel } from "../constants.js";
+import { getColumnDefinitionsFromEntityDefinitionAttribute } from "../getColumnDefinitionsFromEntityAttributes.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"JzodElementDisplay");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -229,11 +229,50 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
         </div>
       )
     }
-    case "simpleType": {
+    // case "simpleType": {
+    //   const targetEntityUuid = targetJzodSchema.extra?.targetEntity
+    //   if (
+    //     context.applicationSection &&
+    //     targetJzodSchema.definition == "string" &&
+    //     targetJzodSchema?.extra?.targetEntity &&
+    //     targetEntityUuid
+    //   ) {
+    //     const targetEntity: Entity | undefined = props.currentReportDeploymentSectionEntities?.find(
+    //       (e) => e.uuid == targetEntityUuid
+    //     );
+    //     return (
+    //       <div>
+    //         {displayName}:
+    //         <EntityInstanceLink
+    //           deploymentUuid={
+    //             context.deploymentUuid
+    //             // targetJzodSchema.extra?.targetEntityApplication == "metaModel"
+    //             //   ? adminConfigurationDeploymentMiroir.uuid
+    //             //   : props.deploymentUuid
+    //           }
+    //           applicationSection={context.applicationSection}
+    //           entityUuid={targetJzodSchema?.extra?.targetEntity}
+    //           instanceUuid={props.element}
+    //           key={props.name}
+    //         />
+    //       </div>
+    //     );
+    //   } else {
+    //     return (
+    //       <div>
+    //         {displayName}: {props.element}
+    //       </div>
+    //     );
+    //   }
+    // }
+    case "uuid": 
+    case "number": 
+    case "date": 
+    case "string": {
       const targetEntityUuid = targetJzodSchema.extra?.targetEntity
       if (
         context.applicationSection &&
-        targetJzodSchema.definition == "string" &&
+        targetJzodSchema.type == "uuid" &&
         targetJzodSchema?.extra?.targetEntity &&
         targetEntityUuid
       ) {

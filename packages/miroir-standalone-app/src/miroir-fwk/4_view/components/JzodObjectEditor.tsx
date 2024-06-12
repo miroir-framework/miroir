@@ -1,12 +1,9 @@
 import { ChangeEvent, useCallback, useMemo, useState } from "react";
-import {ErrorBoundary, withErrorBoundary} from 'react-error-boundary';
+import { ErrorBoundary, withErrorBoundary } from 'react-error-boundary';
 
 import styled from "@emotion/styled";
-import AddBoxIcon from '@mui/icons-material/AddBox';
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
-import { Box, Button, Checkbox, Grid, Icon, IconButton, MenuItem, Select } from "@mui/material";
-import { Clear } from "@mui/icons-material";
+import { AddBox, Clear, ExpandLess, ExpandMore } from "@mui/icons-material";
+import { Button, Checkbox, Icon, IconButton, MenuItem, Select } from "@mui/material";
 
 
 // import { FieldValues, UseFormRegister, UseFormSetValue, useFormContext } from "react-hook-form";
@@ -41,21 +38,18 @@ import {
   deleteObjectAtPath,
   dummyDomainManyQueriesWithDeploymentUuid,
   getApplicationSection,
-  getDefaultValueForJzodSchema,
   getDefaultValueForJzodSchemaWithResolution,
   getDeploymentEntityStateSelectorParams,
   getLoggerName,
-  resolveJzodSchemaReferenceInContext,
   resolveReferencesForJzodSchemaAndValueObject,
   unfoldJzodSchemaOnce
 } from "miroir-core";
 
-import { packageName } from "../../../constants";
-import { useMiroirContextService, useMiroirContextformHelperState } from "../MiroirContextReactProvider";
-import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from '../ReduxHooks';
-import { cleanLevel } from "../constants";
 import { getMemoizedDeploymentEntityStateSelectorMap } from "miroir-localcache-redux";
-import { setNestedObjectValues } from "formik";
+import { packageName } from "../../../constants.js";
+import { useMiroirContextService, useMiroirContextformHelperState } from "../MiroirContextReactProvider.js";
+import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from '../ReduxHooks.js';
+import { cleanLevel } from "../constants.js";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"JzodObjectEditor");
@@ -113,7 +107,8 @@ export interface JzodObjectEditorProps {
 // ################################################################################################
 // #####################################################################################################
 const SizedButton = styled(Button)(({ theme }) => ({height: "1em", width: "auto", padding: "0px"}));
-const SizedAddBoxIcon = styled(AddBoxIcon)(({ theme }) => ({height: "1em", width: "1em"}));
+const SizedAddBox = styled(AddBox)(({ theme }) => ({height: "1em", width: "1em"}));
+const SizedIcon = styled(Icon)(({ theme }) => ({height: "1em", width: "1em"}));
 // const SizedIcon = styled(Icon)(({ theme }) => ({height: "0.5em", width: "0.5em", padding: 0, boxSizing:"border-box"}));
 // const SizedIcon = styled(Icon)(({ theme }) => ({sx: { }, fontSize:"small", padding: 0, boxSizing:"border-box"}));
 // const SizedIcon = styled(Icon)(({ theme }) => ({height: 0.5, width: 0.5, padding: 0, }));
@@ -414,7 +409,7 @@ export const JzodObjectEditor = (
                   case "undefined":
                   case "function":
                   case "array":
-                  case "simpleType":
+                  // case "simpleType":
                   case "any":
                   case "date":
                   case "never":
@@ -1101,7 +1096,10 @@ export const JzodObjectEditor = (
                   unfoldedRawSchema.type == "record"? (
                   <div>
                     <SizedButton variant="text" onClick={addNewRecordAttribute}>
-                      <SizedAddBoxIcon />
+                      {/* <SizedIcon>addBox</SizedIcon> */}
+                      {/* <Icon>add</Icon> */}
+                      {/* <AddBox/> */}
+                      <SizedAddBox/>
                     </SizedButton>
                     add new record:
                   </div>
@@ -1198,8 +1196,7 @@ export const JzodObjectEditor = (
                         let concreteObjectRawJzodSchema: JzodObject | undefined;
                         let resolvedConcreteObjectJzodSchema: JzodObject | undefined;
                         if (
-                          attribute[0] == discriminator ||
-                          (currentValue[discriminator] == "simpleType" && attribute[0] == subDiscriminator)
+                          attribute[0] == discriminator
                         ) {
                           attributeRawJzodSchema =
                             currentAttributeDefinition.type == "enum"
@@ -1442,7 +1439,10 @@ export const JzodObjectEditor = (
                   // <div style={{ marginLeft: `calc(${indentShift})` }}>
                   <div>
                     <SizedButton variant="text" onClick={addMissingOptionalAttribute}>
-                      <SizedAddBoxIcon />
+                      {/* <SizedIcon>addBox</SizedIcon> */}
+                      {/* <Icon>add</Icon> */}
+                      {/* <AddBox/> */}
+                      <SizedAddBox/>
                     </SizedButton>{" "}
                     {JSON.stringify(undefinedOptionalAttributes)}
                   </div>
@@ -1718,128 +1718,128 @@ export const JzodObjectEditor = (
         );
         break;
       }
-      case "simpleType": {
-        switch (props.resolvedJzodSchema.definition) {
-          case "string":{
-            // log.info("selectList for targetEntity", props.resolvedJzodSchema.extra?.targetEntity, "value", selectList, "props.foreignKeyObjects", props.foreignKeyObjects);
+      // case "simpleType": {
+      //   switch (props.resolvedJzodSchema.definition) {
+      //     case "string":{
+      //       // log.info("selectList for targetEntity", props.resolvedJzodSchema.extra?.targetEntity, "value", selectList, "props.foreignKeyObjects", props.foreignKeyObjects);
 
-            return props.resolvedJzodSchema.extra?.targetEntity ? (
-              <>
-                {/* <label htmlFor={props.listKey}>{props.listKey} {displayedLabel}: </label> */}
-                <select
-                  id={props.rootLesslistKey}
-                  name={props.name}
-                  {...props.formik.getFieldProps(props.rootLesslistKey)}
-                  onChange={props.handleChange}
-                  value={currentValue}
-                >
-                  {/* <option id={props.rootLesslistKey+".undefined"} value=""></option> */}
-                  {stringSelectList.map((e: [string, EntityInstance], index: number) => (
-                    <option id={props.rootLesslistKey + "." + index} value={e[1].uuid}>
-                      {(e[1] as EntityInstanceWithName).name}
-                    </option>
-                  ))}
-                  {/* <option value="red">Red</option>
-                 <option value="green">Green</option>
-                 <option value="blue">Blue</option> */}
-                </select>
-              </>
-            ) : (
-              <>
-                {/* <label htmlFor={props.listKey}>{displayedLabel}: </label> */}
-                <input
-                  type="text"
-                  {...props.formik.getFieldProps(props.rootLesslistKey)}
-                  id={props.rootLesslistKey}
-                  name={props.name}
-                  role={props.listKey}
-                  onChange={props.handleChange}
-                  value={currentValue}
-                />
-              </>
-            );
-            break;
-          }
-          case "boolean":{
-            // log.info("JzodObjectEditor boolean!",props.listKey,"formState",props.formState)
-            return (
-              <>
-              {/* <table>
-                <tbody>
-                  <tr>
-                    <td>
-                    {displayedLabel}:{" "} 
-                    </td>
-                    <td> */}
-                      <Checkbox 
-                        // {...register(props.listKey)}
-                        defaultChecked={props.formik.values[props.rootLesslistKey]}
-                        // defaultChecked={props.initialValuesObject}
-                        {...props.formik.getFieldProps(props.listKey)}
-                        name={props.listKey}
-                        id={props.listKey}
-                        onChange={props.handleChange}
-                        // value={props.formik.values[props.rootLesslistKey]}
-                      />
-                    {/* </td>
-                  </tr>
-                </tbody>
-              </table> */}
-              </>
-            );
-            break;
-          }
-          case "number": {
-            // const defaultValue:number | undefined=props.initialValuesObject?(props.initialValuesObject as any as number):undefined;
-            // log.info("JzodObjectEditor number!",props.listKey,"props.initialValuesObject",props.initialValuesObject)
-            return (
-              <>
-                {/* {props.listKey} - {label}:{" "} */}
-                {/* {displayedLabel}:{" "} */}
-                <input
-                  form={"form." + props.name}
-                  {...props.formik.getFieldProps(props.rootLesslistKey)}
-                  id={props.listKey}
-                  name={props.name}
-                  onChange={props.handleChange}
-                  // value={props.formik.values[props.rootLesslistKey]}
-                  // onChange={(e) => {
-                  //   log.info("JzodObjectEditor number onChange!", props.name, e.target.value);
-                  // }}
-                  // defaultValue={defaultValue}
-                />
-              </>
-            );
-            break;
-          }
-          case "any":
-          case "uuid":
-          default: {
-            // const defaultValue=formState.defaultValues?formState.defaultValues[props.name]:'no value found!'
-            // const defaultValue:number | undefined=props.initialValuesObject?(props.initialValuesObject as any as number):undefined;
-            return (
-              <>
-                {/* <label htmlFor={props.listKey}>{displayedLabel}: </label> */}
-                <input
-                  id={props.listKey}
-                  form={"form." + props.name}
-                  name={props.name}
-                  {...props.formik.getFieldProps(props.rootLesslistKey)}
-                  // value={props.formik.values[props.rootLesslistKey]}
-                  // onChange={(e) => {
-                  //   log.info("JzodObjectEditor number onChange!", props.name, e.target.value);
-                  //   // setValue(props.listKey, e.target.value);
-                  // }}
-                  // defaultValue={defaultValue}
-                />
-              </>
-            );
-          // throw new Error("JzodObjectEditor could not handle jzodSchema type:",elementJzodSchema?.type,elementJzodSchema.definition);
-            break;
-          }
-        }
-        break;
-      }
+      //       return props.resolvedJzodSchema.extra?.targetEntity ? (
+      //         <>
+      //           {/* <label htmlFor={props.listKey}>{props.listKey} {displayedLabel}: </label> */}
+      //           <select
+      //             id={props.rootLesslistKey}
+      //             name={props.name}
+      //             {...props.formik.getFieldProps(props.rootLesslistKey)}
+      //             onChange={props.handleChange}
+      //             value={currentValue}
+      //           >
+      //             {/* <option id={props.rootLesslistKey+".undefined"} value=""></option> */}
+      //             {stringSelectList.map((e: [string, EntityInstance], index: number) => (
+      //               <option id={props.rootLesslistKey + "." + index} value={e[1].uuid}>
+      //                 {(e[1] as EntityInstanceWithName).name}
+      //               </option>
+      //             ))}
+      //             {/* <option value="red">Red</option>
+      //            <option value="green">Green</option>
+      //            <option value="blue">Blue</option> */}
+      //           </select>
+      //         </>
+      //       ) : (
+      //         <>
+      //           {/* <label htmlFor={props.listKey}>{displayedLabel}: </label> */}
+      //           <input
+      //             type="text"
+      //             {...props.formik.getFieldProps(props.rootLesslistKey)}
+      //             id={props.rootLesslistKey}
+      //             name={props.name}
+      //             role={props.listKey}
+      //             onChange={props.handleChange}
+      //             value={currentValue}
+      //           />
+      //         </>
+      //       );
+      //       break;
+      //     }
+      //     case "boolean":{
+      //       // log.info("JzodObjectEditor boolean!",props.listKey,"formState",props.formState)
+      //       return (
+      //         <>
+      //         {/* <table>
+      //           <tbody>
+      //             <tr>
+      //               <td>
+      //               {displayedLabel}:{" "} 
+      //               </td>
+      //               <td> */}
+      //                 <Checkbox 
+      //                   // {...register(props.listKey)}
+      //                   defaultChecked={props.formik.values[props.rootLesslistKey]}
+      //                   // defaultChecked={props.initialValuesObject}
+      //                   {...props.formik.getFieldProps(props.listKey)}
+      //                   name={props.listKey}
+      //                   id={props.listKey}
+      //                   onChange={props.handleChange}
+      //                   // value={props.formik.values[props.rootLesslistKey]}
+      //                 />
+      //               {/* </td>
+      //             </tr>
+      //           </tbody>
+      //         </table> */}
+      //         </>
+      //       );
+      //       break;
+      //     }
+      //     case "number": {
+      //       // const defaultValue:number | undefined=props.initialValuesObject?(props.initialValuesObject as any as number):undefined;
+      //       // log.info("JzodObjectEditor number!",props.listKey,"props.initialValuesObject",props.initialValuesObject)
+      //       return (
+      //         <>
+      //           {/* {props.listKey} - {label}:{" "} */}
+      //           {/* {displayedLabel}:{" "} */}
+      //           <input
+      //             form={"form." + props.name}
+      //             {...props.formik.getFieldProps(props.rootLesslistKey)}
+      //             id={props.listKey}
+      //             name={props.name}
+      //             onChange={props.handleChange}
+      //             // value={props.formik.values[props.rootLesslistKey]}
+      //             // onChange={(e) => {
+      //             //   log.info("JzodObjectEditor number onChange!", props.name, e.target.value);
+      //             // }}
+      //             // defaultValue={defaultValue}
+      //           />
+      //         </>
+      //       );
+      //       break;
+      //     }
+      //     case "any":
+      //     case "uuid":
+      //     default: {
+      //       // const defaultValue=formState.defaultValues?formState.defaultValues[props.name]:'no value found!'
+      //       // const defaultValue:number | undefined=props.initialValuesObject?(props.initialValuesObject as any as number):undefined;
+      //       return (
+      //         <>
+      //           {/* <label htmlFor={props.listKey}>{displayedLabel}: </label> */}
+      //           <input
+      //             id={props.listKey}
+      //             form={"form." + props.name}
+      //             name={props.name}
+      //             {...props.formik.getFieldProps(props.rootLesslistKey)}
+      //             // value={props.formik.values[props.rootLesslistKey]}
+      //             // onChange={(e) => {
+      //             //   log.info("JzodObjectEditor number onChange!", props.name, e.target.value);
+      //             //   // setValue(props.listKey, e.target.value);
+      //             // }}
+      //             // defaultValue={defaultValue}
+      //           />
+      //         </>
+      //       );
+      //     // throw new Error("JzodObjectEditor could not handle jzodSchema type:",elementJzodSchema?.type,elementJzodSchema.definition);
+      //       break;
+      //     }
+      //   }
+      //   break;
+      // }
       case "literal": {
         // const handleSelectLiteralChange = (event: any) => {
         //   // TODO: avoid side-effects!!! So ugly, I'll be hanged for this.

@@ -19,8 +19,8 @@ import {
   selectCurrentTransaction
 } from "miroir-localcache-redux";
 
-import { packageName } from "../../constants";
-import { cleanLevel } from "./constants";
+import { packageName } from "../../constants.js";
+import { cleanLevel } from "./constants.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"MiroirContextReactProvider");
 let log:LoggerInterface = console as any as LoggerInterface;

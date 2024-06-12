@@ -119,8 +119,7 @@ const actionsJzodSchema: JzodObject = {
   type: "object",
   definition: {
     "applicationName": {
-      type: "simpleType",
-      definition: "string"
+      type: "string"
     }
   }    
 }
@@ -129,8 +128,7 @@ const formJzodSchema:JzodObject = {
   type: "object",
   definition: {
     "applicationName": {
-      type: "simpleType",
-      definition: "string"
+      type: "string"
     },
     // "configuration": {
     //   "type": "schemaReference",
@@ -184,16 +182,13 @@ export const ToolsPage: React.FC<any> = (
       type: "object",
       definition: {
         "applicationName": {
-          type: "simpleType",
-          definition: "string"
+          type: "string"
         },
         "selfApplicationUuid": {
-          type: "simpleType",
-          definition: "string"
+          type: "string"
         },
         "deploymentUuid": {
-          type: "simpleType",
-          definition: "string"
+          type: "string"
         },
         "testUnion": {
           type: "union",
@@ -207,8 +202,7 @@ export const ToolsPage: React.FC<any> = (
                   definition: "A"
                 },
                 a: {
-                  type: "simpleType",
-                  definition: "string"
+                  type: "string"
                 }
               }
             },
@@ -220,8 +214,7 @@ export const ToolsPage: React.FC<any> = (
                   definition: "B"
                 },
                 b: {
-                  type: "simpleType",
-                  definition: "string"
+                  type: "string"
                 }
               }
             }

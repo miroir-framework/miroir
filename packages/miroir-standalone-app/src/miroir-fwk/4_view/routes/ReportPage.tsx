@@ -40,12 +40,10 @@ const miroirExpression: JzodElement = {
   type: "object",
   definition: {
     root: {
-      type: "simpleType",
-      definition: "string"
+      type: "string"
     },
     attribute: {
-      type: "simpleType",
-      definition: "string"
+      type: "string"
     },
   }
 }

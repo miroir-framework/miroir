@@ -10,6 +10,15 @@
   "proxy": "http://localhost:3080",
   "private": true,
   "type": "module",
+  "scripts": {
+    "startDev": "vite --host --cors",
+    "build": "vite build --emptyOutDir",
+    "build5": "npm run build",
+    "test": "vitest run --poolOptions.threads.singleThread --passWithNoTests"
+  },
+  "msw": {
+    "workerDirectory": "public"
+  },
   "dependencies": {
     "@codemirror/lang-javascript": "^6.2.2",
     "@emotion/react": "^11.10.5",
@@ -72,15 +81,6 @@
     "vite": "4.5.0",
     "vite-plugin-node-polyfills": "^0.19.0",
     "vitest": "1.0.0"
-  },
-  "scripts": {
-    "startDev": "vite --host --cors",
-    "build": "vite build --emptyOutDir",
-    "build5": "npm run build",
-    "test": "vitest run --poolOptions.threads.singleThread --passWithNoTests"
-  },
-  "msw": {
-    "workerDirectory": "public"
   },
   "browserslist": {
     "production": [

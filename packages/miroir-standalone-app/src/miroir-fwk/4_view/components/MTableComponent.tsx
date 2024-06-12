@@ -296,7 +296,7 @@ export const MTableComponent = (props: TableComponentProps) => {
       } else {
         if (
           columnDefinitionAttributeEntry &&
-          (columnDefinitionAttributeEntry[1] as any).type == "simpleType" &&
+          (columnDefinitionAttributeEntry[1] as any).type == "uuid" &&
           (columnDefinitionAttributeEntry[1] as any).extra?.targetEntity
         ) {
           const columnDefinitionAttribute = columnDefinitionAttributeEntry[1];

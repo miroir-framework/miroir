@@ -132,20 +132,17 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         {},
         {
           uuid: {
-            type: "simpleType",
-            definition: "string",
+            type: "string",
             validations: [{ type: "uuid" }],
             extra: { id: 1, defaultLabel: "Uuid", editable: false },
           },
           parentName: {
-            type: "simpleType",
-            definition: "string",
+            type: "string",
             optional: true,
             extra: { id: 1, defaultLabel: "Uuid", editable: false },
           },
           parentUuid: {
-            type: "simpleType",
-            definition: "string",
+            type: "string",
             validations: [{ type: "uuid" }],
             extra: { id: 1, defaultLabel: "parentUuid", editable: false },
           },
@@ -156,8 +153,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             (a: string, index) => (
               {
                 [a]: {
-                  type: "simpleType",
-                  definition: "string",
+                  type: "string",
                   optional: true,
                   extra: { id: index + 2 /* uuid attribute has been added*/, defaultLabel: a, editable: true },
                 },
@@ -618,14 +614,12 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         {},
         {
           uuid: {
-            type: "simpleType",
-            definition: "string",
+            type: "string",
             validations: [{ type: "uuid" }],
             extra: { id: 1, defaultLabel: "Uuid", editable: false },
           } as JzodAttribute,
           name: {
-            type: "simpleType",
-            definition: "string",
+            type: "string",
             extra: { id: 2, defaultLabel: "name", editable: false },
           } as JzodAttribute,
         },
@@ -670,11 +664,10 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         {
           "name": newEntityName,
           "definition": {
-            type: "simpleType",
+            type: "string",
             "validations": [{ "type": "uuid" }],
             nullable: true, // TODO: make non-nullable and enforce FK after migration has been done!
             extra: { defaultLabel: "Municipality", targetEntity: newEntity.uuid},
-            definition: "string"
           }
         }
       ],

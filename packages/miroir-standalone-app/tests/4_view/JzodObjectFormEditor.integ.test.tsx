@@ -707,8 +707,7 @@ describe(
           }
         }
         const objectInitialValue: any = {
-          type: "simpleType",
-          definition: "string",
+          type: "string",
           validations: [
             {
               type: "uuid",
@@ -754,7 +753,8 @@ describe(
             formJzodSchema,
             formInitialValue,
             appModel,
-            miroirModel
+            miroirModel,
+            {}
             // testEnvironment.localCache.currentModel(adminConfigurationDeploymentMiroir.uuid),
           );
 
