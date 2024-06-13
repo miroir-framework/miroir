@@ -55,9 +55,9 @@ import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 
 import { LocalCache } from "miroir-localcache-redux";
-import { TestUtilsTableComponent } from "../utils/TestUtilsTableComponent";
+import { TestUtilsTableComponent } from "../utils/TestUtilsTableComponent.js";
 
-import { loglevelnext } from '../../src/loglevelnextImporter';
+import { loglevelnext } from '../../src/loglevelnextImporter.js';
 
 
 // jest intercepts logs, only console.log will produce test output

@@ -14,21 +14,17 @@ import {
   ReportSection,
   RootReportSection,
   Uuid,
-  adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentLibrary,
-  adminConfigurationDeploymentMiroir,
-  adminConfigurationDeploymentTest1,
   getLoggerName
 } from "miroir-core";
 
 
 
-import { packageName } from '../../../constants';
-import { useMiroirContextService } from '../MiroirContextReactProvider';
-import { ReportSectionEntityInstance } from './ReportSectionEntityInstance';
-import { ReportSectionListDisplay } from './ReportSectionListDisplay';
-import { cleanLevel } from '../constants';
-import { adminConfigurationDeploymentTest4, deployments } from '../routes/ReportPage';
+import { packageName } from '../../../constants.js';
+import { useMiroirContextService } from '../MiroirContextReactProvider.js';
+import { cleanLevel } from '../constants.js';
+import { deployments } from '../routes/ReportPage.js';
+import { ReportSectionEntityInstance } from './ReportSectionEntityInstance.js';
+import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportSectionView");
 let log:LoggerInterface = console as any as LoggerInterface;

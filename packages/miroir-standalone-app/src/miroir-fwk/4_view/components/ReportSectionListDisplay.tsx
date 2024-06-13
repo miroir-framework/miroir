@@ -2,7 +2,6 @@ import { ColDef } from "ag-grid-community";
 import equal from "fast-deep-equal";
 import { useCallback, useMemo, useState } from "react";
 // import { SubmitHandler } from 'react-hook-form';
-import AddBoxIcon from "@mui/icons-material/AddBox";
 import { v4 as uuidv4 } from 'uuid';
 import { z } from "zod";
 
@@ -41,22 +40,26 @@ import {
 } from "miroir-core";
 
 import { Button } from "@mui/material";
+
+
 import { getMemoizedDeploymentEntityStateSelectorMap } from "miroir-localcache-redux";
-import { packageName } from "../../../constants";
+
+import { packageName } from "../../../constants.js";
 import {
   useDomainControllerService,
   useMiroirContextInnerFormOutput,
   useMiroirContextService,
-} from "../MiroirContextReactProvider";
-import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from "../ReduxHooks";
-import { cleanLevel } from "../constants";
-import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "../getColumnDefinitionsFromEntityAttributes";
-import { deleteCascade } from "../scripts";
-import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from "./JsonObjectEditFormDialog";
-import { noValue } from "./JzodObjectEditor";
-import { MTableComponent } from "./MTableComponent";
-import { TableComponentType, TableComponentTypeSchema } from "./MTableComponentInterface";
-import { adminConfigurationDeploymentTest4, deployments } from "../routes/ReportPage";
+} from "../MiroirContextReactProvider.js";
+import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from "../ReduxHooks.js";
+import { cleanLevel } from "../constants.js";
+import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "../getColumnDefinitionsFromEntityAttributes.js";
+import { deleteCascade } from "../scripts.js";
+import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from "./JsonObjectEditFormDialog.js";
+import { noValue } from "./JzodObjectEditor.js";
+import { MTableComponent } from "./MTableComponent.js";
+import { TableComponentType, TableComponentTypeSchema } from "./MTableComponentInterface.js";
+import { adminConfigurationDeploymentTest4, deployments } from "../routes/ReportPage.js";
+import { AddBox } from "@mui/icons-material";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportSectionListDisplay");
@@ -692,7 +695,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                   handleAddObjectDialogFormButtonClick(props.defaultlabel ?? currentReportTargetEntityDefinition?.name??"No Entity Found!", defaultFormValuesObject);
                 }}
               >
-                <AddBoxIcon />
+                <AddBox />
               </Button>
             </h3>
             {

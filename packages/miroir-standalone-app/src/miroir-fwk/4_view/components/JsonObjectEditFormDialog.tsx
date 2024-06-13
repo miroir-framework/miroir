@@ -20,10 +20,14 @@ import {
   resolveReferencesForJzodSchemaAndValueObject
 } from "miroir-core";
 
-import { packageName } from "../../../constants";
-import { JzodObjectEditor } from "./JzodObjectEditor";
-import { useMiroirContextInnerFormOutput, useMiroirContextService, useMiroirContextformHelperState } from "../MiroirContextReactProvider";
-import { cleanLevel } from "../constants";
+import { packageName } from "../../../constants.js";
+import { cleanLevel } from "../constants.js";
+import { JzodObjectEditor } from "./JzodObjectEditor.js";
+import {
+  useMiroirContextInnerFormOutput,
+  useMiroirContextService,
+  useMiroirContextformHelperState,
+} from "../MiroirContextReactProvider.js";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"JsonObjectEditFormDialog");

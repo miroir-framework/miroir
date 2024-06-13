@@ -47,9 +47,9 @@ import {
 
 import { getMemoizedDeploymentEntityStateSelectorMap } from "miroir-localcache-redux";
 import { packageName } from "../../../constants.js";
+import { cleanLevel } from "../constants.js";
 import { useMiroirContextService, useMiroirContextformHelperState } from "../MiroirContextReactProvider.js";
 import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from '../ReduxHooks.js';
-import { cleanLevel } from "../constants.js";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"JzodObjectEditor");

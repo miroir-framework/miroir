@@ -20,12 +20,12 @@ import {
 import {
   useErrorLogService,
   useMiroirContextService
-} from "../../../miroir-fwk/4_view/MiroirContextReactProvider";
+} from "../../../miroir-fwk/4_view/MiroirContextReactProvider.js";
 
-import { packageName } from '../../../constants';
-import { useCurrentModel } from '../ReduxHooks';
-import { RootReportSectionView } from '../components/RootReportSectionView';
-import { cleanLevel } from '../constants';
+import { packageName } from '../../../constants.js';
+import { useCurrentModel } from '../ReduxHooks.js';
+import { RootReportSectionView } from '../components/RootReportSectionView.js';
+import { cleanLevel } from '../constants.js';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportPage");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -270,9 +270,9 @@ export const ReportPage = () => {
     log.info("ReportPage rendering count", count, "params", pageParams);
     return (
       <div>
-        <Box>
+        <div>
           <h3>erreurs: {JSON.stringify(errorLog)}</h3>
-        </Box>
+        </div>
         {/* <div>ReportPage displayed:{count}</div>
         <div>ReportPage reportUuid: {params.reportUuid} </div> */}
         {

@@ -1,4 +1,3 @@
-import AddBoxIcon from '@mui/icons-material/AddBox';
 import { Button } from "@mui/material";
 import { FC, useEffect, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
@@ -13,7 +12,6 @@ import {
   EntityDefinition,
   EntityInstance,
   InstanceAction,
-  JzodAttribute,
   JzodObject,
   LoggerInterface,
   Menu,
@@ -25,12 +23,15 @@ import {
   entityReport,
   entityMenu,
   getLoggerName,
-  metaModel
+  metaModel,
+  JzodPlainAttribute,
+  JzodAttributePlainStringWithValidations
 } from "miroir-core";
 import * as XLSX from 'xlsx';
-import { useDomainControllerService } from "./MiroirContextReactProvider";
-import { packageName } from "../../constants";
-import { cleanLevel } from "./constants";
+import { useDomainControllerService } from "./MiroirContextReactProvider.js";
+import { packageName } from "../../constants.js";
+import { cleanLevel } from "./constants.js";
+import { AddBox } from "@mui/icons-material";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"importer");
@@ -614,14 +615,13 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         {},
         {
           uuid: {
-            type: "string",
-            validations: [{ type: "uuid" }],
+            type: "uuid",
             extra: { id: 1, defaultLabel: "Uuid", editable: false },
-          } as JzodAttribute,
+          } as JzodPlainAttribute,
           name: {
             type: "string",
             extra: { id: 2, defaultLabel: "name", editable: false },
-          } as JzodAttribute,
+          } as JzodAttributePlainStringWithValidations,
         },
         {}
       ),
@@ -1091,13 +1091,13 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       <h3>
         create Entity from Excel File:
         <Button variant="outlined" onClick={()=>createEntity()}>
-          <AddBoxIcon/>
+          <AddBox/>
         </Button>
       </h3>
       <h3>
         split entity Fountain:
         <Button variant="outlined" onClick={()=>splitEntity()}>
-          <AddBoxIcon/>
+          <AddBox/>
         </Button>
       </h3>
     </>

@@ -39,8 +39,8 @@ import {
   renderWithProviders
 } from "miroir-standalone-app/tests/utils/tests-utils";
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
-import { packageName } from "../../src/constants";
-import { cleanLevel } from "./constants";
+import { packageName } from "../../src/constants.js";
+import { cleanLevel } from "./constants.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.Data.CRUD.functions");
 let log:LoggerInterface = console as any as LoggerInterface;

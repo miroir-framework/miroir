@@ -85,6 +85,8 @@ export {
   jzodArray,
   // JzodAttribute,
   // jzodAttribute,
+  JzodPlainAttribute,
+  jzodPlainAttribute,
   JzodAttributeDateValidations,
   jzodAttributeDateValidations,
   // JzodAttributeDateWithValidations,

@@ -32,12 +32,12 @@ import {
   selectInstanceArrayForDeploymentSectionEntity
 } from "miroir-localcache-redux";
 
-import { packageName } from "../../../constants";
-import { TableComponentRow } from "./MTableComponentInterface";
+import { packageName } from "../../../constants.js";
+import { cleanLevel } from "../constants.js";
+import { TableComponentRow } from "./MTableComponentInterface.js";
 import {
   useMiroirContextService
-} from '../MiroirContextReactProvider';
-import { cleanLevel } from "../constants";
+} from '../MiroirContextReactProvider.js';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"SelectEntityInstanceEditor");
 let log:LoggerInterface = console as any as LoggerInterface;

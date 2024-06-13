@@ -1,10 +1,9 @@
 import { ICellRendererParams } from "ag-grid-community";
 import { LoggerInterface, MiroirLoggerFactory, getLoggerName } from "miroir-core";
 import { memo } from "react";
-import { packageName } from "../../../constants";
-import { TableComponentRow } from "./MTableComponentInterface";
-import { useMiroirContextService } from "../MiroirContextReactProvider";
-import { cleanLevel } from "../constants";
+import { packageName } from "../../../constants.js";
+import { TableComponentRow } from "./MTableComponentInterface.js";
+import { cleanLevel } from "../constants.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"EntityInstanceCellRenderer");
 let log:LoggerInterface = console as any as LoggerInterface;

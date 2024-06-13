@@ -44,7 +44,7 @@ import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 import { setupServer } from "msw/node";
 import { loglevelnext } from "../../src/loglevelnextImporter";
-import { loadTestConfigFiles, miroirAfterEach, miroirBeforeAll, miroirBeforeEach } from "../utils/tests-utils";
+import { loadTestConfigFiles, miroirAfterEach, miroirBeforeAll, miroirBeforeEach } from "../utils/tests-utils.js";
 
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localAppPersistenceStoreController: PersistenceStoreControllerInterface;

@@ -39,20 +39,26 @@ import {
 } from "miroir-core";
 import { ReduxStateChanges } from "miroir-localcache-redux";
 
-import { Importer } from '../Importer';
+import { Importer } from '../Importer.js';
 import {
   useDomainControllerService, useErrorLogService,
   useLocalCacheTransactions,
   useMiroirContextService
-} from "../MiroirContextReactProvider";
-import { useCurrentModel } from "../ReduxHooks";
+} from "../MiroirContextReactProvider.js";
+import { useCurrentModel } from "../ReduxHooks.js";
 
 
 // import entityPublisher from "../../assets/library_model/";
-import { packageName } from "../../../constants";
-import { RootReportSectionView } from "../components/RootReportSectionView";
-import { cleanLevel } from "../constants";
-import { ReportUrlParamKeys, adminConfigurationDeploymentParis, adminConfigurationDeploymentTest4, deployments, selfApplicationParis } from "./ReportPage";
+import { packageName } from "../../../constants.js";
+import { RootReportSectionView } from "../components/RootReportSectionView.js";
+import { cleanLevel } from "../constants.js";
+import {
+  ReportUrlParamKeys,
+  adminConfigurationDeploymentParis,
+  adminConfigurationDeploymentTest4,
+  deployments,
+  selfApplicationParis,
+} from "./ReportPage.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"HomePage");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -475,9 +481,9 @@ export const HomePage = (props: RootComponentProps) => {
       <p /> */}
       <span>Applications: {}</span>
       <p />
-      <Box>
+      <div>
         <h3>erreurs: {JSON.stringify(errorLog)}</h3>
-      </Box>
+      </div>
       {/* <span>packages: {JSON.stringify(ConfigurationService.packages)}</span> */}
       <Importer
         filename=""
@@ -492,7 +498,8 @@ export const HomePage = (props: RootComponentProps) => {
         currentApplicationUuid={selfApplicationParis.uuid} // Paris
       ></Importer>
       <p />
-      <Box sx={{ minWidth: 50 }}>
+      {/* <Box sx={{ minWidth: 50 }}> */}
+      <div>
         <FormControl fullWidth>
           <InputLabel id="demo-simple-select-label">Chosen application Deployment</InputLabel>
           <Select
@@ -511,10 +518,11 @@ export const HomePage = (props: RootComponentProps) => {
             })}
           </Select>
         </FormControl>
-      </Box>
+      </div>
       <p />
       <p />
-      <Box sx={{ minWidth: 50 }}>
+      {/* <Box sx={{ minWidth: 50 }}> */}
+      <div>
         <FormControl fullWidth>
           <InputLabel id="demo-simple-select-label">Chosen Application Section</InputLabel>
           <Select
@@ -533,9 +541,10 @@ export const HomePage = (props: RootComponentProps) => {
             })}
           </Select>
         </FormControl>
-      </Box>
+      </div>
       <p />
-      <Box sx={{ minWidth: 50 }}>
+      {/* <Box sx={{ minWidth: 50 }}> */}
+      <div>
         <FormControl fullWidth>
           <InputLabel id="demo-simple-select-label">Displayed Report</InputLabel>
           <Select
@@ -554,7 +563,7 @@ export const HomePage = (props: RootComponentProps) => {
             })}
           </Select>
         </FormControl>
-      </Box>
+      </div>
       {currentMiroirReport && displayedDeploymentUuid && displayedApplicationSection ? (
         <div>
           {/* <div>HomePage reportSection: {JSON.stringify(currentMiroirReport?.definition)}</div> */}

@@ -1,8 +1,10 @@
 import { Formik } from "formik";
 import _ from "lodash";
-import ReactCodeMirror from "@uiw/react-codemirror";
+// import { ReactCodeMirror } from "@uiw/react-codemirror";
+import { javascript } from "@codemirror/lang-javascript";
 import { ChangeEvent, useCallback, useMemo, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
+import ReactCodeMirror from "@uiw/react-codemirror";
 
 
 import {
@@ -24,19 +26,19 @@ import {
   getLoggerName,
   resolveReferencesForJzodSchemaAndValueObject
 } from "miroir-core";
-import { packageName } from "../../../constants";
+
+import { packageName } from "../../../constants.js";
 import {
   useDomainControllerService,
   useErrorLogService,
   useMiroirContextInnerFormOutput,
   useMiroirContextService,
   useMiroirContextformHelperState,
-} from "../MiroirContextReactProvider";
-import { JzodObjectEditor } from "../components/JzodObjectEditor";
-import { cleanLevel } from "../constants";
-import { adminConfigurationDeploymentParis, applicationParis } from './ReportPage';
-import { javascript } from "@codemirror/lang-javascript";
-import { useCurrentModel } from "../ReduxHooks";
+} from "../MiroirContextReactProvider.js";
+import { JzodObjectEditor } from "../components/JzodObjectEditor.js";
+import { cleanLevel } from "../constants.js";
+import { adminConfigurationDeploymentParis, applicationParis } from './ReportPage.js';
+import { useCurrentModel } from "../ReduxHooks.js";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ToolsPage");

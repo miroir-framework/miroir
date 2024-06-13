@@ -12,14 +12,14 @@ import {
   getLoggerName,
 } from "miroir-core";
 
-import { GenderCellEditor } from "./components/GenderCellEditor";
+import { GenderCellEditor } from "./components/GenderCellEditor.js";
 import {
   DefaultCellRenderer,
-} from "./components/SelectEntityInstanceEditor";
-import GenderCellRenderer from "./components/GenderCellRenderer";
-import { packageName } from "../../constants";
-import { cleanLevel } from "./constants";
-import { EntityInstanceCellRenderer } from "./components/EntityInstanceCellRenderer";
+} from "./components/SelectEntityInstanceEditor.js";
+import GenderCellRenderer from "./components/GenderCellRenderer.js";
+import { packageName } from "../../constants.js";
+import { cleanLevel } from "./constants.js";
+import { EntityInstanceCellRenderer } from "./components/EntityInstanceCellRenderer.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"getColumnDefinitionsFromEntityDefinitionAttribute");
 let log:LoggerInterface = console as any as LoggerInterface;

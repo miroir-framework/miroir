@@ -50,7 +50,7 @@ import {
   miroirBeforeAll,
   miroirBeforeEach,
   renderWithProviders
-} from "../utils/tests-utils";
+} from "../utils/tests-utils.js";
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";

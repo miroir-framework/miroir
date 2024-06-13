@@ -1,11 +1,7 @@
-import _ from "lodash";
 
-import { javascript } from '@codemirror/lang-javascript';
-import { Dialog, DialogTitle, Paper, styled } from "@mui/material";
-import CodeMirror from '@uiw/react-codemirror';
-import { ChangeEvent, useCallback, useMemo } from "react";
+import { Dialog, DialogTitle } from "@mui/material";
+import { useCallback, useMemo } from "react";
 
-import { Formik } from "formik";
 
 import {
   ApplicationSection,
@@ -20,10 +16,12 @@ import {
   resolveReferencesForJzodSchemaAndValueObject
 } from "miroir-core";
 
-import { packageName } from "../../../constants";
-import { JzodObjectEditor } from "./JzodObjectEditor";
-import { useMiroirContextInnerFormOutput, useMiroirContextService, useMiroirContextformHelperState } from "../MiroirContextReactProvider";
-import { cleanLevel } from "../constants";
+import { packageName } from "../../../constants.js";
+import { cleanLevel } from "../constants.js";
+import {
+  useMiroirContextInnerFormOutput,
+  useMiroirContextService
+} from "../MiroirContextReactProvider.js";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"JsonObjectDeleteFormDialog");
@@ -115,6 +113,7 @@ export function JsonObjectDeleteFormDialog(props: JsonObjectEditFormDialogProps)
       props.defaultFormValuesObject,
       props.currentAppModel,
       props.currentMiroirModel,
+      {}
     ): undefined,
     [props, context.miroirFundamentalJzodSchema]
   )

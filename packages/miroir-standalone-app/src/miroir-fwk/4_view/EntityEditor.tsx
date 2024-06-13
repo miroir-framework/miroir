@@ -1,8 +1,8 @@
 import { ICellEditorParams } from "ag-grid-community";
 import { getLoggerName, LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 import { KeyboardEvent, forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
-import { packageName } from "../../constants";
-import { cleanLevel } from "./constants";
+import { packageName } from "../../constants.js";
+import { cleanLevel } from "./constants.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"EntityEditor");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -25,9 +25,10 @@ export default forwardRef((props:ICellEditorParams, ref) => {
     if (props.eventKey === KEY_BACKSPACE) {
       // if backspace or delete pressed, we clear the cell
       startValue = '';
-    } else if (props?.charPress) {
+    // } else if ((props as any)?.charPress) {
+    } else if (props?.eventKey) {
       // if a letter was pressed, we start with the letter
-      startValue = props?.charPress;
+      startValue = props?.eventKey;
     } else {
       // otherwise we start with the current value
       startValue = props?.value;

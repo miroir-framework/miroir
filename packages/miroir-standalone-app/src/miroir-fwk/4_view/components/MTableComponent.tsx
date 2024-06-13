@@ -23,18 +23,18 @@ import {
   getLoggerName
 } from "miroir-core";
 
-import { packageName } from '../../../constants';
-import EntityEditor from '../EntityEditor';
+import { packageName } from '../../../constants.js';
+import EntityEditor from '../EntityEditor.js';
 import {
   useMiroirContextInnerFormOutput,
   useMiroirContextService
-} from '../MiroirContextReactProvider';
-import { ToolsCellRenderer } from './GenderCellRenderer';
-import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from './JsonObjectEditFormDialog';
-import { TableComponentProps, TableComponentRow, TableComponentTypeSchema } from './MTableComponentInterface';
-import { useCurrentModel } from '../ReduxHooks';
-import { cleanLevel } from '../constants';
-import { JsonObjectDeleteFormDialog } from './JsonObjectDeleteFormDialog';
+} from '../MiroirContextReactProvider.js';
+import { ToolsCellRenderer } from './GenderCellRenderer.js';
+import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from './JsonObjectEditFormDialog.js';
+import { TableComponentProps, TableComponentRow, TableComponentTypeSchema } from './MTableComponentInterface.js';
+import { useCurrentModel } from '../ReduxHooks.js';
+import { cleanLevel } from '../constants.js';
+import { JsonObjectDeleteFormDialog } from './JsonObjectDeleteFormDialog.js';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"MtableComponent");
 let log:LoggerInterface = console as any as LoggerInterface;
