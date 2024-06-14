@@ -51,7 +51,7 @@ import {
   applicationStoreBasedConfigurationMiroir,
   applicationVersionInitialMiroirVersion,
 } from "../index.js";
-import { objectTemplateToObject } from "../2_domain/Templates.js";
+import { renderObjectTemplate } from "../2_domain/Templates.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -761,7 +761,7 @@ export class DomainController implements DomainControllerInterface {
         // going imperatively to handle inner references
         if (domainAction.templates) {
           for (const t of Object.entries(domainAction.templates)) {
-            const resolvedTemplate = objectTemplateToObject(
+            const resolvedTemplate = renderObjectTemplate(
               t[0],
               t[1],
               {...domainAction.params,...resolvedTemplates},
@@ -773,7 +773,7 @@ export class DomainController implements DomainControllerInterface {
         }
         // resolve domainAction array templates
         for (const a of domainAction.definition) {
-          const currentAction = objectTemplateToObject(
+          const currentAction = renderObjectTemplate(
             "ROOT",
             a,
             {...domainAction.params, ...resolvedTemplates},

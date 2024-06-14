@@ -431,7 +431,7 @@ export function resolveReferencesForJzodSchemaAndValueObject(
           //   }
           // }
 
-          const currentSubDiscriminatedObjectJzodSchemas = currentDiscriminatedObjectJzodSchemas
+          // const currentSubDiscriminatedObjectJzodSchemas = currentDiscriminatedObjectJzodSchemas
             // currentDiscriminatedObjectJzodSchemas.length == 1
             //   ? currentDiscriminatedObjectJzodSchemas
             //   : currentDiscriminatedObjectJzodSchemas.filter(

@@ -121,6 +121,7 @@ export function getMiroirFundamentalJzodSchema(
   queryEndpointVersionV1: any,
   persistenceEndpointVersionV1: any,
   jzodSchemajzodMiroirBootstrapSchema: JzodSchema,
+  templateJzodSchema: JzodSchema,
   entityDefinitionApplicationV1 : EntityDefinition,
   entityDefinitionApplicationVersionV1 : EntityDefinition,
   entityDefinitionDeployment : EntityDefinition,
@@ -1691,12 +1692,17 @@ export function getMiroirFundamentalJzodSchema(
         "instanceAction": { "type": "union", "definition": instanceEndpointVersionV1.definition.actions.map((e: any)=>e.actionParameters)},
         "undoRedoAction": { "type": "union", "definition": undoRedoEndpointVersionV1.definition.actions.map((e: any)=>e.actionParameters)},
         "transactionalInstanceAction": domainEndpointVersionV1.definition.actions.find((a: any) => a.actionParameters.definition.actionType && a.actionParameters.definition.actionType.definition == "transactionalInstanceAction")?.actionParameters,
-        "domainAction": { "type": "union", "definition": domainEndpointVersionV1.definition.actions.map((e: any)=>e.actionParameters)},
         "localCacheAction": { "type": "union", "definition": localCacheEndpointVersionV1.definition.actions.map((e: any)=>e.actionParameters)},
         "storeManagementAction": { "type": "union", "definition": storeManagementEndpoint.definition.actions.map((e: any)=>e.actionParameters)},
         "persistenceAction": { "type": "union", "definition": persistenceEndpointVersionV1.definition.actions.map((e: any)=>e.actionParameters)},
         "restPersistenceAction": persistenceEndpointVersionV1.definition.actions[0].actionParameters,
         "queryAction": queryEndpointVersionV1.definition.actions[0].actionParameters,
+        "domainActionCompositeSequence": domainEndpointVersionV1.definition.actions.find(
+          (a: any) => a.actionParameters?.definition?.actionName?.definition == "sequence"
+          )?.actionParameters,
+        "domainAction": { "type": "union", "definition": domainEndpointVersionV1.definition.actions.map((e: any)=>e.actionParameters)},
+        // "template": { "type": "union", "definition": domainEndpointVersionV1.definition.actions.map((e: any)=>e.actionParameters)},
+        ...(templateJzodSchema as any).definition.context,
         "modelActionReplayableAction": {
           "type": "union",
           "definition": [

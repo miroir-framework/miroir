@@ -49,23 +49,26 @@ import {
   storeManagementEndpoint,
   StoreOrBundleAction,
   StoreUnitConfiguration,
+  templateJzodSchema,
   undoRedoEndpointVersionV1
 } from "miroir-core";
-
-import { useDomainControllerService, useLocalCacheTransactions, useMiroirContextService } from '../MiroirContextReactProvider';
-import AppBar from './AppBar';
-
-import { packageName } from '../../../constants';
-import { cleanLevel } from '../constants';
-import { Sidebar } from "./Sidebar";
-import { SidebarWidth } from "./SidebarSection";
 import { ReduxStateChanges } from "miroir-localcache-redux";
+
+import { useDomainControllerService, useLocalCacheTransactions, useMiroirContextService } from '../MiroirContextReactProvider.js';
+import AppBar from './AppBar.js';
+
+import { packageName } from '../../../constants.js';
+import { cleanLevel } from '../constants.js';
+import { Sidebar } from "./Sidebar.js";
+import { SidebarWidth } from "./SidebarSection.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RootComponent");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;
 });
+
+const MuiBox: any = Box;
 
 export const emptyDomainElementObject: DomainElementObject = { elementType: "object", elementValue: {} }
 
@@ -173,6 +176,7 @@ export const RootComponent = (props: RootComponentProps) => {
     queryEndpointVersionV1,
     persistenceEndpointVersionV1,
     jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
+    templateJzodSchema as JzodSchema,
     entityDefinitionApplication as EntityDefinition,
     entityDefinitionApplicationVersion as EntityDefinition,
     entityDefinitionDeployment as EntityDefinition,
@@ -201,7 +205,7 @@ export const RootComponent = (props: RootComponentProps) => {
     <div>
       {/* <PersistentDrawerLeft></PersistentDrawerLeft> */}
       {/* <Box sx={{ display: 'flex', flexDirection:"column", flexGrow: 1 }}> */}
-      <Box sx={boxParams}>
+      <MuiBox sx={boxParams}>
         {/* <CssBaseline /> */}
         <Grid container direction="column">
           <Grid item>
@@ -570,7 +574,7 @@ export const RootComponent = (props: RootComponentProps) => {
         {/* <StyledDrawerHeader /> */}
         {/* <Box sx={{ display: 'flex', flexDirection:"row", width: 1 }}> */}
         {/* </Box> */}
-      </Box>
+      </MuiBox>
     </div>
   );
 };

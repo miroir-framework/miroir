@@ -69,6 +69,8 @@ export {
   InstanceAction,
   DeploymentStorageConfig,
   deploymentStorageConfig,
+  DomainActionCompositeSequence,
+  domainActionCompositeSequence,
   EntityDefinition,
   entityDefinition,
   EntityInstance,
@@ -181,6 +183,10 @@ export {
   modelActionCreateEntity,
   ModelActionDropEntity,
   modelActionDropEntity,
+  ObjectTemplateInnerReference,
+  objectTemplateInnerReference,
+  objectTemplate,
+  ObjectTemplate,
   PersistenceAction,
   RestPersistenceAction,
   SelectObjectQuery,
@@ -468,12 +474,12 @@ export {
 } from './2_domain/ModelEntityActionTransformer.js';
 export {
   ActionTemplate,
-  ObjectTemplate,
-  ObjectTemplateInnerReference,
+  // ObjectTemplate,
+  // ObjectTemplateInnerReference,
   actionTemplateToAction,
   domainElementTemplateSchema,
-  objectTemplateSchema,
-  objectTemplateToObject,
+  // objectTemplateSchema,
+  renderObjectTemplate,
   resolveActionTemplateContextReference,
   runActionTemplate,
 } from './2_domain/Templates.js';
@@ -595,6 +601,7 @@ import menuDefaultMiroir from './assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc
 import entityDefinitionStoreBasedConfiguration from './assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/f93af951-ea13-4815-a2e3-ec0cab1fadd2.json';
 
 import miroirJzodSchemaBootstrap from './assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json';
+import templateJzodSchema from "./assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/a97756cf-dd93-42b9-a021-91a629b187b9.json";
 
 
 // import entityDefinitionApplicationV1 from "../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json" assert { type: "json" };
@@ -700,6 +707,8 @@ export {
   reportReportList,
   // reportQueryList,
   reportQueryVersionList,
+  // 
+  templateJzodSchema,
 };
 
 

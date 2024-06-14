@@ -1,0 +1,110 @@
+{
+  "uuid": "a97756cf-dd93-42b9-a021-91a629b187b9",
+  "parentName": "JzodSchema",
+  "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+  "name": "transformerJzodSchema",
+  "defaultLabel": "The Jzod Schema for Miroir Transformers: build objects & other values on the fly from a given set of parameters.",
+  "definition": {
+    "type": "schemaReference",
+    "context": {
+      "objectTemplateInnerReference": {
+        "type": "union",
+        "discriminator": "templateType",
+        "definition": [
+          {
+            "type": "object",
+            "definition": {
+              "templateType": {
+                "type": "literal",
+                "definition": "constant"
+              },
+              "referenceUuid": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "templateType": {
+                "type": "literal",
+                "definition": "contextReference"
+              },
+              "referenceName": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "templateType": {
+                "type": "literal",
+                "definition": "parameterReference"
+              },
+              "referenceName": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "objectTemplate": {
+        "type": "union",
+        "discriminator": "templateType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "objectTemplateInnerReference"
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "templateType": {
+                "type": "literal",
+                "definition": "mustacheStringTemplate"
+              },
+              "definition": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "templateType": {
+                "type": "literal",
+                "definition": "fullObjectTemplate"
+              },
+              "definition": {
+                "type": "array",
+                "definition": {
+                  "type": "tuple",
+                  "definition": [
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "objectTemplateInnerReference"
+                      }
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "objectTemplate"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "definition": {
+      "relativePath": "objectTemplate"
+    }
+  }
+}

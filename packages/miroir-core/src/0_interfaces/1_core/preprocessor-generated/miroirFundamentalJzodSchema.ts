@@ -481,7 +481,6 @@ export const miroirFundamentalJzodSchema = {
           "record",
           "schemaReference",
           "set",
-          "simpleType",
           "string",
           "tuple",
           "union"
@@ -6507,109 +6506,6 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "domainAction": {
-        "type": "union",
-        "definition": [
-          {
-            "type": "schemaReference",
-            "optional": false,
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "undoRedoAction"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "optional": false,
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "storeOrBundleAction"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "optional": false,
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "modelAction"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "optional": false,
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "instanceAction"
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "actionType": {
-                "type": "literal",
-                "definition": "transactionalInstanceAction"
-              },
-              "deploymentUuid": {
-                "type": "uuid",
-                "optional": true,
-                "extra": {
-                  "defaultLabel": "Module Deployment Uuid",
-                  "editable": false
-                }
-              },
-              "instanceAction": {
-                "type": "schemaReference",
-                "optional": false,
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "instanceCUDAction"
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "actionType": {
-                "type": "literal",
-                "definition": "compositeAction"
-              },
-              "actionName": {
-                "type": "literal",
-                "definition": "sequence"
-              },
-              "deploymentUuid": {
-                "type": "uuid",
-                "optional": true,
-                "extra": {
-                  "defaultLabel": "Module Deployment Uuid",
-                  "editable": false
-                }
-              },
-              "params": {
-                "type": "record",
-                "optional": true,
-                "definition": {
-                  "type": "any"
-                }
-              },
-              "templates": {
-                "type": "record",
-                "optional": true,
-                "definition": {
-                  "type": "any"
-                }
-              },
-              "definition": {
-                "type": "array",
-                "definition": {
-                  "type": "any"
-                }
-              }
-            }
-          }
-        ]
-      },
       "localCacheAction": {
         "type": "union",
         "definition": [
@@ -7055,6 +6951,245 @@ export const miroirFundamentalJzodSchema = {
             }
           }
         }
+      },
+      "domainActionCompositeSequence": {
+        "type": "object",
+        "definition": {
+          "actionType": {
+            "type": "literal",
+            "definition": "compositeAction"
+          },
+          "actionName": {
+            "type": "literal",
+            "definition": "sequence"
+          },
+          "deploymentUuid": {
+            "type": "uuid",
+            "optional": true,
+            "extra": {
+              "defaultLabel": "Module Deployment Uuid",
+              "editable": false
+            }
+          },
+          "params": {
+            "type": "record",
+            "optional": true,
+            "definition": {
+              "type": "any"
+            }
+          },
+          "templates": {
+            "type": "record",
+            "optional": true,
+            "definition": {
+              "type": "any"
+            }
+          },
+          "definition": {
+            "type": "array",
+            "definition": {
+              "type": "any"
+            }
+          }
+        }
+      },
+      "domainAction": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "optional": false,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "undoRedoAction"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "optional": false,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "storeOrBundleAction"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "optional": false,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "modelAction"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "optional": false,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "instanceAction"
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "transactionalInstanceAction"
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "optional": true,
+                "extra": {
+                  "defaultLabel": "Module Deployment Uuid",
+                  "editable": false
+                }
+              },
+              "instanceAction": {
+                "type": "schemaReference",
+                "optional": false,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "instanceCUDAction"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "compositeAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "sequence"
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "optional": true,
+                "extra": {
+                  "defaultLabel": "Module Deployment Uuid",
+                  "editable": false
+                }
+              },
+              "params": {
+                "type": "record",
+                "optional": true,
+                "definition": {
+                  "type": "any"
+                }
+              },
+              "templates": {
+                "type": "record",
+                "optional": true,
+                "definition": {
+                  "type": "any"
+                }
+              },
+              "definition": {
+                "type": "array",
+                "definition": {
+                  "type": "any"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "objectTemplateInnerReference": {
+        "type": "union",
+        "discriminator": "templateType",
+        "definition": [
+          {
+            "type": "object",
+            "definition": {
+              "templateType": {
+                "type": "literal",
+                "definition": "constant"
+              },
+              "referenceUuid": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "templateType": {
+                "type": "literal",
+                "definition": "contextReference"
+              },
+              "referenceName": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "templateType": {
+                "type": "literal",
+                "definition": "parameterReference"
+              },
+              "referenceName": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "objectTemplate": {
+        "type": "union",
+        "discriminator": "templateType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "objectTemplateInnerReference"
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "templateType": {
+                "type": "literal",
+                "definition": "mustacheStringTemplate"
+              },
+              "definition": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "templateType": {
+                "type": "literal",
+                "definition": "fullObjectTemplate"
+              },
+              "definition": {
+                "type": "array",
+                "definition": {
+                  "type": "tuple",
+                  "definition": [
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "objectTemplateInnerReference"
+                      }
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "objectTemplate"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
       },
       "modelActionReplayableAction": {
         "type": "union",

@@ -6,6 +6,8 @@ import {
   DomainAction,
   JzodReference,
   ActionReturnType,
+  ObjectTemplateInnerReference,
+  ObjectTemplate,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -30,142 +32,13 @@ export const domainElementTemplateSchema: JzodReference = {
   },
 };
 
-export const objectTemplateSchema: JzodReference = {
-  type: "schemaReference",
-  context: {
-    objectTemplate: {
-      type: "union",
-      discriminator: "templateType",
-      definition: [
-        {
-          type: "object",
-          definition: {
-            templateType: {
-              type: "literal",
-              definition: "constant",
-            },
-            referenceUuid: {
-              type: "string",
-            },
-          },
-        },
-        {
-          type: "object",
-          definition: {
-            templateType: {
-              type: "literal",
-              definition: "contextReference",
-            },
-            referenceName: {
-              type: "string",
-            },
-          },
-        },
-        {
-          type: "object",
-          definition: {
-            templateType: {
-              type: "literal",
-              definition: "parameterReference",
-            },
-            referenceName: {
-              type: "string",
-            },
-          },
-        },
-        {
-          type: "object",
-          definition: {
-            templateType: {
-              type: "literal",
-              definition: "mustacheString",
-            },
-            definition: {
-              type: "string",
-            },
-          },
-        },
-        {
-          type: "object",
-          definition: {
-            templateType: {
-              type: "literal",
-              definition: "fullObjectTemplate",
-            },
-            definition: {
-              type: "array",
-              definition: {
-                type: "object",
-                definition: {
-                  index: {
-                    type: "schemaReference",
-                    definition: {
-                      relativePath: "objectTemplate",
-                    },
-                  },
-                  value: {
-                    type: "schemaReference",
-                    definition: {
-                      relativePath: "objectTemplate",
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      ],
-    },
-  },
-  definition: {
-    relativePath: "",
-  },
-};
-export type ObjectTemplateInnerReference =
-  | {
-      templateType: "constant",
-      referenceUuid: string,
-    }
-  | {
-      templateType: "contextReference",
-      referenceName: string,
-    }
-  | {
-      templateType: "parameterReference",
-      referenceName: string,
-    }
-;
-// | {
-//   templateType: "fullObjectTemplate",
-//   definition: [ObjectTemplate, ObjectTemplate][]
-// }
-export type ObjectTemplate =
-  // {
-  //   templateType: "constant";
-  //   referenceUuid: string;
-  // } | {
-  //   templateType: "queryContextReference";
-  //   referenceName: string;
-  // } | {
-  //   templateType: "queryParameterReference";
-  //   referenceName: string;
-  // }
-  | ObjectTemplateInnerReference
-  | {
-    templateType: "mustacheStringTemplate",
-    definition: string
-  }
-  | {
-      templateType: "fullObjectTemplate",
-      definition: [ObjectTemplateInnerReference, ObjectTemplate][],
-    };
-
 // ################################################################################################
 export const resolveActionTemplateContextReference = (
   queryObjectReference: ObjectTemplateInnerReference,
   queryParams: any,
   contextResults: any
 ): any => {
+  // TODO: copy / paste (almost?) from query parameter lookup!
   // log.info("resolveContextReference for queryObjectReference=", queryObjectReference, "queryParams=", queryParams,"contextResults=", contextResults)
   if (
     (queryObjectReference.templateType == "contextReference" &&
@@ -215,18 +88,19 @@ export const resolveActionTemplateContextReference = (
 
 export type ActionTemplate = any;
 
-export function objectTemplateToObject(
+// ################################################################################################
+export function renderObjectTemplate(
   objectName: string,
   objectTemplate: ObjectTemplate,
   queryParams: any,
   contextResults?: any
 ): any {
-  // log.info("objectTemplateToObject called for object named", objectName,"template", objectTemplate, "queryParams", queryParams);
+  // log.info("renderObjectTemplate called for object named", objectName,"template", objectTemplate, "queryParams", queryParams);
   if (typeof objectTemplate == "object") {
-    // log.info("objectTemplateToObject for template object named", objectName, "templateType", objectTemplate.templateType);
+    // log.info("renderObjectTemplate for template object named", objectName, "templateType", objectTemplate.templateType);
     if (Array.isArray(objectTemplate)) {
       return objectTemplate.map(
-        (e,index)=>objectTemplateToObject(index.toString(), e, queryParams, contextResults)
+        (e,index)=>renderObjectTemplate(index.toString(), e, queryParams, contextResults)
       )
     } else {
       if (objectTemplate.templateType) {
@@ -234,7 +108,7 @@ export function objectTemplateToObject(
           case "fullObjectTemplate": {
             const result = Object.fromEntries(
               objectTemplate.definition.map((innerEntry: [ObjectTemplateInnerReference, ObjectTemplate]) => {
-                // log.info("objectTemplateToObject for object named",objectName,"innerEntry index", innerEntry[0], "innerEntry value", innerEntry[1]);
+                // log.info("renderObjectTemplate for object named",objectName,"innerEntry index", innerEntry[0], "innerEntry value", innerEntry[1]);
   
                 const rawLeftValue = innerEntry[0].templateType
                   ? resolveActionTemplateContextReference(innerEntry[0], queryParams, contextResults)
@@ -244,13 +118,13 @@ export function objectTemplateToObject(
                     ? (innerEntry[0] as any).applyFunction(rawLeftValue)
                     : rawLeftValue;
   
-                const rawRightValue = objectTemplateToObject(leftValue, innerEntry[1], queryParams, contextResults);
+                const rawRightValue = renderObjectTemplate(leftValue, innerEntry[1], queryParams, contextResults);
                 const rightValue =
                   typeof innerEntry[1] == "object" && (innerEntry[1] as any).applyFunction
                     ? (innerEntry[1] as any).applyFunction(rawRightValue)
                     : rawRightValue;
                 // log.info(
-                //   "objectTemplateToObject fullObjectTemplate for ",
+                //   "renderObjectTemplate fullObjectTemplate for ",
                 //   objectTemplate,
                 //   "rawLeftvalue",
                 //   rawLeftValue,
@@ -283,17 +157,20 @@ export function objectTemplateToObject(
               typeof objectTemplate == "object" && (objectTemplate as any).applyFunction
                 ? (objectTemplate as any).applyFunction(rawValue)
                 : rawValue;
-            // log.info("objectTemplateToObject default case for", objectTemplate, "rawvalue", rawValue, "value", value);
+            // log.info("renderObjectTemplate default case for", objectTemplate, "rawvalue", rawValue, "value", value);
             return value;
             break;
           }
         }
       } else {
-        // log.info("objectTemplateToObject converting plain object", objectTemplate);
+        // log.info("renderObjectTemplate converting plain object", objectTemplate);
         const result = Object.fromEntries(
           Object.entries(objectTemplate).map(
             (objectTemplateEntry: [string, any]) => {
-              return [objectTemplateEntry[0], objectTemplateToObject(objectTemplateEntry[0], objectTemplateEntry[1], queryParams, contextResults)];
+              return [
+                objectTemplateEntry[0],
+                renderObjectTemplate(objectTemplateEntry[0], objectTemplateEntry[1], queryParams, contextResults),
+              ];
             }
           )
         );
@@ -304,14 +181,17 @@ export function objectTemplateToObject(
     return objectTemplate;
   }
 }
+
+// ################################################################################################
 export function actionTemplateToAction(
   actionTemplate: ActionTemplate,
   queryParams: any,
   contextResults?: any
 ): DomainAction {
-  return objectTemplateToObject(actionTemplate, queryParams, contextResults);
+  return renderObjectTemplate(actionTemplate, queryParams, contextResults);
 }
 
+// ################################################################################################
 export async function runActionTemplate(
   domainController: DomainControllerInterface,
   actionTemplate: ActionTemplate,

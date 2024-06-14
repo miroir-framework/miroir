@@ -6,6 +6,8 @@ import { ChangeEvent, useCallback, useMemo, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import ReactCodeMirror from "@uiw/react-codemirror";
 
+// const MyReactCodeMirror: React.Component = ReactCodeMirror
+const MyReactCodeMirror: any = ReactCodeMirror // TODO: solve the mystery: it was once well-typed, now the linter raises an error upon direct (default-typed) use!
 
 import {
   DomainAction,
@@ -760,7 +762,7 @@ export const ToolsPage: React.FC<any> = (
         {
           // props.defaultFormValuesObject?
           dialogOuterFormObject ? (
-            <ReactCodeMirror
+            <MyReactCodeMirror
               value={JSON.stringify(rawSchema, null, 2)}
               height="400px"
               extensions={[javascript({ jsx: true })]}

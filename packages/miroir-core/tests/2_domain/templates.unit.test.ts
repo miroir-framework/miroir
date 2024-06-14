@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 // import { describe, expect } from 'vitest';
 
-import { ObjectTemplate, objectTemplateToObject } from "../../src/2_domain/Templates";
+import { ObjectTemplate, renderObjectTemplate } from "../../src/2_domain/Templates";
 import {
   DomainAction,
   StoreUnitConfiguration,
@@ -50,7 +50,7 @@ describe("templates.unit.test", () => {
         }
       }
 
-      const newDeploymentStoreConfiguration: StoreUnitConfiguration = objectTemplateToObject(
+      const newDeploymentStoreConfiguration: StoreUnitConfiguration = renderObjectTemplate(
         "ROOT",
         newDeploymentStoreConfigurationTemplate as any,
         {newApplicationName},
@@ -112,7 +112,7 @@ describe("templates.unit.test", () => {
           referenceName: "newDeploymentUuid"
         }
       }
-      const convertedAction: DomainAction = objectTemplateToObject(
+      const convertedAction: DomainAction = renderObjectTemplate(
         "ROOT",
         testAction as any,
         actionParams,
@@ -149,7 +149,7 @@ describe("templates.unit.test", () => {
         definition: "{{newApplicationName}}Application"
       }
 
-      const testResult: string = objectTemplateToObject(
+      const testResult: string = renderObjectTemplate(
         "ROOT",
         mustacheTemplate,
         {newApplicationName},
