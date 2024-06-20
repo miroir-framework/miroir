@@ -687,6 +687,13 @@ export const miroirFundamentalJzodSchema = {
             "type": "boolean",
             "optional": true
           },
+          "carryOn": {
+            "optional": true,
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "jzodObject"
+            }
+          },
           "definition": {
             "type": "record",
             "definition": {
@@ -865,6 +872,46 @@ export const miroirFundamentalJzodSchema = {
           "discriminator": {
             "type": "string",
             "optional": true
+          },
+          "discriminatorNew": {
+            "type": "union",
+            "optional": true,
+            "definition": [
+              {
+                "type": "object",
+                "definition": {
+                  "discriminatorType": {
+                    "type": "literal",
+                    "definition": "string"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "discriminatorType": {
+                    "type": "literal",
+                    "definition": "array"
+                  },
+                  "value": {
+                    "type": "array",
+                    "definition": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "carryOn": {
+            "optional": true,
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "jzodObject"
+            }
           },
           "definition": {
             "type": "array",
@@ -6952,7 +6999,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "domainActionCompositeSequence": {
+      "compositeAction": {
         "type": "object",
         "definition": {
           "actionType": {
@@ -6978,7 +7025,7 @@ export const miroirFundamentalJzodSchema = {
               "type": "any"
             }
           },
-          "templates": {
+          "templatesDEFUNCT": {
             "type": "record",
             "optional": true,
             "definition": {
@@ -7079,7 +7126,7 @@ export const miroirFundamentalJzodSchema = {
                   "type": "any"
                 }
               },
-              "templates": {
+              "templatesDEFUNCT": {
                 "type": "record",
                 "optional": true,
                 "definition": {
@@ -7190,6 +7237,33 @@ export const miroirFundamentalJzodSchema = {
             }
           }
         ]
+      },
+      "actionTemplateSchema": {
+        "type": "object",
+        "definition": {
+          "actionTemplateParameters": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "jzodObject"
+            }
+          },
+          "actionTemplate": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "compositeAction"
+            },
+            "extra": {
+              "carryOn": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "objectTemplate"
+                }
+              }
+            }
+          }
+        }
       },
       "modelActionReplayableAction": {
         "type": "union",

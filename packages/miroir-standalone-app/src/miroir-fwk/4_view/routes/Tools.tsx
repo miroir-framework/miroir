@@ -10,6 +10,7 @@ import ReactCodeMirror from "@uiw/react-codemirror";
 const MyReactCodeMirror: any = ReactCodeMirror // TODO: solve the mystery: it was once well-typed, now the linter raises an error upon direct (default-typed) use!
 
 import {
+  ActionTemplateSchema,
   DomainAction,
   DomainControllerInterface,
   JzodElement,
@@ -341,13 +342,455 @@ export const ToolsPage: React.FC<any> = (
         }
 
         log.info("store opened with uuid", newDeploymentUuid)
+        /**
+         * actionTemplate:
+         * params JzodSchema
+         * resultJzodSchema: compositeAction (implicit)
+         * template: compositeAction with carry-on Template
+         * 
+         * there's a similar template system for queries, in queryObjectReference (queryContextReference, queryParameterReference)
+         * Should it be named transformer or template? Would transformers be more general?
+         * 
+         * are actions templatesDEFUNCT parametered types / templatesDEFUNCT? Depending on the type of action?
+         * 
+         * no action defines a templating format. The domainController does not know about action templatesDEFUNCT, only about actions.
+         * templating format is common to all actions, defined by the platform. Template rendering is done before calling domainController.
+         * 
+         * How to define an action template for a user-defined, run-time defined action type? The need to specify the concrete action
+         * type comes from the need to be able to edit the action template following the structure of the wanted action.
+         * 
+         * sub-typing for carry-on types? A^B > A'^B' iff A > A' && B > B'?
+         * 
+         * has a transformer a type? in which goal? can a transformer be just a template producing actions? producing all-around data? 
+         * 
+         * 
+         */
 
+        const actionTemplate: ActionTemplateSchema = {
+          actionTemplateParameters: {
+            type: "object",
+            definition: {
+              newApplicationName: {
+                type: "string"
+              },
+              newAdminAppApplicationUuid: {
+                type: "uuid"
+              },
+              newSelfApplicationUuid: {
+                type: "uuid"
+              },
+              newDeploymentUuid: {
+                type: "uuid"
+              },
+              adminConfigurationDeploymentAdmin: {
+                type: "any",
+              },
+              entityApplication: {
+                type: "any",
+              },
+              entityApplicationForAdmin: {
+                type: "any",
+              },
+              entityDeployment: {
+                type: "any",
+              },
+              entityMenu: {
+                type: "any",
+              },
+            }
+          },
+          actionTemplate: {
+            actionType: "compositeAction",
+            actionName: "sequence",
+            params: templateConversionParams,
+            templatesDEFUNCT: {
+              // business objects
+              newDeploymentStoreConfiguration: {
+                admin: {
+                  emulatedServerType: "sql",
+                  connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+                  schema: "miroirAdmin",
+                },
+                model: {
+                  emulatedServerType: "sql",
+                  connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+                  schema: {
+                    templateType: "mustacheStringTemplate",
+                    definition: "{{newApplicationName}}Model",
+                  },
+                },
+                data: {
+                  emulatedServerType: "sql",
+                  connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+                  schema: {
+                    templateType: "mustacheStringTemplate",
+                    definition: "{{newApplicationName}}Data",
+                  },
+                },
+              },
+              newApplicationForAdmin: {
+                uuid: {
+                  templateType: "parameterReference",
+                  referenceName: "newAdminAppApplicationUuid",
+                },
+                parentName: {
+                  templateType: "mustacheStringTemplate",
+                  definition: "{{entityApplicationForAdmin.name}}",
+                },
+                parentUuid: {
+                  templateType: "mustacheStringTemplate",
+                  definition: "{{entityApplicationForAdmin.uuid}}",
+                },
+                name: {
+                  templateType: "parameterReference",
+                  referenceName: "newApplicationName",
+                },
+                defaultLabel: {
+                  templateType: "mustacheStringTemplate",
+                  definition: "The {{newApplicationName}} application.",
+                },
+                description: {
+                  templateType: "mustacheStringTemplate",
+                  definition: "This application contains the {{newApplicationName}} model and data",
+                },
+                selfApplication: {
+                  templateType: "parameterReference",
+                  referenceName: "newSelfApplicationUuid",
+                },
+              },
+              newSelfApplication: {
+                uuid: {
+                  templateType: "parameterReference",
+                  referenceName: "newSelfApplicationUuid",
+                },
+                parentName: "Application",
+                parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
+                name: {
+                  templateType: "parameterReference",
+                  referenceName: "newApplicationName",
+                },
+                defaultLabel: {
+                  templateType: "mustacheStringTemplate",
+                  definition: "The {{newApplicationName}} application.",
+                },
+                description: {
+                  templateType: "mustacheStringTemplate",
+                  definition: "This application contains the {{newApplicationName}} model and data",
+                },
+                selfApplication: {
+                  templateType: "parameterReference",
+                  referenceName: "newSelfApplicationUuid",
+                },
+              },
+              newDeployment: {
+                uuid: {
+                  templateType: "parameterReference",
+                  referenceName: "newDeploymentUuid",
+                },
+                parentName: {
+                  templateType: "mustacheStringTemplate",
+                  definition: "{{entityDeployment.name}}",
+                },
+                parentUuid: {
+                  templateType: "mustacheStringTemplate",
+                  definition: "{{entityDeployment.uuid}}",
+                },
+                name: {
+                  templateType: "mustacheStringTemplate",
+                  definition: "{{newApplicationName}}ApplicationSqlDeployment",
+                },
+                defaultLabel: {
+                  templateType: "mustacheStringTemplate",
+                  definition: "{{newApplicationName}}ApplicationSqlDeployment",
+                },
+                application: {
+                  templateType: "mustacheStringTemplate",
+                  definition: "{{newApplicationForAdmin.uuid}}",
+                },
+                description: {
+                  templateType: "mustacheStringTemplate",
+                  definition: "The default Sql Deployment for Application {{newApplicationName}}",
+                },
+                configuration: {
+                  templateType: "parameterReference",
+                  referenceName: "newDeploymentStoreConfiguration",
+                },
+              },
+              newApplicationMenu: {
+                uuid: "84c178cc-1b1b-497a-a035-9b3d756bb085",
+                parentName: "Menu",
+                parentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+                name: {
+                  templateType: "mustacheStringTemplate",
+                  definition: "{{newApplicationName}}Menu",
+                },
+                defaultLabel: "Meta-Model",
+                description: {
+                  templateType: "mustacheStringTemplate",
+                  definition: "This is the default menu allowing to explore the {{newApplicationName}} Application",
+                },
+                definition: {
+                  menuType: "complexMenu",
+                  definition: [
+                    {
+                      title: {
+                        templateType: "parameterReference",
+                        referenceName: "newApplicationName",
+                      },
+                      label: {
+                        templateType: "parameterReference",
+                        referenceName: "newApplicationName",
+                      },
+                      items: [
+                        {
+                          label: {
+                            templateType: "mustacheStringTemplate",
+                            definition: "{{newApplicationName}} Entities",
+                          },
+                          section: "model",
+                          application: {
+                            templateType: "parameterReference",
+                            referenceName: "newDeploymentUuid",
+                          },
+                          reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+                          icon: "category",
+                        },
+                        {
+                          label: {
+                            templateType: "mustacheStringTemplate",
+                            definition: "{{newApplicationName}} Entity Definitions",
+                          },
+                          section: "model",
+                          application: {
+                            templateType: "parameterReference",
+                            referenceName: "newDeploymentUuid",
+                          },
+                          reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
+                          icon: "category",
+                        },
+                        {
+                          label: {
+                            templateType: "mustacheStringTemplate",
+                            definition: "{{newApplicationName}} Reports",
+                          },
+                          section: "model",
+                          application: {
+                            templateType: "parameterReference",
+                            referenceName: "newDeploymentUuid",
+                          },
+                          reportUuid: "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
+                          icon: "list",
+                        },
+                      ],
+                    },
+                  ],
+                },
+              },
+              // actions
+              openStoreAction: {
+                actionType: "storeManagementAction",
+                actionName: "openStore",
+                endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+                configuration: {
+                  templateType: "fullObjectTemplate",
+                  definition: [
+                    [
+                      {
+                        templateType: "parameterReference",
+                        referenceName: "newDeploymentUuid",
+                      },
+                      {
+                        templateType: "parameterReference",
+                        referenceName: "newDeploymentStoreConfiguration",
+                      },
+                    ],
+                  ],
+                },
+                deploymentUuid: {
+                  templateType: "parameterReference",
+                  referenceName: "newDeploymentUuid",
+                },
+              },
+              createStoreAction: {
+                actionType: "storeManagementAction",
+                actionName: "createStore",
+                endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+                deploymentUuid: {
+                  templateType: "parameterReference",
+                  referenceName: "newDeploymentUuid",
+                },
+                configuration: {
+                  templateType: "parameterReference",
+                  referenceName: "newDeploymentStoreConfiguration",
+                },
+              },
+              resetAndInitAction: {
+                endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+                actionType: "storeManagementAction",
+                actionName: "resetAndInitMiroirAndApplicationDatabase",
+                deploymentUuid: "",
+                deployments: [
+                  {
+                    templateType: "parameterReference",
+                    referenceName: "newDeployment",
+                  },
+                ],
+              },
+              createSelfApplicationAction: {
+                actionType: "instanceAction",
+                actionName: "createInstance",
+                applicationSection: "model",
+                deploymentUuid: {
+                  templateType: "parameterReference",
+                  referenceName: "newDeploymentUuid",
+                },
+                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                objects: [
+                  {
+                    parentName: {
+                      templateType: "mustacheStringTemplate",
+                      definition: "{{entityApplication.name}}",
+                    },
+                    parentUuid: {
+                      templateType: "mustacheStringTemplate",
+                      definition: "{{entityApplication.uuid}}",
+                    },
+                    applicationSection: "model",
+                    instances: [
+                      {
+                        templateType: "parameterReference",
+                        referenceName: "newSelfApplication",
+                      },
+                    ],
+                  },
+                ],
+              },
+              createNewApplicationMenuAction: {
+                actionType: "instanceAction",
+                actionName: "createInstance",
+                applicationSection: "model",
+                deploymentUuid: {
+                  templateType: "parameterReference",
+                  referenceName: "newDeploymentUuid",
+                },
+                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                objects: [
+                  {
+                    parentName: {
+                      templateType: "mustacheStringTemplate",
+                      definition: "{{entityMenu.name}}",
+                    },
+                    parentUuid: {
+                      templateType: "mustacheStringTemplate",
+                      definition: "{{entityMenu.uuid}}",
+                    },
+                    applicationSection: "model",
+                    instances: [
+                      {
+                        templateType: "parameterReference",
+                        referenceName: "newApplicationMenu",
+                      },
+                    ],
+                  },
+                ],
+              },
+              createApplicationForAdminAction: {
+                actionType: "instanceAction",
+                actionName: "createInstance",
+                applicationSection: "data",
+                deploymentUuid: {
+                  templateType: "mustacheStringTemplate",
+                  definition: "{{adminConfigurationDeploymentAdmin.uuid}}",
+                },
+                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                objects: [
+                  {
+                    parentName: {
+                      templateType: "mustacheStringTemplate",
+                      definition: "{{entityApplicationForAdmin.name}}",
+                    },
+                    parentUuid: {
+                      templateType: "mustacheStringTemplate",
+                      definition: "{{entityApplicationForAdmin.uuid}}",
+                    },
+                    applicationSection: "data",
+                    instances: [
+                      {
+                        templateType: "parameterReference",
+                        referenceName: "newApplicationForAdmin",
+                      },
+                    ],
+                  },
+                ],
+              },
+              createAdminDeploymentAction: {
+                actionType: "instanceAction",
+                actionName: "createInstance",
+                applicationSection: "data",
+                deploymentUuid: {
+                  templateType: "mustacheStringTemplate",
+                  definition: "{{adminConfigurationDeploymentAdmin.uuid}}",
+                },
+                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                objects: [
+                  {
+                    parentName: {
+                      templateType: "mustacheStringTemplate",
+                      definition: "{{entityDeployment.name}}",
+                    },
+                    parentUuid: {
+                      templateType: "mustacheStringTemplate",
+                      definition: "{{entityDeployment.uuid}}",
+                    },
+                    applicationSection: "data",
+                    instances: [
+                      {
+                        templateType: "parameterReference",
+                        referenceName: "newDeployment",
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
+            definition: [
+              {
+                templateType: "parameterReference",
+                referenceName: "openStoreAction",
+              },
+              {
+                templateType: "parameterReference",
+                referenceName: "createStoreAction",
+              },
+              {
+                templateType: "parameterReference",
+                referenceName: "resetAndInitAction",
+              },
+              {
+                templateType: "parameterReference",
+                referenceName: "createSelfApplicationAction",
+              },
+              {
+                templateType: "parameterReference",
+                referenceName: "createNewApplicationMenuAction",
+              },
+              {
+                templateType: "parameterReference",
+                referenceName: "createApplicationForAdminAction",
+              },
+              {
+                templateType: "parameterReference",
+                referenceName: "createAdminDeploymentAction",
+              },
+            ],
+          }
+        }
         // ########################################################################################
         await domainController.handleAction({
           actionType: "compositeAction",
           actionName: "sequence",
           params: templateConversionParams,
-          templates: {
+          templatesDEFUNCT: {
             // business objects
             newDeploymentStoreConfiguration: {
               admin: {

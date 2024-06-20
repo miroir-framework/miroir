@@ -11,8 +11,8 @@ import {
 
 // console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
-// describe.sequential("templates.unit.test", () => {
-describe("templates.unit.test", () => {
+// describe.sequential("templatesDEFUNCT.unit.test", () => {
+describe("templatesDEFUNCT.unit.test", () => {
 
   // ################################################################################################
   it("convert basic template", async () => { // TODO: test failure cases!

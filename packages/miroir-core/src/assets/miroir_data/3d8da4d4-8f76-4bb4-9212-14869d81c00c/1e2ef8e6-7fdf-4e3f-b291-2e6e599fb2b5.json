@@ -102,7 +102,7 @@
                 "type": "any"
               }
             },
-            "templates": {
+            "templatesDEFUNCT": {
               "type": "record",
               "optional": true,
               "definition": {

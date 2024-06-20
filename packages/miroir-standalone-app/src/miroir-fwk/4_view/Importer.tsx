@@ -187,7 +187,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         jzodSchema,
         currentDeploymentUuid,
       },
-      templates: {
+      templatesDEFUNCT: {
         newEntityDefinition: {
           name: {
             templateType: "parameterReference",

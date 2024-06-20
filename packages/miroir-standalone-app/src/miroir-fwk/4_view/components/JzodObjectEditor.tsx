@@ -451,57 +451,6 @@ export const JzodObjectEditor = (
     },
     [props.resolvedJzodSchema, unfoldedRawSchema]
   );
-  // const objectUnionSubDiscriminatorValues:string[] = useMemo(
-  //   () => {
-  //     if (
-  //       props.resolvedJzodSchema?.type == "object" &&
-  //       unfoldedRawSchema &&
-  //       unfoldedRawSchema.type == "union" &&
-  //       unfoldedRawSchema.discriminator &&
-  //       unfoldedRawSchema.subDiscriminator
-  //     ) {
-  //       const subDiscriminator: string = (unfoldedRawSchema as any).subDiscriminator;
-  //       const discriminatedBranches = unfoldedRawSchema.definition
-  //       .filter(
-  //         (a: any) => (a.definition as any)[unfoldedRawSchema.discriminator as string].definition == currentValue[unfoldedRawSchema.discriminator as string]
-  //       );
-  //       const resultForLiterals:string[] = discriminatedBranches
-  //         .filter( // TODO: AD-HOC CODE, SUBDISCRIMINATOR IS USED ONLY IN MIROIRFUNDAMENTALJZODSCHEMA
-  //           (a: any) => (a.definition as any)[subDiscriminator]?.type == "literal"
-  //         ).map(
-  //         (a: any) => (a.definition as any)[subDiscriminator]?.definition
-  //       );
-  //       const resultForEnum:string[] = discriminatedBranches
-  //         .filter( // TODO: AD-HOC CODE, SUBDISCRIMINATOR IS USED ONLY IN MIROIRFUNDAMENTALJZODSCHEMA
-  //           (a: any) => (a.definition as any)[subDiscriminator]?.type == "enum"
-  //         ).flatMap(
-  //         (a: any) => (a.definition as any)[subDiscriminator]?.definition
-  //       );
-  //       const result:string[] = [
-  //         ...new Set(
-  //           [...resultForLiterals, ...resultForEnum]
-  //         ),
-  //       ];
-  //       log.info(
-  //         "computing objectUnionSubDiscriminatorValues",
-  //         unfoldedRawSchema,
-  //         "discriminatedBranches",
-  //         discriminatedBranches,//JSON.stringify(discriminatedBranches, null, 2),
-  //         "resultForLiterals",
-  //         resultForLiterals,
-  //         "resultForEnum",
-  //         resultForEnum,
-  //         "result",
-  //         result
-  //       );
-  //       return result;
-  //     } else {
-  //       return []
-  //     }      
-  //   },
-  //   [props.resolvedJzodSchema, unfoldedRawSchema]
-  // );
-
 
   if (props.resolvedJzodSchema && props.rawJzodSchema) {
     if (
@@ -642,9 +591,7 @@ export const JzodObjectEditor = (
           ? {
               jzodSchema: unfoldedRawSchema,
               discriminator: unfoldedRawSchema.discriminator as string,
-              // subDiscriminator: unfoldedRawSchema.subDiscriminator as string,
               discriminatorValues: objectUniondiscriminatorValues,
-              // subDiscriminatorValues: objectUnionSubDiscriminatorValues,
               setItemsOrder: setItemsOrder
             }
           : undefined;
@@ -661,7 +608,6 @@ export const JzodObjectEditor = (
           return [
             [noValue.uuid, noValue] as [string, EntityInstance],
             ...(Object.entries(foreignKeyObjects[props.resolvedJzodSchema.extra.targetEntity] ?? {}))
-            // ...(Object.entries(props.foreignKeyObjects[props.resolvedJzodSchema.extra.targetEntity] ?? {}))
           ]
         }
         return []
@@ -753,55 +699,6 @@ export const JzodObjectEditor = (
         //   parentItemsOrder,
         // );
         // const currentParentValue = getValue(newFormState2,parentPath);
-
-        // // DO WE KNOW THAT THIS IS ACTUALLY A UNION
-        // // log.info(
-        // //   "handleAttributeNameChange props.unionInformation?.jzodSchema",
-        // //   props.unionInformation?.jzodSchema
-        // // );
-        // log.info(
-        //   "handleAttributeNameChange for path",
-        //   props.rootLesslistKeyArray,
-        //   "found props.resolvedJzodSchema",
-        //   props.resolvedJzodSchema,
-        //   "parentPath",
-        //   parentPath,
-        // );
-  
-        // // const newResolvedJzodSchema = resolveReferencesForJzodSchemaAndValueObject(
-        // //   currentMiroirFundamentalJzodSchema, //context.miroirFundamentalJzodSchema,
-        // //   props.unionInformation?.jzodSchema as any, // not undefined here!
-        // //   currentParentValue,
-        // //   currentModel,
-        // //   miroirMetaModel,
-        // //   {}
-        // // )
-        // const newResolvedJzodSchema = alterObjectAtPath(
-        //   props.resolvedJzodSchema,
-        //   parentPath,
-        //   getValue(props.resolvedJzodSchema, attributeRootLessListKeyArray)
-        // );
-        // // if (newResolvedJzodSchema.status != "ok") {
-        // //   throw new Error(
-        // //     "handleAttributeNameChange could not resolve schema " +
-        // //       JSON.stringify(props.unionInformation?.jzodSchema) +
-        // //       " value " +
-        // //       JSON.stringify(newFormState2)
-        // //   );
-        // // }
-  
-        // log.info(
-        //   "handleAttributeNameChange newResolvedJzodSchema",
-        //   newResolvedJzodSchema
-        // );
-  
-        // const newItemsOrder = getItemsOrder(currentParentValue, newResolvedJzodSchema.element);
-        // log.info(
-        //   "handleAttributeNameChange newItemsOrder",
-        //   newItemsOrder
-        // );
-        // // props.unionInformation.setItemsOrder(newItemsOrder)
-        // setItemsOrder(newItemsOrder)
     };
     //   [props.formik.values, props.setFormState ]
     // )
@@ -1107,20 +1004,6 @@ export const JzodObjectEditor = (
                     <></>
                   )
                 }
-                {/* <Box
-                  // sx={{
-                  //   display: "grid",
-                  //   // gridTemplateColumns: "1fr 2fr 4fr",
-                  //   gridTemplateColumns: "10px 50px 1fr",
-                  //   // alignContent: "center",
-                  //   justifyContent: "stretch",
-                  //   // alignItems: "center",
-                  //   columnGap: 0,
-                  //   boxSizing: "border-box",
-                  //   padding: 0,
-                  // }}
-                > */}
-                {/* <Grid container gridTemplateColumns={"1fr 1fr 1fr"}> */}
                 {itemsOrder
                   .map((i): [string, JzodElement] => [
                     i,
@@ -1177,7 +1060,7 @@ export const JzodObjectEditor = (
                         }
                         // TODO: resolve using subDiscriminator
                         const discriminator: string = (unfoldedRawSchema as any).discriminator;
-                        const subDiscriminator: string = (unfoldedRawSchema as any).subDiscriminator;
+                        // const subDiscriminator: string = (unfoldedRawSchema as any).subDiscriminator;
                         // log.info(
                         //   "JzodObjectEditor object with discrimitated union:",
                         //   props.listKey,
@@ -1204,29 +1087,14 @@ export const JzodObjectEditor = (
                               : { type: "literal", definition: "literal" }; // definition is not taken into account, possible values come from unionInformation
                         } else {
                           const discriminatorValue = currentValue[discriminator];
-                          // const discriminatorValue = (resolvedJzodSchema?.definition as any)[discriminator]?.definition;
-                          // const subDiscriminatorValue = (resolvedJzodSchema?.definition as any)[subDiscriminator]
-                          //   ?.definition;
                           // log.info(
                           //   "discriminator",
                           //   discriminator,
                           //   "discriminatorValue",
                           //   discriminatorValue,
-                          //   "subDiscriminator",
-                          //   subDiscriminator,
-                          //   "subDiscriminatorValue",
-                          //   subDiscriminatorValue
                           // );
-                          // DO NOT TAKE SUBDISCRIMINATOR INTO ACCOUNT! NO MORE SIMPLETYPES!
-                          // if (subDiscriminator && subDiscriminatorValue) {
-                          //   concreteObjectRawJzodSchema = unfoldedRawSchema.definition.find(
-                          //     (a: any) =>
-                          //       (a.definition as any)[discriminator].definition == discriminatorValue &&
-                          //       (a.definition as any)[subDiscriminator].definition == subDiscriminatorValue
-                          //   ) as any;
-                          // } else {
-                            // discriminator only
-                            // TODO: remove duplication from JzodUnfoldSchemaForValue. This is a core functionality, finding the concrete type for a value in a union.
+                          // discriminator only
+                          // TODO: remove duplication from JzodUnfoldSchemaForValue. This is a core functionality, finding the concrete type for a value in a union.
                           if (discriminator && discriminatorValue) {
                             concreteObjectRawJzodSchema = unfoldedRawSchema.definition.find(
                               (a: any) =>
@@ -1626,25 +1494,14 @@ export const JzodObjectEditor = (
         // log.info("JzodObjectEditor boolean!",props.listKey,"formState",props.formState)
         return (
           <>
-          {/* <table>
-            <tbody>
-              <tr>
-                <td>
-                {displayedLabel}:{" "} 
-                </td>
-                <td> */}
-                  <Checkbox 
-                    defaultChecked={props.formik.values[props.rootLesslistKey]}
-                    {...props.formik.getFieldProps(props.listKey)}
-                    name={props.listKey}
-                    id={props.listKey}
-                    onChange={handleSelectValueChange}
-                    // value={props.formik.values[props.rootLesslistKey]}
-                  />
-                {/* </td>
-              </tr>
-            </tbody>
-          </table> */}
+            <Checkbox 
+              defaultChecked={props.formik.values[props.rootLesslistKey]}
+              {...props.formik.getFieldProps(props.listKey)}
+              name={props.listKey}
+              id={props.listKey}
+              onChange={handleSelectValueChange}
+              // value={props.formik.values[props.rootLesslistKey]}
+            />
           </>
         );
         break;
@@ -1669,9 +1526,6 @@ export const JzodObjectEditor = (
         );
         break;
       }
-  // case "number": {
-      //   break;
-      // }
       case "uuid": {
         const handleSelectUuidChange = (event: any) => {
           // const parentPath = props.rootLesslistKeyArray.slice(0,props.rootLesslistKeyArray.length - 1)
@@ -1718,258 +1572,7 @@ export const JzodObjectEditor = (
         );
         break;
       }
-      // case "simpleType": {
-      //   switch (props.resolvedJzodSchema.definition) {
-      //     case "string":{
-      //       // log.info("selectList for targetEntity", props.resolvedJzodSchema.extra?.targetEntity, "value", selectList, "props.foreignKeyObjects", props.foreignKeyObjects);
-
-      //       return props.resolvedJzodSchema.extra?.targetEntity ? (
-      //         <>
-      //           {/* <label htmlFor={props.listKey}>{props.listKey} {displayedLabel}: </label> */}
-      //           <select
-      //             id={props.rootLesslistKey}
-      //             name={props.name}
-      //             {...props.formik.getFieldProps(props.rootLesslistKey)}
-      //             onChange={props.handleChange}
-      //             value={currentValue}
-      //           >
-      //             {/* <option id={props.rootLesslistKey+".undefined"} value=""></option> */}
-      //             {stringSelectList.map((e: [string, EntityInstance], index: number) => (
-      //               <option id={props.rootLesslistKey + "." + index} value={e[1].uuid}>
-      //                 {(e[1] as EntityInstanceWithName).name}
-      //               </option>
-      //             ))}
-      //             {/* <option value="red">Red</option>
-      //            <option value="green">Green</option>
-      //            <option value="blue">Blue</option> */}
-      //           </select>
-      //         </>
-      //       ) : (
-      //         <>
-      //           {/* <label htmlFor={props.listKey}>{displayedLabel}: </label> */}
-      //           <input
-      //             type="text"
-      //             {...props.formik.getFieldProps(props.rootLesslistKey)}
-      //             id={props.rootLesslistKey}
-      //             name={props.name}
-      //             role={props.listKey}
-      //             onChange={props.handleChange}
-      //             value={currentValue}
-      //           />
-      //         </>
-      //       );
-      //       break;
-      //     }
-      //     case "boolean":{
-      //       // log.info("JzodObjectEditor boolean!",props.listKey,"formState",props.formState)
-      //       return (
-      //         <>
-      //         {/* <table>
-      //           <tbody>
-      //             <tr>
-      //               <td>
-      //               {displayedLabel}:{" "} 
-      //               </td>
-      //               <td> */}
-      //                 <Checkbox 
-      //                   // {...register(props.listKey)}
-      //                   defaultChecked={props.formik.values[props.rootLesslistKey]}
-      //                   // defaultChecked={props.initialValuesObject}
-      //                   {...props.formik.getFieldProps(props.listKey)}
-      //                   name={props.listKey}
-      //                   id={props.listKey}
-      //                   onChange={props.handleChange}
-      //                   // value={props.formik.values[props.rootLesslistKey]}
-      //                 />
-      //               {/* </td>
-      //             </tr>
-      //           </tbody>
-      //         </table> */}
-      //         </>
-      //       );
-      //       break;
-      //     }
-      //     case "number": {
-      //       // const defaultValue:number | undefined=props.initialValuesObject?(props.initialValuesObject as any as number):undefined;
-      //       // log.info("JzodObjectEditor number!",props.listKey,"props.initialValuesObject",props.initialValuesObject)
-      //       return (
-      //         <>
-      //           {/* {props.listKey} - {label}:{" "} */}
-      //           {/* {displayedLabel}:{" "} */}
-      //           <input
-      //             form={"form." + props.name}
-      //             {...props.formik.getFieldProps(props.rootLesslistKey)}
-      //             id={props.listKey}
-      //             name={props.name}
-      //             onChange={props.handleChange}
-      //             // value={props.formik.values[props.rootLesslistKey]}
-      //             // onChange={(e) => {
-      //             //   log.info("JzodObjectEditor number onChange!", props.name, e.target.value);
-      //             // }}
-      //             // defaultValue={defaultValue}
-      //           />
-      //         </>
-      //       );
-      //       break;
-      //     }
-      //     case "any":
-      //     case "uuid":
-      //     default: {
-      //       // const defaultValue=formState.defaultValues?formState.defaultValues[props.name]:'no value found!'
-      //       // const defaultValue:number | undefined=props.initialValuesObject?(props.initialValuesObject as any as number):undefined;
-      //       return (
-      //         <>
-      //           {/* <label htmlFor={props.listKey}>{displayedLabel}: </label> */}
-      //           <input
-      //             id={props.listKey}
-      //             form={"form." + props.name}
-      //             name={props.name}
-      //             {...props.formik.getFieldProps(props.rootLesslistKey)}
-      //             // value={props.formik.values[props.rootLesslistKey]}
-      //             // onChange={(e) => {
-      //             //   log.info("JzodObjectEditor number onChange!", props.name, e.target.value);
-      //             //   // setValue(props.listKey, e.target.value);
-      //             // }}
-      //             // defaultValue={defaultValue}
-      //           />
-      //         </>
-      //       );
-      //     // throw new Error("JzodObjectEditor could not handle jzodSchema type:",elementJzodSchema?.type,elementJzodSchema.definition);
-      //       break;
-      //     }
-      //   }
-      //   break;
-      // }
       case "literal": {
-        // const handleSelectLiteralChange = (event: any) => {
-        //   // TODO: avoid side-effects!!! So ugly, I'll be hanged for this.
-
-        //   // missingAttributes.length > 0
-        //   //   ? { ...props.formik.values, [missingAttributes[0]]: "test!" }
-        //   //   : props.formik.values;
-        //   // const parentPath = props.rootLesslistKey.substring(0,props.rootLesslistKey.lastIndexOf("."))
-        //   if (!props.unionInformation) {
-        //     throw new Error("handleSelectLiteralChange called but current object does not have information about the discriminated union type it must be part of!");
-        //   }
-        //   if (!props.unionInformation.jzodSchema.discriminator) {
-        //     throw new Error("handleSelectLiteralChange called but current object does not have a discriminated union type!");
-        //   }
-
-        //   const currentAttributeName = props.rootLesslistKeyArray[props.rootLesslistKeyArray.length - 1]
-
-        //   const parentPath = props.rootLesslistKeyArray.slice(0,props.rootLesslistKeyArray.length - 1)
-        //   log.info(
-        //     "handleSelectLiteralChange event",
-        //     event,
-        //     "attribute",
-        //     currentAttributeName,
-        //     "props.name",
-        //     props.name,
-        //     "parentPath",
-        //     parentPath,
-        //     "props.unionInformation?.jzodSchema",
-        //     props.unionInformation.jzodSchema,
-        //     "jzodSchema.discriminator",
-        //     "'" + (props.unionInformation as any).jzodSchema.discriminator + "'",
-        //     "props.formik.values",
-        //     props.formik.values,
-        //     "props.rootLesslistKeyArray",
-        //     props.rootLesslistKeyArray,
-        //   );
-
-        //   const newJzodSchema: JzodElement | undefined = 
-        //   props.name == props.unionInformation.subDiscriminator?
-        //   // props.name == currentAttributeName == props.unionInformation.subDiscriminator?
-        //     (
-        //       props.unionInformation.jzodSchema.definition as JzodObject[]
-        //     ).find(
-        //       (a: JzodObject) =>
-        //         a.type == "object" &&
-        //         a.definition[(props.unionInformation as any).jzodSchema.subDiscriminator].type == "literal" &&
-        //         (a.definition[(props.unionInformation as any).jzodSchema.subDiscriminator] as JzodLiteral).definition == event.target.value
-        //     )
-        //     :
-        //     (
-        //       props.unionInformation.jzodSchema.definition as JzodObject[]
-        //     ).find(
-        //       (a: JzodObject) =>
-        //         a.type == "object" &&
-        //         a.definition[(props.unionInformation as any).jzodSchema.discriminator].type == "literal" &&
-        //         (a.definition[(props.unionInformation as any).jzodSchema.discriminator] as JzodLiteral).definition == event.target.value
-        //     );
-
-        //   if (!newJzodSchema) {
-        //     throw new Error(
-        //       "handleSelectChange could not find union branch for discriminator " +
-        //         props.unionInformation.discriminator +
-        //         " in " +
-        //         JSON.stringify(props.unionInformation.jzodSchema)
-        //     );
-        //   }
-        //   // log.info(
-        //   //   "handleSelectChange newJzodSchema",
-        //   //   newJzodSchema
-        //   // );
-
-        //   const defaultValue = getDefaultValueForJzodSchemaWithResolution(
-        //     newJzodSchema,
-        //     currentMiroirFundamentalJzodSchema, // context.miroirFundamentalJzodSchema,
-        //     currentModel,
-        //     miroirMetaModel
-        //   );
-        //   // log.info(
-        //   //   "handleSelectChange defaultValue",
-        //   //   defaultValue
-        //   // );
-        //   // const newFormState: any = alterObjectAtPath(props.formik.values, parentPath, {type: "B", b: "Test!!"}) ;
-        //   const newFormState: any = alterObjectAtPath(props.formik.values, parentPath, defaultValue) ;
-        //   // log.info(
-        //   //   "handleSelectChange newFormState",
-        //   //   newFormState
-        //   // );
-        //   props.setFormState(newFormState);
-        //   const currentParentValue = getValue(newFormState,parentPath);
-        //   // log.info(
-        //   //   "handleSelectChange props.resolvedJzodSchema",
-        //   //   props.resolvedJzodSchema,
-        //   //   "currentParentValue", currentParentValue
-        //   // );
-        //   // log.info(
-        //   //   "handleSelectChange props.unionInformation?.jzodSchema",
-        //   //   props.unionInformation?.jzodSchema
-        //   // );
-
-        //   const newResolvedJzodSchema = resolveReferencesForJzodSchemaAndValueObject(
-        //     currentMiroirFundamentalJzodSchema, //context.miroirFundamentalJzodSchema,
-        //     props.unionInformation?.jzodSchema as any, // not undefined here!
-        //     currentParentValue,
-        //     currentModel,
-        //     miroirMetaModel,
-        //     {}
-        //   )
-
-        //   if (newResolvedJzodSchema.status != "ok") {
-        //     throw new Error(
-        //       "handleSelectChange could not resolve schema " +
-        //         JSON.stringify(props.unionInformation?.jzodSchema) +
-        //         " value " +
-        //         JSON.stringify(newFormState)
-        //     );
-        //   }
-
-        //   // log.info(
-        //   //   "handleSelectChange newResolvedJzodSchema",
-        //   //   newResolvedJzodSchema
-        //   // );
-
-        //   const newItemsOrder = getItemsOrder(currentParentValue, newResolvedJzodSchema.element);
-        //   // log.info(
-        //   //   "handleSelectChange newItemsOrder",
-        //   //   newItemsOrder
-        //   // );
-        //   props.unionInformation.setItemsOrder(newItemsOrder)
-        //   // changing the current Jzod Schema for the whole object (at ROOT! Redraw / recreate everything!)
-        // };
         log.info(
           "rendering literal",
           props.listKey
@@ -1993,28 +1596,6 @@ export const JzodObjectEditor = (
             {props.unionInformation ? (
               <>
                 {
-                //   props.unionInformation.subDiscriminator &&
-                //   props.unionInformation.subDiscriminatorValues &&
-                //   props.name == props.unionInformation.subDiscriminator ? (
-                //     <>
-                //       <StyledSelect
-                //         variant="standard"
-                //         labelId="demo-simple-select-label"
-                //         id={props.listKey}
-                //         value={currentValue}
-                //         label={props.name}
-                //         onChange={handleSelectLiteralChange}
-                //       >
-                //         {props.unionInformation.subDiscriminatorValues.map((v) => {
-                //           return (
-                //             <MenuItem key={v} value={v}>
-                //               {v}
-                //             </MenuItem>
-                //           )
-                //         })}
-                //       </StyledSelect> literal subDiscriminator
-                //     </>
-                // ) : 
                 props.unionInformation.discriminator &&
                   props.unionInformation.discriminatorValues &&
                   props.name == props.unionInformation.discriminator ? (

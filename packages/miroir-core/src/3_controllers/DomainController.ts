@@ -756,11 +756,11 @@ export class DomainController implements DomainControllerInterface {
 
     switch (domainAction.actionType) {
       case 'compositeAction':{
-        // resolve templates
+        // resolve templatesDEFUNCT
         const resolvedTemplates: any = {}
         // going imperatively to handle inner references
-        if (domainAction.templates) {
-          for (const t of Object.entries(domainAction.templates)) {
+        if (domainAction.templatesDEFUNCT) {
+          for (const t of Object.entries(domainAction.templatesDEFUNCT)) {
             const resolvedTemplate = renderObjectTemplate(
               t[0],
               t[1],
@@ -771,7 +771,7 @@ export class DomainController implements DomainControllerInterface {
             resolvedTemplates[t[0]] = resolvedTemplate
           }
         }
-        // resolve domainAction array templates
+        // resolve domainAction array templatesDEFUNCT
         for (const a of domainAction.definition) {
           const currentAction = renderObjectTemplate(
             "ROOT",

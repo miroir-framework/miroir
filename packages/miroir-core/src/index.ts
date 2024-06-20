@@ -69,8 +69,8 @@ export {
   InstanceAction,
   DeploymentStorageConfig,
   deploymentStorageConfig,
-  DomainActionCompositeSequence,
-  domainActionCompositeSequence,
+  CompositeAction,
+  compositeAction,
   EntityDefinition,
   entityDefinition,
   EntityInstance,
@@ -187,6 +187,8 @@ export {
   objectTemplateInnerReference,
   objectTemplate,
   ObjectTemplate,
+  actionTemplateSchema,
+  ActionTemplateSchema,
   PersistenceAction,
   RestPersistenceAction,
   SelectObjectQuery,
@@ -232,7 +234,7 @@ export {
 from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js"
 
 export {
-  miroirJzodSchemaBootstrapZodSchema,
+  // miroirJzodSchemaBootstrapZodSchema,
   InstanceDictionaryNum,
   InstanceDictionary,
   MetaEntitySchema,

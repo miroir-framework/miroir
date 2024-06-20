@@ -1697,8 +1697,8 @@ export function getMiroirFundamentalJzodSchema(
         "persistenceAction": { "type": "union", "definition": persistenceEndpointVersionV1.definition.actions.map((e: any)=>e.actionParameters)},
         "restPersistenceAction": persistenceEndpointVersionV1.definition.actions[0].actionParameters,
         "queryAction": queryEndpointVersionV1.definition.actions[0].actionParameters,
-        "domainActionCompositeSequence": domainEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters?.definition?.actionName?.definition == "sequence"
+        "compositeAction": domainEndpointVersionV1.definition.actions.find(
+          (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
           )?.actionParameters,
         "domainAction": { "type": "union", "definition": domainEndpointVersionV1.definition.actions.map((e: any)=>e.actionParameters)},
         // "template": { "type": "union", "definition": domainEndpointVersionV1.definition.actions.map((e: any)=>e.actionParameters)},

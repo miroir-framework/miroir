@@ -311,6 +311,12 @@ export function resolveReferencesForJzodSchemaAndValueObject(
           break;
         }
         case "object": {
+          /**
+           * resolve type for object, either:
+           * - only 1 object type is possible, or
+           * - there is a discriminator and there is only 1 possible union branch for the valueObject[discriminator]
+           * - there are several discriminators for the union and exactly 1 possible union branch match of valueObject[discriminators[index]] for any index.
+           */
           const objectUnionChoices = concreteUnrolledJzodSchemas.filter(j => j.type == "object")
 
           log.info(
@@ -399,78 +405,6 @@ export function resolveReferencesForJzodSchemaAndValueObject(
             jzodSchema.discriminator + " valueObject[discriminator]=" + valueObject[discriminator] + " found many matches: " + currentDiscriminatedObjectJzodSchemas.length);
           }
 
-          // if (currentDiscriminatedObjectJzodSchemas.length > 1 && (!jzodSchema.subDiscriminator || !valueObject[subDiscriminator])) {
-          //   // HACK HACK HACK
-          //   /**
-          //    * TODO: remove it! bypass before migration to Jzod 0.8.0, because in 0.7.0 dates, numbers and strings can be defined either
-          //    * as a JzodPlainAttribute (type definition uses enum) or as a JzodAttribute (type definition uses literal).
-          //    */
-          //   const enumDefn = currentDiscriminatedObjectJzodSchemas.find(
-          //     (a)=>(
-          //       a.type == "object" &&
-          //       a.definition[discriminator].type == "enum" &&
-          //       (a.definition[discriminator] as JzodEnum).definition.includes(valueObject[discriminator])
-          //     )
-          //   )
-          //   if (enumDefn) {
-          //     currentDiscriminatedObjectJzodSchemas = [ enumDefn ]
-          //   } else {
-          //     throw new Error(
-          //       "resolveReferencesForJzodSchemaAndValueObject called for union-type value object with discriminator=" +
-          //       jzodSchema.discriminator +
-          //       " valueObject[discriminator]=" +
-          //       valueObject[discriminator] +
-          //       " found many matches=" +
-          //       currentDiscriminatedObjectJzodSchemas +
-          //       " and no subDiscriminator because " +
-          //       "subDiscriminator=" +
-          //       subDiscriminator + 
-          //       " and valueObject[subDiscriminator]=" +
-          //       valueObject[subDiscriminator]
-          //     );
-          //   }
-          // }
-
-          // const currentSubDiscriminatedObjectJzodSchemas = currentDiscriminatedObjectJzodSchemas
-            // currentDiscriminatedObjectJzodSchemas.length == 1
-            //   ? currentDiscriminatedObjectJzodSchemas
-            //   : currentDiscriminatedObjectJzodSchemas.filter(
-            //       (a) =>
-            //         a.type == "object" &&
-            //         a.definition[subDiscriminator]?.type == "literal" &&
-            //         (a.definition[subDiscriminator] as JzodLiteral)?.definition == valueObject[subDiscriminator]
-            //     );
-
-          // if (currentSubDiscriminatedObjectJzodSchemas.length != 1) {
-          //   throw new Error(
-          //     "resolveReferencesForJzodSchemaAndValueObject called for union-type value object with discriminator=" +
-          //       discriminator +
-          //       " subDiscriminator=" +
-          //       subDiscriminator + 
-          //       ", valueObject[discriminator]=" +
-          //       valueObject[discriminator] +
-          //       ", valueObject[subDiscriminator]=" +
-          //       valueObject[subDiscriminator] +
-          //       " found no match or too many matches " +
-          //       JSON.stringify(currentSubDiscriminatedObjectJzodSchemas)
-          //   );
-          // }
-
-          // if (currentSubDiscriminatedObjectJzodSchemas[0].type != "object") {
-          //   throw new Error(
-          //     "resolveReferencesForJzodSchemaAndValueObject called for union-type value object with discriminator=" +
-          //       discriminator +
-          //       + " subDiscriminator=" +
-          //       subDiscriminator + 
-          //       " valueObject[discriminator]=" +
-          //       valueObject[discriminator] +
-          //       " valueObject[subDiscriminator]=" +
-          //       valueObject[subDiscriminator] +
-          //       " found non-object schema " +
-          //       JSON.stringify(currentSubDiscriminatedObjectJzodSchemas[0])
-          //   );
-          // }
-
           const currentDiscriminatedObjectJzodSchema: JzodObject = currentDiscriminatedObjectJzodSchemas[0] as JzodObject;
           const objectJzodSchemaDefintion = Object.fromEntries(
             Object.entries(valueObject).map((a: [string, any]) => {
@@ -526,15 +460,12 @@ export function resolveReferencesForJzodSchemaAndValueObject(
             };
           }
         }
-        case "function":
         case "number":
         case "bigint":
         case "boolean":
-        case "symbol":
-        case "undefined": {
-
-          // break;
-        }
+        case "function":
+        case "symbol": // TODO: what does this correspond to?
+        case "undefined":
         default: {
           throw new Error("resolveReferencesForJzodSchemaAndValueObject could not resolve type for union with valueObject " + valueObject);
           break;
@@ -597,19 +528,7 @@ export function resolveReferencesForJzodSchemaAndValueObject(
       break;
     }
     case "enum": {
-      // if (jzodSchema.definition.includes(valueObject)) {
-        // return { status: "ok", element: { type: "literal", definition: valueObject} };
-        return { status: "ok", element: jzodSchema };
-      // } else {
-      //   return {
-      //     status: "error",
-      //     error:
-      //       "resolveReferencesForJzodSchemaAndValueObject enum could not find string type in resolved union " +
-      //       JSON.stringify(jzodSchema.definition, null, 2) +
-      //       " valueObject " +
-      //       valueObject,
-      //   };
-      // }
+      return { status: "ok", element: jzodSchema };
     }
     case "tuple": {
       return {

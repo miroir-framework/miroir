@@ -73,7 +73,7 @@ export async function generateZodSchemaFileFromJzodSchema(
       ? Object.keys(jzodElement.context).filter(
           (e) =>
             ![
-              "jzodObject",
+              // "jzodObject",
               "entityInstance",
               "entityAttributeUntypedCore",
               "entityAttributeCore",
