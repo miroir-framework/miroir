@@ -22,22 +22,22 @@ import {
   ModelActionReplayableAction,
   TransactionalInstanceAction
 } from "miroir-core";
-import { packageName } from '../constants';
-import { cleanLevel } from './constants';
+import { packageName } from '../constants.js';
+import { cleanLevel } from './constants.js';
 import {
   localCacheSliceInputActionNamesObject,
   ReduxReducerWithUndoRedoInterface,
   ReduxStoreWithUndoRedo,
-} from "./localCache/localCacheReduxSliceInterface";
+} from "./localCache/localCacheReduxSliceInterface.js";
 import {
   currentModel,
   LocalCacheSlice,
   localCacheSliceGeneratedActionNames,
   localCacheStateToDomainState
-} from "./localCache/LocalCacheSlice";
+} from "./localCache/LocalCacheSlice.js";
 import {
   createUndoRedoReducer,
-} from "./localCache/UndoRedoReducer";
+} from "./localCache/UndoRedoReducer.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"LocalCache");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -114,7 +114,7 @@ export class LocalCache implements LocalCacheInterface {
   ) {
     this.staticReducers = createUndoRedoReducer(LocalCacheSlice.reducer);
 
-    this.sagaMiddleware = sagaMiddleware();
+    this.sagaMiddleware = (sagaMiddleware as any)();
 
     const ignoredActionsList = [
       "handlePersistenceAction",

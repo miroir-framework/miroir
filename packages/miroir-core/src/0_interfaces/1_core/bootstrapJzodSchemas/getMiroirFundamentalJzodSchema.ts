@@ -3,8 +3,8 @@ import {
   JzodElement,
   JzodObject,
   JzodSchema,
-} from "../preprocessor-generated/miroirFundamentalType";
-// import { Endpoint } from "../../../3_controllers/Endpoint";
+} from "../preprocessor-generated/miroirFundamentalType.js";
+// import { Endpoint } from "../../../3_controllers/Endpoint.js";
 
 function makeReferencesAbsolute(jzodSchema:JzodElement, absolutePath: string):JzodElement {
   switch (jzodSchema.type) {

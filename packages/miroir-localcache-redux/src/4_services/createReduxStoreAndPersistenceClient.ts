@@ -6,11 +6,11 @@ import {
   getLoggerName
 } from "miroir-core";
 
-import { packageName } from "../constants";
-import { LocalCache } from "./LocalCache";
-import { cleanLevel } from "./constants";
-import { PersistenceReduxSaga } from "./persistence/PersistenceReduxSaga";
-import RestPersistenceClientAndRestClient from "./persistence/RestPersistenceClientAndRestClient";
+import { packageName } from "../constants.js";
+import { LocalCache } from "./LocalCache.js";
+import { cleanLevel } from "./constants.js";
+import { PersistenceReduxSaga } from "./persistence/PersistenceReduxSaga.js";
+import RestPersistenceClientAndRestClient from "./persistence/RestPersistenceClientAndRestClient.js";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"createReduxStoreAndPersistenceClient");

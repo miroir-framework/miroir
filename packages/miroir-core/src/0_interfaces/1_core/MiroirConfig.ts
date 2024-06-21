@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { entityInstance } from "./preprocessor-generated/miroirFundamentalType";
+import { entityInstance } from "./preprocessor-generated/miroirFundamentalType.js";
 
 export type DeploymentMode = 'monoUser' | 'multiUser';
 

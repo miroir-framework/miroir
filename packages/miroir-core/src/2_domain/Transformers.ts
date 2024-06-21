@@ -1,9 +1,9 @@
-import { Transformer } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { MiroirLoggerFactory } from "../4_services/Logger";
-import { packageName } from "../constants";
-import { getLoggerName } from "../tools";
-import { cleanLevel } from "./constants";
+import { Transformer } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
+import { MiroirLoggerFactory } from "../4_services/Logger.js";
+import { packageName } from "../constants.js";
+import { getLoggerName } from "../tools.js";
+import { cleanLevel } from "./constants.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"Transformer");
 let log:LoggerInterface = console as any as LoggerInterface;

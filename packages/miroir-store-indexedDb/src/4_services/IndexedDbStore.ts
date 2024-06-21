@@ -1,5 +1,5 @@
 import { ACTION_OK, AbstractStoreInterface, ActionReturnType, ActionVoidReturnType, LoggerInterface, MiroirLoggerFactory, getLoggerName } from "miroir-core";
-import { packageName } from "../constants";
+import { packageName } from "../constants.js";
 import { IndexedDb } from "./IndexedDb";
 import { cleanLevel } from "./constants";
 

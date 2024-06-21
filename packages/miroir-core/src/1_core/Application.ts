@@ -1,4 +1,4 @@
-import { ApplicationSection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { ApplicationSection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
 import entityReport from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json';

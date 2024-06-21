@@ -49,15 +49,15 @@ import {
   getLoggerName
 } from "miroir-core";
 
-import { packageName } from "../../constants";
-import { cleanLevel } from "../constants";
+import { packageName } from "../../constants.js";
+import { cleanLevel } from "../constants.js";
 import {
   LocalCacheSliceState,
   LocalCacheSliceStateZone,
   localCacheSliceInputActionNames,
   localCacheSliceInputActionNamesObject,
   localCacheSliceName
-} from "./localCacheReduxSliceInterface";
+} from "./localCacheReduxSliceInterface.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"LocalCacheSlice");
 let log:LoggerInterface = console as any as LoggerInterface;

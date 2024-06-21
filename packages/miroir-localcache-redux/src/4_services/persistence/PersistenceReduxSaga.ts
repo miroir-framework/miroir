@@ -21,10 +21,10 @@ import {
   getLoggerName,
   storeActionOrBundleActionStoreRunner
 } from "miroir-core";
-import { handlePromiseActionForSaga } from 'src/sagaTools';
-import { packageName } from '../../constants';
-import { LocalCache } from '../LocalCache';
-import { cleanLevel } from '../constants';
+import { handlePromiseActionForSaga } from 'src/sagaTools.js';
+import { packageName } from '../../constants.js';
+import { LocalCache } from '../LocalCache.js';
+import { cleanLevel } from '../constants.js';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"PersistenceActionReduxSaga");
 let log:LoggerInterface = console as any as LoggerInterface;

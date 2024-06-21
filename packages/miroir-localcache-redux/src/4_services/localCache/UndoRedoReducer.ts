@@ -13,8 +13,8 @@ import {
   UndoRedoAction,
   getLoggerName
 } from "miroir-core";
-import { packageName } from "../../constants";
-import { cleanLevel } from "../constants";
+import { packageName } from "../../constants.js";
+import { cleanLevel } from "../constants.js";
 import {
   InnerReducerAction,
   InnerReducerInterface,
@@ -24,7 +24,7 @@ import {
   ReduxStateWithUndoRedo,
   localCacheSliceInputActionNamesObject,
   localCacheSliceName,
-} from "./localCacheReduxSliceInterface";
+} from "./localCacheReduxSliceInterface.js";
 enablePatches(); // to gather undo/redo operation history
 
 const TRANSACTIONS_ENABLED: boolean = true;

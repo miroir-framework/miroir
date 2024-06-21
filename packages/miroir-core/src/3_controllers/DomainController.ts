@@ -5,9 +5,9 @@ import {
   CRUDActionName,
   DomainControllerInterface,
   LocalCacheInfo
-} from "../0_interfaces/2_domain/DomainControllerInterface";
+} from "../0_interfaces/2_domain/DomainControllerInterface.js";
 
-import { MiroirContextInterface } from '../0_interfaces/3_controllers/MiroirContextInterface';
+import { MiroirContextInterface } from '../0_interfaces/3_controllers/MiroirContextInterface.js';
 import {
   LocalCacheInterface
 } from "../0_interfaces/4-services/LocalCacheInterface.js";
@@ -35,10 +35,10 @@ import {
   TransactionalInstanceAction,
   UndoRedoAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface';
-import { MiroirLoggerFactory } from '../4_services/Logger';
+import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface.js';
+import { MiroirLoggerFactory } from '../4_services/Logger.js';
 import { packageName } from '../constants.js';
-import { getLoggerName } from '../tools';
+import { getLoggerName } from '../tools.js';
 import { Endpoint } from './Endpoint.js';
 import { CallUtils } from './ErrorHandling/CallUtils.js';
 import { defaultMiroirMetaModel, metaModelEntities, miroirModelEntities } from '../1_core/Model.js';

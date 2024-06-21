@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 
 import { ACTION_OK, AbstractStoreInterface, ActionReturnType, ActionVoidReturnType, ApplicationSection, LoggerInterface, MiroirLoggerFactory, getLoggerName } from "miroir-core";
-import { packageName } from "../constants";
+import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "SqlDbStore");

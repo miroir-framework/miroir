@@ -1,7 +1,7 @@
 import {
   DomainState,
   LocalCacheInfo
-} from "../2_domain/DomainControllerInterface";
+} from "../2_domain/DomainControllerInterface.js";
 
 import {
   ActionReturnType,

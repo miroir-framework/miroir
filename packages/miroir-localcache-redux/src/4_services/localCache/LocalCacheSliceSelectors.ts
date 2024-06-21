@@ -25,10 +25,10 @@ import {
   getDeploymentEntityStateIndex,
   getLoggerName
 } from "miroir-core";
-import { packageName } from "../../constants";
-import { cleanLevel } from "../constants";
-import { selectDomainStateFromlocalCacheEntityZone } from "./LocalCacheSlice";
-import { ReduxStateWithUndoRedo } from "./localCacheReduxSliceInterface";
+import { packageName } from "../../constants.js";
+import { cleanLevel } from "../constants.js";
+import { selectDomainStateFromlocalCacheEntityZone } from "./LocalCacheSlice.js";
+import { ReduxStateWithUndoRedo } from "./localCacheReduxSliceInterface.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"LocalCacheSliceSelector");
 let log:LoggerInterface = console as any as LoggerInterface;

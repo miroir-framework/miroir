@@ -25,14 +25,14 @@ import {
   entityStoreBasedConfiguration,
   getLoggerName,
 } from "miroir-core";
-import { packageName } from "../../constants";
-import { cleanLevel } from "../constants";
+import { packageName } from "../../constants.js";
+import { cleanLevel } from "../constants.js";
 import {
   selectEntityInstanceUuidIndexFromLocalCacheQueryAndDeploymentEntityState,
   selectCurrentDeploymentEntityStateFromReduxState,
   selectMiroirSelectorQueryParams,
-} from "./LocalCacheSliceSelectors";
-import { ReduxStateWithUndoRedo } from "./localCacheReduxSliceInterface";
+} from "./LocalCacheSliceSelectors.js";
+import { ReduxStateWithUndoRedo } from "./localCacheReduxSliceInterface.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"LocalCacheSliceModelSelector");
 let log:LoggerInterface = console as any as LoggerInterface;

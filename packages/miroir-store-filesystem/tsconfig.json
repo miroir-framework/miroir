@@ -4,6 +4,7 @@
     "outDir": "dist/out-tsc",
     "declaration": true,
     "declarationDir": "dist/out-tsc/dts",
+    "module": "ESNext",
     "rootDir": "./",
     "baseUrl": "./",
   },

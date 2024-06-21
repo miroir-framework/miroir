@@ -1,8 +1,8 @@
-export { LocalCache } from "./4_services/LocalCache";
+export { LocalCache } from "./4_services/LocalCache.js";
 // export {  } from "./4_services/LocalCache/LocalCacheSlice";
 export {
   createReduxStoreAndPersistenceClient,
-} from "./4_services/createReduxStoreAndPersistenceClient";
+} from "./4_services/createReduxStoreAndPersistenceClient.js";
 export {
   getLocalCacheKeysDeploymentSectionEntitiesList,
   getDeploymentUuidListFromLocalCacheKeys,
@@ -12,10 +12,10 @@ export {
   getPersistenceActionReduxEventNames,
   localCacheStateToDomainState,
   LocalCacheSlice,
-} from "./4_services/localCache/LocalCacheSlice";
+} from "./4_services/localCache/LocalCacheSlice.js";
 export {
   selectModelForDeploymentFromReduxState,
-} from "./4_services/localCache/LocalCacheSliceModelSelector";
+} from "./4_services/localCache/LocalCacheSliceModelSelector.js";
 export {
   applyDeploymentEntityStateQuerySelector,
   applyDeploymentEntityStateQuerySelectorForCleanedResult,
@@ -35,12 +35,12 @@ export {
   selectEntityInstanceUuidIndexFromLocalCacheQueryAndDeploymentEntityState,
   selectInstanceArrayForDeploymentSectionEntity,
   selectSelectorParams,
-} from "./4_services/localCache/LocalCacheSliceSelectors";
+} from "./4_services/localCache/LocalCacheSliceSelectors.js";
 export {
   createUndoRedoReducer,
   reduxStoreWithUndoRedoGetInitialState,
   selectCurrentTransaction,
-} from "./4_services/localCache/UndoRedoReducer";
+} from "./4_services/localCache/UndoRedoReducer.js";
 export {
   InnerReducerInterface,
   ReduxReducerWithUndoRedoInterface,
@@ -49,13 +49,13 @@ export {
   ReduxStoreWithUndoRedo,
   LocalCacheSliceState,
   LocalCacheSliceStateZone,
-} from "./4_services/localCache/localCacheReduxSliceInterface";
+} from "./4_services/localCache/localCacheReduxSliceInterface.js";
 export {
   getMemoizedDeploymentEntityStateJzodSchemaSelectorMap,
   getMemoizedDeploymentEntityStateSelectorMap,
-} from "./4_services/localCache/DomainStateMemoizedSelectors";
+} from "./4_services/localCache/DomainStateMemoizedSelectors.js";
 export {
   PersistenceReduxSaga,
   PersistenceSagaGenReturnType,
-} from "./4_services/persistence/PersistenceReduxSaga";
-export { RestPersistenceClientAndRestClient } from "./4_services/persistence/RestPersistenceClientAndRestClient";
+} from "./4_services/persistence/PersistenceReduxSaga.js";
+export { RestPersistenceClientAndRestClient } from "./4_services/persistence/RestPersistenceClientAndRestClient.js";

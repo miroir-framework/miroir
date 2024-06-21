@@ -7240,6 +7240,59 @@ export const miroirFundamentalJzodSchema = {
       },
       "actionTemplateSchema": {
         "type": "object",
+        "carryOn": {
+          "type": "union",
+          "discriminator": "templateType",
+          "definition": [
+            {
+              "type": "schemaReference",
+              "definition": {
+                "relativePath": "objectTemplateInnerReference"
+              }
+            },
+            {
+              "type": "object",
+              "definition": {
+                "templateType": {
+                  "type": "literal",
+                  "definition": "mustacheStringTemplate"
+                },
+                "definition": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "definition": {
+                "templateType": {
+                  "type": "literal",
+                  "definition": "fullObjectTemplate"
+                },
+                "definition": {
+                  "type": "array",
+                  "definition": {
+                    "type": "tuple",
+                    "definition": [
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "objectTemplateInnerReference"
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "objectTemplate"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
         "definition": {
           "actionTemplateParameters": {
             "type": "schemaReference",

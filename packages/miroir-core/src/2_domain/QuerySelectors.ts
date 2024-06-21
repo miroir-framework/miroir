@@ -1,6 +1,6 @@
 // ################################################################################################
 
-import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
+import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import {
   DomainModelGetSingleSelectObjectListQueryQueryParams,
   DomainElement,
@@ -20,7 +20,7 @@ import {
   DomainModelQueryJzodSchemaParams,
   JzodElement,
   QueryObjectReference,
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   QuerySelectorParams,
   QuerySelector,
@@ -28,14 +28,14 @@ import {
   JzodSchemaQuerySelectorParams,
   RecordOfJzodElement,
   RecordOfJzodObject,
-} from "../0_interfaces/2_domain/DeploymentEntityStateQuerySelectorInterface";
-import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { MiroirLoggerFactory } from "../4_services/Logger";
-import { packageName } from "../constants";
-import { getLoggerName } from "../tools";
-import { applyTransformer } from "./Transformers";
-import { cleanLevel } from "./constants";
+} from "../0_interfaces/2_domain/DeploymentEntityStateQuerySelectorInterface.js";
+import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface.js";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
+import { MiroirLoggerFactory } from "../4_services/Logger.js";
+import { packageName } from "../constants.js";
+import { getLoggerName } from "../tools.js";
+import { applyTransformer } from "./Transformers.js";
+import { cleanLevel } from "./constants.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"QuerySelector");
 let log:LoggerInterface = console as any as LoggerInterface;

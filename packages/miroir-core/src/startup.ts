@@ -1,4 +1,4 @@
-import { ConfigurationService } from './3_controllers/ConfigurationService'
+import { ConfigurationService } from './3_controllers/ConfigurationService.js'
 import packageJson from '../package.json'
 
 export function miroirCoreStartup() {

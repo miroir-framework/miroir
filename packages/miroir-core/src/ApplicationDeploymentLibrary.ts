@@ -1,4 +1,4 @@
-import { ApplicationDeploymentConfiguration } from "./0_interfaces/1_core/StorageConfiguration";
+import { ApplicationDeploymentConfiguration } from "./0_interfaces/1_core/StorageConfiguration.js";
 
 // duplicated from server!!!!!!!!
 export const applicationDeploymentLibrary: ApplicationDeploymentConfiguration = {

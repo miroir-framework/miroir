@@ -234,7 +234,6 @@ export {
 from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js"
 
 export {
-  // miroirJzodSchemaBootstrapZodSchema,
   InstanceDictionaryNum,
   InstanceDictionary,
   MetaEntitySchema,
@@ -260,10 +259,10 @@ export {
   DeploymentMode,
   // StoreBasedConfigurationSchema,
   // StoreBasedConfiguration,
-} from './0_interfaces/1_core/MiroirConfig';
+} from './0_interfaces/1_core/MiroirConfig.js';
 export {
   DeploymentUuidToReportsEntitiesDefinitionsMapping
-} from './0_interfaces/1_core/Model';
+} from './0_interfaces/1_core/Model.js';
 export {
   ClientFileStorage,
   ApplicationDeploymentSchema,
@@ -345,7 +344,7 @@ export {
 } from './0_interfaces/3_controllers/ErrorLogServiceInterface.js';
 export {
   MiroirContextInterface
-} from './0_interfaces/3_controllers/MiroirContextInterface';
+} from './0_interfaces/3_controllers/MiroirContextInterface.js';
 export {
   LoggerFactoryInterface,
   LoggerFactoryAsyncInterface,
@@ -394,7 +393,7 @@ export {
 } from './1_core/Application.js';
 export { } from './1_core/Report.js';
 export { ACTION_OK } from './1_core/constants.js';
-export { DomainController } from './3_controllers/DomainController';
+export { DomainController } from './3_controllers/DomainController.js';
 export { DomainInstanceUuidIndexToArray } from './1_core/DomainState.js';
 export {
   getDefaultValueForJzodSchema,

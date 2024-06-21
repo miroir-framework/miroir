@@ -57,7 +57,7 @@ import {
   Menu,
   MetaModel,
   Report,
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 // TODO: REMOVE THIS!!!
 // FIRST: CENTRALIZE LOGIC TO DETERMINE MODEL ENTITIES

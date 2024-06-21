@@ -10,8 +10,8 @@ import {
 } from "miroir-core";
 import { Attributes, DataTypes, Model, ModelAttributeColumnOptions, ModelAttributes, ModelStatic } from "sequelize";
 
-import { cleanLevel } from "./4_services/constants";
-import { packageName } from "./constants";
+import { cleanLevel } from "./4_services/constants.js";
+import { packageName } from "./constants.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"utils");
 let log:LoggerInterface = console as any as LoggerInterface;

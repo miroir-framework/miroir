@@ -45,8 +45,4 @@ export interface InstanceDictionary<T> extends InstanceDictionaryNum<T> {
   [id: string]: T | undefined;
 }
 
-// export const miroirJzodSchemaBootstrapZodSchema: ZodSchemaAndDescription = jzodElementSchemaToZodSchemaAndDescription(
-//   miroirJzodSchemaBootstrap.definition as JzodElement
-// );
-
 export default {}

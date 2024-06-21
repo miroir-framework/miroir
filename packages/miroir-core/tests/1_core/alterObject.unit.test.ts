@@ -7,10 +7,10 @@ import {
   Menu,
   MetaModel,
   Report,
-} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { MiroirModel } from '../../src/0_interfaces/1_core/Model';
+} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { MiroirModel } from '../../src/0_interfaces/1_core/Model.js';
 
-import { alterObjectAtPath } from "../../src/1_core/alterObjectAtPath";
+import { alterObjectAtPath } from "../../src/1_core/alterObjectAtPath.js";
 // import { resolveReferencesForJzodSchemaAndValueObject} from "../../tmp/src/1_core/Jzod.js";
 
 

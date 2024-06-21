@@ -1,5 +1,5 @@
 import { ACTION_OK, ActionError, ActionReturnType, ActionVoidReturnType, AdminStoreInterface, LoggerInterface, MiroirLoggerFactory, SqlDbStoreSectionConfiguration, StoreSectionConfiguration, getLoggerName } from "miroir-core";
-import { packageName } from "../constants";
+import { packageName } from "../constants.js";
 import { SqlDbStore } from "./SqlDbStore";
 import { cleanLevel } from "./constants";
 

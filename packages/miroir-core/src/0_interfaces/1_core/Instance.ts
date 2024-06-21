@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ApplicationSection, entityInstance } from "./preprocessor-generated/miroirFundamentalType";
+import { ApplicationSection, entityInstance } from "./preprocessor-generated/miroirFundamentalType.js";
 
 // // ##########################################################################################
 // export const ApplicationConceptLevelSchema = z.union([z.literal("MetaModel"), z.literal("Model"), z.literal("Data")]);

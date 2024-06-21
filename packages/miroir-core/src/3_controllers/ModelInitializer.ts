@@ -54,14 +54,14 @@ import miroirJzodSchemaBootstrap from '../assets/miroir_data/5e81e1b9-38be-487c-
 
 import { MetaEntity } from "../0_interfaces/1_core/EntityDefinition.js";
 import { PersistenceStoreControllerInterface } from '../0_interfaces/4-services/PersistenceStoreControllerInterface.js';
-import { DataStoreApplicationType } from '../0_interfaces/3_controllers/ApplicationControllerInterface';
-import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface';
-import { MiroirLoggerFactory } from '../4_services/Logger';
-import { packageName } from '../constants';
-import { getLoggerName } from '../tools';
-import { cleanLevel } from './constants';
-import { Application, EntityDefinition, EntityInstance, MetaModel } from '../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
-import { menuDefaultLibrary } from '..';
+import { DataStoreApplicationType } from '../0_interfaces/3_controllers/ApplicationControllerInterface.js';
+import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface.js';
+import { MiroirLoggerFactory } from '../4_services/Logger.js';
+import { packageName } from '../constants.js';
+import { getLoggerName } from '../tools.js';
+import { cleanLevel } from './constants.js';
+import { Application, EntityDefinition, EntityInstance, MetaModel } from '../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
+import { menuDefaultLibrary } from '../index.js';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ModelInitializer");
 let log:LoggerInterface = console as any as LoggerInterface;

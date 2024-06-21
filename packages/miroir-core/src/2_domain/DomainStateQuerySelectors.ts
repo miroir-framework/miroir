@@ -1,4 +1,4 @@
-import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
+import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 
 import {
   ApplicationSection,
@@ -13,20 +13,20 @@ import {
   JzodObject,
   MiroirSelectorQueryParams,
   SelectObjectQuery
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   JzodSchemaQuerySelectorMap,
   JzodSchemaQuerySelectorParams,
   QuerySelector,
   QuerySelectorMap,
   QuerySelectorParams,
-} from "../0_interfaces/2_domain/DeploymentEntityStateQuerySelectorInterface";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { MiroirLoggerFactory } from "../4_services/Logger";
+} from "../0_interfaces/2_domain/DeploymentEntityStateQuerySelectorInterface.js";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
+import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import entityEntityDefinition from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
-import { packageName } from "../constants";
-import { getLoggerName } from "../tools";
-import { cleanLevel } from "./constants";
+import { packageName } from "../constants.js";
+import { getLoggerName } from "../tools.js";
+import { cleanLevel } from "./constants.js";
 import {
   innerSelectElementFromQuery,
   resolveContextReference,
@@ -35,7 +35,7 @@ import {
   selectFetchQueryJzodSchema,
   selectJzodSchemaByDomainModelQuery,
   selectJzodSchemaBySingleSelectQuery,
-} from "./QuerySelectors";
+} from "./QuerySelectors.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainSelector");
 let log:LoggerInterface = console as any as LoggerInterface;

@@ -11,7 +11,7 @@ import {
   JzodElement,
   JzodObject,
   MiroirSelectorQueryParams
-} from "../1_core/preprocessor-generated/miroirFundamentalType";
+} from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
 // ################################################################################################
 export type RecordOfJzodElement = Record<string, JzodElement | undefined>;

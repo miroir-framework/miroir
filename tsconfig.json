@@ -5,7 +5,7 @@
     "module": "NodeNext",
     "target": "ES2017",
     "jsx": "react-jsx",
-    "moduleResolution": "Node",
+    "moduleResolution": "NodeNext",
     "esModuleInterop": true,
     "allowJs": true,
     "allowSyntheticDefaultImports":true,

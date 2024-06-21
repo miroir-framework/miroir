@@ -1,4 +1,4 @@
-import { HttpMethod } from "../0_interfaces/1_core/Http";
+import { HttpMethod } from "../0_interfaces/1_core/Http.js";
 import {
   ActionReturnType,
   ApplicationSection,
@@ -8,26 +8,26 @@ import {
   ModelAction,
   QueryAction,
   StoreOrBundleAction
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import {
   HttpRequestBodyFormat,
   HttpResponseBodyFormat,
   RestServiceHandler,
-} from "../0_interfaces/4-services/PersistenceInterface";
+} from "../0_interfaces/4-services/PersistenceInterface.js";
 import {
   storeActionOrBundleActionStoreRunner
-} from "../3_controllers/ActionRunner";
+} from "../3_controllers/ActionRunner.js";
 
-import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
-import { packageName } from "../constants";
-import { getLoggerName } from "../tools";
-import { MiroirLoggerFactory } from "./Logger";
-import { generateRestServiceResponse } from "./RestTools";
-import { cleanLevel } from "./constants";
+import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface.js";
+import { packageName } from "../constants.js";
+import { getLoggerName } from "../tools.js";
+import { MiroirLoggerFactory } from "./Logger.js";
+import { generateRestServiceResponse } from "./RestTools.js";
+import { cleanLevel } from "./constants.js";
 
-import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface";
-import { getSelectorParams, selectByDomainManyQueriesFromDomainState } from "../2_domain/DomainStateQuerySelectors";
+import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface.js";
+import { getSelectorParams, selectByDomainManyQueriesFromDomainState } from "../2_domain/DomainStateQuerySelectors.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RestServer");
 let log:LoggerInterface = console as any as LoggerInterface;

@@ -1,7 +1,7 @@
 import { Level } from 'level';
 import { ApplicationSection, LoggerInterface, MiroirLoggerFactory, entityDefinitionEntityDefinition, getLoggerName } from "miroir-core";
 
-import { packageName } from "../constants";
+import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"IndexedDb");

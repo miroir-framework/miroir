@@ -1,9 +1,9 @@
-import { Uuid } from "../1_core/EntityDefinition";
-import { ActionReturnType, StoreUnitConfiguration } from "../1_core/preprocessor-generated/miroirFundamentalType";
-import { DomainControllerInterface } from "../2_domain/DomainControllerInterface";
-import { LocalCacheInterface } from "./LocalCacheInterface";
-import { PersistenceInterface } from "./PersistenceInterface";
-import { InitApplicationParameters, PersistenceStoreControllerInterface } from "./PersistenceStoreControllerInterface";
+import { Uuid } from "../1_core/EntityDefinition.js";
+import { ActionReturnType, StoreUnitConfiguration } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
+import { DomainControllerInterface } from "../2_domain/DomainControllerInterface.js";
+import { LocalCacheInterface } from "./LocalCacheInterface.js";
+import { PersistenceInterface } from "./PersistenceInterface.js";
+import { InitApplicationParameters, PersistenceStoreControllerInterface } from "./PersistenceStoreControllerInterface.js";
 
 
 export interface PersistenceStoreControllerManagerInterface {

@@ -8,7 +8,7 @@ import {
   getLoggerName
 } from "miroir-core";
 import { Sequelize } from "sequelize";
-import { packageName } from "../constants";
+import { packageName } from "../constants.js";
 import { EntityUuidIndexedSequelizeModel } from "../utils";
 import { cleanLevel } from "./constants";
 
