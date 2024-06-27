@@ -104,59 +104,6 @@
       },
       "actionTemplateSchema": {
         "type": "object",
-        "carryOn": {
-          "type": "union",
-          "discriminator": "templateType",
-          "definition": [
-            {
-              "type": "schemaReference",
-              "definition": {
-                "relativePath": "objectTemplateInnerReference"
-              }
-            },
-            {
-              "type": "object",
-              "definition": {
-                "templateType": {
-                  "type": "literal",
-                  "definition": "mustacheStringTemplate"
-                },
-                "definition": {
-                  "type": "string"
-                }
-              }
-            },
-            {
-              "type": "object",
-              "definition": {
-                "templateType": {
-                  "type": "literal",
-                  "definition": "fullObjectTemplate"
-                },
-                "definition": {
-                  "type": "array",
-                  "definition": {
-                    "type": "tuple",
-                    "definition": [
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "objectTemplateInnerReference"
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "objectTemplate"
-                        }
-                      }
-                    ]
-                  }
-                }
-              }
-            }
-          ]
-        },
         "definition": {
           "actionTemplateParameters": {
             "type": "schemaReference",
@@ -167,17 +114,62 @@
           },
           "actionTemplate": {
             "type": "schemaReference",
+            "carryOn": {
+              "type": "union",
+              "discriminator": "templateType",
+              "definition": [
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "objectTemplateInnerReference"
+                  }
+                },
+                {
+                  "type": "object",
+                  "definition": {
+                    "templateType": {
+                      "type": "literal",
+                      "definition": "mustacheStringTemplate"
+                    },
+                    "definition": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "definition": {
+                    "templateType": {
+                      "type": "literal",
+                      "definition": "fullObjectTemplate"
+                    },
+                    "definition": {
+                      "type": "array",
+                      "definition": {
+                        "type": "tuple",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "objectTemplateInnerReference"
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "objectTemplate"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            },
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "compositeAction"
-            },
-            "extra": {
-              "carryOn": {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "objectTemplate"
-                }
-              }
             }
           }
         }

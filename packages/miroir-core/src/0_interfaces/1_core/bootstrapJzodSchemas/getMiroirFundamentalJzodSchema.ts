@@ -1,7 +1,9 @@
+import { applyCarryOnSchema, forgeCarryOnReferenceName } from "@miroir-framework/jzod";
 import {
   EntityDefinition,
   JzodElement,
   JzodObject,
+  JzodReference,
   JzodSchema,
 } from "../preprocessor-generated/miroirFundamentalType.js";
 // import { Endpoint } from "../../../3_controllers/Endpoint.js";
@@ -136,6 +138,31 @@ export function getMiroirFundamentalJzodSchema(
     entityDefinitionQueryVersionV1.jzodSchema.definition.definition,
     "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
   ) as any;
+
+  const innerResolutionStore: Record<string, JzodReference> = {
+    // TODO: transform all inner references in jzodSchemajzodMiroirBootstrapSchema into innerResolutionStoreReferences
+    "fe9b7d99-f216-44de-bb6e-60e1a1ebb739": {
+      type: "schemaReference",
+      context: {
+        // ...(jzodSchemajzodMiroirBootstrapSchema as any).definition.context,
+        "objectTemplateInnerReference": (templateJzodSchema as any).definition.context.objectTemplateInnerReference,
+        "objectTemplate": (templateJzodSchema as any).definition.context.objectTemplate,
+        "compositeAction": domainEndpointVersionV1.definition.actions.find(
+          (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
+        )?.actionParameters
+      },
+      definition: {
+        relativePath: "jzodElement"
+      }
+    }
+  };
+  const innerResolutionStoreReferences = Object.fromEntries(
+    Object.entries(innerResolutionStore).flatMap(
+      e => Object.entries(e[1].context??{}).map(
+        f =>[forgeCarryOnReferenceName(e[0], f[0]),f[1]]
+      )
+    )
+  );
 
   // console.log("entityDefinitionQueryVersionV1WithAbsoluteReferences=",JSON.stringify(entityDefinitionQueryVersionV1WithAbsoluteReferences))
   return {
@@ -1699,10 +1726,38 @@ export function getMiroirFundamentalJzodSchema(
         "queryAction": queryEndpointVersionV1.definition.actions[0].actionParameters,
         "compositeAction": domainEndpointVersionV1.definition.actions.find(
           (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
-          )?.actionParameters,
+        )?.actionParameters,
         "domainAction": { "type": "union", "definition": domainEndpointVersionV1.definition.actions.map((e: any)=>e.actionParameters)},
         // "template": { "type": "union", "definition": domainEndpointVersionV1.definition.actions.map((e: any)=>e.actionParameters)},
         ...(templateJzodSchema as any).definition.context,
+        ...innerResolutionStoreReferences,
+        ...(() => {// defining a function, which is called immediately (just one time)
+          const conversionResult = applyCarryOnSchema(
+            (templateJzodSchema as any).definition.context.actionTemplateSchema.definition.actionTemplate,
+            (templateJzodSchema as any).definition.context.actionTemplateSchema.definition.actionTemplate.carryOn,
+            undefined,
+            ((ref:JzodReference): JzodElement | undefined => {
+              const resolvedAbsolutePath = innerResolutionStore[ref.definition?.absolutePath??""]
+              const result = resolvedAbsolutePath && resolvedAbsolutePath.context?resolvedAbsolutePath.context[ref.definition?.relativePath??""]:undefined;
+              const resultWithAbsoluteReferences = result?makeReferencesAbsolute(
+                result,
+                "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+              ) as any:result;
+              console.log("getMiroirFundamentalJzodSchema applyCarryOnSchema resolving reference " + JSON.stringify(ref, null, 2) + " in " + Object.keys(innerResolutionStore))
+              console.log("getMiroirFundamentalJzodSchema applyCarryOnSchema for reference " + JSON.stringify(ref, null, 2) + " result " + JSON.stringify(resultWithAbsoluteReferences, null, 2))
+              if (resultWithAbsoluteReferences) {
+                return resultWithAbsoluteReferences
+              } else {
+                throw new Error("getMiroirFundamentalJzodSchema applyCarryOnSchema resolve reference could not find reference " + JSON.stringify(ref) + " in " + Object.keys(innerResolutionStore));
+                
+              }
+            }) as any
+          );
+          return {
+            ...conversionResult.resolvedReferences,
+            actionTemplateSchemaConverted: conversionResult.resultSchema
+          }
+        })(),
         "modelActionReplayableAction": {
           "type": "union",
           "definition": [

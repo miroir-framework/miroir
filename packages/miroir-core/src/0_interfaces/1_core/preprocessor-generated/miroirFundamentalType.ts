@@ -204,7 +204,7 @@ export type JzodObject = {
     type: "object";
     nonStrict?: boolean | undefined;
     partial?: boolean | undefined;
-    carryOn?: JzodObject | undefined;
+    carryOn?: (JzodObject | JzodUnion) | undefined;
     definition: {
         [x: string]: JzodElement;
     };
@@ -249,6 +249,7 @@ export type JzodReference = {
     context?: {
         [x: string]: JzodElement;
     } | undefined;
+    carryOn?: (JzodObject | JzodUnion) | undefined;
     definition: {
         eager?: boolean | undefined;
         partial?: boolean | undefined;
@@ -1280,10 +1281,10 @@ export type CompositeAction = {
     params?: {
         [x: string]: any;
     } | undefined;
+    definition: ObjectTemplate[];
     templatesDEFUNCT?: {
         [x: string]: any;
     } | undefined;
-    definition: any[];
 };
 export type DomainAction = UndoRedoAction | StoreOrBundleAction | ModelAction | InstanceAction | {
     actionType: "transactionalInstanceAction";
@@ -1296,10 +1297,10 @@ export type DomainAction = UndoRedoAction | StoreOrBundleAction | ModelAction | 
     params?: {
         [x: string]: any;
     } | undefined;
+    definition: ObjectTemplate[];
     templatesDEFUNCT?: {
         [x: string]: any;
     } | undefined;
-    definition: any[];
 };
 export type ObjectTemplateInnerReference = {
     templateType: "constant";
@@ -1325,6 +1326,120 @@ export type ActionTemplateSchema = {
     actionTemplateParameters: JzodObject;
     actionTemplate: CompositeAction;
 };
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference = {
+    templateType: "constant";
+    referenceUuid: string;
+} | {
+    templateType: "contextReference";
+    referenceName: string;
+} | {
+    templateType: "parameterReference";
+    referenceName: string;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplate = ObjectTemplateInnerReference | {
+    templateType: "mustacheStringTemplate";
+    definition: string;
+} | {
+    templateType: "fullObjectTemplate";
+    definition: [
+        ObjectTemplateInnerReference,
+        ObjectTemplate
+    ][];
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction = (ObjectTemplateInnerReference | {
+    templateType: "mustacheStringTemplate";
+    definition: string;
+} | {
+    templateType: "fullObjectTemplate";
+    definition: [
+        ObjectTemplateInnerReference,
+        ObjectTemplate
+    ][];
+}) | {
+    actionType: "compositeAction" | (ObjectTemplateInnerReference | {
+        templateType: "mustacheStringTemplate";
+        definition: string;
+    } | {
+        templateType: "fullObjectTemplate";
+        definition: [
+            ObjectTemplateInnerReference,
+            ObjectTemplate
+        ][];
+    });
+    actionName: "sequence" | (ObjectTemplateInnerReference | {
+        templateType: "mustacheStringTemplate";
+        definition: string;
+    } | {
+        templateType: "fullObjectTemplate";
+        definition: [
+            ObjectTemplateInnerReference,
+            ObjectTemplate
+        ][];
+    });
+    deploymentUuid?: ((string | undefined) | (ObjectTemplateInnerReference | {
+        templateType: "mustacheStringTemplate";
+        definition: string;
+    } | {
+        templateType: "fullObjectTemplate";
+        definition: [
+            ObjectTemplateInnerReference,
+            ObjectTemplate
+        ][];
+    })) | undefined;
+    params?: (({
+        [x: string]: any;
+    } | undefined) | (ObjectTemplateInnerReference | {
+        templateType: "mustacheStringTemplate";
+        definition: string;
+    } | {
+        templateType: "fullObjectTemplate";
+        definition: [
+            ObjectTemplateInnerReference,
+            ObjectTemplate
+        ][];
+    })) | undefined;
+    definition: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplate | (ObjectTemplateInnerReference | {
+        templateType: "mustacheStringTemplate";
+        definition: string;
+    } | {
+        templateType: "fullObjectTemplate";
+        definition: [
+            ObjectTemplateInnerReference,
+            ObjectTemplate
+        ][];
+    }))[] | (ObjectTemplateInnerReference | {
+        templateType: "mustacheStringTemplate";
+        definition: string;
+    } | {
+        templateType: "fullObjectTemplate";
+        definition: [
+            ObjectTemplateInnerReference,
+            ObjectTemplate
+        ][];
+    });
+    templatesDEFUNCT?: (({
+        [x: string]: any;
+    } | undefined) | (ObjectTemplateInnerReference | {
+        templateType: "mustacheStringTemplate";
+        definition: string;
+    } | {
+        templateType: "fullObjectTemplate";
+        definition: [
+            ObjectTemplateInnerReference,
+            ObjectTemplate
+        ][];
+    })) | undefined;
+};
+export type ActionTemplateSchemaConverted = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction | (ObjectTemplateInnerReference | {
+    templateType: "mustacheStringTemplate";
+    definition: string;
+} | {
+    templateType: "fullObjectTemplate";
+    definition: [
+        ObjectTemplateInnerReference,
+        ObjectTemplate
+    ][];
+});
 export type ModelActionReplayableAction = ModelActionAlterEntityAttribute | ModelActionCreateEntity | ModelActionDropEntity | ModelActionRenameEntity;
 export type BundleAction = {
     actionType: "bundleAction";
@@ -1362,10 +1477,10 @@ export const jzodLazy: z.ZodType<JzodLazy> = z.object({optional:z.boolean().opti
 export const jzodLiteral: z.ZodType<JzodLiteral> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({type:z.literal("literal"), definition:z.union([z.string(), z.number(), z.bigint(), z.boolean()])}).strict();
 export const jzodIntersection: z.ZodType<JzodIntersection> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({type:z.literal("intersection"), definition:z.object({left:z.lazy(() =>jzodElement), right:z.lazy(() =>jzodElement)}).strict()}).strict();
 export const jzodMap: z.ZodType<JzodMap> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({type:z.literal("map"), definition:z.tuple([z.lazy(() =>jzodElement), z.lazy(() =>jzodElement)])}).strict();
-export const jzodObject: z.ZodType<JzodObject> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({extend:z.lazy(() =>jzodReference).optional(), type:z.literal("object"), nonStrict:z.boolean().optional(), partial:z.boolean().optional(), carryOn:z.lazy(() =>jzodObject).optional(), definition:z.record(z.string(),z.lazy(() =>jzodElement))}).strict();
+export const jzodObject: z.ZodType<JzodObject> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({extend:z.lazy(() =>jzodReference).optional(), type:z.literal("object"), nonStrict:z.boolean().optional(), partial:z.boolean().optional(), carryOn:z.union([z.lazy(() =>jzodObject), z.lazy(() =>jzodUnion)]).optional(), definition:z.record(z.string(),z.lazy(() =>jzodElement))}).strict();
 export const jzodPromise: z.ZodType<JzodPromise> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({type:z.literal("promise"), definition:z.lazy(() =>jzodElement)}).strict();
 export const jzodRecord: z.ZodType<JzodRecord> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({type:z.literal("record"), definition:z.lazy(() =>jzodElement)}).strict();
-export const jzodReference: z.ZodType<JzodReference> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({type:z.literal("schemaReference"), context:z.record(z.string(),z.lazy(() =>jzodElement)).optional(), definition:z.object({eager:z.boolean().optional(), partial:z.boolean().optional(), relativePath:z.string().optional(), absolutePath:z.string().optional()}).strict()}).strict();
+export const jzodReference: z.ZodType<JzodReference> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({type:z.literal("schemaReference"), context:z.record(z.string(),z.lazy(() =>jzodElement)).optional(), carryOn:z.union([z.lazy(() =>jzodObject), z.lazy(() =>jzodUnion)]).optional(), definition:z.object({eager:z.boolean().optional(), partial:z.boolean().optional(), relativePath:z.string().optional(), absolutePath:z.string().optional()}).strict()}).strict();
 export const jzodSet: z.ZodType<JzodSet> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({type:z.literal("set"), definition:z.lazy(() =>jzodElement)}).strict();
 export const jzodTuple: z.ZodType<JzodTuple> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({type:z.literal("tuple"), definition:z.array(z.lazy(() =>jzodElement))}).strict();
 export const jzodUnion: z.ZodType<JzodUnion> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({type:z.literal("union"), discriminator:z.string().optional(), discriminatorNew:z.union([z.object({discriminatorType:z.literal("string"), value:z.string()}).strict(), z.object({discriminatorType:z.literal("array"), value:z.array(z.string())}).strict()]).optional(), carryOn:z.lazy(() =>jzodObject).optional(), definition:z.array(z.lazy(() =>jzodElement))}).strict();
@@ -1499,11 +1614,15 @@ export const storeManagementAction: z.ZodType<StoreManagementAction> = z.union([
 export const persistenceAction: z.ZodType<PersistenceAction> = z.union([z.object({actionType:z.literal("RestPersistenceAction"), actionName:z.enum(["create","read","update","delete"]), endpoint:z.literal("a93598b3-19b6-42e8-828c-f02042d212d4"), section:z.lazy(() =>applicationSection), deploymentUuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().optional(), uuid:z.string().optional(), objects:z.array(z.lazy(() =>entityInstance).optional()).optional()}).strict(), z.lazy(() =>queryAction), z.lazy(() =>bundleAction), z.lazy(() =>instanceAction), z.lazy(() =>modelAction), z.lazy(() =>storeManagementAction)]);
 export const restPersistenceAction: z.ZodType<RestPersistenceAction> = z.object({actionType:z.literal("RestPersistenceAction"), actionName:z.enum(["create","read","update","delete"]), endpoint:z.literal("a93598b3-19b6-42e8-828c-f02042d212d4"), section:z.lazy(() =>applicationSection), deploymentUuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().optional(), uuid:z.string().optional(), objects:z.array(z.lazy(() =>entityInstance).optional()).optional()}).strict();
 export const queryAction: z.ZodType<QueryAction> = z.object({actionType:z.literal("queryAction"), actionName:z.literal("runQuery"), endpoint:z.literal("9e404b3c-368c-40cb-be8b-e3c28550c25e"), deploymentUuid:z.string().uuid(), query:z.lazy(() =>domainManyQueriesWithDeploymentUuid)}).strict();
-export const compositeAction: z.ZodType<CompositeAction> = z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), deploymentUuid:z.string().uuid().optional(), params:z.record(z.string(),z.any()).optional(), templatesDEFUNCT:z.record(z.string(),z.any()).optional(), definition:z.array(z.any())}).strict();
-export const domainAction: z.ZodType<DomainAction> = z.union([z.lazy(() =>undoRedoAction), z.lazy(() =>storeOrBundleAction), z.lazy(() =>modelAction), z.lazy(() =>instanceAction), z.object({actionType:z.literal("transactionalInstanceAction"), deploymentUuid:z.string().uuid().optional(), instanceAction:z.lazy(() =>instanceCUDAction)}).strict(), z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), deploymentUuid:z.string().uuid().optional(), params:z.record(z.string(),z.any()).optional(), templatesDEFUNCT:z.record(z.string(),z.any()).optional(), definition:z.array(z.any())}).strict()]);
+export const compositeAction: z.ZodType<CompositeAction> = z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), deploymentUuid:z.string().uuid().optional(), params:z.record(z.string(),z.any()).optional(), definition:z.array(z.lazy(() =>objectTemplate)), templatesDEFUNCT:z.record(z.string(),z.any()).optional()}).strict();
+export const domainAction: z.ZodType<DomainAction> = z.union([z.lazy(() =>undoRedoAction), z.lazy(() =>storeOrBundleAction), z.lazy(() =>modelAction), z.lazy(() =>instanceAction), z.object({actionType:z.literal("transactionalInstanceAction"), deploymentUuid:z.string().uuid().optional(), instanceAction:z.lazy(() =>instanceCUDAction)}).strict(), z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), deploymentUuid:z.string().uuid().optional(), params:z.record(z.string(),z.any()).optional(), definition:z.array(z.lazy(() =>objectTemplate)), templatesDEFUNCT:z.record(z.string(),z.any()).optional()}).strict()]);
 export const objectTemplateInnerReference: z.ZodType<ObjectTemplateInnerReference> = z.union([z.object({templateType:z.literal("constant"), referenceUuid:z.string()}).strict(), z.object({templateType:z.literal("contextReference"), referenceName:z.string()}).strict(), z.object({templateType:z.literal("parameterReference"), referenceName:z.string()}).strict()]);
 export const objectTemplate: z.ZodType<ObjectTemplate> = z.union([z.lazy(() =>objectTemplateInnerReference), z.object({templateType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict(), z.object({templateType:z.literal("fullObjectTemplate"), definition:z.array(z.tuple([z.lazy(() =>objectTemplateInnerReference), z.lazy(() =>objectTemplate)]))}).strict()]);
 export const actionTemplateSchema: z.ZodType<ActionTemplateSchema> = z.object({actionTemplateParameters:z.lazy(() =>jzodObject), actionTemplate:z.lazy(() =>compositeAction)}).strict();
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference> = z.union([z.object({templateType:z.literal("constant"), referenceUuid:z.string()}).strict(), z.object({templateType:z.literal("contextReference"), referenceName:z.string()}).strict(), z.object({templateType:z.literal("parameterReference"), referenceName:z.string()}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplate: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplate> = z.union([z.lazy(() =>objectTemplateInnerReference), z.object({templateType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict(), z.object({templateType:z.literal("fullObjectTemplate"), definition:z.array(z.tuple([z.lazy(() =>objectTemplateInnerReference), z.lazy(() =>objectTemplate)]))}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction> = z.union([z.union([z.lazy(() =>objectTemplateInnerReference), z.object({templateType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict(), z.object({templateType:z.literal("fullObjectTemplate"), definition:z.array(z.tuple([z.lazy(() =>objectTemplateInnerReference), z.lazy(() =>objectTemplate)]))}).strict()]), z.object({actionType:z.union([z.literal("compositeAction"), z.union([z.lazy(() =>objectTemplateInnerReference), z.object({templateType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict(), z.object({templateType:z.literal("fullObjectTemplate"), definition:z.array(z.tuple([z.lazy(() =>objectTemplateInnerReference), z.lazy(() =>objectTemplate)]))}).strict()])]), actionName:z.union([z.literal("sequence"), z.union([z.lazy(() =>objectTemplateInnerReference), z.object({templateType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict(), z.object({templateType:z.literal("fullObjectTemplate"), definition:z.array(z.tuple([z.lazy(() =>objectTemplateInnerReference), z.lazy(() =>objectTemplate)]))}).strict()])]), deploymentUuid:z.union([z.string().uuid().optional(), z.union([z.lazy(() =>objectTemplateInnerReference), z.object({templateType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict(), z.object({templateType:z.literal("fullObjectTemplate"), definition:z.array(z.tuple([z.lazy(() =>objectTemplateInnerReference), z.lazy(() =>objectTemplate)]))}).strict()])]).optional(), params:z.union([z.record(z.string(),z.any()).optional(), z.union([z.lazy(() =>objectTemplateInnerReference), z.object({templateType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict(), z.object({templateType:z.literal("fullObjectTemplate"), definition:z.array(z.tuple([z.lazy(() =>objectTemplateInnerReference), z.lazy(() =>objectTemplate)]))}).strict()])]).optional(), definition:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplate), z.union([z.lazy(() =>objectTemplateInnerReference), z.object({templateType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict(), z.object({templateType:z.literal("fullObjectTemplate"), definition:z.array(z.tuple([z.lazy(() =>objectTemplateInnerReference), z.lazy(() =>objectTemplate)]))}).strict()])])), z.union([z.lazy(() =>objectTemplateInnerReference), z.object({templateType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict(), z.object({templateType:z.literal("fullObjectTemplate"), definition:z.array(z.tuple([z.lazy(() =>objectTemplateInnerReference), z.lazy(() =>objectTemplate)]))}).strict()])]), templatesDEFUNCT:z.union([z.record(z.string(),z.any()).optional(), z.union([z.lazy(() =>objectTemplateInnerReference), z.object({templateType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict(), z.object({templateType:z.literal("fullObjectTemplate"), definition:z.array(z.tuple([z.lazy(() =>objectTemplateInnerReference), z.lazy(() =>objectTemplate)]))}).strict()])]).optional()}).strict()]);
+export const actionTemplateSchemaConverted: z.ZodType<ActionTemplateSchemaConverted> = z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction), z.union([z.lazy(() =>objectTemplateInnerReference), z.object({templateType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict(), z.object({templateType:z.literal("fullObjectTemplate"), definition:z.array(z.tuple([z.lazy(() =>objectTemplateInnerReference), z.lazy(() =>objectTemplate)]))}).strict()])]);
 export const modelActionReplayableAction: z.ZodType<ModelActionReplayableAction> = z.union([z.lazy(() =>modelActionAlterEntityAttribute), z.lazy(() =>modelActionCreateEntity), z.lazy(() =>modelActionDropEntity), z.lazy(() =>modelActionRenameEntity)]);
 export const bundleAction: z.ZodType<BundleAction> = z.union([z.object({actionType:z.literal("bundleAction"), actionName:z.literal("createBundle"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("bundleAction"), actionName:z.literal("deleteBundle"), deploymentUuid:z.string().uuid()}).strict()]);
 export const storeOrBundleAction: z.ZodType<StoreOrBundleAction> = z.union([z.lazy(() =>storeManagementAction), z.lazy(() =>bundleAction)]);

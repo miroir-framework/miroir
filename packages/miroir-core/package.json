@@ -35,7 +35,7 @@
     ]
   },
   "dependencies": {
-    "@miroir-framework/jzod": "0.7.0",
+    "@miroir-framework/jzod": "0.8.0",
     "mustache": "^4.2.0",
     "zod": "^3.21.4"
   },

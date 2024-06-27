@@ -1,5 +1,5 @@
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+// import ChevronLeft from '@mui/icons-material/ChevronLeft';
+// import ChevronRight from '@mui/icons-material/ChevronRight';
 import Divider from '@mui/material/Divider';
 import MuiDrawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
@@ -33,9 +33,9 @@ import {
 } from "miroir-core";
 import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
 import { FC, useMemo } from 'react';
-import { packageName } from '../../../constants';
-import { cleanLevel } from '../constants';
-import { useDeploymentEntityStateQuerySelector } from '../ReduxHooks';
+import { packageName } from '../../../constants.js';
+import { cleanLevel } from '../constants.js';
+import { useDeploymentEntityStateQuerySelector } from '../ReduxHooks.js';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"Sidebar");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -90,7 +90,7 @@ export interface ResponsiveAppBarProps {
 }
 
 // const Sidebar = MuiDrawer;
-const StyledDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
+const StyledDrawer = styled(MuiDrawer as any, { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
     width: SidebarWidth,
     flexShrink: 0,

@@ -646,11 +646,22 @@
           },
           "partial": { "type": "boolean", "optional": true },
           "carryOn": {
+            "type": "union",
             "optional": true,
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "jzodObject"
-            }
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "jzodObject"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "jzodUnion"
+                }
+              }
+            ]
           },
           "definition": {
             "type": "record",
@@ -737,6 +748,24 @@
                 "relativePath": "jzodElement"
               }
             }
+          },
+          "carryOn": {
+            "type": "union",
+            "optional": true,
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "jzodObject"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "jzodUnion"
+                }
+              }
+            ]
           },
           "definition": {
             "type": "object",

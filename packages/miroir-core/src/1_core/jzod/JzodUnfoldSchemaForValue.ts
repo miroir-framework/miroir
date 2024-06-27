@@ -41,7 +41,6 @@ export interface ResolvedJzodSchemaReturnTypeError {
 }
 export type ResolvedJzodSchemaReturnType = ResolvedJzodSchemaReturnTypeError | ResolvedJzodSchemaReturnTypeOK;
 
-
 export function resolveObjectExtendClauseAndDefinition(
   jzodObject: JzodObject,
   miroirFundamentalJzodSchema: JzodSchema,
@@ -732,6 +731,7 @@ export function resolveJzodSchemaReferenceInContext(
   return targetJzodSchema;
 }
 // ################################################################################################
+// TODO: redundant to resolveJzodSchemaReferenceInContext, resolveJzodSchemaReference is used only in JzodTools, refactor / merge with resolveJzodSchemaReferenceInContext.
 export function resolveJzodSchemaReference(
   miroirFundamentalJzodSchema: JzodSchema,
   jzodReference?: JzodReference,
