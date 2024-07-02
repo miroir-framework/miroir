@@ -102,74 +102,45 @@
           }
         ]
       },
-      "actionTemplateSchema": {
+      "actionHandler": {
         "type": "object",
         "definition": {
-          "actionTemplateParameters": {
-            "type": "schemaReference",
+          "interface": {
+            "type": "object",
             "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "jzodObject"
+              "actionJzodObjectSchema": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "jzodObject"
+                }
+              }
             }
           },
-          "actionTemplate": {
-            "type": "schemaReference",
-            "carryOn": {
-              "type": "union",
-              "discriminator": "templateType",
-              "definition": [
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "relativePath": "objectTemplateInnerReference"
-                  }
-                },
-                {
-                  "type": "object",
-                  "definition": {
-                    "templateType": {
-                      "type": "literal",
-                      "definition": "mustacheStringTemplate"
-                    },
-                    "definition": {
-                      "type": "string"
-                    }
-                  }
-                },
-                {
-                  "type": "object",
-                  "definition": {
-                    "templateType": {
-                      "type": "literal",
-                      "definition": "fullObjectTemplate"
-                    },
-                    "definition": {
-                      "type": "array",
-                      "definition": {
-                        "type": "tuple",
-                        "definition": [
-                          {
-                            "type": "schemaReference",
-                            "definition": {
-                              "relativePath": "objectTemplateInnerReference"
-                            }
-                          },
-                          {
-                            "type": "schemaReference",
-                            "definition": {
-                              "relativePath": "objectTemplate"
-                            }
-                          }
-                        ]
-                      }
-                    }
-                  }
-                }
-              ]
-            },
+          "implementation": {
+            "type": "object",
             "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "compositeAction"
+              "templates": {
+                "type": "record",
+                "optional": true,
+                "definition": {
+                  "type": "any"
+                }
+              },
+              "compositeActionTemplate": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeActionTemplate"
+                }
+              }
+            }
+          },
+          "params": {
+            "type": "record",
+            "optional": true,
+            "definition": {
+              "type": "any"
             }
           }
         }

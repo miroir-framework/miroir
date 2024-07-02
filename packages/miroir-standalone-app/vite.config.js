@@ -9,6 +9,9 @@ export default defineConfig({
   build: {
     // Relative to the root
     outDir: '../dist',
+    // rollupOptions: {
+    //   external: ["process"]
+    // },
   },
   // resolve: {
   //   alias: {
@@ -18,11 +21,14 @@ export default defineConfig({
   plugins: [
     nodePolyfills({
       // To add only specific polyfills, add them here. If no option is passed, adds all polyfills
-      include: ['crypto'],
+      // include: [ "crypto", "stream", "perf_hooks", "process" ],
+      include: [ "crypto" ],
       // To exclude specific polyfills, add them to this list. Note: if include is provided, this has no effect
-      // exclude: [
-      //   'http', // Excludes the polyfill for `http` and `node:http`.
-      // ],
+      exclude: [
+        // "stream", "perf_hooks"
+        "process"
+        // 'http', // Excludes the polyfill for `http` and `node:http`.
+      ],
       // // Whether to polyfill specific globals.
       // globals: {
       //   Buffer: true, // can also be 'build', 'dev', or false

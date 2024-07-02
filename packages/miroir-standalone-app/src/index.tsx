@@ -34,18 +34,18 @@ import {
 } from "miroir-core";
 import { createMswRestServer } from "miroir-server-msw-stub";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
-
-import { loglevelnext } from './loglevelnextImporter';
-import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage";
-import { HomePage } from "./miroir-fwk/4_view/routes/HomePage";
-import { MiroirContextReactProvider } from "./miroir-fwk/4_view/MiroirContextReactProvider";
-import { RootComponent } from "./miroir-fwk/4_view/components/RootComponent";
-import { ReportPage } from "./miroir-fwk/4_view/routes/ReportPage";
-import { miroirAppStartup } from "./startup";
-
 import { PersistenceReduxSaga, LocalCache, RestPersistenceClientAndRestClient } from "miroir-localcache-redux";
-import { packageName } from "./constants";
-import { cleanLevel } from "./miroir-fwk/4_view/constants";
+
+import { loglevelnext } from './loglevelnextImporter.js';
+import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage.js";
+import { HomePage } from "./miroir-fwk/4_view/routes/HomePage.js";
+import { MiroirContextReactProvider } from "./miroir-fwk/4_view/MiroirContextReactProvider.js";
+import { RootComponent } from "./miroir-fwk/4_view/components/RootComponent.js";
+import { ReportPage } from "./miroir-fwk/4_view/routes/ReportPage.js";
+import { miroirAppStartup } from "./startup.js";
+
+import { packageName } from "./constants.js";
+import { cleanLevel } from "./miroir-fwk/4_view/constants.js";
 
 import miroirConfigEmulatedServerIndexedDb from "./assets/miroirConfig-emulatedServer-IndexedDb.json";
 import miroirConfigRealServerFilesystemGit from "./assets/miroirConfig-realServer-filesystem-git.json";
@@ -53,7 +53,7 @@ import miroirConfigRealServerFilesystemTmp from "./assets/miroirConfig-realServe
 import miroirConfigRealServerIndexedDb from "./assets/miroirConfig-realServer-indexedDb.json";
 import miroirConfigRealServerSql from "./assets/miroirConfig-realServer-sql.json";
 import miroirConfig from "./assets/miroirConfig.json";
-import { ToolsPage } from "./miroir-fwk/4_view/routes/Tools";
+import { ToolsPage } from "./miroir-fwk/4_view/routes/Tools.js";
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
   // "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},

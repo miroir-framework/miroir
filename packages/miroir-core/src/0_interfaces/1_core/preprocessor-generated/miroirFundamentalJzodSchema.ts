@@ -7047,28 +7047,14 @@ export const miroirFundamentalJzodSchema = {
               "editable": false
             }
           },
-          "params": {
-            "type": "record",
-            "optional": true,
-            "definition": {
-              "type": "any"
-            }
-          },
           "definition": {
             "type": "array",
             "definition": {
               "type": "schemaReference",
               "definition": {
                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "objectTemplate"
+                "relativePath": "domainAction"
               }
-            }
-          },
-          "templatesDEFUNCT": {
-            "type": "record",
-            "optional": true,
-            "definition": {
-              "type": "any"
             }
           }
         }
@@ -7152,28 +7138,14 @@ export const miroirFundamentalJzodSchema = {
                   "editable": false
                 }
               },
-              "params": {
-                "type": "record",
-                "optional": true,
-                "definition": {
-                  "type": "any"
-                }
-              },
               "definition": {
                 "type": "array",
                 "definition": {
                   "type": "schemaReference",
                   "definition": {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "objectTemplate"
+                    "relativePath": "domainAction"
                   }
-                }
-              },
-              "templatesDEFUNCT": {
-                "type": "record",
-                "optional": true,
-                "definition": {
-                  "type": "any"
                 }
               }
             }
@@ -7275,859 +7247,48 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "actionTemplateSchema": {
+      "actionHandler": {
         "type": "object",
         "definition": {
-          "actionTemplateParameters": {
-            "type": "schemaReference",
+          "interface": {
+            "type": "object",
             "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "jzodObject"
+              "actionJzodObjectSchema": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "jzodObject"
+                }
+              }
             }
           },
-          "actionTemplate": {
-            "type": "schemaReference",
-            "carryOn": {
-              "type": "union",
-              "discriminator": "templateType",
-              "definition": [
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "relativePath": "objectTemplateInnerReference"
-                  }
-                },
-                {
-                  "type": "object",
-                  "definition": {
-                    "templateType": {
-                      "type": "literal",
-                      "definition": "mustacheStringTemplate"
-                    },
-                    "definition": {
-                      "type": "string"
-                    }
-                  }
-                },
-                {
-                  "type": "object",
-                  "definition": {
-                    "templateType": {
-                      "type": "literal",
-                      "definition": "fullObjectTemplate"
-                    },
-                    "definition": {
-                      "type": "array",
-                      "definition": {
-                        "type": "tuple",
-                        "definition": [
-                          {
-                            "type": "schemaReference",
-                            "definition": {
-                              "relativePath": "objectTemplateInnerReference"
-                            }
-                          },
-                          {
-                            "type": "schemaReference",
-                            "definition": {
-                              "relativePath": "objectTemplate"
-                            }
-                          }
-                        ]
-                      }
-                    }
-                  }
-                }
-              ]
-            },
+          "implementation": {
+            "type": "object",
             "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "compositeAction"
+              "templates": {
+                "type": "record",
+                "optional": true,
+                "definition": {
+                  "type": "any"
+                }
+              },
+              "compositeActionTemplate": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeActionTemplate"
+                }
+              }
+            }
+          },
+          "params": {
+            "type": "record",
+            "optional": true,
+            "definition": {
+              "type": "any"
             }
           }
         }
-      },
-      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference": {
-        "type": "union",
-        "discriminator": "templateType",
-        "definition": [
-          {
-            "type": "object",
-            "definition": {
-              "templateType": {
-                "type": "literal",
-                "definition": "constant"
-              },
-              "referenceUuid": {
-                "type": "string"
-              }
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "templateType": {
-                "type": "literal",
-                "definition": "contextReference"
-              },
-              "referenceName": {
-                "type": "string"
-              }
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "templateType": {
-                "type": "literal",
-                "definition": "parameterReference"
-              },
-              "referenceName": {
-                "type": "string"
-              }
-            }
-          }
-        ]
-      },
-      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplate": {
-        "type": "union",
-        "discriminator": "templateType",
-        "definition": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "objectTemplateInnerReference"
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "templateType": {
-                "type": "literal",
-                "definition": "mustacheStringTemplate"
-              },
-              "definition": {
-                "type": "string"
-              }
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "templateType": {
-                "type": "literal",
-                "definition": "fullObjectTemplate"
-              },
-              "definition": {
-                "type": "array",
-                "definition": {
-                  "type": "tuple",
-                  "definition": [
-                    {
-                      "type": "schemaReference",
-                      "definition": {
-                        "relativePath": "objectTemplateInnerReference"
-                      }
-                    },
-                    {
-                      "type": "schemaReference",
-                      "definition": {
-                        "relativePath": "objectTemplate"
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        ]
-      },
-      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction": {
-        "type": "union",
-        "definition": [
-          {
-            "type": "union",
-            "discriminator": "templateType",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "objectTemplateInnerReference"
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "templateType": {
-                    "type": "literal",
-                    "definition": "mustacheStringTemplate"
-                  },
-                  "definition": {
-                    "type": "string"
-                  }
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "templateType": {
-                    "type": "literal",
-                    "definition": "fullObjectTemplate"
-                  },
-                  "definition": {
-                    "type": "array",
-                    "definition": {
-                      "type": "tuple",
-                      "definition": [
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "relativePath": "objectTemplateInnerReference"
-                          }
-                        },
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "relativePath": "objectTemplate"
-                          }
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            ]
-          },
-          {
-            "type": "object",
-            "definition": {
-              "actionType": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "literal",
-                    "definition": "compositeAction"
-                  },
-                  {
-                    "type": "union",
-                    "discriminator": "templateType",
-                    "definition": [
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "objectTemplateInnerReference"
-                        }
-                      },
-                      {
-                        "type": "object",
-                        "definition": {
-                          "templateType": {
-                            "type": "literal",
-                            "definition": "mustacheStringTemplate"
-                          },
-                          "definition": {
-                            "type": "string"
-                          }
-                        }
-                      },
-                      {
-                        "type": "object",
-                        "definition": {
-                          "templateType": {
-                            "type": "literal",
-                            "definition": "fullObjectTemplate"
-                          },
-                          "definition": {
-                            "type": "array",
-                            "definition": {
-                              "type": "tuple",
-                              "definition": [
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "objectTemplateInnerReference"
-                                  }
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "objectTemplate"
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  }
-                ]
-              },
-              "actionName": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "literal",
-                    "definition": "sequence"
-                  },
-                  {
-                    "type": "union",
-                    "discriminator": "templateType",
-                    "definition": [
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "objectTemplateInnerReference"
-                        }
-                      },
-                      {
-                        "type": "object",
-                        "definition": {
-                          "templateType": {
-                            "type": "literal",
-                            "definition": "mustacheStringTemplate"
-                          },
-                          "definition": {
-                            "type": "string"
-                          }
-                        }
-                      },
-                      {
-                        "type": "object",
-                        "definition": {
-                          "templateType": {
-                            "type": "literal",
-                            "definition": "fullObjectTemplate"
-                          },
-                          "definition": {
-                            "type": "array",
-                            "definition": {
-                              "type": "tuple",
-                              "definition": [
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "objectTemplateInnerReference"
-                                  }
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "objectTemplate"
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  }
-                ]
-              },
-              "deploymentUuid": {
-                "type": "union",
-                "optional": true,
-                "extra": {
-                  "defaultLabel": "Module Deployment Uuid",
-                  "editable": false
-                },
-                "definition": [
-                  {
-                    "type": "uuid",
-                    "optional": true,
-                    "extra": {
-                      "defaultLabel": "Module Deployment Uuid",
-                      "editable": false
-                    }
-                  },
-                  {
-                    "type": "union",
-                    "discriminator": "templateType",
-                    "definition": [
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "objectTemplateInnerReference"
-                        }
-                      },
-                      {
-                        "type": "object",
-                        "definition": {
-                          "templateType": {
-                            "type": "literal",
-                            "definition": "mustacheStringTemplate"
-                          },
-                          "definition": {
-                            "type": "string"
-                          }
-                        }
-                      },
-                      {
-                        "type": "object",
-                        "definition": {
-                          "templateType": {
-                            "type": "literal",
-                            "definition": "fullObjectTemplate"
-                          },
-                          "definition": {
-                            "type": "array",
-                            "definition": {
-                              "type": "tuple",
-                              "definition": [
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "objectTemplateInnerReference"
-                                  }
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "objectTemplate"
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  }
-                ]
-              },
-              "params": {
-                "type": "union",
-                "optional": true,
-                "definition": [
-                  {
-                    "type": "record",
-                    "optional": true,
-                    "definition": {
-                      "type": "any"
-                    }
-                  },
-                  {
-                    "type": "union",
-                    "discriminator": "templateType",
-                    "definition": [
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "objectTemplateInnerReference"
-                        }
-                      },
-                      {
-                        "type": "object",
-                        "definition": {
-                          "templateType": {
-                            "type": "literal",
-                            "definition": "mustacheStringTemplate"
-                          },
-                          "definition": {
-                            "type": "string"
-                          }
-                        }
-                      },
-                      {
-                        "type": "object",
-                        "definition": {
-                          "templateType": {
-                            "type": "literal",
-                            "definition": "fullObjectTemplate"
-                          },
-                          "definition": {
-                            "type": "array",
-                            "definition": {
-                              "type": "tuple",
-                              "definition": [
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "objectTemplateInnerReference"
-                                  }
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "objectTemplate"
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  }
-                ]
-              },
-              "definition": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "array",
-                    "definition": {
-                      "type": "union",
-                      "definition": [
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplate"
-                          },
-                          "context": {}
-                        },
-                        {
-                          "type": "union",
-                          "discriminator": "templateType",
-                          "definition": [
-                            {
-                              "type": "schemaReference",
-                              "definition": {
-                                "relativePath": "objectTemplateInnerReference"
-                              }
-                            },
-                            {
-                              "type": "object",
-                              "definition": {
-                                "templateType": {
-                                  "type": "literal",
-                                  "definition": "mustacheStringTemplate"
-                                },
-                                "definition": {
-                                  "type": "string"
-                                }
-                              }
-                            },
-                            {
-                              "type": "object",
-                              "definition": {
-                                "templateType": {
-                                  "type": "literal",
-                                  "definition": "fullObjectTemplate"
-                                },
-                                "definition": {
-                                  "type": "array",
-                                  "definition": {
-                                    "type": "tuple",
-                                    "definition": [
-                                      {
-                                        "type": "schemaReference",
-                                        "definition": {
-                                          "relativePath": "objectTemplateInnerReference"
-                                        }
-                                      },
-                                      {
-                                        "type": "schemaReference",
-                                        "definition": {
-                                          "relativePath": "objectTemplate"
-                                        }
-                                      }
-                                    ]
-                                  }
-                                }
-                              }
-                            }
-                          ]
-                        }
-                      ],
-                      "context": {}
-                    }
-                  },
-                  {
-                    "type": "union",
-                    "discriminator": "templateType",
-                    "definition": [
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "objectTemplateInnerReference"
-                        }
-                      },
-                      {
-                        "type": "object",
-                        "definition": {
-                          "templateType": {
-                            "type": "literal",
-                            "definition": "mustacheStringTemplate"
-                          },
-                          "definition": {
-                            "type": "string"
-                          }
-                        }
-                      },
-                      {
-                        "type": "object",
-                        "definition": {
-                          "templateType": {
-                            "type": "literal",
-                            "definition": "fullObjectTemplate"
-                          },
-                          "definition": {
-                            "type": "array",
-                            "definition": {
-                              "type": "tuple",
-                              "definition": [
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "objectTemplateInnerReference"
-                                  }
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "objectTemplate"
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  }
-                ]
-              },
-              "templatesDEFUNCT": {
-                "type": "union",
-                "optional": true,
-                "definition": [
-                  {
-                    "type": "record",
-                    "optional": true,
-                    "definition": {
-                      "type": "any"
-                    }
-                  },
-                  {
-                    "type": "union",
-                    "discriminator": "templateType",
-                    "definition": [
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "objectTemplateInnerReference"
-                        }
-                      },
-                      {
-                        "type": "object",
-                        "definition": {
-                          "templateType": {
-                            "type": "literal",
-                            "definition": "mustacheStringTemplate"
-                          },
-                          "definition": {
-                            "type": "string"
-                          }
-                        }
-                      },
-                      {
-                        "type": "object",
-                        "definition": {
-                          "templateType": {
-                            "type": "literal",
-                            "definition": "fullObjectTemplate"
-                          },
-                          "definition": {
-                            "type": "array",
-                            "definition": {
-                              "type": "tuple",
-                              "definition": [
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "objectTemplateInnerReference"
-                                  }
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "objectTemplate"
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          }
-        ]
-      },
-      "actionTemplateSchemaConverted": {
-        "type": "union",
-        "carryOn": {
-          "type": "union",
-          "discriminator": "templateType",
-          "definition": [
-            {
-              "type": "schemaReference",
-              "definition": {
-                "relativePath": "objectTemplateInnerReference"
-              }
-            },
-            {
-              "type": "object",
-              "definition": {
-                "templateType": {
-                  "type": "literal",
-                  "definition": "mustacheStringTemplate"
-                },
-                "definition": {
-                  "type": "string"
-                }
-              }
-            },
-            {
-              "type": "object",
-              "definition": {
-                "templateType": {
-                  "type": "literal",
-                  "definition": "fullObjectTemplate"
-                },
-                "definition": {
-                  "type": "array",
-                  "definition": {
-                    "type": "tuple",
-                    "definition": [
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "objectTemplateInnerReference"
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "objectTemplate"
-                        }
-                      }
-                    ]
-                  }
-                }
-              }
-            }
-          ]
-        },
-        "definition": [
-          {
-            "type": "schemaReference",
-            "carryOn": {
-              "type": "union",
-              "discriminator": "templateType",
-              "definition": [
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "relativePath": "objectTemplateInnerReference"
-                  }
-                },
-                {
-                  "type": "object",
-                  "definition": {
-                    "templateType": {
-                      "type": "literal",
-                      "definition": "mustacheStringTemplate"
-                    },
-                    "definition": {
-                      "type": "string"
-                    }
-                  }
-                },
-                {
-                  "type": "object",
-                  "definition": {
-                    "templateType": {
-                      "type": "literal",
-                      "definition": "fullObjectTemplate"
-                    },
-                    "definition": {
-                      "type": "array",
-                      "definition": {
-                        "type": "tuple",
-                        "definition": [
-                          {
-                            "type": "schemaReference",
-                            "definition": {
-                              "relativePath": "objectTemplateInnerReference"
-                            }
-                          },
-                          {
-                            "type": "schemaReference",
-                            "definition": {
-                              "relativePath": "objectTemplate"
-                            }
-                          }
-                        ]
-                      }
-                    }
-                  }
-                }
-              ]
-            },
-            "definition": {
-              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
-            }
-          },
-          {
-            "type": "union",
-            "discriminator": "templateType",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "objectTemplateInnerReference"
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "templateType": {
-                    "type": "literal",
-                    "definition": "mustacheStringTemplate"
-                  },
-                  "definition": {
-                    "type": "string"
-                  }
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "templateType": {
-                    "type": "literal",
-                    "definition": "fullObjectTemplate"
-                  },
-                  "definition": {
-                    "type": "array",
-                    "definition": {
-                      "type": "tuple",
-                      "definition": [
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "relativePath": "objectTemplateInnerReference"
-                          }
-                        },
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "relativePath": "objectTemplate"
-                          }
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            ]
-          }
-        ]
       },
       "modelActionReplayableAction": {
         "type": "union",
@@ -8245,6 +7406,966 @@ export const miroirFundamentalJzodSchema = {
             "definition": "dataTransformer"
           }
         }
+      },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference": {
+        "type": "union",
+        "discriminator": "templateType",
+        "definition": [
+          {
+            "type": "object",
+            "definition": {
+              "templateType": {
+                "type": "literal",
+                "definition": "constant"
+              },
+              "referenceUuid": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "templateType": {
+                "type": "literal",
+                "definition": "contextReference"
+              },
+              "referenceName": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "templateType": {
+                "type": "literal",
+                "definition": "parameterReference"
+              },
+              "referenceName": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplate": {
+        "type": "union",
+        "discriminator": "templateType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "objectTemplateInnerReference"
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "templateType": {
+                "type": "literal",
+                "definition": "mustacheStringTemplate"
+              },
+              "definition": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "templateType": {
+                "type": "literal",
+                "definition": "fullObjectTemplate"
+              },
+              "definition": {
+                "type": "array",
+                "definition": {
+                  "type": "tuple",
+                  "definition": [
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "objectTemplateInnerReference"
+                      }
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "objectTemplate"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "literal",
+            "definition": "model"
+          },
+          {
+            "type": "literal",
+            "definition": "data"
+          }
+        ]
+      },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance": {
+        "type": "object",
+        "nonStrict": true,
+        "definition": {
+          "uuid": {
+            "type": "uuid",
+            "extra": {
+              "id": 1,
+              "defaultLabel": "Uuid",
+              "editable": false
+            }
+          },
+          "parentName": {
+            "type": "string",
+            "optional": true,
+            "extra": {
+              "id": 2,
+              "defaultLabel": "Entity Name",
+              "editable": false
+            }
+          },
+          "parentUuid": {
+            "type": "uuid",
+            "extra": {
+              "id": 3,
+              "defaultLabel": "Entity Uuid",
+              "editable": false
+            }
+          },
+          "conceptLevel": {
+            "type": "enum",
+            "definition": [
+              "MetaModel",
+              "Model",
+              "Data"
+            ],
+            "optional": true,
+            "extra": {
+              "id": 4,
+              "defaultLabel": "Concept Level",
+              "editable": false
+            }
+          }
+        }
+      },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection": {
+        "type": "object",
+        "definition": {
+          "parentName": {
+            "type": "string",
+            "optional": true
+          },
+          "parentUuid": {
+            "type": "string"
+          },
+          "applicationSection": {
+            "type": "schemaReference",
+            "optional": false,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "applicationSection"
+            }
+          },
+          "instances": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "entityInstance"
+              }
+            }
+          }
+        }
+      },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "instanceAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "createInstance"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Uuid",
+                  "editable": false
+                }
+              },
+              "applicationSection": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "objects": {
+                "type": "array",
+                "extra": {
+                  "id": 2,
+                  "defaultLabel": "Entity Instances to create",
+                  "editable": true
+                },
+                "definition": {
+                  "type": "schemaReference",
+                  "optional": false,
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entityInstanceCollection"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "instanceAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "deleteInstance"
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Uuid",
+                  "editable": false
+                }
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+              },
+              "applicationSection": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "includeInTransaction": {
+                "type": "boolean",
+                "optional": true
+              },
+              "objects": {
+                "type": "array",
+                "extra": {
+                  "id": 2,
+                  "defaultLabel": "Entity Instances to delete",
+                  "editable": true
+                },
+                "definition": {
+                  "type": "schemaReference",
+                  "optional": false,
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entityInstanceCollection"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "instanceAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "updateInstance"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Uuid",
+                  "editable": false
+                }
+              },
+              "applicationSection": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "includeInTransaction": {
+                "type": "boolean",
+                "optional": true
+              },
+              "objects": {
+                "type": "array",
+                "extra": {
+                  "id": 2,
+                  "defaultLabel": "Entity Instances to update",
+                  "editable": true
+                },
+                "definition": {
+                  "type": "schemaReference",
+                  "optional": false,
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entityInstanceCollection"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction": {
+        "type": "schemaReference",
+        "optional": false,
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "undoRedoAction"
+        }
+      },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction": {
+        "type": "schemaReference",
+        "optional": false,
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "storeOrBundleAction"
+        }
+      },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction": {
+        "type": "schemaReference",
+        "optional": false,
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "modelAction"
+        }
+      },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction": {
+        "type": "schemaReference",
+        "optional": false,
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "instanceAction"
+        }
+      },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undefined": {
+        "type": "object",
+        "definition": {
+          "actionType": {
+            "type": "literal",
+            "definition": "transactionalInstanceAction"
+          },
+          "deploymentUuid": {
+            "type": "uuid",
+            "optional": true,
+            "extra": {
+              "defaultLabel": "Module Deployment Uuid",
+              "editable": false
+            }
+          },
+          "instanceAction": {
+            "type": "schemaReference",
+            "optional": false,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "instanceCUDAction"
+            }
+          }
+        }
+      },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "optional": false,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "undoRedoAction"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "optional": false,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "storeOrBundleAction"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "optional": false,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "modelAction"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "optional": false,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "instanceAction"
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "transactionalInstanceAction"
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "optional": true,
+                "extra": {
+                  "defaultLabel": "Module Deployment Uuid",
+                  "editable": false
+                }
+              },
+              "instanceAction": {
+                "type": "schemaReference",
+                "optional": false,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "instanceCUDAction"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "compositeAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "sequence"
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "optional": true,
+                "extra": {
+                  "defaultLabel": "Module Deployment Uuid",
+                  "editable": false
+                }
+              },
+              "definition": {
+                "type": "array",
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "domainAction"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "union",
+            "discriminator": {
+              "discriminatorType": "string",
+              "value": "templateType"
+            },
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "objectTemplateInnerReference"
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "templateType": {
+                    "type": "literal",
+                    "definition": "mustacheStringTemplate"
+                  },
+                  "definition": {
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "templateType": {
+                    "type": "literal",
+                    "definition": "fullObjectTemplate"
+                  },
+                  "definition": {
+                    "type": "array",
+                    "definition": {
+                      "type": "tuple",
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "objectTemplateInnerReference"
+                          }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "objectTemplate"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "compositeAction"
+                  },
+                  {
+                    "type": "union",
+                    "discriminator": {
+                      "discriminatorType": "string",
+                      "value": "templateType"
+                    },
+                    "definition": [
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "objectTemplateInnerReference"
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "definition": {
+                          "templateType": {
+                            "type": "literal",
+                            "definition": "mustacheStringTemplate"
+                          },
+                          "definition": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "definition": {
+                          "templateType": {
+                            "type": "literal",
+                            "definition": "fullObjectTemplate"
+                          },
+                          "definition": {
+                            "type": "array",
+                            "definition": {
+                              "type": "tuple",
+                              "definition": [
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "objectTemplateInnerReference"
+                                  }
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "objectTemplate"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "sequence"
+                  },
+                  {
+                    "type": "union",
+                    "discriminator": {
+                      "discriminatorType": "string",
+                      "value": "templateType"
+                    },
+                    "definition": [
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "objectTemplateInnerReference"
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "definition": {
+                          "templateType": {
+                            "type": "literal",
+                            "definition": "mustacheStringTemplate"
+                          },
+                          "definition": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "definition": {
+                          "templateType": {
+                            "type": "literal",
+                            "definition": "fullObjectTemplate"
+                          },
+                          "definition": {
+                            "type": "array",
+                            "definition": {
+                              "type": "tuple",
+                              "definition": [
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "objectTemplateInnerReference"
+                                  }
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "objectTemplate"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "optional": true,
+                "extra": {
+                  "defaultLabel": "Module Deployment Uuid",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
+                    "optional": true,
+                    "extra": {
+                      "defaultLabel": "Module Deployment Uuid",
+                      "editable": false
+                    }
+                  },
+                  {
+                    "type": "union",
+                    "discriminator": {
+                      "discriminatorType": "string",
+                      "value": "templateType"
+                    },
+                    "definition": [
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "objectTemplateInnerReference"
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "definition": {
+                          "templateType": {
+                            "type": "literal",
+                            "definition": "mustacheStringTemplate"
+                          },
+                          "definition": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "definition": {
+                          "templateType": {
+                            "type": "literal",
+                            "definition": "fullObjectTemplate"
+                          },
+                          "definition": {
+                            "type": "array",
+                            "definition": {
+                              "type": "tuple",
+                              "definition": [
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "objectTemplateInnerReference"
+                                  }
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "objectTemplate"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              "definition": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "array",
+                    "definition": {
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"
+                          },
+                          "context": {}
+                        },
+                        {
+                          "type": "union",
+                          "discriminator": {
+                            "discriminatorType": "string",
+                            "value": "templateType"
+                          },
+                          "definition": [
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "objectTemplateInnerReference"
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "definition": {
+                                "templateType": {
+                                  "type": "literal",
+                                  "definition": "mustacheStringTemplate"
+                                },
+                                "definition": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "definition": {
+                                "templateType": {
+                                  "type": "literal",
+                                  "definition": "fullObjectTemplate"
+                                },
+                                "definition": {
+                                  "type": "array",
+                                  "definition": {
+                                    "type": "tuple",
+                                    "definition": [
+                                      {
+                                        "type": "schemaReference",
+                                        "definition": {
+                                          "relativePath": "objectTemplateInnerReference"
+                                        }
+                                      },
+                                      {
+                                        "type": "schemaReference",
+                                        "definition": {
+                                          "relativePath": "objectTemplate"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ],
+                      "context": {}
+                    }
+                  },
+                  {
+                    "type": "union",
+                    "discriminator": {
+                      "discriminatorType": "string",
+                      "value": "templateType"
+                    },
+                    "definition": [
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "objectTemplateInnerReference"
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "definition": {
+                          "templateType": {
+                            "type": "literal",
+                            "definition": "mustacheStringTemplate"
+                          },
+                          "definition": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "definition": {
+                          "templateType": {
+                            "type": "literal",
+                            "definition": "fullObjectTemplate"
+                          },
+                          "definition": {
+                            "type": "array",
+                            "definition": {
+                              "type": "tuple",
+                              "definition": [
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "objectTemplateInnerReference"
+                                  }
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "objectTemplate"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "compositeActionTemplate": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
+            }
+          },
+          {
+            "type": "union",
+            "discriminator": {
+              "discriminatorType": "string",
+              "value": "templateType"
+            },
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "objectTemplateInnerReference"
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "templateType": {
+                    "type": "literal",
+                    "definition": "mustacheStringTemplate"
+                  },
+                  "definition": {
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "templateType": {
+                    "type": "literal",
+                    "definition": "fullObjectTemplate"
+                  },
+                  "definition": {
+                    "type": "array",
+                    "definition": {
+                      "type": "tuple",
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "objectTemplateInnerReference"
+                          }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "objectTemplate"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ]
       }
     },
     "definition": {

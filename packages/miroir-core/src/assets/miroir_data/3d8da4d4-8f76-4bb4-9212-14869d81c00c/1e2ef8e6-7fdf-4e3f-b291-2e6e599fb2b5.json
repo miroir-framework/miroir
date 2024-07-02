@@ -95,28 +95,14 @@
               "optional": true,
               "extra": { "defaultLabel": "Module Deployment Uuid", "editable": false }
             },
-            "params": {
-              "type": "record",
-              "optional": true,
-              "definition": {
-                "type": "any"
-              }
-            },
             "definition": {
               "type": "array",
               "definition": {
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "objectTemplate"
+                  "relativePath": "domainAction"
                 }
-              }
-            },
-            "templatesDEFUNCT": {
-              "type": "record",
-              "optional": true,
-              "definition": {
-                "type": "any"
               }
             }
           }

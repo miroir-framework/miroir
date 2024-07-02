@@ -756,29 +756,7 @@ export class DomainController implements DomainControllerInterface {
 
     switch (domainAction.actionType) {
       case 'compositeAction':{
-        // resolve templatesDEFUNCT
-        const resolvedTemplates: any = {}
-        // going imperatively to handle inner references
-        if (domainAction.templatesDEFUNCT) {
-          for (const t of Object.entries(domainAction.templatesDEFUNCT)) {
-            const resolvedTemplate = renderObjectTemplate(
-              t[0],
-              t[1],
-              {...domainAction.params,...resolvedTemplates},
-              undefined
-            );
-            log.info("handleAction compositeAction resolved template", t[0], resolvedTemplate)
-            resolvedTemplates[t[0]] = resolvedTemplate
-          }
-        }
-        // resolve domainAction array templatesDEFUNCT
-        for (const a of domainAction.definition) {
-          const currentAction = renderObjectTemplate(
-            "ROOT",
-            a,
-            {...domainAction.params, ...resolvedTemplates},
-            undefined
-          )
+        for (const currentAction of domainAction.definition) {
           log.info("handleAction compositeAction resolved action", currentAction)
           const actionResult = await this.handleAction(currentAction, currentModel)
           if (actionResult?.status != "ok") {
