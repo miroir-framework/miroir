@@ -43,6 +43,7 @@
       },
       "parentDefinitionVersionUuid": {
         "type": "uuid",
+        "optional": true,
         "extra": {
           "id": 4,
           "defaultLabel": "Entity Definition Version Uuid",

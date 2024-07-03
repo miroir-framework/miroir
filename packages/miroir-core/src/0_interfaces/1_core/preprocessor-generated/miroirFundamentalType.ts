@@ -1320,9 +1320,6 @@ export type ActionHandler = {
         } | undefined;
         compositeActionTemplate: CompositeActionTemplate;
     };
-    params?: {
-        [x: string]: any;
-    } | undefined;
 };
 export type ModelActionReplayableAction = ModelActionAlterEntityAttribute | ModelActionCreateEntity | ModelActionDropEntity | ModelActionRenameEntity;
 export type BundleAction = {
@@ -1648,7 +1645,7 @@ export const compositeAction: z.ZodType<CompositeAction> = z.object({actionType:
 export const domainAction: z.ZodType<DomainAction> = z.union([z.lazy(() =>undoRedoAction), z.lazy(() =>storeOrBundleAction), z.lazy(() =>modelAction), z.lazy(() =>instanceAction), z.object({actionType:z.literal("transactionalInstanceAction"), deploymentUuid:z.string().uuid().optional(), instanceAction:z.lazy(() =>instanceCUDAction)}).strict(), z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), deploymentUuid:z.string().uuid().optional(), definition:z.array(z.lazy(() =>domainAction))}).strict()]);
 export const objectTemplateInnerReference: z.ZodType<ObjectTemplateInnerReference> = z.union([z.object({templateType:z.literal("constant"), referenceUuid:z.string()}).strict(), z.object({templateType:z.literal("contextReference"), referenceName:z.string()}).strict(), z.object({templateType:z.literal("parameterReference"), referenceName:z.string()}).strict()]);
 export const objectTemplate: z.ZodType<ObjectTemplate> = z.union([z.lazy(() =>objectTemplateInnerReference), z.object({templateType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict(), z.object({templateType:z.literal("fullObjectTemplate"), definition:z.array(z.tuple([z.lazy(() =>objectTemplateInnerReference), z.lazy(() =>objectTemplate)]))}).strict()]);
-export const actionHandler: z.ZodType<ActionHandler> = z.object({interface:z.object({actionJzodObjectSchema:z.lazy(() =>jzodObject)}).strict(), implementation:z.object({templates:z.record(z.string(),z.any()).optional(), compositeActionTemplate:z.lazy(() =>compositeActionTemplate)}).strict(), params:z.record(z.string(),z.any()).optional()}).strict();
+export const actionHandler: z.ZodType<ActionHandler> = z.object({interface:z.object({actionJzodObjectSchema:z.lazy(() =>jzodObject)}).strict(), implementation:z.object({templates:z.record(z.string(),z.any()).optional(), compositeActionTemplate:z.lazy(() =>compositeActionTemplate)}).strict()}).strict();
 export const modelActionReplayableAction: z.ZodType<ModelActionReplayableAction> = z.union([z.lazy(() =>modelActionAlterEntityAttribute), z.lazy(() =>modelActionCreateEntity), z.lazy(() =>modelActionDropEntity), z.lazy(() =>modelActionRenameEntity)]);
 export const bundleAction: z.ZodType<BundleAction> = z.union([z.object({actionType:z.literal("bundleAction"), actionName:z.literal("createBundle"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("bundleAction"), actionName:z.literal("deleteBundle"), deploymentUuid:z.string().uuid()}).strict()]);
 export const storeOrBundleAction: z.ZodType<StoreOrBundleAction> = z.union([z.lazy(() =>storeManagementAction), z.lazy(() =>bundleAction)]);

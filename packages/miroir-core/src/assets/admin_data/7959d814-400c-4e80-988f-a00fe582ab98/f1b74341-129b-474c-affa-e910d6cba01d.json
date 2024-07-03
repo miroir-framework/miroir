@@ -1,0 +1,26 @@
+{
+  "uuid": "f1b74341-129b-474c-affa-e910d6cba01d",
+  "parentName": "Deployment",
+  "parentUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
+  "name": "ParisApplicationSqlDeployment",
+  "defaultLabel": "ParisApplicationSqlDeployment",
+  "application": "a118ba22-1be2-423f-aa77-f0baaa76313f",
+  "description": "The default Sql Deployment for Application Paris",
+  "configuration": {
+    "admin": {
+      "emulatedServerType": "sql",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "miroirAdmin"
+    },
+    "model": {
+      "emulatedServerType": "sql",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "ParisModel"
+    },
+    "data": {
+      "emulatedServerType": "sql",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "ParisData"
+    }
+  }
+}

@@ -164,7 +164,7 @@ export const ReportPage = () => {
 
   const test1AppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentTest1.uuid);
   const test4AppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentTest4.uuid);
-  // const parisAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentParis.uuid);
+  const parisAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentParis.uuid);
 
   // log.info("ReportPage currentModel", currentModel);
 
@@ -227,11 +227,11 @@ export const ReportPage = () => {
           miroirMetaModel, 
           test4AppModel,
         ),
-        // [adminConfigurationDeploymentParis.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-        //   adminConfigurationDeploymentParis.uuid,
-        //   miroirMetaModel, 
-        //   parisAppModel,
-        // ),
+        [adminConfigurationDeploymentParis.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+          adminConfigurationDeploymentParis.uuid,
+          miroirMetaModel, 
+          parisAppModel,
+        ),
       }
     ),
     // [miroirMetaModel, libraryAppModel, adminAppModel, test1AppModel, test4AppModel, parisAppModel]

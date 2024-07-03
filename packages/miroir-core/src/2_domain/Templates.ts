@@ -39,7 +39,7 @@ export const resolveActionTemplateContextReference = (
   contextResults: any
 ): any => {
   // TODO: copy / paste (almost?) from query parameter lookup!
-  // log.info("resolveContextReference for queryObjectReference=", queryObjectReference, "queryParams=", queryParams,"contextResults=", contextResults)
+  // log.info("resolveActionTemplateContextReference for queryObjectReference=", queryObjectReference, "queryParams=", queryParams,"contextResults=", contextResults)
   if (
     (queryObjectReference.templateType == "contextReference" &&
       (!contextResults || !contextResults[queryObjectReference.referenceName])) ||
@@ -47,9 +47,10 @@ export const resolveActionTemplateContextReference = (
       (typeof queryParams != "object" || !Object.keys(queryParams).includes(queryObjectReference.referenceName)))
   ) {
     // checking that given reference does exist
+    log.warn("could not find", queryObjectReference.templateType, queryObjectReference.referenceName, "in", queryObjectReference.templateType == "contextReference"?JSON.stringify(contextResults):Object.keys(queryParams))
     return {
       elementType: "failure",
-      elementValue: { queryFailure: "ReferenceNotFound", queryContext: JSON.stringify(contextResults) },
+      elementValue: { queryFailure: "ReferenceNotFound", queryContext: "no " + queryObjectReference.referenceName + " in " + queryObjectReference.templateType == "contextReference"?JSON.stringify(contextResults):Object.keys(queryParams) },
     };
   }
 
@@ -74,14 +75,14 @@ export const resolveActionTemplateContextReference = (
       ? { elementType: "instanceUuid", elementValue: queryObjectReference.referenceUuid } // new object
       : undefined; /* this should not happen. Provide "error" value instead?*/
 
-  // log.info(
-  //   "resolveActionTemplateContextReference for queryObjectReference=",
-  //   queryObjectReference,
-  //   "resolved as",
-  //   reference,
-  //   "for queryParams",
-  //   queryParams
-  // );
+  log.info(
+    "resolveActionTemplateContextReference for queryObjectReference=",
+    queryObjectReference,
+    "resolved as",
+    reference,
+    "for queryParams",
+    queryParams
+  );
 
   return reference;
 };

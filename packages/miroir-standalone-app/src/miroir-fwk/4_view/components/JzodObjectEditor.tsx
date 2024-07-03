@@ -302,19 +302,10 @@ export const JzodObjectEditor = (
   // );
 
   const currentValue = getValue(props.formState,props.rootLesslistKeyArray);
-  log.info("#####################################################################################");
-  log.info("JzodObjectEditor", props.listKey, "count", count, "currentValue", currentValue);
-  log.info("JzodObjectEditor", props.listKey, "count", count, "resolvedJzodSchema", props.resolvedJzodSchema);
-  log.info("JzodObjectEditor", props.listKey, "count", count, "rawJzodSchema", props.rawJzodSchema?.type, props.rawJzodSchema);
-  // log.info("JzodObjectEditor", props.listKey, "count", count, "currentValue", JSON.stringify(currentValue, null, 2));
-  // log.info("JzodObjectEditor", props.listKey, "count", count, "resolvedJzodSchema", JSON.stringify(props.resolvedJzodSchema, null, 2));
-  // log.info("JzodObjectEditor", props.listKey, "count", count, "rawJzodSchema", props.rawJzodSchema?.type, JSON.stringify(props.rawJzodSchema, null, 2));
-  // log.info(
-  //   "rendering",
-  //   props.listKey,
-  //   "currentValue",
-  //   currentValue,
-  // );
+  // log.info("#####################################################################################");
+  // log.info("JzodObjectEditor", props.listKey, "count", count, "currentValue", currentValue);
+  // log.info("JzodObjectEditor", props.listKey, "count", count, "resolvedJzodSchema", props.resolvedJzodSchema);
+  // log.info("JzodObjectEditor", props.listKey, "count", count, "rawJzodSchema", props.rawJzodSchema?.type, props.rawJzodSchema);
 
   const [itemsOrder, setItemsOrder] = useState<any[]>(
     getItemsOrder(currentValue, props.resolvedJzodSchema)
@@ -371,14 +362,14 @@ export const JzodObjectEditor = (
     );
   }
   const unfoldedRawSchema:JzodElement = unfoldedRawSchemaReturnType.element
-  log.info(
-    "JzodObjectEditor",
-    props.listKey,
-    "rawJzodSchema",
-    props.rawJzodSchema,
-    "unfoldedRawSchema",
-    unfoldedRawSchema,
-  );
+  // log.info(
+  //   "JzodObjectEditor",
+  //   props.listKey,
+  //   "rawJzodSchema",
+  //   props.rawJzodSchema,
+  //   "unfoldedRawSchema",
+  //   unfoldedRawSchema,
+  // );
   const objectUniondiscriminatorValues:string[] = useMemo(
     () => {
       if (
@@ -543,23 +534,22 @@ export const JzodObjectEditor = (
         foreignKeyObjectsFetchQueryParams
       );
 
-    // log.info("foreignKeyObjects", foreignKeyObjects);
-    if (unfoldedRawSchema.type == "uuid") {
-      log.info(
-        "JzodObjectEditor computed foreign keys for uuid schema:",
-        props.listKey,
-        "currentValue",
-        currentValue,
-        "foreignKeyObjectsFetchQueryParams",
-        foreignKeyObjectsFetchQueryParams,
-        "props.currentDeploymentUuid",
-        props.currentDeploymentUuid,
-        "unfoldedRawSchema",
-        unfoldedRawSchema,
-        "foreignKeyObjects", foreignKeyObjects
-      )
+    // if (unfoldedRawSchema.type == "uuid") {
+    //   log.info(
+    //     "JzodObjectEditor computed foreign keys for uuid schema:",
+    //     props.listKey,
+    //     "currentValue",
+    //     currentValue,
+    //     "foreignKeyObjectsFetchQueryParams",
+    //     foreignKeyObjectsFetchQueryParams,
+    //     "props.currentDeploymentUuid",
+    //     props.currentDeploymentUuid,
+    //     "unfoldedRawSchema",
+    //     unfoldedRawSchema,
+    //     "foreignKeyObjects", foreignKeyObjects
+    //   )
       
-    }
+    // }
 
 
     // ############################################################################################

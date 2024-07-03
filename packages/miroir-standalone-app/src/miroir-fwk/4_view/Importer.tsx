@@ -1,5 +1,5 @@
 import { Button } from "@mui/material";
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import { z } from "zod";
 // import * as XLSX from 'xlsx/xlsx.mjs';
@@ -25,13 +25,15 @@ import {
   getLoggerName,
   metaModel,
   JzodPlainAttribute,
-  JzodAttributePlainStringWithValidations
+  JzodAttributePlainStringWithValidations,
+  ActionHandler
 } from "miroir-core";
 import * as XLSX from 'xlsx';
 import { useDomainControllerService } from "./MiroirContextReactProvider.js";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
 import { AddBox } from "@mui/icons-material";
+import { handleCompositeAction } from "./routes/Tools.js";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"importer");
@@ -169,248 +171,316 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     // ############################################################################################
     // beginning of composite action
     // create new Entity
-    const newEntityDefinitionUuid: string = uuidv4();
-    const newEntityDetailsReportUuid: string = uuidv4();
-    const newEntityListReportUuid: string = uuidv4();
+    // const newEntityDefinitionUuid: string = uuidv4();
+    // const newEntityDetailsReportUuid: string = uuidv4();
+    // const newEntityListReportUuid: string = uuidv4();
 
-    await domainController.handleAction({
-      actionType: "compositeAction",
-      actionName: "sequence",
-      params: {
-        newEntityName,
-        newEntityDefinitionUuid,
-        entityEntityDefinition,
-        entityReport,
-        newEntity,
-        newEntityDetailsReportUuid,
-        newEntityListReportUuid,
-        jzodSchema,
-        currentDeploymentUuid,
-      },
-      templatesDEFUNCT: {
-        newEntityDefinition: {
-          name: {
-            templateType: "parameterReference",
-            referenceName: "newEntityName",
-          },
-          uuid: {
-            templateType: "parameterReference",
-            referenceName: "newEntityDefinitionUuid",
-          },
-          parentName: "EntityDefinition",
-          parentUuid: {
-            templateType: "mustacheStringTemplate",
-            definition: "{{entityEntityDefinition.uuid}}",
-          },
-          entityUuid: {
-            templateType: "mustacheStringTemplate",
-            definition: "{{newEntity.uuid}}",
-          },
-          conceptLevel: "Model",
-          defaultInstanceDetailsReportUuid: {
-            templateType: "parameterReference",
-            referenceName: "newEntityDetailsReportUuid",
-          },
-          jzodSchema: {
-            templateType: "parameterReference",
-            referenceName: "jzodSchema",
-          },
-        },
-        // list of instances Report Definition
-        newEntityListReport: {
-          uuid: {
-            templateType: "parameterReference",
-            referenceName: "newEntityListReportUuid",
-          },
-          parentName: "Report",
-          parentUuid: {
-            templateType: "mustacheStringTemplate",
-            definition: "{{entityReport.uuid}}",
-          },
-          conceptLevel: "Model",
-          name: {
-            templateType: "mustacheStringTemplate",
-            definition: "{{newEntityName}}List",
-          },
-          defaultLabel: {
-            templateType: "mustacheStringTemplate",
-            definition: "List of {{newEntityName}}s",
-          },
-          type: "list",
+    const actionEffectiveParamsCreateEntity:any /** parsed by actionHandlerCreateEntity.interface.actionJzodObjectSchema */ = {
+      newEntityName: "Fountain",
+      newEntityDescription: "Drinking Fountains of Paris",
+      newEntityUuid: uuidv4(),
+      currentApplicationUuid: props.currentApplicationUuid,
+      currentDeploymentUuid: props.currentDeploymentUuid,
+      newEntityDefinitionUuid: uuidv4(),
+      newEntityDetailsReportUuid: uuidv4(),
+      newEntityListReportUuid: uuidv4(),
+      //TODO: extra params, should be passed as context instead?
+      jzodSchema,
+      entityEntityDefinition,
+      entityReport,
+      newEntity,
+    }
+    /**
+     * TODO: correct ActionHandler type to allow template occurrence in implementation.compositeActionTemplate:
+     * CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction definition for "compositeAction" references
+     * definition: DomainAction[] instead of
+     * definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction[]
+     *  */ 
+    // const actionHandlerCreateEntity: ActionHandler = useMemo(()=>({
+    const actionHandlerCreateEntity: ActionHandler = {
+      interface: {
+        actionJzodObjectSchema: {
+          type: "object",
           definition: {
-            fetchQuery: {
-              select: {
-                instanceList: {
-                  queryType: "selectObjectListByEntity",
-                  parentName: {
-                    templateType: "parameterReference",
-                    referenceName: "newEntityName",
-                  },
-                  parentUuid: {
-                    referenceType: "constant",
-                    referenceUuid: {
-                      templateType: "mustacheStringTemplate",
-                      definition: "{{newEntity.uuid}}",
-                    },
-                  },
-                },
-              },
+            newEntityName: {
+              type: "string"
             },
-            section: {
-              type: "objectListReportSection",
-              definition: {
-                label: {
-                  templateType: "mustacheStringTemplate",
-                  definition: "{{newEntityName}}s",
-                },
-                // "parentName": "Fountain",
-                parentUuid: {
-                  templateType: "mustacheStringTemplate",
-                  definition: "{{newEntity.uuid}}",
-                },
-                fetchedDataReference: "instanceList",
-              },
+            newEntityDescription: {
+              type: "string"
             },
-          },
-        },
-        // Details of an instance Report Definition
-        newEntityDetailsReport: {
-          uuid: newEntityDetailsReportUuid,
-          parentName: {
-            templateType: "mustacheStringTemplate",
-            definition: "{{entityReport.name}}",
-          },
-          parentUuid: {
-            templateType: "mustacheStringTemplate",
-            definition: "{{entityReport.uuid}}",
-          },
-          conceptLevel: "Model",
-          name: {
-            templateType: "mustacheStringTemplate",
-            definition: "{{newEntityName}}Details",
-          },
-          defaultLabel: {
-            templateType: "mustacheStringTemplate",
-            definition: "Details of {{newEntityName}}",
-          },
-          definition: {
-            fetchQuery: {
-              select: {
-                elementToDisplay: {
-                  queryType: "selectObjectByDirectReference",
-                  parentName: {
-                    templateType: "parameterReference",
-                    referenceName: "newEntityName",
-                  },
-                  parentUuid: {
-                    referenceType: "constant",
-                    referenceUuid: {
-                      templateType: "mustacheStringTemplate",
-                      definition: "{{newEntity.uuid}}",
-                    },
-                  },
-                  instanceUuid: {
-                    referenceType: "queryParameterReference",
-                    referenceName: "instanceUuid",
-                  },
-                },
-              },
+            newEntityUuid: {
+              type: "uuid"
             },
-            section: {
-              type: "list",
-              definition: [
-                {
-                  "type":"objectInstanceReportSection",
-                  "definition": {
-                    "label": {
-                      templateType: "mustacheStringTemplate",
-                      definition: "My {{newEntityName}}",
-                    },
-                    "parentUuid": {
-                      templateType: "mustacheStringTemplate",
-                      definition: "{{newEntity.uuid}}",
-                    },
-                    "fetchedDataReference": "elementToDisplay"
-                  }
-                }
-              ]
+            currentApplicationUuid: {
+              type: "uuid"
             },
+            currentDeploymentUuid: {
+              type: "uuid"
+            },
+            newEntityDefinitionUuid: {
+              type: "uuid"
+            },
+            newEntityDetailsReportUuid: {
+              type: "uuid"
+            },
+            newEntityListReportUuid: {
+              type: "uuid"
+            }
           }
         }
       },
-      definition: [
-        // action create new Entity
-        {
-          actionType: "modelAction",
-          actionName: "createEntity",
-          deploymentUuid:{
-            templateType: "parameterReference",
-            referenceName: "currentDeploymentUuid",
-          },
-          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-          entities: [
-            {
-              entity: {
-                templateType: "parameterReference",
-                referenceName: "newEntity",
-              }, 
-              entityDefinition: {
-                templateType: "parameterReference",
-                referenceName: "newEntityDefinition",
-              }
+      implementation: {
+        templates: {
+          newEntityDefinition: {
+            name: {
+              templateType: "parameterReference",
+              referenceName: "newEntityName",
             },
-          ],
-        },
-        // action add default Reports for new Entity instances
-        {
-          actionType: "transactionalInstanceAction",
-          instanceAction: {
-            actionType: "instanceAction",
-            actionName: "createInstance",
-            applicationSection: "model",
+            uuid: {
+              templateType: "parameterReference",
+              referenceName: "newEntityDefinitionUuid",
+            },
+            parentName: "EntityDefinition",
+            parentUuid: {
+              templateType: "mustacheStringTemplate",
+              definition: "{{entityEntityDefinition.uuid}}",
+            },
+            entityUuid: {
+              templateType: "mustacheStringTemplate",
+              definition: "{{newEntity.uuid}}",
+            },
+            conceptLevel: "Model",
+            defaultInstanceDetailsReportUuid: {
+              templateType: "parameterReference",
+              referenceName: "newEntityDetailsReportUuid",
+            },
+            jzodSchema: {
+              templateType: "parameterReference",
+              referenceName: "jzodSchema",
+            },
+          },
+          // list of instances Report Definition
+          newEntityListReport: {
+            uuid: {
+              templateType: "parameterReference",
+              referenceName: "newEntityListReportUuid",
+            },
+            parentName: "Report",
+            parentUuid: {
+              templateType: "mustacheStringTemplate",
+              definition: "{{entityReport.uuid}}",
+            },
+            conceptLevel: "Model",
+            name: {
+              templateType: "mustacheStringTemplate",
+              definition: "{{newEntityName}}List",
+            },
+            defaultLabel: {
+              templateType: "mustacheStringTemplate",
+              definition: "List of {{newEntityName}}s",
+            },
+            type: "list",
+            definition: {
+              fetchQuery: {
+                select: {
+                  instanceList: {
+                    queryType: "selectObjectListByEntity",
+                    parentName: {
+                      templateType: "parameterReference",
+                      referenceName: "newEntityName",
+                    },
+                    parentUuid: {
+                      referenceType: "constant",
+                      referenceUuid: {
+                        templateType: "mustacheStringTemplate",
+                        definition: "{{newEntity.uuid}}",
+                      },
+                    },
+                  },
+                },
+              },
+              section: {
+                type: "objectListReportSection",
+                definition: {
+                  label: {
+                    templateType: "mustacheStringTemplate",
+                    definition: "{{newEntityName}}s",
+                  },
+                  // "parentName": "Fountain",
+                  parentUuid: {
+                    templateType: "mustacheStringTemplate",
+                    definition: "{{newEntity.uuid}}",
+                  },
+                  fetchedDataReference: "instanceList",
+                },
+              },
+            },
+          },
+          // // Details of an instance Report Definition
+          newEntityDetailsReport: {
+            uuid: {
+              templateType: "parameterReference",
+              referenceName: "newEntityDetailsReportUuid",
+            },
+            parentName: {
+              templateType: "mustacheStringTemplate",
+              definition: "{{entityReport.name}}",
+            },
+            parentUuid: {
+              templateType: "mustacheStringTemplate",
+              definition: "{{entityReport.uuid}}",
+            },
+            conceptLevel: "Model",
+            name: {
+              templateType: "mustacheStringTemplate",
+              definition: "{{newEntityName}}Details",
+            },
+            defaultLabel: {
+              templateType: "mustacheStringTemplate",
+              definition: "Details of {{newEntityName}}",
+            },
+            definition: {
+              fetchQuery: {
+                select: {
+                  elementToDisplay: {
+                    queryType: "selectObjectByDirectReference",
+                    parentName: {
+                      templateType: "parameterReference",
+                      referenceName: "newEntityName",
+                    },
+                    parentUuid: {
+                      referenceType: "constant",
+                      referenceUuid: {
+                        templateType: "mustacheStringTemplate",
+                        definition: "{{newEntity.uuid}}",
+                      },
+                    },
+                    instanceUuid: {
+                      referenceType: "queryParameterReference",
+                      referenceName: "instanceUuid",
+                    },
+                  },
+                },
+              },
+              section: {
+                type: "list",
+                definition: [
+                  {
+                    "type":"objectInstanceReportSection",
+                    "definition": {
+                      "label": {
+                        templateType: "mustacheStringTemplate",
+                        definition: "My {{newEntityName}}",
+                      },
+                      "parentUuid": {
+                        templateType: "mustacheStringTemplate",
+                        definition: "{{newEntity.uuid}}",
+                      },
+                      "fetchedDataReference": "elementToDisplay"
+                    }
+                  }
+                ]
+              },
+            }
+          },
+          createEntityAction: {
+            actionType: "modelAction",
+            actionName: "createEntity",
+            deploymentUuid:{
+              templateType: "parameterReference",
+              referenceName: "currentDeploymentUuid",
+            },
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            entities: [
+              {
+                entity: {
+                  templateType: "parameterReference",
+                  referenceName: "newEntity",
+                }, 
+                entityDefinition: {
+                  templateType: "parameterReference",
+                  referenceName: "newEntityDefinition",
+                }
+              },
+            ],
+          },
+          createReportsAction: {
+            actionType: "transactionalInstanceAction",
+            instanceAction: {
+              actionType: "instanceAction",
+              actionName: "createInstance",
+              applicationSection: "model",
+              deploymentUuid: {
+                templateType: "parameterReference",
+                referenceName: "currentDeploymentUuid",
+              },
+              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+              objects: [{
+                parentName: {
+                  templateType: "mustacheStringTemplate",
+                  definition: "{{newEntityListReport.parentName}}",
+                },
+                parentUuid: {
+                  templateType: "mustacheStringTemplate",
+                  definition: "{{newEntityListReport.parentUuid}}",
+                },
+                applicationSection:'model',
+                instances: [
+                  {
+                    templateType: "parameterReference",
+                    referenceName: "newEntityListReport",
+                  },
+                  {
+                    templateType: "parameterReference",
+                    referenceName: "newEntityDetailsReport",
+                  },
+                  // newEntityListReport as EntityInstance,
+                  // newEntityDetailsReport as EntityInstance,
+                ]
+              }
+            ],
+            }
+          },
+          commitAction: {
+            actionName: "commit",
+            actionType: "modelAction",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             deploymentUuid: {
               templateType: "parameterReference",
               referenceName: "currentDeploymentUuid",
             },
-            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-            objects: [{
-              parentName: {
-                templateType: "mustacheStringTemplate",
-                definition: "{{newEntityListReport.parentName}}",
-              },
-              parentUuid: {
-                templateType: "mustacheStringTemplate",
-                definition: "{{newEntityListReport.parentUuid}}",
-              },
-              applicationSection:'model',
-              instances: [
-                {
-                  templateType: "parameterReference",
-                  referenceName: "newEntityListReport",
-                },
-                {
-                  templateType: "parameterReference",
-                  referenceName: "newEntityDetailsReport",
-                },
-                // newEntityListReport as EntityInstance,
-                // newEntityDetailsReport as EntityInstance,
-              ]
-            }
-          ],
-          }
-        },
-        // commit
-        {
-          actionName: "commit",
-          actionType: "modelAction",
-          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-          deploymentUuid: {
-            templateType: "parameterReference",
-            referenceName: "currentDeploymentUuid",
           },
         },
-      ]
-    }, props.currentModel);
+        compositeActionTemplate: {
+          actionType: "compositeAction",
+          actionName: "sequence",
+          definition: [
+            {
+              templateType: "parameterReference",
+              referenceName: "createEntityAction",
+            },
+            {
+              templateType: "parameterReference",
+              referenceName: "createReportsAction",
+            },
+            {
+              templateType: "parameterReference",
+              referenceName: "commitAction",
+            },
+          ]
+        }
+    
+      }
+    };
+    // }), [])
+
+    await handleCompositeAction(
+      domainController,
+      actionHandlerCreateEntity,
+      actionEffectiveParamsCreateEntity,
+      props.currentModel
+    )
+
 
     // ############################################################################################
     //  add instances from Excel file (rows)
@@ -521,7 +591,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                 "section": "data",
                 "application": currentDeploymentUuid,
                 // "reportUuid": newEntityListReport.uuid,
-                "reportUuid": newEntityListReportUuid,
+                "reportUuid": actionEffectiveParamsCreateEntity.newEntityListReportUuid,
                 "icon": "local_drink"
               },
             ]

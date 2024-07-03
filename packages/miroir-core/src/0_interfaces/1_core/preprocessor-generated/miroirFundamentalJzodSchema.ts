@@ -7280,13 +7280,6 @@ export const miroirFundamentalJzodSchema = {
                 }
               }
             }
-          },
-          "params": {
-            "type": "record",
-            "optional": true,
-            "definition": {
-              "type": "any"
-            }
           }
         }
       },

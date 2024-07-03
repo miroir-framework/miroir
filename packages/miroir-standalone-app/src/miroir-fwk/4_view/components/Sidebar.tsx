@@ -1,5 +1,5 @@
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft.js';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight.js';
 import Divider from '@mui/material/Divider';
 import MuiDrawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
@@ -19,10 +19,10 @@ import {
   MiroirLoggerFactory
 } from "miroir-core";
 import { FC, useMemo } from 'react';
-import { packageName } from '../../../constants';
-import { cleanLevel } from '../constants';
-import { SidebarSection } from './SidebarSection';
-import { adminConfigurationDeploymentParis, defaultMenuParisUuid } from '../routes/ReportPage';
+import { packageName } from '../../../constants.js';
+import { cleanLevel } from '../constants.js';
+import { SidebarSection } from './SidebarSection.js';
+import { adminConfigurationDeploymentParis, defaultMenuParisUuid } from '../routes/ReportPage.js';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"Sidebar");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -34,6 +34,12 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 
 
 export const SidebarWidth = 200;
+
+const LocalMuiDrawer: any = MuiDrawer;
+const LocalIconButton:any = IconButton;
+const LocalDivider:any = Divider;
+const LocalChevronLeftIcon:any = ChevronLeftIcon;
+const LocalChevronRightIcon:any = ChevronRightIcon;
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: SidebarWidth,
@@ -77,7 +83,7 @@ export interface ResponsiveAppBarProps {
 }
 
 // const Sidebar = MuiDrawer;
-const StyledDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
+const StyledDrawer = styled(LocalMuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
     width: SidebarWidth,
     flexShrink: 0,
@@ -184,12 +190,12 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
       open={props.open}
     >
       <StyledDrawerHeader sx={styledDrawerSx}>
-        <IconButton onClick={() => props.setOpen(false)}>
-          {theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-        </IconButton>
+        <LocalIconButton onClick={() => props.setOpen(false)}>
+          {theme.direction === "ltr" ? <LocalChevronLeftIcon /> : <LocalChevronRightIcon />}
+        </LocalIconButton>
       </StyledDrawerHeader>
       count: {count}
-      <Divider />
+      <LocalDivider />
       <SidebarSection
         deploymentUuid={adminConfigurationDeploymentAdmin.uuid}
         menuUuid={menuDefaultAdmin.uuid}
@@ -197,7 +203,7 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
         setOpen={props.setOpen}
       >
       </SidebarSection>
-      <Divider />
+      <LocalDivider />
       <SidebarSection
         deploymentUuid={adminConfigurationDeploymentMiroir.uuid}
         menuUuid={menuDefaultMiroir.uuid}
@@ -222,15 +228,15 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
       >
       </SidebarSection> */}
       {/* ################################################################################### */}
-      {/* <Divider />
+      <LocalDivider />
       <SidebarSection
         deploymentUuid={adminConfigurationDeploymentParis.uuid}
         menuUuid={defaultMenuParisUuid}
         open={props.open}
         setOpen={props.setOpen}
       >
-      </SidebarSection> */}
-      <Divider />
+      </SidebarSection>
+      <LocalDivider />
       <SidebarSection
         deploymentUuid={adminConfigurationDeploymentLibrary.uuid}
         menuUuid={menuDefaultLibrary.uuid}
@@ -280,7 +286,7 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
             )}
           </List>
         } */}
-      <Divider />
+      <LocalDivider />
     </StyledDrawer>
   );
 }

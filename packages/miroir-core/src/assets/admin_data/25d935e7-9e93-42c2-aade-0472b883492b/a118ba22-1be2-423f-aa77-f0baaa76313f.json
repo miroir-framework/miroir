@@ -1,0 +1,9 @@
+{
+  "uuid": "a118ba22-1be2-423f-aa77-f0baaa76313f",
+  "parentName": "Application",
+  "parentUuid": "25d935e7-9e93-42c2-aade-0472b883492b",
+  "name": "Paris",
+  "defaultLabel": "The Paris application.",
+  "description": "This application contains the Paris model and data",
+  "selfApplication": "70e02039-e283-4381-9575-8c52aed18a87"
+}
