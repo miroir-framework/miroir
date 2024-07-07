@@ -98,11 +98,36 @@
             "definition": {
               "type": "array",
               "definition": {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "domainAction"
-                }
+                "type": "union",
+                "discriminator": "compositeActionType",
+                "definition": [
+                  {
+                    "type": "object",
+                    "definition": {
+                      "compositeActionType": {"type": "literal", "definition": "action"},
+                      "action": {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "domainAction"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "compositeActionType": {"type": "literal", "definition": "query"},
+                      "query": {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "queryAction"
+                        }
+                      }
+                    }
+                  }
+                ]
               }
             }
           }

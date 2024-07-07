@@ -335,10 +335,19 @@
                     }
                   },
                   "parameter": {
-                    "type": "schemaReference",
+                    "type": "object",
                     "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "recordOfTransformers"
+                      "transformerType": { "type": "literal", "definition":"recordOfTransformers" },
+                      "definition": {
+                        "type": "record",
+                        "definition": {
+                          "type": "object",
+                          "definition": {
+                            "transformerType": { "type": "literal", "definition": "objectTransformer" },
+                            "attributeName": { "type": "string" }
+                          }
+                        }
+                      }
                     }
                   }
                 }

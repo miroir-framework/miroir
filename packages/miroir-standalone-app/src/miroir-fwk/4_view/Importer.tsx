@@ -197,7 +197,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
      * definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction[]
      *  */ 
     // const actionHandlerCreateEntity: ActionHandler = useMemo(()=>({
-    const actionHandlerCreateEntity: ActionHandler = {
+    const actionHandlerCreateFountainEntity: ActionHandler = {
       interface: {
         actionJzodObjectSchema: {
           type: "object",
@@ -456,17 +456,26 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           actionName: "sequence",
           definition: [
             {
-              templateType: "parameterReference",
-              referenceName: "createEntityAction",
+              compositeActionType: "action",
+              action: {
+                templateType: "parameterReference",
+                referenceName: "createEntityAction",
+              },
             },
             {
-              templateType: "parameterReference",
-              referenceName: "createReportsAction",
+              compositeActionType: "action",
+              action: {
+                templateType: "parameterReference",
+                referenceName: "createReportsAction",
+              },
             },
             {
-              templateType: "parameterReference",
-              referenceName: "commitAction",
-            },
+              compositeActionType: "action",
+              action: {
+                templateType: "parameterReference",
+                referenceName: "commitAction",
+              },
+            }
           ]
         }
     
@@ -476,7 +485,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
 
     await handleCompositeAction(
       domainController,
-      actionHandlerCreateEntity,
+      actionHandlerCreateFountainEntity,
       actionEffectiveParamsCreateEntity,
       props.currentModel
     )
@@ -496,30 +505,96 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               e[1],
             ]),
             ["uuid", uuidv4()],
-            ["parentName", newEntity.name],
-            ["parentUuid", newEntity.uuid],
+            ["parentName", actionEffectiveParamsCreateEntity.newEntity.name],
+            ["parentUuid", actionEffectiveParamsCreateEntity.newEntity.uuid],
           ]) as EntityInstance;
         }
       ) 
     ;
     log.info('createEntity adding instances',instances);
-    
-    const createRowsAction: InstanceAction = {
-      actionType: 'instanceAction',
-      actionName: "createInstance",
-      applicationSection: "data",
-      deploymentUuid: currentDeploymentUuid,
-      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-      objects:[
-        {
-          parentName:newEntity.name,
-          parentUuid:newEntity.uuid,
-          applicationSection:'data',
-          instances:instances,
+
+    const actionHandlerImportFountains: ActionHandler = {
+      interface: {
+        actionJzodObjectSchema: {
+          type: "object",
+          definition: {
+            newEntityName: {
+              type: "string"
+            },
+            newEntityDescription: {
+              type: "string"
+            },
+            newEntityUuid: {
+              type: "uuid"
+            },
+            currentApplicationUuid: {
+              type: "uuid"
+            },
+            currentDeploymentUuid: {
+              type: "uuid"
+            },
+            newEntityDefinitionUuid: {
+              type: "uuid"
+            },
+            newEntityDetailsReportUuid: {
+              type: "uuid"
+            },
+            newEntityListReportUuid: {
+              type: "uuid"
+            }
+          }
         }
-      ]
+      },
+      implementation: {
+        templates: {
+          createRowsAction: {
+            actionType: 'instanceAction',
+            actionName: "createInstance",
+            applicationSection: "data",
+            deploymentUuid:             {
+              templateType: "parameterReference",
+              referenceName: "currentDeploymentUuid",
+            },
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            objects:[
+              {
+                parentName: {
+                  templateType: "mustacheStringTemplate",
+                  definition: "{{newEntity.name}}",
+                },
+                parentUuid:{
+                  templateType: "mustacheStringTemplate",
+                  definition: "{{newEntity.uuid}}",
+                },
+                applicationSection:'data',
+                instances:instances,
+              }
+            ]
+          },
+        },
+        compositeActionTemplate: {
+          actionType: "compositeAction",
+          actionName: "sequence",
+          definition: [
+            {
+              compositeActionType: "action",
+              action: {
+                templateType: "parameterReference",
+                referenceName: "createRowsAction",
+              },
+            }
+          ]
+        }
+    
+      }
     };
-    await domainController.handleAction(createRowsAction);
+
+    await handleCompositeAction(
+      domainController,
+      actionHandlerImportFountains,
+      actionEffectiveParamsCreateEntity,
+      props.currentModel
+    )
 
     log.info('createEntity DONE adding instances');
 

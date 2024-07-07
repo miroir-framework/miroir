@@ -631,7 +631,8 @@ export class DomainController implements DomainControllerInterface {
   }
 
   // ##############################################################################################
-  async handleQuery(queryAction: QueryAction, currentModel: MetaModel): Promise<ActionReturnType> {
+  // async handleQuery(queryAction: QueryAction, currentModel: MetaModel): Promise<ActionReturnType> {
+  async handleQuery(queryAction: QueryAction): Promise<ActionReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     log.info(
       "handleQuery",
@@ -721,6 +722,7 @@ export class DomainController implements DomainControllerInterface {
       // is it right? We're limiting querying for script execution to remote queries right there!
       // principle: the scripts using transactional (thus Model) actions are limited to localCache access
       // while non-transactional accesses are limited to persistence store access (does this make sense?)
+      // in both cases this enforces only the most up-to-date data is accessed.
       log.info("DomainController handleQuery queryAction sending query to server for execution", JSON.stringify(queryAction))
       const result = await this.callUtil.callPersistenceAction( // what if it is a REAL persistence store?? exception?
         {}, // context
@@ -740,27 +742,37 @@ export class DomainController implements DomainControllerInterface {
   // ##############################################################################################
   async handleAction(domainAction: DomainAction, currentModel: MetaModel): Promise<ActionVoidReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
-    log.info(
-      "handleAction",
-      "deploymentUuid",
-      domainAction.deploymentUuid,
-      "actionName",
-      (domainAction as any).actionName,
-      "actionType",
-      domainAction?.actionType,
-      "objects",
-      JSON.stringify((domainAction as any)["objects"], null, 2)
-    );
+    // log.info(
+    //   "handleAction",
+    //   "deploymentUuid",
+    //   domainAction.deploymentUuid,
+    //   "actionName",
+    //   (domainAction as any).actionName,
+    //   "actionType",
+    //   domainAction?.actionType,
+    //   "objects",
+    //   JSON.stringify((domainAction as any)["objects"], null, 2)
+    // );
 
     log.debug("DomainController handleAction domainAction", domainAction);
-
+    // if (!domainAction.deploymentUuid) {
+    //   throw new Error("waaaaa");
+      
+    // }
     switch (domainAction.actionType) {
       case 'compositeAction':{
         for (const currentAction of domainAction.definition) {
           log.info("handleAction compositeAction resolved action", currentAction)
-          const actionResult = await this.handleAction(currentAction, currentModel)
-          if (actionResult?.status != "ok") {
-            log.error('Error afterEach',JSON.stringify(actionResult, null, 2));
+          if (currentAction.compositeActionType == "query") {
+            const actionResult = await this.handleQuery(currentAction.query)
+            if (actionResult?.status != "ok") {
+              log.error('Error query afterEach',JSON.stringify(actionResult, null, 2));
+            }
+          } else {
+            const actionResult = await this.handleAction(currentAction.action, currentModel)
+            if (actionResult?.status != "ok") {
+              log.error('Error action afterEach',JSON.stringify(actionResult, null, 2));
+            }
           }
         }
         return Promise.resolve(ACTION_OK);

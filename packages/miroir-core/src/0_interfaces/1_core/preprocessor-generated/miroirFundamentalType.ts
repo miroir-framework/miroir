@@ -489,7 +489,7 @@ export type Menu = {
     uuid: string;
     parentName?: string | undefined;
     parentUuid: string;
-    parentDefinitionVersionUuid: string;
+    parentDefinitionVersionUuid?: string | undefined;
     name: string;
     defaultLabel: string;
     description?: string | undefined;
@@ -736,7 +736,15 @@ export type SelectQueryCombinerQuery = {
     rootQuery: MiroirSelectQuery;
     subQuery: {
         query: MiroirSelectQuery;
-        parameter: RecordOfTransformers;
+        parameter: {
+            transformerType: "recordOfTransformers";
+            definition: {
+                [x: string]: {
+                    transformerType: "objectTransformer";
+                    attributeName: string;
+                };
+            };
+        };
     };
 };
 export type SelectObjectListQuery = SelectObjectListByEntityQuery | SelectObjectListByRelationQuery | SelectObjectListByManyToManyRelationQuery;
@@ -1278,7 +1286,13 @@ export type CompositeAction = {
     actionType: "compositeAction";
     actionName: "sequence";
     deploymentUuid?: string | undefined;
-    definition: DomainAction[];
+    definition: ({
+        compositeActionType: "action";
+        action: DomainAction;
+    } | {
+        compositeActionType: "query";
+        query: QueryAction;
+    })[];
 };
 export type DomainAction = UndoRedoAction | StoreOrBundleAction | ModelAction | InstanceAction | {
     actionType: "transactionalInstanceAction";
@@ -1288,7 +1302,13 @@ export type DomainAction = UndoRedoAction | StoreOrBundleAction | ModelAction | 
     actionType: "compositeAction";
     actionName: "sequence";
     deploymentUuid?: string | undefined;
-    definition: DomainAction[];
+    definition: ({
+        compositeActionType: "action";
+        action: DomainAction;
+    } | {
+        compositeActionType: "query";
+        query: QueryAction;
+    })[];
 };
 export type ObjectTemplateInnerReference = {
     templateType: "constant";
@@ -1338,17 +1358,731 @@ export type ActionTransformer = {
 export type DataTransformer = {
     transformerType: "dataTransformer";
 };
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference = {
-    templateType: "constant";
-    referenceUuid: string;
-} | {
-    templateType: "contextReference";
-    referenceName: string;
-} | {
-    templateType: "parameterReference";
-    referenceName: string;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject = CarryOnObject | {
+    optional?: ((boolean | undefined) | CarryOnObject) | undefined;
+    nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    extra?: (CarryOnObject | {
+        id?: ((number | undefined) | CarryOnObject) | undefined;
+        defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+        initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+        targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+        editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    }) | undefined;
 };
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplate = ObjectTemplateInnerReference | {
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodArray = CarryOnObject | {
+    type: "array" | CarryOnObject;
+    definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPlainAttribute = CarryOnObject | {
+    type: ("any" | "bigint" | "boolean" | "never" | "null" | "uuid" | "undefined" | "unknown" | "void") | CarryOnObject;
+    coerce?: ((boolean | undefined) | CarryOnObject) | undefined;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeDateValidations = CarryOnObject | {
+    extra?: (({
+        [x: string]: any;
+    } | undefined) | CarryOnObject) | undefined;
+    type: ("min" | "max") | CarryOnObject;
+    parameter?: any | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainDateWithValidations = CarryOnObject | {
+    type: "date" | CarryOnObject;
+    coerce?: ((boolean | undefined) | CarryOnObject) | undefined;
+    validations?: (((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeDateValidations | CarryOnObject)[] | undefined) | CarryOnObject) | undefined;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeNumberValidations = CarryOnObject | {
+    extra?: (({
+        [x: string]: any;
+    } | undefined) | CarryOnObject) | undefined;
+    type: ("gt" | "gte" | "lt" | "lte" | "int" | "positive" | "nonpositive" | "negative" | "nonnegative" | "multipleOf" | "finite" | "safe") | CarryOnObject;
+    parameter?: any | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainNumberWithValidations = CarryOnObject | {
+    type: "number" | CarryOnObject;
+    coerce?: ((boolean | undefined) | CarryOnObject) | undefined;
+    validations?: (((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeNumberValidations | CarryOnObject)[] | undefined) | CarryOnObject) | undefined;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeStringValidations = CarryOnObject | {
+    extra?: (({
+        [x: string]: any;
+    } | undefined) | CarryOnObject) | undefined;
+    type: ("max" | "min" | "length" | "email" | "url" | "emoji" | "uuid" | "cuid" | "cuid2" | "ulid" | "regex" | "includes" | "startsWith" | "endsWith" | "datetime" | "ip") | CarryOnObject;
+    parameter?: any | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainStringWithValidations = CarryOnObject | {
+    type: "string" | CarryOnObject;
+    coerce?: ((boolean | undefined) | CarryOnObject) | undefined;
+    validations?: (((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeStringValidations | CarryOnObject)[] | undefined) | CarryOnObject) | undefined;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement = (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodArray | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPlainAttribute | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainDateWithValidations | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainNumberWithValidations | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainStringWithValidations | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnum | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodFunction | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLazy | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLiteral | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodIntersection | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodMap | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPromise | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodRecord | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodReference | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSet | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodTuple | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodUnion | CarryOnObject) | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnum = CarryOnObject | {
+    type: "enum" | CarryOnObject;
+    definition: (string | CarryOnObject)[] | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnumAttributeTypes = ("any" | "bigint" | "boolean" | "date" | "never" | "null" | "number" | "string" | "uuid" | "undefined" | "unknown" | "void") | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnumElementTypes = ("array" | "date" | "enum" | "function" | "lazy" | "literal" | "intersection" | "map" | "number" | "object" | "promise" | "record" | "schemaReference" | "set" | "string" | "tuple" | "union") | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodFunction = CarryOnObject | {
+    type: "function" | CarryOnObject;
+    definition: CarryOnObject | {
+        args: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement | CarryOnObject)[] | CarryOnObject;
+        returns?: ((JzodElement | undefined) | CarryOnObject) | undefined;
+    };
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLazy = CarryOnObject | {
+    type: "lazy" | CarryOnObject;
+    definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodFunction | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLiteral = CarryOnObject | {
+    type: "literal" | CarryOnObject;
+    definition: (string | CarryOnObject) | (number | CarryOnObject) | (bigint | CarryOnObject) | (boolean | CarryOnObject) | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodIntersection = CarryOnObject | {
+    type: "intersection" | CarryOnObject;
+    definition: CarryOnObject | {
+        left: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement | CarryOnObject;
+        right: JzodElement | CarryOnObject;
+    };
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodMap = CarryOnObject | {
+    type: "map" | CarryOnObject;
+    definition: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement | CarryOnObject) | (JzodElement | CarryOnObject);
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject = CarryOnObject | {
+    extend?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodReference | undefined) | CarryOnObject) | undefined;
+    type: "object" | CarryOnObject;
+    nonStrict?: ((boolean | undefined) | CarryOnObject) | undefined;
+    partial?: ((boolean | undefined) | CarryOnObject) | undefined;
+    carryOn?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodUnion | CarryOnObject) | CarryOnObject) | undefined;
+    definition: {
+        [x: string]: JzodElement;
+    } | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPromise = CarryOnObject | {
+    type: "promise" | CarryOnObject;
+    definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodRecord = CarryOnObject | {
+    type: "record" | CarryOnObject;
+    definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodReference = CarryOnObject | {
+    type: "schemaReference" | CarryOnObject;
+    context?: (({
+        [x: string]: JzodElement;
+    } | undefined) | CarryOnObject) | undefined;
+    carryOn?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodUnion | CarryOnObject) | CarryOnObject) | undefined;
+    definition: CarryOnObject | {
+        eager?: ((boolean | undefined) | CarryOnObject) | undefined;
+        partial?: ((boolean | undefined) | CarryOnObject) | undefined;
+        relativePath?: ((string | undefined) | CarryOnObject) | undefined;
+        absolutePath?: ((string | undefined) | CarryOnObject) | undefined;
+    };
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSet = CarryOnObject | {
+    type: "set" | CarryOnObject;
+    definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodTuple = CarryOnObject | {
+    type: "tuple" | CarryOnObject;
+    definition: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement | CarryOnObject)[] | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodUnion = CarryOnObject | {
+    type: "union" | CarryOnObject;
+    discriminator?: ((string | undefined) | CarryOnObject) | undefined;
+    discriminatorNew?: ((CarryOnObject | {
+        discriminatorType: "string" | CarryOnObject;
+        value: string | CarryOnObject;
+    }) | (CarryOnObject | {
+        discriminatorType: "array" | CarryOnObject;
+        value: (string | CarryOnObject)[] | CarryOnObject;
+    }) | CarryOnObject) | undefined;
+    carryOn?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject | undefined) | CarryOnObject) | undefined;
+    definition: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement | CarryOnObject)[] | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType = ("miroir" | "app") | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_application = CarryOnObject | {
+    uuid: string | CarryOnObject;
+    parentName?: ((string | undefined) | CarryOnObject) | undefined;
+    parentUuid: string | CarryOnObject;
+    parentDefinitionVersionUuid?: ((string | undefined) | CarryOnObject) | undefined;
+    name: string | CarryOnObject;
+    defaultLabel: string | CarryOnObject;
+    description?: ((string | undefined) | CarryOnObject) | undefined;
+    selfApplication: string | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationVersion = CarryOnObject | {
+    uuid: string | CarryOnObject;
+    parentName?: ((string | undefined) | CarryOnObject) | undefined;
+    parentUuid: string | CarryOnObject;
+    parentDefinitionVersionUuid?: ((string | undefined) | CarryOnObject) | undefined;
+    name: string | CarryOnObject;
+    defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+    description?: ((string | undefined) | CarryOnObject) | undefined;
+    type?: ((string | undefined) | CarryOnObject) | undefined;
+    application: string | CarryOnObject;
+    branch: string | CarryOnObject;
+    previousVersion?: ((string | undefined) | CarryOnObject) | undefined;
+    modelStructureMigration?: ((({
+        [x: string]: any;
+    } | CarryOnObject)[] | undefined) | CarryOnObject) | undefined;
+    modelCUDMigration?: ((({
+        [x: string]: any;
+    } | CarryOnObject)[] | undefined) | CarryOnObject) | undefined;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menu = CarryOnObject | {
+    uuid: string | CarryOnObject;
+    parentName?: ((string | undefined) | CarryOnObject) | undefined;
+    parentUuid: string | CarryOnObject;
+    parentDefinitionVersionUuid?: ((string | undefined) | CarryOnObject) | undefined;
+    name: string | CarryOnObject;
+    defaultLabel: string | CarryOnObject;
+    description?: ((string | undefined) | CarryOnObject) | undefined;
+    definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuDefinition | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuDefinition = (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_simpleMenu | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_complexMenu | CarryOnObject) | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity = CarryOnObject | {
+    uuid: string | CarryOnObject;
+    parentName?: ((string | undefined) | CarryOnObject) | undefined;
+    parentUuid: string | CarryOnObject;
+    parentDefinitionVersionUuid?: ((string | undefined) | CarryOnObject) | undefined;
+    conceptLevel?: ((("MetaModel" | "Model" | "Data") | undefined) | CarryOnObject) | undefined;
+    application?: ((string | undefined) | CarryOnObject) | undefined;
+    name: string | CarryOnObject;
+    author?: ((string | undefined) | CarryOnObject) | undefined;
+    description?: ((string | undefined) | CarryOnObject) | undefined;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition = CarryOnObject | {
+    uuid: string | CarryOnObject;
+    parentName: string | CarryOnObject;
+    parentUuid: string | CarryOnObject;
+    parentDefinitionVersionUuid?: ((string | undefined) | CarryOnObject) | undefined;
+    name: string | CarryOnObject;
+    entityUuid: string | CarryOnObject;
+    conceptLevel?: ((("MetaModel" | "Model" | "Data") | undefined) | CarryOnObject) | undefined;
+    description?: ((string | undefined) | CarryOnObject) | undefined;
+    defaultInstanceDetailsReportUuid?: ((string | undefined) | CarryOnObject) | undefined;
+    viewAttributes?: (((string | CarryOnObject)[] | undefined) | CarryOnObject) | undefined;
+    jzodSchema: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection = ("model" | CarryOnObject) | ("data" | CarryOnObject) | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance = CarryOnObject | {
+    uuid: string | CarryOnObject;
+    parentName?: ((string | undefined) | CarryOnObject) | undefined;
+    parentUuid: string | CarryOnObject;
+    conceptLevel?: ((("MetaModel" | "Model" | "Data") | undefined) | CarryOnObject) | undefined;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_deployment = CarryOnObject | {
+    uuid: string | CarryOnObject;
+    parentName?: ((string | undefined) | CarryOnObject) | undefined;
+    parentUuid: string | CarryOnObject;
+    parentDefinitionVersionUuid?: ((string | undefined) | CarryOnObject) | undefined;
+    name: string | CarryOnObject;
+    defaultLabel: string | CarryOnObject;
+    description?: ((string | undefined) | CarryOnObject) | undefined;
+    application: string | CarryOnObject;
+    bundle: string | CarryOnObject;
+    configuration?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration | undefined) | CarryOnObject) | undefined;
+    model?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject | undefined) | CarryOnObject) | undefined;
+    data?: ((JzodObject | undefined) | CarryOnObject) | undefined;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection = CarryOnObject | {
+    parentName?: ((string | undefined) | CarryOnObject) | undefined;
+    parentUuid: string | CarryOnObject;
+    applicationSection: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | CarryOnObject;
+    instances: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance | CarryOnObject)[] | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSchema = CarryOnObject | {
+    uuid: string | CarryOnObject;
+    parentName: string | CarryOnObject;
+    parentUuid: string | CarryOnObject;
+    parentDefinitionVersionUuid?: ((string | undefined) | CarryOnObject) | undefined;
+    name: string | CarryOnObject;
+    conceptLevel?: ((("MetaModel" | "Model" | "Data") | undefined) | CarryOnObject) | undefined;
+    defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+    description?: ((string | undefined) | CarryOnObject) | undefined;
+    definition?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObjectOrReference | undefined) | CarryOnObject) | undefined;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirMenuItem = CarryOnObject | {
+    label: string | CarryOnObject;
+    section: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | CarryOnObject;
+    application: string | CarryOnObject;
+    reportUuid: string | CarryOnObject;
+    instanceUuid?: ((string | undefined) | CarryOnObject) | undefined;
+    icon: string | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuItemArray = (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirMenuItem | CarryOnObject)[] | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_sectionOfMenu = CarryOnObject | {
+    title: string | CarryOnObject;
+    label: string | CarryOnObject;
+    items: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuItemArray | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_simpleMenu = CarryOnObject | {
+    menuType: "simpleMenu" | CarryOnObject;
+    definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuItemArray | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_complexMenu = CarryOnObject | {
+    menuType: "complexMenu" | CarryOnObject;
+    definition: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_sectionOfMenu | CarryOnObject)[] | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObjectOrReference = (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodReference | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject | CarryOnObject) | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectInstanceReportSection = CarryOnObject | {
+    type: "objectInstanceReportSection" | CarryOnObject;
+    fetchQuery?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirFetchQuery | undefined) | CarryOnObject) | undefined;
+    definition: CarryOnObject | {
+        label?: ((string | undefined) | CarryOnObject) | undefined;
+        parentUuid: string | CarryOnObject;
+        fetchedDataReference?: ((string | undefined) | CarryOnObject) | undefined;
+        query?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectQuery | undefined) | CarryOnObject) | undefined;
+    };
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectListReportSection = CarryOnObject | {
+    type: "objectListReportSection" | CarryOnObject;
+    definition: CarryOnObject | {
+        label?: ((string | undefined) | CarryOnObject) | undefined;
+        parentName?: ((string | undefined) | CarryOnObject) | undefined;
+        parentUuid: string | CarryOnObject;
+        fetchedDataReference?: ((string | undefined) | CarryOnObject) | undefined;
+        query?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectQuery | undefined) | CarryOnObject) | undefined;
+        sortByAttribute?: ((string | undefined) | CarryOnObject) | undefined;
+    };
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_gridReportSection = CarryOnObject | {
+    type: "grid" | CarryOnObject;
+    fetchQuery?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirFetchQuery | undefined) | CarryOnObject) | undefined;
+    selectData?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQueriesRecord | undefined) | CarryOnObject) | undefined;
+    combineData?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirCrossJoinQuery | undefined) | CarryOnObject) | undefined;
+    definition: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_reportSection | CarryOnObject)[] | CarryOnObject)[] | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_listReportSection = CarryOnObject | {
+    type: "list" | CarryOnObject;
+    fetchQuery?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirFetchQuery | undefined) | CarryOnObject) | undefined;
+    selectData?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQueriesRecord | undefined) | CarryOnObject) | undefined;
+    combineData?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirCrossJoinQuery | undefined) | CarryOnObject) | undefined;
+    definition: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectInstanceReportSection | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectListReportSection | CarryOnObject) | CarryOnObject)[] | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_reportSection = (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_gridReportSection | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_listReportSection | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectListReportSection | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectInstanceReportSection | CarryOnObject) | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_rootReportSection = CarryOnObject | {
+    reportParametersToFetchQueryParametersTransformer?: (({
+        [x: string]: string;
+    } | undefined) | CarryOnObject) | undefined;
+    reportParameters?: (({
+        [x: string]: string;
+    } | undefined) | CarryOnObject) | undefined;
+    fetchQuery: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirFetchQuery | CarryOnObject;
+    section: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_reportSection | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_report = CarryOnObject | {
+    uuid: string | CarryOnObject;
+    parentName?: ((string | undefined) | CarryOnObject) | undefined;
+    parentUuid: string | CarryOnObject;
+    parentDefinitionVersionUuid?: ((string | undefined) | CarryOnObject) | undefined;
+    conceptLevel?: ((("MetaModel" | "Model" | "Data") | undefined) | CarryOnObject) | undefined;
+    name: string | CarryOnObject;
+    defaultLabel: string | CarryOnObject;
+    type?: ((("list" | "grid") | undefined) | CarryOnObject) | undefined;
+    application?: ((string | undefined) | CarryOnObject) | undefined;
+    definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_rootReportSection | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel = CarryOnObject | {
+    applicationVersions: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationVersion | CarryOnObject)[] | CarryOnObject;
+    applicationVersionCrossEntityDefinition: (CarryOnObject | {
+        uuid: string | CarryOnObject;
+        parentName?: ((string | undefined) | CarryOnObject) | undefined;
+        parentUuid: string | CarryOnObject;
+        conceptLevel?: ((("MetaModel" | "Model" | "Data") | undefined) | CarryOnObject) | undefined;
+        applicationVersion: string | CarryOnObject;
+        entityDefinition: string | CarryOnObject;
+    })[] | CarryOnObject;
+    configuration: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeBasedConfiguration | CarryOnObject)[] | CarryOnObject;
+    entities: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity | CarryOnObject)[] | CarryOnObject;
+    entityDefinitions: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition | CarryOnObject)[] | CarryOnObject;
+    jzodSchemas: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSchema | CarryOnObject)[] | CarryOnObject;
+    menus: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menu | CarryOnObject)[] | CarryOnObject;
+    reports: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_report | CarryOnObject)[] | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference = (CarryOnObject | {
+    templateType: "constant" | CarryOnObject;
+    referenceUuid: string | CarryOnObject;
+}) | (CarryOnObject | {
+    templateType: "contextReference" | CarryOnObject;
+    referenceName: string | CarryOnObject;
+}) | (CarryOnObject | {
+    templateType: "parameterReference" | CarryOnObject;
+    referenceName: string | CarryOnObject;
+}) | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplate = (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference | CarryOnObject) | (CarryOnObject | {
+    templateType: "mustacheStringTemplate" | CarryOnObject;
+    definition: string | CarryOnObject;
+}) | (CarryOnObject | {
+    templateType: "fullObjectTemplate" | CarryOnObject;
+    definition: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplate | CarryOnObject))[] | CarryOnObject;
+}) | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_indexedDbStoreSectionConfiguration = CarryOnObject | {
+    emulatedServerType: "indexedDb" | CarryOnObject;
+    indexedDbName: string | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_filesystemDbStoreSectionConfiguration = CarryOnObject | {
+    emulatedServerType: "filesystem" | CarryOnObject;
+    directory: string | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_sqlDbStoreSectionConfiguration = CarryOnObject | {
+    emulatedServerType: "sql" | CarryOnObject;
+    connectionString: string | CarryOnObject;
+    schema: string | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeBasedConfiguration = CarryOnObject | {
+    uuid: string | CarryOnObject;
+    parentName?: ((string | undefined) | CarryOnObject) | undefined;
+    parentUuid: string | CarryOnObject;
+    conceptLevel?: ((("MetaModel" | "Model" | "Data") | undefined) | CarryOnObject) | undefined;
+    defaultLabel: string | CarryOnObject;
+    definition: CarryOnObject | {
+        currentApplicationVersion: string | CarryOnObject;
+    };
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration = CarryOnObject | {
+    admin: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeSectionConfiguration | CarryOnObject;
+    model: StoreSectionConfiguration | CarryOnObject;
+    data: StoreSectionConfiguration | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeSectionConfiguration = (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_indexedDbStoreSectionConfiguration | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_filesystemDbStoreSectionConfiguration | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_sqlDbStoreSectionConfiguration | CarryOnObject) | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction = (CarryOnObject | {
+    actionType: "instanceAction" | CarryOnObject;
+    actionName: "createInstance" | CarryOnObject;
+    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89" | CarryOnObject;
+    deploymentUuid: string | CarryOnObject;
+    applicationSection: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | CarryOnObject;
+    objects: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection | CarryOnObject)[] | CarryOnObject;
+}) | (CarryOnObject | {
+    actionType: "instanceAction" | CarryOnObject;
+    actionName: "deleteInstance" | CarryOnObject;
+    deploymentUuid: string | CarryOnObject;
+    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89" | CarryOnObject;
+    applicationSection: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | CarryOnObject;
+    includeInTransaction?: ((boolean | undefined) | CarryOnObject) | undefined;
+    objects: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection | CarryOnObject)[] | CarryOnObject;
+}) | (CarryOnObject | {
+    actionType: "instanceAction" | CarryOnObject;
+    actionName: "updateInstance" | CarryOnObject;
+    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89" | CarryOnObject;
+    deploymentUuid: string | CarryOnObject;
+    applicationSection: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | CarryOnObject;
+    includeInTransaction?: ((boolean | undefined) | CarryOnObject) | undefined;
+    objects: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection | CarryOnObject)[] | CarryOnObject;
+}) | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction = (CarryOnObject | {
+    actionType: "undoRedoAction" | CarryOnObject;
+    actionName: "undo" | CarryOnObject;
+    endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389" | CarryOnObject;
+    deploymentUuid: string | CarryOnObject;
+}) | (CarryOnObject | {
+    actionType: "undoRedoAction" | CarryOnObject;
+    actionName: "redo" | CarryOnObject;
+    endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389" | CarryOnObject;
+    deploymentUuid: string | CarryOnObject;
+}) | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction = (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction | CarryOnObject) | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction = (CarryOnObject | {
+    actionType: "modelAction" | CarryOnObject;
+    actionName: "initModel" | CarryOnObject;
+    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
+    deploymentUuid: string | CarryOnObject;
+    params: CarryOnObject | {
+        metaModel: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel | CarryOnObject;
+        dataStoreType: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType | CarryOnObject;
+        application: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_application | CarryOnObject;
+        applicationDeploymentConfiguration: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance | CarryOnObject;
+        applicationModelBranch: EntityInstance | CarryOnObject;
+        applicationVersion: EntityInstance | CarryOnObject;
+        applicationStoreBasedConfiguration: EntityInstance | CarryOnObject;
+    };
+}) | (CarryOnObject | {
+    actionType: "modelAction" | CarryOnObject;
+    actionName: "commit" | CarryOnObject;
+    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
+    deploymentUuid: string | CarryOnObject;
+}) | (CarryOnObject | {
+    actionType: "modelAction" | CarryOnObject;
+    actionName: "rollback" | CarryOnObject;
+    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
+    deploymentUuid: string | CarryOnObject;
+}) | (CarryOnObject | {
+    actionType: "modelAction" | CarryOnObject;
+    actionName: "remoteLocalCacheRollback" | CarryOnObject;
+    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
+    deploymentUuid: string | CarryOnObject;
+}) | (CarryOnObject | {
+    actionType: "modelAction" | CarryOnObject;
+    actionName: "resetModel" | CarryOnObject;
+    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
+    deploymentUuid: string | CarryOnObject;
+}) | (CarryOnObject | {
+    actionType: "modelAction" | CarryOnObject;
+    actionName: "resetData" | CarryOnObject;
+    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
+    deploymentUuid: string | CarryOnObject;
+}) | (CarryOnObject | {
+    actionType: "modelAction" | CarryOnObject;
+    actionName: "alterEntityAttribute" | CarryOnObject;
+    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
+    transactional?: ((boolean | undefined) | CarryOnObject) | undefined;
+    deploymentUuid: string | CarryOnObject;
+    entityName: string | CarryOnObject;
+    entityUuid: string | CarryOnObject;
+    entityDefinitionUuid: string | CarryOnObject;
+    addColumns?: (((CarryOnObject | {
+        name: string | CarryOnObject;
+        definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement | CarryOnObject;
+    })[] | undefined) | CarryOnObject) | undefined;
+    removeColumns?: (((string | CarryOnObject)[] | undefined) | CarryOnObject) | undefined;
+    update?: ((JzodElement | undefined) | CarryOnObject) | undefined;
+}) | (CarryOnObject | {
+    actionType: "modelAction" | CarryOnObject;
+    actionName: "renameEntity" | CarryOnObject;
+    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
+    transactional?: ((boolean | undefined) | CarryOnObject) | undefined;
+    deploymentUuid: string | CarryOnObject;
+    entityName?: ((string | undefined) | CarryOnObject) | undefined;
+    entityUuid: string | CarryOnObject;
+    entityDefinitionUuid: string | CarryOnObject;
+    targetValue: string | CarryOnObject;
+}) | (CarryOnObject | {
+    actionType: "modelAction" | CarryOnObject;
+    actionName: "createEntity" | CarryOnObject;
+    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
+    transactional?: ((boolean | undefined) | CarryOnObject) | undefined;
+    deploymentUuid: string | CarryOnObject;
+    entities: (CarryOnObject | {
+        entity: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity | CarryOnObject;
+        entityDefinition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition | CarryOnObject;
+    })[] | CarryOnObject;
+}) | (CarryOnObject | {
+    actionType: "modelAction" | CarryOnObject;
+    actionName: "dropEntity" | CarryOnObject;
+    transactional?: ((boolean | undefined) | CarryOnObject) | undefined;
+    deploymentUuid: string | CarryOnObject;
+    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
+    entityUuid: string | CarryOnObject;
+    entityDefinitionUuid: string | CarryOnObject;
+}) | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction = (CarryOnObject | {
+    actionType: "instanceAction" | CarryOnObject;
+    actionName: "createInstance" | CarryOnObject;
+    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89" | CarryOnObject;
+    deploymentUuid: string | CarryOnObject;
+    applicationSection: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | CarryOnObject;
+    objects: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection | CarryOnObject)[] | CarryOnObject;
+}) | (CarryOnObject | {
+    actionType: "instanceAction" | CarryOnObject;
+    actionName: "deleteInstance" | CarryOnObject;
+    deploymentUuid: string | CarryOnObject;
+    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89" | CarryOnObject;
+    applicationSection: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | CarryOnObject;
+    includeInTransaction?: ((boolean | undefined) | CarryOnObject) | undefined;
+    objects: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection | CarryOnObject)[] | CarryOnObject;
+}) | (CarryOnObject | {
+    actionType: "instanceAction" | CarryOnObject;
+    actionName: "deleteInstanceWithCascade" | CarryOnObject;
+    deploymentUuid: string | CarryOnObject;
+    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89" | CarryOnObject;
+    applicationSection: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | CarryOnObject;
+    includeInTransaction?: ((boolean | undefined) | CarryOnObject) | undefined;
+    objects: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection | CarryOnObject)[] | CarryOnObject;
+}) | (CarryOnObject | {
+    actionType: "instanceAction" | CarryOnObject;
+    actionName: "updateInstance" | CarryOnObject;
+    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89" | CarryOnObject;
+    deploymentUuid: string | CarryOnObject;
+    applicationSection: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | CarryOnObject;
+    includeInTransaction?: ((boolean | undefined) | CarryOnObject) | undefined;
+    objects: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection | CarryOnObject)[] | CarryOnObject;
+}) | (CarryOnObject | {
+    actionType: "instanceAction" | CarryOnObject;
+    actionName: "loadNewInstancesInLocalCache" | CarryOnObject;
+    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89" | CarryOnObject;
+    deploymentUuid: string | CarryOnObject;
+    objects: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection | CarryOnObject)[] | CarryOnObject;
+}) | (CarryOnObject | {
+    actionType: "instanceAction" | CarryOnObject;
+    actionName: "getInstance" | CarryOnObject;
+    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89" | CarryOnObject;
+    deploymentUuid: string | CarryOnObject;
+    applicationSection: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | CarryOnObject;
+    parentUuid: string | CarryOnObject;
+    uuid: string | CarryOnObject;
+}) | (CarryOnObject | {
+    actionType: "instanceAction" | CarryOnObject;
+    actionName: "getInstances" | CarryOnObject;
+    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89" | CarryOnObject;
+    deploymentUuid: string | CarryOnObject;
+    applicationSection: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | CarryOnObject;
+    parentUuid: string | CarryOnObject;
+}) | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction = (CarryOnObject | {
+    actionType: "storeManagementAction" | CarryOnObject;
+    actionName: "createStore" | CarryOnObject;
+    endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" | CarryOnObject;
+    configuration: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration | CarryOnObject;
+    deploymentUuid: string | CarryOnObject;
+}) | (CarryOnObject | {
+    actionType: "storeManagementAction" | CarryOnObject;
+    actionName: "deleteStore" | CarryOnObject;
+    endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" | CarryOnObject;
+    deploymentUuid: string | CarryOnObject;
+    configuration: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration | CarryOnObject;
+}) | (CarryOnObject | {
+    actionType: "storeManagementAction" | CarryOnObject;
+    actionName: "resetAndInitMiroirAndApplicationDatabase" | CarryOnObject;
+    endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" | CarryOnObject;
+    deployments: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_deployment | CarryOnObject)[] | CarryOnObject;
+    deploymentUuid: string | CarryOnObject;
+}) | (CarryOnObject | {
+    actionType: "storeManagementAction" | CarryOnObject;
+    actionName: "openStore" | CarryOnObject;
+    endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" | CarryOnObject;
+    configuration: {
+        [x: string]: StoreUnitConfiguration;
+    } | CarryOnObject;
+    deploymentUuid: string | CarryOnObject;
+}) | (CarryOnObject | {
+    actionType: "storeManagementAction" | CarryOnObject;
+    actionName: "closeStore" | CarryOnObject;
+    endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" | CarryOnObject;
+    deploymentUuid: string | CarryOnObject;
+}) | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transactionalInstanceAction = CarryOnObject | {
+    actionType: "transactionalInstanceAction" | CarryOnObject;
+    deploymentUuid?: ((string | undefined) | CarryOnObject) | undefined;
+    instanceAction: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction = (CarryOnObject | {
+    actionType: "bundleAction" | CarryOnObject;
+    actionName: "createBundle" | CarryOnObject;
+    deploymentUuid: string | CarryOnObject;
+}) | (CarryOnObject | {
+    actionType: "bundleAction" | CarryOnObject;
+    actionName: "deleteBundle" | CarryOnObject;
+    deploymentUuid: string | CarryOnObject;
+}) | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction = (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction | CarryOnObject) | (CarryOnObject | {
+    actionType: "transactionalInstanceAction" | CarryOnObject;
+    deploymentUuid?: ((string | undefined) | CarryOnObject) | undefined;
+    instanceAction: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction | CarryOnObject;
+}) | (CarryOnObject | {
+    actionType: "compositeAction" | CarryOnObject;
+    actionName: "sequence" | CarryOnObject;
+    deploymentUuid?: ((string | undefined) | CarryOnObject) | undefined;
+    definition: ((CarryOnObject | {
+        compositeActionType: "action" | CarryOnObject;
+        action: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction | CarryOnObject;
+    }) | (CarryOnObject | {
+        compositeActionType: "query" | CarryOnObject;
+        query: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction | CarryOnObject;
+    }) | CarryOnObject)[] | CarryOnObject;
+}) | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction = CarryOnObject | {
+    actionType: "compositeAction" | CarryOnObject;
+    actionName: "sequence" | CarryOnObject;
+    deploymentUuid?: ((string | undefined) | CarryOnObject) | undefined;
+    definition: ((CarryOnObject | {
+        compositeActionType: "action" | CarryOnObject;
+        action: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction | CarryOnObject;
+    }) | (CarryOnObject | {
+        compositeActionType: "query" | CarryOnObject;
+        query: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction | CarryOnObject;
+    }) | CarryOnObject)[] | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference = (CarryOnObject | {
+    referenceType: "constant" | CarryOnObject;
+    referenceUuid: string | CarryOnObject;
+}) | (CarryOnObject | {
+    referenceType: "queryContextReference" | CarryOnObject;
+    referenceName: string | CarryOnObject;
+}) | (CarryOnObject | {
+    referenceType: "queryParameterReference" | CarryOnObject;
+    referenceName: string | CarryOnObject;
+}) | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByManyToManyRelationQuery = CarryOnObject | {
+    queryType: "selectObjectListByManyToManyRelation" | CarryOnObject;
+    objectListReference: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference | CarryOnObject;
+    objectListReferenceAttribute?: ((string | undefined) | CarryOnObject) | undefined;
+    AttributeOfRootListObjectToCompareToListReferenceUuid?: ((string | undefined) | CarryOnObject) | undefined;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByEntityQuery = CarryOnObject | {
+    queryType: "selectObjectListByEntity" | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByRelationQuery = CarryOnObject | {
+    queryType: "selectObjectListByRelation" | CarryOnObject;
+    objectReference: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference | CarryOnObject;
+    objectReferenceAttribute?: ((string | undefined) | CarryOnObject) | undefined;
+    AttributeOfListObjectToCompareToReferenceUuid: string | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByRelationQuery = CarryOnObject | {
+    queryType: "selectObjectByRelation" | CarryOnObject;
+    objectReference: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference | CarryOnObject;
+    AttributeOfObjectToCompareToReferenceUuid: string | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByDirectReferenceQuery = CarryOnObject | {
+    queryType: "selectObjectByDirectReference" | CarryOnObject;
+    instanceUuid: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectQuery = (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByRelationQuery | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByDirectReferenceQuery | CarryOnObject) | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectQueryCombinerQuery = CarryOnObject | {
+    queryType: "queryCombiner" | CarryOnObject;
+    rootQuery: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQuery | CarryOnObject;
+    subQuery: CarryOnObject | {
+        query: MiroirSelectQuery | CarryOnObject;
+        parameter: CarryOnObject | {
+            transformerType: "recordOfTransformers" | CarryOnObject;
+            definition: {
+                [x: string]: {
+                    transformerType: "objectTransformer";
+                    attributeName: string;
+                };
+            } | CarryOnObject;
+        };
+    };
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQuery = (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByEntityQuery | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByRelationQuery | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByManyToManyRelationQuery | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectQueryCombinerQuery | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByRelationQuery | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByDirectReferenceQuery | CarryOnObject) | (CarryOnObject | {
+    queryType: "literal" | CarryOnObject;
+    definition: string | CarryOnObject;
+}) | (CarryOnObject | {
+    queryType: "queryContextReference" | CarryOnObject;
+    queryReference: string | CarryOnObject;
+}) | (CarryOnObject | {
+    queryType: "wrapperReturningObject" | CarryOnObject;
+    definition: {
+        [x: string]: MiroirSelectQuery;
+    } | CarryOnObject;
+}) | (CarryOnObject | {
+    queryType: "wrapperReturningList" | CarryOnObject;
+    definition: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQuery | CarryOnObject)[] | CarryOnObject;
+}) | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQueriesRecord = {
+    [x: string]: MiroirSelectQuery;
+} | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirCrossJoinQuery = CarryOnObject | {
+    queryType: "combineQuery" | CarryOnObject;
+    a: string | CarryOnObject;
+    b: string | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirFetchQuery = CarryOnObject | {
+    parameterSchema?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject | undefined) | CarryOnObject) | undefined;
+    select: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQueriesRecord | CarryOnObject;
+    crossJoin?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirCrossJoinQuery | undefined) | CarryOnObject) | undefined;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainManyQueriesWithDeploymentUuid = CarryOnObject | {
+    queryType: "DomainManyQueries" | CarryOnObject;
+    deploymentUuid: string | CarryOnObject;
+    fetchQuery: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirFetchQuery | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction = CarryOnObject | {
+    actionType: "queryAction" | CarryOnObject;
+    actionName: "runQuery" | CarryOnObject;
+    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e" | CarryOnObject;
+    deploymentUuid: string | CarryOnObject;
+    query: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainManyQueriesWithDeploymentUuid | CarryOnObject;
+};
+export type CarryOnObject = ObjectTemplateInnerReference | {
     templateType: "mustacheStringTemplate";
     definition: string;
 } | {
@@ -1358,132 +2092,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplate = Object
         ObjectTemplate
     ][];
 };
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection = "model" | "data";
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance = {
-    uuid: string;
-    parentName?: string | undefined;
-    parentUuid: string;
-    conceptLevel?: ("MetaModel" | "Model" | "Data") | undefined;
-};
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection = {
-    parentName?: string | undefined;
-    parentUuid: string;
-    applicationSection: ApplicationSection;
-    instances: EntityInstance[];
-};
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction = {
-    actionType: "instanceAction";
-    actionName: "createInstance";
-    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
-    deploymentUuid: string;
-    applicationSection: ApplicationSection;
-    objects: EntityInstanceCollection[];
-} | {
-    actionType: "instanceAction";
-    actionName: "deleteInstance";
-    deploymentUuid: string;
-    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
-    applicationSection: ApplicationSection;
-    includeInTransaction?: boolean | undefined;
-    objects: EntityInstanceCollection[];
-} | {
-    actionType: "instanceAction";
-    actionName: "updateInstance";
-    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
-    deploymentUuid: string;
-    applicationSection: ApplicationSection;
-    includeInTransaction?: boolean | undefined;
-    objects: EntityInstanceCollection[];
-};
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction = UndoRedoAction;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction = StoreOrBundleAction;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction = ModelAction;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction = InstanceAction;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undefined = {
-    actionType: "transactionalInstanceAction";
-    deploymentUuid?: string | undefined;
-    instanceAction: InstanceCUDAction;
-};
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction = UndoRedoAction | StoreOrBundleAction | ModelAction | InstanceAction | {
-    actionType: "transactionalInstanceAction";
-    deploymentUuid?: string | undefined;
-    instanceAction: InstanceCUDAction;
-} | {
-    actionType: "compositeAction";
-    actionName: "sequence";
-    deploymentUuid?: string | undefined;
-    definition: DomainAction[];
-};
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction = (ObjectTemplateInnerReference | {
-    templateType: "mustacheStringTemplate";
-    definition: string;
-} | {
-    templateType: "fullObjectTemplate";
-    definition: [
-        ObjectTemplateInnerReference,
-        ObjectTemplate
-    ][];
-}) | {
-    actionType: "compositeAction" | (ObjectTemplateInnerReference | {
-        templateType: "mustacheStringTemplate";
-        definition: string;
-    } | {
-        templateType: "fullObjectTemplate";
-        definition: [
-            ObjectTemplateInnerReference,
-            ObjectTemplate
-        ][];
-    });
-    actionName: "sequence" | (ObjectTemplateInnerReference | {
-        templateType: "mustacheStringTemplate";
-        definition: string;
-    } | {
-        templateType: "fullObjectTemplate";
-        definition: [
-            ObjectTemplateInnerReference,
-            ObjectTemplate
-        ][];
-    });
-    deploymentUuid?: ((string | undefined) | (ObjectTemplateInnerReference | {
-        templateType: "mustacheStringTemplate";
-        definition: string;
-    } | {
-        templateType: "fullObjectTemplate";
-        definition: [
-            ObjectTemplateInnerReference,
-            ObjectTemplate
-        ][];
-    })) | undefined;
-    definition: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction | (ObjectTemplateInnerReference | {
-        templateType: "mustacheStringTemplate";
-        definition: string;
-    } | {
-        templateType: "fullObjectTemplate";
-        definition: [
-            ObjectTemplateInnerReference,
-            ObjectTemplate
-        ][];
-    }))[] | (ObjectTemplateInnerReference | {
-        templateType: "mustacheStringTemplate";
-        definition: string;
-    } | {
-        templateType: "fullObjectTemplate";
-        definition: [
-            ObjectTemplateInnerReference,
-            ObjectTemplate
-        ][];
-    });
-};
-export type CompositeActionTemplate = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction | (ObjectTemplateInnerReference | {
-    templateType: "mustacheStringTemplate";
-    definition: string;
-} | {
-    templateType: "fullObjectTemplate";
-    definition: [
-        ObjectTemplateInnerReference,
-        ObjectTemplate
-    ][];
-});
+export type CompositeActionTemplate = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction | CarryOnObject;
 export type MiroirFundamentalType = MiroirAllFundamentalTypesUnion;
 
 export const jzodBaseObject: z.ZodType<JzodBaseObject> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict();
@@ -1543,7 +2152,7 @@ export const sectionOfMenu: z.ZodType<SectionOfMenu> = z.object({title:z.string(
 export const simpleMenu: z.ZodType<SimpleMenu> = z.object({menuType:z.literal("simpleMenu"), definition:z.lazy(() =>menuItemArray)}).strict();
 export const complexMenu: z.ZodType<ComplexMenu> = z.object({menuType:z.literal("complexMenu"), definition:z.array(z.lazy(() =>sectionOfMenu))}).strict();
 export const menuDefinition: z.ZodType<MenuDefinition> = z.union([z.lazy(() =>simpleMenu), z.lazy(() =>complexMenu)]);
-export const menu: z.ZodType<Menu> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid(), name:z.string(), defaultLabel:z.string(), description:z.string().optional(), definition:z.lazy(() =>menuDefinition)}).strict();
+export const menu: z.ZodType<Menu> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), defaultLabel:z.string(), description:z.string().optional(), definition:z.lazy(() =>menuDefinition)}).strict();
 export const objectInstanceReportSection: z.ZodType<ObjectInstanceReportSection> = z.object({type:z.literal("objectInstanceReportSection"), fetchQuery:z.lazy(() =>miroirFetchQuery).optional(), definition:z.object({label:z.string().optional(), parentUuid:z.string(), fetchedDataReference:z.string().optional(), query:z.lazy(() =>selectObjectQuery).optional()}).strict()}).strict();
 export const objectListReportSection: z.ZodType<ObjectListReportSection> = z.object({type:z.literal("objectListReportSection"), definition:z.object({label:z.string().optional(), parentName:z.string().optional(), parentUuid:z.string().uuid(), fetchedDataReference:z.string().optional(), query:z.lazy(() =>selectObjectQuery).optional(), sortByAttribute:z.string().optional()}).strict()}).strict();
 export const gridReportSection: z.ZodType<GridReportSection> = z.object({type:z.literal("grid"), fetchQuery:z.lazy(() =>miroirFetchQuery).optional(), selectData:z.lazy(() =>miroirSelectQueriesRecord).optional(), combineData:z.lazy(() =>miroirCrossJoinQuery).optional(), definition:z.array(z.array(z.lazy(() =>reportSection)))}).strict();
@@ -1579,7 +2188,7 @@ export const selectObjectQuery: z.ZodType<SelectObjectQuery> = z.union([z.lazy((
 export const selectObjectListByEntityQuery: z.ZodType<SelectObjectListByEntityQuery> = z.object({label:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), parentName:z.string().optional(), parentUuid:z.lazy(() =>queryObjectReference)}).strict().extend({queryType:z.literal("selectObjectListByEntity")}).strict();
 export const selectObjectListByRelationQuery: z.ZodType<SelectObjectListByRelationQuery> = z.object({label:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), parentName:z.string().optional(), parentUuid:z.lazy(() =>queryObjectReference)}).strict().extend({queryType:z.literal("selectObjectListByRelation"), objectReference:z.lazy(() =>queryObjectReference), objectReferenceAttribute:z.string().optional(), AttributeOfListObjectToCompareToReferenceUuid:z.string()}).strict();
 export const selectObjectListByManyToManyRelationQuery: z.ZodType<SelectObjectListByManyToManyRelationQuery> = z.object({label:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), parentName:z.string().optional(), parentUuid:z.lazy(() =>queryObjectReference)}).strict().extend({queryType:z.literal("selectObjectListByManyToManyRelation"), objectListReference:z.lazy(() =>queryObjectReference), objectListReferenceAttribute:z.string().optional(), AttributeOfRootListObjectToCompareToListReferenceUuid:z.string().optional()}).strict();
-export const selectQueryCombinerQuery: z.ZodType<SelectQueryCombinerQuery> = z.object({queryType:z.literal("queryCombiner"), rootQuery:z.lazy(() =>miroirSelectQuery), subQuery:z.object({query:z.lazy(() =>miroirSelectQuery), parameter:z.lazy(() =>recordOfTransformers)}).strict()}).strict();
+export const selectQueryCombinerQuery: z.ZodType<SelectQueryCombinerQuery> = z.object({queryType:z.literal("queryCombiner"), rootQuery:z.lazy(() =>miroirSelectQuery), subQuery:z.object({query:z.lazy(() =>miroirSelectQuery), parameter:z.object({transformerType:z.literal("recordOfTransformers"), definition:z.record(z.string(),z.object({transformerType:z.literal("objectTransformer"), attributeName:z.string()}).strict())}).strict()}).strict()}).strict();
 export const selectObjectListQuery: z.ZodType<SelectObjectListQuery> = z.union([z.lazy(() =>selectObjectListByEntityQuery), z.lazy(() =>selectObjectListByRelationQuery), z.lazy(() =>selectObjectListByManyToManyRelationQuery)]);
 export const miroirSelectQuery: z.ZodType<MiroirSelectQuery> = z.union([z.lazy(() =>selectObjectListByEntityQuery), z.lazy(() =>selectObjectListByRelationQuery), z.lazy(() =>selectObjectListByManyToManyRelationQuery), z.lazy(() =>selectQueryCombinerQuery), z.lazy(() =>selectObjectByRelationQuery), z.lazy(() =>selectObjectByDirectReferenceQuery), z.object({queryType:z.literal("literal"), definition:z.string()}).strict(), z.object({queryType:z.literal("queryContextReference"), queryReference:z.string()}).strict(), z.object({queryType:z.literal("wrapperReturningObject"), definition:z.record(z.string(),z.lazy(() =>miroirSelectQuery))}).strict(), z.object({queryType:z.literal("wrapperReturningList"), definition:z.array(z.lazy(() =>miroirSelectQuery))}).strict()]);
 export const miroirSelectQueriesRecord: z.ZodType<MiroirSelectQueriesRecord> = z.record(z.string(),z.lazy(() =>miroirSelectQuery));
@@ -1641,8 +2250,8 @@ export const storeManagementAction: z.ZodType<StoreManagementAction> = z.union([
 export const persistenceAction: z.ZodType<PersistenceAction> = z.union([z.object({actionType:z.literal("RestPersistenceAction"), actionName:z.enum(["create","read","update","delete"]), endpoint:z.literal("a93598b3-19b6-42e8-828c-f02042d212d4"), section:z.lazy(() =>applicationSection), deploymentUuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().optional(), uuid:z.string().optional(), objects:z.array(z.lazy(() =>entityInstance).optional()).optional()}).strict(), z.lazy(() =>queryAction), z.lazy(() =>bundleAction), z.lazy(() =>instanceAction), z.lazy(() =>modelAction), z.lazy(() =>storeManagementAction)]);
 export const restPersistenceAction: z.ZodType<RestPersistenceAction> = z.object({actionType:z.literal("RestPersistenceAction"), actionName:z.enum(["create","read","update","delete"]), endpoint:z.literal("a93598b3-19b6-42e8-828c-f02042d212d4"), section:z.lazy(() =>applicationSection), deploymentUuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().optional(), uuid:z.string().optional(), objects:z.array(z.lazy(() =>entityInstance).optional()).optional()}).strict();
 export const queryAction: z.ZodType<QueryAction> = z.object({actionType:z.literal("queryAction"), actionName:z.literal("runQuery"), endpoint:z.literal("9e404b3c-368c-40cb-be8b-e3c28550c25e"), deploymentUuid:z.string().uuid(), query:z.lazy(() =>domainManyQueriesWithDeploymentUuid)}).strict();
-export const compositeAction: z.ZodType<CompositeAction> = z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), deploymentUuid:z.string().uuid().optional(), definition:z.array(z.lazy(() =>domainAction))}).strict();
-export const domainAction: z.ZodType<DomainAction> = z.union([z.lazy(() =>undoRedoAction), z.lazy(() =>storeOrBundleAction), z.lazy(() =>modelAction), z.lazy(() =>instanceAction), z.object({actionType:z.literal("transactionalInstanceAction"), deploymentUuid:z.string().uuid().optional(), instanceAction:z.lazy(() =>instanceCUDAction)}).strict(), z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), deploymentUuid:z.string().uuid().optional(), definition:z.array(z.lazy(() =>domainAction))}).strict()]);
+export const compositeAction: z.ZodType<CompositeAction> = z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), deploymentUuid:z.string().uuid().optional(), definition:z.array(z.union([z.object({compositeActionType:z.literal("action"), action:z.lazy(() =>domainAction)}).strict(), z.object({compositeActionType:z.literal("query"), query:z.lazy(() =>queryAction)}).strict()]))}).strict();
+export const domainAction: z.ZodType<DomainAction> = z.union([z.lazy(() =>undoRedoAction), z.lazy(() =>storeOrBundleAction), z.lazy(() =>modelAction), z.lazy(() =>instanceAction), z.object({actionType:z.literal("transactionalInstanceAction"), deploymentUuid:z.string().uuid().optional(), instanceAction:z.lazy(() =>instanceCUDAction)}).strict(), z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), deploymentUuid:z.string().uuid().optional(), definition:z.array(z.union([z.object({compositeActionType:z.literal("action"), action:z.lazy(() =>domainAction)}).strict(), z.object({compositeActionType:z.literal("query"), query:z.lazy(() =>queryAction)}).strict()]))}).strict()]);
 export const objectTemplateInnerReference: z.ZodType<ObjectTemplateInnerReference> = z.union([z.object({templateType:z.literal("constant"), referenceUuid:z.string()}).strict(), z.object({templateType:z.literal("contextReference"), referenceName:z.string()}).strict(), z.object({templateType:z.literal("parameterReference"), referenceName:z.string()}).strict()]);
 export const objectTemplate: z.ZodType<ObjectTemplate> = z.union([z.lazy(() =>objectTemplateInnerReference), z.object({templateType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict(), z.object({templateType:z.literal("fullObjectTemplate"), definition:z.array(z.tuple([z.lazy(() =>objectTemplateInnerReference), z.lazy(() =>objectTemplate)]))}).strict()]);
 export const actionHandler: z.ZodType<ActionHandler> = z.object({interface:z.object({actionJzodObjectSchema:z.lazy(() =>jzodObject)}).strict(), implementation:z.object({templates:z.record(z.string(),z.any()).optional(), compositeActionTemplate:z.lazy(() =>compositeActionTemplate)}).strict()}).strict();
@@ -1651,18 +2260,89 @@ export const bundleAction: z.ZodType<BundleAction> = z.union([z.object({actionTy
 export const storeOrBundleAction: z.ZodType<StoreOrBundleAction> = z.union([z.lazy(() =>storeManagementAction), z.lazy(() =>bundleAction)]);
 export const actionTransformer: z.ZodType<ActionTransformer> = z.object({transformerType:z.literal("actionTransformer")}).strict();
 export const dataTransformer: z.ZodType<DataTransformer> = z.object({transformerType:z.literal("dataTransformer")}).strict();
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference> = z.union([z.object({templateType:z.literal("constant"), referenceUuid:z.string()}).strict(), z.object({templateType:z.literal("contextReference"), referenceName:z.string()}).strict(), z.object({templateType:z.literal("parameterReference"), referenceName:z.string()}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplate: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplate> = z.union([z.lazy(() =>objectTemplateInnerReference), z.object({templateType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict(), z.object({templateType:z.literal("fullObjectTemplate"), definition:z.array(z.tuple([z.lazy(() =>objectTemplateInnerReference), z.lazy(() =>objectTemplate)]))}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection> = z.union([z.literal("model"), z.literal("data")]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional()});
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection> = z.object({parentName:z.string().optional(), parentUuid:z.string(), applicationSection:z.lazy(() =>applicationSection), instances:z.array(z.lazy(() =>entityInstance))}).strict();
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction> = z.union([z.object({actionType:z.literal("instanceAction"), actionName:z.literal("createInstance"), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>applicationSection), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("instanceAction"), actionName:z.literal("deleteInstance"), deploymentUuid:z.string().uuid(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), applicationSection:z.lazy(() =>applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("instanceAction"), actionName:z.literal("updateInstance"), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction> = z.lazy(() =>undoRedoAction);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction> = z.lazy(() =>storeOrBundleAction);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction> = z.lazy(() =>modelAction);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction> = z.lazy(() =>instanceAction);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undefined: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undefined> = z.object({actionType:z.literal("transactionalInstanceAction"), deploymentUuid:z.string().uuid().optional(), instanceAction:z.lazy(() =>instanceCUDAction)}).strict();
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction> = z.union([z.lazy(() =>undoRedoAction), z.lazy(() =>storeOrBundleAction), z.lazy(() =>modelAction), z.lazy(() =>instanceAction), z.object({actionType:z.literal("transactionalInstanceAction"), deploymentUuid:z.string().uuid().optional(), instanceAction:z.lazy(() =>instanceCUDAction)}).strict(), z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), deploymentUuid:z.string().uuid().optional(), definition:z.array(z.lazy(() =>domainAction))}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction> = z.union([z.union([z.lazy(() =>objectTemplateInnerReference), z.object({templateType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict(), z.object({templateType:z.literal("fullObjectTemplate"), definition:z.array(z.tuple([z.lazy(() =>objectTemplateInnerReference), z.lazy(() =>objectTemplate)]))}).strict()]), z.object({actionType:z.union([z.literal("compositeAction"), z.union([z.lazy(() =>objectTemplateInnerReference), z.object({templateType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict(), z.object({templateType:z.literal("fullObjectTemplate"), definition:z.array(z.tuple([z.lazy(() =>objectTemplateInnerReference), z.lazy(() =>objectTemplate)]))}).strict()])]), actionName:z.union([z.literal("sequence"), z.union([z.lazy(() =>objectTemplateInnerReference), z.object({templateType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict(), z.object({templateType:z.literal("fullObjectTemplate"), definition:z.array(z.tuple([z.lazy(() =>objectTemplateInnerReference), z.lazy(() =>objectTemplate)]))}).strict()])]), deploymentUuid:z.union([z.string().uuid().optional(), z.union([z.lazy(() =>objectTemplateInnerReference), z.object({templateType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict(), z.object({templateType:z.literal("fullObjectTemplate"), definition:z.array(z.tuple([z.lazy(() =>objectTemplateInnerReference), z.lazy(() =>objectTemplate)]))}).strict()])]).optional(), definition:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction), z.union([z.lazy(() =>objectTemplateInnerReference), z.object({templateType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict(), z.object({templateType:z.literal("fullObjectTemplate"), definition:z.array(z.tuple([z.lazy(() =>objectTemplateInnerReference), z.lazy(() =>objectTemplate)]))}).strict()])])), z.union([z.lazy(() =>objectTemplateInnerReference), z.object({templateType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict(), z.object({templateType:z.literal("fullObjectTemplate"), definition:z.array(z.tuple([z.lazy(() =>objectTemplateInnerReference), z.lazy(() =>objectTemplate)]))}).strict()])])}).strict()]);
-export const compositeActionTemplate: z.ZodType<CompositeActionTemplate> = z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction), z.union([z.lazy(() =>objectTemplateInnerReference), z.object({templateType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict(), z.object({templateType:z.literal("fullObjectTemplate"), definition:z.array(z.tuple([z.lazy(() =>objectTemplateInnerReference), z.lazy(() =>objectTemplate)]))}).strict()])]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject> = z.union([z.lazy(() =>carryOnObject), z.object({optional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), nullable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), extra:z.union([z.lazy(() =>carryOnObject), z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]).optional()}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodArray: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodArray> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("array"), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPlainAttribute: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPlainAttribute> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.enum(["any","bigint","boolean","never","null","uuid","undefined","unknown","void"]), z.lazy(() =>carryOnObject)]), coerce:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeDateValidations: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeDateValidations> = z.union([z.lazy(() =>carryOnObject), z.object({extra:z.union([z.record(z.string(),z.any()).optional(), z.lazy(() =>carryOnObject)]).optional(), type:z.union([z.enum(["min","max"]), z.lazy(() =>carryOnObject)]), parameter:z.union([z.any(), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainDateWithValidations: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainDateWithValidations> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("date"), z.lazy(() =>carryOnObject)]), coerce:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), validations:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeDateValidations), z.lazy(() =>carryOnObject)])).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeNumberValidations: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeNumberValidations> = z.union([z.lazy(() =>carryOnObject), z.object({extra:z.union([z.record(z.string(),z.any()).optional(), z.lazy(() =>carryOnObject)]).optional(), type:z.union([z.enum(["gt","gte","lt","lte","int","positive","nonpositive","negative","nonnegative","multipleOf","finite","safe"]), z.lazy(() =>carryOnObject)]), parameter:z.union([z.any(), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainNumberWithValidations: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainNumberWithValidations> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("number"), z.lazy(() =>carryOnObject)]), coerce:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), validations:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeNumberValidations), z.lazy(() =>carryOnObject)])).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeStringValidations: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeStringValidations> = z.union([z.lazy(() =>carryOnObject), z.object({extra:z.union([z.record(z.string(),z.any()).optional(), z.lazy(() =>carryOnObject)]).optional(), type:z.union([z.enum(["max","min","length","email","url","emoji","uuid","cuid","cuid2","ulid","regex","includes","startsWith","endsWith","datetime","ip"]), z.lazy(() =>carryOnObject)]), parameter:z.union([z.any(), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainStringWithValidations: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainStringWithValidations> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("string"), z.lazy(() =>carryOnObject)]), coerce:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), validations:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeStringValidations), z.lazy(() =>carryOnObject)])).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement> = z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodArray), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPlainAttribute), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainDateWithValidations), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainNumberWithValidations), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainStringWithValidations), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnum), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodFunction), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLazy), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLiteral), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodIntersection), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodMap), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPromise), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodRecord), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodReference), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSet), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodTuple), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodUnion), z.lazy(() =>carryOnObject)]), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnum: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnum> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("enum"), z.lazy(() =>carryOnObject)]), definition:z.union([z.array(z.union([z.string(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnumAttributeTypes: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnumAttributeTypes> = z.union([z.enum(["any","bigint","boolean","date","never","null","number","string","uuid","undefined","unknown","void"]), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnumElementTypes: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnumElementTypes> = z.union([z.enum(["array","date","enum","function","lazy","literal","intersection","map","number","object","promise","record","schemaReference","set","string","tuple","union"]), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodFunction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodFunction> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("function"), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOnObject), z.object({args:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), returns:z.union([z.lazy(() =>jzodElement).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLazy: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLazy> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("lazy"), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodFunction), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLiteral: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLiteral> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("literal"), z.lazy(() =>carryOnObject)]), definition:z.union([z.union([z.string(), z.lazy(() =>carryOnObject)]), z.union([z.number(), z.lazy(() =>carryOnObject)]), z.union([z.bigint(), z.lazy(() =>carryOnObject)]), z.union([z.boolean(), z.lazy(() =>carryOnObject)]), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodIntersection: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodIntersection> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("intersection"), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOnObject), z.object({left:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)]), right:z.union([z.lazy(() =>jzodElement), z.lazy(() =>carryOnObject)])}).strict()])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodMap: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodMap> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("map"), z.lazy(() =>carryOnObject)]), definition:z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>jzodElement), z.lazy(() =>carryOnObject)])])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject> = z.union([z.lazy(() =>carryOnObject), z.object({extend:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodReference).optional(), z.lazy(() =>carryOnObject)]).optional(), type:z.union([z.literal("object"), z.lazy(() =>carryOnObject)]), nonStrict:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), partial:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), carryOn:z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodUnion), z.lazy(() =>carryOnObject)]), z.lazy(() =>carryOnObject)]).optional(), definition:z.union([z.record(z.string(),z.lazy(() =>jzodElement)), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPromise: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPromise> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("promise"), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodRecord: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodRecord> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("record"), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodReference: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodReference> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("schemaReference"), z.lazy(() =>carryOnObject)]), context:z.union([z.record(z.string(),z.lazy(() =>jzodElement)).optional(), z.lazy(() =>carryOnObject)]).optional(), carryOn:z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodUnion), z.lazy(() =>carryOnObject)]), z.lazy(() =>carryOnObject)]).optional(), definition:z.union([z.lazy(() =>carryOnObject), z.object({eager:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), partial:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), relativePath:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), absolutePath:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSet: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSet> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("set"), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodTuple: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodTuple> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("tuple"), z.lazy(() =>carryOnObject)]), definition:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodUnion: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodUnion> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("union"), z.lazy(() =>carryOnObject)]), discriminator:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), discriminatorNew:z.union([z.union([z.lazy(() =>carryOnObject), z.object({discriminatorType:z.union([z.literal("string"), z.lazy(() =>carryOnObject)]), value:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({discriminatorType:z.union([z.literal("array"), z.lazy(() =>carryOnObject)]), value:z.union([z.array(z.union([z.string(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]), z.lazy(() =>carryOnObject)]).optional(), carryOn:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject).optional(), z.lazy(() =>carryOnObject)]).optional(), definition:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType> = z.union([z.enum(["miroir","app"]), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_application: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_application> = z.union([z.lazy(() =>carryOnObject), z.object({uuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentDefinitionVersionUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), name:z.union([z.string(), z.lazy(() =>carryOnObject)]), defaultLabel:z.union([z.string(), z.lazy(() =>carryOnObject)]), description:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), selfApplication:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationVersion: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationVersion> = z.union([z.lazy(() =>carryOnObject), z.object({uuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentDefinitionVersionUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), name:z.union([z.string(), z.lazy(() =>carryOnObject)]), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), description:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), type:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), application:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), branch:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), previousVersion:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), modelStructureMigration:z.union([z.array(z.union([z.record(z.string(),z.any()), z.lazy(() =>carryOnObject)])).optional(), z.lazy(() =>carryOnObject)]).optional(), modelCUDMigration:z.union([z.array(z.union([z.record(z.string(),z.any()), z.lazy(() =>carryOnObject)])).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menu: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menu> = z.union([z.lazy(() =>carryOnObject), z.object({uuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentDefinitionVersionUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), name:z.union([z.string(), z.lazy(() =>carryOnObject)]), defaultLabel:z.union([z.string(), z.lazy(() =>carryOnObject)]), description:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), definition:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuDefinition), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuDefinition: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuDefinition> = z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_simpleMenu), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_complexMenu), z.lazy(() =>carryOnObject)]), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity> = z.union([z.lazy(() =>carryOnObject), z.object({uuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentDefinitionVersionUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), conceptLevel:z.union([z.enum(["MetaModel","Model","Data"]).optional(), z.lazy(() =>carryOnObject)]).optional(), application:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), name:z.union([z.string(), z.lazy(() =>carryOnObject)]), author:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), description:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition> = z.union([z.lazy(() =>carryOnObject), z.object({uuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentName:z.union([z.string(), z.lazy(() =>carryOnObject)]), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentDefinitionVersionUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), name:z.union([z.string(), z.lazy(() =>carryOnObject)]), entityUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), conceptLevel:z.union([z.enum(["MetaModel","Model","Data"]).optional(), z.lazy(() =>carryOnObject)]).optional(), description:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultInstanceDetailsReportUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), viewAttributes:z.union([z.array(z.union([z.string(), z.lazy(() =>carryOnObject)])).optional(), z.lazy(() =>carryOnObject)]).optional(), jzodSchema:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection> = z.union([z.union([z.literal("model"), z.lazy(() =>carryOnObject)]), z.union([z.literal("data"), z.lazy(() =>carryOnObject)]), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance> = z.union([z.lazy(() =>carryOnObject), z.object({uuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), conceptLevel:z.union([z.enum(["MetaModel","Model","Data"]).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_deployment: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_deployment> = z.union([z.lazy(() =>carryOnObject), z.object({uuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentDefinitionVersionUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), name:z.union([z.string(), z.lazy(() =>carryOnObject)]), defaultLabel:z.union([z.string(), z.lazy(() =>carryOnObject)]), description:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), application:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), bundle:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), configuration:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration).optional(), z.lazy(() =>carryOnObject)]).optional(), model:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject).optional(), z.lazy(() =>carryOnObject)]).optional(), data:z.union([z.lazy(() =>jzodObject).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection> = z.union([z.lazy(() =>carryOnObject), z.object({parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), instances:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSchema: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSchema> = z.union([z.lazy(() =>carryOnObject), z.object({uuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentName:z.union([z.string(), z.lazy(() =>carryOnObject)]), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentDefinitionVersionUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), name:z.union([z.string(), z.lazy(() =>carryOnObject)]), conceptLevel:z.union([z.enum(["MetaModel","Model","Data"]).optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), description:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), definition:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObjectOrReference).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirMenuItem: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirMenuItem> = z.union([z.lazy(() =>carryOnObject), z.object({label:z.union([z.string(), z.lazy(() =>carryOnObject)]), section:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), application:z.union([z.string(), z.lazy(() =>carryOnObject)]), reportUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), instanceUuid:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), icon:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuItemArray: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuItemArray> = z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirMenuItem), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_sectionOfMenu: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_sectionOfMenu> = z.union([z.lazy(() =>carryOnObject), z.object({title:z.union([z.string(), z.lazy(() =>carryOnObject)]), label:z.union([z.string(), z.lazy(() =>carryOnObject)]), items:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuItemArray), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_simpleMenu: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_simpleMenu> = z.union([z.lazy(() =>carryOnObject), z.object({menuType:z.union([z.literal("simpleMenu"), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuItemArray), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_complexMenu: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_complexMenu> = z.union([z.lazy(() =>carryOnObject), z.object({menuType:z.union([z.literal("complexMenu"), z.lazy(() =>carryOnObject)]), definition:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_sectionOfMenu), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObjectOrReference: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObjectOrReference> = z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodReference), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject), z.lazy(() =>carryOnObject)]), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectInstanceReportSection: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectInstanceReportSection> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("objectInstanceReportSection"), z.lazy(() =>carryOnObject)]), fetchQuery:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirFetchQuery).optional(), z.lazy(() =>carryOnObject)]).optional(), definition:z.union([z.lazy(() =>carryOnObject), z.object({label:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), fetchedDataReference:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), query:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectQuery).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectListReportSection: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectListReportSection> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("objectListReportSection"), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOnObject), z.object({label:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), fetchedDataReference:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), query:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectQuery).optional(), z.lazy(() =>carryOnObject)]).optional(), sortByAttribute:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_gridReportSection: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_gridReportSection> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("grid"), z.lazy(() =>carryOnObject)]), fetchQuery:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirFetchQuery).optional(), z.lazy(() =>carryOnObject)]).optional(), selectData:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQueriesRecord).optional(), z.lazy(() =>carryOnObject)]).optional(), combineData:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirCrossJoinQuery).optional(), z.lazy(() =>carryOnObject)]).optional(), definition:z.union([z.array(z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_reportSection), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_listReportSection: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_listReportSection> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("list"), z.lazy(() =>carryOnObject)]), fetchQuery:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirFetchQuery).optional(), z.lazy(() =>carryOnObject)]).optional(), selectData:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQueriesRecord).optional(), z.lazy(() =>carryOnObject)]).optional(), combineData:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirCrossJoinQuery).optional(), z.lazy(() =>carryOnObject)]).optional(), definition:z.union([z.array(z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectInstanceReportSection), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectListReportSection), z.lazy(() =>carryOnObject)]), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_reportSection: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_reportSection> = z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_gridReportSection), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_listReportSection), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectListReportSection), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectInstanceReportSection), z.lazy(() =>carryOnObject)]), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_rootReportSection: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_rootReportSection> = z.union([z.lazy(() =>carryOnObject), z.object({reportParametersToFetchQueryParametersTransformer:z.union([z.record(z.string(),z.string()).optional(), z.lazy(() =>carryOnObject)]).optional(), reportParameters:z.union([z.record(z.string(),z.string()).optional(), z.lazy(() =>carryOnObject)]).optional(), fetchQuery:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirFetchQuery), z.lazy(() =>carryOnObject)]), section:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_reportSection), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_report: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_report> = z.union([z.lazy(() =>carryOnObject), z.object({uuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentDefinitionVersionUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), conceptLevel:z.union([z.enum(["MetaModel","Model","Data"]).optional(), z.lazy(() =>carryOnObject)]).optional(), name:z.union([z.string(), z.lazy(() =>carryOnObject)]), defaultLabel:z.union([z.string(), z.lazy(() =>carryOnObject)]), type:z.union([z.enum(["list","grid"]).optional(), z.lazy(() =>carryOnObject)]).optional(), application:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), definition:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_rootReportSection), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel> = z.union([z.lazy(() =>carryOnObject), z.object({applicationVersions:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationVersion), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), applicationVersionCrossEntityDefinition:z.union([z.array(z.union([z.lazy(() =>carryOnObject), z.object({uuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), conceptLevel:z.union([z.enum(["MetaModel","Model","Data"]).optional(), z.lazy(() =>carryOnObject)]).optional(), applicationVersion:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), entityDefinition:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()])), z.lazy(() =>carryOnObject)]), configuration:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeBasedConfiguration), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), entities:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), entityDefinitions:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), jzodSchemas:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSchema), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), menus:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menu), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), reports:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_report), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference> = z.union([z.union([z.lazy(() =>carryOnObject), z.object({templateType:z.union([z.literal("constant"), z.lazy(() =>carryOnObject)]), referenceUuid:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({templateType:z.union([z.literal("contextReference"), z.lazy(() =>carryOnObject)]), referenceName:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({templateType:z.union([z.literal("parameterReference"), z.lazy(() =>carryOnObject)]), referenceName:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplate: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplate> = z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOnObject), z.object({templateType:z.union([z.literal("mustacheStringTemplate"), z.lazy(() =>carryOnObject)]), definition:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({templateType:z.union([z.literal("fullObjectTemplate"), z.lazy(() =>carryOnObject)]), definition:z.union([z.array(z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplate), z.lazy(() =>carryOnObject)])])), z.lazy(() =>carryOnObject)])}).strict()]), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_indexedDbStoreSectionConfiguration: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_indexedDbStoreSectionConfiguration> = z.union([z.lazy(() =>carryOnObject), z.object({emulatedServerType:z.union([z.literal("indexedDb"), z.lazy(() =>carryOnObject)]), indexedDbName:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_filesystemDbStoreSectionConfiguration: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_filesystemDbStoreSectionConfiguration> = z.union([z.lazy(() =>carryOnObject), z.object({emulatedServerType:z.union([z.literal("filesystem"), z.lazy(() =>carryOnObject)]), directory:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_sqlDbStoreSectionConfiguration: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_sqlDbStoreSectionConfiguration> = z.union([z.lazy(() =>carryOnObject), z.object({emulatedServerType:z.union([z.literal("sql"), z.lazy(() =>carryOnObject)]), connectionString:z.union([z.string(), z.lazy(() =>carryOnObject)]), schema:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeBasedConfiguration: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeBasedConfiguration> = z.union([z.lazy(() =>carryOnObject), z.object({uuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), conceptLevel:z.union([z.enum(["MetaModel","Model","Data"]).optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOnObject), z.object({currentApplicationVersion:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration> = z.union([z.lazy(() =>carryOnObject), z.object({admin:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeSectionConfiguration), z.lazy(() =>carryOnObject)]), model:z.union([z.lazy(() =>storeSectionConfiguration), z.lazy(() =>carryOnObject)]), data:z.union([z.lazy(() =>storeSectionConfiguration), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeSectionConfiguration: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeSectionConfiguration> = z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_indexedDbStoreSectionConfiguration), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_filesystemDbStoreSectionConfiguration), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_sqlDbStoreSectionConfiguration), z.lazy(() =>carryOnObject)]), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction> = z.union([z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("createInstance"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), objects:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("deleteInstance"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), includeInTransaction:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), objects:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("updateInstance"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), includeInTransaction:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), objects:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction> = z.union([z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("undoRedoAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("undo"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("71c04f8e-c687-4ea7-9a19-bc98d796c389"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("undoRedoAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("redo"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("71c04f8e-c687-4ea7-9a19-bc98d796c389"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction> = z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction), z.lazy(() =>carryOnObject)]), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction> = z.union([z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("initModel"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), params:z.union([z.lazy(() =>carryOnObject), z.object({metaModel:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel), z.lazy(() =>carryOnObject)]), dataStoreType:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType), z.lazy(() =>carryOnObject)]), application:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_application), z.lazy(() =>carryOnObject)]), applicationDeploymentConfiguration:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance), z.lazy(() =>carryOnObject)]), applicationModelBranch:z.union([z.lazy(() =>entityInstance), z.lazy(() =>carryOnObject)]), applicationVersion:z.union([z.lazy(() =>entityInstance), z.lazy(() =>carryOnObject)]), applicationStoreBasedConfiguration:z.union([z.lazy(() =>entityInstance), z.lazy(() =>carryOnObject)])}).strict()])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("commit"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("rollback"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("remoteLocalCacheRollback"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("resetModel"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("resetData"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("alterEntityAttribute"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), transactional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), entityName:z.union([z.string(), z.lazy(() =>carryOnObject)]), entityUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), entityDefinitionUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), addColumns:z.union([z.array(z.union([z.lazy(() =>carryOnObject), z.object({name:z.union([z.string(), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)])}).strict()])).optional(), z.lazy(() =>carryOnObject)]).optional(), removeColumns:z.union([z.array(z.union([z.string(), z.lazy(() =>carryOnObject)])).optional(), z.lazy(() =>carryOnObject)]).optional(), update:z.union([z.lazy(() =>jzodElement).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("renameEntity"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), transactional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), entityName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), entityUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), entityDefinitionUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), targetValue:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("createEntity"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), transactional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), entities:z.union([z.array(z.union([z.lazy(() =>carryOnObject), z.object({entity:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity), z.lazy(() =>carryOnObject)]), entityDefinition:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition), z.lazy(() =>carryOnObject)])}).strict()])), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("dropEntity"), z.lazy(() =>carryOnObject)]), transactional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), entityUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), entityDefinitionUuid:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction> = z.union([z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("createInstance"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), objects:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("deleteInstance"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), includeInTransaction:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), objects:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("deleteInstanceWithCascade"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), includeInTransaction:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), objects:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("updateInstance"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), includeInTransaction:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), objects:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("loadNewInstancesInLocalCache"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), objects:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("getInstance"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), uuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("getInstances"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction> = z.union([z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("storeManagementAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("createStore"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), z.lazy(() =>carryOnObject)]), configuration:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("storeManagementAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("deleteStore"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), configuration:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("storeManagementAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("resetAndInitMiroirAndApplicationDatabase"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), z.lazy(() =>carryOnObject)]), deployments:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_deployment), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("storeManagementAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("openStore"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), z.lazy(() =>carryOnObject)]), configuration:z.union([z.record(z.string(),z.lazy(() =>storeUnitConfiguration)), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("storeManagementAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("closeStore"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transactionalInstanceAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transactionalInstanceAction> = z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("transactionalInstanceAction"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), instanceAction:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction> = z.union([z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("bundleAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("createBundle"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("bundleAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("deleteBundle"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction> = z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("transactionalInstanceAction"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), instanceAction:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("compositeAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("sequence"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), definition:z.union([z.array(z.union([z.union([z.lazy(() =>carryOnObject), z.object({compositeActionType:z.union([z.literal("action"), z.lazy(() =>carryOnObject)]), action:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({compositeActionType:z.union([z.literal("query"), z.lazy(() =>carryOnObject)]), query:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction), z.lazy(() =>carryOnObject)])}).strict()]), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction> = z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("compositeAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("sequence"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), definition:z.union([z.array(z.union([z.union([z.lazy(() =>carryOnObject), z.object({compositeActionType:z.union([z.literal("action"), z.lazy(() =>carryOnObject)]), action:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({compositeActionType:z.union([z.literal("query"), z.lazy(() =>carryOnObject)]), query:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction), z.lazy(() =>carryOnObject)])}).strict()]), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference> = z.union([z.union([z.lazy(() =>carryOnObject), z.object({referenceType:z.union([z.literal("constant"), z.lazy(() =>carryOnObject)]), referenceUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({referenceType:z.union([z.literal("queryContextReference"), z.lazy(() =>carryOnObject)]), referenceName:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({referenceType:z.union([z.literal("queryParameterReference"), z.lazy(() =>carryOnObject)]), referenceName:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByManyToManyRelationQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByManyToManyRelationQuery> = z.union([z.lazy(() =>carryOnObject), z.object({queryType:z.union([z.literal("selectObjectListByManyToManyRelation"), z.lazy(() =>carryOnObject)]), objectListReference:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference), z.lazy(() =>carryOnObject)]), objectListReferenceAttribute:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), AttributeOfRootListObjectToCompareToListReferenceUuid:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByEntityQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByEntityQuery> = z.union([z.lazy(() =>carryOnObject), z.object({queryType:z.union([z.literal("selectObjectListByEntity"), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByRelationQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByRelationQuery> = z.union([z.lazy(() =>carryOnObject), z.object({queryType:z.union([z.literal("selectObjectListByRelation"), z.lazy(() =>carryOnObject)]), objectReference:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference), z.lazy(() =>carryOnObject)]), objectReferenceAttribute:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), AttributeOfListObjectToCompareToReferenceUuid:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByRelationQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByRelationQuery> = z.union([z.lazy(() =>carryOnObject), z.object({queryType:z.union([z.literal("selectObjectByRelation"), z.lazy(() =>carryOnObject)]), objectReference:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference), z.lazy(() =>carryOnObject)]), AttributeOfObjectToCompareToReferenceUuid:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByDirectReferenceQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByDirectReferenceQuery> = z.union([z.lazy(() =>carryOnObject), z.object({queryType:z.union([z.literal("selectObjectByDirectReference"), z.lazy(() =>carryOnObject)]), instanceUuid:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectQuery> = z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByRelationQuery), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByDirectReferenceQuery), z.lazy(() =>carryOnObject)]), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectQueryCombinerQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectQueryCombinerQuery> = z.union([z.lazy(() =>carryOnObject), z.object({queryType:z.union([z.literal("queryCombiner"), z.lazy(() =>carryOnObject)]), rootQuery:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQuery), z.lazy(() =>carryOnObject)]), subQuery:z.union([z.lazy(() =>carryOnObject), z.object({query:z.union([z.lazy(() =>miroirSelectQuery), z.lazy(() =>carryOnObject)]), parameter:z.union([z.lazy(() =>carryOnObject), z.object({transformerType:z.union([z.literal("recordOfTransformers"), z.lazy(() =>carryOnObject)]), definition:z.union([z.record(z.string(),z.object({transformerType:z.literal("objectTransformer"), attributeName:z.string()}).strict()), z.lazy(() =>carryOnObject)])}).strict()])}).strict()])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQuery> = z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByEntityQuery), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByRelationQuery), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByManyToManyRelationQuery), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectQueryCombinerQuery), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByRelationQuery), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByDirectReferenceQuery), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOnObject), z.object({queryType:z.union([z.literal("literal"), z.lazy(() =>carryOnObject)]), definition:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({queryType:z.union([z.literal("queryContextReference"), z.lazy(() =>carryOnObject)]), queryReference:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({queryType:z.union([z.literal("wrapperReturningObject"), z.lazy(() =>carryOnObject)]), definition:z.union([z.record(z.string(),z.lazy(() =>miroirSelectQuery)), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({queryType:z.union([z.literal("wrapperReturningList"), z.lazy(() =>carryOnObject)]), definition:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQuery), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQueriesRecord: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQueriesRecord> = z.union([z.record(z.string(),z.lazy(() =>miroirSelectQuery)), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirCrossJoinQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirCrossJoinQuery> = z.union([z.lazy(() =>carryOnObject), z.object({queryType:z.union([z.literal("combineQuery"), z.lazy(() =>carryOnObject)]), a:z.union([z.string(), z.lazy(() =>carryOnObject)]), b:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirFetchQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirFetchQuery> = z.union([z.lazy(() =>carryOnObject), z.object({parameterSchema:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject).optional(), z.lazy(() =>carryOnObject)]).optional(), select:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQueriesRecord), z.lazy(() =>carryOnObject)]), crossJoin:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirCrossJoinQuery).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainManyQueriesWithDeploymentUuid: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainManyQueriesWithDeploymentUuid> = z.union([z.lazy(() =>carryOnObject), z.object({queryType:z.union([z.literal("DomainManyQueries"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), fetchQuery:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirFetchQuery), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction> = z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("queryAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("runQuery"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("9e404b3c-368c-40cb-be8b-e3c28550c25e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), query:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainManyQueriesWithDeploymentUuid), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOnObject: z.ZodType<CarryOnObject> = z.union([z.lazy(() =>objectTemplateInnerReference), z.object({templateType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict(), z.object({templateType:z.literal("fullObjectTemplate"), definition:z.array(z.tuple([z.lazy(() =>objectTemplateInnerReference), z.lazy(() =>objectTemplate)]))}).strict()]);
+export const compositeActionTemplate: z.ZodType<CompositeActionTemplate> = z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction), z.lazy(() =>carryOnObject)]);
 export const miroirFundamentalType = z.lazy(() =>miroirAllFundamentalTypesUnion);

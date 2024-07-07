@@ -84,7 +84,7 @@ export async function generateZodSchemaFileFromJzodSchema(
         )
       : [];
 
-  console.log("generateZodSchemaFileFromJzodSchema generateTypeAnotationsForSchema:", generateTypeAnotationsForSchema);
+  // console.log("generateZodSchemaFileFromJzodSchema generateTypeAnotationsForSchema:", generateTypeAnotationsForSchema);
   const newFileContentsNotFormated = jzodToTsCode(
     jzodElement,
     true,
@@ -97,7 +97,7 @@ export async function generateZodSchemaFileFromJzodSchema(
   if (targetFileName && existsSync(targetFileName)) {
     const oldFileContents = readFileSync(targetFileName).toString()
     if (newFileContents != oldFileContents)  {
-      console.log("generateZodSchemaFileFromJzodSchema newFileContents",newFileContents);
+      // console.log("generateZodSchemaFileFromJzodSchema newFileContents",newFileContents);
       writeFileSync(targetFileName,newFileContents);
     } else {
       console.log("generateZodSchemaFileFromJzodSchema entityDefinitionReport old contents equal new contents, no file generation needed.");

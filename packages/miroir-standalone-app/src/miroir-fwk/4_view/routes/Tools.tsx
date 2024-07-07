@@ -222,9 +222,10 @@ export const handleCompositeAction = async (
   }
 
   for (const a of (actionHandler.implementation.compositeActionTemplate as any).definition) {
+    log.info("handleCompositeAction resolving action", a)
     const currentAction = renderObjectTemplate(
       "ROOT",
-      a,
+      a.action,
       compositeActionTemplateAvailableReferences,
       undefined
     )
@@ -236,7 +237,7 @@ export const handleCompositeAction = async (
   const compositeAction: CompositeAction = {
     actionType: "compositeAction",
     actionName: "sequence",
-    definition: actions,
+    definition: actions.map(a => ({ compositeActionType: "action", action: a})),
   }
   // return compositeAction
   await domainController.handleAction(
@@ -658,36 +659,60 @@ export const ToolsPage: React.FC<any> = (
         actionName: "sequence",
         definition: [
           {
-            templateType: "parameterReference",
-            referenceName: "openStoreAction",
+            compositeActionType: "action",
+            action: {
+              templateType: "parameterReference",
+              referenceName: "openStoreAction",
+            }
           },
           {
-            templateType: "parameterReference",
-            referenceName: "createStoreAction",
+            compositeActionType: "action",
+            action: {
+              templateType: "parameterReference",
+              referenceName: "createStoreAction",
+            }
           },
           {
-            templateType: "parameterReference",
-            referenceName: "resetAndInitAction",
+            compositeActionType: "action",
+            action: {
+              templateType: "parameterReference",
+              referenceName: "resetAndInitAction",
+            }
           },
           {
-            templateType: "parameterReference",
-            referenceName: "createSelfApplicationAction",
+            compositeActionType: "action",
+            action: {
+              templateType: "parameterReference",
+              referenceName: "createSelfApplicationAction",
+            }
           },
           {
-            templateType: "parameterReference",
-            referenceName: "createApplicationForAdminAction",
+            compositeActionType: "action",
+            action: {
+              templateType: "parameterReference",
+              referenceName: "createApplicationForAdminAction",
+            }
           },
           {
-            templateType: "parameterReference",
-            referenceName: "createAdminDeploymentAction",
+            compositeActionType: "action",
+            action: {
+              templateType: "parameterReference",
+              referenceName: "createAdminDeploymentAction",
+            }
           },
           {
-            templateType: "parameterReference",
-            referenceName: "createNewApplicationMenuAction",
+            compositeActionType: "action",
+            action: {
+              templateType: "parameterReference",
+              referenceName: "createNewApplicationMenuAction",
+            }
           },
           {
-            templateType: "parameterReference",
-            referenceName: "commitAction",
+            compositeActionType: "action",
+            action: {
+              templateType: "parameterReference",
+              referenceName: "commitAction",
+            }
           },
         ],
       }
@@ -782,7 +807,8 @@ export const ToolsPage: React.FC<any> = (
         await handleCompositeAction(
           domainController,
           actionHandlerCreateApplication,
-          actionCreateSchemaParamValues
+          actionCreateSchemaParamValues,
+          currentModel
         )
         log.info("store opened with uuid", actionCreateSchemaParamValues.newDeploymentUuid)
 
