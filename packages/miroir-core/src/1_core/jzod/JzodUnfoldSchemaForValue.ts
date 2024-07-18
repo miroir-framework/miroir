@@ -318,11 +318,11 @@ export function resolveReferencesForJzodSchemaAndValueObject(
            */
           const objectUnionChoices = concreteUnrolledJzodSchemas.filter(j => j.type == "object")
 
-          log.info(
-            "resolveReferencesForJzodSchemaAndValueObject called for union-type value object found", objectUnionChoices.length, "object branches is the union",
-            // JSON.stringify(objectUnionChoices),
-            // objectUnionChoices,
-          );
+          // log.info(
+          //   "resolveReferencesForJzodSchemaAndValueObject called for union-type value object found", objectUnionChoices.length, "object branches is the union",
+          //   // JSON.stringify(objectUnionChoices),
+          //   // objectUnionChoices,
+          // );
 
           // if there is only one object candidate, use this one
           if (objectUnionChoices.length == 1) {
@@ -560,7 +560,7 @@ export function resolveReferencesForJzodSchemaAndValueObject(
       : jzodSchema.definition
       ;
 
-      log.info("resolveJzodSchemaReferenceInContext for array found innerSchema", JSON.stringify(innerSchema, null, 2));
+      // log.info("resolveJzodSchemaReferenceInContext for array found innerSchema", JSON.stringify(innerSchema, null, 2));
 
       if (innerSchema.type != "union") {
         return { status: "ok", element: { type: "array", definition: innerSchema } }
@@ -679,23 +679,23 @@ export function resolveJzodSchemaReferenceInContext(
     : { type: "object", definition: absoluteReferenceTargetJzodSchema };
 
 
-    console.log(
-      "resolveJzodSchemaReferenceInContext for reference",
-      "absolutePath",
-      jzodReference.definition.absolutePath,
-      "relativePath",
-      jzodReference.definition.relativePath,
-      "relativeReferenceJzodContext",
-      Object.keys(relativeReferenceJzodContext??{}),
-      "result",
-      targetJzodSchema,
-      // "currentModel",
-      // currentModel,
-      // "miroirFundamentalJzodSchema", 
-      // miroirFundamentalJzodSchema,
-      // "absoluteReferenceTargetJzodSchema",
-      // absoluteReferenceTargetJzodSchema,
-    );
+    // console.log(
+    //   "resolveJzodSchemaReferenceInContext for reference",
+    //   "absolutePath",
+    //   jzodReference.definition.absolutePath,
+    //   "relativePath",
+    //   jzodReference.definition.relativePath,
+    //   "relativeReferenceJzodContext",
+    //   Object.keys(relativeReferenceJzodContext??{}),
+    //   "result",
+    //   targetJzodSchema,
+    //   // "currentModel",
+    //   // currentModel,
+    //   // "miroirFundamentalJzodSchema", 
+    //   // miroirFundamentalJzodSchema,
+    //   // "absoluteReferenceTargetJzodSchema",
+    //   // absoluteReferenceTargetJzodSchema,
+    // );
 
   if (!targetJzodSchema) {
     // console.error(

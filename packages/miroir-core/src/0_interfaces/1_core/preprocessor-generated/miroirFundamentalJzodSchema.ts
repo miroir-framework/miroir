@@ -9,6 +9,62 @@ export const miroirFundamentalJzodSchema = {
     "context": {
       "jzodBaseObject": {
         "type": "object",
+        "tag": {
+          "optional": true,
+          "schema": {
+            "optional": true,
+            "metaSchema": {
+              "type": "object",
+              "optional": true,
+              "definition": {
+                "optional": {
+                  "type": "boolean",
+                  "optional": true
+                },
+                "metaSchema": {
+                  "type": "schemaReference",
+                  "optional": true,
+                  "definition": {
+                    "relativePath": "jzodElement"
+                  }
+                },
+                "valueSchema": {
+                  "type": "schemaReference",
+                  "optional": true,
+                  "definition": {
+                    "relativePath": "jzodElement"
+                  }
+                }
+              }
+            },
+            "valueSchema": {
+              "type": "object",
+              "optional": true,
+              "definition": {
+                "id": {
+                  "type": "number",
+                  "optional": true
+                },
+                "defaultLabel": {
+                  "type": "string",
+                  "optional": true
+                },
+                "initializeTo": {
+                  "type": "any",
+                  "optional": true
+                },
+                "targetEntity": {
+                  "type": "string",
+                  "optional": true
+                },
+                "editable": {
+                  "type": "boolean",
+                  "optional": true
+                }
+              }
+            }
+          }
+        },
         "definition": {
           "optional": {
             "type": "boolean",
@@ -300,8 +356,11 @@ export const miroirFundamentalJzodSchema = {
         "type": "union",
         "discriminator": "type",
         "extra": {
-          "initializeTo": {
-            "type": "string"
+          "type": "object",
+          "definition": {
+            "initializeTo": {
+              "type": "string"
+            }
           }
         },
         "definition": [
@@ -7544,7 +7603,549 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject_extend": {
+        "type": "object",
+        "tag": {
+          "optional": true,
+          "schema": {
+            "optional": true,
+            "metaSchema": {
+              "type": "object",
+              "optional": true,
+              "definition": {
+                "optional": {
+                  "type": "boolean",
+                  "optional": true
+                },
+                "metaSchema": {
+                  "type": "schemaReference",
+                  "optional": true,
+                  "definition": {
+                    "relativePath": "jzodElement"
+                  }
+                },
+                "valueSchema": {
+                  "type": "schemaReference",
+                  "optional": true,
+                  "definition": {
+                    "relativePath": "jzodElement"
+                  }
+                }
+              }
+            },
+            "valueSchema": {
+              "type": "object",
+              "optional": true,
+              "definition": {
+                "id": {
+                  "type": "union",
+                  "optional": true,
+                  "definition": [
+                    {
+                      "type": "number",
+                      "optional": true
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "carryOnObject"
+                      }
+                    }
+                  ]
+                },
+                "defaultLabel": {
+                  "type": "union",
+                  "optional": true,
+                  "definition": [
+                    {
+                      "type": "string",
+                      "optional": true
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "carryOnObject"
+                      }
+                    }
+                  ]
+                },
+                "initializeTo": {
+                  "type": "union",
+                  "optional": true,
+                  "definition": [
+                    {
+                      "type": "any",
+                      "optional": true
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "carryOnObject"
+                      }
+                    }
+                  ]
+                },
+                "targetEntity": {
+                  "type": "union",
+                  "optional": true,
+                  "definition": [
+                    {
+                      "type": "string",
+                      "optional": true
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "carryOnObject"
+                      }
+                    }
+                  ]
+                },
+                "editable": {
+                  "type": "union",
+                  "optional": true,
+                  "definition": [
+                    {
+                      "type": "boolean",
+                      "optional": true
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "carryOnObject"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "definition": {
+          "optional": {
+            "type": "union",
+            "optional": true,
+            "definition": [
+              {
+                "type": "boolean",
+                "optional": true
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "carryOnObject"
+                }
+              }
+            ]
+          },
+          "nullable": {
+            "type": "union",
+            "optional": true,
+            "definition": [
+              {
+                "type": "boolean",
+                "optional": true
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "carryOnObject"
+                }
+              }
+            ]
+          },
+          "extra": {
+            "optional": true,
+            "type": "union",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "carryOnObject"
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "id": {
+                    "type": "union",
+                    "optional": true,
+                    "definition": [
+                      {
+                        "type": "number",
+                        "optional": true
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "carryOnObject"
+                        }
+                      }
+                    ]
+                  },
+                  "defaultLabel": {
+                    "type": "union",
+                    "optional": true,
+                    "definition": [
+                      {
+                        "type": "string",
+                        "optional": true
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "carryOnObject"
+                        }
+                      }
+                    ]
+                  },
+                  "initializeTo": {
+                    "type": "union",
+                    "optional": true,
+                    "definition": [
+                      {
+                        "type": "any",
+                        "optional": true
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "carryOnObject"
+                        }
+                      }
+                    ]
+                  },
+                  "targetEntity": {
+                    "type": "union",
+                    "optional": true,
+                    "definition": [
+                      {
+                        "type": "string",
+                        "optional": true
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "carryOnObject"
+                        }
+                      }
+                    ]
+                  },
+                  "editable": {
+                    "type": "union",
+                    "optional": true,
+                    "definition": [
+                      {
+                        "type": "boolean",
+                        "optional": true
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "carryOnObject"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRootQuery_extend": {
+        "type": "object",
+        "definition": {
+          "pageParams": {
+            "type": "union",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementObject"
+                },
+                "context": {}
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "carryOnObject"
+                }
+              }
+            ]
+          },
+          "queryParams": {
+            "type": "union",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "domainElementObject"
+                },
+                "context": {}
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "carryOnObject"
+                }
+              }
+            ]
+          },
+          "contextResults": {
+            "type": "union",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "domainElementObject"
+                },
+                "context": {}
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "carryOnObject"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectRootQuery_extend": {
+        "type": "object",
+        "definition": {
+          "label": {
+            "type": "union",
+            "optional": true,
+            "extra": {
+              "id": 1,
+              "defaultLabel": "Label",
+              "editable": false
+            },
+            "definition": [
+              {
+                "type": "string",
+                "optional": true,
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Label",
+                  "editable": false
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "carryOnObject"
+                }
+              }
+            ]
+          },
+          "applicationSection": {
+            "optional": true,
+            "extra": {
+              "id": 2,
+              "defaultLabel": "Parent Uuid",
+              "editable": false
+            },
+            "type": "union",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "optional": true,
+                "extra": {
+                  "id": 2,
+                  "defaultLabel": "Parent Uuid",
+                  "editable": false
+                },
+                "definition": {
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                },
+                "context": {}
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "carryOnObject"
+                }
+              }
+            ]
+          },
+          "parentName": {
+            "type": "union",
+            "optional": true,
+            "extra": {
+              "id": 3,
+              "defaultLabel": "Parent Name",
+              "editable": false
+            },
+            "definition": [
+              {
+                "type": "string",
+                "optional": true,
+                "extra": {
+                  "id": 3,
+                  "defaultLabel": "Parent Name",
+                  "editable": false
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "carryOnObject"
+                }
+              }
+            ]
+          },
+          "parentUuid": {
+            "extra": {
+              "id": 4,
+              "defaultLabel": "Parent Uuid",
+              "editable": false
+            },
+            "type": "union",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "extra": {
+                  "id": 4,
+                  "defaultLabel": "Parent Uuid",
+                  "editable": false
+                },
+                "definition": {
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference"
+                },
+                "context": {}
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "carryOnObject"
+                }
+              }
+            ]
+          }
+        }
+      },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject": {
+        "tag": {
+          "optional": true,
+          "schema": {
+            "optional": true,
+            "metaSchema": {
+              "type": "object",
+              "optional": true,
+              "definition": {
+                "optional": {
+                  "type": "boolean",
+                  "optional": true
+                },
+                "metaSchema": {
+                  "type": "schemaReference",
+                  "optional": true,
+                  "definition": {
+                    "relativePath": "jzodElement"
+                  }
+                },
+                "valueSchema": {
+                  "type": "schemaReference",
+                  "optional": true,
+                  "definition": {
+                    "relativePath": "jzodElement"
+                  }
+                }
+              }
+            },
+            "valueSchema": {
+              "type": "object",
+              "optional": true,
+              "definition": {
+                "id": {
+                  "type": "union",
+                  "optional": true,
+                  "definition": [
+                    {
+                      "type": "number",
+                      "optional": true
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "carryOnObject"
+                      }
+                    }
+                  ]
+                },
+                "defaultLabel": {
+                  "type": "union",
+                  "optional": true,
+                  "definition": [
+                    {
+                      "type": "string",
+                      "optional": true
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "carryOnObject"
+                      }
+                    }
+                  ]
+                },
+                "initializeTo": {
+                  "type": "union",
+                  "optional": true,
+                  "definition": [
+                    {
+                      "type": "any",
+                      "optional": true
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "carryOnObject"
+                      }
+                    }
+                  ]
+                },
+                "targetEntity": {
+                  "type": "union",
+                  "optional": true,
+                  "definition": [
+                    {
+                      "type": "string",
+                      "optional": true
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "carryOnObject"
+                      }
+                    }
+                  ]
+                },
+                "editable": {
+                  "type": "union",
+                  "optional": true,
+                  "definition": [
+                    {
+                      "type": "boolean",
+                      "optional": true
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "carryOnObject"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
         "type": "union",
         "definition": [
           {
@@ -7555,6 +8156,122 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
+            "tag": {
+              "optional": true,
+              "schema": {
+                "optional": true,
+                "metaSchema": {
+                  "type": "object",
+                  "optional": true,
+                  "definition": {
+                    "optional": {
+                      "type": "boolean",
+                      "optional": true
+                    },
+                    "metaSchema": {
+                      "type": "schemaReference",
+                      "optional": true,
+                      "definition": {
+                        "relativePath": "jzodElement"
+                      }
+                    },
+                    "valueSchema": {
+                      "type": "schemaReference",
+                      "optional": true,
+                      "definition": {
+                        "relativePath": "jzodElement"
+                      }
+                    }
+                  }
+                },
+                "valueSchema": {
+                  "type": "object",
+                  "optional": true,
+                  "definition": {
+                    "id": {
+                      "type": "union",
+                      "optional": true,
+                      "definition": [
+                        {
+                          "type": "number",
+                          "optional": true
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "carryOnObject"
+                          }
+                        }
+                      ]
+                    },
+                    "defaultLabel": {
+                      "type": "union",
+                      "optional": true,
+                      "definition": [
+                        {
+                          "type": "string",
+                          "optional": true
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "carryOnObject"
+                          }
+                        }
+                      ]
+                    },
+                    "initializeTo": {
+                      "type": "union",
+                      "optional": true,
+                      "definition": [
+                        {
+                          "type": "any",
+                          "optional": true
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "carryOnObject"
+                          }
+                        }
+                      ]
+                    },
+                    "targetEntity": {
+                      "type": "union",
+                      "optional": true,
+                      "definition": [
+                        {
+                          "type": "string",
+                          "optional": true
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "carryOnObject"
+                          }
+                        }
+                      ]
+                    },
+                    "editable": {
+                      "type": "union",
+                      "optional": true,
+                      "definition": [
+                        {
+                          "type": "boolean",
+                          "optional": true
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "carryOnObject"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
             "definition": {
               "optional": {
                 "type": "union",
@@ -7589,6 +8306,7 @@ export const miroirFundamentalJzodSchema = {
                 ]
               },
               "extra": {
+                "optional": true,
                 "type": "union",
                 "definition": [
                   {
@@ -7682,8 +8400,7 @@ export const miroirFundamentalJzodSchema = {
                       }
                     }
                   }
-                ],
-                "optional": true
+                ]
               }
             }
           }
@@ -7691,15 +8408,6 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodArray": {
         "type": "union",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "jzodBaseObject"
-          },
-          "context": {}
-        },
         "definition": [
           {
             "type": "schemaReference",
@@ -7709,6 +8417,14 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject_extend"
+              },
+              "context": {}
+            },
             "definition": {
               "type": {
                 "type": "union",
@@ -7749,15 +8465,6 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPlainAttribute": {
         "type": "union",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "jzodBaseObject"
-          },
-          "context": {}
-        },
         "definition": [
           {
             "type": "schemaReference",
@@ -7767,6 +8474,14 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject_extend"
+              },
+              "context": {}
+            },
             "definition": {
               "type": {
                 "type": "union",
@@ -7882,15 +8597,6 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainDateWithValidations": {
         "type": "union",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "jzodBaseObject"
-          },
-          "context": {}
-        },
         "definition": [
           {
             "type": "schemaReference",
@@ -7900,6 +8606,14 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject_extend"
+              },
+              "context": {}
+            },
             "definition": {
               "type": {
                 "type": "union",
@@ -8049,15 +8763,6 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainNumberWithValidations": {
         "type": "union",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "jzodBaseObject"
-          },
-          "context": {}
-        },
         "definition": [
           {
             "type": "schemaReference",
@@ -8067,6 +8772,14 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject_extend"
+              },
+              "context": {}
+            },
             "definition": {
               "type": {
                 "type": "union",
@@ -8220,15 +8933,6 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainStringWithValidations": {
         "type": "union",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "jzodBaseObject"
-          },
-          "context": {}
-        },
         "definition": [
           {
             "type": "schemaReference",
@@ -8238,6 +8942,14 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject_extend"
+              },
+              "context": {}
+            },
             "definition": {
               "type": {
                 "type": "union",
@@ -8312,8 +9024,11 @@ export const miroirFundamentalJzodSchema = {
         "type": "union",
         "discriminator": "type",
         "extra": {
-          "initializeTo": {
-            "type": "string"
+          "type": "object",
+          "definition": {
+            "initializeTo": {
+              "type": "string"
+            }
           }
         },
         "definition": [
@@ -8651,15 +9366,6 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnum": {
         "type": "union",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "jzodBaseObject"
-          },
-          "context": {}
-        },
         "definition": [
           {
             "type": "schemaReference",
@@ -8669,6 +9375,14 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject_extend"
+              },
+              "context": {}
+            },
             "definition": {
               "type": {
                 "type": "union",
@@ -8780,15 +9494,6 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodFunction": {
         "type": "union",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "jzodBaseObject"
-          },
-          "context": {}
-        },
         "definition": [
           {
             "type": "schemaReference",
@@ -8798,6 +9503,14 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject_extend"
+              },
+              "context": {}
+            },
             "definition": {
               "type": {
                 "type": "union",
@@ -8889,15 +9602,6 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLazy": {
         "type": "union",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "jzodBaseObject"
-          },
-          "context": {}
-        },
         "definition": [
           {
             "type": "schemaReference",
@@ -8907,6 +9611,14 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject_extend"
+              },
+              "context": {}
+            },
             "definition": {
               "type": {
                 "type": "union",
@@ -8947,15 +9659,6 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLiteral": {
         "type": "union",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "jzodBaseObject"
-          },
-          "context": {}
-        },
         "definition": [
           {
             "type": "schemaReference",
@@ -8965,6 +9668,14 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject_extend"
+              },
+              "context": {}
+            },
             "definition": {
               "type": {
                 "type": "union",
@@ -8985,60 +9696,16 @@ export const miroirFundamentalJzodSchema = {
                 "type": "union",
                 "definition": [
                   {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    "type": "string"
                   },
                   {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "number"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    "type": "number"
                   },
                   {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "bigint"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    "type": "bigint"
                   },
                   {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "boolean"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    "type": "boolean"
                   },
                   {
                     "type": "schemaReference",
@@ -9054,15 +9721,6 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodIntersection": {
         "type": "union",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "jzodBaseObject"
-          },
-          "context": {}
-        },
         "definition": [
           {
             "type": "schemaReference",
@@ -9072,6 +9730,14 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject_extend"
+              },
+              "context": {}
+            },
             "definition": {
               "type": {
                 "type": "union",
@@ -9147,15 +9813,6 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodMap": {
         "type": "union",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "jzodBaseObject"
-          },
-          "context": {}
-        },
         "definition": [
           {
             "type": "schemaReference",
@@ -9165,6 +9822,14 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject_extend"
+              },
+              "context": {}
+            },
             "definition": {
               "type": {
                 "type": "union",
@@ -9185,41 +9850,52 @@ export const miroirFundamentalJzodSchema = {
                 "type": "union",
                 "definition": [
                   {
-                    "type": "union",
+                    "type": "tuple",
                     "definition": [
                       {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement"
-                        },
-                        "context": {}
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement"
+                            },
+                            "context": {}
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOnObject"
+                            }
+                          }
+                        ]
                       },
                       {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "jzodElement"
+                            },
+                            "context": {}
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOnObject"
+                            }
+                          }
+                        ]
                       }
                     ]
                   },
                   {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "jzodElement"
-                        },
-                        "context": {}
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
                 ]
               }
@@ -9229,15 +9905,6 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject": {
         "type": "union",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "jzodBaseObject"
-          },
-          "context": {}
-        },
         "definition": [
           {
             "type": "schemaReference",
@@ -9247,6 +9914,14 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject_extend"
+              },
+              "context": {}
+            },
             "definition": {
               "extend": {
                 "optional": true,
@@ -9391,15 +10066,6 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPromise": {
         "type": "union",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "jzodBaseObject"
-          },
-          "context": {}
-        },
         "definition": [
           {
             "type": "schemaReference",
@@ -9409,6 +10075,14 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject_extend"
+              },
+              "context": {}
+            },
             "definition": {
               "type": {
                 "type": "union",
@@ -9449,15 +10123,6 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodRecord": {
         "type": "union",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "jzodBaseObject"
-          },
-          "context": {}
-        },
         "definition": [
           {
             "type": "schemaReference",
@@ -9467,6 +10132,14 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject_extend"
+              },
+              "context": {}
+            },
             "definition": {
               "type": {
                 "type": "union",
@@ -9507,15 +10180,6 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodReference": {
         "type": "union",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "jzodBaseObject"
-          },
-          "context": {}
-        },
         "definition": [
           {
             "type": "schemaReference",
@@ -9525,6 +10189,14 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject_extend"
+              },
+              "context": {}
+            },
             "definition": {
               "type": {
                 "type": "union",
@@ -9699,15 +10371,6 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSet": {
         "type": "union",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "jzodBaseObject"
-          },
-          "context": {}
-        },
         "definition": [
           {
             "type": "schemaReference",
@@ -9717,6 +10380,14 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject_extend"
+              },
+              "context": {}
+            },
             "definition": {
               "type": {
                 "type": "union",
@@ -9757,15 +10428,6 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodTuple": {
         "type": "union",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "jzodBaseObject"
-          },
-          "context": {}
-        },
         "definition": [
           {
             "type": "schemaReference",
@@ -9775,6 +10437,14 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject_extend"
+              },
+              "context": {}
+            },
             "definition": {
               "type": {
                 "type": "union",
@@ -9829,15 +10499,6 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodUnion": {
         "type": "union",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "jzodBaseObject"
-          },
-          "context": {}
-        },
         "definition": [
           {
             "type": "schemaReference",
@@ -9847,6 +10508,14 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject_extend"
+              },
+              "context": {}
+            },
             "definition": {
               "type": {
                 "type": "union",
@@ -9884,108 +10553,86 @@ export const miroirFundamentalJzodSchema = {
                 "optional": true,
                 "definition": [
                   {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      },
-                      {
-                        "type": "object",
-                        "definition": {
-                          "discriminatorType": {
-                            "type": "union",
-                            "definition": [
-                              {
-                                "type": "literal",
-                                "definition": "string"
-                              },
-                              {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "relativePath": "carryOnObject"
-                                }
-                              }
-                            ]
+                    "type": "object",
+                    "definition": {
+                      "discriminatorType": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "literal",
+                            "definition": "string"
                           },
-                          "value": {
-                            "type": "union",
-                            "definition": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "relativePath": "carryOnObject"
-                                }
-                              }
-                            ]
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOnObject"
+                            }
                           }
-                        }
+                        ]
+                      },
+                      "value": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOnObject"
+                            }
+                          }
+                        ]
                       }
-                    ]
+                    }
                   },
                   {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      },
-                      {
-                        "type": "object",
-                        "definition": {
-                          "discriminatorType": {
-                            "type": "union",
-                            "definition": [
-                              {
-                                "type": "literal",
-                                "definition": "array"
-                              },
-                              {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "relativePath": "carryOnObject"
-                                }
-                              }
-                            ]
+                    "type": "object",
+                    "definition": {
+                      "discriminatorType": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "literal",
+                            "definition": "array"
                           },
-                          "value": {
-                            "type": "union",
-                            "definition": [
-                              {
-                                "type": "array",
-                                "definition": {
-                                  "type": "union",
-                                  "definition": [
-                                    {
-                                      "type": "string"
-                                    },
-                                    {
-                                      "type": "schemaReference",
-                                      "definition": {
-                                        "relativePath": "carryOnObject"
-                                      }
-                                    }
-                                  ]
-                                }
-                              },
-                              {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "relativePath": "carryOnObject"
-                                }
-                              }
-                            ]
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOnObject"
+                            }
                           }
-                        }
+                        ]
+                      },
+                      "value": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "array",
+                            "definition": {
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "carryOnObject"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOnObject"
+                            }
+                          }
+                        ]
                       }
-                    ]
+                    }
                   },
                   {
                     "type": "schemaReference",
@@ -11917,34 +12564,12 @@ export const miroirFundamentalJzodSchema = {
         "type": "union",
         "definition": [
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "literal",
-                "definition": "model"
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
-              }
-            ]
+            "type": "literal",
+            "definition": "model"
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "literal",
-                "definition": "data"
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
-              }
-            ]
+            "type": "literal",
+            "definition": "data"
           },
           {
             "type": "schemaReference",
@@ -11956,7 +12581,6 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance": {
         "type": "union",
-        "nonStrict": true,
         "definition": [
           {
             "type": "schemaReference",
@@ -15620,139 +16244,106 @@ export const miroirFundamentalJzodSchema = {
         "discriminator": "templateType",
         "definition": [
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "templateType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "constant"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+            "type": "object",
+            "definition": {
+              "templateType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "constant"
                   },
-                  "referenceUuid": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
+              },
+              "referenceUuid": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               }
-            ]
+            }
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "templateType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "contextReference"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+            "type": "object",
+            "definition": {
+              "templateType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "contextReference"
                   },
-                  "referenceName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
+              },
+              "referenceName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               }
-            ]
+            }
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "templateType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "parameterReference"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+            "type": "object",
+            "definition": {
+              "templateType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "parameterReference"
                   },
-                  "referenceName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
+              },
+              "referenceName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               }
-            ]
+            }
           },
           {
             "type": "schemaReference",
@@ -15785,84 +16376,67 @@ export const miroirFundamentalJzodSchema = {
             ]
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "templateType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "mustacheStringTemplate"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+            "type": "object",
+            "definition": {
+              "templateType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "mustacheStringTemplate"
                   },
-                  "definition": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
+              },
+              "definition": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               }
-            ]
+            }
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "templateType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "fullObjectTemplate"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+            "type": "object",
+            "definition": {
+              "templateType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "fullObjectTemplate"
                   },
-                  "definition": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "array",
-                        "definition": {
-                          "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "definition": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "array",
+                    "definition": {
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "tuple",
                           "definition": [
                             {
                               "type": "union",
@@ -15901,19 +16475,25 @@ export const miroirFundamentalJzodSchema = {
                               ]
                             }
                           ]
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "carryOnObject"
+                          }
                         }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                      ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
               }
-            ]
+            }
           },
           {
             "type": "schemaReference",
@@ -16399,477 +16979,444 @@ export const miroirFundamentalJzodSchema = {
         "type": "union",
         "definition": [
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "instanceAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "instanceAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "createInstance"
                   },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "createInstance"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "endpoint": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
                   },
-                  "endpoint": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "deploymentUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Uuid",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
                     "extra": {
                       "id": 1,
                       "defaultLabel": "Uuid",
                       "editable": false
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "applicationSection": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
                     },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "id": 1,
-                          "defaultLabel": "Uuid",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    "context": {}
                   },
-                  "applicationSection": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                        },
-                        "context": {}
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "objects": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "objects": {
+                "type": "union",
+                "extra": {
+                  "id": 2,
+                  "defaultLabel": "Entity Instances to create",
+                  "editable": true
+                },
+                "definition": [
+                  {
+                    "type": "array",
                     "extra": {
                       "id": 2,
                       "defaultLabel": "Entity Instances to create",
                       "editable": true
                     },
-                    "definition": [
-                      {
-                        "type": "array",
-                        "extra": {
-                          "id": 2,
-                          "defaultLabel": "Entity Instances to create",
-                          "editable": true
-                        },
-                        "definition": {
+                    "definition": {
+                      "optional": false,
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "schemaReference",
                           "optional": false,
-                          "type": "union",
-                          "definition": [
-                            {
-                              "type": "schemaReference",
-                              "optional": false,
-                              "definition": {
-                                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
-                              },
-                              "context": {}
-                            },
-                            {
-                              "type": "schemaReference",
-                              "definition": {
-                                "relativePath": "carryOnObject"
-                              }
-                            }
-                          ]
+                          "definition": {
+                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                          },
+                          "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "carryOnObject"
+                          }
                         }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                      ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
               }
-            ]
+            }
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "instanceAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "instanceAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "deleteInstance"
                   },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "deleteInstance"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "deploymentUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Uuid",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
                     "extra": {
                       "id": 1,
                       "defaultLabel": "Uuid",
                       "editable": false
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "endpoint": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "applicationSection": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
                     },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "id": 1,
-                          "defaultLabel": "Uuid",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    "context": {}
                   },
-                  "endpoint": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "includeInTransaction": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "boolean",
+                    "optional": true
                   },
-                  "applicationSection": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                        },
-                        "context": {}
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "includeInTransaction": {
-                    "type": "union",
-                    "optional": true,
-                    "definition": [
-                      {
-                        "type": "boolean",
-                        "optional": true
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "objects": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "objects": {
+                "type": "union",
+                "extra": {
+                  "id": 2,
+                  "defaultLabel": "Entity Instances to delete",
+                  "editable": true
+                },
+                "definition": [
+                  {
+                    "type": "array",
                     "extra": {
                       "id": 2,
                       "defaultLabel": "Entity Instances to delete",
                       "editable": true
                     },
-                    "definition": [
-                      {
-                        "type": "array",
-                        "extra": {
-                          "id": 2,
-                          "defaultLabel": "Entity Instances to delete",
-                          "editable": true
-                        },
-                        "definition": {
+                    "definition": {
+                      "optional": false,
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "schemaReference",
                           "optional": false,
-                          "type": "union",
-                          "definition": [
-                            {
-                              "type": "schemaReference",
-                              "optional": false,
-                              "definition": {
-                                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
-                              },
-                              "context": {}
-                            },
-                            {
-                              "type": "schemaReference",
-                              "definition": {
-                                "relativePath": "carryOnObject"
-                              }
-                            }
-                          ]
+                          "definition": {
+                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                          },
+                          "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "carryOnObject"
+                          }
                         }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                      ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
               }
-            ]
+            }
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "instanceAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "instanceAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "updateInstance"
                   },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "updateInstance"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "endpoint": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
                   },
-                  "endpoint": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "deploymentUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Uuid",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
                     "extra": {
                       "id": 1,
                       "defaultLabel": "Uuid",
                       "editable": false
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "applicationSection": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
                     },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "id": 1,
-                          "defaultLabel": "Uuid",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    "context": {}
                   },
-                  "applicationSection": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                        },
-                        "context": {}
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "includeInTransaction": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "boolean",
+                    "optional": true
                   },
-                  "includeInTransaction": {
-                    "type": "union",
-                    "optional": true,
-                    "definition": [
-                      {
-                        "type": "boolean",
-                        "optional": true
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "objects": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "objects": {
+                "type": "union",
+                "extra": {
+                  "id": 2,
+                  "defaultLabel": "Entity Instances to update",
+                  "editable": true
+                },
+                "definition": [
+                  {
+                    "type": "array",
                     "extra": {
                       "id": 2,
                       "defaultLabel": "Entity Instances to update",
                       "editable": true
                     },
-                    "definition": [
-                      {
-                        "type": "array",
-                        "extra": {
-                          "id": 2,
-                          "defaultLabel": "Entity Instances to update",
-                          "editable": true
-                        },
-                        "definition": {
+                    "definition": {
+                      "optional": false,
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "schemaReference",
                           "optional": false,
-                          "type": "union",
-                          "definition": [
-                            {
-                              "type": "schemaReference",
-                              "optional": false,
-                              "definition": {
-                                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
-                              },
-                              "context": {}
-                            },
-                            {
-                              "type": "schemaReference",
-                              "definition": {
-                                "relativePath": "carryOnObject"
-                              }
-                            }
-                          ]
+                          "definition": {
+                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                          },
+                          "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "carryOnObject"
+                          }
                         }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                      ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
               }
-            ]
+            }
           },
           {
             "type": "schemaReference",
@@ -16883,174 +17430,152 @@ export const miroirFundamentalJzodSchema = {
         "type": "union",
         "definition": [
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "undoRedoAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "undoRedoAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "undo"
                   },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "undo"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "endpoint": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "71c04f8e-c687-4ea7-9a19-bc98d796c389"
                   },
-                  "endpoint": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "71c04f8e-c687-4ea7-9a19-bc98d796c389"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "deploymentUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Uuid",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
                     "extra": {
                       "id": 1,
                       "defaultLabel": "Uuid",
                       "editable": false
-                    },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "id": 1,
-                          "defaultLabel": "Uuid",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
               }
-            ]
+            }
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "undoRedoAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "undoRedoAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "redo"
                   },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "redo"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "endpoint": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "71c04f8e-c687-4ea7-9a19-bc98d796c389"
                   },
-                  "endpoint": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "71c04f8e-c687-4ea7-9a19-bc98d796c389"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "deploymentUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Uuid",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
                     "extra": {
                       "id": 1,
                       "defaultLabel": "Uuid",
                       "editable": false
-                    },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "id": 1,
-                          "defaultLabel": "Uuid",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
               }
-            ]
+            }
           },
           {
             "type": "schemaReference",
@@ -17111,1412 +17636,1302 @@ export const miroirFundamentalJzodSchema = {
         "type": "union",
         "definition": [
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "modelAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "modelAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "initModel"
                   },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "initModel"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "endpoint": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
                   },
-                  "endpoint": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "deploymentUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Deployment",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
                     "extra": {
                       "id": 1,
                       "defaultLabel": "Deployment",
                       "editable": false
-                    },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "id": 1,
-                          "defaultLabel": "Deployment",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    }
                   },
-                  "params": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      },
-                      {
-                        "type": "object",
-                        "definition": {
-                          "metaModel": {
-                            "type": "union",
-                            "definition": [
-                              {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel"
-                                },
-                                "context": {}
-                              },
-                              {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "relativePath": "carryOnObject"
-                                }
-                              }
-                            ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "params": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "metaModel": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel"
+                            },
+                            "context": {}
                           },
-                          "dataStoreType": {
-                            "type": "union",
-                            "definition": [
-                              {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType"
-                                },
-                                "context": {}
-                              },
-                              {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "relativePath": "carryOnObject"
-                                }
-                              }
-                            ]
-                          },
-                          "application": {
-                            "type": "union",
-                            "definition": [
-                              {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_application"
-                                },
-                                "context": {}
-                              },
-                              {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "relativePath": "carryOnObject"
-                                }
-                              }
-                            ]
-                          },
-                          "applicationDeploymentConfiguration": {
-                            "type": "union",
-                            "definition": [
-                              {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
-                                },
-                                "context": {}
-                              },
-                              {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "relativePath": "carryOnObject"
-                                }
-                              }
-                            ]
-                          },
-                          "applicationModelBranch": {
-                            "type": "union",
-                            "definition": [
-                              {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  "relativePath": "entityInstance"
-                                },
-                                "context": {}
-                              },
-                              {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "relativePath": "carryOnObject"
-                                }
-                              }
-                            ]
-                          },
-                          "applicationVersion": {
-                            "type": "union",
-                            "definition": [
-                              {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  "relativePath": "entityInstance"
-                                },
-                                "context": {}
-                              },
-                              {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "relativePath": "carryOnObject"
-                                }
-                              }
-                            ]
-                          },
-                          "applicationStoreBasedConfiguration": {
-                            "type": "union",
-                            "definition": [
-                              {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  "relativePath": "entityInstance"
-                                },
-                                "context": {}
-                              },
-                              {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "relativePath": "carryOnObject"
-                                }
-                              }
-                            ]
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOnObject"
+                            }
                           }
-                        }
+                        ]
+                      },
+                      "dataStoreType": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType"
+                            },
+                            "context": {}
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "application": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_application"
+                            },
+                            "context": {}
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "applicationDeploymentConfiguration": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
+                            },
+                            "context": {}
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "applicationModelBranch": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "entityInstance"
+                            },
+                            "context": {}
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "applicationVersion": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "entityInstance"
+                            },
+                            "context": {}
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "applicationStoreBasedConfiguration": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "entityInstance"
+                            },
+                            "context": {}
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOnObject"
+                            }
+                          }
+                        ]
                       }
-                    ]
+                    }
                   }
-                }
+                ]
               }
-            ]
+            }
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "modelAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "modelAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "commit"
                   },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "commit"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "endpoint": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
                   },
-                  "endpoint": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "deploymentUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Deployment",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
                     "extra": {
                       "id": 1,
                       "defaultLabel": "Deployment",
                       "editable": false
-                    },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "id": 1,
-                          "defaultLabel": "Deployment",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
               }
-            ]
+            }
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "modelAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "modelAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "rollback"
                   },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "rollback"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "endpoint": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
                   },
-                  "endpoint": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "deploymentUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Deployment",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
                     "extra": {
                       "id": 1,
                       "defaultLabel": "Deployment",
                       "editable": false
-                    },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "id": 1,
-                          "defaultLabel": "Deployment",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
               }
-            ]
+            }
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "modelAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "modelAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "remoteLocalCacheRollback"
                   },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "remoteLocalCacheRollback"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "endpoint": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
                   },
-                  "endpoint": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "deploymentUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Deployment",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
                     "extra": {
                       "id": 1,
                       "defaultLabel": "Deployment",
                       "editable": false
-                    },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "id": 1,
-                          "defaultLabel": "Deployment",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
               }
-            ]
+            }
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "modelAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "modelAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "resetModel"
                   },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "resetModel"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "endpoint": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
                   },
-                  "endpoint": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "deploymentUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Deployment",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
                     "extra": {
                       "id": 1,
                       "defaultLabel": "Deployment",
                       "editable": false
-                    },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "id": 1,
-                          "defaultLabel": "Deployment",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
               }
-            ]
+            }
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "modelAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "modelAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "resetData"
                   },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "resetData"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "endpoint": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
                   },
-                  "endpoint": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "deploymentUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Deployment",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
                     "extra": {
                       "id": 1,
                       "defaultLabel": "Deployment",
                       "editable": false
-                    },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "id": 1,
-                          "defaultLabel": "Deployment",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
               }
-            ]
+            }
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "modelAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "modelAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "alterEntityAttribute"
                   },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "alterEntityAttribute"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "endpoint": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
                   },
-                  "endpoint": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "transactional": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "boolean",
+                    "optional": true
                   },
-                  "transactional": {
-                    "type": "union",
-                    "optional": true,
-                    "definition": [
-                      {
-                        "type": "boolean",
-                        "optional": true
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "deploymentUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Deployment",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
                     "extra": {
                       "id": 1,
                       "defaultLabel": "Deployment",
                       "editable": false
-                    },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "id": 1,
-                          "defaultLabel": "Deployment",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    }
                   },
-                  "entityName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "entityName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
                   },
-                  "entityUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "entityUuid": {
+                "type": "union",
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "definition": [
+                  {
+                    "type": "string",
                     "validations": [
                       {
                         "type": "uuid"
                       }
-                    ],
-                    "definition": [
-                      {
-                        "type": "string",
-                        "validations": [
-                          {
-                            "type": "uuid"
-                          }
-                        ]
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
                     ]
                   },
-                  "entityDefinitionUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "entityDefinitionUuid": {
+                "type": "union",
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "definition": [
+                  {
+                    "type": "string",
                     "validations": [
                       {
                         "type": "uuid"
                       }
-                    ],
-                    "definition": [
-                      {
-                        "type": "string",
-                        "validations": [
-                          {
-                            "type": "uuid"
+                    ]
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "addColumns": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "carryOnObject"
                           }
-                        ]
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "addColumns": {
-                    "type": "union",
-                    "optional": true,
-                    "definition": [
-                      {
-                        "type": "array",
-                        "optional": true,
-                        "definition": {
-                          "type": "union",
-                          "definition": [
-                            {
-                              "type": "schemaReference",
-                              "definition": {
-                                "relativePath": "carryOnObject"
-                              }
-                            },
-                            {
-                              "type": "object",
-                              "definition": {
-                                "name": {
-                                  "type": "union",
-                                  "definition": [
-                                    {
-                                      "type": "string"
-                                    },
-                                    {
-                                      "type": "schemaReference",
-                                      "definition": {
-                                        "relativePath": "carryOnObject"
-                                      }
-                                    }
-                                  ]
-                                },
-                                "definition": {
-                                  "type": "union",
-                                  "definition": [
-                                    {
-                                      "type": "schemaReference",
-                                      "definition": {
-                                        "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement"
-                                      },
-                                      "context": {}
-                                    },
-                                    {
-                                      "type": "schemaReference",
-                                      "definition": {
-                                        "relativePath": "carryOnObject"
-                                      }
-                                    }
-                                  ]
-                                }
-                              }
-                            }
-                          ]
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "removeColumns": {
-                    "type": "union",
-                    "optional": true,
-                    "definition": [
-                      {
-                        "type": "array",
-                        "optional": true,
-                        "definition": {
-                          "type": "union",
-                          "definition": [
-                            {
-                              "type": "string"
-                            },
-                            {
-                              "type": "schemaReference",
-                              "definition": {
-                                "relativePath": "carryOnObject"
-                              }
-                            }
-                          ]
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "update": {
-                    "optional": true,
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "schemaReference",
-                        "optional": true,
-                        "definition": {
-                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "jzodElement"
                         },
-                        "context": {}
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  }
-                }
-              }
-            ]
-          },
-          {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "modelAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "renameEntity"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "endpoint": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "transactional": {
-                    "type": "union",
-                    "optional": true,
-                    "definition": [
-                      {
-                        "type": "boolean",
-                        "optional": true
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "deploymentUuid": {
-                    "type": "union",
-                    "extra": {
-                      "id": 1,
-                      "defaultLabel": "Deployment",
-                      "editable": false
-                    },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "id": 1,
-                          "defaultLabel": "Deployment",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "entityName": {
-                    "type": "union",
-                    "optional": true,
-                    "definition": [
-                      {
-                        "type": "string",
-                        "optional": true
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "entityUuid": {
-                    "type": "union",
-                    "validations": [
-                      {
-                        "type": "uuid"
-                      }
-                    ],
-                    "definition": [
-                      {
-                        "type": "string",
-                        "validations": [
-                          {
-                            "type": "uuid"
-                          }
-                        ]
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "entityDefinitionUuid": {
-                    "type": "union",
-                    "validations": [
-                      {
-                        "type": "uuid"
-                      }
-                    ],
-                    "definition": [
-                      {
-                        "type": "string",
-                        "validations": [
-                          {
-                            "type": "uuid"
-                          }
-                        ]
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "targetValue": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  }
-                }
-              }
-            ]
-          },
-          {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "modelAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "createEntity"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "endpoint": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "transactional": {
-                    "type": "union",
-                    "optional": true,
-                    "definition": [
-                      {
-                        "type": "boolean",
-                        "optional": true
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "deploymentUuid": {
-                    "type": "union",
-                    "extra": {
-                      "id": 1,
-                      "defaultLabel": "Deployment",
-                      "editable": false
-                    },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "id": 1,
-                          "defaultLabel": "Deployment",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "entities": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "array",
-                        "definition": {
-                          "type": "union",
-                          "definition": [
-                            {
-                              "type": "schemaReference",
-                              "definition": {
-                                "relativePath": "carryOnObject"
-                              }
-                            },
-                            {
-                              "type": "object",
-                              "definition": {
-                                "entity": {
-                                  "type": "union",
-                                  "definition": [
-                                    {
-                                      "type": "schemaReference",
-                                      "definition": {
-                                        "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity"
-                                      },
-                                      "context": {}
-                                    },
-                                    {
-                                      "type": "schemaReference",
-                                      "definition": {
-                                        "relativePath": "carryOnObject"
-                                      }
-                                    }
-                                  ]
+                        {
+                          "type": "object",
+                          "definition": {
+                            "name": {
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "string"
                                 },
-                                "entityDefinition": {
-                                  "type": "union",
-                                  "definition": [
-                                    {
-                                      "type": "schemaReference",
-                                      "definition": {
-                                        "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition"
-                                      },
-                                      "context": {}
-                                    },
-                                    {
-                                      "type": "schemaReference",
-                                      "definition": {
-                                        "relativePath": "carryOnObject"
-                                      }
-                                    }
-                                  ]
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "carryOnObject"
+                                  }
                                 }
-                              }
+                              ]
+                            },
+                            "definition": {
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement"
+                                  },
+                                  "context": {}
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "carryOnObject"
+                                  }
+                                }
+                              ]
                             }
-                          ]
+                          }
                         }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                      ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
+              },
+              "removeColumns": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "carryOnObject"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "update": {
+                "optional": true,
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "optional": true,
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "jzodElement"
+                    },
+                    "context": {}
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               }
-            ]
+            }
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "modelAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "modelAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "renameEntity"
                   },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "dropEntity"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "endpoint": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
                   },
-                  "transactional": {
-                    "type": "union",
-                    "optional": true,
-                    "definition": [
-                      {
-                        "type": "boolean",
-                        "optional": true
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "transactional": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "boolean",
+                    "optional": true
                   },
-                  "deploymentUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Deployment",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
                     "extra": {
                       "id": 1,
                       "defaultLabel": "Deployment",
                       "editable": false
-                    },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "id": 1,
-                          "defaultLabel": "Deployment",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    }
                   },
-                  "endpoint": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "entityUuid": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "entityDefinitionUuid": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
+              },
+              "entityName": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "entityUuid": {
+                "type": "union",
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "definition": [
+                  {
+                    "type": "string",
+                    "validations": [
+                      {
+                        "type": "uuid"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "entityDefinitionUuid": {
+                "type": "union",
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "definition": [
+                  {
+                    "type": "string",
+                    "validations": [
+                      {
+                        "type": "uuid"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "targetValue": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               }
-            ]
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "modelAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "createEntity"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "endpoint": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "transactional": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Deployment",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
+                    "extra": {
+                      "id": 1,
+                      "defaultLabel": "Deployment",
+                      "editable": false
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "entities": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "array",
+                    "definition": {
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "carryOnObject"
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "entity": {
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity"
+                                  },
+                                  "context": {}
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "carryOnObject"
+                                  }
+                                }
+                              ]
+                            },
+                            "entityDefinition": {
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition"
+                                  },
+                                  "context": {}
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "carryOnObject"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "modelAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "dropEntity"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "transactional": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Deployment",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
+                    "extra": {
+                      "id": 1,
+                      "defaultLabel": "Deployment",
+                      "editable": false
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "endpoint": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "entityUuid": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "entityDefinitionUuid": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              }
+            }
           },
           {
             "type": "schemaReference",
@@ -18530,1047 +18945,970 @@ export const miroirFundamentalJzodSchema = {
         "type": "union",
         "definition": [
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "instanceAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "instanceAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "createInstance"
                   },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "createInstance"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "endpoint": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
                   },
-                  "endpoint": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "deploymentUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Uuid",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
                     "extra": {
                       "id": 1,
                       "defaultLabel": "Uuid",
                       "editable": false
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "applicationSection": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
                     },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "id": 1,
-                          "defaultLabel": "Uuid",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    "context": {}
                   },
-                  "applicationSection": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                        },
-                        "context": {}
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "objects": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "objects": {
+                "type": "union",
+                "extra": {
+                  "id": 2,
+                  "defaultLabel": "Entity Instances to create",
+                  "editable": true
+                },
+                "definition": [
+                  {
+                    "type": "array",
                     "extra": {
                       "id": 2,
                       "defaultLabel": "Entity Instances to create",
                       "editable": true
                     },
-                    "definition": [
-                      {
-                        "type": "array",
-                        "extra": {
-                          "id": 2,
-                          "defaultLabel": "Entity Instances to create",
-                          "editable": true
-                        },
-                        "definition": {
+                    "definition": {
+                      "optional": false,
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "schemaReference",
                           "optional": false,
-                          "type": "union",
-                          "definition": [
-                            {
-                              "type": "schemaReference",
-                              "optional": false,
-                              "definition": {
-                                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
-                              },
-                              "context": {}
-                            },
-                            {
-                              "type": "schemaReference",
-                              "definition": {
-                                "relativePath": "carryOnObject"
-                              }
-                            }
-                          ]
+                          "definition": {
+                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                          },
+                          "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "carryOnObject"
+                          }
                         }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                      ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
               }
-            ]
+            }
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "instanceAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "instanceAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "deleteInstance"
                   },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "deleteInstance"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "deploymentUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Uuid",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
                     "extra": {
                       "id": 1,
                       "defaultLabel": "Uuid",
                       "editable": false
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "endpoint": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "applicationSection": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
                     },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "id": 1,
-                          "defaultLabel": "Uuid",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    "context": {}
                   },
-                  "endpoint": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "includeInTransaction": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "boolean",
+                    "optional": true
                   },
-                  "applicationSection": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                        },
-                        "context": {}
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "includeInTransaction": {
-                    "type": "union",
-                    "optional": true,
-                    "definition": [
-                      {
-                        "type": "boolean",
-                        "optional": true
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "objects": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "objects": {
+                "type": "union",
+                "extra": {
+                  "id": 2,
+                  "defaultLabel": "Entity Instances to delete",
+                  "editable": true
+                },
+                "definition": [
+                  {
+                    "type": "array",
                     "extra": {
                       "id": 2,
                       "defaultLabel": "Entity Instances to delete",
                       "editable": true
                     },
-                    "definition": [
-                      {
-                        "type": "array",
-                        "extra": {
-                          "id": 2,
-                          "defaultLabel": "Entity Instances to delete",
-                          "editable": true
-                        },
-                        "definition": {
+                    "definition": {
+                      "optional": false,
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "schemaReference",
                           "optional": false,
-                          "type": "union",
-                          "definition": [
-                            {
-                              "type": "schemaReference",
-                              "optional": false,
-                              "definition": {
-                                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
-                              },
-                              "context": {}
-                            },
-                            {
-                              "type": "schemaReference",
-                              "definition": {
-                                "relativePath": "carryOnObject"
-                              }
-                            }
-                          ]
+                          "definition": {
+                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                          },
+                          "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "carryOnObject"
+                          }
                         }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                      ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
               }
-            ]
+            }
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "instanceAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "instanceAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "deleteInstanceWithCascade"
                   },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "deleteInstanceWithCascade"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "deploymentUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Uuid",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
                     "extra": {
                       "id": 1,
                       "defaultLabel": "Uuid",
                       "editable": false
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "endpoint": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "applicationSection": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
                     },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "id": 1,
-                          "defaultLabel": "Uuid",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    "context": {}
                   },
-                  "endpoint": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "includeInTransaction": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "boolean",
+                    "optional": true
                   },
-                  "applicationSection": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                        },
-                        "context": {}
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "includeInTransaction": {
-                    "type": "union",
-                    "optional": true,
-                    "definition": [
-                      {
-                        "type": "boolean",
-                        "optional": true
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "objects": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "objects": {
+                "type": "union",
+                "extra": {
+                  "id": 2,
+                  "defaultLabel": "Entity Instances to delete",
+                  "editable": true
+                },
+                "definition": [
+                  {
+                    "type": "array",
                     "extra": {
                       "id": 2,
                       "defaultLabel": "Entity Instances to delete",
                       "editable": true
                     },
-                    "definition": [
-                      {
-                        "type": "array",
-                        "extra": {
-                          "id": 2,
-                          "defaultLabel": "Entity Instances to delete",
-                          "editable": true
-                        },
-                        "definition": {
+                    "definition": {
+                      "optional": false,
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "schemaReference",
                           "optional": false,
-                          "type": "union",
-                          "definition": [
-                            {
-                              "type": "schemaReference",
-                              "optional": false,
-                              "definition": {
-                                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
-                              },
-                              "context": {}
-                            },
-                            {
-                              "type": "schemaReference",
-                              "definition": {
-                                "relativePath": "carryOnObject"
-                              }
-                            }
-                          ]
+                          "definition": {
+                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                          },
+                          "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "carryOnObject"
+                          }
                         }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                      ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
               }
-            ]
+            }
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "instanceAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "instanceAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "updateInstance"
                   },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "updateInstance"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "endpoint": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
                   },
-                  "endpoint": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "deploymentUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Uuid",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
                     "extra": {
                       "id": 1,
                       "defaultLabel": "Uuid",
                       "editable": false
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "applicationSection": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
                     },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "id": 1,
-                          "defaultLabel": "Uuid",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    "context": {}
                   },
-                  "applicationSection": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                        },
-                        "context": {}
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "includeInTransaction": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "boolean",
+                    "optional": true
                   },
-                  "includeInTransaction": {
-                    "type": "union",
-                    "optional": true,
-                    "definition": [
-                      {
-                        "type": "boolean",
-                        "optional": true
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "objects": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "objects": {
+                "type": "union",
+                "extra": {
+                  "id": 2,
+                  "defaultLabel": "Entity Instances to update",
+                  "editable": true
+                },
+                "definition": [
+                  {
+                    "type": "array",
                     "extra": {
                       "id": 2,
                       "defaultLabel": "Entity Instances to update",
                       "editable": true
                     },
-                    "definition": [
-                      {
-                        "type": "array",
-                        "extra": {
-                          "id": 2,
-                          "defaultLabel": "Entity Instances to update",
-                          "editable": true
-                        },
-                        "definition": {
+                    "definition": {
+                      "optional": false,
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "schemaReference",
                           "optional": false,
-                          "type": "union",
-                          "definition": [
-                            {
-                              "type": "schemaReference",
-                              "optional": false,
-                              "definition": {
-                                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
-                              },
-                              "context": {}
-                            },
-                            {
-                              "type": "schemaReference",
-                              "definition": {
-                                "relativePath": "carryOnObject"
-                              }
-                            }
-                          ]
+                          "definition": {
+                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                          },
+                          "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "carryOnObject"
+                          }
                         }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                      ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
               }
-            ]
+            }
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "instanceAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "instanceAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "loadNewInstancesInLocalCache"
                   },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "loadNewInstancesInLocalCache"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "endpoint": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
                   },
-                  "endpoint": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "deploymentUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Uuid",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
                     "extra": {
                       "id": 1,
                       "defaultLabel": "Uuid",
                       "editable": false
-                    },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "id": 1,
-                          "defaultLabel": "Uuid",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    }
                   },
-                  "objects": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "objects": {
+                "type": "union",
+                "extra": {
+                  "id": 2,
+                  "defaultLabel": "Entity Instances to place in the local cache",
+                  "editable": true
+                },
+                "definition": [
+                  {
+                    "type": "array",
                     "extra": {
                       "id": 2,
                       "defaultLabel": "Entity Instances to place in the local cache",
                       "editable": true
                     },
-                    "definition": [
-                      {
-                        "type": "array",
-                        "extra": {
-                          "id": 2,
-                          "defaultLabel": "Entity Instances to place in the local cache",
-                          "editable": true
-                        },
-                        "definition": {
+                    "definition": {
+                      "optional": false,
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "schemaReference",
                           "optional": false,
-                          "type": "union",
-                          "definition": [
-                            {
-                              "type": "schemaReference",
-                              "optional": false,
-                              "definition": {
-                                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
-                              },
-                              "context": {}
-                            },
-                            {
-                              "type": "schemaReference",
-                              "definition": {
-                                "relativePath": "carryOnObject"
-                              }
-                            }
-                          ]
+                          "definition": {
+                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                          },
+                          "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "carryOnObject"
+                          }
                         }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                      ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
               }
-            ]
+            }
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "instanceAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "instanceAction"
                   },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "getInstance"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "endpoint": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "deploymentUuid": {
-                    "type": "union",
-                    "extra": {
-                      "id": 1,
-                      "defaultLabel": "Uuid",
-                      "editable": false
-                    },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "id": 1,
-                          "defaultLabel": "Uuid",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "applicationSection": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                        },
-                        "context": {}
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "parentUuid": {
-                    "type": "union",
-                    "extra": {
-                      "id": 1,
-                      "defaultLabel": "Uuid",
-                      "editable": false
-                    },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "id": 1,
-                          "defaultLabel": "Uuid",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "uuid": {
-                    "type": "union",
-                    "extra": {
-                      "id": 1,
-                      "defaultLabel": "Uuid",
-                      "editable": false
-                    },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "id": 1,
-                          "defaultLabel": "Uuid",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
+              },
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "getInstance"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "endpoint": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Uuid",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
+                    "extra": {
+                      "id": 1,
+                      "defaultLabel": "Uuid",
+                      "editable": false
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "applicationSection": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    },
+                    "context": {}
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "parentUuid": {
+                "type": "union",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Uuid",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
+                    "extra": {
+                      "id": 1,
+                      "defaultLabel": "Uuid",
+                      "editable": false
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "uuid": {
+                "type": "union",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Uuid",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
+                    "extra": {
+                      "id": 1,
+                      "defaultLabel": "Uuid",
+                      "editable": false
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               }
-            ]
+            }
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "instanceAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "instanceAction"
                   },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "getInstances"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "endpoint": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "deploymentUuid": {
-                    "type": "union",
-                    "extra": {
-                      "id": 1,
-                      "defaultLabel": "Uuid",
-                      "editable": false
-                    },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "id": 1,
-                          "defaultLabel": "Uuid",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "applicationSection": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                        },
-                        "context": {}
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "parentUuid": {
-                    "type": "union",
-                    "extra": {
-                      "id": 1,
-                      "defaultLabel": "Uuid",
-                      "editable": false
-                    },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "id": 1,
-                          "defaultLabel": "Uuid",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
+              },
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "getInstances"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "endpoint": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Uuid",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
+                    "extra": {
+                      "id": 1,
+                      "defaultLabel": "Uuid",
+                      "editable": false
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "applicationSection": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    },
+                    "context": {}
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "parentUuid": {
+                "type": "union",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Uuid",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
+                    "extra": {
+                      "id": 1,
+                      "defaultLabel": "Uuid",
+                      "editable": false
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               }
-            ]
+            }
           },
           {
             "type": "schemaReference",
@@ -19584,509 +19922,454 @@ export const miroirFundamentalJzodSchema = {
         "type": "union",
         "definition": [
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "storeManagementAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "storeManagementAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "createStore"
                   },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "createStore"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "endpoint": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
                   },
-                  "endpoint": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "configuration": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration"
+                    },
+                    "context": {}
                   },
-                  "configuration": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration"
-                        },
-                        "context": {}
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "deploymentUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "defaultLabel": "Module Deployment Uuid",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
                     "extra": {
                       "defaultLabel": "Module Deployment Uuid",
                       "editable": false
-                    },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "defaultLabel": "Module Deployment Uuid",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
               }
-            ]
+            }
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "storeManagementAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "storeManagementAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "deleteStore"
                   },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "deleteStore"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "endpoint": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
                   },
-                  "endpoint": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "deploymentUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "defaultLabel": "Module Deployment Uuid",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
                     "extra": {
                       "defaultLabel": "Module Deployment Uuid",
                       "editable": false
-                    },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "defaultLabel": "Module Deployment Uuid",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    }
                   },
-                  "configuration": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration"
-                        },
-                        "context": {}
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
+              },
+              "configuration": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration"
+                    },
+                    "context": {}
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               }
-            ]
+            }
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "storeManagementAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "storeManagementAction"
                   },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "resetAndInitMiroirAndApplicationDatabase"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "endpoint": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "deployments": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "array",
-                        "definition": {
-                          "type": "union",
-                          "definition": [
-                            {
-                              "type": "schemaReference",
-                              "definition": {
-                                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_deployment"
-                              },
-                              "context": {}
-                            },
-                            {
-                              "type": "schemaReference",
-                              "definition": {
-                                "relativePath": "carryOnObject"
-                              }
-                            }
-                          ]
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "deploymentUuid": {
-                    "type": "union",
-                    "extra": {
-                      "defaultLabel": "Module Deployment Uuid",
-                      "editable": false
-                    },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "defaultLabel": "Module Deployment Uuid",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
-              }
-            ]
-          },
-          {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
+                ]
               },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "storeManagementAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "resetAndInitMiroirAndApplicationDatabase"
                   },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "openStore"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "endpoint": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
                   },
-                  "endpoint": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "configuration": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "record",
-                        "definition": {
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deployments": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "array",
+                    "definition": {
+                      "type": "union",
+                      "definition": [
+                        {
                           "type": "schemaReference",
                           "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "storeUnitConfiguration"
+                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_deployment"
                           },
                           "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "carryOnObject"
+                          }
                         }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                      ]
+                    }
                   },
-                  "deploymentUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "defaultLabel": "Module Deployment Uuid",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
                     "extra": {
                       "defaultLabel": "Module Deployment Uuid",
                       "editable": false
-                    },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "defaultLabel": "Module Deployment Uuid",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
               }
-            ]
+            }
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "storeManagementAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "storeManagementAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "openStore"
                   },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "closeStore"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "endpoint": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
                   },
-                  "endpoint": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "configuration": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "record",
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "storeUnitConfiguration"
                       },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                      "context": {}
+                    }
                   },
-                  "deploymentUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "defaultLabel": "Module Deployment Uuid",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
                     "extra": {
                       "defaultLabel": "Module Deployment Uuid",
                       "editable": false
-                    },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "defaultLabel": "Module Deployment Uuid",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
               }
-            ]
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "storeManagementAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "closeStore"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "endpoint": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "defaultLabel": "Module Deployment Uuid",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
+                    "extra": {
+                      "defaultLabel": "Module Deployment Uuid",
+                      "editable": false
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              }
+            }
           },
           {
             "type": "schemaReference",
@@ -20175,144 +20458,122 @@ export const miroirFundamentalJzodSchema = {
         "type": "union",
         "definition": [
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "bundleAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "bundleAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "createBundle"
                   },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "createBundle"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "deploymentUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Uuid",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
                     "extra": {
                       "id": 1,
                       "defaultLabel": "Uuid",
                       "editable": false
-                    },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "id": 1,
-                          "defaultLabel": "Uuid",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
               }
-            ]
+            }
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "bundleAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "bundleAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "deleteBundle"
                   },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "deleteBundle"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "deploymentUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Uuid",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
                     "extra": {
                       "id": 1,
                       "defaultLabel": "Uuid",
                       "editable": false
-                    },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "id": 1,
-                          "defaultLabel": "Uuid",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
               }
-            ]
+            }
           },
           {
             "type": "schemaReference",
@@ -20406,273 +20667,229 @@ export const miroirFundamentalJzodSchema = {
             ]
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "transactionalInstanceAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "transactionalInstanceAction"
                   },
-                  "deploymentUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "optional": true,
+                "extra": {
+                  "defaultLabel": "Module Deployment Uuid",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
                     "optional": true,
                     "extra": {
                       "defaultLabel": "Module Deployment Uuid",
                       "editable": false
-                    },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "optional": true,
-                        "extra": {
-                          "defaultLabel": "Module Deployment Uuid",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    }
                   },
-                  "instanceAction": {
-                    "optional": false,
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "schemaReference",
-                        "optional": false,
-                        "definition": {
-                          "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction"
-                        },
-                        "context": {}
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
+              },
+              "instanceAction": {
+                "optional": false,
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "optional": false,
+                    "definition": {
+                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction"
+                    },
+                    "context": {}
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               }
-            ]
+            }
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "compositeAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               },
-              {
-                "type": "object",
-                "definition": {
-                  "actionType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "compositeAction"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+              "actionName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "sequence"
                   },
-                  "actionName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "sequence"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  },
-                  "deploymentUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "deploymentUuid": {
+                "type": "union",
+                "optional": true,
+                "extra": {
+                  "defaultLabel": "Module Deployment Uuid",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
                     "optional": true,
                     "extra": {
                       "defaultLabel": "Module Deployment Uuid",
                       "editable": false
-                    },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "optional": true,
-                        "extra": {
-                          "defaultLabel": "Module Deployment Uuid",
-                          "editable": false
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    }
                   },
-                  "definition": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "array",
-                        "definition": {
-                          "type": "union",
-                          "discriminator": "compositeActionType",
-                          "definition": [
-                            {
-                              "type": "union",
-                              "definition": [
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "carryOnObject"
-                                  }
-                                },
-                                {
-                                  "type": "object",
-                                  "definition": {
-                                    "compositeActionType": {
-                                      "type": "union",
-                                      "definition": [
-                                        {
-                                          "type": "literal",
-                                          "definition": "action"
-                                        },
-                                        {
-                                          "type": "schemaReference",
-                                          "definition": {
-                                            "relativePath": "carryOnObject"
-                                          }
-                                        }
-                                      ]
-                                    },
-                                    "action": {
-                                      "type": "union",
-                                      "definition": [
-                                        {
-                                          "type": "schemaReference",
-                                          "definition": {
-                                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"
-                                          },
-                                          "context": {}
-                                        },
-                                        {
-                                          "type": "schemaReference",
-                                          "definition": {
-                                            "relativePath": "carryOnObject"
-                                          }
-                                        }
-                                      ]
-                                    }
-                                  }
-                                }
-                              ]
-                            },
-                            {
-                              "type": "union",
-                              "definition": [
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "carryOnObject"
-                                  }
-                                },
-                                {
-                                  "type": "object",
-                                  "definition": {
-                                    "compositeActionType": {
-                                      "type": "union",
-                                      "definition": [
-                                        {
-                                          "type": "literal",
-                                          "definition": "query"
-                                        },
-                                        {
-                                          "type": "schemaReference",
-                                          "definition": {
-                                            "relativePath": "carryOnObject"
-                                          }
-                                        }
-                                      ]
-                                    },
-                                    "query": {
-                                      "type": "union",
-                                      "definition": [
-                                        {
-                                          "type": "schemaReference",
-                                          "definition": {
-                                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction"
-                                          },
-                                          "context": {}
-                                        },
-                                        {
-                                          "type": "schemaReference",
-                                          "definition": {
-                                            "relativePath": "carryOnObject"
-                                          }
-                                        }
-                                      ]
-                                    }
-                                  }
-                                }
-                              ]
-                            },
-                            {
-                              "type": "schemaReference",
-                              "definition": {
-                                "relativePath": "carryOnObject"
-                              }
-                            }
-                          ]
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
+              },
+              "definition": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "array",
+                    "definition": {
+                      "type": "union",
+                      "discriminator": "compositeActionType",
+                      "definition": [
+                        {
+                          "type": "object",
+                          "definition": {
+                            "compositeActionType": {
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "literal",
+                                  "definition": "action"
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "carryOnObject"
+                                  }
+                                }
+                              ]
+                            },
+                            "action": {
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"
+                                  },
+                                  "context": {}
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "carryOnObject"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "compositeActionType": {
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "literal",
+                                  "definition": "query"
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "carryOnObject"
+                                  }
+                                }
+                              ]
+                            },
+                            "query": {
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction"
+                                  },
+                                  "context": {}
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "carryOnObject"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "carryOnObject"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               }
-            ]
+            }
           },
           {
             "type": "schemaReference",
@@ -20758,102 +20975,80 @@ export const miroirFundamentalJzodSchema = {
                       "discriminator": "compositeActionType",
                       "definition": [
                         {
-                          "type": "union",
-                          "definition": [
-                            {
-                              "type": "schemaReference",
-                              "definition": {
-                                "relativePath": "carryOnObject"
-                              }
-                            },
-                            {
-                              "type": "object",
-                              "definition": {
-                                "compositeActionType": {
-                                  "type": "union",
-                                  "definition": [
-                                    {
-                                      "type": "literal",
-                                      "definition": "action"
-                                    },
-                                    {
-                                      "type": "schemaReference",
-                                      "definition": {
-                                        "relativePath": "carryOnObject"
-                                      }
-                                    }
-                                  ]
+                          "type": "object",
+                          "definition": {
+                            "compositeActionType": {
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "literal",
+                                  "definition": "action"
                                 },
-                                "action": {
-                                  "type": "union",
-                                  "definition": [
-                                    {
-                                      "type": "schemaReference",
-                                      "definition": {
-                                        "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"
-                                      },
-                                      "context": {}
-                                    },
-                                    {
-                                      "type": "schemaReference",
-                                      "definition": {
-                                        "relativePath": "carryOnObject"
-                                      }
-                                    }
-                                  ]
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "carryOnObject"
+                                  }
                                 }
-                              }
+                              ]
+                            },
+                            "action": {
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"
+                                  },
+                                  "context": {}
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "carryOnObject"
+                                  }
+                                }
+                              ]
                             }
-                          ]
+                          }
                         },
                         {
-                          "type": "union",
-                          "definition": [
-                            {
-                              "type": "schemaReference",
-                              "definition": {
-                                "relativePath": "carryOnObject"
-                              }
-                            },
-                            {
-                              "type": "object",
-                              "definition": {
-                                "compositeActionType": {
-                                  "type": "union",
-                                  "definition": [
-                                    {
-                                      "type": "literal",
-                                      "definition": "query"
-                                    },
-                                    {
-                                      "type": "schemaReference",
-                                      "definition": {
-                                        "relativePath": "carryOnObject"
-                                      }
-                                    }
-                                  ]
+                          "type": "object",
+                          "definition": {
+                            "compositeActionType": {
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "literal",
+                                  "definition": "query"
                                 },
-                                "query": {
-                                  "type": "union",
-                                  "definition": [
-                                    {
-                                      "type": "schemaReference",
-                                      "definition": {
-                                        "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction"
-                                      },
-                                      "context": {}
-                                    },
-                                    {
-                                      "type": "schemaReference",
-                                      "definition": {
-                                        "relativePath": "carryOnObject"
-                                      }
-                                    }
-                                  ]
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "carryOnObject"
+                                  }
                                 }
-                              }
+                              ]
+                            },
+                            "query": {
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction"
+                                  },
+                                  "context": {}
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "carryOnObject"
+                                  }
+                                }
+                              ]
                             }
-                          ]
+                          }
                         },
                         {
                           "type": "schemaReference",
@@ -20876,150 +21071,368 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementObject": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "carryOnObject"
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "elementType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "object"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "elementValue": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "record",
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "domainElement",
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                      },
+                      "context": {}
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRootQuery": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "carryOnObject"
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "pageParams": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementObject"
+                    },
+                    "context": {}
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "queryParams": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "domainElementObject"
+                    },
+                    "context": {}
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "contextResults": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "domainElementObject"
+                    },
+                    "context": {}
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectRootQuery": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "carryOnObject"
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "label": {
+                "type": "union",
+                "optional": true,
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Label",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true,
+                    "extra": {
+                      "id": 1,
+                      "defaultLabel": "Label",
+                      "editable": false
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "applicationSection": {
+                "optional": true,
+                "extra": {
+                  "id": 2,
+                  "defaultLabel": "Parent Uuid",
+                  "editable": false
+                },
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "optional": true,
+                    "extra": {
+                      "id": 2,
+                      "defaultLabel": "Parent Uuid",
+                      "editable": false
+                    },
+                    "definition": {
+                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    },
+                    "context": {}
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "parentName": {
+                "type": "union",
+                "optional": true,
+                "extra": {
+                  "id": 3,
+                  "defaultLabel": "Parent Name",
+                  "editable": false
+                },
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true,
+                    "extra": {
+                      "id": 3,
+                      "defaultLabel": "Parent Name",
+                      "editable": false
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "parentUuid": {
+                "extra": {
+                  "id": 4,
+                  "defaultLabel": "Parent Uuid",
+                  "editable": false
+                },
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "extra": {
+                      "id": 4,
+                      "defaultLabel": "Parent Uuid",
+                      "editable": false
+                    },
+                    "definition": {
+                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference"
+                    },
+                    "context": {}
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference": {
         "type": "union",
         "discriminator": "referenceType",
         "definition": [
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "referenceType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "constant"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+            "type": "object",
+            "definition": {
+              "referenceType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "constant"
                   },
-                  "referenceUuid": {
-                    "type": "union",
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "referenceUuid": {
+                "type": "union",
+                "extra": {
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
                     "extra": {
                       "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
-                    },
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "extra": {
-                          "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
               }
-            ]
+            }
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "referenceType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "queryContextReference"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+            "type": "object",
+            "definition": {
+              "referenceType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "queryContextReference"
                   },
-                  "referenceName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
+              },
+              "referenceName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               }
-            ]
+            }
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "referenceType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "queryParameterReference"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+            "type": "object",
+            "definition": {
+              "referenceType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "queryParameterReference"
                   },
-                  "referenceName": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
+              },
+              "referenceName": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               }
-            ]
+            }
           },
           {
             "type": "schemaReference",
@@ -21031,15 +21444,6 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByManyToManyRelationQuery": {
         "type": "union",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "relativePath": "selectRootQuery",
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-          },
-          "context": {}
-        },
         "definition": [
           {
             "type": "schemaReference",
@@ -21049,6 +21453,14 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectRootQuery_extend"
+              },
+              "context": {}
+            },
             "definition": {
               "queryType": {
                 "type": "union",
@@ -21121,15 +21533,6 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByEntityQuery": {
         "type": "union",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "relativePath": "selectRootQuery",
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-          },
-          "context": {}
-        },
         "definition": [
           {
             "type": "schemaReference",
@@ -21139,6 +21542,14 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectRootQuery_extend"
+              },
+              "context": {}
+            },
             "definition": {
               "queryType": {
                 "type": "union",
@@ -21161,15 +21572,6 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByRelationQuery": {
         "type": "union",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "relativePath": "selectRootQuery",
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-          },
-          "context": {}
-        },
         "definition": [
           {
             "type": "schemaReference",
@@ -21179,6 +21581,14 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectRootQuery_extend"
+              },
+              "context": {}
+            },
             "definition": {
               "queryType": {
                 "type": "union",
@@ -21249,15 +21659,6 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByRelationQuery": {
         "type": "union",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "relativePath": "selectRootQuery",
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-          },
-          "context": {}
-        },
         "definition": [
           {
             "type": "schemaReference",
@@ -21267,6 +21668,14 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectRootQuery_extend"
+              },
+              "context": {}
+            },
             "definition": {
               "queryType": {
                 "type": "union",
@@ -21321,15 +21730,6 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByDirectReferenceQuery": {
         "type": "union",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "relativePath": "selectRootQuery",
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-          },
-          "context": {}
-        },
         "definition": [
           {
             "type": "schemaReference",
@@ -21339,6 +21739,14 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectRootQuery_extend"
+              },
+              "context": {}
+            },
             "definition": {
               "queryType": {
                 "type": "union",
@@ -21679,212 +22087,168 @@ export const miroirFundamentalJzodSchema = {
             ]
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "queryType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "literal"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+            "type": "object",
+            "definition": {
+              "queryType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "literal"
                   },
-                  "definition": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
+              },
+              "definition": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               }
-            ]
+            }
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "queryType": {
-                    "type": "union",
+            "type": "object",
+            "definition": {
+              "queryType": {
+                "type": "union",
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "definition": [
+                  {
+                    "type": "literal",
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "definition": "queryContextReference"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                    "definition": "queryContextReference"
                   },
-                  "queryReference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
+              },
+              "queryReference": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               }
-            ]
+            }
           },
           {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "queryType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "wrapperReturningObject"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+            "type": "object",
+            "definition": {
+              "queryType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "wrapperReturningObject"
                   },
-                  "definition": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "record",
-                        "definition": {
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "definition": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "record",
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "miroirSelectQuery",
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                      },
+                      "context": {}
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "queryType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "wrapperReturningList"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "definition": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "array",
+                    "definition": {
+                      "type": "union",
+                      "definition": [
+                        {
                           "type": "schemaReference",
                           "definition": {
-                            "relativePath": "miroirSelectQuery",
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQuery"
                           },
                           "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "carryOnObject"
+                          }
                         }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
-                  }
-                }
-              }
-            ]
-          },
-          {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOnObject"
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "queryType": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "literal",
-                        "definition": "wrapperReturningList"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                      ]
+                    }
                   },
-                  "definition": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "array",
-                        "definition": {
-                          "type": "union",
-                          "definition": [
-                            {
-                              "type": "schemaReference",
-                              "definition": {
-                                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQuery"
-                              },
-                              "context": {}
-                            },
-                            {
-                              "type": "schemaReference",
-                              "definition": {
-                                "relativePath": "carryOnObject"
-                              }
-                            }
-                          ]
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOnObject"
-                        }
-                      }
-                    ]
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
                   }
-                }
+                ]
               }
-            ]
+            }
           },
           {
             "type": "schemaReference",
@@ -22051,15 +22415,6 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainManyQueriesWithDeploymentUuid": {
         "type": "union",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "domainModelRootQuery"
-          },
-          "context": {}
-        },
         "definition": [
           {
             "type": "schemaReference",
@@ -22069,6 +22424,14 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRootQuery_extend"
+              },
+              "context": {}
+            },
             "definition": {
               "queryType": {
                 "type": "union",

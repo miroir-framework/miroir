@@ -87,7 +87,7 @@
         "optional": true,
         "extra": {
           "id": 7,
-          "defaultLabel": "D0eath",
+          "defaultLabel": "Death",
           "editable": true
         }
       },

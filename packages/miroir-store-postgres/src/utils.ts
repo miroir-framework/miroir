@@ -43,6 +43,7 @@ export const dataTypesMapping: { [type in string]: DataTypes.AbstractDataTypeCon
   record: DataTypes.JSONB, 
   string: DataTypes.STRING,
   uuid: DataTypes.STRING,
+  date: DataTypes.DATE,
   schemaReference: DataTypes.JSONB, 
 
   // ARRAY: DataTypes.JSONB, // OK?

@@ -17,9 +17,10 @@
     "build5": "npm run devBuild",
     "devBuild": "npm run preBuild && npm run build",
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
-    "preBuild": "copyfiles -u 1 src/**/*.json tmp/ && tsc ./src/index.ts --rootDir . --baseUrl . --target ES2017 --module ES2022 --strict --moduleResolution node --allowSyntheticDefaultImports --resolveJsonModule --outdir ./tmp/ || node ./tools/generate-ts-types.mjs",
-    "preTest": "tsc ./tests/1_core/jzod.unit.test.ts --rootDir . --baseUrl . --target ES2017 --module ES2022 --moduleResolution node --allowSyntheticDefaultImports --resolveJsonModule --outdir ./tmp/",
-    "test": "cross-env NODE_ENV=test jest --verbose --silent=false --debug -t"
+    "preBuild": "copyfiles -u 1 src/**/*.json tmp/ && tsc ./src/index.ts --rootDir . --baseUrl . --target ESNext --module NodeNext --strict --moduleResolution node --allowSyntheticDefaultImports --resolveJsonModule --outdir ./tmp/ || node ./tools/generate-ts-types.mjs",
+    "test": "cross-env NODE_ENV=test jest --verbose --silent=false --debug -t",
+    "preTest": "tsc --rootDir . --baseUrl . --strict --target ESNext --module NodeNext --moduleResolution nodenext --allowSyntheticDefaultImports --resolveJsonModule --outdir ./tmp/",
+    "testNode": "cross-env NODE_ENV=test node --experimental-vm-modules ../../node_modules/jest/bin/jest.js"
   },
   "tsup": {
     "dts": true,
@@ -42,7 +43,7 @@
   "devDependencies": {
     "@babel/plugin-syntax-import-attributes": "^7.23.3",
     "@jest/globals": "^29.3.1",
-    "@miroir-framework/jzod-ts": "0.7.0",
+    "@miroir-framework/jzod-ts": "0.8.0",
     "@types/jest": "^29.2.4",
     "@types/mustache": "^4.2.5",
     "copyfiles": "^2.4.1",

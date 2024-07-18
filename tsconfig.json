@@ -3,7 +3,7 @@
     "types": ["node", "jest"],
     "removeComments": true,
     "module": "NodeNext",
-    "target": "ES2017",
+    "target": "ESNext",
     "jsx": "react-jsx",
     "moduleResolution": "NodeNext",
     "esModuleInterop": true,

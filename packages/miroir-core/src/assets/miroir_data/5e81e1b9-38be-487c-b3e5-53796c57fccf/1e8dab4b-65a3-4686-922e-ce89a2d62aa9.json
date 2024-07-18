@@ -9,6 +9,46 @@
     "context": {
       "jzodBaseObject": {
         "type": "object",
+        "tag": {
+          "optional": true,
+          "type": "schemaTag",
+          "schema": {
+            "optional": true,
+            "metaSchema": {
+              "type": "object",
+              "optional": true,
+              "definition": {
+                "optional": { "type": "boolean", "optional": true },
+                "type": { "type": "literal", "definition": "schemaTag"},
+                "metaSchema": {
+                  "type": "schemaReference",
+                  "optional": true,
+                  "definition": {
+                    "relativePath": "jzodElement"
+                  }
+                },
+                "valueSchema": {
+                  "type": "schemaReference",
+                  "optional": true,
+                  "definition": {
+                    "relativePath": "jzodElement"
+                  }
+                }
+              }
+            },
+            "valueSchema": {
+              "type": "object",
+              "optional": true,
+              "definition": {
+                "id": { "type": "number", "optional": true },
+                "defaultLabel": { "type": "string", "optional": true },
+                "initializeTo": { "type": "any", "optional": true },
+                "targetEntity": { "type": "string", "optional": true },
+                "editable": { "type": "boolean", "optional": true }
+              }
+            }
+          }
+        },
         "definition": {
           "optional": {
             "type": "boolean",
@@ -20,14 +60,14 @@
           },
           "extra": {
             "type": "object",
+            "optional": true,
             "definition": {
               "id": { "type": "number", "optional": true },
               "defaultLabel": { "type": "string", "optional": true },
               "initializeTo": { "type": "any", "optional": true },
               "targetEntity": { "type": "string", "optional": true },
               "editable": { "type": "boolean", "optional": true }
-            },
-            "optional": true
+            }
           }
         }
       },
@@ -263,7 +303,12 @@
       "jzodElement": {
         "type": "union",
         "discriminator": "type",
-        "extra": { "initializeTo": { "type": "string" } },
+        "extra": { 
+          "type": "object",
+          "definition": {
+            "initializeTo": { "type": "string" }
+          }
+        },
         "definition": [
           {
             "type": "schemaReference",

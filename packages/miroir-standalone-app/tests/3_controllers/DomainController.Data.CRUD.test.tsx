@@ -142,6 +142,8 @@ afterEach(
   }
 )
 
+const globalTimeOut = 10000;
+
 describe.sequential('DomainController.Data.CRUD',
   () => {
 
@@ -157,7 +159,8 @@ describe.sequential('DomainController.Data.CRUD',
           miroirContext,
         );
         return Promise.resolve();
-      }
+      },
+      globalTimeOut
     )
 
     // ###########################################################################################

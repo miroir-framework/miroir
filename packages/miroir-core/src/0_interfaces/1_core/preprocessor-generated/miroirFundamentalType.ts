@@ -10,6 +10,21 @@ export type JzodBaseObject = {
         targetEntity?: string | undefined;
         editable?: boolean | undefined;
     } | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: number | undefined;
+            defaultLabel?: string | undefined;
+            initializeTo?: any | undefined;
+            targetEntity?: string | undefined;
+            editable?: boolean | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
 };
 export type JzodArray = {
     optional?: boolean | undefined;
@@ -20,6 +35,21 @@ export type JzodArray = {
         initializeTo?: any | undefined;
         targetEntity?: string | undefined;
         editable?: boolean | undefined;
+    } | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: number | undefined;
+            defaultLabel?: string | undefined;
+            initializeTo?: any | undefined;
+            targetEntity?: string | undefined;
+            editable?: boolean | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
     } | undefined;
     type: "array";
     definition: JzodElement;
@@ -33,6 +63,21 @@ export type JzodPlainAttribute = {
         initializeTo?: any | undefined;
         targetEntity?: string | undefined;
         editable?: boolean | undefined;
+    } | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: number | undefined;
+            defaultLabel?: string | undefined;
+            initializeTo?: any | undefined;
+            targetEntity?: string | undefined;
+            editable?: boolean | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
     } | undefined;
     type: "any" | "bigint" | "boolean" | "never" | "null" | "uuid" | "undefined" | "unknown" | "void";
     coerce?: boolean | undefined;
@@ -53,6 +98,21 @@ export type JzodAttributePlainDateWithValidations = {
         initializeTo?: any | undefined;
         targetEntity?: string | undefined;
         editable?: boolean | undefined;
+    } | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: number | undefined;
+            defaultLabel?: string | undefined;
+            initializeTo?: any | undefined;
+            targetEntity?: string | undefined;
+            editable?: boolean | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
     } | undefined;
     type: "date";
     coerce?: boolean | undefined;
@@ -75,6 +135,21 @@ export type JzodAttributePlainNumberWithValidations = {
         targetEntity?: string | undefined;
         editable?: boolean | undefined;
     } | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: number | undefined;
+            defaultLabel?: string | undefined;
+            initializeTo?: any | undefined;
+            targetEntity?: string | undefined;
+            editable?: boolean | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
     type: "number";
     coerce?: boolean | undefined;
     validations?: JzodAttributeNumberValidations[] | undefined;
@@ -96,6 +171,21 @@ export type JzodAttributePlainStringWithValidations = {
         targetEntity?: string | undefined;
         editable?: boolean | undefined;
     } | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: number | undefined;
+            defaultLabel?: string | undefined;
+            initializeTo?: any | undefined;
+            targetEntity?: string | undefined;
+            editable?: boolean | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
     type: "string";
     coerce?: boolean | undefined;
     validations?: JzodAttributeStringValidations[] | undefined;
@@ -111,6 +201,21 @@ export type JzodEnum = {
         targetEntity?: string | undefined;
         editable?: boolean | undefined;
     } | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: number | undefined;
+            defaultLabel?: string | undefined;
+            initializeTo?: any | undefined;
+            targetEntity?: string | undefined;
+            editable?: boolean | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
     type: "enum";
     definition: string[];
 };
@@ -125,6 +230,21 @@ export type JzodFunction = {
         initializeTo?: any | undefined;
         targetEntity?: string | undefined;
         editable?: boolean | undefined;
+    } | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: number | undefined;
+            defaultLabel?: string | undefined;
+            initializeTo?: any | undefined;
+            targetEntity?: string | undefined;
+            editable?: boolean | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
     } | undefined;
     type: "function";
     definition: {
@@ -142,6 +262,21 @@ export type JzodLazy = {
         targetEntity?: string | undefined;
         editable?: boolean | undefined;
     } | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: number | undefined;
+            defaultLabel?: string | undefined;
+            initializeTo?: any | undefined;
+            targetEntity?: string | undefined;
+            editable?: boolean | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
     type: "lazy";
     definition: JzodFunction;
 };
@@ -155,6 +290,21 @@ export type JzodLiteral = {
         targetEntity?: string | undefined;
         editable?: boolean | undefined;
     } | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: number | undefined;
+            defaultLabel?: string | undefined;
+            initializeTo?: any | undefined;
+            targetEntity?: string | undefined;
+            editable?: boolean | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
     type: "literal";
     definition: string | number | bigint | boolean;
 };
@@ -167,6 +317,21 @@ export type JzodIntersection = {
         initializeTo?: any | undefined;
         targetEntity?: string | undefined;
         editable?: boolean | undefined;
+    } | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: number | undefined;
+            defaultLabel?: string | undefined;
+            initializeTo?: any | undefined;
+            targetEntity?: string | undefined;
+            editable?: boolean | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
     } | undefined;
     type: "intersection";
     definition: {
@@ -184,6 +349,21 @@ export type JzodMap = {
         targetEntity?: string | undefined;
         editable?: boolean | undefined;
     } | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: number | undefined;
+            defaultLabel?: string | undefined;
+            initializeTo?: any | undefined;
+            targetEntity?: string | undefined;
+            editable?: boolean | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
     type: "map";
     definition: [
         JzodElement,
@@ -199,6 +379,21 @@ export type JzodObject = {
         initializeTo?: any | undefined;
         targetEntity?: string | undefined;
         editable?: boolean | undefined;
+    } | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: number | undefined;
+            defaultLabel?: string | undefined;
+            initializeTo?: any | undefined;
+            targetEntity?: string | undefined;
+            editable?: boolean | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
     } | undefined;
     extend?: JzodReference | undefined;
     type: "object";
@@ -219,6 +414,21 @@ export type JzodPromise = {
         targetEntity?: string | undefined;
         editable?: boolean | undefined;
     } | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: number | undefined;
+            defaultLabel?: string | undefined;
+            initializeTo?: any | undefined;
+            targetEntity?: string | undefined;
+            editable?: boolean | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
     type: "promise";
     definition: JzodElement;
 };
@@ -232,6 +442,21 @@ export type JzodRecord = {
         targetEntity?: string | undefined;
         editable?: boolean | undefined;
     } | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: number | undefined;
+            defaultLabel?: string | undefined;
+            initializeTo?: any | undefined;
+            targetEntity?: string | undefined;
+            editable?: boolean | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
     type: "record";
     definition: JzodElement;
 };
@@ -244,6 +469,21 @@ export type JzodReference = {
         initializeTo?: any | undefined;
         targetEntity?: string | undefined;
         editable?: boolean | undefined;
+    } | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: number | undefined;
+            defaultLabel?: string | undefined;
+            initializeTo?: any | undefined;
+            targetEntity?: string | undefined;
+            editable?: boolean | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
     } | undefined;
     type: "schemaReference";
     context?: {
@@ -267,6 +507,21 @@ export type JzodSet = {
         targetEntity?: string | undefined;
         editable?: boolean | undefined;
     } | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: number | undefined;
+            defaultLabel?: string | undefined;
+            initializeTo?: any | undefined;
+            targetEntity?: string | undefined;
+            editable?: boolean | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
     type: "set";
     definition: JzodElement;
 };
@@ -280,6 +535,21 @@ export type JzodTuple = {
         targetEntity?: string | undefined;
         editable?: boolean | undefined;
     } | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: number | undefined;
+            defaultLabel?: string | undefined;
+            initializeTo?: any | undefined;
+            targetEntity?: string | undefined;
+            editable?: boolean | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
     type: "tuple";
     definition: JzodElement[];
 };
@@ -292,6 +562,21 @@ export type JzodUnion = {
         initializeTo?: any | undefined;
         targetEntity?: string | undefined;
         editable?: boolean | undefined;
+    } | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: number | undefined;
+            defaultLabel?: string | undefined;
+            initializeTo?: any | undefined;
+            targetEntity?: string | undefined;
+            editable?: boolean | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
     } | undefined;
     type: "union";
     discriminator?: string | undefined;
@@ -1358,6 +1643,43 @@ export type ActionTransformer = {
 export type DataTransformer = {
     transformerType: "dataTransformer";
 };
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject_extend = {
+    optional?: ((boolean | undefined) | CarryOnObject) | undefined;
+    nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    extra?: (CarryOnObject | {
+        id?: ((number | undefined) | CarryOnObject) | undefined;
+        defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+        initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+        targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+        editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    }) | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: ((number | undefined) | CarryOnObject) | undefined;
+            defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+            initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+            targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+            editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRootQuery_extend = {
+    pageParams: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementObject | CarryOnObject;
+    queryParams: DomainElementObject | CarryOnObject;
+    contextResults: DomainElementObject | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectRootQuery_extend = {
+    label?: ((string | undefined) | CarryOnObject) | undefined;
+    applicationSection?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined) | CarryOnObject) | undefined;
+    parentName?: ((string | undefined) | CarryOnObject) | undefined;
+    parentUuid: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference | CarryOnObject;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject = CarryOnObject | {
     optional?: ((boolean | undefined) | CarryOnObject) | undefined;
     nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
@@ -1368,12 +1690,75 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject = CarryO
         targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
         editable?: ((boolean | undefined) | CarryOnObject) | undefined;
     }) | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: ((number | undefined) | CarryOnObject) | undefined;
+            defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+            initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+            targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+            editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
 };
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodArray = CarryOnObject | {
+    optional?: ((boolean | undefined) | CarryOnObject) | undefined;
+    nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    extra?: (CarryOnObject | {
+        id?: ((number | undefined) | CarryOnObject) | undefined;
+        defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+        initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+        targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+        editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    }) | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: ((number | undefined) | CarryOnObject) | undefined;
+            defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+            initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+            targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+            editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
     type: "array" | CarryOnObject;
     definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement | CarryOnObject;
 };
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPlainAttribute = CarryOnObject | {
+    optional?: ((boolean | undefined) | CarryOnObject) | undefined;
+    nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    extra?: (CarryOnObject | {
+        id?: ((number | undefined) | CarryOnObject) | undefined;
+        defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+        initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+        targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+        editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    }) | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: ((number | undefined) | CarryOnObject) | undefined;
+            defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+            initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+            targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+            editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
     type: ("any" | "bigint" | "boolean" | "never" | "null" | "uuid" | "undefined" | "unknown" | "void") | CarryOnObject;
     coerce?: ((boolean | undefined) | CarryOnObject) | undefined;
 };
@@ -1385,6 +1770,30 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeDateValida
     parameter?: any | CarryOnObject;
 };
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainDateWithValidations = CarryOnObject | {
+    optional?: ((boolean | undefined) | CarryOnObject) | undefined;
+    nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    extra?: (CarryOnObject | {
+        id?: ((number | undefined) | CarryOnObject) | undefined;
+        defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+        initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+        targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+        editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    }) | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: ((number | undefined) | CarryOnObject) | undefined;
+            defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+            initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+            targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+            editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
     type: "date" | CarryOnObject;
     coerce?: ((boolean | undefined) | CarryOnObject) | undefined;
     validations?: (((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeDateValidations | CarryOnObject)[] | undefined) | CarryOnObject) | undefined;
@@ -1397,6 +1806,30 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeNumberVali
     parameter?: any | CarryOnObject;
 };
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainNumberWithValidations = CarryOnObject | {
+    optional?: ((boolean | undefined) | CarryOnObject) | undefined;
+    nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    extra?: (CarryOnObject | {
+        id?: ((number | undefined) | CarryOnObject) | undefined;
+        defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+        initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+        targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+        editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    }) | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: ((number | undefined) | CarryOnObject) | undefined;
+            defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+            initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+            targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+            editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
     type: "number" | CarryOnObject;
     coerce?: ((boolean | undefined) | CarryOnObject) | undefined;
     validations?: (((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeNumberValidations | CarryOnObject)[] | undefined) | CarryOnObject) | undefined;
@@ -1409,18 +1842,90 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeStringVali
     parameter?: any | CarryOnObject;
 };
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainStringWithValidations = CarryOnObject | {
+    optional?: ((boolean | undefined) | CarryOnObject) | undefined;
+    nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    extra?: (CarryOnObject | {
+        id?: ((number | undefined) | CarryOnObject) | undefined;
+        defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+        initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+        targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+        editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    }) | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: ((number | undefined) | CarryOnObject) | undefined;
+            defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+            initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+            targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+            editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
     type: "string" | CarryOnObject;
     coerce?: ((boolean | undefined) | CarryOnObject) | undefined;
     validations?: (((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeStringValidations | CarryOnObject)[] | undefined) | CarryOnObject) | undefined;
 };
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement = (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodArray | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPlainAttribute | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainDateWithValidations | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainNumberWithValidations | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainStringWithValidations | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnum | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodFunction | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLazy | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLiteral | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodIntersection | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodMap | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPromise | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodRecord | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodReference | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSet | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodTuple | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodUnion | CarryOnObject) | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnum = CarryOnObject | {
+    optional?: ((boolean | undefined) | CarryOnObject) | undefined;
+    nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    extra?: (CarryOnObject | {
+        id?: ((number | undefined) | CarryOnObject) | undefined;
+        defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+        initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+        targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+        editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    }) | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: ((number | undefined) | CarryOnObject) | undefined;
+            defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+            initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+            targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+            editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
     type: "enum" | CarryOnObject;
     definition: (string | CarryOnObject)[] | CarryOnObject;
 };
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnumAttributeTypes = ("any" | "bigint" | "boolean" | "date" | "never" | "null" | "number" | "string" | "uuid" | "undefined" | "unknown" | "void") | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnumElementTypes = ("array" | "date" | "enum" | "function" | "lazy" | "literal" | "intersection" | "map" | "number" | "object" | "promise" | "record" | "schemaReference" | "set" | "string" | "tuple" | "union") | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodFunction = CarryOnObject | {
+    optional?: ((boolean | undefined) | CarryOnObject) | undefined;
+    nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    extra?: (CarryOnObject | {
+        id?: ((number | undefined) | CarryOnObject) | undefined;
+        defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+        initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+        targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+        editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    }) | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: ((number | undefined) | CarryOnObject) | undefined;
+            defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+            initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+            targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+            editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
     type: "function" | CarryOnObject;
     definition: CarryOnObject | {
         args: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement | CarryOnObject)[] | CarryOnObject;
@@ -1428,14 +1933,86 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodFunction = CarryOnO
     };
 };
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLazy = CarryOnObject | {
+    optional?: ((boolean | undefined) | CarryOnObject) | undefined;
+    nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    extra?: (CarryOnObject | {
+        id?: ((number | undefined) | CarryOnObject) | undefined;
+        defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+        initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+        targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+        editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    }) | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: ((number | undefined) | CarryOnObject) | undefined;
+            defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+            initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+            targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+            editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
     type: "lazy" | CarryOnObject;
     definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodFunction | CarryOnObject;
 };
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLiteral = CarryOnObject | {
+    optional?: ((boolean | undefined) | CarryOnObject) | undefined;
+    nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    extra?: (CarryOnObject | {
+        id?: ((number | undefined) | CarryOnObject) | undefined;
+        defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+        initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+        targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+        editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    }) | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: ((number | undefined) | CarryOnObject) | undefined;
+            defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+            initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+            targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+            editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
     type: "literal" | CarryOnObject;
-    definition: (string | CarryOnObject) | (number | CarryOnObject) | (bigint | CarryOnObject) | (boolean | CarryOnObject) | CarryOnObject;
+    definition: string | number | bigint | boolean | CarryOnObject;
 };
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodIntersection = CarryOnObject | {
+    optional?: ((boolean | undefined) | CarryOnObject) | undefined;
+    nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    extra?: (CarryOnObject | {
+        id?: ((number | undefined) | CarryOnObject) | undefined;
+        defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+        initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+        targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+        editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    }) | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: ((number | undefined) | CarryOnObject) | undefined;
+            defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+            initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+            targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+            editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
     type: "intersection" | CarryOnObject;
     definition: CarryOnObject | {
         left: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement | CarryOnObject;
@@ -1443,10 +2020,61 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodIntersection = Carr
     };
 };
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodMap = CarryOnObject | {
+    optional?: ((boolean | undefined) | CarryOnObject) | undefined;
+    nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    extra?: (CarryOnObject | {
+        id?: ((number | undefined) | CarryOnObject) | undefined;
+        defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+        initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+        targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+        editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    }) | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: ((number | undefined) | CarryOnObject) | undefined;
+            defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+            initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+            targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+            editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
     type: "map" | CarryOnObject;
-    definition: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement | CarryOnObject) | (JzodElement | CarryOnObject);
+    definition: [
+        CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement | CarryOnObject,
+        JzodElement | CarryOnObject
+    ] | CarryOnObject;
 };
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject = CarryOnObject | {
+    optional?: ((boolean | undefined) | CarryOnObject) | undefined;
+    nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    extra?: (CarryOnObject | {
+        id?: ((number | undefined) | CarryOnObject) | undefined;
+        defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+        initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+        targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+        editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    }) | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: ((number | undefined) | CarryOnObject) | undefined;
+            defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+            initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+            targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+            editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
     extend?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodReference | undefined) | CarryOnObject) | undefined;
     type: "object" | CarryOnObject;
     nonStrict?: ((boolean | undefined) | CarryOnObject) | undefined;
@@ -1457,14 +2085,86 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject = CarryOnObj
     } | CarryOnObject;
 };
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPromise = CarryOnObject | {
+    optional?: ((boolean | undefined) | CarryOnObject) | undefined;
+    nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    extra?: (CarryOnObject | {
+        id?: ((number | undefined) | CarryOnObject) | undefined;
+        defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+        initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+        targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+        editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    }) | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: ((number | undefined) | CarryOnObject) | undefined;
+            defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+            initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+            targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+            editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
     type: "promise" | CarryOnObject;
     definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement | CarryOnObject;
 };
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodRecord = CarryOnObject | {
+    optional?: ((boolean | undefined) | CarryOnObject) | undefined;
+    nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    extra?: (CarryOnObject | {
+        id?: ((number | undefined) | CarryOnObject) | undefined;
+        defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+        initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+        targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+        editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    }) | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: ((number | undefined) | CarryOnObject) | undefined;
+            defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+            initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+            targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+            editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
     type: "record" | CarryOnObject;
     definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement | CarryOnObject;
 };
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodReference = CarryOnObject | {
+    optional?: ((boolean | undefined) | CarryOnObject) | undefined;
+    nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    extra?: (CarryOnObject | {
+        id?: ((number | undefined) | CarryOnObject) | undefined;
+        defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+        initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+        targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+        editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    }) | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: ((number | undefined) | CarryOnObject) | undefined;
+            defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+            initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+            targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+            editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
     type: "schemaReference" | CarryOnObject;
     context?: (({
         [x: string]: JzodElement;
@@ -1478,23 +2178,95 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodReference = CarryOn
     };
 };
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSet = CarryOnObject | {
+    optional?: ((boolean | undefined) | CarryOnObject) | undefined;
+    nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    extra?: (CarryOnObject | {
+        id?: ((number | undefined) | CarryOnObject) | undefined;
+        defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+        initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+        targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+        editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    }) | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: ((number | undefined) | CarryOnObject) | undefined;
+            defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+            initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+            targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+            editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
     type: "set" | CarryOnObject;
     definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement | CarryOnObject;
 };
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodTuple = CarryOnObject | {
+    optional?: ((boolean | undefined) | CarryOnObject) | undefined;
+    nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    extra?: (CarryOnObject | {
+        id?: ((number | undefined) | CarryOnObject) | undefined;
+        defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+        initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+        targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+        editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    }) | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: ((number | undefined) | CarryOnObject) | undefined;
+            defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+            initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+            targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+            editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
     type: "tuple" | CarryOnObject;
     definition: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement | CarryOnObject)[] | CarryOnObject;
 };
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodUnion = CarryOnObject | {
+    optional?: ((boolean | undefined) | CarryOnObject) | undefined;
+    nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    extra?: (CarryOnObject | {
+        id?: ((number | undefined) | CarryOnObject) | undefined;
+        defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+        initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+        targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+        editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+    }) | undefined;
+    tag?: {
+        optional?: boolean | undefined;
+        value?: {
+            id?: ((number | undefined) | CarryOnObject) | undefined;
+            defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
+            initializeTo?: ((any | undefined) | CarryOnObject) | undefined;
+            targetEntity?: ((string | undefined) | CarryOnObject) | undefined;
+            editable?: ((boolean | undefined) | CarryOnObject) | undefined;
+        } | undefined;
+        schema?: {
+            optional?: boolean | undefined;
+            metaSchema?: JzodElement | undefined;
+            valueSchema?: JzodElement | undefined;
+        } | undefined;
+    } | undefined;
     type: "union" | CarryOnObject;
     discriminator?: ((string | undefined) | CarryOnObject) | undefined;
-    discriminatorNew?: ((CarryOnObject | {
+    discriminatorNew?: ({
         discriminatorType: "string" | CarryOnObject;
         value: string | CarryOnObject;
-    }) | (CarryOnObject | {
+    } | {
         discriminatorType: "array" | CarryOnObject;
         value: (string | CarryOnObject)[] | CarryOnObject;
-    }) | CarryOnObject) | undefined;
+    } | CarryOnObject) | undefined;
     carryOn?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject | undefined) | CarryOnObject) | undefined;
     definition: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement | CarryOnObject)[] | CarryOnObject;
 };
@@ -1563,7 +2335,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition = Carr
     viewAttributes?: (((string | CarryOnObject)[] | undefined) | CarryOnObject) | undefined;
     jzodSchema: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject | CarryOnObject;
 };
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection = ("model" | CarryOnObject) | ("data" | CarryOnObject) | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection = "model" | "data" | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance = CarryOnObject | {
     uuid: string | CarryOnObject;
     parentName?: ((string | undefined) | CarryOnObject) | undefined;
@@ -1699,23 +2471,26 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel = CarryOnObje
     menus: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menu | CarryOnObject)[] | CarryOnObject;
     reports: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_report | CarryOnObject)[] | CarryOnObject;
 };
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference = (CarryOnObject | {
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference = {
     templateType: "constant" | CarryOnObject;
     referenceUuid: string | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     templateType: "contextReference" | CarryOnObject;
     referenceName: string | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     templateType: "parameterReference" | CarryOnObject;
     referenceName: string | CarryOnObject;
-}) | CarryOnObject;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplate = (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference | CarryOnObject) | (CarryOnObject | {
+} | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplate = (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference | CarryOnObject) | {
     templateType: "mustacheStringTemplate" | CarryOnObject;
     definition: string | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     templateType: "fullObjectTemplate" | CarryOnObject;
-    definition: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplate | CarryOnObject))[] | CarryOnObject;
-}) | CarryOnObject;
+    definition: ([
+        CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference | CarryOnObject,
+        CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplate | CarryOnObject
+    ] | CarryOnObject)[] | CarryOnObject;
+} | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_indexedDbStoreSectionConfiguration = CarryOnObject | {
     emulatedServerType: "indexedDb" | CarryOnObject;
     indexedDbName: string | CarryOnObject;
@@ -1745,14 +2520,14 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration 
     data: StoreSectionConfiguration | CarryOnObject;
 };
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeSectionConfiguration = (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_indexedDbStoreSectionConfiguration | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_filesystemDbStoreSectionConfiguration | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_sqlDbStoreSectionConfiguration | CarryOnObject) | CarryOnObject;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction = (CarryOnObject | {
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction = {
     actionType: "instanceAction" | CarryOnObject;
     actionName: "createInstance" | CarryOnObject;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
     applicationSection: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | CarryOnObject;
     objects: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection | CarryOnObject)[] | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     actionType: "instanceAction" | CarryOnObject;
     actionName: "deleteInstance" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
@@ -1760,7 +2535,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction = (Ca
     applicationSection: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | CarryOnObject;
     includeInTransaction?: ((boolean | undefined) | CarryOnObject) | undefined;
     objects: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection | CarryOnObject)[] | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     actionType: "instanceAction" | CarryOnObject;
     actionName: "updateInstance" | CarryOnObject;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89" | CarryOnObject;
@@ -1768,20 +2543,20 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction = (Ca
     applicationSection: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | CarryOnObject;
     includeInTransaction?: ((boolean | undefined) | CarryOnObject) | undefined;
     objects: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection | CarryOnObject)[] | CarryOnObject;
-}) | CarryOnObject;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction = (CarryOnObject | {
+} | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction = {
     actionType: "undoRedoAction" | CarryOnObject;
     actionName: "undo" | CarryOnObject;
     endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     actionType: "undoRedoAction" | CarryOnObject;
     actionName: "redo" | CarryOnObject;
     endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
-}) | CarryOnObject;
+} | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction = (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction | CarryOnObject) | CarryOnObject;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction = (CarryOnObject | {
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction = {
     actionType: "modelAction" | CarryOnObject;
     actionName: "initModel" | CarryOnObject;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
@@ -1795,32 +2570,32 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction = (CarryOnO
         applicationVersion: EntityInstance | CarryOnObject;
         applicationStoreBasedConfiguration: EntityInstance | CarryOnObject;
     };
-}) | (CarryOnObject | {
+} | {
     actionType: "modelAction" | CarryOnObject;
     actionName: "commit" | CarryOnObject;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     actionType: "modelAction" | CarryOnObject;
     actionName: "rollback" | CarryOnObject;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     actionType: "modelAction" | CarryOnObject;
     actionName: "remoteLocalCacheRollback" | CarryOnObject;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     actionType: "modelAction" | CarryOnObject;
     actionName: "resetModel" | CarryOnObject;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     actionType: "modelAction" | CarryOnObject;
     actionName: "resetData" | CarryOnObject;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     actionType: "modelAction" | CarryOnObject;
     actionName: "alterEntityAttribute" | CarryOnObject;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
@@ -1835,7 +2610,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction = (CarryOnO
     })[] | undefined) | CarryOnObject) | undefined;
     removeColumns?: (((string | CarryOnObject)[] | undefined) | CarryOnObject) | undefined;
     update?: ((JzodElement | undefined) | CarryOnObject) | undefined;
-}) | (CarryOnObject | {
+} | {
     actionType: "modelAction" | CarryOnObject;
     actionName: "renameEntity" | CarryOnObject;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
@@ -1845,7 +2620,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction = (CarryOnO
     entityUuid: string | CarryOnObject;
     entityDefinitionUuid: string | CarryOnObject;
     targetValue: string | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     actionType: "modelAction" | CarryOnObject;
     actionName: "createEntity" | CarryOnObject;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
@@ -1855,7 +2630,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction = (CarryOnO
         entity: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity | CarryOnObject;
         entityDefinition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition | CarryOnObject;
     })[] | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     actionType: "modelAction" | CarryOnObject;
     actionName: "dropEntity" | CarryOnObject;
     transactional?: ((boolean | undefined) | CarryOnObject) | undefined;
@@ -1863,15 +2638,15 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction = (CarryOnO
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
     entityUuid: string | CarryOnObject;
     entityDefinitionUuid: string | CarryOnObject;
-}) | CarryOnObject;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction = (CarryOnObject | {
+} | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction = {
     actionType: "instanceAction" | CarryOnObject;
     actionName: "createInstance" | CarryOnObject;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
     applicationSection: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | CarryOnObject;
     objects: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection | CarryOnObject)[] | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     actionType: "instanceAction" | CarryOnObject;
     actionName: "deleteInstance" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
@@ -1879,7 +2654,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction = (Carry
     applicationSection: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | CarryOnObject;
     includeInTransaction?: ((boolean | undefined) | CarryOnObject) | undefined;
     objects: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection | CarryOnObject)[] | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     actionType: "instanceAction" | CarryOnObject;
     actionName: "deleteInstanceWithCascade" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
@@ -1887,7 +2662,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction = (Carry
     applicationSection: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | CarryOnObject;
     includeInTransaction?: ((boolean | undefined) | CarryOnObject) | undefined;
     objects: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection | CarryOnObject)[] | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     actionType: "instanceAction" | CarryOnObject;
     actionName: "updateInstance" | CarryOnObject;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89" | CarryOnObject;
@@ -1895,13 +2670,13 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction = (Carry
     applicationSection: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | CarryOnObject;
     includeInTransaction?: ((boolean | undefined) | CarryOnObject) | undefined;
     objects: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection | CarryOnObject)[] | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     actionType: "instanceAction" | CarryOnObject;
     actionName: "loadNewInstancesInLocalCache" | CarryOnObject;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
     objects: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection | CarryOnObject)[] | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     actionType: "instanceAction" | CarryOnObject;
     actionName: "getInstance" | CarryOnObject;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89" | CarryOnObject;
@@ -1909,33 +2684,33 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction = (Carry
     applicationSection: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | CarryOnObject;
     parentUuid: string | CarryOnObject;
     uuid: string | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     actionType: "instanceAction" | CarryOnObject;
     actionName: "getInstances" | CarryOnObject;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
     applicationSection: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | CarryOnObject;
     parentUuid: string | CarryOnObject;
-}) | CarryOnObject;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction = (CarryOnObject | {
+} | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction = {
     actionType: "storeManagementAction" | CarryOnObject;
     actionName: "createStore" | CarryOnObject;
     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" | CarryOnObject;
     configuration: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     actionType: "storeManagementAction" | CarryOnObject;
     actionName: "deleteStore" | CarryOnObject;
     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
     configuration: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     actionType: "storeManagementAction" | CarryOnObject;
     actionName: "resetAndInitMiroirAndApplicationDatabase" | CarryOnObject;
     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" | CarryOnObject;
     deployments: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_deployment | CarryOnObject)[] | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     actionType: "storeManagementAction" | CarryOnObject;
     actionName: "openStore" | CarryOnObject;
     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" | CarryOnObject;
@@ -1943,85 +2718,122 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction =
         [x: string]: StoreUnitConfiguration;
     } | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     actionType: "storeManagementAction" | CarryOnObject;
     actionName: "closeStore" | CarryOnObject;
     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
-}) | CarryOnObject;
+} | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transactionalInstanceAction = CarryOnObject | {
     actionType: "transactionalInstanceAction" | CarryOnObject;
     deploymentUuid?: ((string | undefined) | CarryOnObject) | undefined;
     instanceAction: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction | CarryOnObject;
 };
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction = (CarryOnObject | {
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction = {
     actionType: "bundleAction" | CarryOnObject;
     actionName: "createBundle" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     actionType: "bundleAction" | CarryOnObject;
     actionName: "deleteBundle" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
-}) | CarryOnObject;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction = (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction | CarryOnObject) | (CarryOnObject | {
+} | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction = (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction | CarryOnObject) | {
     actionType: "transactionalInstanceAction" | CarryOnObject;
     deploymentUuid?: ((string | undefined) | CarryOnObject) | undefined;
     instanceAction: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     actionType: "compositeAction" | CarryOnObject;
     actionName: "sequence" | CarryOnObject;
     deploymentUuid?: ((string | undefined) | CarryOnObject) | undefined;
-    definition: ((CarryOnObject | {
+    definition: ({
         compositeActionType: "action" | CarryOnObject;
         action: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction | CarryOnObject;
-    }) | (CarryOnObject | {
+    } | {
         compositeActionType: "query" | CarryOnObject;
         query: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction | CarryOnObject;
-    }) | CarryOnObject)[] | CarryOnObject;
-}) | CarryOnObject;
+    } | CarryOnObject)[] | CarryOnObject;
+} | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction = CarryOnObject | {
     actionType: "compositeAction" | CarryOnObject;
     actionName: "sequence" | CarryOnObject;
     deploymentUuid?: ((string | undefined) | CarryOnObject) | undefined;
-    definition: ((CarryOnObject | {
+    definition: ({
         compositeActionType: "action" | CarryOnObject;
         action: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction | CarryOnObject;
-    }) | (CarryOnObject | {
+    } | {
         compositeActionType: "query" | CarryOnObject;
         query: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction | CarryOnObject;
-    }) | CarryOnObject)[] | CarryOnObject;
+    } | CarryOnObject)[] | CarryOnObject;
 };
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference = (CarryOnObject | {
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementObject = CarryOnObject | {
+    elementType: "object" | CarryOnObject;
+    elementValue: {
+        [x: string]: DomainElement;
+    } | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRootQuery = CarryOnObject | {
+    pageParams: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementObject | CarryOnObject;
+    queryParams: DomainElementObject | CarryOnObject;
+    contextResults: DomainElementObject | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectRootQuery = CarryOnObject | {
+    label?: ((string | undefined) | CarryOnObject) | undefined;
+    applicationSection?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined) | CarryOnObject) | undefined;
+    parentName?: ((string | undefined) | CarryOnObject) | undefined;
+    parentUuid: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference | CarryOnObject;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference = {
     referenceType: "constant" | CarryOnObject;
     referenceUuid: string | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     referenceType: "queryContextReference" | CarryOnObject;
     referenceName: string | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     referenceType: "queryParameterReference" | CarryOnObject;
     referenceName: string | CarryOnObject;
-}) | CarryOnObject;
+} | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByManyToManyRelationQuery = CarryOnObject | {
+    label?: ((string | undefined) | CarryOnObject) | undefined;
+    applicationSection?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined) | CarryOnObject) | undefined;
+    parentName?: ((string | undefined) | CarryOnObject) | undefined;
+    parentUuid: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference | CarryOnObject;
     queryType: "selectObjectListByManyToManyRelation" | CarryOnObject;
     objectListReference: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference | CarryOnObject;
     objectListReferenceAttribute?: ((string | undefined) | CarryOnObject) | undefined;
     AttributeOfRootListObjectToCompareToListReferenceUuid?: ((string | undefined) | CarryOnObject) | undefined;
 };
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByEntityQuery = CarryOnObject | {
+    label?: ((string | undefined) | CarryOnObject) | undefined;
+    applicationSection?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined) | CarryOnObject) | undefined;
+    parentName?: ((string | undefined) | CarryOnObject) | undefined;
+    parentUuid: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference | CarryOnObject;
     queryType: "selectObjectListByEntity" | CarryOnObject;
 };
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByRelationQuery = CarryOnObject | {
+    label?: ((string | undefined) | CarryOnObject) | undefined;
+    applicationSection?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined) | CarryOnObject) | undefined;
+    parentName?: ((string | undefined) | CarryOnObject) | undefined;
+    parentUuid: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference | CarryOnObject;
     queryType: "selectObjectListByRelation" | CarryOnObject;
     objectReference: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference | CarryOnObject;
     objectReferenceAttribute?: ((string | undefined) | CarryOnObject) | undefined;
     AttributeOfListObjectToCompareToReferenceUuid: string | CarryOnObject;
 };
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByRelationQuery = CarryOnObject | {
+    label?: ((string | undefined) | CarryOnObject) | undefined;
+    applicationSection?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined) | CarryOnObject) | undefined;
+    parentName?: ((string | undefined) | CarryOnObject) | undefined;
+    parentUuid: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference | CarryOnObject;
     queryType: "selectObjectByRelation" | CarryOnObject;
     objectReference: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference | CarryOnObject;
     AttributeOfObjectToCompareToReferenceUuid: string | CarryOnObject;
 };
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByDirectReferenceQuery = CarryOnObject | {
+    label?: ((string | undefined) | CarryOnObject) | undefined;
+    applicationSection?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined) | CarryOnObject) | undefined;
+    parentName?: ((string | undefined) | CarryOnObject) | undefined;
+    parentUuid: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference | CarryOnObject;
     queryType: "selectObjectByDirectReference" | CarryOnObject;
     instanceUuid: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference | CarryOnObject;
 };
@@ -2042,21 +2854,21 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectQueryCombinerQuer
         };
     };
 };
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQuery = (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByEntityQuery | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByRelationQuery | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByManyToManyRelationQuery | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectQueryCombinerQuery | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByRelationQuery | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByDirectReferenceQuery | CarryOnObject) | (CarryOnObject | {
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQuery = (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByEntityQuery | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByRelationQuery | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByManyToManyRelationQuery | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectQueryCombinerQuery | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByRelationQuery | CarryOnObject) | (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByDirectReferenceQuery | CarryOnObject) | {
     queryType: "literal" | CarryOnObject;
     definition: string | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     queryType: "queryContextReference" | CarryOnObject;
     queryReference: string | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     queryType: "wrapperReturningObject" | CarryOnObject;
     definition: {
         [x: string]: MiroirSelectQuery;
     } | CarryOnObject;
-}) | (CarryOnObject | {
+} | {
     queryType: "wrapperReturningList" | CarryOnObject;
     definition: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQuery | CarryOnObject)[] | CarryOnObject;
-}) | CarryOnObject;
+} | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQueriesRecord = {
     [x: string]: MiroirSelectQuery;
 } | CarryOnObject;
@@ -2071,6 +2883,9 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirFetchQuery = Carr
     crossJoin?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirCrossJoinQuery | undefined) | CarryOnObject) | undefined;
 };
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainManyQueriesWithDeploymentUuid = CarryOnObject | {
+    pageParams: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementObject | CarryOnObject;
+    queryParams: DomainElementObject | CarryOnObject;
+    contextResults: DomainElementObject | CarryOnObject;
     queryType: "DomainManyQueries" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
     fetchQuery: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirFetchQuery | CarryOnObject;
@@ -2095,31 +2910,72 @@ export type CarryOnObject = ObjectTemplateInnerReference | {
 export type CompositeActionTemplate = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction | CarryOnObject;
 export type MiroirFundamentalType = MiroirAllFundamentalTypesUnion;
 
-export const jzodBaseObject: z.ZodType<JzodBaseObject> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict();
-export const jzodArray: z.ZodType<JzodArray> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({type:z.literal("array"), definition:z.lazy(() =>jzodElement)}).strict();
-export const jzodPlainAttribute: z.ZodType<JzodPlainAttribute> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({type:z.enum(["any","bigint","boolean","never","null","uuid","undefined","unknown","void"]), coerce:z.boolean().optional()}).strict();
+export const jzodBaseObject: z.ZodType<JzodBaseObject> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict();
+export const jzodArray: z.ZodType<JzodArray> = z
+  .object({
+    optional: z.boolean().optional(),
+    nullable: z.boolean().optional(),
+    extra: z
+      .object({
+        id: z.number().optional(),
+        defaultLabel: z.string().optional(),
+        initializeTo: z.any().optional(),
+        targetEntity: z.string().optional(),
+        editable: z.boolean().optional(),
+      })
+      .strict()
+      .optional(),
+    tag: z
+      .object({
+        optional: z.boolean().optional(),
+        value: z
+          .object({
+            id: z.number().optional(),
+            defaultLabel: z.string().optional(),
+            initializeTo: z.any().optional(),
+            targetEntity: z.string().optional(),
+            editable: z.boolean().optional(),
+          })
+          .strict()
+          .optional(),
+        schema: z
+          .object({
+            optional: z.boolean().optional(),
+            metaSchema: z.lazy(() => jzodElement).optional(),
+            valueSchema: z.lazy(() => jzodElement).optional(),
+          })
+          .strict()
+          .optional(),
+      })
+      .strict()
+      .optional(),
+  })
+  .strict()
+  .extend({ type: z.literal("array"), definition: z.lazy(() => jzodElement) })
+  .strict();
+export const jzodPlainAttribute: z.ZodType<JzodPlainAttribute> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.enum(["any","bigint","boolean","never","null","uuid","undefined","unknown","void"]), coerce:z.boolean().optional()}).strict();
 export const jzodAttributeDateValidations: z.ZodType<JzodAttributeDateValidations> = z.object({extra:z.record(z.string(),z.any()).optional(), type:z.enum(["min","max"]), parameter:z.any()}).strict();
-export const jzodAttributePlainDateWithValidations: z.ZodType<JzodAttributePlainDateWithValidations> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({type:z.literal("date"), coerce:z.boolean().optional(), validations:z.array(z.lazy(() =>jzodAttributeDateValidations)).optional()}).strict();
+export const jzodAttributePlainDateWithValidations: z.ZodType<JzodAttributePlainDateWithValidations> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.literal("date"), coerce:z.boolean().optional(), validations:z.array(z.lazy(() =>jzodAttributeDateValidations)).optional()}).strict();
 export const jzodAttributeNumberValidations: z.ZodType<JzodAttributeNumberValidations> = z.object({extra:z.record(z.string(),z.any()).optional(), type:z.enum(["gt","gte","lt","lte","int","positive","nonpositive","negative","nonnegative","multipleOf","finite","safe"]), parameter:z.any()}).strict();
-export const jzodAttributePlainNumberWithValidations: z.ZodType<JzodAttributePlainNumberWithValidations> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({type:z.literal("number"), coerce:z.boolean().optional(), validations:z.array(z.lazy(() =>jzodAttributeNumberValidations)).optional()}).strict();
+export const jzodAttributePlainNumberWithValidations: z.ZodType<JzodAttributePlainNumberWithValidations> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.literal("number"), coerce:z.boolean().optional(), validations:z.array(z.lazy(() =>jzodAttributeNumberValidations)).optional()}).strict();
 export const jzodAttributeStringValidations: z.ZodType<JzodAttributeStringValidations> = z.object({extra:z.record(z.string(),z.any()).optional(), type:z.enum(["max","min","length","email","url","emoji","uuid","cuid","cuid2","ulid","regex","includes","startsWith","endsWith","datetime","ip"]), parameter:z.any()}).strict();
-export const jzodAttributePlainStringWithValidations: z.ZodType<JzodAttributePlainStringWithValidations> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({type:z.literal("string"), coerce:z.boolean().optional(), validations:z.array(z.lazy(() =>jzodAttributeStringValidations)).optional()}).strict();
+export const jzodAttributePlainStringWithValidations: z.ZodType<JzodAttributePlainStringWithValidations> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.literal("string"), coerce:z.boolean().optional(), validations:z.array(z.lazy(() =>jzodAttributeStringValidations)).optional()}).strict();
 export const jzodElement: z.ZodType<JzodElement> = z.union([z.lazy(() =>jzodArray), z.lazy(() =>jzodPlainAttribute), z.lazy(() =>jzodAttributePlainDateWithValidations), z.lazy(() =>jzodAttributePlainNumberWithValidations), z.lazy(() =>jzodAttributePlainStringWithValidations), z.lazy(() =>jzodEnum), z.lazy(() =>jzodFunction), z.lazy(() =>jzodLazy), z.lazy(() =>jzodLiteral), z.lazy(() =>jzodIntersection), z.lazy(() =>jzodMap), z.lazy(() =>jzodObject), z.lazy(() =>jzodPromise), z.lazy(() =>jzodRecord), z.lazy(() =>jzodReference), z.lazy(() =>jzodSet), z.lazy(() =>jzodTuple), z.lazy(() =>jzodUnion)]);
-export const jzodEnum: z.ZodType<JzodEnum> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({type:z.literal("enum"), definition:z.array(z.string())}).strict();
+export const jzodEnum: z.ZodType<JzodEnum> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.literal("enum"), definition:z.array(z.string())}).strict();
 export const jzodEnumAttributeTypes: z.ZodType<JzodEnumAttributeTypes> = z.enum(["any","bigint","boolean","date","never","null","number","string","uuid","undefined","unknown","void"]);
 export const jzodEnumElementTypes: z.ZodType<JzodEnumElementTypes> = z.enum(["array","date","enum","function","lazy","literal","intersection","map","number","object","promise","record","schemaReference","set","string","tuple","union"]);
-export const jzodFunction: z.ZodType<JzodFunction> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({type:z.literal("function"), definition:z.object({args:z.array(z.lazy(() =>jzodElement)), returns:z.lazy(() =>jzodElement).optional()}).strict()}).strict();
-export const jzodLazy: z.ZodType<JzodLazy> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({type:z.literal("lazy"), definition:z.lazy(() =>jzodFunction)}).strict();
-export const jzodLiteral: z.ZodType<JzodLiteral> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({type:z.literal("literal"), definition:z.union([z.string(), z.number(), z.bigint(), z.boolean()])}).strict();
-export const jzodIntersection: z.ZodType<JzodIntersection> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({type:z.literal("intersection"), definition:z.object({left:z.lazy(() =>jzodElement), right:z.lazy(() =>jzodElement)}).strict()}).strict();
-export const jzodMap: z.ZodType<JzodMap> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({type:z.literal("map"), definition:z.tuple([z.lazy(() =>jzodElement), z.lazy(() =>jzodElement)])}).strict();
-export const jzodObject: z.ZodType<JzodObject> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({extend:z.lazy(() =>jzodReference).optional(), type:z.literal("object"), nonStrict:z.boolean().optional(), partial:z.boolean().optional(), carryOn:z.union([z.lazy(() =>jzodObject), z.lazy(() =>jzodUnion)]).optional(), definition:z.record(z.string(),z.lazy(() =>jzodElement))}).strict();
-export const jzodPromise: z.ZodType<JzodPromise> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({type:z.literal("promise"), definition:z.lazy(() =>jzodElement)}).strict();
-export const jzodRecord: z.ZodType<JzodRecord> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({type:z.literal("record"), definition:z.lazy(() =>jzodElement)}).strict();
-export const jzodReference: z.ZodType<JzodReference> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({type:z.literal("schemaReference"), context:z.record(z.string(),z.lazy(() =>jzodElement)).optional(), carryOn:z.union([z.lazy(() =>jzodObject), z.lazy(() =>jzodUnion)]).optional(), definition:z.object({eager:z.boolean().optional(), partial:z.boolean().optional(), relativePath:z.string().optional(), absolutePath:z.string().optional()}).strict()}).strict();
-export const jzodSet: z.ZodType<JzodSet> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({type:z.literal("set"), definition:z.lazy(() =>jzodElement)}).strict();
-export const jzodTuple: z.ZodType<JzodTuple> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({type:z.literal("tuple"), definition:z.array(z.lazy(() =>jzodElement))}).strict();
-export const jzodUnion: z.ZodType<JzodUnion> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional()}).strict().extend({type:z.literal("union"), discriminator:z.string().optional(), discriminatorNew:z.union([z.object({discriminatorType:z.literal("string"), value:z.string()}).strict(), z.object({discriminatorType:z.literal("array"), value:z.array(z.string())}).strict()]).optional(), carryOn:z.lazy(() =>jzodObject).optional(), definition:z.array(z.lazy(() =>jzodElement))}).strict();
+export const jzodFunction: z.ZodType<JzodFunction> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.literal("function"), definition:z.object({args:z.array(z.lazy(() =>jzodElement)), returns:z.lazy(() =>jzodElement).optional()}).strict()}).strict();
+export const jzodLazy: z.ZodType<JzodLazy> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.literal("lazy"), definition:z.lazy(() =>jzodFunction)}).strict();
+export const jzodLiteral: z.ZodType<JzodLiteral> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.literal("literal"), definition:z.union([z.string(), z.number(), z.bigint(), z.boolean()])}).strict();
+export const jzodIntersection: z.ZodType<JzodIntersection> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.literal("intersection"), definition:z.object({left:z.lazy(() =>jzodElement), right:z.lazy(() =>jzodElement)}).strict()}).strict();
+export const jzodMap: z.ZodType<JzodMap> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.literal("map"), definition:z.tuple([z.lazy(() =>jzodElement), z.lazy(() =>jzodElement)])}).strict();
+export const jzodObject: z.ZodType<JzodObject> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({extend:z.lazy(() =>jzodReference).optional(), type:z.literal("object"), nonStrict:z.boolean().optional(), partial:z.boolean().optional(), carryOn:z.union([z.lazy(() =>jzodObject), z.lazy(() =>jzodUnion)]).optional(), definition:z.record(z.string(),z.lazy(() =>jzodElement))}).strict();
+export const jzodPromise: z.ZodType<JzodPromise> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.literal("promise"), definition:z.lazy(() =>jzodElement)}).strict();
+export const jzodRecord: z.ZodType<JzodRecord> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.literal("record"), definition:z.lazy(() =>jzodElement)}).strict();
+export const jzodReference: z.ZodType<JzodReference> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.literal("schemaReference"), context:z.record(z.string(),z.lazy(() =>jzodElement)).optional(), carryOn:z.union([z.lazy(() =>jzodObject), z.lazy(() =>jzodUnion)]).optional(), definition:z.object({eager:z.boolean().optional(), partial:z.boolean().optional(), relativePath:z.string().optional(), absolutePath:z.string().optional()}).strict()}).strict();
+export const jzodSet: z.ZodType<JzodSet> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.literal("set"), definition:z.lazy(() =>jzodElement)}).strict();
+export const jzodTuple: z.ZodType<JzodTuple> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.literal("tuple"), definition:z.array(z.lazy(() =>jzodElement))}).strict();
+export const jzodUnion: z.ZodType<JzodUnion> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.literal("union"), discriminator:z.string().optional(), discriminatorNew:z.union([z.object({discriminatorType:z.literal("string"), value:z.string()}).strict(), z.object({discriminatorType:z.literal("array"), value:z.array(z.string())}).strict()]).optional(), carryOn:z.lazy(() =>jzodObject).optional(), definition:z.array(z.lazy(() =>jzodElement))}).strict();
 export const ______________________________________________miroirMetaModel_____________________________________________: z.ZodType<______________________________________________miroirMetaModel_____________________________________________> = z.never();
 export const entityAttributeExpandedType: z.ZodType<EntityAttributeExpandedType> = z.enum(["UUID","STRING","BOOLEAN","OBJECT"]);
 export const entityAttributeType: z.ZodType<EntityAttributeType> = z.union([z.lazy(() =>entityInstance), z.enum(["ENTITY_INSTANCE_UUID","ARRAY"])]);
@@ -2260,31 +3116,34 @@ export const bundleAction: z.ZodType<BundleAction> = z.union([z.object({actionTy
 export const storeOrBundleAction: z.ZodType<StoreOrBundleAction> = z.union([z.lazy(() =>storeManagementAction), z.lazy(() =>bundleAction)]);
 export const actionTransformer: z.ZodType<ActionTransformer> = z.object({transformerType:z.literal("actionTransformer")}).strict();
 export const dataTransformer: z.ZodType<DataTransformer> = z.object({transformerType:z.literal("dataTransformer")}).strict();
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject> = z.union([z.lazy(() =>carryOnObject), z.object({optional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), nullable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), extra:z.union([z.lazy(() =>carryOnObject), z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]).optional()}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodArray: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodArray> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("array"), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)])}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPlainAttribute: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPlainAttribute> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.enum(["any","bigint","boolean","never","null","uuid","undefined","unknown","void"]), z.lazy(() =>carryOnObject)]), coerce:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject_extend: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject_extend> = z.object({optional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), nullable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), extra:z.union([z.lazy(() =>carryOnObject), z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]).optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict();
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRootQuery_extend: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRootQuery_extend> = z.object({pageParams:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementObject), z.lazy(() =>carryOnObject)]), queryParams:z.union([z.lazy(() =>domainElementObject), z.lazy(() =>carryOnObject)]), contextResults:z.union([z.lazy(() =>domainElementObject), z.lazy(() =>carryOnObject)])}).strict();
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectRootQuery_extend: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectRootQuery_extend> = z.object({label:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection).optional(), z.lazy(() =>carryOnObject)]).optional(), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference), z.lazy(() =>carryOnObject)])}).strict();
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject> = z.union([z.lazy(() =>carryOnObject), z.object({optional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), nullable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), extra:z.union([z.lazy(() =>carryOnObject), z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]).optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodArray: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodArray> = z.union([z.lazy(() =>carryOnObject), z.object({optional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), nullable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), extra:z.union([z.lazy(() =>carryOnObject), z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]).optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.union([z.literal("array"), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPlainAttribute: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPlainAttribute> = z.union([z.lazy(() =>carryOnObject), z.object({optional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), nullable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), extra:z.union([z.lazy(() =>carryOnObject), z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]).optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.union([z.enum(["any","bigint","boolean","never","null","uuid","undefined","unknown","void"]), z.lazy(() =>carryOnObject)]), coerce:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeDateValidations: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeDateValidations> = z.union([z.lazy(() =>carryOnObject), z.object({extra:z.union([z.record(z.string(),z.any()).optional(), z.lazy(() =>carryOnObject)]).optional(), type:z.union([z.enum(["min","max"]), z.lazy(() =>carryOnObject)]), parameter:z.union([z.any(), z.lazy(() =>carryOnObject)])}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainDateWithValidations: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainDateWithValidations> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("date"), z.lazy(() =>carryOnObject)]), coerce:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), validations:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeDateValidations), z.lazy(() =>carryOnObject)])).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainDateWithValidations: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainDateWithValidations> = z.union([z.lazy(() =>carryOnObject), z.object({optional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), nullable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), extra:z.union([z.lazy(() =>carryOnObject), z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]).optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.union([z.literal("date"), z.lazy(() =>carryOnObject)]), coerce:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), validations:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeDateValidations), z.lazy(() =>carryOnObject)])).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeNumberValidations: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeNumberValidations> = z.union([z.lazy(() =>carryOnObject), z.object({extra:z.union([z.record(z.string(),z.any()).optional(), z.lazy(() =>carryOnObject)]).optional(), type:z.union([z.enum(["gt","gte","lt","lte","int","positive","nonpositive","negative","nonnegative","multipleOf","finite","safe"]), z.lazy(() =>carryOnObject)]), parameter:z.union([z.any(), z.lazy(() =>carryOnObject)])}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainNumberWithValidations: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainNumberWithValidations> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("number"), z.lazy(() =>carryOnObject)]), coerce:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), validations:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeNumberValidations), z.lazy(() =>carryOnObject)])).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainNumberWithValidations: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainNumberWithValidations> = z.union([z.lazy(() =>carryOnObject), z.object({optional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), nullable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), extra:z.union([z.lazy(() =>carryOnObject), z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]).optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.union([z.literal("number"), z.lazy(() =>carryOnObject)]), coerce:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), validations:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeNumberValidations), z.lazy(() =>carryOnObject)])).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeStringValidations: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeStringValidations> = z.union([z.lazy(() =>carryOnObject), z.object({extra:z.union([z.record(z.string(),z.any()).optional(), z.lazy(() =>carryOnObject)]).optional(), type:z.union([z.enum(["max","min","length","email","url","emoji","uuid","cuid","cuid2","ulid","regex","includes","startsWith","endsWith","datetime","ip"]), z.lazy(() =>carryOnObject)]), parameter:z.union([z.any(), z.lazy(() =>carryOnObject)])}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainStringWithValidations: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainStringWithValidations> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("string"), z.lazy(() =>carryOnObject)]), coerce:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), validations:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeStringValidations), z.lazy(() =>carryOnObject)])).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainStringWithValidations: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainStringWithValidations> = z.union([z.lazy(() =>carryOnObject), z.object({optional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), nullable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), extra:z.union([z.lazy(() =>carryOnObject), z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]).optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.union([z.literal("string"), z.lazy(() =>carryOnObject)]), coerce:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), validations:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeStringValidations), z.lazy(() =>carryOnObject)])).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement> = z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodArray), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPlainAttribute), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainDateWithValidations), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainNumberWithValidations), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainStringWithValidations), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnum), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodFunction), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLazy), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLiteral), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodIntersection), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodMap), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPromise), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodRecord), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodReference), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSet), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodTuple), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodUnion), z.lazy(() =>carryOnObject)]), z.lazy(() =>carryOnObject)]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnum: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnum> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("enum"), z.lazy(() =>carryOnObject)]), definition:z.union([z.array(z.union([z.string(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnum: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnum> = z.union([z.lazy(() =>carryOnObject), z.object({optional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), nullable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), extra:z.union([z.lazy(() =>carryOnObject), z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]).optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.union([z.literal("enum"), z.lazy(() =>carryOnObject)]), definition:z.union([z.array(z.union([z.string(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnumAttributeTypes: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnumAttributeTypes> = z.union([z.enum(["any","bigint","boolean","date","never","null","number","string","uuid","undefined","unknown","void"]), z.lazy(() =>carryOnObject)]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnumElementTypes: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnumElementTypes> = z.union([z.enum(["array","date","enum","function","lazy","literal","intersection","map","number","object","promise","record","schemaReference","set","string","tuple","union"]), z.lazy(() =>carryOnObject)]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodFunction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodFunction> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("function"), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOnObject), z.object({args:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), returns:z.union([z.lazy(() =>jzodElement).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()])}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLazy: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLazy> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("lazy"), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodFunction), z.lazy(() =>carryOnObject)])}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLiteral: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLiteral> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("literal"), z.lazy(() =>carryOnObject)]), definition:z.union([z.union([z.string(), z.lazy(() =>carryOnObject)]), z.union([z.number(), z.lazy(() =>carryOnObject)]), z.union([z.bigint(), z.lazy(() =>carryOnObject)]), z.union([z.boolean(), z.lazy(() =>carryOnObject)]), z.lazy(() =>carryOnObject)])}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodIntersection: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodIntersection> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("intersection"), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOnObject), z.object({left:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)]), right:z.union([z.lazy(() =>jzodElement), z.lazy(() =>carryOnObject)])}).strict()])}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodMap: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodMap> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("map"), z.lazy(() =>carryOnObject)]), definition:z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>jzodElement), z.lazy(() =>carryOnObject)])])}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject> = z.union([z.lazy(() =>carryOnObject), z.object({extend:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodReference).optional(), z.lazy(() =>carryOnObject)]).optional(), type:z.union([z.literal("object"), z.lazy(() =>carryOnObject)]), nonStrict:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), partial:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), carryOn:z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodUnion), z.lazy(() =>carryOnObject)]), z.lazy(() =>carryOnObject)]).optional(), definition:z.union([z.record(z.string(),z.lazy(() =>jzodElement)), z.lazy(() =>carryOnObject)])}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPromise: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPromise> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("promise"), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)])}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodRecord: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodRecord> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("record"), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)])}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodReference: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodReference> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("schemaReference"), z.lazy(() =>carryOnObject)]), context:z.union([z.record(z.string(),z.lazy(() =>jzodElement)).optional(), z.lazy(() =>carryOnObject)]).optional(), carryOn:z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodUnion), z.lazy(() =>carryOnObject)]), z.lazy(() =>carryOnObject)]).optional(), definition:z.union([z.lazy(() =>carryOnObject), z.object({eager:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), partial:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), relativePath:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), absolutePath:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()])}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSet: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSet> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("set"), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)])}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodTuple: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodTuple> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("tuple"), z.lazy(() =>carryOnObject)]), definition:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodUnion: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodUnion> = z.union([z.lazy(() =>carryOnObject), z.object({type:z.union([z.literal("union"), z.lazy(() =>carryOnObject)]), discriminator:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), discriminatorNew:z.union([z.union([z.lazy(() =>carryOnObject), z.object({discriminatorType:z.union([z.literal("string"), z.lazy(() =>carryOnObject)]), value:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({discriminatorType:z.union([z.literal("array"), z.lazy(() =>carryOnObject)]), value:z.union([z.array(z.union([z.string(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]), z.lazy(() =>carryOnObject)]).optional(), carryOn:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject).optional(), z.lazy(() =>carryOnObject)]).optional(), definition:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodFunction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodFunction> = z.union([z.lazy(() =>carryOnObject), z.object({optional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), nullable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), extra:z.union([z.lazy(() =>carryOnObject), z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]).optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.union([z.literal("function"), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOnObject), z.object({args:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), returns:z.union([z.lazy(() =>jzodElement).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLazy: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLazy> = z.union([z.lazy(() =>carryOnObject), z.object({optional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), nullable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), extra:z.union([z.lazy(() =>carryOnObject), z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]).optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.union([z.literal("lazy"), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodFunction), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLiteral: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLiteral> = z.union([z.lazy(() =>carryOnObject), z.object({optional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), nullable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), extra:z.union([z.lazy(() =>carryOnObject), z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]).optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.union([z.literal("literal"), z.lazy(() =>carryOnObject)]), definition:z.union([z.string(), z.number(), z.bigint(), z.boolean(), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodIntersection: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodIntersection> = z.union([z.lazy(() =>carryOnObject), z.object({optional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), nullable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), extra:z.union([z.lazy(() =>carryOnObject), z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]).optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.union([z.literal("intersection"), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOnObject), z.object({left:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)]), right:z.union([z.lazy(() =>jzodElement), z.lazy(() =>carryOnObject)])}).strict()])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodMap: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodMap> = z.union([z.lazy(() =>carryOnObject), z.object({optional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), nullable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), extra:z.union([z.lazy(() =>carryOnObject), z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]).optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.union([z.literal("map"), z.lazy(() =>carryOnObject)]), definition:z.union([z.tuple([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>jzodElement), z.lazy(() =>carryOnObject)])]), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject> = z.union([z.lazy(() =>carryOnObject), z.object({optional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), nullable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), extra:z.union([z.lazy(() =>carryOnObject), z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]).optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({extend:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodReference).optional(), z.lazy(() =>carryOnObject)]).optional(), type:z.union([z.literal("object"), z.lazy(() =>carryOnObject)]), nonStrict:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), partial:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), carryOn:z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodUnion), z.lazy(() =>carryOnObject)]), z.lazy(() =>carryOnObject)]).optional(), definition:z.union([z.record(z.string(),z.lazy(() =>jzodElement)), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPromise: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPromise> = z.union([z.lazy(() =>carryOnObject), z.object({optional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), nullable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), extra:z.union([z.lazy(() =>carryOnObject), z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]).optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.union([z.literal("promise"), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodRecord: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodRecord> = z.union([z.lazy(() =>carryOnObject), z.object({optional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), nullable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), extra:z.union([z.lazy(() =>carryOnObject), z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]).optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.union([z.literal("record"), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodReference: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodReference> = z.union([z.lazy(() =>carryOnObject), z.object({optional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), nullable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), extra:z.union([z.lazy(() =>carryOnObject), z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]).optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.union([z.literal("schemaReference"), z.lazy(() =>carryOnObject)]), context:z.union([z.record(z.string(),z.lazy(() =>jzodElement)).optional(), z.lazy(() =>carryOnObject)]).optional(), carryOn:z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodUnion), z.lazy(() =>carryOnObject)]), z.lazy(() =>carryOnObject)]).optional(), definition:z.union([z.lazy(() =>carryOnObject), z.object({eager:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), partial:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), relativePath:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), absolutePath:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSet: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSet> = z.union([z.lazy(() =>carryOnObject), z.object({optional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), nullable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), extra:z.union([z.lazy(() =>carryOnObject), z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]).optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.union([z.literal("set"), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodTuple: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodTuple> = z.union([z.lazy(() =>carryOnObject), z.object({optional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), nullable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), extra:z.union([z.lazy(() =>carryOnObject), z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]).optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.union([z.literal("tuple"), z.lazy(() =>carryOnObject)]), definition:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodUnion: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodUnion> = z.union([z.lazy(() =>carryOnObject), z.object({optional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), nullable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), extra:z.union([z.lazy(() =>carryOnObject), z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]).optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.union([z.literal("union"), z.lazy(() =>carryOnObject)]), discriminator:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), discriminatorNew:z.union([z.object({discriminatorType:z.union([z.literal("string"), z.lazy(() =>carryOnObject)]), value:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict(), z.object({discriminatorType:z.union([z.literal("array"), z.lazy(() =>carryOnObject)]), value:z.union([z.array(z.union([z.string(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)]).optional(), carryOn:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject).optional(), z.lazy(() =>carryOnObject)]).optional(), definition:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType> = z.union([z.enum(["miroir","app"]), z.lazy(() =>carryOnObject)]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_application: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_application> = z.union([z.lazy(() =>carryOnObject), z.object({uuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentDefinitionVersionUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), name:z.union([z.string(), z.lazy(() =>carryOnObject)]), defaultLabel:z.union([z.string(), z.lazy(() =>carryOnObject)]), description:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), selfApplication:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationVersion: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationVersion> = z.union([z.lazy(() =>carryOnObject), z.object({uuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentDefinitionVersionUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), name:z.union([z.string(), z.lazy(() =>carryOnObject)]), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), description:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), type:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), application:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), branch:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), previousVersion:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), modelStructureMigration:z.union([z.array(z.union([z.record(z.string(),z.any()), z.lazy(() =>carryOnObject)])).optional(), z.lazy(() =>carryOnObject)]).optional(), modelCUDMigration:z.union([z.array(z.union([z.record(z.string(),z.any()), z.lazy(() =>carryOnObject)])).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
@@ -2292,7 +3151,7 @@ export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menu: z.ZodType<CarryO
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuDefinition: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuDefinition> = z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_simpleMenu), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_complexMenu), z.lazy(() =>carryOnObject)]), z.lazy(() =>carryOnObject)]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity> = z.union([z.lazy(() =>carryOnObject), z.object({uuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentDefinitionVersionUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), conceptLevel:z.union([z.enum(["MetaModel","Model","Data"]).optional(), z.lazy(() =>carryOnObject)]).optional(), application:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), name:z.union([z.string(), z.lazy(() =>carryOnObject)]), author:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), description:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition> = z.union([z.lazy(() =>carryOnObject), z.object({uuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentName:z.union([z.string(), z.lazy(() =>carryOnObject)]), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentDefinitionVersionUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), name:z.union([z.string(), z.lazy(() =>carryOnObject)]), entityUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), conceptLevel:z.union([z.enum(["MetaModel","Model","Data"]).optional(), z.lazy(() =>carryOnObject)]).optional(), description:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultInstanceDetailsReportUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), viewAttributes:z.union([z.array(z.union([z.string(), z.lazy(() =>carryOnObject)])).optional(), z.lazy(() =>carryOnObject)]).optional(), jzodSchema:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject), z.lazy(() =>carryOnObject)])}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection> = z.union([z.union([z.literal("model"), z.lazy(() =>carryOnObject)]), z.union([z.literal("data"), z.lazy(() =>carryOnObject)]), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection> = z.union([z.literal("model"), z.literal("data"), z.lazy(() =>carryOnObject)]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance> = z.union([z.lazy(() =>carryOnObject), z.object({uuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), conceptLevel:z.union([z.enum(["MetaModel","Model","Data"]).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_deployment: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_deployment> = z.union([z.lazy(() =>carryOnObject), z.object({uuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentDefinitionVersionUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), name:z.union([z.string(), z.lazy(() =>carryOnObject)]), defaultLabel:z.union([z.string(), z.lazy(() =>carryOnObject)]), description:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), application:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), bundle:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), configuration:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration).optional(), z.lazy(() =>carryOnObject)]).optional(), model:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject).optional(), z.lazy(() =>carryOnObject)]).optional(), data:z.union([z.lazy(() =>jzodObject).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection> = z.union([z.lazy(() =>carryOnObject), z.object({parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), instances:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]);
@@ -2311,37 +3170,40 @@ export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_reportSection: z.ZodTy
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_rootReportSection: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_rootReportSection> = z.union([z.lazy(() =>carryOnObject), z.object({reportParametersToFetchQueryParametersTransformer:z.union([z.record(z.string(),z.string()).optional(), z.lazy(() =>carryOnObject)]).optional(), reportParameters:z.union([z.record(z.string(),z.string()).optional(), z.lazy(() =>carryOnObject)]).optional(), fetchQuery:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirFetchQuery), z.lazy(() =>carryOnObject)]), section:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_reportSection), z.lazy(() =>carryOnObject)])}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_report: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_report> = z.union([z.lazy(() =>carryOnObject), z.object({uuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentDefinitionVersionUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), conceptLevel:z.union([z.enum(["MetaModel","Model","Data"]).optional(), z.lazy(() =>carryOnObject)]).optional(), name:z.union([z.string(), z.lazy(() =>carryOnObject)]), defaultLabel:z.union([z.string(), z.lazy(() =>carryOnObject)]), type:z.union([z.enum(["list","grid"]).optional(), z.lazy(() =>carryOnObject)]).optional(), application:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), definition:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_rootReportSection), z.lazy(() =>carryOnObject)])}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel> = z.union([z.lazy(() =>carryOnObject), z.object({applicationVersions:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationVersion), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), applicationVersionCrossEntityDefinition:z.union([z.array(z.union([z.lazy(() =>carryOnObject), z.object({uuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), conceptLevel:z.union([z.enum(["MetaModel","Model","Data"]).optional(), z.lazy(() =>carryOnObject)]).optional(), applicationVersion:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), entityDefinition:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()])), z.lazy(() =>carryOnObject)]), configuration:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeBasedConfiguration), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), entities:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), entityDefinitions:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), jzodSchemas:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSchema), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), menus:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menu), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), reports:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_report), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference> = z.union([z.union([z.lazy(() =>carryOnObject), z.object({templateType:z.union([z.literal("constant"), z.lazy(() =>carryOnObject)]), referenceUuid:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({templateType:z.union([z.literal("contextReference"), z.lazy(() =>carryOnObject)]), referenceName:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({templateType:z.union([z.literal("parameterReference"), z.lazy(() =>carryOnObject)]), referenceName:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]), z.lazy(() =>carryOnObject)]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplate: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplate> = z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOnObject), z.object({templateType:z.union([z.literal("mustacheStringTemplate"), z.lazy(() =>carryOnObject)]), definition:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({templateType:z.union([z.literal("fullObjectTemplate"), z.lazy(() =>carryOnObject)]), definition:z.union([z.array(z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplate), z.lazy(() =>carryOnObject)])])), z.lazy(() =>carryOnObject)])}).strict()]), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference> = z.union([z.object({templateType:z.union([z.literal("constant"), z.lazy(() =>carryOnObject)]), referenceUuid:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict(), z.object({templateType:z.union([z.literal("contextReference"), z.lazy(() =>carryOnObject)]), referenceName:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict(), z.object({templateType:z.union([z.literal("parameterReference"), z.lazy(() =>carryOnObject)]), referenceName:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplate: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplate> = z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference), z.lazy(() =>carryOnObject)]), z.object({templateType:z.union([z.literal("mustacheStringTemplate"), z.lazy(() =>carryOnObject)]), definition:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict(), z.object({templateType:z.union([z.literal("fullObjectTemplate"), z.lazy(() =>carryOnObject)]), definition:z.union([z.array(z.union([z.tuple([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplateInnerReference), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectTemplate), z.lazy(() =>carryOnObject)])]), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_indexedDbStoreSectionConfiguration: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_indexedDbStoreSectionConfiguration> = z.union([z.lazy(() =>carryOnObject), z.object({emulatedServerType:z.union([z.literal("indexedDb"), z.lazy(() =>carryOnObject)]), indexedDbName:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_filesystemDbStoreSectionConfiguration: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_filesystemDbStoreSectionConfiguration> = z.union([z.lazy(() =>carryOnObject), z.object({emulatedServerType:z.union([z.literal("filesystem"), z.lazy(() =>carryOnObject)]), directory:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_sqlDbStoreSectionConfiguration: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_sqlDbStoreSectionConfiguration> = z.union([z.lazy(() =>carryOnObject), z.object({emulatedServerType:z.union([z.literal("sql"), z.lazy(() =>carryOnObject)]), connectionString:z.union([z.string(), z.lazy(() =>carryOnObject)]), schema:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeBasedConfiguration: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeBasedConfiguration> = z.union([z.lazy(() =>carryOnObject), z.object({uuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), conceptLevel:z.union([z.enum(["MetaModel","Model","Data"]).optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOnObject), z.object({currentApplicationVersion:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()])}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration> = z.union([z.lazy(() =>carryOnObject), z.object({admin:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeSectionConfiguration), z.lazy(() =>carryOnObject)]), model:z.union([z.lazy(() =>storeSectionConfiguration), z.lazy(() =>carryOnObject)]), data:z.union([z.lazy(() =>storeSectionConfiguration), z.lazy(() =>carryOnObject)])}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeSectionConfiguration: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeSectionConfiguration> = z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_indexedDbStoreSectionConfiguration), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_filesystemDbStoreSectionConfiguration), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_sqlDbStoreSectionConfiguration), z.lazy(() =>carryOnObject)]), z.lazy(() =>carryOnObject)]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction> = z.union([z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("createInstance"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), objects:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("deleteInstance"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), includeInTransaction:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), objects:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("updateInstance"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), includeInTransaction:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), objects:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]), z.lazy(() =>carryOnObject)]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction> = z.union([z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("undoRedoAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("undo"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("71c04f8e-c687-4ea7-9a19-bc98d796c389"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("undoRedoAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("redo"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("71c04f8e-c687-4ea7-9a19-bc98d796c389"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction> = z.union([z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("createInstance"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), objects:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("deleteInstance"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), includeInTransaction:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), objects:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("updateInstance"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), includeInTransaction:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), objects:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction> = z.union([z.object({actionType:z.union([z.literal("undoRedoAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("undo"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("71c04f8e-c687-4ea7-9a19-bc98d796c389"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("undoRedoAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("redo"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("71c04f8e-c687-4ea7-9a19-bc98d796c389"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction> = z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction), z.lazy(() =>carryOnObject)]), z.lazy(() =>carryOnObject)]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction> = z.union([z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("initModel"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), params:z.union([z.lazy(() =>carryOnObject), z.object({metaModel:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel), z.lazy(() =>carryOnObject)]), dataStoreType:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType), z.lazy(() =>carryOnObject)]), application:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_application), z.lazy(() =>carryOnObject)]), applicationDeploymentConfiguration:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance), z.lazy(() =>carryOnObject)]), applicationModelBranch:z.union([z.lazy(() =>entityInstance), z.lazy(() =>carryOnObject)]), applicationVersion:z.union([z.lazy(() =>entityInstance), z.lazy(() =>carryOnObject)]), applicationStoreBasedConfiguration:z.union([z.lazy(() =>entityInstance), z.lazy(() =>carryOnObject)])}).strict()])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("commit"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("rollback"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("remoteLocalCacheRollback"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("resetModel"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("resetData"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("alterEntityAttribute"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), transactional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), entityName:z.union([z.string(), z.lazy(() =>carryOnObject)]), entityUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), entityDefinitionUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), addColumns:z.union([z.array(z.union([z.lazy(() =>carryOnObject), z.object({name:z.union([z.string(), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)])}).strict()])).optional(), z.lazy(() =>carryOnObject)]).optional(), removeColumns:z.union([z.array(z.union([z.string(), z.lazy(() =>carryOnObject)])).optional(), z.lazy(() =>carryOnObject)]).optional(), update:z.union([z.lazy(() =>jzodElement).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("renameEntity"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), transactional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), entityName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), entityUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), entityDefinitionUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), targetValue:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("createEntity"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), transactional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), entities:z.union([z.array(z.union([z.lazy(() =>carryOnObject), z.object({entity:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity), z.lazy(() =>carryOnObject)]), entityDefinition:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition), z.lazy(() =>carryOnObject)])}).strict()])), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("dropEntity"), z.lazy(() =>carryOnObject)]), transactional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), entityUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), entityDefinitionUuid:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]), z.lazy(() =>carryOnObject)]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction> = z.union([z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("createInstance"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), objects:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("deleteInstance"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), includeInTransaction:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), objects:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("deleteInstanceWithCascade"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), includeInTransaction:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), objects:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("updateInstance"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), includeInTransaction:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), objects:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("loadNewInstancesInLocalCache"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), objects:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("getInstance"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), uuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("getInstances"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.lazy(() =>carryOnObject)]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction> = z.union([z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("storeManagementAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("createStore"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), z.lazy(() =>carryOnObject)]), configuration:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("storeManagementAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("deleteStore"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), configuration:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("storeManagementAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("resetAndInitMiroirAndApplicationDatabase"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), z.lazy(() =>carryOnObject)]), deployments:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_deployment), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("storeManagementAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("openStore"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), z.lazy(() =>carryOnObject)]), configuration:z.union([z.record(z.string(),z.lazy(() =>storeUnitConfiguration)), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("storeManagementAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("closeStore"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction> = z.union([z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("initModel"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), params:z.union([z.lazy(() =>carryOnObject), z.object({metaModel:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel), z.lazy(() =>carryOnObject)]), dataStoreType:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType), z.lazy(() =>carryOnObject)]), application:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_application), z.lazy(() =>carryOnObject)]), applicationDeploymentConfiguration:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance), z.lazy(() =>carryOnObject)]), applicationModelBranch:z.union([z.lazy(() =>entityInstance), z.lazy(() =>carryOnObject)]), applicationVersion:z.union([z.lazy(() =>entityInstance), z.lazy(() =>carryOnObject)]), applicationStoreBasedConfiguration:z.union([z.lazy(() =>entityInstance), z.lazy(() =>carryOnObject)])}).strict()])}).strict(), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("commit"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("rollback"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("remoteLocalCacheRollback"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("resetModel"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("resetData"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("alterEntityAttribute"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), transactional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), entityName:z.union([z.string(), z.lazy(() =>carryOnObject)]), entityUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), entityDefinitionUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), addColumns:z.union([z.array(z.union([z.lazy(() =>carryOnObject), z.object({name:z.union([z.string(), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)])}).strict()])).optional(), z.lazy(() =>carryOnObject)]).optional(), removeColumns:z.union([z.array(z.union([z.string(), z.lazy(() =>carryOnObject)])).optional(), z.lazy(() =>carryOnObject)]).optional(), update:z.union([z.lazy(() =>jzodElement).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict(), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("renameEntity"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), transactional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), entityName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), entityUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), entityDefinitionUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), targetValue:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("createEntity"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), transactional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), entities:z.union([z.array(z.union([z.lazy(() =>carryOnObject), z.object({entity:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity), z.lazy(() =>carryOnObject)]), entityDefinition:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition), z.lazy(() =>carryOnObject)])}).strict()])), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("dropEntity"), z.lazy(() =>carryOnObject)]), transactional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), entityUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), entityDefinitionUuid:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction> = z.union([z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("createInstance"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), objects:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("deleteInstance"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), includeInTransaction:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), objects:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("deleteInstanceWithCascade"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), includeInTransaction:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), objects:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("updateInstance"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), includeInTransaction:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), objects:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("loadNewInstancesInLocalCache"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), objects:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("getInstance"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), uuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("getInstances"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), z.lazy(() =>carryOnObject)]), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction> = z.union([z.object({actionType:z.union([z.literal("storeManagementAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("createStore"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), z.lazy(() =>carryOnObject)]), configuration:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("storeManagementAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("deleteStore"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), configuration:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("storeManagementAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("resetAndInitMiroirAndApplicationDatabase"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), z.lazy(() =>carryOnObject)]), deployments:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_deployment), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("storeManagementAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("openStore"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), z.lazy(() =>carryOnObject)]), configuration:z.union([z.record(z.string(),z.lazy(() =>storeUnitConfiguration)), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("storeManagementAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("closeStore"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transactionalInstanceAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transactionalInstanceAction> = z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("transactionalInstanceAction"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), instanceAction:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction), z.lazy(() =>carryOnObject)])}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction> = z.union([z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("bundleAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("createBundle"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("bundleAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("deleteBundle"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.lazy(() =>carryOnObject)]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction> = z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("transactionalInstanceAction"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), instanceAction:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("compositeAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("sequence"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), definition:z.union([z.array(z.union([z.union([z.lazy(() =>carryOnObject), z.object({compositeActionType:z.union([z.literal("action"), z.lazy(() =>carryOnObject)]), action:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({compositeActionType:z.union([z.literal("query"), z.lazy(() =>carryOnObject)]), query:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction), z.lazy(() =>carryOnObject)])}).strict()]), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]), z.lazy(() =>carryOnObject)]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction> = z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("compositeAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("sequence"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), definition:z.union([z.array(z.union([z.union([z.lazy(() =>carryOnObject), z.object({compositeActionType:z.union([z.literal("action"), z.lazy(() =>carryOnObject)]), action:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({compositeActionType:z.union([z.literal("query"), z.lazy(() =>carryOnObject)]), query:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction), z.lazy(() =>carryOnObject)])}).strict()]), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference> = z.union([z.union([z.lazy(() =>carryOnObject), z.object({referenceType:z.union([z.literal("constant"), z.lazy(() =>carryOnObject)]), referenceUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({referenceType:z.union([z.literal("queryContextReference"), z.lazy(() =>carryOnObject)]), referenceName:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({referenceType:z.union([z.literal("queryParameterReference"), z.lazy(() =>carryOnObject)]), referenceName:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]), z.lazy(() =>carryOnObject)]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByManyToManyRelationQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByManyToManyRelationQuery> = z.union([z.lazy(() =>carryOnObject), z.object({queryType:z.union([z.literal("selectObjectListByManyToManyRelation"), z.lazy(() =>carryOnObject)]), objectListReference:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference), z.lazy(() =>carryOnObject)]), objectListReferenceAttribute:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), AttributeOfRootListObjectToCompareToListReferenceUuid:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByEntityQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByEntityQuery> = z.union([z.lazy(() =>carryOnObject), z.object({queryType:z.union([z.literal("selectObjectListByEntity"), z.lazy(() =>carryOnObject)])}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByRelationQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByRelationQuery> = z.union([z.lazy(() =>carryOnObject), z.object({queryType:z.union([z.literal("selectObjectListByRelation"), z.lazy(() =>carryOnObject)]), objectReference:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference), z.lazy(() =>carryOnObject)]), objectReferenceAttribute:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), AttributeOfListObjectToCompareToReferenceUuid:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByRelationQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByRelationQuery> = z.union([z.lazy(() =>carryOnObject), z.object({queryType:z.union([z.literal("selectObjectByRelation"), z.lazy(() =>carryOnObject)]), objectReference:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference), z.lazy(() =>carryOnObject)]), AttributeOfObjectToCompareToReferenceUuid:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByDirectReferenceQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByDirectReferenceQuery> = z.union([z.lazy(() =>carryOnObject), z.object({queryType:z.union([z.literal("selectObjectByDirectReference"), z.lazy(() =>carryOnObject)]), instanceUuid:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction> = z.union([z.object({actionType:z.union([z.literal("bundleAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("createBundle"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("bundleAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("deleteBundle"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction> = z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction), z.lazy(() =>carryOnObject)]), z.object({actionType:z.union([z.literal("transactionalInstanceAction"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), instanceAction:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("compositeAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("sequence"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), definition:z.union([z.array(z.union([z.object({compositeActionType:z.union([z.literal("action"), z.lazy(() =>carryOnObject)]), action:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction), z.lazy(() =>carryOnObject)])}).strict(), z.object({compositeActionType:z.union([z.literal("query"), z.lazy(() =>carryOnObject)]), query:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction> = z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("compositeAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("sequence"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), definition:z.union([z.array(z.union([z.object({compositeActionType:z.union([z.literal("action"), z.lazy(() =>carryOnObject)]), action:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction), z.lazy(() =>carryOnObject)])}).strict(), z.object({compositeActionType:z.union([z.literal("query"), z.lazy(() =>carryOnObject)]), query:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementObject: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementObject> = z.union([z.lazy(() =>carryOnObject), z.object({elementType:z.union([z.literal("object"), z.lazy(() =>carryOnObject)]), elementValue:z.union([z.record(z.string(),z.lazy(() =>domainElement)), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRootQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRootQuery> = z.union([z.lazy(() =>carryOnObject), z.object({pageParams:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementObject), z.lazy(() =>carryOnObject)]), queryParams:z.union([z.lazy(() =>domainElementObject), z.lazy(() =>carryOnObject)]), contextResults:z.union([z.lazy(() =>domainElementObject), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectRootQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectRootQuery> = z.union([z.lazy(() =>carryOnObject), z.object({label:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection).optional(), z.lazy(() =>carryOnObject)]).optional(), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference> = z.union([z.object({referenceType:z.union([z.literal("constant"), z.lazy(() =>carryOnObject)]), referenceUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({referenceType:z.union([z.literal("queryContextReference"), z.lazy(() =>carryOnObject)]), referenceName:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict(), z.object({referenceType:z.union([z.literal("queryParameterReference"), z.lazy(() =>carryOnObject)]), referenceName:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByManyToManyRelationQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByManyToManyRelationQuery> = z.union([z.lazy(() =>carryOnObject), z.object({label:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection).optional(), z.lazy(() =>carryOnObject)]).optional(), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference), z.lazy(() =>carryOnObject)])}).strict().extend({queryType:z.union([z.literal("selectObjectListByManyToManyRelation"), z.lazy(() =>carryOnObject)]), objectListReference:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference), z.lazy(() =>carryOnObject)]), objectListReferenceAttribute:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), AttributeOfRootListObjectToCompareToListReferenceUuid:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByEntityQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByEntityQuery> = z.union([z.lazy(() =>carryOnObject), z.object({label:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection).optional(), z.lazy(() =>carryOnObject)]).optional(), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference), z.lazy(() =>carryOnObject)])}).strict().extend({queryType:z.union([z.literal("selectObjectListByEntity"), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByRelationQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByRelationQuery> = z.union([z.lazy(() =>carryOnObject), z.object({label:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection).optional(), z.lazy(() =>carryOnObject)]).optional(), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference), z.lazy(() =>carryOnObject)])}).strict().extend({queryType:z.union([z.literal("selectObjectListByRelation"), z.lazy(() =>carryOnObject)]), objectReference:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference), z.lazy(() =>carryOnObject)]), objectReferenceAttribute:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), AttributeOfListObjectToCompareToReferenceUuid:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByRelationQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByRelationQuery> = z.union([z.lazy(() =>carryOnObject), z.object({label:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection).optional(), z.lazy(() =>carryOnObject)]).optional(), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference), z.lazy(() =>carryOnObject)])}).strict().extend({queryType:z.union([z.literal("selectObjectByRelation"), z.lazy(() =>carryOnObject)]), objectReference:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference), z.lazy(() =>carryOnObject)]), AttributeOfObjectToCompareToReferenceUuid:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByDirectReferenceQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByDirectReferenceQuery> = z.union([z.lazy(() =>carryOnObject), z.object({label:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection).optional(), z.lazy(() =>carryOnObject)]).optional(), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference), z.lazy(() =>carryOnObject)])}).strict().extend({queryType:z.union([z.literal("selectObjectByDirectReference"), z.lazy(() =>carryOnObject)]), instanceUuid:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference), z.lazy(() =>carryOnObject)])}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectQuery> = z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByRelationQuery), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByDirectReferenceQuery), z.lazy(() =>carryOnObject)]), z.lazy(() =>carryOnObject)]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectQueryCombinerQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectQueryCombinerQuery> = z.union([z.lazy(() =>carryOnObject), z.object({queryType:z.union([z.literal("queryCombiner"), z.lazy(() =>carryOnObject)]), rootQuery:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQuery), z.lazy(() =>carryOnObject)]), subQuery:z.union([z.lazy(() =>carryOnObject), z.object({query:z.union([z.lazy(() =>miroirSelectQuery), z.lazy(() =>carryOnObject)]), parameter:z.union([z.lazy(() =>carryOnObject), z.object({transformerType:z.union([z.literal("recordOfTransformers"), z.lazy(() =>carryOnObject)]), definition:z.union([z.record(z.string(),z.object({transformerType:z.literal("objectTransformer"), attributeName:z.string()}).strict()), z.lazy(() =>carryOnObject)])}).strict()])}).strict()])}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQuery> = z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByEntityQuery), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByRelationQuery), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByManyToManyRelationQuery), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectQueryCombinerQuery), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByRelationQuery), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByDirectReferenceQuery), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOnObject), z.object({queryType:z.union([z.literal("literal"), z.lazy(() =>carryOnObject)]), definition:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({queryType:z.union([z.literal("queryContextReference"), z.lazy(() =>carryOnObject)]), queryReference:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({queryType:z.union([z.literal("wrapperReturningObject"), z.lazy(() =>carryOnObject)]), definition:z.union([z.record(z.string(),z.lazy(() =>miroirSelectQuery)), z.lazy(() =>carryOnObject)])}).strict()]), z.union([z.lazy(() =>carryOnObject), z.object({queryType:z.union([z.literal("wrapperReturningList"), z.lazy(() =>carryOnObject)]), definition:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQuery), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQuery> = z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByEntityQuery), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByRelationQuery), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectListByManyToManyRelationQuery), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectQueryCombinerQuery), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByRelationQuery), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectObjectByDirectReferenceQuery), z.lazy(() =>carryOnObject)]), z.object({queryType:z.union([z.literal("literal"), z.lazy(() =>carryOnObject)]), definition:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict(), z.object({queryType:z.union([z.literal("queryContextReference"), z.lazy(() =>carryOnObject)]), queryReference:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict(), z.object({queryType:z.union([z.literal("wrapperReturningObject"), z.lazy(() =>carryOnObject)]), definition:z.union([z.record(z.string(),z.lazy(() =>miroirSelectQuery)), z.lazy(() =>carryOnObject)])}).strict(), z.object({queryType:z.union([z.literal("wrapperReturningList"), z.lazy(() =>carryOnObject)]), definition:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQuery), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQueriesRecord: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQueriesRecord> = z.union([z.record(z.string(),z.lazy(() =>miroirSelectQuery)), z.lazy(() =>carryOnObject)]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirCrossJoinQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirCrossJoinQuery> = z.union([z.lazy(() =>carryOnObject), z.object({queryType:z.union([z.literal("combineQuery"), z.lazy(() =>carryOnObject)]), a:z.union([z.string(), z.lazy(() =>carryOnObject)]), b:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirFetchQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirFetchQuery> = z.union([z.lazy(() =>carryOnObject), z.object({parameterSchema:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject).optional(), z.lazy(() =>carryOnObject)]).optional(), select:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQueriesRecord), z.lazy(() =>carryOnObject)]), crossJoin:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirCrossJoinQuery).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainManyQueriesWithDeploymentUuid: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainManyQueriesWithDeploymentUuid> = z.union([z.lazy(() =>carryOnObject), z.object({queryType:z.union([z.literal("DomainManyQueries"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), fetchQuery:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirFetchQuery), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainManyQueriesWithDeploymentUuid: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainManyQueriesWithDeploymentUuid> = z.union([z.lazy(() =>carryOnObject), z.object({pageParams:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementObject), z.lazy(() =>carryOnObject)]), queryParams:z.union([z.lazy(() =>domainElementObject), z.lazy(() =>carryOnObject)]), contextResults:z.union([z.lazy(() =>domainElementObject), z.lazy(() =>carryOnObject)])}).strict().extend({queryType:z.union([z.literal("DomainManyQueries"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), fetchQuery:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirFetchQuery), z.lazy(() =>carryOnObject)])}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction> = z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("queryAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("runQuery"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("9e404b3c-368c-40cb-be8b-e3c28550c25e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), query:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainManyQueriesWithDeploymentUuid), z.lazy(() =>carryOnObject)])}).strict()]);
 export const carryOnObject: z.ZodType<CarryOnObject> = z.union([z.lazy(() =>objectTemplateInnerReference), z.object({templateType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict(), z.object({templateType:z.literal("fullObjectTemplate"), definition:z.array(z.tuple([z.lazy(() =>objectTemplateInnerReference), z.lazy(() =>objectTemplate)]))}).strict()]);
 export const compositeActionTemplate: z.ZodType<CompositeActionTemplate> = z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction), z.lazy(() =>carryOnObject)]);

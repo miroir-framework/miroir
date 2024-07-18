@@ -1,4 +1,4 @@
-import { applyCarryOnSchema, forgeCarryOnReferenceName } from "@miroir-framework/jzod";
+import { applyCarryOnSchema, applyCarryOnSchemaOnLevel, forgeCarryOnReferenceName } from "@miroir-framework/jzod";
 import {
   EntityDefinition,
   JzodElement,
@@ -374,7 +374,7 @@ export function getMiroirFundamentalJzodSchema(
           "definition": {
             "uuid": {
               "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+              "extra": { "id":1 , "defaultLabel": "Uuid", "editable": false }
             },
             "parentName": {
               "type": "string",
@@ -1870,7 +1870,7 @@ export function getMiroirFundamentalJzodSchema(
   }
 
   // console.log("################## domainActionDefinitions", JSON.stringify(domainActionDefinitions, null, 2))
-  console.log("################## domainActionDefinitions", JSON.stringify(domainActionDefinitions, null, 2))
+
   const innerResolutionStore: Record<string, JzodReference> = {
     // TODO: transform all inner references in jzodSchemajzodMiroirBootstrapSchema into innerResolutionStoreReferences
     "fe9b7d99-f216-44de-bb6e-60e1a1ebb739": {
@@ -1926,6 +1926,15 @@ export function getMiroirFundamentalJzodSchema(
         compositeAction: domainEndpointVersionV1.definition.actions.find(
           (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
         )?.actionParameters,
+        // domain elements
+        domainElementObject: (miroirFundamentalJzodSchema as any).definition.context
+          .domainElementObject,
+        // root elements
+        domainModelRootQuery: (miroirFundamentalJzodSchema as any).definition.context
+          .domainModelRootQuery,
+        selectRootQuery: (miroirFundamentalJzodSchema as any).definition.context
+          .selectRootQuery,
+        // queries
         queryObjectReference: (miroirFundamentalJzodSchema as any).definition.context.queryObjectReference,
         selectObjectListByManyToManyRelationQuery: (miroirFundamentalJzodSchema as any).definition.context
           .selectObjectListByManyToManyRelationQuery,
@@ -1954,7 +1963,9 @@ export function getMiroirFundamentalJzodSchema(
       },
     },
   };
-  log.info("innerResolutionStore", innerResolutionStore);
+  // log.info("innerResolutionStore", innerResolutionStore);
+  // log.info("innerResolutionStore baseObject", JSON.stringify((innerResolutionStore["fe9b7d99-f216-44de-bb6e-60e1a1ebb739"] as any).context["jzodBaseObject"], null, 2));
+  // log.info("innerResolutionStore array", JSON.stringify((innerResolutionStore["fe9b7d99-f216-44de-bb6e-60e1a1ebb739"] as any).context["jzodArray"], null, 2));
 
   const localizedResolutionStore: Record<string, JzodReference> = Object.fromEntries(
     Object.entries(innerResolutionStore).map((e) => [
@@ -1963,7 +1974,7 @@ export function getMiroirFundamentalJzodSchema(
     ])
   );
 
-  log.info("localizedResolutionStore", localizedResolutionStore);
+  // log.info("localizedResolutionStore", localizedResolutionStore);
 
   const carryOnSchema: JzodUnion = {
     "type": "union",
@@ -2061,13 +2072,34 @@ export function getMiroirFundamentalJzodSchema(
       );
       
     }
-  }) as any
+  }) as any;
 
   // console.log("getMiroirFundamentalJzodSchema #######################################################")
   // console.log("getMiroirFundamentalJzodSchema", "localizedResolutionStore", JSON.stringify(localizedResolutionStore, null, 2))
   // console.log("getMiroirFundamentalJzodSchema #######################################################")
   // const localizedInnerResolutionStoreReferences: Record<string, JzodReference> = Object.fromEntries(
-  const localizedInnerResolutionStoreReferences = Object.fromEntries(
+  const extendedSchemas = ["jzodBaseObject", "domainModelRootQuery", "selectRootQuery"];
+
+  const localizedInnerResolutionStoreExtendedReferences = Object.fromEntries(
+    Object.entries(localizedResolutionStore)
+    .flatMap(
+      (e) =>
+        Object.entries(e[1].context ?? {})
+        .filter(e => extendedSchemas.includes(e[0]))
+        .map(
+          (f) => [
+            forgeCarryOnReferenceName(e[0], f[0], "extend"),
+            // TODO: add inner references to environment!!!!
+            // applyCarryOnSchema(f[1] as any, carryOnSchema as any, undefined, resolveReferencesWithCarryOn).resultSchema,
+            applyCarryOnSchemaOnLevel(f[1] as any, carryOnSchemaReference as any, false /** applyOnFirstLevel */, undefined, resolveReferencesWithCarryOn).resultSchema,
+          ]
+        )
+    )
+  );
+
+  // console.log("localizedInnerResolutionStoreExtendedReferences", JSON.stringify(localizedInnerResolutionStoreExtendedReferences, null, 2))
+
+  const localizedInnerResolutionStorePlainReferences = Object.fromEntries(
     Object.entries(localizedResolutionStore).flatMap(
       (e) =>
         Object.entries(e[1].context ?? {}).map(
@@ -2081,6 +2113,17 @@ export function getMiroirFundamentalJzodSchema(
     )
   );
 
+  // console.log("localizedInnerResolutionStorePlainReferences", JSON.stringify(localizedInnerResolutionStorePlainReferences, null, 2))
+
+  const localizedInnerResolutionStoreReferences = Object.assign(
+    {
+
+    },
+    localizedInnerResolutionStoreExtendedReferences,
+    localizedInnerResolutionStorePlainReferences, 
+  )
+
+  // console.log("localizedInnerResolutionStoreReferences", localizedInnerResolutionStoreReferences)
 
   const miroirFundamentalJzodSchemaWithActionTemplate:JzodSchema = {
     ...miroirFundamentalJzodSchema,

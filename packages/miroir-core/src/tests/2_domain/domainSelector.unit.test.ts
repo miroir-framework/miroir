@@ -1,16 +1,16 @@
-import adminConfigurationDeploymentLibrary from "../../src/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
+import adminConfigurationDeploymentLibrary from "../../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
 
-import { DomainState } from "../../src/0_interfaces/2_domain/DomainControllerInterface";
+import { DomainState } from "../../0_interfaces/2_domain/DomainControllerInterface.js";
 import {
   getSelectorParams,
   selectByDomainManyQueriesFromDomainState
-} from "../../src/2_domain/DomainStateQuerySelectors";
+} from "../../2_domain/DomainStateQuerySelectors.js";
 
 import {
   DomainElement,
   DomainManyQueriesWithDeploymentUuid,
-} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { circularReplacer } from "../../src/tools";
+} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { circularReplacer } from "../../tools.js";
 import domainStateImport from "./domainState.json";
 
 const domainState: DomainState = domainStateImport as DomainState;

@@ -1,18 +1,19 @@
 import { v4 as uuidv4 } from 'uuid';
 // import { describe, expect } from 'vitest';
 
-import { ObjectTemplate, renderObjectTemplate } from "../../src/2_domain/Templates";
+import { renderObjectTemplate } from "../../2_domain/Templates.js";
 import {
   DomainAction,
   StoreUnitConfiguration,
-} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+  ObjectTemplate,
+} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
 // console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 // describe.sequential("templatesDEFUNCT.unit.test", () => {
-describe("templatesDEFUNCT.unit.test", () => {
+describe("templates.unit.test", () => {
 
   // ################################################################################################
   it("convert basic template", async () => { // TODO: test failure cases!
