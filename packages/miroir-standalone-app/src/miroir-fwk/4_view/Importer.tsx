@@ -551,7 +551,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             actionType: 'instanceAction',
             actionName: "createInstance",
             applicationSection: "data",
-            deploymentUuid:             {
+            deploymentUuid: {
               templateType: "parameterReference",
               referenceName: "currentDeploymentUuid",
             },
@@ -599,19 +599,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     log.info('createEntity DONE adding instances');
 
     // ############################################################################################
-    // modify global menu (shall be removed, find another solution!)
-    const miroirMenuPageParams: DomainElementObject = {
-      elementType: "object",
-      elementValue: {
-        deploymentUuid: { elementType: "string", elementValue: currentDeploymentUuid },
-        applicationSection: { elementType: "string", elementValue: "model" },
-      },
-    };
-
+    // modify global menu (shall be removed, find another solution! is this solution part of a "Menu" DSL / Endpoint? "add menu item" action?)
     const miroirMenuInstancesQuery: DomainManyQueriesWithDeploymentUuid = {
       queryType: "DomainManyQueries",
       deploymentUuid: currentDeploymentUuid,
-      pageParams: miroirMenuPageParams,
+      pageParams: { elementType: "object", elementValue: {} },
       queryParams: { elementType: "object", elementValue: {} },
       contextResults: { elementType: "object", elementValue: {} },
       fetchQuery: {
@@ -723,6 +715,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     const newEntityUuid = uuidv4();
     const currentApplicationUuid = props.currentApplicationUuid;
     const currentDeploymentUuid = props.currentDeploymentUuid;
+    const newEntityDetailsReportUuid: string = uuidv4();
 
 
     const splittedEntityDefinition = props.currentModel.entityDefinitions.find(e=>e.name == splittedEntityName)
@@ -741,466 +734,645 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       },
     };
 
-
-    const newEntity: MetaEntity = {
-      uuid: newEntityUuid,
-      parentUuid: entityEntity.uuid,
-      application: currentApplicationUuid,
-      description: newEntityDescription,
-      name: newEntityName,
+    const actionSplitFountainEntityParams = {
+      splittedEntityName: "Fountain",
+      splittedEntityAttribute: "Commune",
+      newEntityName:"Municipality",
+      newEntityDescription: "Municipalities",
+      newEntityUuid: uuidv4(),
+      newEntityDetailsReportUuid: uuidv4(),
+      currentApplicationUuid: props.currentApplicationUuid,
+      currentDeploymentUuid: props.currentDeploymentUuid,
+      //TODO: extra params, should be passed as context instead?
+      // jzodSchema,
+      splittedEntityDefinition, // !!!
+      entityEntity,
+      entityEntityDefinition,
+      entityReport,
+      // newEntity,
+      
     }
 
-
-    // UPDATE MODEL ###############################################################################
-
-    // log.info("createEntity fileData", fileData);
-    const newEntityJzodSchema:JzodObject = {
-      type: "object",
-      definition: Object.assign(
-        {},
-        {
-          uuid: {
-            type: "uuid",
-            extra: { id: 1, defaultLabel: "Uuid", editable: false },
-          } as JzodPlainAttribute,
-          name: {
-            type: "string",
-            extra: { id: 2, defaultLabel: "name", editable: false },
-          } as JzodAttributePlainStringWithValidations,
-        },
-        {}
-      ),
-    };
-
-    // Entity creation
-    const newEntityDetailsReportUuid: string = uuidv4();
-    const newEntityDefinition: EntityDefinition = {
-      name: newEntityName,
-      uuid: uuidv4(),
-      parentName: "EntityDefinition",
-      parentUuid: entityEntityDefinition.uuid,
-      entityUuid: newEntity.uuid,
-      conceptLevel: "Model",
-      defaultInstanceDetailsReportUuid: newEntityDetailsReportUuid,
-      jzodSchema: newEntityJzodSchema,
-    };
-    const createEntityAction: DomainAction = {
-      actionType: "modelAction",
-      actionName: "createEntity",
-      deploymentUuid:currentDeploymentUuid,
-      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      entities: [
-        {entity: newEntity, entityDefinition:newEntityDefinition},
-      ],
-    };
-    await domainController.handleAction(createEntityAction, props.currentModel);
-
-    log.info("splitEntity added new Entity", newEntityName, createEntityAction)
-
-    const updateSplittedEntityAction: DomainAction = {
-      actionType:"modelAction",
-      actionName: "alterEntityAttribute",
-      deploymentUuid:currentDeploymentUuid,
-      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      entityName: splittedEntityName,
-      entityUuid: splittedEntityDefinition.entityUuid,
-      entityDefinitionUuid: splittedEntityDefinition.uuid,
-      addColumns: [
-        {
-          "name": newEntityName,
-          "definition": {
-            type: "string",
-            "validations": [{ "type": "uuid" }],
-            nullable: true, // TODO: make non-nullable and enforce FK after migration has been done!
-            extra: { defaultLabel: "Municipality", targetEntity: newEntity.uuid},
-          }
-        }
-      ],
-    };
-
-    await domainController.handleAction(
-      updateSplittedEntityAction,
-      props.currentModel
-    );
-
-    await domainController.handleAction(
-      {
-        actionName: "commit",
-        actionType: "modelAction",
-        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        deploymentUuid: currentDeploymentUuid,
-      },
-      props.currentModel
-    );
-
-    log.info("splitEntity added new FK attribute to", splittedEntityName, updateSplittedEntityAction)
-
-    // ############################################################################################
-    // Reports creation
-    const newEntityListReport: Report = {
-      uuid: uuidv4(),
-      parentName: "Report",
-      parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-      conceptLevel: "Model",
-      name: newEntityName + "List",
-      defaultLabel: "List of " + newEntityDescription,
-      application: currentApplicationUuid,
-      type: "list",
-      definition: {
-        fetchQuery: {
-          select: {
-            listReportSectionElements: {
-              queryType: "selectObjectListByEntity",
-              parentName: newEntityName,
-              parentUuid: {
-                referenceType: "constant",
-                referenceUuid: newEntity.uuid,
-              },
-            },
-          },
-        },
-        section: {
-          type: "objectListReportSection",
+    const actionHandlerSplitFountainEntity: ActionHandler = {
+      interface: {
+        actionJzodObjectSchema: {
+          type: "object",
           definition: {
-            label: newEntityDescription,
-            // "parentName": "Fountain",
-            parentUuid: newEntity.uuid,
-            fetchedDataReference: "listReportSectionElements",
-          },
-        },
-      },
-    };
-    const newEntityDetailsReport: Report = {
-      uuid: newEntityDetailsReportUuid,
-      parentName: "Report",
-      parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-      conceptLevel: "Model",
-      name: newEntityName + "Details",
-      defaultLabel: "Details of " + newEntityDescription,
-      definition: {
-        fetchQuery: {
-          select: {
-            elementToDisplay: {
-              queryType: "selectObjectByDirectReference",
-              parentName: newEntityName,
-              parentUuid: {
-                referenceType: "constant",
-                referenceUuid: newEntity.uuid,
-              },
-              instanceUuid: {
-                referenceType: "queryParameterReference",
-                referenceName: "instanceUuid",
-              },
-            },
-            fountainsOfMunicipality: {
-              queryType: "selectObjectListByRelation",
-              parentName: "Fountain",
-              parentUuid: {
-                referenceType: "constant",
-                referenceUuid: splittedEntityDefinition.entityUuid,
-              },
-              objectReference: {
-                referenceName: "elementToDisplay",
-                referenceType: "queryContextReference",
-              },
-              AttributeOfListObjectToCompareToReferenceUuid: newEntityName,
-            },
-          },
-        },
-        section: {
-          type: "list",
-          definition: [
-            {
-              type: "objectInstanceReportSection",
-              definition: {
-                label: "My " + newEntityName,
-                parentUuid: newEntity.uuid,
-                fetchedDataReference: "elementToDisplay",
-              },
-            },
-            {
-              type: "objectListReportSection",
-              definition: {
-                label: newEntityName + "'s (${elementToDisplay.name}) " + splittedEntityName + "s",
-                parentName: splittedEntityName,
-                parentUuid: splittedEntityDefinition.entityUuid,
-                fetchedDataReference: "fountainsOfMunicipality",
-                sortByAttribute: "name",
-              },
-            },
-          ],
-        },
-      },
-    };
-    const createNewEntityListReportAction: DomainAction = {
-      actionType: "transactionalInstanceAction",
-      instanceAction: {
-        actionType: "instanceAction",
-        actionName: "createInstance",
-        applicationSection: "model",
-        deploymentUuid: currentDeploymentUuid,
-        endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-        objects: [
-          {
-            parentName: newEntityListReport.parentName,
-            parentUuid: newEntityListReport.parentUuid,
-            applicationSection:'model',
-            instances: [
-              newEntityListReport as EntityInstance,
-              newEntityDetailsReport as EntityInstance
-            ]
+            splittedEntityName: { type: "string" },
+            splittedEntityAttribute: { type: "string" },
+            newEntityName: { type: "string" },
+            newEntityDescription: { type: "string" },
+            newEntityUuid: { type: "uuid" },
+            newEntityDetailsReportUuid: { type: "uuid" },
+            currentApplicationUuid: { type: "uuid" },
+            currentDeploymentUuid: { type: "uuid" },
           }
-        ],
-      }
-    };
-    await domainController.handleAction(createNewEntityListReportAction, props.currentModel);
-
-    await domainController.handleAction(
-      {
-        actionName: "commit",
-        actionType: "modelAction",
-        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        deploymentUuid: currentDeploymentUuid,
+        }
       },
-      props.currentModel
-    );
-    const objectAttributeNames = fileData[0];
-    log.info('createEntity objectAttributeNames',objectAttributeNames);
-
-
-
-    // ############################################################################################
-    // insert / update instances
-    const splittedEntityInstancesQuery: DomainManyQueriesWithDeploymentUuid = {
-      queryType: "DomainManyQueries",
-      deploymentUuid: currentDeploymentUuid,
-      pageParams,
-      queryParams: { elementType: "object", elementValue: {} },
-      contextResults: { elementType: "object", elementValue: {} },
-      fetchQuery: {
-        select: {
-          [splittedEntityName]: {
-            queryType: "selectObjectListByEntity",
-            applicationSection: "data",
-            parentName: splittedEntityName,
+      implementation: {
+        templates: {
+          newEntity: {
+            uuid: {
+              templateType: "parameterReference",
+              referenceName: "newEntityUuid",
+            },
+            name: {
+              templateType: "parameterReference",
+              referenceName: "newEntityName",
+            },
+            description: {
+              templateType: "parameterReference",
+              referenceName: "newEntityDescription",
+            },
             parentUuid: {
-              referenceType: "constant",
-              referenceUuid: splittedEntityDefinition?.entityUuid,
+              templateType: "mustacheStringTemplate",
+              definition: "{{entityEntity.uuid}}",
+            },
+            application: {
+              templateType: "parameterReference",
+              referenceName: "currentApplicationUuid",
             },
           },
+          newEntityJzodSchema: {
+            type: "object",
+            definition: {
+                uuid: {
+                  type: "uuid",
+                  extra: { id: 1, defaultLabel: "Uuid", editable: false },
+                } as JzodPlainAttribute,
+                name: {
+                  type: "string",
+                  extra: { id: 2, defaultLabel: "name", editable: false },
+                } as JzodAttributePlainStringWithValidations,
+              },
+          },
+          newEntityDefinition: {
+            name: {
+              templateType: "parameterReference",
+              referenceName: "newEntityName",
+            },
+            uuid: uuidv4(),
+            parentName: "EntityDefinition",
+            parentUuid: {
+              templateType: "mustacheStringTemplate",
+              definition: "{{entityEntityDefinition.uuid}}",
+            },
+            entityUuid: {
+              templateType: "mustacheStringTemplate",
+              definition: "{{newEntity.uuid}}",
+            },
+            conceptLevel: "Model",
+            defaultInstanceDetailsReportUuid: {
+              templateType: "parameterReference",
+              referenceName: "newEntityDetailsReportUuid",
+            },
+            jzodSchema: {
+              templateType: "parameterReference",
+              referenceName: "newEntityJzodSchema",
+            },
+          },
+        },
+        compositeActionTemplate: {
+          actionType: "compositeAction",
+          actionName: "sequence",
+          definition: [
+            // createEntity
+            {
+              compositeActionType: "action",
+              action: {
+                actionType: "modelAction",
+                actionName: "createEntity",
+                deploymentUuid: {
+                  templateType: "parameterReference",
+                  referenceName: "currentDeploymentUuid",
+                },
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                entities: [
+                  {
+                    entity: {
+                      templateType: "parameterReference",
+                      referenceName: "newEntity",
+                    }, 
+                    entityDefinition:{
+                      templateType: "parameterReference",
+                      referenceName: "newEntityDefinition",
+                    }
+                  },
+                ],
+              }
+            },
+            // updateSplittedEntityAction
+            {
+              compositeActionType: "action",
+              action: {
+                actionType:"modelAction",
+                actionName: "alterEntityAttribute",
+                deploymentUuid: {
+                  templateType: "parameterReference",
+                  referenceName: "currentDeploymentUuid",
+                },
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                entityName: {
+                  templateType: "parameterReference",
+                  referenceName: "splittedEntityName",
+                },
+                entityUuid: {
+                  templateType: "mustacheStringTemplate",
+                  definition: "{{splittedEntityDefinition.entityUuid}}",
+                },
+                entityDefinitionUuid: {
+                  templateType: "mustacheStringTemplate",
+                  definition: "{{splittedEntityDefinition.uuid}}",
+                },
+                addColumns: [
+                  {
+                    "name": {
+                      templateType: "parameterReference",
+                      referenceName: "newEntityName",
+                    },
+                    "definition": {
+                      type: "string",
+                      "validations": [{ "type": "uuid" }],
+                      nullable: true, // TODO: make non-nullable and enforce FK after migration has been done!
+                      extra: { defaultLabel: "Municipality", targetEntity: {
+                        templateType: "mustacheStringTemplate",
+                        definition: "{{newEntity.uuid}}",
+                      }},
+                    }
+                  }
+                ],
+              }
+            }
+          ]
         }
-      },
-    };
-    const splittedEntityInstances: ActionReturnType = 
-      await domainController.handleQuery(
-        {
-          actionType: "queryAction",
-          actionName: "runQuery",
-          deploymentUuid:currentDeploymentUuid,
-          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-          query: splittedEntityInstancesQuery
-        }
-      )
-    ;
-
-    if (splittedEntityInstances.status != "ok") {
-      throw new Error("splitEntity found splittedEntityInstances with error " + splittedEntityInstances.error);
+      }
     }
 
-    if (splittedEntityInstances.returnedDomainElement.elementType != "entityInstanceCollection") {
-      throw new Error("splitEntity found splittedEntityInstances not an instance collection " + splittedEntityInstances.returnedDomainElement);
-    }
-    log.info("splitEntity found splittedEntityInstances", JSON.stringify(splittedEntityInstances));
-
-    let municipalities: Set<string> = new Set();
-    for (const m of splittedEntityInstances.returnedDomainElement.elementValue.instances) {
-      log.info("splitEntity found entity instance", m, (m as any)[splittedEntityAttribute]);
-
-      municipalities.add((m as any)[splittedEntityAttribute])
-    }
-    
-    log.info("splitEntity found municipalities", municipalities);
-
-    const newInstancesArray = Array.from(municipalities.keys())
-    const newInstancesUuidMap = Object.fromEntries(
-      newInstancesArray.map(
-        k => [k, uuidv4()]
-      )
+    await handleCompositeAction(
+      domainController,
+      actionHandlerSplitFountainEntity,
+      actionSplitFountainEntityParams,
+      props.currentModel
     )
 
-    const newEntityInstances:EntityInstance[] = 
-      newInstancesArray.map(
-        (municipalityName:any) => {
-          return {
-            "uuid": newInstancesUuidMap[municipalityName],
-            "parentName": newEntity.name,
-            "parentUuid": newEntity.uuid,
-            "name": municipalityName
-          }
-        }
-      ) 
-    ;
-    log.info('adding instances',newEntityInstances);
+    // const newEntity: MetaEntity = {
+    //   uuid: newEntityUuid,
+    //   parentUuid: entityEntity.uuid,
+    //   application: currentApplicationUuid,
+    //   description: newEntityDescription,
+    //   name: newEntityName,
+    // }
+
+
+    // // UPDATE MODEL ###############################################################################
+
+    // // log.info("createEntity fileData", fileData);
+    // const newEntityJzodSchema:JzodObject = {
+    //   type: "object",
+    //   definition: Object.assign(
+    //     {},
+    //     {
+    //       uuid: {
+    //         type: "uuid",
+    //         extra: { id: 1, defaultLabel: "Uuid", editable: false },
+    //       } as JzodPlainAttribute,
+    //       name: {
+    //         type: "string",
+    //         extra: { id: 2, defaultLabel: "name", editable: false },
+    //       } as JzodAttributePlainStringWithValidations,
+    //     },
+    //     {}
+    //   ),
+    // };
+
+    // // Entity creation
+    // const newEntityDefinition: EntityDefinition = {
+    //   name: newEntityName,
+    //   uuid: uuidv4(),
+    //   parentName: "EntityDefinition",
+    //   parentUuid: entityEntityDefinition.uuid,
+    //   entityUuid: newEntity.uuid,
+    //   conceptLevel: "Model",
+    //   defaultInstanceDetailsReportUuid: newEntityDetailsReportUuid,
+    //   jzodSchema: newEntityJzodSchema,
+    // };
+    // const createEntityAction: DomainAction = {
+    //   actionType: "modelAction",
+    //   actionName: "createEntity",
+    //   deploymentUuid:currentDeploymentUuid,
+    //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+    //   entities: [
+    //     {entity: newEntity, entityDefinition:newEntityDefinition},
+    //   ],
+    // };
+    // await domainController.handleAction(createEntityAction, props.currentModel);
+
+    // log.info("splitEntity added new Entity", newEntityName, createEntityAction)
+
+    // const updateSplittedEntityAction: DomainAction = {
+    //   actionType:"modelAction",
+    //   actionName: "alterEntityAttribute",
+    //   deploymentUuid:currentDeploymentUuid,
+    //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+    //   entityName: splittedEntityName,
+    //   entityUuid: splittedEntityDefinition.entityUuid,
+    //   entityDefinitionUuid: splittedEntityDefinition.uuid,
+    //   addColumns: [
+    //     {
+    //       "name": newEntityName,
+    //       "definition": {
+    //         type: "string",
+    //         "validations": [{ "type": "uuid" }],
+    //         nullable: true, // TODO: make non-nullable and enforce FK after migration has been done!
+    //         extra: { defaultLabel: "Municipality", targetEntity: newEntity.uuid},
+    //       }
+    //     }
+    //   ],
+    // };
+
+    // await domainController.handleAction(
+    //   updateSplittedEntityAction,
+    //   props.currentModel
+    // );
+
+    // await domainController.handleAction(
+    //   {
+    //     actionName: "commit",
+    //     actionType: "modelAction",
+    //     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+    //     deploymentUuid: currentDeploymentUuid,
+    //   },
+    //   props.currentModel
+    // );
+
+    // log.info("splitEntity added new FK attribute to", splittedEntityName, updateSplittedEntityAction)
+
+    // // ############################################################################################
+    // // Reports creation
+    // const newEntityListReport: Report = {
+    //   uuid: uuidv4(),
+    //   parentName: "Report",
+    //   parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+    //   conceptLevel: "Model",
+    //   name: newEntityName + "List",
+    //   defaultLabel: "List of " + newEntityDescription,
+    //   application: currentApplicationUuid,
+    //   type: "list",
+    //   definition: {
+    //     fetchQuery: {
+    //       select: {
+    //         listReportSectionElements: {
+    //           queryType: "selectObjectListByEntity",
+    //           parentName: newEntityName,
+    //           parentUuid: {
+    //             referenceType: "constant",
+    //             referenceUuid: newEntity.uuid,
+    //           },
+    //         },
+    //       },
+    //     },
+    //     section: {
+    //       type: "objectListReportSection",
+    //       definition: {
+    //         label: newEntityDescription,
+    //         // "parentName": "Fountain",
+    //         parentUuid: newEntity.uuid,
+    //         fetchedDataReference: "listReportSectionElements",
+    //       },
+    //     },
+    //   },
+    // };
+    // const newEntityDetailsReport: Report = {
+    //   uuid: newEntityDetailsReportUuid,
+    //   parentName: "Report",
+    //   parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+    //   conceptLevel: "Model",
+    //   name: newEntityName + "Details",
+    //   defaultLabel: "Details of " + newEntityDescription,
+    //   definition: {
+    //     fetchQuery: {
+    //       select: {
+    //         elementToDisplay: {
+    //           queryType: "selectObjectByDirectReference",
+    //           parentName: newEntityName,
+    //           parentUuid: {
+    //             referenceType: "constant",
+    //             referenceUuid: newEntity.uuid,
+    //           },
+    //           instanceUuid: {
+    //             referenceType: "queryParameterReference",
+    //             referenceName: "instanceUuid",
+    //           },
+    //         },
+    //         fountainsOfMunicipality: {
+    //           queryType: "selectObjectListByRelation",
+    //           parentName: "Fountain",
+    //           parentUuid: {
+    //             referenceType: "constant",
+    //             referenceUuid: splittedEntityDefinition.entityUuid,
+    //           },
+    //           objectReference: {
+    //             referenceName: "elementToDisplay",
+    //             referenceType: "queryContextReference",
+    //           },
+    //           AttributeOfListObjectToCompareToReferenceUuid: newEntityName,
+    //         },
+    //       },
+    //     },
+    //     section: {
+    //       type: "list",
+    //       definition: [
+    //         {
+    //           type: "objectInstanceReportSection",
+    //           definition: {
+    //             label: "My " + newEntityName,
+    //             parentUuid: newEntity.uuid,
+    //             fetchedDataReference: "elementToDisplay",
+    //           },
+    //         },
+    //         {
+    //           type: "objectListReportSection",
+    //           definition: {
+    //             label: newEntityName + "'s (${elementToDisplay.name}) " + splittedEntityName + "s",
+    //             parentName: splittedEntityName,
+    //             parentUuid: splittedEntityDefinition.entityUuid,
+    //             fetchedDataReference: "fountainsOfMunicipality",
+    //             sortByAttribute: "name",
+    //           },
+    //         },
+    //       ],
+    //     },
+    //   },
+    // };
+    // const createNewEntityListReportAction: DomainAction = {
+    //   actionType: "transactionalInstanceAction",
+    //   instanceAction: {
+    //     actionType: "instanceAction",
+    //     actionName: "createInstance",
+    //     applicationSection: "model",
+    //     deploymentUuid: currentDeploymentUuid,
+    //     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    //     objects: [
+    //       {
+    //         parentName: newEntityListReport.parentName,
+    //         parentUuid: newEntityListReport.parentUuid,
+    //         applicationSection:'model',
+    //         instances: [
+    //           newEntityListReport as EntityInstance,
+    //           newEntityDetailsReport as EntityInstance
+    //         ]
+    //       }
+    //     ],
+    //   }
+    // };
+    // await domainController.handleAction(createNewEntityListReportAction, props.currentModel);
+
+    // await domainController.handleAction(
+    //   {
+    //     actionName: "commit",
+    //     actionType: "modelAction",
+    //     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+    //     deploymentUuid: currentDeploymentUuid,
+    //   },
+    //   props.currentModel
+    // );
+    // const objectAttributeNames = fileData[0];
+    // log.info('createEntity objectAttributeNames',objectAttributeNames);
+
+
+
+    // // ############################################################################################
+    // // insert / update instances
+    // const splittedEntityInstancesQuery: DomainManyQueriesWithDeploymentUuid = {
+    //   queryType: "DomainManyQueries",
+    //   deploymentUuid: currentDeploymentUuid,
+    //   pageParams,
+    //   queryParams: { elementType: "object", elementValue: {} },
+    //   contextResults: { elementType: "object", elementValue: {} },
+    //   fetchQuery: {
+    //     select: {
+    //       [splittedEntityName]: {
+    //         queryType: "selectObjectListByEntity",
+    //         applicationSection: "data",
+    //         parentName: splittedEntityName,
+    //         parentUuid: {
+    //           referenceType: "constant",
+    //           referenceUuid: splittedEntityDefinition?.entityUuid,
+    //         },
+    //       },
+    //     }
+    //   },
+    // };
+    // const splittedEntityInstances: ActionReturnType = 
+    //   await domainController.handleQuery(
+    //     {
+    //       actionType: "queryAction",
+    //       actionName: "runQuery",
+    //       deploymentUuid:currentDeploymentUuid,
+    //       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+    //       query: splittedEntityInstancesQuery
+    //     }
+    //   )
+    // ;
+
+    // if (splittedEntityInstances.status != "ok") {
+    //   throw new Error("splitEntity found splittedEntityInstances with error " + splittedEntityInstances.error);
+    // }
+
+    // if (splittedEntityInstances.returnedDomainElement.elementType != "entityInstanceCollection") {
+    //   throw new Error("splitEntity found splittedEntityInstances not an instance collection " + splittedEntityInstances.returnedDomainElement);
+    // }
+    // log.info("splitEntity found splittedEntityInstances", JSON.stringify(splittedEntityInstances));
+
+    // let municipalities: Set<string> = new Set();
+    // for (const m of splittedEntityInstances.returnedDomainElement.elementValue.instances) {
+    //   log.info("splitEntity found entity instance", m, (m as any)[splittedEntityAttribute]);
+
+    //   municipalities.add((m as any)[splittedEntityAttribute])
+    // }
     
-    const createNewEntityInstancesAction: InstanceAction = {
-      actionType: 'instanceAction',
-      actionName: "createInstance",
-      applicationSection: "data",
-      deploymentUuid: currentDeploymentUuid,
-      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-      objects:[
-        {
-          parentName:newEntity.name,
-          parentUuid:newEntity.uuid,
-          applicationSection:'data',
-          instances:newEntityInstances,
-        }
-      ]
-    };
-    await domainController.handleAction(createNewEntityInstancesAction);
-    log.info("splitEntity newEntityInstances", createNewEntityInstancesAction);
+    // log.info("splitEntity found municipalities", municipalities);
 
-    // update splitted entity instances with new reference
-    const splitInstancesNewValues = splittedEntityInstances.returnedDomainElement.elementValue.instances.map(
-      (e: any) => (
-        {
-          ...e,
-          [newEntityName]: newInstancesUuidMap[e[splittedEntityAttribute]]
-        }
-      ) as any // EntityInstance. Only uuid is needed to identify entity instance
-    );
-    log.info("splitEntity splitInstancesNewValues", splitInstancesNewValues);
+    // const newInstancesArray = Array.from(municipalities.keys())
+    // const newInstancesUuidMap = Object.fromEntries(
+    //   newInstancesArray.map(
+    //     k => [k, uuidv4()]
+    //   )
+    // )
 
-    const updateSplittedEntityInstancesAction: InstanceAction = {
-      actionType: "instanceAction",
-      actionName: "updateInstance",
-      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-      applicationSection: "data",
-      deploymentUuid: currentDeploymentUuid,
-      objects: [
-        {
-          parentName: splittedEntityName,
-          parentUuid: splittedEntityDefinition.entityUuid,
-          applicationSection:'data',
-          instances: splitInstancesNewValues,
-        }
-      ],
-    };
-
-    await domainController.handleAction(updateSplittedEntityInstancesAction);
-    log.info("splitEntity updateSplittedEntityInstancesAction", updateSplittedEntityInstancesAction);
-    // modify split Entity List Report to display new Entity Attribute?
-
-
-    // ############################################################################################
-    // modify menu
-    const miroirMenuPageParams: DomainElementObject = {
-      elementType: "object",
-      elementValue: {
-        deploymentUuid: { elementType: "string", elementValue: currentDeploymentUuid },
-        applicationSection: { elementType: "string", elementValue: "model" },
-      },
-    };
+    // const newEntityInstances:EntityInstance[] = 
+    //   newInstancesArray.map(
+    //     (municipalityName:any) => {
+    //       return {
+    //         "uuid": newInstancesUuidMap[municipalityName],
+    //         "parentName": newEntity.name,
+    //         "parentUuid": newEntity.uuid,
+    //         "name": municipalityName
+    //       }
+    //     }
+    //   ) 
+    // ;
+    // log.info('adding instances',newEntityInstances);
     
-    const miroirMenuInstancesQuery: DomainManyQueriesWithDeploymentUuid = {
-      queryType: "DomainManyQueries",
-      deploymentUuid: currentDeploymentUuid,
-      pageParams: miroirMenuPageParams,
-      queryParams: { elementType: "object", elementValue: {} },
-      contextResults: { elementType: "object", elementValue: {} },
-      fetchQuery: {
-        select: {
-          menus: {
-            queryType: "selectObjectListByEntity",
-            applicationSection: "model",
-            parentName: "Menu",
-            parentUuid: {
-              referenceType: "constant",
-              referenceUuid: entityMenu.uuid,
-            },
-          },
-        }
-      },
-    };
-    const miroirMenuInstances: ActionReturnType = 
-      await domainController.handleQuery(
-        {
-          actionType: "queryAction",
-          actionName: "runQuery",
-          deploymentUuid:currentDeploymentUuid,
-          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-          query: miroirMenuInstancesQuery
-        }
-      )
-    ;
-    
-    if (miroirMenuInstances.status != "ok") {
-      throw new Error("splitEntity found miroirMenuInstances with error " + miroirMenuInstances.error);
-    }
+    // const createNewEntityInstancesAction: InstanceAction = {
+    //   actionType: 'instanceAction',
+    //   actionName: "createInstance",
+    //   applicationSection: "data",
+    //   deploymentUuid: currentDeploymentUuid,
+    //   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    //   objects:[
+    //     {
+    //       parentName:newEntity.name,
+    //       parentUuid:newEntity.uuid,
+    //       applicationSection:'data',
+    //       instances:newEntityInstances,
+    //     }
+    //   ]
+    // };
+    // await domainController.handleAction(createNewEntityInstancesAction);
+    // log.info("splitEntity newEntityInstances", createNewEntityInstancesAction);
 
-    if (miroirMenuInstances.returnedDomainElement.elementType != "entityInstanceCollection") {
-      throw new Error("splitEntity found miroirMenuInstances not an instance collection " + miroirMenuInstances.returnedDomainElement);
-    }
-    log.info("splitEntity found miroirMenuInstances", JSON.stringify(miroirMenuInstances));
+    // // update splitted entity instances with new reference
+    // const splitInstancesNewValues = splittedEntityInstances.returnedDomainElement.elementValue.instances.map(
+    //   (e: any) => (
+    //     {
+    //       ...e,
+    //       [newEntityName]: newInstancesUuidMap[e[splittedEntityAttribute]]
+    //     }
+    //   ) as any // EntityInstance. Only uuid is needed to identify entity instance
+    // );
+    // log.info("splitEntity splitInstancesNewValues", splitInstancesNewValues);
+
+    // const updateSplittedEntityInstancesAction: InstanceAction = {
+    //   actionType: "instanceAction",
+    //   actionName: "updateInstance",
+    //   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    //   applicationSection: "data",
+    //   deploymentUuid: currentDeploymentUuid,
+    //   objects: [
+    //     {
+    //       parentName: splittedEntityName,
+    //       parentUuid: splittedEntityDefinition.entityUuid,
+    //       applicationSection:'data',
+    //       instances: splitInstancesNewValues,
+    //     }
+    //   ],
+    // };
+
+    // await domainController.handleAction(updateSplittedEntityInstancesAction);
+    // log.info("splitEntity updateSplittedEntityInstancesAction", updateSplittedEntityInstancesAction);
+    // // modify split Entity List Report to display new Entity Attribute?
+
+
+    // // ############################################################################################
+    // // modify menu
+    // const miroirMenuPageParams: DomainElementObject = {
+    //   elementType: "object",
+    //   elementValue: {
+    //     deploymentUuid: { elementType: "string", elementValue: currentDeploymentUuid },
+    //     applicationSection: { elementType: "string", elementValue: "model" },
+    //   },
+    // };
     
-    const oldMenu: Menu = miroirMenuInstances.returnedDomainElement.elementValue.instances[0] as any;
-    const newMenu:Menu = {
-      ...oldMenu,
-      definition: {
-        menuType: 'complexMenu',
-        definition: [
-          oldMenu.definition.definition[0],
-          {
-            ...oldMenu.definition.definition[1],
-            items: [
-              ...(oldMenu.definition.definition[1] as any).items,
-              {
-                "label": newEntityListReport.defaultLabel,
-                "section": "data",
-                "application": currentDeploymentUuid,
-                "reportUuid": newEntityListReport.uuid,
-                "icon": "location_on"
-              },
-            ]
-          } as any
-        ]
-      }
-    };
+    // const miroirMenuInstancesQuery: DomainManyQueriesWithDeploymentUuid = {
+    //   queryType: "DomainManyQueries",
+    //   deploymentUuid: currentDeploymentUuid,
+    //   pageParams: miroirMenuPageParams,
+    //   queryParams: { elementType: "object", elementValue: {} },
+    //   contextResults: { elementType: "object", elementValue: {} },
+    //   fetchQuery: {
+    //     select: {
+    //       menus: {
+    //         queryType: "selectObjectListByEntity",
+    //         applicationSection: "model",
+    //         parentName: "Menu",
+    //         parentUuid: {
+    //           referenceType: "constant",
+    //           referenceUuid: entityMenu.uuid,
+    //         },
+    //       },
+    //     }
+    //   },
+    // };
+    // const miroirMenuInstances: ActionReturnType = 
+    //   await domainController.handleQuery(
+    //     {
+    //       actionType: "queryAction",
+    //       actionName: "runQuery",
+    //       deploymentUuid:currentDeploymentUuid,
+    //       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+    //       query: miroirMenuInstancesQuery
+    //     }
+    //   )
+    // ;
+    
+    // if (miroirMenuInstances.status != "ok") {
+    //   throw new Error("splitEntity found miroirMenuInstances with error " + miroirMenuInstances.error);
+    // }
+
+    // if (miroirMenuInstances.returnedDomainElement.elementType != "entityInstanceCollection") {
+    //   throw new Error("splitEntity found miroirMenuInstances not an instance collection " + miroirMenuInstances.returnedDomainElement);
+    // }
+    // log.info("splitEntity found miroirMenuInstances", JSON.stringify(miroirMenuInstances));
+    
+    // const oldMenu: Menu = miroirMenuInstances.returnedDomainElement.elementValue.instances[0] as any;
+    // const newMenu:Menu = {
+    //   ...oldMenu,
+    //   definition: {
+    //     menuType: 'complexMenu',
+    //     definition: [
+    //       oldMenu.definition.definition[0],
+    //       {
+    //         ...oldMenu.definition.definition[1],
+    //         items: [
+    //           ...(oldMenu.definition.definition[1] as any).items,
+    //           {
+    //             "label": newEntityListReport.defaultLabel,
+    //             "section": "data",
+    //             "application": currentDeploymentUuid,
+    //             "reportUuid": newEntityListReport.uuid,
+    //             "icon": "location_on"
+    //           },
+    //         ]
+    //       } as any
+    //     ]
+    //   }
+    // };
         
-    const menuUpdateAction: DomainAction = {
-      actionType: "transactionalInstanceAction",
-      instanceAction: {
-        actionType: "instanceAction",
-        actionName: "updateInstance",
-        applicationSection: "model",
-        deploymentUuid: currentDeploymentUuid,
-        endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-        objects: [
-          {
-            parentName: entityMenu.name,
-            parentUuid: entityMenu.uuid,
-            applicationSection: "model",
-            instances: [
-              newMenu
-              // Object.assign({}, reportReportList, {
-              //   name: "Report2List",
-              //   defaultLabel: "Modified List of Reports",
-              // }) as EntityInstance,
-            ],
-          },
-        ],
-      }
-    };
-    await domainController.handleAction(menuUpdateAction, props.currentModel);
-    await domainController.handleAction(
-      {
-        actionName: "commit",
-        actionType: "modelAction",
-        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        deploymentUuid: currentDeploymentUuid,
-      },
-      props.currentModel
-    );
+    // const menuUpdateAction: DomainAction = {
+    //   actionType: "transactionalInstanceAction",
+    //   instanceAction: {
+    //     actionType: "instanceAction",
+    //     actionName: "updateInstance",
+    //     applicationSection: "model",
+    //     deploymentUuid: currentDeploymentUuid,
+    //     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    //     objects: [
+    //       {
+    //         parentName: entityMenu.name,
+    //         parentUuid: entityMenu.uuid,
+    //         applicationSection: "model",
+    //         instances: [
+    //           newMenu
+    //           // Object.assign({}, reportReportList, {
+    //           //   name: "Report2List",
+    //           //   defaultLabel: "Modified List of Reports",
+    //           // }) as EntityInstance,
+    //         ],
+    //       },
+    //     ],
+    //   }
+    // };
+    // await domainController.handleAction(menuUpdateAction, props.currentModel);
+    // await domainController.handleAction(
+    //   {
+    //     actionName: "commit",
+    //     actionType: "modelAction",
+    //     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+    //     deploymentUuid: currentDeploymentUuid,
+    //   },
+    //   props.currentModel
+    // );
 
     log.info("splitEntity updated miroirMenu DONE");
     
