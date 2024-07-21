@@ -17,7 +17,7 @@
             "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
             "deploymentUuid": {
               "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
+              "tag": { "value": {  "id":1, "defaultLabel": "Deployment", "editable": false }}
             },
             "params": {
               "type": "object",
@@ -85,7 +85,7 @@
             "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
             "deploymentUuid": {
               "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
+              "tag": { "value": {  "id":1, "defaultLabel": "Deployment", "editable": false }}
             }
           }
         }
@@ -99,7 +99,7 @@
             "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
             "deploymentUuid": {
               "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
+              "tag": { "value": {  "id":1, "defaultLabel": "Deployment", "editable": false }}
             }
           }
         }
@@ -113,7 +113,7 @@
             "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
             "deploymentUuid": {
               "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
+              "tag": { "value": {  "id":1, "defaultLabel": "Deployment", "editable": false }}
             }
           }
         }
@@ -127,7 +127,7 @@
             "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
             "deploymentUuid": {
               "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
+              "tag": { "value": {  "id":1, "defaultLabel": "Deployment", "editable": false }}
             }
           }
         }
@@ -141,7 +141,7 @@
             "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
             "deploymentUuid": {
               "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
+              "tag": { "value": {  "id":1, "defaultLabel": "Deployment", "editable": false }}
             }
           }
         }
@@ -156,7 +156,7 @@
             "transactional": { "type": "boolean", "optional": true },
             "deploymentUuid": {
               "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
+              "tag": { "value": {  "id":1, "defaultLabel": "Deployment", "editable": false }}
             },
             "entityName": {
               "type": "string"
@@ -216,7 +216,7 @@
             "transactional": { "type": "boolean", "optional": true },
             "deploymentUuid": {
               "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
+              "tag": { "value": {  "id":1, "defaultLabel": "Deployment", "editable": false }}
             },
             "entityName": {
               "type": "string",
@@ -246,7 +246,7 @@
             "transactional": { "type": "boolean", "optional": true },
             "deploymentUuid": {
               "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
+              "tag": { "value": {  "id":1, "defaultLabel": "Deployment", "editable": false }}
             },
             "entities": {
               "type": "array",
@@ -282,7 +282,7 @@
             "transactional": { "type": "boolean", "optional": true },
             "deploymentUuid": {
               "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
+              "tag": { "value": {  "id":1, "defaultLabel": "Deployment", "editable": false }}
             },
             "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
             "entityUuid": {

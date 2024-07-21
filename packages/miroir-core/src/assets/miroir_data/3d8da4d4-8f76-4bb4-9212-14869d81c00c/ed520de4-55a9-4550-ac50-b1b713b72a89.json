@@ -17,7 +17,7 @@
             "endpoint": {"type": "literal", "definition":"ed520de4-55a9-4550-ac50-b1b713b72a89"},
             "deploymentUuid": {
               "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+              "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
             },
             "applicationSection": {
               "type": "schemaReference",
@@ -28,7 +28,7 @@
             },
             "objects": {
               "type": "array",
-              "extra": { "id":2, "defaultLabel": "Entity Instances to create", "editable": true },
+              "tag": { "value": {  "id":2, "defaultLabel": "Entity Instances to create", "editable": true }},
               "definition": {
                 "type": "schemaReference",
                 "optional": false,
@@ -52,7 +52,7 @@
             "actionName": {"type": "literal", "definition":"deleteInstance"},
             "deploymentUuid": {
               "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+              "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
             },
             "endpoint": {"type": "literal", "definition":"ed520de4-55a9-4550-ac50-b1b713b72a89"},
             "applicationSection": {
@@ -65,7 +65,7 @@
             "includeInTransaction": { "type": "boolean", "optional": true},
             "objects": {
               "type": "array",
-              "extra": { "id":2, "defaultLabel": "Entity Instances to delete", "editable": true },
+              "tag": { "value": {  "id":2, "defaultLabel": "Entity Instances to delete", "editable": true }},
               "definition": {
                 "type": "schemaReference",
                 "optional": false,
@@ -86,7 +86,7 @@
             "actionName": {"type": "literal", "definition":"deleteInstanceWithCascade"},
             "deploymentUuid": {
               "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+              "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
             },
             "endpoint": {"type": "literal", "definition":"ed520de4-55a9-4550-ac50-b1b713b72a89"},
             "applicationSection": {
@@ -99,7 +99,7 @@
             "includeInTransaction": { "type": "boolean", "optional": true},
             "objects": {
               "type": "array",
-              "extra": { "id":2, "defaultLabel": "Entity Instances to delete", "editable": true },
+              "tag": { "value": {  "id":2, "defaultLabel": "Entity Instances to delete", "editable": true }},
               "definition": {
                 "type": "schemaReference",
                 "optional": false,
@@ -121,7 +121,7 @@
             "endpoint": {"type": "literal", "definition":"ed520de4-55a9-4550-ac50-b1b713b72a89"},
             "deploymentUuid": {
               "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+              "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
             },
             "applicationSection": {
               "type": "schemaReference",
@@ -133,7 +133,7 @@
             "includeInTransaction": { "type": "boolean", "optional": true},
             "objects": {
               "type": "array",
-              "extra": { "id":2, "defaultLabel": "Entity Instances to update", "editable": true },
+              "tag": { "value": {  "id":2, "defaultLabel": "Entity Instances to update", "editable": true }},
               "definition": {
                 "type": "schemaReference",
                 "optional": false,
@@ -155,11 +155,11 @@
             "endpoint": {"type": "literal", "definition":"ed520de4-55a9-4550-ac50-b1b713b72a89"},
             "deploymentUuid": {
               "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+              "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
             },
             "objects": {
               "type": "array",
-              "extra": { "id":2, "defaultLabel": "Entity Instances to place in the local cache", "editable": true },
+              "tag": { "value": {  "id":2, "defaultLabel": "Entity Instances to place in the local cache", "editable": true }},
               "definition": {
                 "type": "schemaReference",
                 "optional": false,
@@ -181,7 +181,7 @@
             "endpoint": {"type": "literal", "definition":"ed520de4-55a9-4550-ac50-b1b713b72a89"},
             "deploymentUuid": {
               "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+              "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
             },
             "applicationSection": {
               "type": "schemaReference",
@@ -192,11 +192,11 @@
             },
             "parentUuid": {
               "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+              "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
             },
             "uuid": {
               "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+              "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
             }
           }
         },
@@ -213,7 +213,7 @@
             "endpoint": {"type": "literal", "definition":"ed520de4-55a9-4550-ac50-b1b713b72a89"},
             "deploymentUuid": {
               "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+              "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
             },
             "applicationSection": {
               "type": "schemaReference",
@@ -224,7 +224,7 @@
             },
             "parentUuid": {
               "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+              "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
             }
           }
         },

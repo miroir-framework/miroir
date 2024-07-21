@@ -14,24 +14,24 @@
     "definition": {
       "uuid": {
         "type": "uuid",
-        "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+        "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
       },
       "parentName": {
         "type": "string",
         "optional": true,
-        "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+        "tag": { "value": {  "id":2, "defaultLabel": "Entity Name", "editable": false }}
       },
       "parentUuid": {
         "type": "uuid",
-        "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
+        "tag": { "value": {  "id":3, "defaultLabel": "Entity Uuid", "editable": false }}
       },
       "name": {
         "type": "string",
-        "extra": { "id":4, "defaultLabel": "Name", "editable": true }
+        "tag": { "value": {  "id":4, "defaultLabel": "Name", "editable": true }}
       },
       "applicationVersion": {
         "type": "uuid",
-        "extra": { "id":5, "defaultLabel": "Deployed Application Version", "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4", "editable": false }
+        "tag": { "value": {  "id":5, "defaultLabel": "Deployed Application Version", "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4", "editable": false }}
       },
       "storeUnitConfiguration": {
         "type": "schemaReference",

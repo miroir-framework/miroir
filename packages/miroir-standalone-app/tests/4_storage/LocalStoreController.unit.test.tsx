@@ -20,14 +20,14 @@ import {
   PersistenceStoreControllerManagerInterface,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  applicationLibrary,
-  applicationMiroir,
-  applicationModelBranchLibraryMasterBranch,
-  applicationModelBranchMiroirMasterBranch,
-  applicationStoreBasedConfigurationLibrary,
-  applicationStoreBasedConfigurationMiroir,
-  applicationVersionInitialMiroirVersion,
-  applicationVersionLibraryInitialVersion,
+  selfApplicationLibrary,
+  selfApplicationMiroir,
+  selfApplicationModelBranchLibraryMasterBranch,
+  selfApplicationModelBranchMiroirMasterBranch,
+  selfApplicationStoreBasedConfigurationLibrary,
+  selfApplicationStoreBasedConfigurationMiroir,
+  selfApplicationVersionInitialMiroirVersion,
+  selfApplicationVersionLibraryInitialVersion,
   author1,
   defaultLevels,
   defaultMiroirMetaModel,
@@ -209,11 +209,11 @@ describe.sequential("localPersistenceStoreController.unit.test", () => {
           {
             metaModel: defaultMiroirMetaModel,
             dataStoreType: 'miroir',
-            application: applicationMiroir,
+            application: selfApplicationMiroir,
             applicationDeploymentConfiguration: adminConfigurationDeploymentMiroir,
-            applicationModelBranch: applicationModelBranchMiroirMasterBranch,
-            applicationVersion: applicationVersionInitialMiroirVersion,
-            applicationStoreBasedConfiguration: applicationStoreBasedConfigurationMiroir,
+            applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
+            applicationVersion: selfApplicationVersionInitialMiroirVersion,
+            applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
           }
         );
         const deployApp = await persistenceStoreControllerManager.deployModule(
@@ -223,11 +223,11 @@ describe.sequential("localPersistenceStoreController.unit.test", () => {
           {
             metaModel: defaultMiroirMetaModel,
             dataStoreType: 'app',
-            application: applicationLibrary,
+            application: selfApplicationLibrary,
             applicationDeploymentConfiguration: adminConfigurationDeploymentLibrary,
-            applicationModelBranch: applicationModelBranchLibraryMasterBranch,
-            applicationVersion: applicationVersionLibraryInitialVersion,
-            applicationStoreBasedConfiguration: applicationStoreBasedConfigurationLibrary,
+            applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
+            applicationVersion: selfApplicationVersionLibraryInitialVersion,
+            applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,
           }
         );
         expect(deployMiroir).toEqual( ACTION_OK )
@@ -496,7 +496,7 @@ describe.sequential("localPersistenceStoreController.unit.test", () => {
     expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK)
     // test starts
     const iconsDefinition: JzodElement = {
-      "type": "number", "optional": true, "extra": { "id":6, "defaultLabel": "Gender (narrow-minded)", "editable": true }
+      "type": "number", "optional": true, "tag": { "value": { "id":6, "defaultLabel": "Gender (narrow-minded)", "editable": true } }
     };
     const modelActionAlterAttribute:ModelAction =  {
       actionType: "modelAction",
@@ -516,7 +516,7 @@ describe.sequential("localPersistenceStoreController.unit.test", () => {
         }
       ],
       // update: {
-      //   "type": "number", "optional": true, "extra": { "id":6, "defaultLabel": "Gender (narrow-minded)", "editable": true }
+      //   "type": "number", "optional": true, "tag": { "id":6, "defaultLabel": "Gender (narrow-minded)", "editable": true }
       // }
     };
 

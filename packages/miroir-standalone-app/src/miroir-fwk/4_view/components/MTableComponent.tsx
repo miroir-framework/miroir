@@ -297,7 +297,7 @@ export const MTableComponent = (props: TableComponentProps) => {
         if (
           columnDefinitionAttributeEntry &&
           (columnDefinitionAttributeEntry[1] as any).type == "uuid" &&
-          (columnDefinitionAttributeEntry[1] as any).extra?.targetEntity
+          (columnDefinitionAttributeEntry[1] as any).tag?.value?.targetEntity
         ) {
           const columnDefinitionAttribute = columnDefinitionAttributeEntry[1];
   
@@ -307,8 +307,8 @@ export const MTableComponent = (props: TableComponentProps) => {
   
           navigate(
             `/report/${contextDeploymentUuid}/${
-              (columnDefinitionAttribute as any)?.extra?.targetEntityApplicationSection
-                ? (columnDefinitionAttribute as any)?.extra.targetEntityApplicationSection
+              (columnDefinitionAttribute as any)?.tag?.value?.targetEntityApplicationSection
+                ? (columnDefinitionAttribute as any)?.tag.value?.targetEntityApplicationSection
                 : context.applicationSection
             }/${targetEntityDefinition?.defaultInstanceDetailsReportUuid}/${event.data.rawValue[event.colDef.field]}`
           );

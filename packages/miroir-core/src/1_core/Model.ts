@@ -1,8 +1,8 @@
-import entityApplication from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a659d350-dd97-4da9-91de-524fa01745dc.json';
-import entityApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
-import entityApplicationModelBranch from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/cdb0aec6-b848-43ac-a058-fe2dbe5811f1.json';
+import entitySelfApplication from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a659d350-dd97-4da9-91de-524fa01745dc.json';
+import entitySelfApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
+import entitySelfApplicationModelBranch from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/cdb0aec6-b848-43ac-a058-fe2dbe5811f1.json';
 import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
-import entityApplicationDeploymentConfiguration from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/35c5608a-7678-4f07-a4ec-76fc5bc35424.json';
+import entitySelfApplicationDeploymentConfiguration from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/35c5608a-7678-4f07-a4ec-76fc5bc35424.json';
 import entityReport from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json';
 import entityEntityDefinition from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
 import EntityJzodSchema from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/5e81e1b9-38be-487c-b3e5-53796c57fccf.json';
@@ -10,13 +10,13 @@ import entityMenu from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a987320
 import entityStoreBasedConfiguration from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7990c0c9-86c3-40a1-a121-036c91b55ed7.json';
 
 import entityDefinitionJzodSchema from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/15407b85-f2c8-4a34-bfa7-89f044ba2407.json';
-import entityDefinitionApplicationVersion from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json';
+import entityDefinitionSelfApplicationVersion from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json';
 import entityDefinitionEntity from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/381ab1be-337f-4198-b1d3-f686867fc1dd.json';
-import entityDefinitionApplicationModelBranch from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/69bf7c03-a1df-4d1c-88c1-44363feeea87.json';
-import entityDefinitionApplication from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json';
+import entityDefinitionSelfApplicationModelBranch from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/69bf7c03-a1df-4d1c-88c1-44363feeea87.json';
+import entityDefinitionSelfApplication from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json';
 import entityDefinitionMenu from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/0f421b2f-2fdc-47ee-8232-62121ea46350.json';
 import entityDefinitionReport from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json';
-import entityDefinitionApplicationDeploymentConfiguration from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bd303ae8-6bce-4b44-a63c-815b9ebf728b.json';
+import entityDefinitionSelfApplicationDeploymentConfiguration from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bd303ae8-6bce-4b44-a63c-815b9ebf728b.json';
 import entityDefinitionEntityDefinition from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json';
 // import entityDefinitionModelVersion from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json';
 import entityDefinitionStoreBasedConfiguration from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/f93af951-ea13-4815-a2e3-ec0cab1fadd2.json';
@@ -43,7 +43,7 @@ import applicationVersionInitialMiroirVersionCrossEntityDefinitionApplicationVer
 import applicationVersionInitialMiroirVersionCrossEntityDefinitionStoreBasedConfiguration from '../assets/miroir_data/8bec933d-6287-4de7-8a88-5c24216de9f4/ba38669e-ac6f-40ea-af14-bb200db251d8.json';
 import applicationVersionInitialMiroirVersionCrossEntityDefinitionApplication from '../assets/miroir_data/8bec933d-6287-4de7-8a88-5c24216de9f4/dc47438c-166a-4d19-aeba-ad70281afdf4.json';
 import applicationVersionInitialMiroirVersionCrossEntityDefinitionReport from '../assets/miroir_data/8bec933d-6287-4de7-8a88-5c24216de9f4/ede7e794-5ae7-48a8-81c9-d1f82df11829.json';
-import applicationVersionInitialMiroirVersion from '../assets/miroir_data/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json';
+import selfApplicationVersionInitialMiroirVersion from '../assets/miroir_data/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json';
 
 import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import instanceConfigurationReference from '../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
@@ -62,10 +62,10 @@ import {
 // TODO: REMOVE THIS!!!
 // FIRST: CENTRALIZE LOGIC TO DETERMINE MODEL ENTITIES
 export const metaModelEntities: MetaEntity[] = [
-  entityApplication,
-  entityApplicationDeploymentConfiguration, // TODO: remove, deployments are not part of applications, they are external to them, belonging to a separate application, which contents is specific to each node (no transactions / historization)
-  entityApplicationModelBranch,
-  entityApplicationVersion,
+  entitySelfApplication,
+  entitySelfApplicationDeploymentConfiguration, // TODO: remove, deployments are not part of applications, they are external to them, belonging to a separate application, which contents is specific to each node (no transactions / historization)
+  entitySelfApplicationModelBranch,
+  entitySelfApplicationVersion,
   entityEntity,
   entityEntityDefinition,
   entityMenu,
@@ -86,23 +86,23 @@ export const applicationModelEntities: MetaEntity[] = metaModelEntities.filter((
 export const defaultMiroirMetaModel: MetaModel = {
   configuration: [instanceConfigurationReference],
   entities: [
-    entityApplication as Entity,
-    entityApplicationDeploymentConfiguration as Entity,
-    entityApplicationModelBranch as Entity,
-    entityApplicationVersion as Entity,
+    entitySelfApplication as Entity,
+    entitySelfApplicationDeploymentConfiguration as Entity,
+    entitySelfApplicationModelBranch as Entity,
+    entitySelfApplicationVersion as Entity,
     entityEntity as Entity,
     entityEntityDefinition as Entity,
     EntityJzodSchema as Entity,
     entityMenu as Entity,
     entityReport as Entity,
     entityStoreBasedConfiguration as Entity,
-    entityApplicationVersion as Entity,
+    entitySelfApplicationVersion as Entity,
   ],
   entityDefinitions: [
-    entityDefinitionApplication as EntityDefinition,
-    entityDefinitionApplicationDeploymentConfiguration as EntityDefinition,
-    entityDefinitionApplicationModelBranch as EntityDefinition,
-    entityDefinitionApplicationVersion as EntityDefinition,
+    entityDefinitionSelfApplication as EntityDefinition,
+    entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition,
+    entityDefinitionSelfApplicationModelBranch as EntityDefinition,
+    entityDefinitionSelfApplicationVersion as EntityDefinition,
     entityDefinitionEntity as EntityDefinition,
     entityDefinitionEntityDefinition as EntityDefinition,
     entityDefinitionJzodSchema as EntityDefinition,
@@ -117,7 +117,7 @@ export const defaultMiroirMetaModel: MetaModel = {
     menuDefaultMiroir as Menu,
   ],
   applicationVersions:[
-    applicationVersionInitialMiroirVersion
+    selfApplicationVersionInitialMiroirVersion
   ],
   reports: [
     reportApplicationDeploymentConfigurationList as Report,

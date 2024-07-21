@@ -3,7 +3,7 @@ import { ApplicationSection } from "../0_interfaces/1_core/preprocessor-generate
 import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
 import entityReport from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json';
 import entityEntityDefinition from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
-import entityApplication from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a659d350-dd97-4da9-91de-524fa01745dc.json';
+import entitySelfApplication from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a659d350-dd97-4da9-91de-524fa01745dc.json';
 import entityMenu from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/dde4c883-ae6d-47c3-b6df-26bc6e3c1842.json';
 
 
@@ -16,7 +16,7 @@ export const getApplicationSection = (deploymentUUid: string, entityUuid: string
     return entityUuid == entityEntity.uuid ||
       entityUuid == entityEntityDefinition.uuid ||
       entityUuid == entityReport.uuid ||
-      entityUuid == entityApplication.uuid ||
+      entityUuid == entitySelfApplication.uuid ||
       entityUuid == entityMenu.uuid
       ? "model"
       : "data";

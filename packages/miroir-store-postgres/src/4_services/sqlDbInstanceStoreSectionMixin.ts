@@ -14,6 +14,7 @@ import { MixableSqlDbStoreSection, SqlDbStoreSection } from "./SqlDbStoreSection
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
+import { Error } from "sequelize";
 
 const consoleLog: any = console.log.bind(console, packageName, cleanLevel, "SqlDbInstanceStoreSectionMixin");
 const loggerName: string = getLoggerName(packageName, cleanLevel, "SqlDbInstanceStoreSectionMixin");
@@ -56,7 +57,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         }
       } catch (error) {
         // TODO: indicate exact reason!
-        console.warn(
+        log.warn(
           this.logHeader,
           "getInstance",
           "could not fetch instance from db: parentId",
@@ -77,14 +78,14 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         this.sqlSchemaTableAccess[parentUuid] &&
         this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel
       ) {
-        consoleLog("getInstances calling this.sqlEntities findall", parentUuid);
+        log.info("getInstances calling this.sqlEntities findall", parentUuid);
         try {
           const sequelizeModel = this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel;
           rawResult = (await sequelizeModel?.findAll()) as unknown as EntityInstance[];
           cleanResult = rawResult.map((i) => i["dataValues"]);
           consoleLog("getInstances result", cleanResult);
         } catch (e) {
-          console.warn(this.logHeader, "getInstances", "failed to fetch instances of entityUuid", parentUuid);
+          log.warn(this.logHeader, "getInstances", "failed to fetch instances of entityUuid", parentUuid);
           return {
             status: "error",
             error: {
@@ -94,7 +95,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           };
         }
       } else {
-        console.warn(this.logHeader, "getInstances", "could not find entity in database: entityUuid", parentUuid);
+        log.warn(this.logHeader, "getInstances", "could not find entity in database: entityUuid", parentUuid);
         return {
           status: "error",
           error: { errorType: "FailedToGetInstances", errorMessage: `could not find entity ${parentUuid}` },
@@ -112,22 +113,29 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
 
     // ##############################################################################################
     async upsertInstance(parentUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
-      const sequelizeModel = this.sqlSchemaTableAccess[instance.parentUuid].sequelizeModel;
-      const tmp = await sequelizeModel.upsert(instance as any);
-      console.debug(
-        this.logHeader,
-        "upsertInstance",
-        "upserting into Parent",
-        instance["parentUuid"],
-        "named",
-        instance["parentName"],
-        "existing data schema entities",
-        Object.keys(this.sqlSchemaTableAccess ? this.sqlSchemaTableAccess : {}),
-        "instance",
-        instance,
-        "db upsert result (not returned)",
-        tmp
-      );
+      console.log("######################################################### upsertInstance #####################################################")
+      try {
+        const sequelizeModel = this.sqlSchemaTableAccess[instance.parentUuid].sequelizeModel;
+        const tmp = await sequelizeModel.upsert(instance as any);
+      } catch (error: any) {
+        log.error(
+          this.logHeader,
+          "upsertInstance error",
+          "FAILED upserting into Parent",
+          instance["parentUuid"],
+          "named",
+          instance["parentName"],
+          "existing data schema entities",
+          Object.keys(this.sqlSchemaTableAccess ? this.sqlSchemaTableAccess : {}),
+          "instance",
+          instance,
+          "error",
+          error
+        //   "db upsert result (not returned)",
+        //   tmp
+        );
+        return Promise.resolve({status: "error", error: { errorType: "FailedToCreateInstance", errorMessage: error}});
+      }
       return Promise.resolve(ACTION_OK);
     }
 
@@ -141,7 +149,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
 
     // ##############################################################################################
     async deleteInstance(parentUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
-      console.debug(this.logHeader, "deleteInstance", parentUuid, instance);
+      log.info(this.logHeader, "deleteInstance", parentUuid, instance);
       const sequelizeModel = this.sqlSchemaTableAccess[parentUuid].sequelizeModel;
       await sequelizeModel.destroy({ where: { uuid: instance.uuid } });
       return Promise.resolve(ACTION_OK);

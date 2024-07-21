@@ -17,7 +17,7 @@
             "endpoint": {"type": "literal", "definition":"ddd9c928-2ceb-4f67-971b-5898090412d6"},
             "objects": {
               "type": "array",
-              "extra": { "defaultLabel": "Application Instance to create", "editable": true },
+              "tag": { "value": {  "defaultLabel": "Application Instance to create", "editable": true }},
               "definition": {
                 "type": "schemaReference",
                 "optional": false,
@@ -39,7 +39,7 @@
             "endpoint": {"type": "literal", "definition":"ddd9c928-2ceb-4f67-971b-5898090412d6"},
             "objects": {
               "type": "array",
-              "extra": { "defaultLabel": "Application Instance to create", "editable": true },
+              "tag": { "value": {  "defaultLabel": "Application Instance to create", "editable": true }},
               "definition": {
                 "type": "schemaReference",
                 "optional": false,

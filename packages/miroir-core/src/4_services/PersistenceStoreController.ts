@@ -253,21 +253,21 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   async initApplication(
     metaModel:MetaModel,
     dataStoreType: DataStoreApplicationType,
-    application: Application,
-    applicationDeploymentConfiguration: EntityInstance,
-    applicationModelBranch: EntityInstance,
-    applicationVersion: EntityInstance,
-    applicationStoreBasedConfiguration: EntityInstance,
+    selfApplication: Application,
+    selfApplicationDeploymentConfiguration: EntityInstance,
+    selfApplicationModelBranch: EntityInstance,
+    selfApplicationVersion: EntityInstance,
+    selfApplicationStoreBasedConfiguration: EntityInstance,
   ):Promise<ActionReturnType>{
     await modelInitialize(
       metaModel,
       this,
       dataStoreType,
-      application,
-      applicationDeploymentConfiguration,
-      applicationModelBranch,
-      applicationVersion,
-      applicationStoreBasedConfiguration,
+      selfApplication,
+      selfApplicationDeploymentConfiguration,
+      selfApplicationModelBranch,
+      selfApplicationVersion,
+      selfApplicationStoreBasedConfiguration,
     );
     return Promise.resolve(ACTION_OK);
   }

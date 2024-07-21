@@ -107,35 +107,35 @@
             "definition": {
               "uuid": {
                 "type": "uuid",
-                "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+                "tag": { "value": {  "id": 1, "defaultLabel": "Uuid", "editable": false }}
               },
               "parentName": {
                 "type": "string",
-                "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
+                "tag": { "value": {  "id": 2, "defaultLabel": "Entity Name", "editable": false }}
               },
               "parentUuid": {
                 "type": "uuid",
-                "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
+                "tag": { "value": {  "id": 3, "defaultLabel": "Entity Uuid", "editable": false }}
               },
               "name": {
                 "type": "string",
-                "extra": { "id": 4, "defaultLabel": "Name", "editable": false }
+                "tag": { "value": {  "id": 4, "defaultLabel": "Name", "editable": false }}
               },
               "conceptLevel": {
                 "type": "enum",
                 "definition": ["MetaModel", "Model", "Data"],
                 "optional": true,
-                "extra": { "id": 5, "defaultLabel": "Concept Level", "editable": false }
+                "tag": { "value": {  "id": 5, "defaultLabel": "Concept Level", "editable": false }}
               },
               "defaultLabel": {
                 "type": "string",
                 "optional": true,
-                "extra": { "id": 6, "defaultLabel": "Default Label", "editable": true }
+                "tag": { "value": {  "id": 6, "defaultLabel": "Default Label", "editable": true }}
               },
               "description": {
                 "type": "string",
                 "optional": true,
-                "extra": { "id": 7, "description": "Description", "editable": true }
+                "tag": { "value": {  "id": 7, "description": "Description", "editable": true }}
               },
               "definition": {
                 "type": "schemaReference",
@@ -162,7 +162,7 @@
                 },
                 "definition": { "relativePath": "jzodObjectOrReference" },
                 "optional": true,
-                "extra": { "id": 8, "defaultLabel": "Definition", "editable": true }
+                "tag": { "value": {  "id": 8, "defaultLabel": "Definition", "editable": true }}
               }
             }
           }
@@ -180,38 +180,38 @@
             "definition": {
               "uuid": {
                 "type": "uuid",
-                "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+                "tag": { "value": {  "id": 1, "defaultLabel": "Uuid", "editable": false }}
               },
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
+                "tag": { "value": {  "id": 2, "defaultLabel": "Entity Name", "editable": false }}
               },
               "parentUuid": {
                 "type": "uuid",
-                "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
+                "tag": { "value": {  "id": 3, "defaultLabel": "Entity Uuid", "editable": false }}
               },
               "name": {
                 "type": "string",
-                "extra": { "id": 4, "defaultLabel": "Name", "editable": true }
+                "tag": { "value": {  "id": 4, "defaultLabel": "Name", "editable": true }}
               },
               "defaultLabel": {
                 "type": "string",
-                "extra": { "id": 5, "defaultLabel": "Default Label", "editable": true }
+                "tag": { "value": {  "id": 5, "defaultLabel": "Default Label", "editable": true }}
               },
               "description": {
                 "type": "string",
                 "optional": true,
-                "extra": { "id": 6, "defaultLabel": "Description", "editable": true }
+                "tag": { "value": {  "id": 6, "defaultLabel": "Description", "editable": true }}
               },
               "type": {
                 "type": "string",
                 "optional": true,
-                "extra": { "id": 7, "defaultLabel": "Type of Report", "editable": true }
+                "tag": { "value": {  "id": 7, "defaultLabel": "Type of Report", "editable": true }}
               },
               "application": {
                 "type": "uuid",
-                "extra": {
+                "tag": { "value": { 
                   "id": 8,
                   "defaultLabel": "Application",
                   "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
@@ -220,7 +220,7 @@
               },
               "branch": {
                 "type": "uuid",
-                "extra": {
+                "tag": { "value": { 
                   "id": 9,
                   "defaultLabel": "Branch",
                   "description": "The Branch of this Application Version",
@@ -230,7 +230,7 @@
               },
               "previousVersion": {
                 "type": "uuid",
-                "extra": {
+                "tag": { "value": { 
                   "id": 10,
                   "defaultLabel": "Previous Application Version",
                   "description": "Previous version of the application on this Branch.",
@@ -241,7 +241,7 @@
               "modelStructureMigration": {
                 "type": "schemaReference",
                 "optional": true,
-                "extra": { "id": 11, "defaultLabel": "Structure Migration from Previous Version", "editable": true },
+                "tag": { "value": {  "id": 11, "defaultLabel": "Structure Migration from Previous Version", "editable": true }},
                 "definition": {
                   "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
                   "relativePath": "jzodObject"
@@ -250,7 +250,7 @@
               "modelCUDMigration": {
                 "type": "schemaReference",
                 "optional": true,
-                "extra": {
+                "tag": { "value": { 
                   "id": 12,
                   "defaultLabel": "Create-Update-Delete Migration from Previous Version",
                   "editable": true
@@ -276,31 +276,31 @@
             "definition": {
               "uuid": {
                 "type": "uuid",
-                "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+                "tag": { "value": {  "id": 1, "defaultLabel": "Uuid", "editable": false }}
               },
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
+                "tag": { "value": {  "id": 2, "defaultLabel": "Entity Name", "editable": false }}
               },
               "parentUuid": {
                 "type": "uuid",
-                "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
+                "tag": { "value": {  "id": 3, "defaultLabel": "Entity Uuid", "editable": false }}
               },
               "conceptLevel": {
                 "type": "enum",
                 "definition": ["MetaModel", "Model", "Data"],
                 "optional": true,
-                "extra": { "id": 4, "defaultLabel": "Concept Level", "editable": false }
+                "tag": { "value": {  "id": 4, "defaultLabel": "Concept Level", "editable": false }}
               },
               "name": {
                 "type": "string",
-                "extra": { "id": 5, "defaultLabel": "Name", "editable": true }
+                "tag": { "value": {  "id": 5, "defaultLabel": "Name", "editable": true }}
               },
               "author": {
                 "type": "uuid",
                 "optional": true,
-                "extra": {
+                "tag": { "value": { 
                   "id": 6,
                   "defaultLabel": "Application",
                   "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
@@ -310,7 +310,7 @@
               "description": {
                 "type": "string",
                 "optional": true,
-                "extra": { "id": 7, "defaultLabel": "Description", "editable": true }
+                "tag": { "value": {  "id": 7, "defaultLabel": "Description", "editable": true }}
               }
             }
           }
@@ -328,16 +328,16 @@
             "definition": {
               "uuid": {
                 "type": "uuid",
-                "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+                "tag": { "value": {  "id": 1, "defaultLabel": "Uuid", "editable": false }}
               },
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
+                "tag": { "value": {  "id": 2, "defaultLabel": "Entity Name", "editable": false }}
               },
               "parentUuid": {
                 "type": "uuid",
-                "extra": {
+                "tag": { "value": { 
                   "id": 3,
                   "defaultLabel": "Entity Uuid",
                   "targetEntityApplicationSection": "model",
@@ -349,19 +349,19 @@
                 "type": "enum",
                 "definition": ["MetaModel", "Model", "Data"],
                 "optional": true,
-                "extra": { "id": 4, "defaultLabel": "Concept Level", "editable": false }
+                "tag": { "value": {  "id": 4, "defaultLabel": "Concept Level", "editable": false }}
               },
               "name": {
                 "type": "string",
-                "extra": { "id": 5, "defaultLabel": "Name", "editable": true }
+                "tag": { "value": {  "id": 5, "defaultLabel": "Name", "editable": true }}
               },
               "defaultLabel": {
                 "type": "string",
-                "extra": { "id": 6, "defaultLabel": "Name", "editable": true }
+                "tag": { "value": {  "id": 6, "defaultLabel": "Name", "editable": true }}
               },
               "application": {
                 "type": "uuid",
-                "extra": {
+                "tag": { "value": { 
                   "id": 7,
                   "defaultLabel": "Application",
                   "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
@@ -371,7 +371,7 @@
               "headVersion": {
                 "type": "uuid",
                 "optional": true,
-                "extra": {
+                "tag": { "value": { 
                   "id": 8,
                   "defaultLabel": "Head Version",
                   "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
@@ -381,7 +381,7 @@
               "description": {
                 "type": "string",
                 "optional": true,
-                "extra": { "id": 9, "defaultLabel": "Description", "editable": true }
+                "tag": { "value": {  "id": 9, "defaultLabel": "Description", "editable": true }}
               }
             }
           }
@@ -399,29 +399,29 @@
             "definition": {
               "uuid": {
                 "type": "uuid",
-                "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+                "tag": { "value": {  "id": 1, "defaultLabel": "Uuid", "editable": false }}
               },
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
+                "tag": { "value": {  "id": 2, "defaultLabel": "Entity Name", "editable": false }}
               },
               "parentUuid": {
                 "type": "uuid",
-                "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
+                "tag": { "value": {  "id": 3, "defaultLabel": "Entity Uuid", "editable": false }}
               },
               "name": {
                 "type": "string",
-                "extra": { "id": 4, "defaultLabel": "Name", "editable": true }
+                "tag": { "value": {  "id": 4, "defaultLabel": "Name", "editable": true }}
               },
               "defaultLabel": {
                 "type": "string",
-                "extra": { "id": 5, "defaultLabel": "Default Label", "editable": true }
+                "tag": { "value": {  "id": 5, "defaultLabel": "Default Label", "editable": true }}
               },
               "description": {
                 "type": "string",
                 "optional": true,
-                "extra": { "id": 6, "defaultLabel": "Description", "editable": true }
+                "tag": { "value": {  "id": 6, "defaultLabel": "Description", "editable": true }}
               }
             }
           }
@@ -439,41 +439,41 @@
             "definition": {
               "uuid": {
                 "type": "uuid",
-                "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+                "tag": { "value": {  "id": 1, "defaultLabel": "Uuid", "editable": false }}
               },
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
+                "tag": { "value": {  "id": 2, "defaultLabel": "Entity Name", "editable": false }}
               },
               "parentUuid": {
                 "type": "uuid",
-                "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
+                "tag": { "value": {  "id": 3, "defaultLabel": "Entity Uuid", "editable": false }}
               },
               "conceptLevel": {
                 "type": "enum",
                 "definition": ["MetaModel", "Model", "Data"],
                 "optional": true,
-                "extra": { "id": 4, "defaultLabel": "Concept Level", "editable": false }
+                "tag": { "value": {  "id": 4, "defaultLabel": "Concept Level", "editable": false }}
               },
               "name": {
                 "type": "string",
-                "extra": { "id": 5, "defaultLabel": "Name", "editable": true }
+                "tag": { "value": {  "id": 5, "defaultLabel": "Name", "editable": true }}
               },
               "defaultLabel": {
                 "type": "string",
-                "extra": { "id": 6, "defaultLabel": "Default Label", "editable": true }
+                "tag": { "value": {  "id": 6, "defaultLabel": "Default Label", "editable": true }}
               },
               "type": {
                 "type": "enum",
                 "definition": ["list", "grid"],
                 "optional": true,
-                "extra": { "id": 7, "defaultLabel": "Type of Report", "editable": true }
+                "tag": { "value": {  "id": 7, "defaultLabel": "Type of Report", "editable": true }}
               },
               "application": {
                 "type": "uuid",
                 "optional": true,
-                "extra": {
+                "tag": { "value": { 
                   "id": 8,
                   "defaultLabel": "Application",
                   "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
@@ -491,32 +491,32 @@
                         "type": "simpleType",
                         "definition": "string",
                         "optional": true,
-                        "extra": { "id": 1, "defaultLabel": "Entity Name", "editable": false }
+                        "tag": { "value": {  "id": 1, "defaultLabel": "Entity Name", "editable": false }}
                       },
                       "parentName": {
                         "type": "simpleType",
                         "definition": "string",
                         "optional": true,
-                        "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
+                        "tag": { "value": {  "id": 2, "defaultLabel": "Entity Name", "editable": false }}
                       },
                       "parentUuid": {
                         "type": "simpleType",
                         "definition": "string",
                         "validations": [{ "type": "uuid" }],
-                        "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
+                        "tag": { "value": {  "id": 3, "defaultLabel": "Entity Uuid", "editable": false }}
                       },
                       "rootObjectUuid": {
                         "type": "simpleType",
                         "definition": "string",
                         "optional": true,
                         "validations": [{ "type": "uuid" }],
-                        "extra": { "id": 4, "defaultLabel": "Entity Uuid", "editable": false }
+                        "tag": { "value": {  "id": 4, "defaultLabel": "Entity Uuid", "editable": false }}
                       },
                       "rootObjectAttribute": {
                         "type": "simpleType",
                         "definition": "string",
                         "optional": true,
-                        "extra": { "id": 5, "defaultLabel": "Entity Uuid", "editable": false }
+                        "tag": { "value": {  "id": 5, "defaultLabel": "Entity Uuid", "editable": false }}
                       }
                     }
                   },
@@ -528,38 +528,38 @@
                         "type": "simpleType",
                         "definition": "string",
                         "optional": true,
-                        "extra": { "id": 1, "defaultLabel": "Label", "editable": false }
+                        "tag": { "value": {  "id": 1, "defaultLabel": "Label", "editable": false }}
                       },
                       "parentName": {
                         "type": "simpleType",
                         "definition": "string",
                         "optional": true,
-                        "extra": { "id": 2, "defaultLabel": "Parent Name", "editable": false }
+                        "tag": { "value": {  "id": 2, "defaultLabel": "Parent Name", "editable": false }}
                       },
                       "parentUuid": {
                         "type": "simpleType",
                         "definition": "string",
                         "validations": [{ "type": "uuid" }],
-                        "extra": { "id": 3, "defaultLabel": "Parent Uuid", "editable": false }
+                        "tag": { "value": {  "id": 3, "defaultLabel": "Parent Uuid", "editable": false }}
                       },
                       "rootObjectUuid": {
                         "type": "simpleType",
                         "definition": "string",
                         "optional": true,
                         "validations": [{ "type": "uuid" }],
-                        "extra": { "id": 4, "defaultLabel": "Root Object Uuid", "editable": false }
+                        "tag": { "value": {  "id": 4, "defaultLabel": "Root Object Uuid", "editable": false }}
                       },
                       "rootObjectAttribute": {
                         "type": "simpleType",
                         "definition": "string",
                         "optional": true,
-                        "extra": { "id": 5, "defaultLabel": "Root Object Attribute", "editable": false }
+                        "tag": { "value": {  "id": 5, "defaultLabel": "Root Object Attribute", "editable": false }}
                       },
                       "fetchedDataReference": {
                         "type": "simpleType",
                         "definition": "string",
                         "optional": true,
-                        "extra": { "id": 6, "defaultLabel": "Fetched Data Reference", "editable": false }
+                        "tag": { "value": {  "id": 6, "defaultLabel": "Fetched Data Reference", "editable": false }}
                       }
                     }
                   },
@@ -591,13 +591,13 @@
                             "type": "simpleType",
                             "definition": "string",
                             "optional": true,
-                            "extra": { "id": 1, "defaultLabel": "Label", "editable": false }
+                            "tag": { "value": {  "id": 1, "defaultLabel": "Label", "editable": false }}
                           },
                           "parentUuid": {
                             "type": "simpleType",
                             "definition": "string",
                             "validations": [{ "type": "uuid" }],
-                            "extra": { "id": 2, "defaultLabel": "Entity Uuid", "editable": false }
+                            "tag": { "value": {  "id": 2, "defaultLabel": "Entity Uuid", "editable": false }}
                           }
                         }
                       }
@@ -663,7 +663,7 @@
                   }
                 },
                 "definition": { "eager": true, "relativePath": "reportSection" },
-                "extra": { "id": 9, "defaultLabel": "Definition", "editable": true }
+                "tag": { "value": {  "id": 9, "defaultLabel": "Definition", "editable": true }}
               }
             }
           }
@@ -681,33 +681,33 @@
             "definition": {
               "uuid": {
                 "type": "uuid",
-                "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+                "tag": { "value": {  "id": 1, "defaultLabel": "Uuid", "editable": false }}
               },
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
+                "tag": { "value": {  "id": 2, "defaultLabel": "Entity Name", "editable": false }}
               },
               "parentUuid": {
                 "type": "uuid",
-                "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
+                "tag": { "value": {  "id": 3, "defaultLabel": "Entity Uuid", "editable": false }}
               },
               "name": {
                 "type": "string",
-                "extra": { "id": 4, "defaultLabel": "Name", "editable": true }
+                "tag": { "value": {  "id": 4, "defaultLabel": "Name", "editable": true }}
               },
               "defaultLabel": {
                 "type": "string",
-                "extra": { "id": 5, "defaultLabel": "Default Label", "editable": true }
+                "tag": { "value": {  "id": 5, "defaultLabel": "Default Label", "editable": true }}
               },
               "description": {
                 "type": "string",
                 "optional": true,
-                "extra": { "id": 6, "defaultLabel": "Description", "editable": true }
+                "tag": { "value": {  "id": 6, "defaultLabel": "Description", "editable": true }}
               },
               "application": {
                 "type": "uuid",
-                "extra": {
+                "tag": { "value": { 
                   "id": 7,
                   "defaultLabel": "Application",
                   "description": "The Application of the Branch.",
@@ -718,7 +718,7 @@
               "model": {
                 "type": "schemaReference",
                 "optional": true,
-                "extra": { "id": 8, "defaultLabel": "Application Deployment Model", "editable": true },
+                "tag": { "value": {  "id": 8, "defaultLabel": "Application Deployment Model", "editable": true }},
                 "definition": {
                   "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
                   "relativePath": "jzodObject"
@@ -727,7 +727,7 @@
               "data": {
                 "type": "schemaReference",
                 "optional": true,
-                "extra": { "id": 9, "defaultLabel": "Application Deployment Data", "editable": true },
+                "tag": { "value": {  "id": 9, "defaultLabel": "Application Deployment Data", "editable": true }},
                 "definition": {
                   "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
                   "relativePath": "jzodObject"
@@ -749,30 +749,30 @@
             "definition": {
               "uuid": {
                 "type": "uuid",
-                "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+                "tag": { "value": {  "id": 1, "defaultLabel": "Uuid", "editable": false }}
               },
               "parentName": {
                 "type": "string",
-                "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
+                "tag": { "value": {  "id": 2, "defaultLabel": "Entity Name", "editable": false }}
               },
               "parentUuid": {
                 "type": "uuid",
-                "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
+                "tag": { "value": {  "id": 3, "defaultLabel": "Entity Uuid", "editable": false }}
               },
               "name": {
                 "type": "string",
-                "extra": { "id": 4, "defaultLabel": "Name", "editable": false }
+                "tag": { "value": {  "id": 4, "defaultLabel": "Name", "editable": false }}
               },
               "conceptLevel": {
                 "type": "enum",
                 "definition": ["MetaModel", "Model", "Data"],
                 "optional": true,
-                "extra": { "id": 5, "defaultLabel": "Concept Level", "editable": false }
+                "tag": { "value": {  "id": 5, "defaultLabel": "Concept Level", "editable": false }}
               },
               "description": {
                 "type": "string",
                 "optional": true,
-                "extra": { "id": 6, "defaultLabel": "Description", "editable": true }
+                "tag": { "value": {  "id": 6, "defaultLabel": "Description", "editable": true }}
               },
               "jzodSchema": {
                 "type": "schemaReference",
@@ -781,7 +781,7 @@
                   "relativePath": "jzodObject"
                 },
                 "optional": true,
-                "extra": { "id": 7, "defaultLabel": "Jzod Schema", "editable": true }
+                "tag": { "value": {  "id": 7, "defaultLabel": "Jzod Schema", "editable": true }}
               }
             }
           }
@@ -800,16 +800,16 @@
             "definition": {
               "uuid": {
                 "type": "uuid",
-                "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+                "tag": { "value": {  "id": 1, "defaultLabel": "Uuid", "editable": false }}
               },
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
+                "tag": { "value": {  "id": 2, "defaultLabel": "Entity Name", "editable": false }}
               },
               "parentUuid": {
                 "type": "uuid",
-                "extra": {
+                "tag": { "value": { 
                   "id": 3,
                   "defaultLabel": "Entity Uuid",
                   "description": "The Parent Entity of this Instance",
@@ -819,20 +819,20 @@
               },
               "name": {
                 "type": "string",
-                "extra": { "id": 4, "defaultLabel": "Name", "editable": true }
+                "tag": { "value": {  "id": 4, "defaultLabel": "Name", "editable": true }}
               },
               "defaultLabel": {
                 "type": "string",
-                "extra": { "id": 5, "defaultLabel": "Default Label", "editable": true }
+                "tag": { "value": {  "id": 5, "defaultLabel": "Default Label", "editable": true }}
               },
               "description": {
                 "type": "string",
                 "optional": true,
-                "extra": { "id": 6, "defaultLabel": "Description", "editable": true }
+                "tag": { "value": {  "id": 6, "defaultLabel": "Description", "editable": true }}
               },
               "application": {
                 "type": "uuid",
-                "extra": {
+                "tag": { "value": { 
                   "id": 7,
                   "defaultLabel": "Application",
                   "description": "The Application of the Branch.",
@@ -842,7 +842,7 @@
               },
               "applicationVersion": {
                 "type": "uuid",
-                "extra": {
+                "tag": { "value": { 
                   "id": 7,
                   "defaultLabel": "Application Version",
                   "description": "The Application Version of this mapping.",
@@ -852,7 +852,7 @@
               },
               "entity": {
                 "type": "uuid",
-                "extra": {
+                "tag": { "value": { 
                   "id": 7,
                   "defaultLabel": "Entity",
                   "description": "The Entity definition of this mapping.",
@@ -876,29 +876,29 @@
             "definition": {
               "uuid": {
                 "type": "uuid",
-                "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+                "tag": { "value": {  "id": 1, "defaultLabel": "Uuid", "editable": false }}
               },
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
+                "tag": { "value": {  "id": 2, "defaultLabel": "Entity Name", "editable": false }}
               },
               "parentUuid": {
                 "type": "uuid",
-                "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
+                "tag": { "value": {  "id": 3, "defaultLabel": "Entity Uuid", "editable": false }}
               },
               "name": {
                 "type": "string",
-                "extra": { "id": 4, "defaultLabel": "Name", "editable": true }
+                "tag": { "value": {  "id": 4, "defaultLabel": "Name", "editable": true }}
               },
               "defaultLabel": {
                 "type": "string",
-                "extra": { "id": 5, "defaultLabel": "Default Label", "editable": true }
+                "tag": { "value": {  "id": 5, "defaultLabel": "Default Label", "editable": true }}
               },
               "definition": {
                 "type": "schemaReference",
                 "optional": true,
-                "extra": { "id": 8, "defaultLabel": "The configuration itself", "editable": true },
+                "tag": { "value": {  "id": 8, "defaultLabel": "The configuration itself", "editable": true }},
                 "definition": {
                   "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
                   "relativePath": "jzodObject"
@@ -1064,7 +1064,7 @@
                 "type": "object",
                 "definition": {
                   "optional": { "type": "boolean", "optional": true },
-                  "extra": {
+                  "tag": { "value": { 
                     "type": "record",
                     "definition": { "type": "any" },
                     "optional": true
@@ -1077,7 +1077,7 @@
                 "type": "object",
                 "definition": {
                   "optional": { "type": "boolean", "optional": true },
-                  "extra": {
+                  "tag": { "value": { 
                     "type": "record",
                     "definition": { "type": "any" },
                     "optional": true
@@ -1093,7 +1093,7 @@
                 "type": "object",
                 "definition": {
                   "optional": { "type": "boolean", "optional": true },
-                  "extra": {
+                  "tag": { "value": { 
                     "type": "record",
                     "definition": { "type": "any" },
                     "optional": true
@@ -1112,7 +1112,7 @@
               "jzodAttributeStringValidations": {
                 "type": "object",
                 "definition": {
-                  "extra": {
+                  "tag": { "value": { 
                     "type": "record",
                     "definition": { "type": "any" },
                     "optional": true
@@ -1169,7 +1169,7 @@
                 "type": "object",
                 "definition": {
                   "optional": { "type": "boolean", "optional": true },
-                  "extra": {
+                  "tag": { "value": { 
                     "type": "record",
                     "definition": { "type": "any" },
                     "optional": true
@@ -1208,7 +1208,7 @@
                 "type": "object",
                 "definition": {
                   "optional": { "type": "boolean", "optional": true },
-                  "extra": {
+                  "tag": { "value": { 
                     "type": "record",
                     "definition": { "type": "any" },
                     "optional": true
@@ -1221,7 +1221,7 @@
                 "type": "object",
                 "definition": {
                   "optional": { "type": "boolean", "optional": true },
-                  "extra": {
+                  "tag": { "value": { 
                     "type": "record",
                     "definition": { "type": "any" },
                     "optional": true
@@ -1237,7 +1237,7 @@
                 "type": "object",
                 "definition": {
                   "optional": { "type": "boolean", "optional": true },
-                  "extra": {
+                  "tag": { "value": { 
                     "type": "record",
                     "definition": { "type": "any" },
                     "optional": true
@@ -1250,7 +1250,7 @@
                 "type": "object",
                 "definition": {
                   "optional": { "type": "boolean", "optional": true },
-                  "extra": {
+                  "tag": { "value": { 
                     "type": "record",
                     "definition": { "type": "any" },
                     "optional": true
@@ -1269,7 +1269,7 @@
                 "type": "object",
                 "definition": {
                   "optional": { "type": "boolean", "optional": true },
-                  "extra": {
+                  "tag": { "value": { 
                     "type": "record",
                     "definition": { "type": "any" },
                     "optional": true
@@ -1298,7 +1298,7 @@
                 "definition": {
                   "optional": { "type": "boolean", "optional": true },
                   "nullable": { "type": "boolean", "optional": true },
-                  "extra": {
+                  "tag": { "value": { 
                     "type": "object",
                     "definition": {
                       "id": { "type": "number" },
@@ -1355,7 +1355,7 @@
               "jzodAttributeDateValidations": {
                 "type": "object",
                 "definition": {
-                  "extra": {
+                  "tag": { "value": { 
                     "type": "record",
                     "definition": { "type": "any" },
                     "optional": true
@@ -1393,7 +1393,7 @@
               "jzodAttributeNumberValidations": {
                 "type": "object",
                 "definition": {
-                  "extra": {
+                  "tag": { "value": { 
                     "type": "record",
                     "definition": { "type": "any" },
                     "optional": true
@@ -1447,7 +1447,7 @@
               "jzodAttributeStringValidations": {
                 "type": "object",
                 "definition": {
-                  "extra": {
+                  "tag": { "value": { 
                     "type": "record",
                     "definition": { "type": "any" },
                     "optional": true
@@ -2207,25 +2207,25 @@
             "definition": {
               "uuid": {
                 "type": "uuid",
-                "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+                "tag": { "value": {  "id": 1, "defaultLabel": "Uuid", "editable": false }}
               },
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
+                "tag": { "value": {  "id": 2, "defaultLabel": "Entity Name", "editable": false }}
               },
               "parentUuid": {
                 "type": "uuid",
-                "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
+                "tag": { "value": {  "id": 3, "defaultLabel": "Entity Uuid", "editable": false }}
               },
               "name": {
                 "type": "string",
-                "extra": { "id": 4, "defaultLabel": "Name", "editable": true }
+                "tag": { "value": {  "id": 4, "defaultLabel": "Name", "editable": true }}
               },
               "author": {
                 "type": "uuid",
                 "optional": true,
-                "extra": {
+                "tag": { "value": { 
                   "id": 5,
                   "defaultLabel": "Author",
                   "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
@@ -2235,7 +2235,7 @@
               "publisher": {
                 "type": "uuid",
                 "optional": true,
-                "extra": {
+                "tag": { "value": { 
                   "id": 5,
                   "defaultLabel": "Publisher",
                   "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab",
@@ -2259,26 +2259,26 @@
             "definition": {
               "uuid": {
                 "type": "uuid",
-                "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+                "tag": { "value": {  "id": 1, "defaultLabel": "Uuid", "editable": false }}
               },
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
+                "tag": { "value": {  "id": 2, "defaultLabel": "Entity Name", "editable": false }}
               },
               "parentUuid": {
                 "type": "uuid",
-                "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
+                "tag": { "value": {  "id": 3, "defaultLabel": "Entity Uuid", "editable": false }}
               },
               "name": {
                 "type": "string",
-                "extra": { "id": 4, "defaultLabel": "Name", "editable": true }
+                "tag": { "value": {  "id": 4, "defaultLabel": "Name", "editable": true }}
               },
               "icon": {
                 "id": 5,
                 "type": "string",
                 "optional": true,
-                "extra": { "defaultLabel": "Icon", "editable": true }
+                "tag": { "value": {  "defaultLabel": "Icon", "editable": true }}
               }
             }
           }
@@ -2300,7 +2300,7 @@
                 "definition": {
                   "a": {
                     "type": "string",
-                    "extra": { "id": 1, "defaultLabel": "A", "editable": true }
+                    "tag": { "value": {  "id": 1, "defaultLabel": "A", "editable": true }}
                   },
                   "b": {
                     "type": "object",
@@ -2308,12 +2308,12 @@
                       "inB1": { "type": "string" },
                       "inB2": { "type": "string" }
                     },
-                    "extra": { "id": 2, "defaultLabel": "B", "editable": true }
+                    "tag": { "value": {  "id": 2, "defaultLabel": "B", "editable": true }}
                   },
                   "c": {
                     "type": "array",
                     "definition": { "type": "string" },
-                    "extra": { "id": 3, "defaultLabel": "C", "editable": true }
+                    "tag": { "value": {  "id": 3, "defaultLabel": "C", "editable": true }}
                   },
                   "d": {
                     "type": "schemaReference",
@@ -2322,7 +2322,7 @@
                       "relativePath": "jzodObject"
                     },
                     "optional": true,
-                    "extra": { "id": 4, "defaultLabel": "D", "editable": true }
+                    "tag": { "value": {  "id": 4, "defaultLabel": "D", "editable": true }}
                   },
                   "e": {
                     "type": "schemaReference",
@@ -2331,7 +2331,7 @@
                       "relativePath": "jzodReference"
                     },
                     "optional": true,
-                    "extra": { "id": 5, "defaultLabel": "E", "editable": true }
+                    "tag": { "value": {  "id": 5, "defaultLabel": "E", "editable": true }}
                   },
                   "f": {
                     "type": "schemaReference",
@@ -2340,31 +2340,31 @@
                       "relativePath": "jzodArray"
                     },
                     "optional": true,
-                    "extra": { "id": 6, "defaultLabel": "F", "editable": true }
+                    "tag": { "value": {  "id": 6, "defaultLabel": "F", "editable": true }}
                   }
                 }
               },
               "uuid": {
                 "type": "uuid",
-                "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+                "tag": { "value": {  "id": 1, "defaultLabel": "Uuid", "editable": false }}
               },
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
+                "tag": { "value": {  "id": 2, "defaultLabel": "Entity Name", "editable": false }}
               },
               "parentUuid": {
                 "type": "uuid",
-                "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
+                "tag": { "value": {  "id": 3, "defaultLabel": "Entity Uuid", "editable": false }}
               },
               "name": {
                 "type": "string",
-                "extra": { "id": 4, "defaultLabel": "Name", "editable": true }
+                "tag": { "value": {  "id": 4, "defaultLabel": "Name", "editable": true }}
               },
               "icon": {
                 "id": 5,
                 "type": "string",
-                "extra": { "defaultLabel": "Icon", "editable": true }
+                "tag": { "value": {  "defaultLabel": "Icon", "editable": true }}
               }
             }
           }
@@ -2383,25 +2383,25 @@
             "definition": {
               "uuid": {
                 "type": "uuid",
-                "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+                "tag": { "value": {  "id": 1, "defaultLabel": "Uuid", "editable": false }}
               },
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
+                "tag": { "value": {  "id": 2, "defaultLabel": "Entity Name", "editable": false }}
               },
               "parentUuid": {
                 "type": "uuid",
-                "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
+                "tag": { "value": {  "id": 3, "defaultLabel": "Entity Uuid", "editable": false }}
               },
               "name": {
                 "type": "string",
-                "extra": { "id": 4, "defaultLabel": "Name", "editable": true }
+                "tag": { "value": {  "id": 4, "defaultLabel": "Name", "editable": true }}
               },
               "icon": {
                 "id": 5,
                 "type": "string",
-                "extra": { "defaultLabel": "Gender (narrow-minded)", "editable": true }
+                "tag": { "value": {  "defaultLabel": "Gender (narrow-minded)", "editable": true }}
               }
             }
           }
@@ -2517,7 +2517,7 @@
               "type": "object",
               "definition": {
                 "optional": { "type": "boolean", "optional": false },
-                "extra": {
+                "tag": { "value": { 
                   "optional": true,
                   "type": "object",
                   "definition": {
@@ -2546,7 +2546,7 @@
                 "relativePath": "jzodReference"
               },
               "optional": true,
-              "extra": { "id": "5", "defaultLabel": "E", "editable": true }
+              "tag": { "value": {  "id": "5", "defaultLabel": "E", "editable": true }}
             },
             "f": {
               "type": "array",

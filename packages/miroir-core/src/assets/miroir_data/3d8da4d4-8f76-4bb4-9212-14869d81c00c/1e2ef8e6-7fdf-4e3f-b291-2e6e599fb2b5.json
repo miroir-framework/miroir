@@ -68,7 +68,7 @@
             "deploymentUuid": {
               "type": "uuid",
               "optional": true,
-              "extra": { "defaultLabel": "Module Deployment Uuid", "editable": false }
+              "tag": { "value": { "defaultLabel": "Module Deployment Uuid", "editable": false } }
             },
             "instanceAction": {
               "type": "schemaReference",
@@ -93,7 +93,7 @@
             "deploymentUuid": {
               "type": "uuid",
               "optional": true,
-              "extra": { "defaultLabel": "Module Deployment Uuid", "editable": false }
+              "tag": { "value": { "defaultLabel": "Module Deployment Uuid", "editable": false } }
             },
             "definition": {
               "type": "array",

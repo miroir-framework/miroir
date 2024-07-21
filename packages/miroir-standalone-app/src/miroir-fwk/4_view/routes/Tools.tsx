@@ -25,7 +25,7 @@ import {
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   compositeAction,
-  entityApplication,
+  entitySelfApplication,
   entityApplicationForAdmin,
   entityDeployment,
   entityMenu,
@@ -178,7 +178,7 @@ export const handleCompositeAction = async (
   const templateConversionEffectiveParams = {
     ...actionParamValues,
     adminConfigurationDeploymentAdmin,
-    entityApplication,
+    entitySelfApplication,
     entityApplicationForAdmin,
     entityDeployment,
     entityMenu,
@@ -541,11 +541,11 @@ export const ToolsPage: React.FC<any> = (
             {
               parentName: {
                 templateType: "mustacheStringTemplate",
-                definition: "{{entityApplication.name}}",
+                definition: "{{entitySelfApplication.name}}",
               },
               parentUuid: {
                 templateType: "mustacheStringTemplate",
-                definition: "{{entityApplication.uuid}}",
+                definition: "{{entitySelfApplication.uuid}}",
               },
               applicationSection: "model",
               instances: [

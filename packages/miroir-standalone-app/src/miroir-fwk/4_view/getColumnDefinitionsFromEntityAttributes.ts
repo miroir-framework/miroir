@@ -35,7 +35,7 @@ export function getColumnDefinitionsFromEntityDefinitionAttribute(
   entityDefinition?: EntityDefinition | undefined,
 ): ColDef<any> {
 
-  if (jzodSchema?.extra?.targetEntity) {
+  if (jzodSchema?.tag?.value?.targetEntity) {
     const result =  {
       // field: "publisher",
       field: name,
@@ -45,11 +45,11 @@ export function getColumnDefinitionsFromEntityDefinitionAttribute(
       // editable: true,
       // sort:'asc',
       // cellEditorParams: {
-      //   entityUuid: jzodSchema?.extra?.targetEntity,
+      //   entityUuid: jzodSchema?.tag?.value?.targetEntity,
       // },
       cellRendererParams: {
         isFK: true,
-        entityUuid: jzodSchema?.extra?.targetEntity,
+        entityUuid: jzodSchema?.tag?.value?.targetEntity,
         entityDefinition
       },
     };
@@ -59,10 +59,10 @@ export function getColumnDefinitionsFromEntityDefinitionAttribute(
     //   "jzodSchema",
     //   jzodSchema,
     //   "targetEntity",
-    //   jzodSchema?.extra?.targetEntity,
+    //   jzodSchema?.tag?.value?.targetEntity,
     //   "entityPublisher.uuid",
     //   entityPublisher.uuid,
-    //   entityPublisher.uuid == jzodSchema?.extra?.targetEntity,
+    //   entityPublisher.uuid == jzodSchema?.tag?.value?.targetEntity,
     //   "result",
     //   result
     // );
@@ -114,7 +114,7 @@ export function getColumnDefinitionsFromEntityDefinitionAttribute(
       // log.info("column conceptLevel", name, jzodSchema);
       return {
         field: name,
-        headerName: jzodSchema.extra?.defaultLabel ? jzodSchema.extra?.defaultLabel : name,
+        headerName: jzodSchema.tag?.value?.defaultLabel ? jzodSchema.tag?.value?.defaultLabel : name,
       };
     }
     default: {
@@ -125,7 +125,7 @@ export function getColumnDefinitionsFromEntityDefinitionAttribute(
         cellRendererParams: {
           columnName: name,
         },
-        headerName: jzodSchema.extra?.defaultLabel ? jzodSchema.extra?.defaultLabel : name,
+        headerName: jzodSchema.tag?.value?.defaultLabel ? jzodSchema.tag?.value?.defaultLabel : name,
         // "sort":'asc'
       };
       break;

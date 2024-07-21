@@ -12,33 +12,33 @@
     "definition": {
       "uuid": {
         "type": "uuid",
-        "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+        "tag": { "value": {  "id": 1, "defaultLabel": "Uuid", "editable": false }}
       },
       "parentName": {
         "type": "string",
-        "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
+        "tag": { "value": {  "id": 2, "defaultLabel": "Entity Name", "editable": false }}
       },
       "parentUuid": {
         "type": "uuid",
-        "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
+        "tag": { "value": {  "id": 3, "defaultLabel": "Entity Uuid", "editable": false }}
       },
       "parentDefinitionVersionUuid": {
         "type": "uuid",
         "optional": true,
-        "extra": { "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }
+        "tag": { "value": {  "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }}
       },
       "name": {
         "type": "string",
-        "extra": { "id": 5, "defaultLabel": "Name", "editable": false }
+        "tag": { "value": {  "id": 5, "defaultLabel": "Name", "editable": false }}
       },
       "description": {
         "type": "string",
         "optional": true,
-        "extra": { "id": 6, "defaultLabel": "Description", "editable": true }
+        "tag": { "value": {  "id": 6, "defaultLabel": "Description", "editable": true }}
       },
       "definition": {
         "type": "schemaReference",
-        "extra": { "id": 7, "defaultLabel": "Query Version definition", "editable": true },
+        "tag": { "value": {  "id": 7, "defaultLabel": "Query Version definition", "editable": true }},
         "context": {
           "queryFailed": {
             "type": "object",
@@ -109,7 +109,7 @@
                   },
                   "referenceUuid": {
                     "type": "uuid",
-                    "extra": { "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad" }
+                    "tag": { "value": {  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad" }}
                   }
                 }
               },
@@ -145,12 +145,12 @@
               "label": {
                 "type": "string",
                 "optional": true,
-                "extra": { "id":1, "defaultLabel": "Label", "editable": false }
+                "tag": { "value": {  "id":1, "defaultLabel": "Label", "editable": false }}
               },
               "applicationSection": {
                 "type": "schemaReference",
                 "optional": true,
-                "extra": { "id":2, "defaultLabel": "Parent Uuid", "editable": false },
+                "tag": { "value": {  "id":2, "defaultLabel": "Parent Uuid", "editable": false }},
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "applicationSection"
@@ -159,11 +159,11 @@
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "extra": { "id":3, "defaultLabel": "Parent Name", "editable": false }
+                "tag": { "value": {  "id":3, "defaultLabel": "Parent Name", "editable": false }}
               },
               "parentUuid": {
                 "type": "schemaReference",
-                "extra": { "id":4, "defaultLabel": "Parent Uuid", "editable": false },
+                "tag": { "value": {  "id":4, "defaultLabel": "Parent Uuid", "editable": false }},
                 "definition": {
                   "relativePath": "queryObjectReference"
                 }

@@ -34,7 +34,7 @@ import {
   StoreBasedConfiguration,
   Uuid,
   adminConfigurationDeploymentMiroir,
-  entityApplicationVersion,
+  entitySelfApplicationVersion,
   entityDefinitionEntityDefinition,
   entityEntity,
   entityEntityDefinition,
@@ -196,7 +196,7 @@ export function currentModel(deploymentUuid: string, state:LocalCacheSliceState)
   } else {
       const metaModelSection = "model";
       const modelSection = deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model";
-      const applicationVersions = state.current[getDeploymentEntityStateIndex(deploymentUuid, modelSection, entityApplicationVersion.uuid)];
+      const applicationVersions = state.current[getDeploymentEntityStateIndex(deploymentUuid, modelSection, entitySelfApplicationVersion.uuid)];
       const configuration = state.current[getDeploymentEntityStateIndex(deploymentUuid, modelSection, entityStoreBasedConfiguration.uuid)];
       const entities = state.current[getDeploymentEntityStateIndex(deploymentUuid, metaModelSection, entityEntity.uuid)];
       const entityDefinitions = state.current[getDeploymentEntityStateIndex(deploymentUuid, metaModelSection, entityEntityDefinition.uuid)];

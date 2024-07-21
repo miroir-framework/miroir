@@ -14,11 +14,11 @@ import { resolveReferencesForJzodSchemaAndValueObject} from "../../1_core/jzod/J
 // import { resolveReferencesForJzodSchemaAndValueObject} from "../../tmp/src/1_core/Jzod.js";
 
 
-import entityApplication from '../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a659d350-dd97-4da9-91de-524fa01745dc.json';
-// import entityApplication from '../../../src assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a659d350-dd97-4da9-91de-524fa01745dc.json';
-import entityApplicationDeploymentConfiguration from '../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/35c5608a-7678-4f07-a4ec-76fc5bc35424.json';
-import entityApplicationModelBranch from '../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/cdb0aec6-b848-43ac-a058-fe2dbe5811f1.json';
-import entityApplicationVersion from '../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
+import entitySelfApplication from '../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a659d350-dd97-4da9-91de-524fa01745dc.json';
+// import entitySelfApplication from '../../../src assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a659d350-dd97-4da9-91de-524fa01745dc.json';
+import entitySelfApplicationDeploymentConfiguration from '../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/35c5608a-7678-4f07-a4ec-76fc5bc35424.json';
+import entitySelfApplicationModelBranch from '../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/cdb0aec6-b848-43ac-a058-fe2dbe5811f1.json';
+import entitySelfApplicationVersion from '../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
 import entityApplicationVersionCrossEntityDeployment from '../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/8bec933d-6287-4de7-8a88-5c24216de9f4.json';
 import entityCommit from '../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/73bb0c69-e636-4e3b-a230-51f25469c089.json';
 import entityEndpointVersion from '../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3d8da4d4-8f76-4bb4-9212-14869d81c00c.json';
@@ -30,11 +30,11 @@ import entityReport from '../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9
 import entityStoreBasedConfiguration from '../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7990c0c9-86c3-40a1-a121-036c91b55ed7.json';
 import entityQueryVersion from '../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e4320b9e-ab45-4abe-85d8-359604b3c62f.json';
 
-import entityDefinitionApplication from '../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json';
-import entityDefinitionApplicationDeploymentConfiguration from '../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bd303ae8-6bce-4b44-a63c-815b9ebf728b.json';
-import entityDefinitionApplicationVersion from '../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json';
+import entityDefinitionSelfApplication from '../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json';
+import entityDefinitionSelfApplicationDeploymentConfiguration from '../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bd303ae8-6bce-4b44-a63c-815b9ebf728b.json';
+import entityDefinitionSelfApplicationVersion from '../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json';
 import entityDefinitionApplicationVersionCrossEntityDeployment from '../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c0b71083-8cc8-43db-bf52-572f1f03bbb5.json';
-import entityDefinitionApplicationModelBranch from '../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/69bf7c03-a1df-4d1c-88c1-44363feeea87.json';
+import entityDefinitionSelfApplicationModelBranch from '../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/69bf7c03-a1df-4d1c-88c1-44363feeea87.json';
 import entityDefinitionCommit from '../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b17d5e9e-12f2-4ed8-abdb-2576c01514a4.json';
 import entityDefinitionEndpoint from '../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/e3c1cc69-066d-4f52-beeb-b659dc7a88b9.json';
 import entityDefinitionEntityDefinition from '../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json';
@@ -73,7 +73,7 @@ import applicationVersionInitialMiroirVersionCrossEntityDefinitionApplicationVer
 import applicationVersionInitialMiroirVersionCrossEntityDefinitionStoreBasedConfiguration from '../../assets/miroir_data/8bec933d-6287-4de7-8a88-5c24216de9f4/ba38669e-ac6f-40ea-af14-bb200db251d8.json';
 import applicationVersionInitialMiroirVersionCrossEntityDefinitionApplication from '../../assets/miroir_data/8bec933d-6287-4de7-8a88-5c24216de9f4/dc47438c-166a-4d19-aeba-ad70281afdf4.json';
 import applicationVersionInitialMiroirVersionCrossEntityDefinitionReport from '../../assets/miroir_data/8bec933d-6287-4de7-8a88-5c24216de9f4/ede7e794-5ae7-48a8-81c9-d1f82df11829.json';
-import applicationVersionInitialMiroirVersion from '../../assets/miroir_data/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json';
+import selfApplicationVersionInitialMiroirVersion from '../../assets/miroir_data/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json';
 import jzodSchemajzodMiroirBootstrapSchema from "../../assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json";
 import templateJzodSchema from "../../assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/a97756cf-dd93-42b9-a021-91a629b187b9.json";
 import instanceConfigurationReference from '../../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
@@ -108,23 +108,23 @@ import entityDefinitionDeployment from "../../assets/admin_model/54b9c72f-d4f3-4
 export const defaultMiroirMetaModel: MetaModel = {
   configuration: [instanceConfigurationReference],
   entities: [
-    entityApplication as Entity,
-    entityApplicationDeploymentConfiguration as Entity,
-    entityApplicationModelBranch as Entity,
-    entityApplicationVersion as Entity,
+    entitySelfApplication as Entity,
+    entitySelfApplicationDeploymentConfiguration as Entity,
+    entitySelfApplicationModelBranch as Entity,
+    entitySelfApplicationVersion as Entity,
     entityEntity as Entity,
     entityEntityDefinition as Entity,
     entityJzodSchema as Entity,
     entityMenu as Entity,
     entityReport as Entity,
     entityStoreBasedConfiguration as Entity,
-    entityApplicationVersion as Entity,
+    entitySelfApplicationVersion as Entity,
   ],
   entityDefinitions: [
-    entityDefinitionApplication as EntityDefinition,
-    entityDefinitionApplicationDeploymentConfiguration as EntityDefinition,
-    entityDefinitionApplicationModelBranch as EntityDefinition,
-    entityDefinitionApplicationVersion as EntityDefinition,
+    entityDefinitionSelfApplication as EntityDefinition,
+    entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition,
+    entityDefinitionSelfApplicationModelBranch as EntityDefinition,
+    entityDefinitionSelfApplicationVersion as EntityDefinition,
     entityDefinitionEntity as EntityDefinition,
     entityDefinitionEntityDefinition as EntityDefinition,
     entityDefinitionJzodSchema as EntityDefinition,
@@ -139,7 +139,7 @@ export const defaultMiroirMetaModel: MetaModel = {
     menuDefaultMiroir as Menu,
   ],
   applicationVersions:[
-    applicationVersionInitialMiroirVersion
+    selfApplicationVersionInitialMiroirVersion
   ],
   reports: [
     reportApplicationDeploymentConfigurationList as Report,
@@ -184,8 +184,8 @@ const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
   persistenceEndpointVersionV1,
   jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
   templateJzodSchema as JzodSchema,
-  entityDefinitionApplication as EntityDefinition,
-  entityDefinitionApplicationVersion as EntityDefinition,
+  entityDefinitionSelfApplication as EntityDefinition,
+  entityDefinitionSelfApplicationVersion as EntityDefinition,
   entityDefinitionDeployment as EntityDefinition,
   entityDefinitionEntity as EntityDefinition,
   entityDefinitionEntityDefinition as EntityDefinition,
@@ -823,7 +823,7 @@ describe(
                       type: "uuid",
                     },
                   ],
-                  extra: {
+                  tag: {
                     id: 1,
                     defaultLabel: "Uuid",
                     editable: false,
@@ -832,7 +832,7 @@ describe(
                 parentName: {
                   type: "string",
                   optional: true,
-                  extra: {
+                  tag: {
                     id: 2,
                     defaultLabel: "Entity Name",
                     editable: false,
@@ -845,7 +845,7 @@ describe(
                       type: "uuid",
                     },
                   ],
-                  extra: {
+                  tag: {
                     id: 3,
                     defaultLabel: "Entity Uuid",
                     editable: false,
@@ -853,7 +853,7 @@ describe(
                 },
                 name: {
                   type: "string",
-                  extra: {
+                  tag: {
                     id: 4,
                     defaultLabel: "Name",
                     editable: true,
@@ -867,7 +867,7 @@ describe(
                     },
                   ],
                   optional: true,
-                  extra: {
+                  tag: {
                     id: 5,
                     defaultLabel: "Author",
                     targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
@@ -882,7 +882,7 @@ describe(
                     },
                   ],
                   optional: true,
-                  extra: {
+                  tag: {
                     id: 5,
                     defaultLabel: "Publisher",
                     targetEntity: "a027c379-8468-43a5-ba4d-bf618be25cab",
@@ -901,7 +901,7 @@ describe(
                       type: "uuid",
                     },
                   ],
-                  extra: {
+                  tag: {
                     id: 1,
                     defaultLabel: "Uuid",
                     editable: false,
@@ -910,7 +910,7 @@ describe(
                 parentName: {
                   type: "string",
                   optional: true,
-                  extra: {
+                  tag: {
                     id: 2,
                     defaultLabel: "Entity Name",
                     editable: false,
@@ -923,7 +923,7 @@ describe(
                       type: "uuid",
                     },
                   ],
-                  extra: {
+                  tag: {
                     id: 3,
                     defaultLabel: "Entity Uuid",
                     editable: false,
@@ -931,7 +931,7 @@ describe(
                 },
                 name: {
                   type: "string",
-                  extra: {
+                  tag: {
                     id: 4,
                     defaultLabel: "Name",
                     editable: true,
@@ -945,7 +945,7 @@ describe(
                     },
                   ],
                   optional: true,
-                  extra: {
+                  tag: {
                     id: 5,
                     defaultLabel: "Author",
                     targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
@@ -960,7 +960,7 @@ describe(
                     },
                   ],
                   optional: true,
-                  extra: {
+                  tag: {
                     id: 5,
                     defaultLabel: "Publisher",
                     targetEntity: "a027c379-8468-43a5-ba4d-bf618be25cab",
@@ -1003,7 +1003,7 @@ describe(
                           type: "uuid",
                         },
                       ],
-                      extra: {
+                      tag: {
                         id: 1,
                         defaultLabel: "Uuid",
                         editable: false,
@@ -1016,7 +1016,7 @@ describe(
                           type: "uuid",
                         },
                       ],
-                      extra: {
+                      tag: {
                         id: 1,
                         defaultLabel: "Uuid",
                         editable: false,
@@ -1030,7 +1030,7 @@ describe(
                           type: "uuid",
                         },
                       ],
-                      extra: {
+                      tag: {
                         id: 1,
                         defaultLabel: "Uuid",
                         editable: false,
@@ -1171,7 +1171,7 @@ describe(
                       //             type: "uuid",
                       //           },
                       //         ],
-                      //         extra: {
+                      //         tag: {
                       //           id: 1,
                       //           defaultLabel: "Uuid",
                       //           editable: false,
@@ -1184,7 +1184,7 @@ describe(
                       //             type: "uuid",
                       //           },
                       //         ],
-                      //         extra: {
+                      //         tag: {
                       //           id: 1,
                       //           defaultLabel: "Uuid",
                       //           editable: false,
@@ -1303,7 +1303,7 @@ describe(
           //     definition: {
           //       uuid: {
           //         type: "uuid",
-          //         extra: {
+          //         tag: {
           //           id: 1,
           //           defaultLabel: "Uuid",
           //           editable: false,
@@ -1311,7 +1311,7 @@ describe(
           //       },
           //       parentName: {
           //         type: "string",
-          //         extra: {
+          //         tag: {
           //           id: 2,
           //           defaultLabel: "Entity Name",
           //           editable: false,
@@ -1319,7 +1319,7 @@ describe(
           //       },
           //       parentUuid: {
           //         type: "uuid",
-          //         extra: {
+          //         tag: {
           //           id: 3,
           //           defaultLabel: "Entity Uuid",
           //           editable: false,
@@ -1328,7 +1328,7 @@ describe(
           //       parentDefinitionVersionUuid: {
           //         type: "uuid",
           //         optional: true,
-          //         extra: {
+          //         tag: {
           //           id: 4,
           //           defaultLabel: "Entity Definition Version Uuid",
           //           editable: false,
@@ -1336,7 +1336,7 @@ describe(
           //       },
           //       entityUuid: {
           //         type: "uuid",
-          //         extra: {
+          //         tag: {
           //           id: 6,
           //           defaultLabel: "Entity Uuid of the Entity which this definition is the definition",
           //           editable: false,
@@ -1344,7 +1344,7 @@ describe(
           //       },
           //       name: {
           //         type: "string",
-          //         extra: {
+          //         tag: {
           //           id: 5,
           //           defaultLabel: "Name",
           //           editable: false,
@@ -1354,7 +1354,7 @@ describe(
           //         type: "enum",
           //         definition: ["MetaModel", "Model", "Data"],
           //         optional: true,
-          //         extra: {
+          //         tag: {
           //           id: 7,
           //           defaultLabel: "Concept Level",
           //           editable: false,
@@ -1363,7 +1363,7 @@ describe(
           //       description: {
           //         type: "string",
           //         optional: true,
-          //         extra: {
+          //         tag: {
           //           id: 8,
           //           defaultLabel: "Description",
           //           editable: true,
@@ -1372,7 +1372,7 @@ describe(
           //       defaultInstanceDetailsReportUuid: {
           //         type: "uuid",
           //         optional: true,
-          //         extra: {
+          //         tag: {
           //           id: 9,
           //           defaultLabel: "Default Report used to display instances of this Entity",
           //           editable: false,
@@ -1411,7 +1411,7 @@ describe(
           //                       "void",
           //                     ],
           //                   },
-          //                   extra: {
+          //                   tag: {
           //                     type: "object",
           //                     definition: {
           //                       id: {
@@ -1438,7 +1438,7 @@ describe(
           //                     type: "literal",
           //                     definition: "string",
           //                   },
-          //                   extra: {
+          //                   tag: {
           //                     type: "object",
           //                     definition: {
           //                       id: {
@@ -1475,7 +1475,7 @@ describe(
           //                       "void",
           //                     ],
           //                   },
-          //                   extra: {
+          //                   tag: {
           //                     type: "object",
           //                     definition: {
           //                       id: {
@@ -1516,7 +1516,7 @@ describe(
           //                     type: "boolean",
           //                     optional: true,
           //                   },
-          //                   extra: {
+          //                   tag: {
           //                     type: "object",
           //                     definition: {
           //                       id: {
@@ -1543,7 +1543,7 @@ describe(
           //                     type: "literal",
           //                     definition: "string",
           //                   },
-          //                   extra: {
+          //                   tag: {
           //                     type: "object",
           //                     definition: {
           //                       id: {
@@ -1580,7 +1580,7 @@ describe(
           //                       "void",
           //                     ],
           //                   },
-          //                   extra: {
+          //                   tag: {
           //                     type: "object",
           //                     definition: {
           //                       id: {
@@ -1617,7 +1617,7 @@ describe(
           //                     type: "boolean",
           //                     optional: true,
           //                   },
-          //                   extra: {
+          //                   tag: {
           //                     type: "object",
           //                     definition: {
           //                       id: {
@@ -1648,7 +1648,7 @@ describe(
           //                     type: "boolean",
           //                     optional: true,
           //                   },
-          //                   extra: {
+          //                   tag: {
           //                     type: "object",
           //                     definition: {
           //                       id: {
@@ -1689,7 +1689,7 @@ describe(
           //                     type: "boolean",
           //                     optional: true,
           //                   },
-          //                   extra: {
+          //                   tag: {
           //                     type: "object",
           //                     definition: {
           //                       id: {
@@ -1751,7 +1751,7 @@ describe(
           //                       },
           //                     },
           //                   },
-          //                   extra: {
+          //                   tag: {
           //                     type: "object",
           //                     definition: {
           //                       id: {

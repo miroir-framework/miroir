@@ -202,7 +202,7 @@ export function unfoldJzodSchemaOnce(
         // ...jzodSchema, // could be an issue if resolvedJzodSchema forces a value for an attribute already in jzodSchema (example: jzodSchema.optional = true, resolvedJzodSchema.optional=false)
         // optional: jzodSchema.optional, // TODO: what is the semantics of optional for a schema reference? COMPARE WITH JZOD TO ZOD!!!!!!!!!!
         // nullable: jzodSchema.nullable,
-        // extra: jzodSchema.extra,
+        // tag: jzodSchema.tag,
       //   ...resolvedJzodSchema
       // }
       if (jzodSchema.optional) {
@@ -211,8 +211,8 @@ export function unfoldJzodSchemaOnce(
       if (jzodSchema.nullable) {
         resultJzodSchema.optional = true;
       }
-      if (jzodSchema.extra) {
-        resultJzodSchema.extra = jzodSchema.extra;
+      if (jzodSchema.tag) {
+        resultJzodSchema.tag = jzodSchema.tag;
       }
 
       if (resultJzodSchema.optional != jzodSchema.optional) {
@@ -275,7 +275,7 @@ export function unfoldJzodSchemaOnce(
               return [
                 e[0],
                 // {
-                //   ...e[1], // all properties of JzodSchema extra, optional, nullable...
+                //   ...e[1], // all properties of JzodSchema tag, optional, nullable...
                   // ...resultSchemaTmp.element,
                 // }
                 resultSchemaTmp.element

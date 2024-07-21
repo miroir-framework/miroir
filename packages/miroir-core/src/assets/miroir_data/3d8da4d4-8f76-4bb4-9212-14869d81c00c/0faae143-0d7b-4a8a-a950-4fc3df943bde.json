@@ -12,12 +12,12 @@
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": {"type": "literal", "definition":"queryAction"},
-            "actionName": {"type": "literal", "definition":"runQuery"},
-            "endpoint": {"type": "literal", "definition":"9e404b3c-368c-40cb-be8b-e3c28550c25e"},
+            "actionType": { "type": "literal", "definition": "queryAction" },
+            "actionName": { "type": "literal", "definition": "runQuery" },
+            "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
             "deploymentUuid": {
               "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+              "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
             },
             "query": {
               "type": "schemaReference",
@@ -30,7 +30,8 @@
           }
         },
         "actionErrors": {
-          "type":"literal", "definition": "FailedToCreateInstance"
+          "type": "literal",
+          "definition": "FailedToCreateInstance"
         }
       }
     ]

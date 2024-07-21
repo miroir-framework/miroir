@@ -29,19 +29,21 @@ import {
   StoreUnitConfiguration,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  applicationLibrary,
-  applicationMiroir,
-  applicationModelBranchLibraryMasterBranch,
-  applicationModelBranchMiroirMasterBranch,
-  applicationStoreBasedConfigurationLibrary,
-  applicationStoreBasedConfigurationMiroir,
-  applicationVersionInitialMiroirVersion,
-  applicationVersionLibraryInitialVersion,
+  selfApplicationLibrary,
+  selfApplicationMiroir,
+  selfApplicationModelBranchLibraryMasterBranch,
+  selfApplicationModelBranchMiroirMasterBranch,
+  selfApplicationStoreBasedConfigurationLibrary,
+  selfApplicationStoreBasedConfigurationMiroir,
+  selfApplicationVersionInitialMiroirVersion,
+  selfApplicationVersionLibraryInitialVersion,
   defaultMiroirMetaModel,
   getLoggerName,
   resetAndInitMiroirAndApplicationDatabase,
   restServerDefaultHandlers,
-  startLocalPersistenceStoreControllers
+  startLocalPersistenceStoreControllers,
+  selfApplicationDeploymentMiroir,
+  selfApplicationDeploymentLibrary
 } from "miroir-core";
 import { LocalCache, PersistenceReduxSaga, ReduxStoreWithUndoRedo, RestPersistenceClientAndRestClient } from 'miroir-localcache-redux';
 import { createMswRestServer } from 'miroir-server-msw-stub';
@@ -362,10 +364,11 @@ export async function miroirBeforeEach(
 ):Promise<void> {
   
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach');
-  if (!miroirConfig.client.emulateServer) {
+  if (!miroirConfig.client.emulateServer) { // NOT EMULATED SERVER, USING REAL SERVER!
     // throw new Error('emulateServer must be true in miroirConfig, tests must be independent of server.'); // TODO: really???
     if (domainController) {
-      await resetAndInitMiroirAndApplicationDatabase(domainController, [adminConfigurationDeploymentLibrary, adminConfigurationDeploymentMiroir]);
+      // await resetAndInitMiroirAndApplicationDatabase(domainController, [adminConfigurationDeploymentLibrary, adminConfigurationDeploymentMiroir]);
+      await resetAndInitMiroirAndApplicationDatabase(domainController, [selfApplicationDeploymentMiroir, selfApplicationDeploymentLibrary]);
     } else {
       throw new Error("miroirBeforeEach could not send commands to reset remote datastore because no domain controller has been provided.");
     }
@@ -415,11 +418,11 @@ export async function miroirBeforeEach(
         await localMiroirPersistenceStoreController.initApplication(
           defaultMiroirMetaModel,
           'miroir',
-          applicationMiroir,
-          adminConfigurationDeploymentMiroir,
-          applicationModelBranchMiroirMasterBranch,
-          applicationVersionInitialMiroirVersion,
-          applicationStoreBasedConfigurationMiroir,
+          selfApplicationMiroir,
+          selfApplicationDeploymentMiroir,//adminConfigurationDeploymentMiroir,
+          selfApplicationModelBranchMiroirMasterBranch,
+          selfApplicationVersionInitialMiroirVersion,
+          selfApplicationStoreBasedConfigurationMiroir,
         );
         console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach initApplication miroir END');
       } catch (error) {
@@ -431,11 +434,11 @@ export async function miroirBeforeEach(
         await localAppPersistenceStoreController.initApplication(
           defaultMiroirMetaModel,
           'app',
-          applicationLibrary,
-          adminConfigurationDeploymentLibrary,
-          applicationModelBranchLibraryMasterBranch,
-          applicationVersionLibraryInitialVersion,
-          applicationStoreBasedConfigurationLibrary,
+          selfApplicationLibrary,
+          selfApplicationDeploymentLibrary,// adminConfigurationDeploymentLibrary,
+          selfApplicationModelBranchLibraryMasterBranch,
+          selfApplicationVersionLibraryInitialVersion,
+          selfApplicationStoreBasedConfigurationLibrary,
         );
         console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach initApplication app END');
       } catch (error) {

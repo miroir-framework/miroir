@@ -24,24 +24,24 @@
             },
             "deploymentUuid": {
               "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+              "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
             },
             "parentName": {
               "type": "string",
               "optional": true,
-              "extra": { "id":1, "defaultLabel": "Parent Name", "editable": false }
+              "tag": { "value": {  "id":1, "defaultLabel": "Parent Name", "editable": false }}
             },
             "parentUuid": {
               "type": "string",
               "optional": true,
               "validations": [{ "type": "uuid" }],
-              "extra": { "id":1, "defaultLabel": "Parent Uuid", "editable": false }
+              "tag": { "value": {  "id":1, "defaultLabel": "Parent Uuid", "editable": false }}
             },
             "uuid": {
               "type": "string",
               "optional": true,
               "validations": [{ "type": "uuid" }],
-              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+              "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
             },
             "objects": {
               "type": "array",

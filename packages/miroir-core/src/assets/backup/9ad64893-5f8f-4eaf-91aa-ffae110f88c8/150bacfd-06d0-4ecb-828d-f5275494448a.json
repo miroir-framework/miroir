@@ -21,7 +21,7 @@
           "type": "boolean",
           "optional": false
         },
-        "extra": {
+        "tag": { "value": { 
           "optional": true,
           "type": "object",
           "definition": {
@@ -35,7 +35,7 @@
               "type": "boolean"
             }
           }
-        },
+        }},
         "type": {
           "type": "literal",
           "definition": "object"
@@ -59,11 +59,11 @@
         "relativePath": "jzodReference"
       },
       "optional": true,
-      "extra": {
+      "tag": { "value": { 
         "id": "5",
         "defaultLabel": "E",
         "editable": true
-      }
+      }}
     },
     "f": {
       "type": "array",

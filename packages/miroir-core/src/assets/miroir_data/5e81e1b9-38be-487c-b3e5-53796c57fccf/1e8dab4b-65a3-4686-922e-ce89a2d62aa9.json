@@ -9,9 +9,8 @@
     "context": {
       "jzodBaseObject": {
         "type": "object",
-        "tag": {
+        "tag": { 
           "optional": true,
-          "type": "schemaTag",
           "schema": {
             "optional": true,
             "metaSchema": {
@@ -19,7 +18,6 @@
               "optional": true,
               "definition": {
                 "optional": { "type": "boolean", "optional": true },
-                "type": { "type": "literal", "definition": "schemaTag"},
                 "metaSchema": {
                   "type": "schemaReference",
                   "optional": true,
@@ -57,17 +55,6 @@
           "nullable": {
             "type": "boolean",
             "optional": true
-          },
-          "extra": {
-            "type": "object",
-            "optional": true,
-            "definition": {
-              "id": { "type": "number", "optional": true },
-              "defaultLabel": { "type": "string", "optional": true },
-              "initializeTo": { "type": "any", "optional": true },
-              "targetEntity": { "type": "string", "optional": true },
-              "editable": { "type": "boolean", "optional": true }
-            }
           }
         }
       },
@@ -129,13 +116,6 @@
       "jzodAttributeDateValidations": {
         "type": "object",
         "definition": {
-          "extra": {
-            "type": "record",
-            "definition": {
-              "type": "any"
-            },
-            "optional": true
-          },
           "type": {
             "type": "enum",
             "definition": ["min", "max"]
@@ -177,13 +157,6 @@
       "jzodAttributeNumberValidations": {
         "type": "object",
         "definition": {
-          "extra": {
-            "type": "record",
-            "definition": {
-              "type": "any"
-            },
-            "optional": true
-          },
           "type": {
             "type": "enum",
             "definition": [
@@ -238,13 +211,6 @@
       "jzodAttributeStringValidations": {
         "type": "object",
         "definition": {
-          "extra": {
-            "type": "record",
-            "definition": {
-              "type": "any"
-            },
-            "optional": true
-          },
           "type": {
             "type": "enum",
             "definition": [
@@ -303,12 +269,6 @@
       "jzodElement": {
         "type": "union",
         "discriminator": "type",
-        "extra": { 
-          "type": "object",
-          "definition": {
-            "initializeTo": { "type": "string" }
-          }
-        },
         "definition": [
           {
             "type": "schemaReference",

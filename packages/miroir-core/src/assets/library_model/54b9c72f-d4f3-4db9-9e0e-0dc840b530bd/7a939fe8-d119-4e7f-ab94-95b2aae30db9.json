@@ -20,41 +20,41 @@
     "definition": {
       "uuid": {
         "type": "uuid",
-        "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+        "tag": { "value": {  "id": 1, "defaultLabel": "Uuid", "editable": false }}
       },
       "parentName": {
         "type": "string",
         "optional": true,
-        "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
+        "tag": { "value": {  "id": 2, "defaultLabel": "Entity Name", "editable": false }}
       },
       "parentUuid": {
         "type": "uuid",
-        "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
+        "tag": { "value": {  "id": 3, "defaultLabel": "Entity Uuid", "editable": false }}
       },
       "conceptLevel": {
         "type": "enum",
         "definition": ["MetaModel", "Model", "Data"],
         "optional": true,
-        "extra": { "id": 5, "defaultLabel": "Concept Level", "editable": false }
+        "tag": { "value": {  "id": 5, "defaultLabel": "Concept Level", "editable": false }}
       },
       "name": {
         "type": "string",
-        "extra": { "id": 4, "defaultLabel": "Name", "editable": true }
+        "tag": { "value": {  "id": 4, "defaultLabel": "Name", "editable": true }}
       },
       "country": {
         "type": "uuid",
         "optional": true,
-        "extra": {
+        "tag": { "value": { 
           "id": 5,
           "defaultLabel": "Country",
           "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
           "editable": true
-        }
+        }}
       },
       "icon": {
         "type": "string",
         "optional": true,
-        "extra": { "id": 6, "defaultLabel": "Icon", "editable": true }
+        "tag": { "value": {  "id": 6, "defaultLabel": "Icon", "editable": true }}
       }
     }
   }

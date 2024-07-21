@@ -31,7 +31,7 @@ import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
 import entityJzodSchema from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/5e81e1b9-38be-487c-b3e5-53796c57fccf.json';
 import entityStoreBasedConfiguration from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7990c0c9-86c3-40a1-a121-036c91b55ed7.json';
-import entityApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
+import entitySelfApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
 import { packageName } from "../constants.js";
 import { entityMenu } from "../index.js";
 import { getLoggerName } from "../tools.js";
@@ -111,16 +111,16 @@ export function selectCurrentDeploymentModel(
         applicationVersions: (
           domainState[deploymentUuid] &&
           domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"] &&
-          domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entityApplicationVersion.uuid]
-          // ? Object.values(domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entityApplicationVersion.uuid]) as MiroirApplicationVersionOLD_DO_NOT_USE[]
-          ? Object.values(domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entityApplicationVersion.uuid]) as ApplicationVersion[]
+          domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entitySelfApplicationVersion.uuid]
+          // ? Object.values(domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entitySelfApplicationVersion.uuid]) as MiroirApplicationVersionOLD_DO_NOT_USE[]
+          ? Object.values(domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entitySelfApplicationVersion.uuid]) as ApplicationVersion[]
           : []
         ),
         menus: (
           domainState[deploymentUuid] &&
           domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"] &&
           domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entityMenu.uuid]
-          // ? Object.values(domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entityApplicationVersion.uuid]) as MiroirApplicationVersionOLD_DO_NOT_USE[]
+          // ? Object.values(domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entitySelfApplicationVersion.uuid]) as MiroirApplicationVersionOLD_DO_NOT_USE[]
           ? Object.values(domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entityMenu.uuid]) as Menu[]
           : []
         ),
@@ -136,9 +136,9 @@ export function selectEntityInstancesFromJzodAttribute(
 ): EntitiesDomainStateEntityInstanceArraySelector {
   return (domainState: EntitiesDomainState): EntityInstance[] => {
     // log.info('selectEntityInstances for entityUuid', parentUuid, 'existing entities:', Object.keys(domainState))
-    if (jzodSchema?.extra?.targetEntity && domainState[jzodSchema?.extra?.targetEntity]) {
+    if (jzodSchema?.tag?.value?.targetEntity && domainState[jzodSchema?.tag?.value.targetEntity]) {
       // log.info('selectEntityInstances for entityUuid', parentUuid, 'existing instances:', Object.keys(domainState[parentUuid]))
-      return DomainInstanceUuidIndexToArray(domainState[jzodSchema?.extra?.targetEntity]);
+      return DomainInstanceUuidIndexToArray(domainState[jzodSchema?.tag?.value.targetEntity]);
     } else {
       return [];
     }
@@ -147,7 +147,7 @@ export function selectEntityInstancesFromJzodAttribute(
 
 // ################################################################################################
 export function selectEntityUuidFromJzodAttribute(jzodSchema:JzodPlainAttribute | undefined):Uuid | undefined{
-  return jzodSchema?.extra?.targetEntity;
+  return jzodSchema?.tag?.value?.targetEntity;
 }
 
 // ################################################################################################

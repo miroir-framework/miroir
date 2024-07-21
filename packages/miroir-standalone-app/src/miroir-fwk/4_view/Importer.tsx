@@ -137,17 +137,17 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           uuid: {
             type: "string",
             validations: [{ type: "uuid" }],
-            extra: { id: 1, defaultLabel: "Uuid", editable: false },
+            tag: { id: 1, defaultLabel: "Uuid", editable: false },
           },
           parentName: {
             type: "string",
             optional: true,
-            extra: { id: 1, defaultLabel: "Uuid", editable: false },
+            tag: { id: 1, defaultLabel: "Uuid", editable: false },
           },
           parentUuid: {
             type: "string",
             validations: [{ type: "uuid" }],
-            extra: { id: 1, defaultLabel: "parentUuid", editable: false },
+            tag: { id: 1, defaultLabel: "parentUuid", editable: false },
           },
         },
         ...(
@@ -158,7 +158,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                 [a]: {
                   type: "string",
                   optional: true,
-                  extra: { id: index + 2 /* uuid attribute has been added*/, defaultLabel: a, editable: true },
+                  tag: { id: index + 2 /* uuid attribute has been added*/, defaultLabel: a, editable: true },
                 },
               }
             )
@@ -184,7 +184,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       newEntityDefinitionUuid: uuidv4(),
       newEntityDetailsReportUuid: uuidv4(),
       newEntityListReportUuid: uuidv4(),
-      //TODO: extra params, should be passed as context instead?
+      //TODO: tag params, should be passed as context instead?
       jzodSchema,
       entityEntityDefinition,
       entityReport,
@@ -743,7 +743,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       newEntityDetailsReportUuid: uuidv4(),
       currentApplicationUuid: props.currentApplicationUuid,
       currentDeploymentUuid: props.currentDeploymentUuid,
-      //TODO: extra params, should be passed as context instead?
+      //TODO: tag params, should be passed as context instead?
       // jzodSchema,
       splittedEntityDefinition, // !!!
       entityEntity,
@@ -798,11 +798,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             definition: {
                 uuid: {
                   type: "uuid",
-                  extra: { id: 1, defaultLabel: "Uuid", editable: false },
+                  tag: { id: 1, defaultLabel: "Uuid", editable: false },
                 } as JzodPlainAttribute,
                 name: {
                   type: "string",
-                  extra: { id: 2, defaultLabel: "name", editable: false },
+                  tag: { id: 2, defaultLabel: "name", editable: false },
                 } as JzodAttributePlainStringWithValidations,
               },
           },
@@ -894,7 +894,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                       type: "string",
                       "validations": [{ "type": "uuid" }],
                       nullable: true, // TODO: make non-nullable and enforce FK after migration has been done!
-                      extra: { defaultLabel: "Municipality", targetEntity: {
+                      tag: { defaultLabel: "Municipality", targetEntity: {
                         templateType: "mustacheStringTemplate",
                         definition: "{{newEntity.uuid}}",
                       }},
@@ -934,11 +934,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     //     {
     //       uuid: {
     //         type: "uuid",
-    //         extra: { id: 1, defaultLabel: "Uuid", editable: false },
+    //         tag: { id: 1, defaultLabel: "Uuid", editable: false },
     //       } as JzodPlainAttribute,
     //       name: {
     //         type: "string",
-    //         extra: { id: 2, defaultLabel: "name", editable: false },
+    //         tag: { id: 2, defaultLabel: "name", editable: false },
     //       } as JzodAttributePlainStringWithValidations,
     //     },
     //     {}
@@ -984,7 +984,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     //         type: "string",
     //         "validations": [{ "type": "uuid" }],
     //         nullable: true, // TODO: make non-nullable and enforce FK after migration has been done!
-    //         extra: { defaultLabel: "Municipality", targetEntity: newEntity.uuid},
+    //         tag: { defaultLabel: "Municipality", targetEntity: newEntity.uuid},
     //       }
     //     }
     //   ],

@@ -1,7 +1,7 @@
-import entityApplication from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a659d350-dd97-4da9-91de-524fa01745dc.json';
-import entityApplicationDeploymentConfiguration from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/35c5608a-7678-4f07-a4ec-76fc5bc35424.json';
-import entityApplicationModelBranch from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/cdb0aec6-b848-43ac-a058-fe2dbe5811f1.json';
-import entityApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
+import entitySelfApplication from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a659d350-dd97-4da9-91de-524fa01745dc.json';
+import entitySelfApplicationDeploymentConfiguration from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/35c5608a-7678-4f07-a4ec-76fc5bc35424.json';
+import entitySelfApplicationModelBranch from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/cdb0aec6-b848-43ac-a058-fe2dbe5811f1.json';
+import entitySelfApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
 import entityApplicationVersionCrossEntityDeployment from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/8bec933d-6287-4de7-8a88-5c24216de9f4.json';
 import entityCommit from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/73bb0c69-e636-4e3b-a230-51f25469c089.json';
 import entityEndpointVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3d8da4d4-8f76-4bb4-9212-14869d81c00c.json';
@@ -13,11 +13,11 @@ import entityReport from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873
 import entityStoreBasedConfiguration from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7990c0c9-86c3-40a1-a121-036c91b55ed7.json';
 import entityQueryVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e4320b9e-ab45-4abe-85d8-359604b3c62f.json';
 
-import entityDefinitionApplication from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json';
-import entityDefinitionApplicationDeploymentConfiguration from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bd303ae8-6bce-4b44-a63c-815b9ebf728b.json';
-import entityDefinitionApplicationVersion from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json';
+import entityDefinitionSelfApplication from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json';
+import entityDefinitionSelfApplicationDeploymentConfiguration from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bd303ae8-6bce-4b44-a63c-815b9ebf728b.json';
+import entityDefinitionSelfApplicationVersion from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json';
 import entityDefinitionApplicationVersionCrossEntityDeployment from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c0b71083-8cc8-43db-bf52-572f1f03bbb5.json';
-import entityDefinitionApplicationModelBranch from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/69bf7c03-a1df-4d1c-88c1-44363feeea87.json';
+import entityDefinitionSelfApplicationModelBranch from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/69bf7c03-a1df-4d1c-88c1-44363feeea87.json';
 import entityDefinitionCommit from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b17d5e9e-12f2-4ed8-abdb-2576c01514a4.json';
 import entityDefinitionEndpoint from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/e3c1cc69-066d-4f52-beeb-b659dc7a88b9.json';
 import entityDefinitionEntityDefinition from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json';
@@ -76,17 +76,17 @@ export async function modelInitialize(
   metaModel:MetaModel,
   persistenceStoreController:PersistenceStoreControllerInterface,
   dataStoreType: DataStoreApplicationType,
-  application: Application,
-  applicationDeploymentConfiguration: EntityInstance,
-  applicationModelBranch: EntityInstance,
-  applicationVersion: EntityInstance,
-  applicationStoreBasedConfiguration: EntityInstance,
+  selfApplication: Application,
+  selfApplicationDeploymentConfiguration: EntityInstance,
+  selfApplicationModelBranch: EntityInstance,
+  selfApplicationVersion: EntityInstance,
+  selfApplicationStoreBasedConfiguration: EntityInstance,
 ): Promise<void> {
-  log.info("modelInitialize application",application,'dataStoreType',dataStoreType);
-  const logHeader = 'modelInitialize '+ application?.name;
+  log.info("modelInitialize application",selfApplication,'dataStoreType',dataStoreType);
+  const logHeader = 'modelInitialize '+ selfApplication?.name;
   // TODO: test this.sqlEntities for emptiness, abort if not empty
   // bootstrap MetaClass entity
-  log.info('################################### modelInitialize',application.name,'dataStoreType',dataStoreType);
+  log.info('################################### modelInitialize',selfApplication.name,'dataStoreType',dataStoreType);
   
   const insertReferenceInMetaModel = dataStoreType == 'miroir';
 
@@ -105,19 +105,19 @@ export async function modelInitialize(
     log.info(logHeader, 'created entity entity',persistenceStoreController.getEntityUuids());
   
     // bootstrap Application
-    await persistenceStoreController.createEntity(entityApplication as MetaEntity, entityDefinitionApplication as EntityDefinition);
+    await persistenceStoreController.createEntity(entitySelfApplication as MetaEntity, entityDefinitionSelfApplication as EntityDefinition);
     log.info(logHeader, 'created entity Application',persistenceStoreController.getEntityUuids());
     
     // bootstrap ApplicationModelBranch
-    await persistenceStoreController.createEntity(entityApplicationModelBranch as MetaEntity, entityDefinitionApplicationModelBranch as EntityDefinition);
+    await persistenceStoreController.createEntity(entitySelfApplicationModelBranch as MetaEntity, entityDefinitionSelfApplicationModelBranch as EntityDefinition);
     log.info(logHeader, 'created entity ApplicationModelBranch',persistenceStoreController.getEntityUuids());
     
     // bootstrap ApplicationVersion
-    await persistenceStoreController.createEntity(entityApplicationVersion as MetaEntity, entityDefinitionApplicationVersion as EntityDefinition);
+    await persistenceStoreController.createEntity(entitySelfApplicationVersion as MetaEntity, entityDefinitionSelfApplicationVersion as EntityDefinition);
     log.info(logHeader, 'created entity ApplicationVersion',persistenceStoreController.getEntityUuids());
     
     // bootstrap Application Deployment Configuration
-    await persistenceStoreController.createEntity(entityApplicationDeploymentConfiguration as MetaEntity, entityDefinitionApplicationDeploymentConfiguration as EntityDefinition);
+    await persistenceStoreController.createEntity(entitySelfApplicationDeploymentConfiguration as MetaEntity, entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition);
     log.info(logHeader, 'created entity ApplicationDeploymentConfiguration',persistenceStoreController.getEntityUuids());
     
     // // bootstrap Endpoint
@@ -170,11 +170,11 @@ export async function modelInitialize(
     await persistenceStoreController.upsertInstance('data', miroirJzodSchemaBootstrap as EntityInstance);
     
 
-    await persistenceStoreController.upsertInstance('data', application);
-    await persistenceStoreController.upsertInstance('data', applicationDeploymentConfiguration);
-    await persistenceStoreController.upsertInstance('data', applicationModelBranch);
-    await persistenceStoreController.upsertInstance('data', applicationVersion);
-    await persistenceStoreController.upsertInstance('data', applicationStoreBasedConfiguration);
+    await persistenceStoreController.upsertInstance('data', selfApplication);
+    await persistenceStoreController.upsertInstance('data', selfApplicationDeploymentConfiguration);
+    await persistenceStoreController.upsertInstance('data', selfApplicationModelBranch);
+    await persistenceStoreController.upsertInstance('data', selfApplicationVersion);
+    await persistenceStoreController.upsertInstance('data', selfApplicationStoreBasedConfiguration);
 
     // await persistenceStoreController.upsertInstance('data', applicationEndpoint);
     await persistenceStoreController.upsertInstance('data', applicationEndpointV1);
@@ -206,29 +206,29 @@ export async function modelInitialize(
 
     // bootstrap Self Application
     await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
-      entityApplication as MetaEntity,
-      entityDefinitionApplication as EntityDefinition
+      entitySelfApplication as MetaEntity,
+      entityDefinitionSelfApplication as EntityDefinition
     );
     log.info(logHeader, "app initialized entity Application", persistenceStoreController.getEntityUuids());
 
     // bootstrap Self ApplicationModelBranch
     await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
-      entityApplicationModelBranch as MetaEntity,
-      entityDefinitionApplicationModelBranch as EntityDefinition
+      entitySelfApplicationModelBranch as MetaEntity,
+      entityDefinitionSelfApplicationModelBranch as EntityDefinition
     );
     log.info(logHeader, "app initialized entity ApplicationModelBranch", persistenceStoreController.getEntityUuids());
 
     // bootstrap Self ApplicationVersion
     await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
-      entityApplicationVersion as MetaEntity,
-      entityDefinitionApplicationVersion as EntityDefinition
+      entitySelfApplicationVersion as MetaEntity,
+      entityDefinitionSelfApplicationVersion as EntityDefinition
     );
     log.info(logHeader, "app initialized entity ApplicationVersion", persistenceStoreController.getEntityUuids());
 
     // bootstrap Self Deployment
     await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
-      entityApplicationDeploymentConfiguration as MetaEntity,
-      entityDefinitionApplicationDeploymentConfiguration as EntityDefinition
+      entitySelfApplicationDeploymentConfiguration as MetaEntity,
+      entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition
     );
     log.info(
       logHeader,
@@ -272,11 +272,11 @@ export async function modelInitialize(
     );
     log.info(logHeader, "app initialized entity StoreBasedConfiguration", persistenceStoreController.getEntityUuids());
 
-    await persistenceStoreController.upsertInstance("model", application);
-    await persistenceStoreController.upsertInstance("model", applicationDeploymentConfiguration);
-    await persistenceStoreController.upsertInstance("model", applicationModelBranch);
-    await persistenceStoreController.upsertInstance("model", applicationVersion);
-    await persistenceStoreController.upsertInstance("model", applicationStoreBasedConfiguration);
+    await persistenceStoreController.upsertInstance("model", selfApplication);
+    await persistenceStoreController.upsertInstance("model", selfApplicationDeploymentConfiguration);
+    await persistenceStoreController.upsertInstance("model", selfApplicationModelBranch);
+    await persistenceStoreController.upsertInstance("model", selfApplicationVersion);
+    await persistenceStoreController.upsertInstance("model", selfApplicationStoreBasedConfiguration);
     await persistenceStoreController.upsertInstance("model", menuDefaultLibrary);
   }
 

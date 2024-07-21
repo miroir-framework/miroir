@@ -16,7 +16,7 @@ import {
   StoreBasedConfiguration,
   Uuid,
   adminConfigurationDeploymentMiroir,
-  entityApplicationVersion,
+  entitySelfApplicationVersion,
   entityEntity,
   entityEntityDefinition,
   entityJzodSchema,
@@ -169,7 +169,7 @@ const selectApplicationVersionsFromReduxState = createSelector(
               ? "data"
               : "model"
             : undefined,
-      entityApplicationVersion.uuid
+      entitySelfApplicationVersion.uuid
     )
   }
 );

@@ -12,54 +12,54 @@
     "definition": {
       "uuid": {
         "type": "uuid",
-        "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+        "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
       },
       "parentName": {
         "type": "string",
         "optional": true,
-        "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+        "tag": { "value": {  "id":2, "defaultLabel": "Entity Name", "editable": false }}
       },
       "parentUuid": {
         "type": "uuid",
-        "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
+        "tag": { "value": {  "id":3, "defaultLabel": "Entity Uuid", "editable": false }}
       },
       "parentDefinitionVersionUuid": {
         "type": "uuid",
         "optional": true,
-        "extra": { "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }
+        "tag": { "value": {  "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }}
       },
       "date": {
         "type": "date",
-        "extra": { "id": 5, "defaultLabel": "Date", "editable": false }
+        "tag": { "value": {  "id": 5, "defaultLabel": "Date", "editable": false }}
       },
       "application": {
         "type": "uuid",
         "optional": true,
-        "extra": { "id": 6, "defaultLabel": "Application", "editable": false }
+        "tag": { "value": {  "id": 6, "defaultLabel": "Application", "editable": false }}
       },
       "name": {
         "type": "string",
-        "extra": { "id":7, "defaultLabel": "Name", "editable": true }
+        "tag": { "value": {  "id":7, "defaultLabel": "Name", "editable": true }}
       },
       "preceding": {
         "type": "uuid",
         "optional": true,
-        "extra": { "id":8, "defaultLabel": "Previous Commit", "targetEntity": "73bb0c69-e636-4e3b-a230-51f25469c089", "editable": false }
+        "tag": { "value": {  "id":8, "defaultLabel": "Previous Commit", "targetEntity": "73bb0c69-e636-4e3b-a230-51f25469c089", "editable": false }}
       },
       "branch": {
         "type": "uuid",
         "optional": true,
-        "extra": { "id":9, "defaultLabel": "Author", "targetEntity": "", "editable": true }
+        "tag": { "value": {  "id":9, "defaultLabel": "Author", "targetEntity": "", "editable": true }}
       },
       "author": {
         "type": "uuid",
         "optional": true,
-        "extra": { "id":10, "defaultLabel": "Author", "targetEntity": "", "editable": true }
+        "tag": { "value": {  "id":10, "defaultLabel": "Author", "targetEntity": "", "editable": true }}
       },
       "description": {
         "type": "string",
         "optional": true,
-        "extra": { "id": 11, "defaultLabel": "Description", "editable": true }
+        "tag": { "value": {  "id": 11, "defaultLabel": "Description", "editable": true }}
       }
     }
   }

@@ -1,15 +1,21 @@
 import { applyCarryOnSchema, applyCarryOnSchemaOnLevel, forgeCarryOnReferenceName } from "@miroir-framework/jzod";
-import {
-  EntityDefinition,
-  JzodElement,
-  JzodObject,
-  JzodObjectOrReference,
-  JzodReference,
-  JzodSchema,
-  JzodUnion,
-  miroirCrossJoinQuery,
-  miroirSelectQueriesRecord,
-} from "../preprocessor-generated/miroirFundamentalType.js";
+/**
+ * BEWARE: since this file is involved in generating 
+ * "../preprocessor-generated/miroirFundamentalType.js"
+ * it CAN NOT use types from it, for the sake of circularity avoidance!
+ *  */ 
+
+// import {
+//   EntityDefinition,
+//   JzodElement,
+//   JzodObject,
+//   JzodObjectOrReference,
+//   JzodReference,
+//   JzodSchema,
+//   JzodUnion,
+//   miroirCrossJoinQuery,
+//   miroirSelectQueriesRecord,
+// } from "../preprocessor-generated/miroirFundamentalType.js";
 import { cleanLevel } from "../../../1_core/constants.js";
 import { MiroirLoggerFactory } from "../../../4_services/Logger.js";
 import { packageName } from "../../../constants.js";
@@ -17,65 +23,75 @@ import { getLoggerName } from "../../../tools.js";
 import { LoggerInterface } from "../../4-services/LoggerInterface.js";
 // import { Endpoint } from "../../../3_controllers/Endpoint.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"getMiroirFundamentalJzodSchema");
-let log:LoggerInterface = console as any as LoggerInterface;
+const loggerName: string = getLoggerName(packageName, cleanLevel, "getMiroirFundamentalJzodSchema");
+let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;
 });
 
-function makeReferencesAbsolute(jzodSchema:JzodElement, absolutePath: string, force?: boolean):JzodElement {
+function makeReferencesAbsolute(jzodSchema: any, absolutePath: string, force?: boolean): any {
+// function makeReferencesAbsolute(jzodSchema: JzodElement, absolutePath: string, force?: boolean): JzodElement {
   switch (jzodSchema.type) {
     case "schemaReference": {
       const convertedContext = Object.fromEntries(
-        Object.entries(jzodSchema.context??{}).map(
-          (e: [string, JzodElement]) => [e[0], makeReferencesAbsolute(e[1], absolutePath, force)]
-        )
+        Object.entries(jzodSchema.context ?? {}).map((e: [string, any]) => [
+        // Object.entries(jzodSchema.context ?? {}).map((e: [string, JzodElement]) => [
+          e[0],
+          makeReferencesAbsolute(e[1], absolutePath, force),
+        ])
       );
 
-      const result = jzodSchema.definition.absolutePath && !force
-      ? {
-        ...jzodSchema,
-        context: convertedContext,
-      }
-      : {
-          ...jzodSchema,
-          context: convertedContext,
-          definition: {
-            ...jzodSchema.definition,
-            absolutePath,
-          },
-        };
+      const result =
+        jzodSchema.definition.absolutePath && !force
+          ? {
+              ...jzodSchema,
+              context: convertedContext,
+            }
+          : {
+              ...jzodSchema,
+              context: convertedContext,
+              definition: {
+                ...jzodSchema.definition,
+                absolutePath,
+              },
+            };
       // console.log("makeReferencesAbsolute schemaReference received", JSON.stringify(jzodSchema));
       // console.log("makeReferencesAbsolute schemaReference returns", JSON.stringify(result));
       return result;
       break;
     }
     case "object": {
-      const convertedExtend = jzodSchema.extend?makeReferencesAbsolute(jzodSchema.extend, absolutePath, force): undefined as any;
+      const convertedExtend = jzodSchema.extend
+        ? makeReferencesAbsolute(jzodSchema.extend, absolutePath, force)
+        : (undefined as any);
       const convertedDefinition = Object.fromEntries(
-        Object.entries(jzodSchema.definition).map(
-          (e: [string, JzodElement]) => [e[0], makeReferencesAbsolute(e[1], absolutePath, force)]
-        )
+        Object.entries(jzodSchema.definition).map((e: [string, any]) => [
+        // Object.entries(jzodSchema.definition).map((e: [string, JzodElement]) => [
+          e[0],
+          makeReferencesAbsolute(e[1], absolutePath, force),
+        ])
       );
-      return convertedExtend?{
-        ...jzodSchema,
-        extend: convertedExtend,
-        definition: convertedDefinition
-      }:{
-        ...jzodSchema,
-        definition: convertedDefinition
-      }
+      return convertedExtend
+        ? {
+            ...jzodSchema,
+            extend: convertedExtend,
+            definition: convertedDefinition,
+          }
+        : {
+            ...jzodSchema,
+            definition: convertedDefinition,
+          };
       break;
     }
     case "array":
     case "lazy":
-    case "record": 
+    case "record":
     case "promise":
     case "set": {
       return {
         ...jzodSchema,
-        definition: makeReferencesAbsolute(jzodSchema.definition, absolutePath, force) as any
-      }
+        definition: makeReferencesAbsolute(jzodSchema.definition, absolutePath, force) as any,
+      };
       break;
     }
     case "map": {
@@ -83,18 +99,20 @@ function makeReferencesAbsolute(jzodSchema:JzodElement, absolutePath: string, fo
         ...jzodSchema,
         definition: [
           makeReferencesAbsolute(jzodSchema.definition[0], absolutePath, force),
-          makeReferencesAbsolute(jzodSchema.definition[1], absolutePath, force)
-        ]
-      }
+          makeReferencesAbsolute(jzodSchema.definition[1], absolutePath, force),
+        ],
+      };
     }
     case "function": {
       return {
         ...jzodSchema,
         definition: {
-          args: jzodSchema.definition.args.map(e => makeReferencesAbsolute(e, absolutePath, force)),
-          returns: jzodSchema.definition.returns?makeReferencesAbsolute(jzodSchema.definition.returns, absolutePath, force):undefined,
-        }
-      }
+          args: jzodSchema.definition.args.map((e: any) => makeReferencesAbsolute(e, absolutePath, force)),
+          returns: jzodSchema.definition.returns
+            ? makeReferencesAbsolute(jzodSchema.definition.returns, absolutePath, force)
+            : undefined,
+        },
+      };
       break;
     }
     case "intersection": {
@@ -103,23 +121,23 @@ function makeReferencesAbsolute(jzodSchema:JzodElement, absolutePath: string, fo
         definition: {
           left: makeReferencesAbsolute(jzodSchema.definition.left, absolutePath, force),
           right: makeReferencesAbsolute(jzodSchema.definition.right, absolutePath, force),
-        }
-      }
+        },
+      };
       break;
     }
     case "union":
     case "tuple": {
       return {
         ...jzodSchema,
-        definition: jzodSchema.definition.map(e => makeReferencesAbsolute(e,absolutePath, force)),
-      }
+        definition: jzodSchema.definition.map((e: any) => makeReferencesAbsolute(e, absolutePath, force)),
+      };
       break;
     }
     // case "simpleType":
     case "enum":
     case "literal":
     default: {
-      return jzodSchema
+      return jzodSchema;
       break;
     }
   }
@@ -127,8 +145,10 @@ function makeReferencesAbsolute(jzodSchema:JzodElement, absolutePath: string, fo
 
 // ################################################################################################
 export function getMiroirFundamentalJzodSchema(
-  entityDefinitionBundleV1 : EntityDefinition,
-  entityDefinitionCommit : EntityDefinition,
+  entityDefinitionBundleV1: any,
+  entityDefinitionCommit: any,
+  // entityDefinitionBundleV1: EntityDefinition,
+  // entityDefinitionCommit: EntityDefinition,
   modelEndpointVersionV1: any,
   storeManagementEndpoint: any,
   instanceEndpointVersionV1: any,
@@ -137,19 +157,30 @@ export function getMiroirFundamentalJzodSchema(
   domainEndpointVersionV1: any,
   queryEndpointVersionV1: any,
   persistenceEndpointVersionV1: any,
-  jzodSchemajzodMiroirBootstrapSchema: JzodSchema,
-  templateJzodSchema: JzodSchema,
-  entityDefinitionApplicationV1 : EntityDefinition,
-  entityDefinitionApplicationVersionV1 : EntityDefinition,
-  entityDefinitionDeployment : EntityDefinition,
-  entityDefinitionEntity : EntityDefinition,
-  entityDefinitionEntityDefinitionV1 : EntityDefinition,
-  entityDefinitionJzodSchemaV1 : EntityDefinition,
-  entityDefinitionMenu  : EntityDefinition,
-  entityDefinitionQueryVersionV1 : EntityDefinition,
-  entityDefinitionReportV1 : EntityDefinition,
-  ): JzodSchema {
-
+  jzodSchemajzodMiroirBootstrapSchema: any,
+  templateJzodSchema: any,
+  entityDefinitionApplicationV1: any,
+  entityDefinitionApplicationVersionV1: any,
+  entityDefinitionDeployment: any,
+  entityDefinitionEntity: any,
+  entityDefinitionEntityDefinitionV1: any,
+  entityDefinitionJzodSchemaV1: any,
+  entityDefinitionMenu: any,
+  entityDefinitionQueryVersionV1: any,
+  entityDefinitionReportV1: any
+  // jzodSchemajzodMiroirBootstrapSchema: JzodSchema,
+  // templateJzodSchema: JzodSchema,
+  // entityDefinitionApplicationV1: EntityDefinition,
+  // entityDefinitionApplicationVersionV1: EntityDefinition,
+  // entityDefinitionDeployment: EntityDefinition,
+  // entityDefinitionEntity: EntityDefinition,
+  // entityDefinitionEntityDefinitionV1: EntityDefinition,
+  // entityDefinitionJzodSchemaV1: EntityDefinition,
+  // entityDefinitionMenu: EntityDefinition,
+  // entityDefinitionQueryVersionV1: EntityDefinition,
+  // entityDefinitionReportV1: EntityDefinition
+): any {
+// ): JzodSchema {
   const entityDefinitionQueryVersionV1WithAbsoluteReferences = makeReferencesAbsolute(
     entityDefinitionQueryVersionV1.jzodSchema.definition.definition,
     "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -169,359 +200,334 @@ export function getMiroirFundamentalJzodSchema(
 
   // log.info("domainActionDefinitions", domainActionDefinitions)
 
-  const miroirFundamentalJzodSchema: JzodSchema = {
-    "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-    "parentName": "JzodSchema",
-    "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
-    "name": "miroirFundamentalJzodSchema",
-    "defaultLabel": "The Jzod Schema of fundamental Miroir Datatypes. Those are fundamental Jzod schemas that are needed before further Jzod Schemas can be loaded from the datastore.",
-    "definition": {
-      "type": "schemaReference",
-      "context": {
+  const miroirFundamentalJzodSchema: any = {
+  // const miroirFundamentalJzodSchema: JzodSchema = {
+    uuid: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+    parentName: "JzodSchema",
+    parentUuid: "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+    name: "miroirFundamentalJzodSchema",
+    defaultLabel:
+      "The Jzod Schema of fundamental Miroir Datatypes. Those are fundamental Jzod schemas that are needed before further Jzod Schemas can be loaded from the datastore.",
+    definition: {
+      type: "schemaReference",
+      context: {
         // ...(jzodSchemajzodMiroirBootstrapSchema as any).definition.context,
         ...(
           makeReferencesAbsolute(
-            jzodSchemajzodMiroirBootstrapSchema.definition as JzodElement,
+            // jzodSchemajzodMiroirBootstrapSchema.definition as JzodElement,
+            jzodSchemajzodMiroirBootstrapSchema.definition as any,
             "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
             true
-          ) as JzodReference
+          ) as any
+          // ) as JzodReference
         ).context,
-        "______________________________________________miroirMetaModel_____________________________________________": {
-          "type": "never"
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+        ______________________________________________miroirMetaModel_____________________________________________: {
+          type: "never",
         },
-        "entityAttributeExpandedType": {
-          "type": "enum",
-          "definition": [
-            "UUID",
-            "STRING",
-            "BOOLEAN",
-            "OBJECT"
-          ]
+        entityAttributeExpandedType: {
+          type: "enum",
+          definition: ["UUID", "STRING", "BOOLEAN", "OBJECT"],
         },
-        "entityAttributeType": {
-          "type": "union",
-          "definition": [
+        entityAttributeType: {
+          type: "union",
+          definition: [
             {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "entityInstance"
-              }
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "entityInstance",
+              },
             },
             {
-              "type": "enum",
-              "definition": [
-                "ENTITY_INSTANCE_UUID",
-                "ARRAY"
-              ]
-            }
-          ]
+              type: "enum",
+              definition: ["ENTITY_INSTANCE_UUID", "ARRAY"],
+            },
+          ],
         },
-        "entityAttributeUntypedCore": {
-          "type": "object",
-          "definition": {
-            "id": { "type": "number" },
-            "name": { "type": "string" },
-            "defaultLabel": { "type": "string" },
-            "description": { "type": "string", "optional": true },
-            "editable": { "type": "boolean" },
-            "nullable": { "type": "boolean" }
-          }
-        },
-        "entityAttributeCore": {
-          "type": "object",
-          "extend": {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "entityAttributeUntypedCore"
-            }
+        entityAttributeUntypedCore: {
+          type: "object",
+          definition: {
+            id: { type: "number" },
+            name: { type: "string" },
+            defaultLabel: { type: "string" },
+            description: { type: "string", optional: true },
+            editable: { type: "boolean" },
+            nullable: { type: "boolean" },
           },
-          "definition": {
-            "type": {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "entityAttributeExpandedType"
-              }
-            }
-          }
         },
-        "entityArrayAttribute": {
-          "type": "object",
-          "extend": {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "entityAttributeUntypedCore"
-            }
+        entityAttributeCore: {
+          type: "object",
+          extend: {
+            type: "schemaReference",
+            definition: {
+              eager: true,
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "entityAttributeUntypedCore",
+            },
           },
-          "definition": {
-            "type": {
-              "type": "literal",
-              "definition": "ARRAY"
+          definition: {
+            type: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "entityAttributeExpandedType",
+              },
             },
-            "lineFormat": {
-              "type": "array",
-              "definition": {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "entityAttributeCore"
-                }
-              }
-            }
-          }
-        },
-        "entityForeignKeyAttribute": {
-          "type": "object",
-          "extend": {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "entityAttributeUntypedCore"
-            }
           },
-          "definition": {
-            "type": {
-              "type": "literal",
-              "definition": "ENTITY_INSTANCE_UUID"
-            },
-            "applicationSection": {
-              "type": "schemaReference",
-              "optional": true,
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "applicationSection"
-              }
-            },
-            "entityUuid": {
-              "type": "uuid",
-              "extra": { "id": 1, "defaultLabel": "Entity Uuid", "editable": false }
-            }
-          }
         },
-        "entityAttribute": {
-          "type": "union",
-          "definition": [
+        entityArrayAttribute: {
+          type: "object",
+          extend: {
+            type: "schemaReference",
+            definition: {
+              eager: true,
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "entityAttributeUntypedCore",
+            },
+          },
+          definition: {
+            type: {
+              type: "literal",
+              definition: "ARRAY",
+            },
+            lineFormat: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "entityAttributeCore",
+                },
+              },
+            },
+          },
+        },
+        entityForeignKeyAttribute: {
+          type: "object",
+          extend: {
+            type: "schemaReference",
+            definition: {
+              eager: true,
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "entityAttributeUntypedCore",
+            },
+          },
+          definition: {
+            type: {
+              type: "literal",
+              definition: "ENTITY_INSTANCE_UUID",
+            },
+            applicationSection: {
+              type: "schemaReference",
+              optional: true,
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "applicationSection",
+              },
+            },
+            entityUuid: {
+              type: "uuid",
+              tag: { value: { id: 1, defaultLabel: "Entity Uuid", editable: false } },
+            },
+          },
+        },
+        entityAttribute: {
+          type: "union",
+          definition: [
             {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "entityForeignKeyAttribute"
-              }
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "entityForeignKeyAttribute",
+              },
             },
             {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "entityArrayAttribute"
-              }
-            }
-          ]
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "entityArrayAttribute",
+              },
+            },
+          ],
         },
-        "entityAttributePartial": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "partial": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "jzodElement"
-          }
+        entityAttributePartial: {
+          type: "schemaReference",
+          definition: {
+            eager: true,
+            partial: true,
+            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            relativePath: "jzodElement",
+          },
         },
         applicationSection: {
-          "type": "union",
-          "definition": [
+          type: "union",
+          definition: [
             {
-              "type": "literal",
-              "definition": "model"
-            },
-            {
-              "type": "literal",
-              "definition": "data"
-            }
-          ]
-        }
-        ,
-        "dataStoreApplicationType": {
-          "type": "union",
-          "definition": [
-            {
-              "type": "literal",
-              "definition": "miroir"
+              type: "literal",
+              definition: "model",
             },
             {
-              "type": "literal",
-              "definition": "app"
-            }
-          ]
+              type: "literal",
+              definition: "data",
+            },
+          ],
         },
-        "storeBasedConfiguration": {
-          "type": "object",
-          "definition": {
-            "uuid": {
-              "type": "uuid",
-              "extra": { "id":1 , "defaultLabel": "Uuid", "editable": false }
+        dataStoreApplicationType: {
+          type: "union",
+          definition: [
+            {
+              type: "literal",
+              definition: "miroir",
             },
-            "parentName": {
-              "type": "string",
-              "optional": true,
-              "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+            {
+              type: "literal",
+              definition: "app",
             },
-            "parentUuid": {
-              "type": "uuid",
-              "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
-            },
-            "conceptLevel": {
-              "type": "enum",
-              "definition": ["MetaModel", "Model", "Data"],
-              "optional": true,
-              "extra": { "id": 4, "defaultLabel": "Concept Level", "editable": false }
-            },
-            "defaultLabel": {
-              "type": "uuid",
-              "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
-            },
-            "definition": {
-              "type": "object",
-              "definition": {
-                "currentApplicationVersion": {
-                  "type": "uuid",
-                  "extra": { "id":1, "defaultLabel": "Current Application Version", "editable": false }
-                }
-              }
-            }
-          }
+          ],
         },
-        "entityInstance": {
-          "type": "object",
-          "nonStrict": true,
-          "definition": {
-            "uuid": {
-              "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+        storeBasedConfiguration: {
+          type: "object",
+          definition: {
+            uuid: {
+              type: "uuid",
+              tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
             },
-            "parentName": {
-              "type": "string",
-              "optional": true,
-              "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+            parentName: {
+              type: "string",
+              optional: true,
+              tag: { value: { id: 2, defaultLabel: "Entity Name", editable: false } },
             },
-            "parentUuid": {
-              "type": "uuid",
-              "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
+            parentUuid: {
+              type: "uuid",
+              tag: { value: { id: 3, defaultLabel: "Entity Uuid", editable: false } },
             },
-            "conceptLevel": {
-              "type": "enum",
-              "definition": ["MetaModel", "Model", "Data"],
-              "optional": true,
-              "extra": { "id": 4, "defaultLabel": "Concept Level", "editable": false }
-            }
-          }
-        },
-        "entityInstanceCollection": {
-          "type": "object",
-          "definition": {
-            "parentName": {
-              "type": "string",
-              "optional": true
+            conceptLevel: {
+              type: "enum",
+              definition: ["MetaModel", "Model", "Data"],
+              optional: true,
+              tag: { value: { id: 4, defaultLabel: "Concept Level", editable: false } },
             },
-            "parentUuid": {
-              "type": "string"
+            defaultLabel: {
+              type: "uuid",
+              tag: { value: { id: 3, defaultLabel: "Entity Uuid", editable: false } },
             },
-            "applicationSection": {
-              "type": "schemaReference",
-              "optional": false,
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "applicationSection"
-              }
+            definition: {
+              type: "object",
+              definition: {
+                currentApplicationVersion: {
+                  type: "uuid",
+                  tag: { value: { id: 1, defaultLabel: "Current Application Version", editable: false } },
+                },
+              },
             },
-            "instances": {
-              "type": "array",
-              "definition": {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "entityInstance"
-                }
-              }
-            }
-          }
+          },
         },
-        "conceptLevel": {
-          "type": "enum",
-          "definition": [
-            "MetaModel",
-            "Model",
-            "Data"
-          ]
+        entityInstance: {
+          type: "object",
+          nonStrict: true,
+          definition: {
+            uuid: {
+              type: "uuid",
+              tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+            },
+            parentName: {
+              type: "string",
+              optional: true,
+              tag: { value: { id: 2, defaultLabel: "Entity Name", editable: false } },
+            },
+            parentUuid: {
+              type: "uuid",
+              tag: { value: { id: 3, defaultLabel: "Entity Uuid", editable: false } },
+            },
+            conceptLevel: {
+              type: "enum",
+              definition: ["MetaModel", "Model", "Data"],
+              optional: true,
+              tag: { value: { id: 4, defaultLabel: "Concept Level", editable: false } },
+            },
+          },
         },
-        "dataStoreType": {
-          "type": "enum",
-          "definition": [
-            "miroir",
-            "app"
-          ]
+        entityInstanceCollection: {
+          type: "object",
+          definition: {
+            parentName: {
+              type: "string",
+              optional: true,
+            },
+            parentUuid: {
+              type: "string",
+            },
+            applicationSection: {
+              type: "schemaReference",
+              optional: false,
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "applicationSection",
+              },
+            },
+            instances: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "entityInstance",
+                },
+              },
+            },
+          },
         },
-        "entityInstanceUuid": {
-          "type": "string"
+        conceptLevel: {
+          type: "enum",
+          definition: ["MetaModel", "Model", "Data"],
         },
-        "entityInstancesUuidIndex": {
-          "type": "record",
-          "definition": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "entityInstance"
-            }
-          }
+        dataStoreType: {
+          type: "enum",
+          definition: ["miroir", "app"],
         },
-        "entityInstancesUuidIndexUuidIndex": {
-          "type": "record",
-          "definition": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "entityInstancesUuidIndex"
-            }
-          }
+        entityInstanceUuid: {
+          type: "string",
         },
-        "______________________________________________entities_____________________________________________": {
-          "type": "never"
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+        entityInstancesUuidIndex: {
+          type: "record",
+          definition: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "entityInstance",
+            },
+          },
         },
-        "application": entityDefinitionApplicationV1.jzodSchema as JzodObject,
-        "applicationVersion": entityDefinitionApplicationVersionV1.jzodSchema as JzodObject,
-        "bundle": entityDefinitionBundleV1.jzodSchema as JzodObject,
-        "deployment": entityDefinitionDeployment.jzodSchema as JzodObject,
-        "entity": entityDefinitionEntity.jzodSchema as JzodObject,
-        "entityDefinition": entityDefinitionEntityDefinitionV1.jzodSchema as JzodObject,
+        entityInstancesUuidIndexUuidIndex: {
+          type: "record",
+          definition: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "entityInstancesUuidIndex",
+            },
+          },
+        },
+        ______________________________________________entities_____________________________________________: {
+          type: "never",
+        },
+        application: entityDefinitionApplicationV1.jzodSchema as any,
+        applicationVersion: entityDefinitionApplicationVersionV1.jzodSchema as any,
+        bundle: entityDefinitionBundleV1.jzodSchema as any,
+        deployment: entityDefinitionDeployment.jzodSchema as any,
+        entity: entityDefinitionEntity.jzodSchema as any,
+        entityDefinition: entityDefinitionEntityDefinitionV1.jzodSchema as any,
+        // application: entityDefinitionApplicationV1.jzodSchema as JzodObject,
+        // applicationVersion: entityDefinitionApplicationVersionV1.jzodSchema as JzodObject,
+        // bundle: entityDefinitionBundleV1.jzodSchema as JzodObject,
+        // deployment: entityDefinitionDeployment.jzodSchema as JzodObject,
+        // entity: entityDefinitionEntity.jzodSchema as JzodObject,
+        // entityDefinition: entityDefinitionEntityDefinitionV1.jzodSchema as JzodObject,
         ...(entityDefinitionMenu.jzodSchema.definition.definition as any).context,
-        "menu": entityDefinitionMenu.jzodSchema as JzodObject,
+        menu: entityDefinitionMenu.jzodSchema as any,
+        // menu: entityDefinitionMenu.jzodSchema as JzodObject,
         ...Object.fromEntries(
-          Object.entries((entityDefinitionReportV1 as any).jzodSchema.definition.definition.context).filter(e => 
+          Object.entries((entityDefinitionReportV1 as any).jzodSchema.definition.definition.context).filter((e) =>
             [
               "objectInstanceReportSection",
               "objectListReportSection",
@@ -532,1039 +538,1053 @@ export function getMiroirFundamentalJzodSchema(
             ].includes(e[0])
           )
         ),
-        "jzodObjectOrReference": (entityDefinitionJzodSchemaV1 as any).jzodSchema.definition.definition.context.jzodObjectOrReference,
-        "jzodSchema": entityDefinitionJzodSchemaV1.jzodSchema as JzodObject,
-        "report": (entityDefinitionReportV1 as any).jzodSchema,
-        "metaModel": {
-          "type": "object",
-          "definition": {
-            "applicationVersions": {
-              "type": "array", 
-              "definition": { 
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "applicationVersion"
-                }
-              }
+        jzodObjectOrReference: (entityDefinitionJzodSchemaV1 as any).jzodSchema.definition.definition.context
+          .jzodObjectOrReference,
+        jzodSchema: entityDefinitionJzodSchemaV1.jzodSchema as any,
+        // jzodSchema: entityDefinitionJzodSchemaV1.jzodSchema as JzodObject,
+        report: (entityDefinitionReportV1 as any).jzodSchema,
+        metaModel: {
+          type: "object",
+          definition: {
+            applicationVersions: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "applicationVersion",
+                },
+              },
             },
-            "applicationVersionCrossEntityDefinition": {
-              "type": "array", 
-              "definition": { 
-                "type": "object",
-                "definition": {
-                  "uuid": {
-                    "type": "uuid",
-                    "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+            applicationVersionCrossEntityDefinition: {
+              type: "array",
+              definition: {
+                type: "object",
+                definition: {
+                  uuid: {
+                    type: "uuid",
+                    tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
                   },
-                  "parentName": {
-                    "type": "string",
-                    "optional": true,
-                    "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+                  parentName: {
+                    type: "string",
+                    optional: true,
+                    tag: { value: { id: 2, defaultLabel: "Entity Name", editable: false } },
                   },
-                  "parentUuid": {
-                    "type": "uuid",
-                    "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
+                  parentUuid: {
+                    type: "uuid",
+                    tag: { value: { id: 3, defaultLabel: "Entity Uuid", editable: false } },
                   },
-                  "conceptLevel": {
-                    "type": "enum",
-                    "definition": ["MetaModel", "Model", "Data"],
-                    "optional": true,
-                    "extra": { "id": 4, "defaultLabel": "Concept Level", "editable": false }
+                  conceptLevel: {
+                    type: "enum",
+                    definition: ["MetaModel", "Model", "Data"],
+                    optional: true,
+                    tag: { value: { id: 4, defaultLabel: "Concept Level", editable: false } },
                   },
-                  "applicationVersion": {
-                    "type": "uuid",
-                    "extra": { "id":1, "defaultLabel": "Application Version", "editable": false }
+                  applicationVersion: {
+                    type: "uuid",
+                    tag: { value: { id: 1, defaultLabel: "Application Version", editable: false } },
                   },
-                  "entityDefinition": {
-                    "type": "uuid",
-                    "extra": { "id":1, "defaultLabel": "Entity Definition", "editable": false }
-                  }
-                }
-              }
+                  entityDefinition: {
+                    type: "uuid",
+                    tag: { value: { id: 1, defaultLabel: "Entity Definition", editable: false } },
+                  },
+                },
+              },
             },
-            "configuration": {
-              "type": "array", 
-              "definition": { 
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "storeBasedConfiguration"
-                }
-              }
+            configuration: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "storeBasedConfiguration",
+                },
+              },
             },
-            "entities": {
-              "type": "array", 
-              "definition": { 
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "entity"
-                }
-              }
+            entities: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "entity",
+                },
+              },
             },
-            "entityDefinitions": {
-              "type": "array", 
-              "definition": { 
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "entityDefinition"
-                }
-              }
+            entityDefinitions: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "entityDefinition",
+                },
+              },
             },
-            "jzodSchemas": {
-              "type": "array", 
-              "definition": { 
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodSchema"
-                }
-              }
+            jzodSchemas: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "jzodSchema",
+                },
+              },
             },
-            "menus": {
-              "type": "array", 
-              "definition": { 
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "menu"
-                }
-              }
+            menus: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "menu",
+                },
+              },
             },
-            "reports": {
-              "type": "array", 
-              "definition": { 
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "report"
-                }
-              }
-            }
-          }
+            reports: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "report",
+                },
+              },
+            },
+          },
         },
-        "_________________________________configuration_and_bundles_________________________________": {
-          "type": "never"
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+        _________________________________configuration_and_bundles_________________________________: {
+          type: "never",
         },
-        "indexedDbStoreSectionConfiguration": {
-          "type": "object",
-          "definition": {
-            "emulatedServerType": { "type":"literal", "definition": "indexedDb" },
-            "indexedDbName": { "type": "string" }
-          }
+        indexedDbStoreSectionConfiguration: {
+          type: "object",
+          definition: {
+            emulatedServerType: { type: "literal", definition: "indexedDb" },
+            indexedDbName: { type: "string" },
+          },
         },
-        "filesystemDbStoreSectionConfiguration": {
-          "type": "object",
-          "definition": {
-            "emulatedServerType": { "type":"literal", "definition": "filesystem" },
-            "directory": { "type": "string" }
-          }
+        filesystemDbStoreSectionConfiguration: {
+          type: "object",
+          definition: {
+            emulatedServerType: { type: "literal", definition: "filesystem" },
+            directory: { type: "string" },
+          },
         },
-        "sqlDbStoreSectionConfiguration": {
-          "type": "object",
-          "definition": {
-            "emulatedServerType": { "type":"literal", "definition": "sql" },
-            "connectionString": { "type": "string" },
-            "schema": { "type": "string" }
-          }
+        sqlDbStoreSectionConfiguration: {
+          type: "object",
+          definition: {
+            emulatedServerType: { type: "literal", definition: "sql" },
+            connectionString: { type: "string" },
+            schema: { type: "string" },
+          },
         },
-        "storeSectionConfiguration": {
-          "type": "union",
-          "discriminator": "emulatedServerType",
-          "definition": [
+        storeSectionConfiguration: {
+          type: "union",
+          discriminator: "emulatedServerType",
+          definition: [
             {
-              "type": "schemaReference",
-              "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "indexedDbStoreSectionConfiguration"}
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "indexedDbStoreSectionConfiguration",
+              },
             },
             {
-              "type": "schemaReference",
-              "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "filesystemDbStoreSectionConfiguration"}
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "filesystemDbStoreSectionConfiguration",
+              },
             },
             {
-              "type": "schemaReference",
-              "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "sqlDbStoreSectionConfiguration"}
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "sqlDbStoreSectionConfiguration",
+              },
             },
-          ]
+          ],
         },
-        "storeUnitConfiguration": {
-          "type": "object",
-          "definition": {
-            "admin": {
-              "type": "schemaReference",
-              "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeSectionConfiguration"}
+        storeUnitConfiguration: {
+          type: "object",
+          definition: {
+            admin: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "storeSectionConfiguration",
+              },
             },
-            "model": {
-              "type": "schemaReference",
-              "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeSectionConfiguration"}
+            model: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "storeSectionConfiguration",
+              },
             },
-            "data": {
-              "type": "schemaReference",
-              "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeSectionConfiguration"}
-            }
-          }
+            data: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "storeSectionConfiguration",
+              },
+            },
+          },
         },
-        "deploymentStorageConfig": {
-          "type": "record",
-          "definition": {
-            "type": "schemaReference",
-            "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeUnitConfiguration"}
-          }
+        deploymentStorageConfig: {
+          type: "record",
+          definition: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "storeUnitConfiguration",
+            },
+          },
         },
-        "serverConfigForClientConfig": {
-          "type": "object",
-          "definition": {
-            "rootApiUrl": {
-              "type": "string",
+        serverConfigForClientConfig: {
+          type: "object",
+          definition: {
+            rootApiUrl: {
+              type: "string",
             },
-            "dataflowConfiguration": {
-              "type": "any",
+            dataflowConfiguration: {
+              type: "any",
             },
-            "storeSectionConfiguration": {
-              "type": "record",
-              "definition": {
-                "type": "schemaReference",
-                "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeUnitConfiguration"}
-              }
-            }
-          }
+            storeSectionConfiguration: {
+              type: "record",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "storeUnitConfiguration",
+                },
+              },
+            },
+          },
         },
-        "miroirConfigForMswClient": {
-          "type": "object",
-          "definition": {
-            "emulateServer": {
-              "type": "literal",
-              "definition": true,
+        miroirConfigForMswClient: {
+          type: "object",
+          definition: {
+            emulateServer: {
+              type: "literal",
+              definition: true,
             },
-            "rootApiUrl": {
-              "type": "string",
+            rootApiUrl: {
+              type: "string",
             },
-            "deploymentStorageConfig": {
-              "type": "schemaReference",
-              "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "deploymentStorageConfig"}
-            }
-          }
+            deploymentStorageConfig: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "deploymentStorageConfig",
+              },
+            },
+          },
         },
-        "miroirConfigForRestClient": {
-          "type": "object",
-          "definition": {
-            "emulateServer": {
-              "type": "literal",
-              "definition": false,
+        miroirConfigForRestClient: {
+          type: "object",
+          definition: {
+            emulateServer: {
+              type: "literal",
+              definition: false,
             },
-            "serverConfig": {
-              "type": "schemaReference",
-              "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "serverConfigForClientConfig"}
-            }
-          }
+            serverConfig: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "serverConfigForClientConfig",
+              },
+            },
+          },
         },
-        "miroirConfigClient": {
-          "type": "object",
-          "definition": {
-            "client": {
-              "type": "union",
-              "definition": [
+        miroirConfigClient: {
+          type: "object",
+          definition: {
+            client: {
+              type: "union",
+              definition: [
                 {
-                  "type": "schemaReference",
-                  "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "miroirConfigForMswClient"}
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "miroirConfigForMswClient",
+                  },
                 },
                 {
-                  "type": "schemaReference",
-                  "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "miroirConfigForRestClient"}
-                }
-              ]
-            }
-          }
-        },
-        "miroirConfigServer": {
-          "type": "object",
-          "definition": {
-            "server": {
-              "type": "object",
-              "definition": {
-                "rootApiUrl": {
-                  "type": "string",
-                }
-              }
-            }
-          }
-        },
-        "miroirConfig": {
-          "type": "union",
-          "definition": [
-            {
-              "type": "literal",
-              "definition": "miroirConfigClient"
-            },
-            {
-              "type": "literal",
-              "definition": "miroirConfigServer"
-            }
-          ]
-        },
-        "commit": {
-          "type": "object",
-          "definition": {
-            ...entityDefinitionCommit.jzodSchema.definition,
-            "actions": {
-              "type": "array",
-              "definition": {
-                "type": "object",
-                "definition": {
-                  "endpoint": {
-                    "type": "uuid",
-                    "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "miroirConfigForRestClient",
                   },
-                  "actionArguments": {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "modelAction"
-                    }
-                  }
-                }
-              }
+                },
+              ],
             },
-            "patches": {
-              "type": "array", 
-              "definition": {
-                "type": "any"
-              }
-            },
-          }
+          },
         },
-        "miroirAllFundamentalTypesUnion": {
-          "type": "union",
-          "definition": [
-            {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "applicationSection"
-              }
+        miroirConfigServer: {
+          type: "object",
+          definition: {
+            server: {
+              type: "object",
+              definition: {
+                rootApiUrl: {
+                  type: "string",
+                },
+              },
             },
-            {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "entityInstance"
-              }
-            },
-            {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "entityInstanceCollection"
-              }
-            },
-            {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "instanceAction"
-              }
-            }
-          ]
+          },
         },
-        "______________________________________________queries_____________________________________________": {
-          "type": "never"
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+        miroirConfig: {
+          type: "union",
+          definition: [
+            {
+              type: "literal",
+              definition: "miroirConfigClient",
+            },
+            {
+              type: "literal",
+              definition: "miroirConfigServer",
+            },
+          ],
+        },
+        commit: {
+          type: "object",
+          definition: {
+            ...entityDefinitionCommit.jzodSchema.definition,
+            actions: {
+              type: "array",
+              definition: {
+                type: "object",
+                definition: {
+                  endpoint: {
+                    type: "uuid",
+                    tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+                  },
+                  actionArguments: {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "modelAction",
+                    },
+                  },
+                },
+              },
+            },
+            patches: {
+              type: "array",
+              definition: {
+                type: "any",
+              },
+            },
+          },
+        },
+        miroirAllFundamentalTypesUnion: {
+          type: "union",
+          definition: [
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "applicationSection",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "entityInstance",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "entityInstanceCollection",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "instanceAction",
+              },
+            },
+          ],
+        },
+        ______________________________________________queries_____________________________________________: {
+          type: "never",
         },
         // ...(makeReferencesAbsolute(entityDefinitionQueryVersionV1.jzodSchema.definition.definition,"fe9b7d99-f216-44de-bb6e-60e1a1ebb739") as any).context,
         ...entityDefinitionQueryVersionV1WithAbsoluteReferences.context,
-        "domainElementVoid": {
-          "type": "object",
-          "definition": {
-            "elementType": {
-              "type": "literal",
-              "definition": "void"
+        domainElementVoid: {
+          type: "object",
+          definition: {
+            elementType: {
+              type: "literal",
+              definition: "void",
             },
-            "elementValue": {
-              "type": "void"
-            }
-          }
+            elementValue: {
+              type: "void",
+            },
+          },
         },
-        "domainElementObject": {
-          "type": "object",
-          "definition": {
-            "elementType": {
-              "type": "literal",
-              "definition": "object"
+        domainElementObject: {
+          type: "object",
+          definition: {
+            elementType: {
+              type: "literal",
+              definition: "object",
             },
-            "elementValue": 
-            {
-              "type": "record",
-              "definition": {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "domainElement"
-                }
-              }
-            }
-          }
-        },
-        "domainElementUuidIndex": {
-          "type": "object",
-          "definition": {
-            "elementType": {
-              "type": "literal",
-              "definition": "instanceUuidIndex"
-            },
-            "elementValue": 
-            {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "entityInstancesUuidIndex"
-              }
-            }
-          }
-        },
-        "domainElementEntityInstance": {
-          "type": "object",
-          "definition": {
-            "elementType": {
-              "type": "literal",
-              "definition": "instance"
-            },
-            "elementValue": 
-            {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "entityInstance"
-              }
-            }
-          }
-        },
-        "domainElementEntityInstanceCollection": {
-          "type": "object",
-          "definition": {
-            "elementType": {
-              "type": "literal",
-              "definition": "entityInstanceCollection"
-            },
-            "elementValue": 
-            {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "entityInstanceCollection"
-              }
-            }
-          }
-        },
-        "domainElementInstanceArray": {
-          "type": "object",
-          "definition": {
-            "elementType": {
-              "type": "literal",
-              "definition": "instanceArray"
-            },
-            "elementValue": 
-            {
-              "type": "array",
-              "definition": {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "entityInstance"
-                }
-              }
-            }
-          }
-        },
-        "domainElementType": {
-          "type": "enum",
-          "definition": [
-            "object", "instanceUuidIndex", "entityInstanceCollection", "instanceArray", "instance", "instanceUuid", "instanceUuidIndexUuidIndex"
-          ]
-        },
-        "domainElement": {
-          "type": "union",
-          "definition": [
-            {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "domainElementVoid"
-              }
-            },
-            {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "domainElementObject"
-              }
-            },
-            {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "domainElementUuidIndex"
-              }
-            },
-            {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "domainElementEntityInstanceCollection"
-              }
-            },
-            {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "domainElementInstanceArray"
-              }
-            },
-            {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "domainElementEntityInstance"
-              }
-            },
-            {
-              "type": "object",
-              "definition": {
-                "elementType": {
-                  "type": "literal",
-                  "definition": "instanceUuid"
+            elementValue: {
+              type: "record",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  relativePath: "domainElement",
                 },
-                "elementValue": {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "entityInstanceUuid"
-                  }
-                }
-              }
+              },
             },
-            {
-              "type": "object",
-              "definition": {
-                "elementType": {
-                  "type": "literal",
-                  "definition": "instanceUuidIndexUuidIndex"
+          },
+        },
+        domainElementUuidIndex: {
+          type: "object",
+          definition: {
+            elementType: {
+              type: "literal",
+              definition: "instanceUuidIndex",
+            },
+            elementValue: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "entityInstancesUuidIndex",
+              },
+            },
+          },
+        },
+        domainElementEntityInstance: {
+          type: "object",
+          definition: {
+            elementType: {
+              type: "literal",
+              definition: "instance",
+            },
+            elementValue: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "entityInstance",
+              },
+            },
+          },
+        },
+        domainElementEntityInstanceCollection: {
+          type: "object",
+          definition: {
+            elementType: {
+              type: "literal",
+              definition: "entityInstanceCollection",
+            },
+            elementValue: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "entityInstanceCollection",
+              },
+            },
+          },
+        },
+        domainElementInstanceArray: {
+          type: "object",
+          definition: {
+            elementType: {
+              type: "literal",
+              definition: "instanceArray",
+            },
+            elementValue: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "entityInstance",
                 },
-                "elementValue": 
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "entityInstancesUuidIndex"
-                  }
-                }
-              }
+              },
+            },
+          },
+        },
+        domainElementType: {
+          type: "enum",
+          definition: [
+            "object",
+            "instanceUuidIndex",
+            "entityInstanceCollection",
+            "instanceArray",
+            "instance",
+            "instanceUuid",
+            "instanceUuidIndexUuidIndex",
+          ],
+        },
+        domainElement: {
+          type: "union",
+          definition: [
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainElementVoid",
+              },
             },
             {
-              "type": "object",
-              "definition": {
-                "elementType": {
-                  "type": "literal",
-                  "definition": "failure"
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainElementObject",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainElementUuidIndex",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainElementEntityInstanceCollection",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainElementInstanceArray",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainElementEntityInstance",
+              },
+            },
+            {
+              type: "object",
+              definition: {
+                elementType: {
+                  type: "literal",
+                  definition: "instanceUuid",
                 },
-                "elementValue": 
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "queryFailed"
-                  }
-                }
-              }
-            },
-            {
-              "type": "object",
-              "definition": {
-                "elementType": {
-                  "type": "literal",
-                  "definition": "string"
+                elementValue: {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "entityInstanceUuid",
+                  },
                 },
-                "elementValue": 
-                {
-                  "type": "string"
-                }
-              }
+              },
             },
             {
-              "type": "object",
-              "definition": {
-                "elementType": {
-                  "type": "literal",
-                  "definition": "array"
+              type: "object",
+              definition: {
+                elementType: {
+                  type: "literal",
+                  definition: "instanceUuidIndexUuidIndex",
                 },
-                "elementValue": 
-                {
-                  "type": "array",
-                  "definition": {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "domainElement"
-                    }
-                  }
-                }
-              }
-            }
-          ]
-        },
-        "recordOfTransformers":{
-          "type": "object",
-          "definition": {
-            "transformerType": {
-              "type": "literal",
-              "definition": "recordOfTransformers"
-            },
-            "definition": {
-              "type": "record",
-              "definition": {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "transformer"
-                }
-              }
-              
-            }
-          }
-        },
-        "transformer": {
-          "type": "union",
-          "definition": [
-            {
-              "type": "object",
-              "definition": {
-                "transformerType": {
-                  "type": "literal",
-                  "definition": "objectTransformer"
+                elementValue: {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "entityInstancesUuidIndex",
+                  },
                 },
-                "attributeName": {
-                  "type": "string"
-                }
-              }
+              },
             },
             {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "recordOfTransformers"
-              }
-            }
-          ]
+              type: "object",
+              definition: {
+                elementType: {
+                  type: "literal",
+                  definition: "failure",
+                },
+                elementValue: {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "queryFailed",
+                  },
+                },
+              },
+            },
+            {
+              type: "object",
+              definition: {
+                elementType: {
+                  type: "literal",
+                  definition: "string",
+                },
+                elementValue: {
+                  type: "string",
+                },
+              },
+            },
+            {
+              type: "object",
+              definition: {
+                elementType: {
+                  type: "literal",
+                  definition: "array",
+                },
+                elementValue: {
+                  type: "array",
+                  definition: {
+                    type: "schemaReference",
+                    definition: {
+                      relativePath: "domainElement",
+                    },
+                  },
+                },
+              },
+            },
+          ],
         },
-        "miroirCustomQueryParams": {
-          "type": "object",
-          "definition": {
-            "queryType": {
-              "type": "literal",
-              "definition": "custom"
+        recordOfTransformers: {
+          type: "object",
+          definition: {
+            transformerType: {
+              type: "literal",
+              definition: "recordOfTransformers",
             },
-            "name": {
-              "type": "literal",
-              "definition": "jsonata"
+            definition: {
+              type: "record",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "transformer",
+                },
+              },
             },
-            "definition": {
-              "type": "string"
-            }
-          }
-        },
-        "localCacheEntityInstancesSelectorParams": {
-          "type": "object",
-          "definition": {
-            "deploymentUuid": {
-              "type": "uuid",
-              "optional": true,
-              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
-            },
-            "applicationSection": {
-              "type": "schemaReference",
-              "optional": true,
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "applicationSection"
-              }
-            },
-            "entityUuid": {
-              "type": "uuid",
-              "optional": true,
-              "extra": { "id":1, "defaultLabel": "Entity", "editable": false }
-            },
-            "instanceUuid": {
-              "type": "uuid",
-              "optional": true,
-              "extra": { "id":1, "defaultLabel": "Instance", "editable": false }
-            }
-          }
-        },
-        "localCacheQueryParams": {
-          "type": "object",
-          "definition": {
-            "queryType": {
-              "type": "literal",
-              "definition": "LocalCacheEntityInstancesSelectorParams",
-            },
-            "definition": {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "localCacheEntityInstancesSelectorParams"
-              }
-            }
-          }
-        },
-        "domainSingleSelectObjectQueryWithDeployment": {
-          "type": "object",
-          "definition": {
-            "queryType": {
-              "type": "literal",
-              "definition": "domainSingleSelectQueryWithDeployment",
-            },
-            "deploymentUuid": {
-              "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
-            },
-            "select": {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "selectObjectQuery"
-              }
-            }
-          }
-        },
-        "domainSingleSelectObjectListQueryWithDeployment": {
-          "type": "object",
-          "definition": {
-            "queryType": {
-              "type": "literal",
-              "definition": "domainSingleSelectQueryWithDeployment",
-            },
-            "deploymentUuid": {
-              "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
-            },
-            "select": {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "selectObjectListQuery"
-              }
-            }
-          }
-        },
-        "domainSingleSelectQueryWithDeployment": {
-          "type": "object",
-          "definition": {
-            "queryType": {
-              "type": "literal",
-              "definition": "domainSingleSelectQueryWithDeployment",
-            },
-            "deploymentUuid": {
-              "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
-            },
-            "select": {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "miroirSelectQuery"
-              }
-            }
-          }
-        },
-        "domainModelRootQuery": {
-          "type": "object",
-          "definition": {
-            "pageParams": {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "domainElementObject"
-              }
-            },
-            "queryParams": {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "domainElementObject"
-              }
-            },
-            "contextResults": {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "domainElementObject"
-              }
-            }
-          }
-        },
-        "domainModelGetSingleSelectObjectQueryQueryParams": {
-          "type": "object",
-          "extend": {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "domainModelRootQuery"
-            }
           },
-          "definition": {
-            "queryType": {
-              "type": "literal",
-              "definition": "getSingleSelectQuery",
-            },
-            "singleSelectQuery": {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "domainSingleSelectObjectQueryWithDeployment"
-              }
-            }
-          }
         },
-        "domainModelGetSingleSelectObjectListQueryQueryParams": {
-          "type": "object",
-          "extend": {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "domainModelRootQuery"
-            }
-          },
-          "definition": {
-            "queryType": {
-              "type": "literal",
-              "definition": "getSingleSelectQuery",
+        transformer: {
+          type: "union",
+          definition: [
+            {
+              type: "object",
+              definition: {
+                transformerType: {
+                  type: "literal",
+                  definition: "objectTransformer",
+                },
+                attributeName: {
+                  type: "string",
+                },
+              },
             },
-            "singleSelectQuery": {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "domainSingleSelectObjectListQueryWithDeployment"
-              }
-            }
-          }
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "recordOfTransformers",
+              },
+            },
+          ],
         },
-        "domainModelGetSingleSelectQueryQueryParams": {
-          "type": "object",
-          "extend": {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "domainModelRootQuery"
-            }
-          },
-          "definition": {
-            "queryType": {
-              "type": "literal",
-              "definition": "getSingleSelectQuery",
+        miroirCustomQueryParams: {
+          type: "object",
+          definition: {
+            queryType: {
+              type: "literal",
+              definition: "custom",
             },
-            "singleSelectQuery": {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "domainSingleSelectQueryWithDeployment"
-              }
-            }
-          }
+            name: {
+              type: "literal",
+              definition: "jsonata",
+            },
+            definition: {
+              type: "string",
+            },
+          },
         },
-        "domainManyQueriesWithDeploymentUuid": {
-          "type": "object",
-          "extend": {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "domainModelRootQuery"
-            }
+        localCacheEntityInstancesSelectorParams: {
+          type: "object",
+          definition: {
+            deploymentUuid: {
+              type: "uuid",
+              optional: true,
+              tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+            },
+            applicationSection: {
+              type: "schemaReference",
+              optional: true,
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "applicationSection",
+              },
+            },
+            entityUuid: {
+              type: "uuid",
+              optional: true,
+              tag: { value: { id: 1, defaultLabel: "Entity", editable: false } },
+            },
+            instanceUuid: {
+              type: "uuid",
+              optional: true,
+              tag: { value: { id: 1, defaultLabel: "Instance", editable: false } },
+            },
           },
-          "definition": {
-            "queryType": {
-              "type": "literal",
-              "definition": "DomainManyQueries",
-            },
-            "deploymentUuid": {
-              "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
-            },
-            "fetchQuery": {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "miroirFetchQuery"
-              }
-            }
-          }
         },
-        "domainModelGetEntityDefinitionQueryParams": {
-          "type": "object",
-          "extend": {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "domainModelRootQuery"
-            }
+        localCacheQueryParams: {
+          type: "object",
+          definition: {
+            queryType: {
+              type: "literal",
+              definition: "LocalCacheEntityInstancesSelectorParams",
+            },
+            definition: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "localCacheEntityInstancesSelectorParams",
+              },
+            },
           },
-          "definition": {
-            "queryType": {
-              "type": "literal",
-              "definition": "getEntityDefinition",
-            },
-            "deploymentUuid": {
-              "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
-            },
-            "entityUuid": {
-              "type": "uuid",
-              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
-            }
-          }
         },
-        "domainModelGetFetchParamJzodSchemaQueryParams": {
-          "type": "object",
-          "extend": {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "domainModelRootQuery"
-            }
-          },
-          "definition": {
-            "queryType": {
-              "type": "literal",
-              "definition": "getFetchParamsJzodSchema",
+        domainSingleSelectObjectQueryWithDeployment: {
+          type: "object",
+          definition: {
+            queryType: {
+              type: "literal",
+              definition: "domainSingleSelectQueryWithDeployment",
             },
-            "fetchParams": {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "domainManyQueriesWithDeploymentUuid"
-              }
-            }
-          }
+            deploymentUuid: {
+              type: "uuid",
+              tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+            },
+            select: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "selectObjectQuery",
+              },
+            },
+          },
         },
-        "domainModelGetSingleSelectQueryJzodSchemaQueryParams": {
-          "type": "object",
-          "extend": {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "domainModelRootQuery"
-            }
-          },
-          "definition": {
-            "queryType": {
-              "type": "literal",
-              "definition": "getSingleSelectQueryJzodSchema",
+        domainSingleSelectObjectListQueryWithDeployment: {
+          type: "object",
+          definition: {
+            queryType: {
+              type: "literal",
+              definition: "domainSingleSelectQueryWithDeployment",
             },
-            "singleSelectQuery": {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "domainSingleSelectQueryWithDeployment"
-              }
-            }
-          }
+            deploymentUuid: {
+              type: "uuid",
+              tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+            },
+            select: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "selectObjectListQuery",
+              },
+            },
+          },
+        },
+        domainSingleSelectQueryWithDeployment: {
+          type: "object",
+          definition: {
+            queryType: {
+              type: "literal",
+              definition: "domainSingleSelectQueryWithDeployment",
+            },
+            deploymentUuid: {
+              type: "uuid",
+              tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+            },
+            select: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "miroirSelectQuery",
+              },
+            },
+          },
+        },
+        domainModelRootQuery: {
+          type: "object",
+          definition: {
+            pageParams: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainElementObject",
+              },
+            },
+            queryParams: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainElementObject",
+              },
+            },
+            contextResults: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainElementObject",
+              },
+            },
+          },
+        },
+        domainModelGetSingleSelectObjectQueryQueryParams: {
+          type: "object",
+          extend: {
+            type: "schemaReference",
+            definition: {
+              eager: true,
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "domainModelRootQuery",
+            },
+          },
+          definition: {
+            queryType: {
+              type: "literal",
+              definition: "getSingleSelectQuery",
+            },
+            singleSelectQuery: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainSingleSelectObjectQueryWithDeployment",
+              },
+            },
+          },
+        },
+        domainModelGetSingleSelectObjectListQueryQueryParams: {
+          type: "object",
+          extend: {
+            type: "schemaReference",
+            definition: {
+              eager: true,
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "domainModelRootQuery",
+            },
+          },
+          definition: {
+            queryType: {
+              type: "literal",
+              definition: "getSingleSelectQuery",
+            },
+            singleSelectQuery: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainSingleSelectObjectListQueryWithDeployment",
+              },
+            },
+          },
+        },
+        domainModelGetSingleSelectQueryQueryParams: {
+          type: "object",
+          extend: {
+            type: "schemaReference",
+            definition: {
+              eager: true,
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "domainModelRootQuery",
+            },
+          },
+          definition: {
+            queryType: {
+              type: "literal",
+              definition: "getSingleSelectQuery",
+            },
+            singleSelectQuery: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainSingleSelectQueryWithDeployment",
+              },
+            },
+          },
+        },
+        domainManyQueriesWithDeploymentUuid: {
+          type: "object",
+          extend: {
+            type: "schemaReference",
+            definition: {
+              eager: true,
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "domainModelRootQuery",
+            },
+          },
+          definition: {
+            queryType: {
+              type: "literal",
+              definition: "DomainManyQueries",
+            },
+            deploymentUuid: {
+              type: "uuid",
+              tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+            },
+            fetchQuery: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "miroirFetchQuery",
+              },
+            },
+          },
+        },
+        domainModelGetEntityDefinitionQueryParams: {
+          type: "object",
+          extend: {
+            type: "schemaReference",
+            definition: {
+              eager: true,
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "domainModelRootQuery",
+            },
+          },
+          definition: {
+            queryType: {
+              type: "literal",
+              definition: "getEntityDefinition",
+            },
+            deploymentUuid: {
+              type: "uuid",
+              tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+            },
+            entityUuid: {
+              type: "uuid",
+              tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+            },
+          },
+        },
+        domainModelGetFetchParamJzodSchemaQueryParams: {
+          type: "object",
+          extend: {
+            type: "schemaReference",
+            definition: {
+              eager: true,
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "domainModelRootQuery",
+            },
+          },
+          definition: {
+            queryType: {
+              type: "literal",
+              definition: "getFetchParamsJzodSchema",
+            },
+            fetchParams: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainManyQueriesWithDeploymentUuid",
+              },
+            },
+          },
+        },
+        domainModelGetSingleSelectQueryJzodSchemaQueryParams: {
+          type: "object",
+          extend: {
+            type: "schemaReference",
+            definition: {
+              eager: true,
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "domainModelRootQuery",
+            },
+          },
+          definition: {
+            queryType: {
+              type: "literal",
+              definition: "getSingleSelectQueryJzodSchema",
+            },
+            singleSelectQuery: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainSingleSelectQueryWithDeployment",
+              },
+            },
+          },
         },
         // TODO: THIS IS DUPLICATED BELOW!!!!
-        "domainModelQueryJzodSchemaParams": {
-          "type": "union",
-          "discriminator": "queryType",
-          "definition": [
+        domainModelQueryJzodSchemaParams: {
+          type: "union",
+          discriminator: "queryType",
+          definition: [
             {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "domainModelGetEntityDefinitionQueryParams"
-              }
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainModelGetEntityDefinitionQueryParams",
+              },
             },
             {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "domainModelGetFetchParamJzodSchemaQueryParams"
-              }
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainModelGetFetchParamJzodSchemaQueryParams",
+              },
             },
             {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "domainModelGetSingleSelectQueryJzodSchemaQueryParams"
-              }
-            }
-          ]
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainModelGetSingleSelectQueryJzodSchemaQueryParams",
+              },
+            },
+          ],
         },
-        "miroirSelectorQueryParams": {
-          "type": "union",
-          "discriminator": "queryType",
-          "definition": [
+        miroirSelectorQueryParams: {
+          type: "union",
+          discriminator: "queryType",
+          definition: [
             {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "domainSingleSelectQueryWithDeployment"
-              }
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainSingleSelectQueryWithDeployment",
+              },
             },
             {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "domainModelGetSingleSelectQueryQueryParams"
-              }
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainModelGetSingleSelectQueryQueryParams",
+              },
             },
             {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "domainModelGetSingleSelectObjectListQueryQueryParams"
-              }
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainModelGetSingleSelectObjectListQueryQueryParams",
+              },
             },
             {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "domainManyQueriesWithDeploymentUuid"
-              }
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainManyQueriesWithDeploymentUuid",
+              },
             },
             {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "localCacheQueryParams"
-              }
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "localCacheQueryParams",
+              },
             },
             {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "miroirCustomQueryParams"
-              }
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "miroirCustomQueryParams",
+              },
             },
             // {
             //   "type": "schemaReference",
@@ -1578,187 +1598,280 @@ export function getMiroirFundamentalJzodSchema(
             //   |
             //   v
             {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "domainModelGetEntityDefinitionQueryParams"
-              }
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainModelGetEntityDefinitionQueryParams",
+              },
             },
             {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "domainModelGetFetchParamJzodSchemaQueryParams"
-              }
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainModelGetFetchParamJzodSchemaQueryParams",
+              },
             },
             {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "domainModelGetSingleSelectQueryJzodSchemaQueryParams"
-              }
-            }
-          ]
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainModelGetSingleSelectQueryJzodSchemaQueryParams",
+              },
+            },
+          ],
         },
-        "______________________________________________actions_____________________________________________": {
-          "type": "never"
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+        ______________________________________________actions_____________________________________________: {
+          type: "never",
         },
-        "actionError": {
-          "type": "object",
-          "definition": {
-            "status": { "type": "literal", "definition": "error" },
-            "error": { 
-              "type": "object",
-              "definition": {
-                "errorType": {
-                  "type": "union",
-                  "definition": [
-                    ...((storeManagementEndpoint as any).definition.actions.filter((e:any)=>!!e.actionErrors).map((e: any) =>e.actionErrors)),
-                    ...((instanceEndpointVersionV1 as any).definition.actions.filter((e: any)=>!!e.actionErrors).map((e: any) =>e.actionErrors)),
-                  ]
+        actionError: {
+          type: "object",
+          definition: {
+            status: { type: "literal", definition: "error" },
+            error: {
+              type: "object",
+              definition: {
+                errorType: {
+                  type: "union",
+                  definition: [
+                    ...(storeManagementEndpoint as any).definition.actions
+                      .filter((e: any) => !!e.actionErrors)
+                      .map((e: any) => e.actionErrors),
+                    ...(instanceEndpointVersionV1 as any).definition.actions
+                      .filter((e: any) => !!e.actionErrors)
+                      .map((e: any) => e.actionErrors),
+                  ],
                 },
-                "errorMessage": { "type": "string", "optional": true },
-                "error": { "type": "object", "optional": true, "definition": {
-                  "errorMessage": { "type": "string", "optional": true },
-                  "stack": {
-                    "type": "array",
-                    "definition": { "type": "string", "optional": true }
-                  }
-                }
-               }
-              }
-            }
-          }
+                errorMessage: { type: "string", optional: true },
+                error: {
+                  type: "object",
+                  optional: true,
+                  definition: {
+                    errorMessage: { type: "string", optional: true },
+                    stack: {
+                      type: "array",
+                      definition: { type: "string", optional: true },
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
-        "actionVoidSuccess": {
-          "type": "object",
-          "definition": {
-            "status": { "type": "literal", "definition": "ok" },
-            "returnedDomainElement": { "type": "schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "domainElementVoid" } }
-          }
+        actionVoidSuccess: {
+          type: "object",
+          definition: {
+            status: { type: "literal", definition: "ok" },
+            returnedDomainElement: {
+              type: "schemaReference",
+              definition: { absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", relativePath: "domainElementVoid" },
+            },
+          },
         },
-        "actionVoidReturnType": {
-          "type": "union",
-          "definition": [
+        actionVoidReturnType: {
+          type: "union",
+          definition: [
             {
-              "type": "schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "actionError" }
+              type: "schemaReference",
+              definition: { absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", relativePath: "actionError" },
             },
             {
-              "type": "schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "actionVoidSuccess" }
-            }
-          ]
+              type: "schemaReference",
+              definition: { absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", relativePath: "actionVoidSuccess" },
+            },
+          ],
         },
-        "actionEntityInstanceSuccess": {
-          "type": "object",
-          "definition": {
-            "status": { "type": "literal", "definition": "ok" },
-            "returnedDomainElement": { "type": "schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "domainElementEntityInstance" } }
-          }
+        actionEntityInstanceSuccess: {
+          type: "object",
+          definition: {
+            status: { type: "literal", definition: "ok" },
+            returnedDomainElement: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainElementEntityInstance",
+              },
+            },
+          },
         },
-        "actionEntityInstanceReturnType": {
-          "type": "union",
-          "definition": [
+        actionEntityInstanceReturnType: {
+          type: "union",
+          definition: [
             {
-              "type": "schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "actionError" }
+              type: "schemaReference",
+              definition: { absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", relativePath: "actionError" },
             },
             {
-              "type": "schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "actionEntityInstanceSuccess" }
-            }
-          ]
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "actionEntityInstanceSuccess",
+              },
+            },
+          ],
         },
-        "actionEntityInstanceCollectionSuccess": {
-          "type": "object",
-          "definition": {
-            "status": { "type": "literal", "definition": "ok" },
-            "returnedDomainElement": { "type": "schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "domainElementEntityInstanceCollection" } }
-          }
+        actionEntityInstanceCollectionSuccess: {
+          type: "object",
+          definition: {
+            status: { type: "literal", definition: "ok" },
+            returnedDomainElement: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainElementEntityInstanceCollection",
+              },
+            },
+          },
         },
-        "actionEntityInstanceCollectionReturnType": {
-          "type": "union",
-          "definition": [
+        actionEntityInstanceCollectionReturnType: {
+          type: "union",
+          definition: [
             {
-              "type": "schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "actionError" }
+              type: "schemaReference",
+              definition: { absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", relativePath: "actionError" },
             },
             {
-              "type": "schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "actionEntityInstanceCollectionSuccess" }
-            }
-          ]
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "actionEntityInstanceCollectionSuccess",
+              },
+            },
+          ],
         },
-        "actionSuccess": {
-          "type": "object",
-          "definition": {
-            "status": { "type": "literal", "definition": "ok" },
-            "returnedDomainElement": { "type": "schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "domainElement" } }
-          }
+        actionSuccess: {
+          type: "object",
+          definition: {
+            status: { type: "literal", definition: "ok" },
+            returnedDomainElement: {
+              type: "schemaReference",
+              definition: { absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", relativePath: "domainElement" },
+            },
+          },
         },
-        "actionReturnType": {
-          "type": "union",
-          "definition": [
+        actionReturnType: {
+          type: "union",
+          definition: [
             {
-              "type": "schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "actionError" }
+              type: "schemaReference",
+              definition: { absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", relativePath: "actionError" },
             },
             {
-              "type": "schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "actionSuccess" }
-            }
-          ]
+              type: "schemaReference",
+              definition: { absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", relativePath: "actionSuccess" },
+            },
+          ],
         },
-        "modelActionInitModelParams": modelEndpointVersionV1.definition.actions.find((a: any) => a.actionParameters.definition.actionName.definition == "initModel")?.actionParameters.definition.params,
-        "modelActionCommit": modelEndpointVersionV1.definition.actions.find((a: any) => a.actionParameters.definition.actionName.definition == "commit")?.actionParameters,
-        "modelActionRollback": modelEndpointVersionV1.definition.actions.find((a: any) => a.actionParameters.definition.actionName.definition == "rollback")?.actionParameters,
-        "modelActionInitModel": modelEndpointVersionV1.definition.actions.find((a: any) => a.actionParameters.definition.actionName.definition == "initModel")?.actionParameters,
-        "modelActionResetModel": modelEndpointVersionV1.definition.actions.find((a: any) => a.actionParameters.definition.actionName.definition == "resetModel")?.actionParameters,
-        "modelActionResetData": modelEndpointVersionV1.definition.actions.find((a: any) => a.actionParameters.definition.actionName.definition == "resetData")?.actionParameters,
-        "modelActionAlterEntityAttribute": modelEndpointVersionV1.definition.actions.find((a: any) => a.actionParameters.definition.actionName.definition == "alterEntityAttribute")?.actionParameters,
-        "modelActionCreateEntity": modelEndpointVersionV1.definition.actions.find((a: any) => a.actionParameters.definition.actionName.definition == "createEntity")?.actionParameters,
-        "modelActionDropEntity": modelEndpointVersionV1.definition.actions.find((a: any) => a.actionParameters.definition.actionName.definition == "dropEntity")?.actionParameters,
-        "modelActionRenameEntity": modelEndpointVersionV1.definition.actions.find((a: any) => a.actionParameters.definition.actionName.definition == "renameEntity")?.actionParameters,
-        "modelAction": { "type": "union", "definition": modelEndpointVersionV1.definition.actions.map((e: any)=>e.actionParameters)},
-        "instanceCUDAction": { "type": "union", "definition": instanceEndpointVersionV1.definition.actions.filter((e: any)=>["createInstance", "updateInstance", "deleteInstance"].includes(e.actionParameters.definition.actionName.definition)).map((e: any)=>e.actionParameters)},
-        "instanceAction": { "type": "union", "definition": instanceEndpointVersionV1.definition.actions.map((e: any)=>e.actionParameters)},
-        "undoRedoAction": { "type": "union", "definition": undoRedoEndpointVersionV1.definition.actions.map((e: any)=>e.actionParameters)},
-        "transactionalInstanceAction": domainEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters.definition.actionType && a.actionParameters.definition.actionType.definition == "transactionalInstanceAction"
+        modelActionInitModelParams: modelEndpointVersionV1.definition.actions.find(
+          (a: any) => a.actionParameters.definition.actionName.definition == "initModel"
+        )?.actionParameters.definition.params,
+        modelActionCommit: modelEndpointVersionV1.definition.actions.find(
+          (a: any) => a.actionParameters.definition.actionName.definition == "commit"
         )?.actionParameters,
-        "localCacheAction": { "type": "union", "definition": localCacheEndpointVersionV1.definition.actions.map((e: any)=>e.actionParameters)},
-        "storeManagementAction": { "type": "union", "definition": storeManagementEndpoint.definition.actions.map((e: any)=>e.actionParameters)},
-        "persistenceAction": { "type": "union", "definition": persistenceEndpointVersionV1.definition.actions.map((e: any)=>e.actionParameters)},
-        "restPersistenceAction": persistenceEndpointVersionV1.definition.actions[0].actionParameters,
-        "queryAction": queryEndpointVersionV1.definition.actions[0].actionParameters,
-        "compositeAction": domainEndpointVersionV1.definition.actions.find(
+        modelActionRollback: modelEndpointVersionV1.definition.actions.find(
+          (a: any) => a.actionParameters.definition.actionName.definition == "rollback"
+        )?.actionParameters,
+        modelActionInitModel: modelEndpointVersionV1.definition.actions.find(
+          (a: any) => a.actionParameters.definition.actionName.definition == "initModel"
+        )?.actionParameters,
+        modelActionResetModel: modelEndpointVersionV1.definition.actions.find(
+          (a: any) => a.actionParameters.definition.actionName.definition == "resetModel"
+        )?.actionParameters,
+        modelActionResetData: modelEndpointVersionV1.definition.actions.find(
+          (a: any) => a.actionParameters.definition.actionName.definition == "resetData"
+        )?.actionParameters,
+        modelActionAlterEntityAttribute: modelEndpointVersionV1.definition.actions.find(
+          (a: any) => a.actionParameters.definition.actionName.definition == "alterEntityAttribute"
+        )?.actionParameters,
+        modelActionCreateEntity: modelEndpointVersionV1.definition.actions.find(
+          (a: any) => a.actionParameters.definition.actionName.definition == "createEntity"
+        )?.actionParameters,
+        modelActionDropEntity: modelEndpointVersionV1.definition.actions.find(
+          (a: any) => a.actionParameters.definition.actionName.definition == "dropEntity"
+        )?.actionParameters,
+        modelActionRenameEntity: modelEndpointVersionV1.definition.actions.find(
+          (a: any) => a.actionParameters.definition.actionName.definition == "renameEntity"
+        )?.actionParameters,
+        modelAction: {
+          type: "union",
+          definition: modelEndpointVersionV1.definition.actions.map((e: any) => e.actionParameters),
+        },
+        instanceCUDAction: {
+          type: "union",
+          definition: instanceEndpointVersionV1.definition.actions
+            .filter((e: any) =>
+              ["createInstance", "updateInstance", "deleteInstance"].includes(
+                e.actionParameters.definition.actionName.definition
+              )
+            )
+            .map((e: any) => e.actionParameters),
+        },
+        instanceAction: {
+          type: "union",
+          definition: instanceEndpointVersionV1.definition.actions.map((e: any) => e.actionParameters),
+        },
+        undoRedoAction: {
+          type: "union",
+          definition: undoRedoEndpointVersionV1.definition.actions.map((e: any) => e.actionParameters),
+        },
+        transactionalInstanceAction: domainEndpointVersionV1.definition.actions.find(
+          (a: any) =>
+            a.actionParameters.definition.actionType &&
+            a.actionParameters.definition.actionType.definition == "transactionalInstanceAction"
+        )?.actionParameters,
+        localCacheAction: {
+          type: "union",
+          definition: localCacheEndpointVersionV1.definition.actions.map((e: any) => e.actionParameters),
+        },
+        storeManagementAction: {
+          type: "union",
+          definition: storeManagementEndpoint.definition.actions.map((e: any) => e.actionParameters),
+        },
+        persistenceAction: {
+          type: "union",
+          definition: persistenceEndpointVersionV1.definition.actions.map((e: any) => e.actionParameters),
+        },
+        restPersistenceAction: persistenceEndpointVersionV1.definition.actions[0].actionParameters,
+        queryAction: queryEndpointVersionV1.definition.actions[0].actionParameters,
+        compositeAction: domainEndpointVersionV1.definition.actions.find(
           (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
         )?.actionParameters,
-        "domainAction": { "type": "union", "definition": domainEndpointVersionV1.definition.actions.map((e: any)=>e.actionParameters)},
+        domainAction: {
+          type: "union",
+          definition: domainEndpointVersionV1.definition.actions.map((e: any) => e.actionParameters),
+        },
         ...(templateJzodSchema as any).definition.context,
-        "modelActionReplayableAction": {
-          "type": "union",
-          "definition": [
+        modelActionReplayableAction: {
+          type: "union",
+          definition: [
             {
-              "type": "schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "modelActionAlterEntityAttribute" }
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "modelActionAlterEntityAttribute",
+              },
             },
             {
-              "type": "schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "modelActionCreateEntity" }
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "modelActionCreateEntity",
+              },
             },
             {
-              "type": "schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "modelActionDropEntity" }
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "modelActionDropEntity",
+              },
             },
             {
-              "type": "schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "modelActionRenameEntity" }
-            }
-          ]
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "modelActionRenameEntity",
+              },
+            },
+          ],
         },
         // "compositeDomainAction": {
         //   "type": "object",
@@ -1774,109 +1887,122 @@ export function getMiroirFundamentalJzodSchema(
 
         //   }
         // },
-        "bundleAction": {
-          "type": "union",
-          "definition": [
+        bundleAction: {
+          type: "union",
+          definition: [
             {
-              "type": "object",
-              "definition": {
-                "actionType": {
-                  "type": "literal",
-                  "definition": "bundleAction"
+              type: "object",
+              definition: {
+                actionType: {
+                  type: "literal",
+                  definition: "bundleAction",
                 },
-                "actionName": {
-                  "type": "literal",
-                  "definition": "createBundle"
+                actionName: {
+                  type: "literal",
+                  definition: "createBundle",
                 },
-                "deploymentUuid": {
-                  "type": "uuid",
-                  "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
-                }
-              }
+                deploymentUuid: {
+                  type: "uuid",
+                  tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+                },
+              },
             },
             {
-              "type": "object",
-              "definition": {
-                "actionType": {
-                  "type": "literal",
-                  "definition": "bundleAction"
+              type: "object",
+              definition: {
+                actionType: {
+                  type: "literal",
+                  definition: "bundleAction",
                 },
-                "actionName": {
-                  "type": "literal",
-                  "definition": "deleteBundle"
+                actionName: {
+                  type: "literal",
+                  definition: "deleteBundle",
                 },
-                "deploymentUuid": {
-                  "type": "uuid",
-                  "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+                deploymentUuid: {
+                  type: "uuid",
+                  tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
                 },
-              }
-            }
-          ]
+              },
+            },
+          ],
         },
-        "storeOrBundleAction": {
-          "type": "union",
-          "definition": [
+        storeOrBundleAction: {
+          type: "union",
+          definition: [
             {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "storeManagementAction"
-              }
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "storeManagementAction",
+              },
             },
             {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "bundleAction"
-              }
-            }
-          ]
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "bundleAction",
+              },
+            },
+          ],
         },
-        "actionTransformer": {
-          "type": "object",
-          "definition": {
-            "transformerType": {
-              "type": "literal",
-              "definition": "actionTransformer"
-            }
-          }
+        actionTransformer: {
+          type: "object",
+          definition: {
+            transformerType: {
+              type: "literal",
+              definition: "actionTransformer",
+            },
+          },
         },
-        "dataTransformer": {
-          "type": "object",
-          "definition": {
-            "transformerType": {
-              "type": "literal",
-              "definition": "dataTransformer"
-            }
-          }
+        dataTransformer: {
+          type: "object",
+          definition: {
+            transformerType: {
+              type: "literal",
+              definition: "dataTransformer",
+            },
+          },
         },
       },
-      "definition": {
-        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-        "relativePath": "miroirAllFundamentalTypesUnion"
-      }
-    }
-  }
+      definition: {
+        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        relativePath: "miroirAllFundamentalTypesUnion",
+      },
+    },
+  };
 
   const domainActionDefinitions = {
-    undoRedoAction: ((miroirFundamentalJzodSchema.definition as JzodReference).context?.undoRedoAction as JzodElement),
-    storeOrBundleAction: ((miroirFundamentalJzodSchema.definition as JzodReference).context?.storeOrBundleAction as JzodElement),
-    modelAction: ((miroirFundamentalJzodSchema.definition as JzodReference).context?.modelAction as JzodElement),
-    instanceAction: ((miroirFundamentalJzodSchema.definition as JzodReference).context?.instanceAction as JzodElement),
-    storeManagementAction: ((miroirFundamentalJzodSchema.definition as JzodReference).context?.storeManagementAction as JzodElement),
+    undoRedoAction: (miroirFundamentalJzodSchema.definition as any).context?.undoRedoAction as any,
+    storeOrBundleAction: (miroirFundamentalJzodSchema.definition as any).context
+      ?.storeOrBundleAction as any,
+    modelAction: (miroirFundamentalJzodSchema.definition as any).context?.modelAction as any,
+    instanceAction: (miroirFundamentalJzodSchema.definition as any).context?.instanceAction as any,
+    storeManagementAction: (miroirFundamentalJzodSchema.definition as any).context
+      ?.storeManagementAction as any,
+    // undoRedoAction: (miroirFundamentalJzodSchema.definition as JzodReference).context?.undoRedoAction as JzodElement,
+    // storeOrBundleAction: (miroirFundamentalJzodSchema.definition as JzodReference).context
+    //   ?.storeOrBundleAction as JzodElement,
+    // modelAction: (miroirFundamentalJzodSchema.definition as JzodReference).context?.modelAction as JzodElement,
+    // instanceAction: (miroirFundamentalJzodSchema.definition as JzodReference).context?.instanceAction as JzodElement,
+    // storeManagementAction: (miroirFundamentalJzodSchema.definition as JzodReference).context
+    //   ?.storeManagementAction as JzodElement,
     transactionalInstanceAction: domainEndpointVersionV1.definition.actions.find(
-      (a: any) => a.actionParameters.definition.actionType && a.actionParameters.definition.actionType.definition == "transactionalInstanceAction"
-    ).actionParameters
-  }
+      (a: any) =>
+        a.actionParameters.definition.actionType &&
+        a.actionParameters.definition.actionType.definition == "transactionalInstanceAction"
+    ).actionParameters,
+  };
 
   // console.log("################## domainActionDefinitions", JSON.stringify(domainActionDefinitions, null, 2))
 
-  const innerResolutionStore: Record<string, JzodReference> = {
+  // const innerResolutionStore: Record<string, JzodReference> = {
+  const innerResolutionStore: Record<string, any> = {
     // TODO: transform all inner references in jzodSchemajzodMiroirBootstrapSchema into innerResolutionStoreReferences
     "fe9b7d99-f216-44de-bb6e-60e1a1ebb739": {
       type: "schemaReference",
       context: {
-        ...(jzodSchemajzodMiroirBootstrapSchema.definition as JzodReference).context,
+        // ...(jzodSchemajzodMiroirBootstrapSchema.definition as JzodReference).context,
+        ...(jzodSchemajzodMiroirBootstrapSchema.definition as any).context,
         dataStoreType: (miroirFundamentalJzodSchema as any).definition.context.dataStoreType,
         application: (miroirFundamentalJzodSchema as any).definition.context.application,
         applicationVersion: (miroirFundamentalJzodSchema as any).definition.context.applicationVersion,
@@ -1884,14 +2010,15 @@ export function getMiroirFundamentalJzodSchema(
         menuDefinition: (miroirFundamentalJzodSchema as any).definition.context.menuDefinition,
         entity: (miroirFundamentalJzodSchema as any).definition.context.entity,
         entityDefinition: (miroirFundamentalJzodSchema as any).definition.context.entityDefinition,
-        applicationSection:(miroirFundamentalJzodSchema as any).definition.context.applicationSection,
+        applicationSection: (miroirFundamentalJzodSchema as any).definition.context.applicationSection,
         entityInstance: (miroirFundamentalJzodSchema as any).definition.context.entityInstance,
         deployment: (miroirFundamentalJzodSchema as any).definition.context.deployment,
-        entityInstanceCollection:(miroirFundamentalJzodSchema as any).definition.context.entityInstanceCollection,
+        entityInstanceCollection: (miroirFundamentalJzodSchema as any).definition.context.entityInstanceCollection,
         jzodSchema: (miroirFundamentalJzodSchema as any).definition.context.jzodSchema,
         ...(miroirFundamentalJzodSchema as any).definition.context.menu.definition.definition.context,
         jzodObjectOrReference: (miroirFundamentalJzodSchema as any).definition.context.jzodObjectOrReference,
-        objectInstanceReportSection: (miroirFundamentalJzodSchema as any).definition.context.objectInstanceReportSection,
+        objectInstanceReportSection: (miroirFundamentalJzodSchema as any).definition.context
+          .objectInstanceReportSection,
         objectListReportSection: (miroirFundamentalJzodSchema as any).definition.context.objectListReportSection,
         gridReportSection: (miroirFundamentalJzodSchema as any).definition.context.gridReportSection,
         listReportSection: (miroirFundamentalJzodSchema as any).definition.context.listReportSection,
@@ -1901,9 +2028,12 @@ export function getMiroirFundamentalJzodSchema(
         metaModel: (miroirFundamentalJzodSchema as any).definition.context.metaModel,
         objectTemplateInnerReference: (templateJzodSchema as any).definition.context.objectTemplateInnerReference,
         objectTemplate: (templateJzodSchema as any).definition.context.objectTemplate,
-        indexedDbStoreSectionConfiguration: (miroirFundamentalJzodSchema as any).definition.context.indexedDbStoreSectionConfiguration,
-        filesystemDbStoreSectionConfiguration: (miroirFundamentalJzodSchema as any).definition.context.filesystemDbStoreSectionConfiguration,
-        sqlDbStoreSectionConfiguration: (miroirFundamentalJzodSchema as any).definition.context.sqlDbStoreSectionConfiguration,
+        indexedDbStoreSectionConfiguration: (miroirFundamentalJzodSchema as any).definition.context
+          .indexedDbStoreSectionConfiguration,
+        filesystemDbStoreSectionConfiguration: (miroirFundamentalJzodSchema as any).definition.context
+          .filesystemDbStoreSectionConfiguration,
+        sqlDbStoreSectionConfiguration: (miroirFundamentalJzodSchema as any).definition.context
+          .sqlDbStoreSectionConfiguration,
         storeBasedConfiguration: (miroirFundamentalJzodSchema as any).definition.context.storeBasedConfiguration,
         storeUnitConfiguration: (miroirFundamentalJzodSchema as any).definition.context.storeUnitConfiguration,
         storeSectionConfiguration: (miroirFundamentalJzodSchema as any).definition.context.storeSectionConfiguration,
@@ -1927,13 +2057,10 @@ export function getMiroirFundamentalJzodSchema(
           (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
         )?.actionParameters,
         // domain elements
-        domainElementObject: (miroirFundamentalJzodSchema as any).definition.context
-          .domainElementObject,
+        domainElementObject: (miroirFundamentalJzodSchema as any).definition.context.domainElementObject,
         // root elements
-        domainModelRootQuery: (miroirFundamentalJzodSchema as any).definition.context
-          .domainModelRootQuery,
-        selectRootQuery: (miroirFundamentalJzodSchema as any).definition.context
-          .selectRootQuery,
+        domainModelRootQuery: (miroirFundamentalJzodSchema as any).definition.context.domainModelRootQuery,
+        selectRootQuery: (miroirFundamentalJzodSchema as any).definition.context.selectRootQuery,
         // queries
         queryObjectReference: (miroirFundamentalJzodSchema as any).definition.context.queryObjectReference,
         selectObjectListByManyToManyRelationQuery: (miroirFundamentalJzodSchema as any).definition.context
@@ -1942,14 +2069,12 @@ export function getMiroirFundamentalJzodSchema(
           .selectObjectListByEntityQuery,
         selectObjectListByRelationQuery: (miroirFundamentalJzodSchema as any).definition.context
           .selectObjectListByRelationQuery,
-          selectObjectByRelationQuery: (miroirFundamentalJzodSchema as any).definition.context
+        selectObjectByRelationQuery: (miroirFundamentalJzodSchema as any).definition.context
           .selectObjectByRelationQuery,
         selectObjectByDirectReferenceQuery: (miroirFundamentalJzodSchema as any).definition.context
           .selectObjectByDirectReferenceQuery,
-        selectObjectQuery: (miroirFundamentalJzodSchema as any).definition.context
-          .selectObjectQuery,
-        selectQueryCombinerQuery: (miroirFundamentalJzodSchema as any).definition.context
-          .selectQueryCombinerQuery,
+        selectObjectQuery: (miroirFundamentalJzodSchema as any).definition.context.selectObjectQuery,
+        selectQueryCombinerQuery: (miroirFundamentalJzodSchema as any).definition.context.selectQueryCombinerQuery,
         miroirSelectQuery: (miroirFundamentalJzodSchema as any).definition.context.miroirSelectQuery,
         miroirSelectQueriesRecord: (miroirFundamentalJzodSchema as any).definition.context.miroirSelectQueriesRecord,
         miroirCrossJoinQuery: (miroirFundamentalJzodSchema as any).definition.context.miroirCrossJoinQuery,
@@ -1967,88 +2092,92 @@ export function getMiroirFundamentalJzodSchema(
   // log.info("innerResolutionStore baseObject", JSON.stringify((innerResolutionStore["fe9b7d99-f216-44de-bb6e-60e1a1ebb739"] as any).context["jzodBaseObject"], null, 2));
   // log.info("innerResolutionStore array", JSON.stringify((innerResolutionStore["fe9b7d99-f216-44de-bb6e-60e1a1ebb739"] as any).context["jzodArray"], null, 2));
 
-  const localizedResolutionStore: Record<string, JzodReference> = Object.fromEntries(
+  const localizedResolutionStore: Record<string, any> = Object.fromEntries(
+  // const localizedResolutionStore: Record<string, JzodReference> = Object.fromEntries(
     Object.entries(innerResolutionStore).map((e) => [
       e[0],
-      makeReferencesAbsolute(e[1], "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", true) as JzodReference,
+      makeReferencesAbsolute(e[1], "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", true) as any,
+      // makeReferencesAbsolute(e[1], "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", true) as JzodReference,
     ])
   );
 
   // log.info("localizedResolutionStore", localizedResolutionStore);
 
-  const carryOnSchema: JzodUnion = {
-    "type": "union",
-    "discriminator": "templateType",
-    "discriminatorNew": { discriminatorType: "string", value: "templateType"},
-    "definition": [
+  const carryOnSchema: any = {
+  // const carryOnSchema: JzodUnion = {
+    type: "union",
+    discriminator: "templateType",
+    discriminatorNew: { discriminatorType: "string", value: "templateType" },
+    definition: [
       {
-        "type": "schemaReference",
-        "definition": {
-          "relativePath": "objectTemplateInnerReference"
-        }
+        type: "schemaReference",
+        definition: {
+          relativePath: "objectTemplateInnerReference",
+        },
       },
       {
-        "type": "object",
-        "definition": {
-          "templateType": {
-            "type": "literal",
-            "definition": "mustacheStringTemplate"
+        type: "object",
+        definition: {
+          templateType: {
+            type: "literal",
+            definition: "mustacheStringTemplate",
           },
-          "definition": {
-            "type": "string"
-          }
-        }
+          definition: {
+            type: "string",
+          },
+        },
       },
       {
-        "type": "object",
-        "definition": {
-          "templateType": {
-            "type": "literal",
-            "definition": "fullObjectTemplate"
+        type: "object",
+        definition: {
+          templateType: {
+            type: "literal",
+            definition: "fullObjectTemplate",
           },
-          "definition": {
-            "type": "array",
-            "definition": {
-              "type": "tuple",
-              "definition": [
+          definition: {
+            type: "array",
+            definition: {
+              type: "tuple",
+              definition: [
                 {
-                  "type": "schemaReference",
-                  "definition": {
-                    "relativePath": "objectTemplateInnerReference"
-                  }
+                  type: "schemaReference",
+                  definition: {
+                    relativePath: "objectTemplateInnerReference",
+                  },
                 },
                 {
-                  "type": "schemaReference",
-                  "definition": {
-                    "relativePath": "objectTemplate"
-                  }
-                }
-              ]
-            }
-          }
-        }
-      }
-    ]
+                  type: "schemaReference",
+                  definition: {
+                    relativePath: "objectTemplate",
+                  },
+                },
+              ],
+            },
+          },
+        },
+      },
+    ],
   };
 
-  const carryOnSchemaReference: JzodReference = {
+  // const carryOnSchemaReference: JzodReference = {
+  const carryOnSchemaReference: any = {
     type: "schemaReference",
     definition: {
-      relativePath: "carryOnObject"
-    }
-  }
+      relativePath: "carryOnObject",
+    },
+  };
 
-  const resolveReferencesWithCarryOn = ((ref:JzodReference): JzodElement | undefined => {
+  const resolveReferencesWithCarryOn = ((ref: any): any | undefined => {
+  // const resolveReferencesWithCarryOn = ((ref: JzodReference): JzodElement | undefined => {
     // const resolvedAbsolutePath = innerResolutionStore[ref.definition?.absolutePath??""]
-    const resolvedAbsolutePath = localizedResolutionStore[ref.definition?.absolutePath??""]
+    const resolvedAbsolutePath = localizedResolutionStore[ref.definition?.absolutePath ?? ""];
     const result =
       resolvedAbsolutePath && resolvedAbsolutePath.context
         ? resolvedAbsolutePath.context[ref.definition?.relativePath ?? ""]
         : undefined;
-    const resultWithAbsoluteReferences = result?makeReferencesAbsolute(
-      result,
-      "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-    ) as any:result;
+    const resultWithAbsoluteReferences = result
+      ? (makeReferencesAbsolute(result, "fe9b7d99-f216-44de-bb6e-60e1a1ebb739") as any)
+      : result;
     // console.log(
     //   "getMiroirFundamentalJzodSchema applyCarryOnSchema resolving reference " +
     //     JSON.stringify(ref, null, 2) +
@@ -2062,7 +2191,7 @@ export function getMiroirFundamentalJzodSchema(
     //     JSON.stringify(resultWithAbsoluteReferences, null, 2)
     // );
     if (resultWithAbsoluteReferences) {
-      return resultWithAbsoluteReferences
+      return resultWithAbsoluteReferences;
     } else {
       throw new Error(
         "getMiroirFundamentalJzodSchema applyCarryOnSchema resolve reference could not find reference " +
@@ -2070,7 +2199,6 @@ export function getMiroirFundamentalJzodSchema(
           " in " +
           Object.keys(innerResolutionStore)
       );
-      
     }
   }) as any;
 
@@ -2081,67 +2209,68 @@ export function getMiroirFundamentalJzodSchema(
   const extendedSchemas = ["jzodBaseObject", "domainModelRootQuery", "selectRootQuery"];
 
   const localizedInnerResolutionStoreExtendedReferences = Object.fromEntries(
-    Object.entries(localizedResolutionStore)
-    .flatMap(
-      (e) =>
-        Object.entries(e[1].context ?? {})
-        .filter(e => extendedSchemas.includes(e[0]))
-        .map(
-          (f) => [
-            forgeCarryOnReferenceName(e[0], f[0], "extend"),
-            // TODO: add inner references to environment!!!!
-            // applyCarryOnSchema(f[1] as any, carryOnSchema as any, undefined, resolveReferencesWithCarryOn).resultSchema,
-            applyCarryOnSchemaOnLevel(f[1] as any, carryOnSchemaReference as any, false /** applyOnFirstLevel */, undefined, resolveReferencesWithCarryOn).resultSchema,
-          ]
-        )
+    Object.entries(localizedResolutionStore).flatMap((e) =>
+      Object.entries(e[1].context ?? {})
+        .filter((e) => extendedSchemas.includes(e[0]))
+        .map((f) => [
+          forgeCarryOnReferenceName(e[0], f[0], "extend"),
+          // TODO: add inner references to environment!!!!
+          // applyCarryOnSchema(f[1] as any, carryOnSchema as any, undefined, resolveReferencesWithCarryOn).resultSchema,
+          applyCarryOnSchemaOnLevel(
+            f[1] as any,
+            carryOnSchemaReference as any,
+            false /** applyOnFirstLevel */,
+            undefined,
+            resolveReferencesWithCarryOn
+          ).resultSchema,
+        ])
     )
   );
 
   // console.log("localizedInnerResolutionStoreExtendedReferences", JSON.stringify(localizedInnerResolutionStoreExtendedReferences, null, 2))
 
   const localizedInnerResolutionStorePlainReferences = Object.fromEntries(
-    Object.entries(localizedResolutionStore).flatMap(
-      (e) =>
-        Object.entries(e[1].context ?? {}).map(
-          (f) => [
-            forgeCarryOnReferenceName(e[0], f[0]),
-            // TODO: add inner references to environment!!!!
-            // applyCarryOnSchema(f[1] as any, carryOnSchema as any, undefined, resolveReferencesWithCarryOn).resultSchema,
-            applyCarryOnSchema(f[1] as any, carryOnSchemaReference as any, undefined, resolveReferencesWithCarryOn).resultSchema,
-          ]
-        )
+    Object.entries(localizedResolutionStore).flatMap((e) =>
+      Object.entries(e[1].context ?? {}).map((f) => [
+        forgeCarryOnReferenceName(e[0], f[0]),
+        // TODO: add inner references to environment!!!!
+        // applyCarryOnSchema(f[1] as any, carryOnSchema as any, undefined, resolveReferencesWithCarryOn).resultSchema,
+        applyCarryOnSchema(f[1] as any, carryOnSchemaReference as any, undefined, resolveReferencesWithCarryOn)
+          .resultSchema,
+      ])
     )
   );
 
   // console.log("localizedInnerResolutionStorePlainReferences", JSON.stringify(localizedInnerResolutionStorePlainReferences, null, 2))
 
   const localizedInnerResolutionStoreReferences = Object.assign(
-    {
-
-    },
+    {},
     localizedInnerResolutionStoreExtendedReferences,
-    localizedInnerResolutionStorePlainReferences, 
-  )
+    localizedInnerResolutionStorePlainReferences
+  );
 
   // console.log("localizedInnerResolutionStoreReferences", localizedInnerResolutionStoreReferences)
 
-  const miroirFundamentalJzodSchemaWithActionTemplate:JzodSchema = {
+  const miroirFundamentalJzodSchemaWithActionTemplate: any = {
+  // const miroirFundamentalJzodSchemaWithActionTemplate: JzodSchema = {
     ...miroirFundamentalJzodSchema,
     definition: {
       ...miroirFundamentalJzodSchema.definition,
-      "context": {
-        ...(miroirFundamentalJzodSchema.definition as JzodReference)?.context??{},
+      context: {
+        ...((miroirFundamentalJzodSchema.definition as any)?.context ?? {}),
+        // ...((miroirFundamentalJzodSchema.definition as JzodReference)?.context ?? {}),
         ...localizedInnerResolutionStoreReferences,
         carryOnObject: carryOnSchema,
-        ...(() => {// defining a function, which is called immediately (just one time)
+        ...(() => {
+          // defining a function, which is called immediately (just one time)
           const conversionResult = applyCarryOnSchema(
             // (templateJzodSchema as any).definition.context.actionHandler.definition.actionTemplate,
             {
-              "type": "schemaReference",
-              "definition": {
+              type: "schemaReference",
+              definition: {
                 // "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": forgeCarryOnReferenceName("fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "compositeAction")
-              }
+                relativePath: forgeCarryOnReferenceName("fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "compositeAction"),
+              },
             },
             // (templateJzodSchema as any).definition.context.actionHandler.definition.actionTemplate.carryOn,
             // carryOnSchema as any,
@@ -2151,12 +2280,14 @@ export function getMiroirFundamentalJzodSchema(
           );
           return {
             ...conversionResult.resolvedReferences,
-            compositeActionTemplate: conversionResult.resultSchema // compositeActionTemplate: THAT's THE RESULT OF THE WHOLE MOVEMENT!
-          }
+            compositeActionTemplate: conversionResult.resultSchema, // compositeActionTemplate: THAT's THE RESULT OF THE WHOLE MOVEMENT!
+          };
         })(),
-      } as Record<string, JzodElement>
-    } as JzodObjectOrReference
-  }
+      } as Record<string, any>,
+      // } as Record<string, JzodElement>,
+    } as any,
+    // } as JzodObjectOrReference,
+  };
   // console.log("entityDefinitionQueryVersionV1WithAbsoluteReferences=",JSON.stringify(entityDefinitionQueryVersionV1WithAbsoluteReferences))
 
   return miroirFundamentalJzodSchemaWithActionTemplate;

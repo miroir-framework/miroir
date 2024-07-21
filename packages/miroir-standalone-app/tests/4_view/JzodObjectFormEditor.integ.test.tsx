@@ -20,8 +20,8 @@ import {
   adminConfigurationDeploymentMiroir,
   circularReplacer,
   domainEndpointVersionV1,
-  entityDefinitionApplication,
-  entityDefinitionApplicationVersion,
+  entityDefinitionSelfApplication,
+  entityDefinitionSelfApplicationVersion,
   entityDefinitionBundleV1,
   entityDefinitionCommit,
   entityDefinitionDeployment,
@@ -92,8 +92,8 @@ const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
   queryEndpointVersionV1,
   persistenceEndpointVersionV1,
   jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
-  entityDefinitionApplication as EntityDefinition,
-  entityDefinitionApplicationVersion as EntityDefinition,
+  entityDefinitionSelfApplication as EntityDefinition,
+  entityDefinitionSelfApplicationVersion as EntityDefinition,
   entityDefinitionDeployment as EntityDefinition,
   entityDefinitionEntity as EntityDefinition,
   entityDefinitionEntityDefinition as EntityDefinition,
@@ -713,11 +713,11 @@ describe(
               type: "uuid",
             },
           ],
-          extra: {
+          tag: { value: {
             id: 1,
             defaultLabel: "Uuid",
             editable: false,
-          },
+          }},
         };
         const formInitialValue: any = {[attributeName]: objectInitialValue};
         const elementRoleQueries: RoleQuery[] = [{ role: "option", method: "findAllByRole"}];

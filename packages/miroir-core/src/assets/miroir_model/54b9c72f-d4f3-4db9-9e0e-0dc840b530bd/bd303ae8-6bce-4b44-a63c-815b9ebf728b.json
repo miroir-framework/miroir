@@ -12,43 +12,43 @@
     "definition": {
       "uuid": {
         "type": "uuid",
-        "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+        "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
       },
       "parentName": {
         "type": "string",
         "optional": true,
-        "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+        "tag": { "value": {  "id":2, "defaultLabel": "Entity Name", "editable": false }}
       },
       "parentUuid": {
         "type": "uuid",
-        "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
+        "tag": { "value": {  "id":3, "defaultLabel": "Entity Uuid", "editable": false }}
       },
       "parentDefinitionVersionUuid": {
         "type": "uuid",
         "optional": true,
-        "extra": { "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }
+        "tag": { "value": {  "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }}
       },
       "name": {
         "type": "string",
-        "extra": { "id":5, "defaultLabel": "Name", "editable": true }
+        "tag": { "value": {  "id":5, "defaultLabel": "Name", "editable": true }}
       },
       "defaultLabel": {
         "type": "string",
-        "extra": { "id":6, "defaultLabel": "Default Label", "editable": true }
+        "tag": { "value": {  "id":6, "defaultLabel": "Default Label", "editable": true }}
       },
       "description": {
         "type": "string",
         "optional": true,
-        "extra": { "id":7, "defaultLabel": "Description", "editable": true }
+        "tag": { "value": {  "id":7, "defaultLabel": "Description", "editable": true }}
       },
       "application": {
         "type": "uuid",
-        "extra": { "id":8, "defaultLabel": "Application", "description": "The Application of the Branch.", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": false }
+        "tag": { "value": {  "id":8, "defaultLabel": "Application", "description": "The Application of the Branch.", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": false }}
       },
       "model": {
         "type": "schemaReference",
         "optional": true,
-        "extra": { "id":9, "defaultLabel": "Application Deployment Model", "editable": true },
+        "tag": { "value": {  "id":9, "defaultLabel": "Application Deployment Model", "editable": true }},
         "definition": {
           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
           "relativePath": "jzodObject" 
@@ -57,7 +57,7 @@
       "data": {
         "type": "schemaReference",
         "optional": true,
-        "extra": { "id":10, "defaultLabel": "Application Deployment Data", "editable": true },
+        "tag": { "value": {  "id":10, "defaultLabel": "Application Deployment Data", "editable": true }},
         "definition": {
           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
           "relativePath": "jzodObject"

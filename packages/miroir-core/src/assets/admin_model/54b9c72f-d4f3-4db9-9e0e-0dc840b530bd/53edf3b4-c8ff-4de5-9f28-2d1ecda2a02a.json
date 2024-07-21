@@ -12,64 +12,64 @@
     "definition": {
       "uuid": {
         "type": "uuid",
-        "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+        "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
       },
       "parentName": {
         "type": "string",
         "optional": true,
-        "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+        "tag": { "value": {  "id":2, "defaultLabel": "Entity Name", "editable": false }}
       },
       "parentUuid": {
         "type": "uuid",
-        "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
+        "tag": { "value": {  "id":3, "defaultLabel": "Entity Uuid", "editable": false }}
       },
       "parentDefinitionVersionUuid": {
         "type": "uuid",
         "optional": true,
-        "extra": { "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }
+        "tag": { "value": {  "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }}
       },
       "name": {
         "type": "string",
-        "extra": { "id":5, "defaultLabel": "Name", "editable": true }
+        "tag": { "value": {  "id":5, "defaultLabel": "Name", "editable": true }}
       },
       "defaultLabel": {
         "type": "string",
         "optional": true,
-        "extra": { "id":6, "defaultLabel": "Default Label", "editable": true }
+        "tag": { "value": {  "id":6, "defaultLabel": "Default Label", "editable": true }}
       },
       "description": {
         "type": "string",
         "optional": true,
-        "extra": { "id":7, "defaultLabel": "Description", "editable": true }
+        "tag": { "value": {  "id":7, "defaultLabel": "Description", "editable": true }}
       },
       "type": {
         "type": "string",
         "optional": true,
-        "extra": { "id":8, "defaultLabel": "Type of Report", "editable": true }
+        "tag": { "value": {  "id":8, "defaultLabel": "Type of Report", "editable": true }}
       },
       "application": {
         "type": "uuid",
-        "extra": { "id":9, "defaultLabel": "Application", "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b", "editable": false }
+        "tag": { "value": {  "id":9, "defaultLabel": "Application", "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b", "editable": false }}
       },
       "branch": {
         "type": "uuid",
-        "extra": { "id":10, "defaultLabel": "Branch", "description":"The Branch of this Application Version", "editable": false }
+        "tag": { "value": {  "id":10, "defaultLabel": "Branch", "description":"The Branch of this Application Version", "editable": false }}
       },
       "previousVersion": {
         "type": "uuid",
         "optional": true,
-        "extra": {
+        "tag": { "value": { 
           "id": 11,
           "defaultLabel": "Previous Application Version",
           "description": "Previous version of the application on this Branch.",
           "targetEntity": "ff3d211b-7eb6-473a-afbf-503bb70a5c26",
           "editable": false
-        }
+        }}
       },
       "modelStructureMigration": {
         "type": "array",
         "optional": true,
-        "extra": { "id":12, "defaultLabel": "Structure Migration from Previous Version", "editable": true },
+        "tag": { "value": {  "id":12, "defaultLabel": "Structure Migration from Previous Version", "editable": true }},
         "definition": {
           "type": "record",
           "definition": {
@@ -80,7 +80,7 @@
       "modelCUDMigration": {
         "type": "array",
         "optional": true,
-        "extra": { "id":13, "defaultLabel": "Create-Update-Delete Migration from Previous Version", "editable": true },
+        "tag": { "value": {  "id":13, "defaultLabel": "Create-Update-Delete Migration from Previous Version", "editable": true }},
         "definition": {
           "type": "record",
           "definition": {

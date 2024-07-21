@@ -52,7 +52,7 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
       ? props.currentEnumJzodSchemaResolver(props.element?.type,props.element?.definition)
       : props.resolvedElementJzodSchema;
 
-  const displayName = targetJzodSchema?.extra?.defaultLabel?targetJzodSchema?.extra?.defaultLabel:props.name;
+  const displayName = targetJzodSchema?.tag?.value?.defaultLabel?targetJzodSchema?.tag?.value?.defaultLabel:props.name;
   const styles = useMemo(
     () => ({
       width: "50vw",
@@ -225,16 +225,16 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
               </table>
             </div>
           }
-          {/* {currentAttributeJzodSchema?.extra?.defaultLabel}: {instance[entityAttribute[0]]} */}
+          {/* {currentAttributeJzodSchema?.tag?.defaultLabel}: {instance[entityAttribute[0]]} */}
         </div>
       )
     }
     // case "simpleType": {
-    //   const targetEntityUuid = targetJzodSchema.extra?.targetEntity
+    //   const targetEntityUuid = targetJzodSchema.tag?.value?.targetEntity
     //   if (
     //     context.applicationSection &&
     //     targetJzodSchema.definition == "string" &&
-    //     targetJzodSchema?.extra?.targetEntity &&
+    //     targetJzodSchema?.tag?.value?.targetEntity &&
     //     targetEntityUuid
     //   ) {
     //     const targetEntity: Entity | undefined = props.currentReportDeploymentSectionEntities?.find(
@@ -246,12 +246,12 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
     //         <EntityInstanceLink
     //           deploymentUuid={
     //             context.deploymentUuid
-    //             // targetJzodSchema.extra?.targetEntityApplication == "metaModel"
+    //             // targetJzodSchema.tag?.targetEntityApplication == "metaModel"
     //             //   ? adminConfigurationDeploymentMiroir.uuid
     //             //   : props.deploymentUuid
     //           }
     //           applicationSection={context.applicationSection}
-    //           entityUuid={targetJzodSchema?.extra?.targetEntity}
+    //           entityUuid={targetJzodSchema?.tag?.value?.targetEntity}
     //           instanceUuid={props.element}
     //           key={props.name}
     //         />
@@ -269,11 +269,11 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
     case "number": 
     case "date": 
     case "string": {
-      const targetEntityUuid = targetJzodSchema.extra?.targetEntity
+      const targetEntityUuid = targetJzodSchema.tag?.value?.targetEntity
       if (
         context.applicationSection &&
         targetJzodSchema.type == "uuid" &&
-        targetJzodSchema?.extra?.targetEntity &&
+        targetJzodSchema?.tag?.value?.targetEntity &&
         targetEntityUuid
       ) {
         const targetEntity: Entity | undefined = props.currentReportDeploymentSectionEntities?.find(
@@ -285,12 +285,12 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
             <EntityInstanceLink
               deploymentUuid={
                 context.deploymentUuid
-                // targetJzodSchema.extra?.targetEntityApplication == "metaModel"
+                // targetJzodSchema.tag?.targetEntityApplication == "metaModel"
                 //   ? adminConfigurationDeploymentMiroir.uuid
                 //   : props.deploymentUuid
               }
               applicationSection={context.applicationSection}
-              entityUuid={targetJzodSchema?.extra?.targetEntity}
+              entityUuid={targetJzodSchema?.tag?.value?.targetEntity}
               instanceUuid={props.element}
               key={props.name}
             />

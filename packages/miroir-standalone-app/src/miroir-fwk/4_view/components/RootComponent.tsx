@@ -22,8 +22,8 @@ import {
   domainEndpointVersionV1,
   DomainManyQueriesWithDeploymentUuid,
   EntityDefinition,
-  entityDefinitionApplication,
-  entityDefinitionApplicationVersion,
+  entityDefinitionSelfApplication,
+  entityDefinitionSelfApplicationVersion,
   entityDefinitionBundleV1,
   entityDefinitionCommit,
   entityDefinitionDeployment,
@@ -177,8 +177,8 @@ export const RootComponent = (props: RootComponentProps) => {
     persistenceEndpointVersionV1,
     jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
     templateJzodSchema as JzodSchema,
-    entityDefinitionApplication as EntityDefinition,
-    entityDefinitionApplicationVersion as EntityDefinition,
+    entityDefinitionSelfApplication as EntityDefinition,
+    entityDefinitionSelfApplicationVersion as EntityDefinition,
     entityDefinitionDeployment as EntityDefinition,
     entityDefinitionEntity as EntityDefinition,
     entityDefinitionEntityDefinition as EntityDefinition,
@@ -439,11 +439,11 @@ export const RootComponent = (props: RootComponentProps) => {
                         params: {
                           dataStoreType: "miroir",
                           metaModel: defaultMiroirMetaModel,
-                          application: applicationMiroir,
+                          application: selfApplicationMiroir,
                           applicationDeploymentConfiguration: adminConfigurationDeploymentMiroir,
-                          applicationModelBranch: applicationModelBranchMiroirMasterBranch,
-                          applicationStoreBasedConfiguration: applicationStoreBasedConfigurationMiroir,
-                          applicationVersion: applicationVersionInitialMiroirVersion,
+                          applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
+                          applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
+                          applicationVersion: selfApplicationVersionInitialMiroirVersion,
                         },
                       });
                       await domainController.handleAction({
@@ -454,11 +454,11 @@ export const RootComponent = (props: RootComponentProps) => {
                         params: {
                           dataStoreType: "app",
                           metaModel: defaultMiroirMetaModel,
-                          application: applicationLibrary,
+                          application: selfApplicationLibrary,
                           applicationDeploymentConfiguration: adminConfigurationDeploymentLibrary,
-                          applicationModelBranch: applicationModelBranchLibraryMasterBranch,
-                          applicationStoreBasedConfiguration: applicationStoreBasedConfigurationLibrary,
-                          applicationVersion: applicationVersionLibraryInitialVersion,
+                          applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
+                          applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,
+                          applicationVersion: selfApplicationVersionLibraryInitialVersion,
                         },
                       });
                       // TODO: transactional action must not autocommit! initModel neither?!

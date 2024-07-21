@@ -477,7 +477,7 @@ export const JzodObjectEditor = (
         getDeploymentEntityStateSelectorParams<DomainManyQueriesWithDeploymentUuid>(
           props.currentDeploymentUuid &&
           unfoldedRawSchema.type == "uuid" &&
-          unfoldedRawSchema.extra?.targetEntity
+          unfoldedRawSchema.tag?.value?.targetEntity
           ?
           {
             queryType: "DomainManyQueries",
@@ -489,14 +489,14 @@ export const JzodObjectEditor = (
             contextResults: { elementType: "object", elementValue: {} },
             fetchQuery: {
               select: {
-                [unfoldedRawSchema.extra?.targetEntity]:
+                [unfoldedRawSchema.tag?.value?.targetEntity]:
                 {
                   queryType: "selectObjectListByEntity",
-                  applicationSection: getApplicationSection(props.currentDeploymentUuid,unfoldedRawSchema.extra?.targetEntity),
+                  applicationSection: getApplicationSection(props.currentDeploymentUuid,unfoldedRawSchema.tag?.value?.targetEntity),
                   parentName: "",
                   parentUuid: {
                     referenceType: "constant",
-                    referenceUuid: unfoldedRawSchema.extra?.targetEntity,
+                    referenceUuid: unfoldedRawSchema.tag?.value?.targetEntity,
                   },
                 }
               }
@@ -593,11 +593,11 @@ export const JzodObjectEditor = (
       () => {
         if (
           props.resolvedJzodSchema?.type == "uuid" &&
-          props.resolvedJzodSchema.extra?.targetEntity
+          props.resolvedJzodSchema.tag?.value?.targetEntity
         ) {
           return [
             [noValue.uuid, noValue] as [string, EntityInstance],
-            ...(Object.entries(foreignKeyObjects[props.resolvedJzodSchema.extra.targetEntity] ?? {}))
+            ...(Object.entries(foreignKeyObjects[props.resolvedJzodSchema.tag.value?.targetEntity] ?? {}))
           ]
         }
         return []
@@ -1022,7 +1022,7 @@ export const JzodObjectEditor = (
                     }
 
                     const attributeDisplayedLabel: string =
-                      currentAttributeDefinition?.extra?.defaultLabel ?? attribute[0];
+                      currentAttributeDefinition?.tag?.defaultLabel ?? attribute[0];
 
                     // determine raw schema of attribute
                     switch (unfoldedRawSchema?.type) {
@@ -1271,7 +1271,7 @@ export const JzodObjectEditor = (
                               rootLesslistKey={attributeRootLessListKey}
                               rootLesslistKeyArray={[...props.rootLesslistKeyArray, attribute[0]]}
                               indentLevel={usedIndentLevel + 1}
-                              label={currentAttributeDefinition?.extra?.defaultLabel}
+                              label={currentAttributeDefinition?.tag?.value?.defaultLabel}
                               paramMiroirFundamentalJzodSchema={props.paramMiroirFundamentalJzodSchema}
                               currentDeploymentUuid={props.currentDeploymentUuid}
                               rawJzodSchema={attributeRawJzodSchema}
@@ -1454,7 +1454,7 @@ export const JzodObjectEditor = (
                         listKey={props.listKey + "." + index}
                         // currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
                         indentLevel={usedIndentLevel + 1}
-                        label={props.resolvedJzodSchema?.extra?.defaultLabel}
+                        label={props.resolvedJzodSchema?.tag?.value?.defaultLabel}
                         paramMiroirFundamentalJzodSchema={props.paramMiroirFundamentalJzodSchema}
                         currentDeploymentUuid={props.currentDeploymentUuid}
                         currentApplicationSection={props.currentApplicationSection}
@@ -1499,7 +1499,7 @@ export const JzodObjectEditor = (
       case "number":
       case "bigint":
       case "string":{
-        // log.info("selectList for targetEntity", props.resolvedJzodSchema.extra?.targetEntity, "value", selectList, "props.foreignKeyObjects", props.foreignKeyObjects);
+        // log.info("selectList for targetEntity", props.resolvedJzodSchema.tag?.value?.targetEntity, "value", selectList, "props.foreignKeyObjects", props.foreignKeyObjects);
         return (
           <>
             {/* <label htmlFor={props.listKey}>{displayedLabel}: </label> */}
@@ -1525,7 +1525,7 @@ export const JzodObjectEditor = (
           props.setFormState(newFormState);
         }
 
-        return props.resolvedJzodSchema.extra?.targetEntity ? (
+        return props.resolvedJzodSchema.tag?.value?.targetEntity ? (
           <>
             {/* <label htmlFor={props.listKey}>{displayedLabel}: </label> */}
             <select

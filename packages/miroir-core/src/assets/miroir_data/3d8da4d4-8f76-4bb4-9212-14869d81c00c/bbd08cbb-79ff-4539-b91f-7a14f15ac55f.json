@@ -17,7 +17,7 @@
             "configuration": { "type":"schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeUnitConfiguration" } },
             "deploymentUuid": {
               "type": "uuid",
-              "extra": { "defaultLabel": "Module Deployment Uuid", "editable": false }
+              "tag": { "value": {  "defaultLabel": "Module Deployment Uuid", "editable": false }}
             }
           }
         },
@@ -34,7 +34,7 @@
             "endpoint": { "type": "literal", "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" },
             "deploymentUuid": {
               "type": "uuid",
-              "extra": { "defaultLabel": "Module Deployment Uuid", "editable": false }
+              "tag": { "value": {  "defaultLabel": "Module Deployment Uuid", "editable": false }}
             },
             "configuration": {
               "type": "schemaReference",
@@ -68,7 +68,7 @@
             },
             "deploymentUuid": {
               "type": "uuid",
-              "extra": { "defaultLabel": "Module Deployment Uuid", "editable": false }
+              "tag": { "value": {  "defaultLabel": "Module Deployment Uuid", "editable": false }}
             }
           }
         },
@@ -95,7 +95,7 @@
             },
             "deploymentUuid": {
               "type": "uuid",
-              "extra": { "defaultLabel": "Module Deployment Uuid", "editable": false }
+              "tag": { "value": {  "defaultLabel": "Module Deployment Uuid", "editable": false }}
             }
           }
         },
@@ -112,7 +112,7 @@
             "endpoint": {"type": "literal", "definition":"bbd08cbb-79ff-4539-b91f-7a14f15ac55f"},
             "deploymentUuid": {
               "type": "uuid",
-              "extra": { "defaultLabel": "Module Deployment Uuid", "editable": false }
+              "tag": { "value": {  "defaultLabel": "Module Deployment Uuid", "editable": false }}
             }
           }
         },

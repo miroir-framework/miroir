@@ -298,8 +298,8 @@ export function getDefaultValueForJzodSchemaWithResolution(
       if (jzodSchema.definition.length == 0) {
         throw new Error("getDefaultValueForJzodSchemaWithResolution union definition is empty for jzodSchema="  + JSON.stringify(jzodSchema, null, 2));
       }
-      if (jzodSchema.extra?.initializeTo) {
-        return jzodSchema.extra?.initializeTo
+      if (jzodSchema.tag?.value?.initializeTo) {
+        return jzodSchema.tag?.value?.initializeTo
       } else {
         return getDefaultValueForJzodSchemaWithResolution(
           jzodSchema.definition[0],

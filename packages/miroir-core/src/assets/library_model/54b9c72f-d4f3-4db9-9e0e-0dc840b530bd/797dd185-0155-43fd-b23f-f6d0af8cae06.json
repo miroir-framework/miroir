@@ -19,36 +19,36 @@
     "definition": {
       "uuid": {
         "type": "uuid",
-        "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+        "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
       },
       "parentName": {
         "type": "string",
         "optional": true,
-        "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+        "tag": { "value": {  "id":2, "defaultLabel": "Entity Name", "editable": false }}
       },
       "parentUuid": {
         "type": "uuid",
-        "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
+        "tag": { "value": {  "id":3, "defaultLabel": "Entity Uuid", "editable": false }}
       },
       "conceptLevel": {
         "type": "enum",
         "definition": ["MetaModel", "Model", "Data"],
         "optional": true,
-        "extra": { "id": 5, "defaultLabel": "Concept Level", "editable": false }
+        "tag": { "value": {  "id": 5, "defaultLabel": "Concept Level", "editable": false }}
       },
       "name": {
         "type": "string",
-        "extra": { "id":4, "defaultLabel": "Name", "editable": true }
+        "tag": { "value": {  "id":4, "defaultLabel": "Name", "editable": true }}
       },
       "author": {
         "type": "uuid",
         "optional": true,
-        "extra": { "id":5, "defaultLabel": "Author", "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733", "editable": true }
+        "tag": { "value": {  "id":5, "defaultLabel": "Author", "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733", "editable": true }}
       },
       "publisher": {
         "type": "uuid",
         "optional": true,
-        "extra": { "id":5, "defaultLabel": "Publisher", "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab", "editable": true }
+        "tag": { "value": {  "id":5, "defaultLabel": "Publisher", "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab", "editable": true }}
       }
     }
   }

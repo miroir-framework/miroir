@@ -131,7 +131,7 @@ export function defaultFormValues(
       
       const currentEditorAttributes = Object.entries(currentEntityJzodSchema?.definition??{}).reduce((acc,attributeJzodSchema)=>{
         let result
-        if (attributeJzodSchema[1].extra?.targetEntity) {
+        if (attributeJzodSchema[1].tag?.value?.targetEntity) {
           result = Object.assign({},acc,{[attributeJzodSchema[0]]:noValue})
         } else {
           if (Object.keys(attributeDefaultValue).includes(attributeJzodSchema[0])) {
@@ -305,7 +305,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         props.tableComponentReportType == TableComponentTypeSchema.enum.EntityInstance
           ? currentReportTargetEntityDefinition?.jzodSchema.definition ?? {}
           : {}
-      ).filter((e) => e[1].extra?.targetEntity)
+      ).filter((e) => e[1].tag?.value?.targetEntity)
     ,
     [
       deploymentEntityStateSelectorMap,
@@ -332,15 +332,15 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           fetchQuery: {
             select: Object.fromEntries(
               foreignKeyObjectsAttributeDefinition.map((e) => [
-                e[1].extra?.targetEntity,
+                e[1].tag?.value?.targetEntity,
                 {
                   queryType: "selectObjectListByEntity",
                   // applicationSection: (props.paramsAsdomainElements as any)["applicationSection"],
-                  applicationSection: getApplicationSection(props.deploymentUuid,e[1].extra?.targetEntity??"undefined"),
+                  applicationSection: getApplicationSection(props.deploymentUuid,e[1].tag?.value?.targetEntity??"undefined"),
                   parentName: "",
                   parentUuid: {
                     referenceType: "constant",
-                    referenceUuid: e[1].extra?.targetEntity,
+                    referenceUuid: e[1].tag?.value?.targetEntity,
                   },
                 },
               ])
