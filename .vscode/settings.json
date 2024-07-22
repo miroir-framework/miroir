@@ -1,7 +1,4 @@
 {
-  "accessibility.signalOptions": {
-    "volume": 20
-  },
   "accessibility.signals.lineHasError": {
     "sound": "off"
   },
@@ -46,5 +43,6 @@
   },
   "accessibility.signals.noInlayHints": {
     "sound": "off"
-  }
+  },
+  "accessibility.signalOptions.volume": 20
 }
