@@ -1839,7 +1839,7 @@ export function getMiroirFundamentalJzodSchema(
           type: "union",
           definition: domainEndpointVersionV1.definition.actions.map((e: any) => e.actionParameters),
         },
-        ...(templateJzodSchema as any).definition.context,
+        ...(templateJzodSchema as any).definition.context, // gives "objectTemplateInnerReference", "objectTemplate", "actionHandler"
         modelActionReplayableAction: {
           type: "union",
           definition: [
@@ -2012,7 +2012,83 @@ export function getMiroirFundamentalJzodSchema(
         entityDefinition: (miroirFundamentalJzodSchema as any).definition.context.entityDefinition,
         applicationSection: (miroirFundamentalJzodSchema as any).definition.context.applicationSection,
         entityInstance: (miroirFundamentalJzodSchema as any).definition.context.entityInstance,
+        entityInstanceUuid: (miroirFundamentalJzodSchema as any).definition.context.entityInstanceUuid,
+        // instanceUuidIndexUuidIndex: (miroirFundamentalJzodSchema as any).definition.context.instanceUuidIndexUuidIndex,
+        entityInstancesUuidIndex: (miroirFundamentalJzodSchema as any).definition.context.entityInstancesUuidIndex,
         deployment: (miroirFundamentalJzodSchema as any).definition.context.deployment,
+        // domain elements  ###########################################################
+        // definition: [
+        //   },
+        //   {
+        //     type: "object",
+        //     definition: {
+        //       elementType: {
+        //         type: "literal",
+        //         definition: "instanceUuidIndexUuidIndex",
+        //       },
+        //       elementValue: {
+        //         type: "schemaReference",
+        //         definition: {
+        //           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        //           relativePath: "entityInstancesUuidIndex",
+        //         },
+        //       },
+        //     },
+        //   },
+        //   {
+        //     type: "object",
+        //     definition: {
+        //       elementType: {
+        //         type: "literal",
+        //         definition: "failure",
+        //       },
+        //       elementValue: {
+        //         type: "schemaReference",
+        //         definition: {
+        //           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        //           relativePath: "queryFailed",
+        //         },
+        //       },
+        //     },
+        //   },
+        //   {
+        //     type: "object",
+        //     definition: {
+        //       elementType: {
+        //         type: "literal",
+        //         definition: "string",
+        //       },
+        //       elementValue: {
+        //         type: "string",
+        //       },
+        //     },
+        //   },
+        //   {
+        //     type: "object",
+        //     definition: {
+        //       elementType: {
+        //         type: "literal",
+        //         definition: "array",
+        //       },
+        //       elementValue: {
+        //         type: "array",
+        //         definition: {
+        //           type: "schemaReference",
+        //           definition: {
+        //             relativePath: "domainElement",
+        //           },
+        //         },
+        //       },
+        //     },
+        //   },
+        // ],
+        domainElementVoid: (miroirFundamentalJzodSchema as any).definition.context.domainElementVoid,
+        domainElementObject: (miroirFundamentalJzodSchema as any).definition.context.domainElementObject,
+        domainElementUuidIndex: (miroirFundamentalJzodSchema as any).definition.context.domainElementUuidIndex,
+        domainElementEntityInstanceCollection: (miroirFundamentalJzodSchema as any).definition.context.domainElementEntityInstanceCollection,
+        domainElementInstanceArray: (miroirFundamentalJzodSchema as any).definition.context.domainElementInstanceArray,
+        domainElementEntityInstance: (miroirFundamentalJzodSchema as any).definition.context.domainElementEntityInstance,
+        domainElement: (miroirFundamentalJzodSchema as any).definition.context.domainElement,
         entityInstanceCollection: (miroirFundamentalJzodSchema as any).definition.context.entityInstanceCollection,
         jzodSchema: (miroirFundamentalJzodSchema as any).definition.context.jzodSchema,
         ...(miroirFundamentalJzodSchema as any).definition.context.menu.definition.definition.context,
@@ -2057,12 +2133,13 @@ export function getMiroirFundamentalJzodSchema(
           (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
         )?.actionParameters,
         // domain elements
-        domainElementObject: (miroirFundamentalJzodSchema as any).definition.context.domainElementObject,
+        // domainElementObject: (miroirFundamentalJzodSchema as any).definition.context.domainElementObject,
         // root elements
         domainModelRootQuery: (miroirFundamentalJzodSchema as any).definition.context.domainModelRootQuery,
         selectRootQuery: (miroirFundamentalJzodSchema as any).definition.context.selectRootQuery,
         // queries
         queryObjectReference: (miroirFundamentalJzodSchema as any).definition.context.queryObjectReference,
+        queryFailed: (miroirFundamentalJzodSchema as any).definition.context.queryFailed,
         selectObjectListByManyToManyRelationQuery: (miroirFundamentalJzodSchema as any).definition.context
           .selectObjectListByManyToManyRelationQuery,
         selectObjectListByEntityQuery: (miroirFundamentalJzodSchema as any).definition.context
@@ -2260,33 +2337,75 @@ export function getMiroirFundamentalJzodSchema(
         ...((miroirFundamentalJzodSchema.definition as any)?.context ?? {}),
         // ...((miroirFundamentalJzodSchema.definition as JzodReference)?.context ?? {}),
         ...localizedInnerResolutionStoreReferences,
+        compositeInstanceActionTemplate: {
+          type: "object",
+          definition: {
+            actionType: {
+              type: "literal",
+              definition: "compositeInstanceAction",
+            },
+            actionName: {
+              type: "literal",
+              definition: "instanceActionSequence",
+            },
+            definition: {
+              type: "array",
+              definition: {
+                type: "union",
+                definition: [
+                  {
+                    type: "object",
+                    definition: {
+                      compositeActionType: { type: "literal", definition: "action" },
+                      action: {
+                        type: "schemaReference",
+                        definition: {
+                          relativePath: forgeCarryOnReferenceName("fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "instanceAction"),
+                        },
+                      },
+                    }
+                  },
+                  {
+                    type: "object",
+                    definition: {
+                      compositeActionType: { type: "literal", definition: "query" },
+                      nameGivenToResult: { type: "string" },
+                      query: {
+                        type: "schemaReference",
+                        definition: {
+                          relativePath: forgeCarryOnReferenceName("fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "queryAction"),
+                        },
+                      },
+                    }
+                  }
+                ]
+              }
+            },            
+          },
+        },
         carryOnObject: carryOnSchema,
         ...(() => {
           // defining a function, which is called immediately (just one time)
           const conversionResult = applyCarryOnSchema(
-            // (templateJzodSchema as any).definition.context.actionHandler.definition.actionTemplate,
             {
               type: "schemaReference",
               definition: {
-                // "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                 relativePath: forgeCarryOnReferenceName("fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "compositeAction"),
               },
             },
-            // (templateJzodSchema as any).definition.context.actionHandler.definition.actionTemplate.carryOn,
-            // carryOnSchema as any,
             carryOnSchemaReference as any,
             undefined,
             resolveReferencesWithCarryOn
           );
           return {
             ...conversionResult.resolvedReferences,
+            // TODO: use / define replayableActionTemplate (ModelAction + InstanceCUDAction) & Non-transactionalActionTemplate
+            // non-transactional action templates can be used wich queries, they do not need to be replayable post-mortem.
             compositeActionTemplate: conversionResult.resultSchema, // compositeActionTemplate: THAT's THE RESULT OF THE WHOLE MOVEMENT!
           };
         })(),
-      } as Record<string, any>,
-      // } as Record<string, JzodElement>,
-    } as any,
-    // } as JzodObjectOrReference,
+      } as Record<string, any /**JzodElement */>,
+    } as any /** JzodObjectOrReference */,
   };
   // console.log("entityDefinitionQueryVersionV1WithAbsoluteReferences=",JSON.stringify(entityDefinitionQueryVersionV1WithAbsoluteReferences))
 

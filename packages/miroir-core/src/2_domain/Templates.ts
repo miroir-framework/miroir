@@ -144,6 +144,14 @@ export function renderObjectTemplate(
           }
           case "mustacheStringTemplate": {
             const result = Mustache.render(objectTemplate.definition, queryParams);
+            log.info(
+              "renderObjectTemplate mustacheStringTemplate for",
+              objectTemplate,
+              "queryParams",
+              queryParams,
+              "result",
+              result
+            );
             return result;
             break;
           }

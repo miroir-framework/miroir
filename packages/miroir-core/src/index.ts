@@ -28,6 +28,8 @@ export {
   ApplicationSection,
   applicationSection,
   Commit,
+  CompositeInstanceActionTemplate,
+  compositeInstanceActionTemplate,
   DomainAction,
   DomainSingleSelectObjectQueryWithDeployment,
   DomainSingleSelectObjectListQueryWithDeployment,

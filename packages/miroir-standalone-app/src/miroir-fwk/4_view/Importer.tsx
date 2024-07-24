@@ -1,5 +1,5 @@
 import { Button } from "@mui/material";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, ReactNode, useEffect, useMemo, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import { z } from "zod";
 // import * as XLSX from 'xlsx/xlsx.mjs';
@@ -26,7 +26,8 @@ import {
   metaModel,
   JzodPlainAttribute,
   JzodAttributePlainStringWithValidations,
-  ActionHandler
+  ActionHandler,
+  CompositeInstanceActionTemplate
 } from "miroir-core";
 import * as XLSX from 'xlsx';
 import { useDomainControllerService } from "./MiroirContextReactProvider.js";
@@ -949,35 +950,35 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               },
             },
           },
-          splittedEntityInstancesQuery: /* DomainManyQueriesWithDeploymentUuid */ {
-            queryType: "DomainManyQueries",
-            deploymentUuid: {
-              templateType: "parameterReference",
-              referenceName: "currentDeploymentUuid",
-            },
-            pageParams,
-            queryParams: { elementType: "object", elementValue: {} },
-            contextResults: { elementType: "object", elementValue: {} },
-            fetchQuery: {
-              select: { // TODO: replace with fullObjectTemplate
-                [splittedEntityName]: {
-                  queryType: "selectObjectListByEntity",
-                  applicationSection: "data",
-                  parentName: {
-                    templateType: "parameterReference",
-                    referenceName: "splittedEntityName",
-                  },
-                  parentUuid: {
-                    referenceType: "constant",
-                    referenceUuid: {
-                      templateType: "mustacheStringTemplate",
-                      definition: "{{splittedEntityDefinition?.entityUuid}}",
-                    },
-                  },
-                },
-              }
-            },
-          },
+          // splittedEntityInstancesQuery: /* DomainManyQueriesWithDeploymentUuid */ {
+          //   queryType: "DomainManyQueries",
+          //   deploymentUuid: {
+          //     templateType: "parameterReference",
+          //     referenceName: "currentDeploymentUuid",
+          //   },
+          //   pageParams,
+          //   queryParams: { elementType: "object", elementValue: {} },
+          //   contextResults: { elementType: "object", elementValue: {} },
+          //   fetchQuery: {
+          //     select: { // TODO: replace with fullObjectTemplate
+          //       [splittedEntityName]: {
+          //         queryType: "selectObjectListByEntity",
+          //         applicationSection: "data",
+          //         parentName: {
+          //           templateType: "parameterReference",
+          //           referenceName: "splittedEntityName",
+          //         },
+          //         parentUuid: {
+          //           referenceType: "constant",
+          //           referenceUuid: {
+          //             templateType: "mustacheStringTemplate",
+          //             definition: "{{splittedEntityDefinition?.entityUuid}}",
+          //           },
+          //         },
+          //       },
+          //     }
+          //   },
+          // },
         },
         compositeActionTemplate: {
           actionType: "compositeAction",
@@ -1121,36 +1122,159 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                 },
               }
             },
-            // find splitted entity instances
-            {
-              compositeActionType: "query",
-              query: {
-                actionType: "queryAction",
-                actionName: "runQuery",
-                endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                deploymentUuid: {
-                  templateType: "parameterReference",
-                  referenceName: "currentDeploymentUuid"
-                },
-                query: {
-                  templateType: "parameterReference",
-                  referenceName: "splittedEntityInstancesQuery"
-                }
-              }
-            }
+            // // find splitted entity instances
+            // {
+            //   compositeActionType: "query",
+            //   query: {
+            //     actionType: "queryAction",
+            //     actionName: "runQuery",
+            //     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+            //     deploymentUuid: {
+            //       templateType: "parameterReference",
+            //       referenceName: "currentDeploymentUuid"
+            //     },
+            //     query: {
+            //       templateType: "parameterReference",
+            //       referenceName: "splittedEntityInstancesQuery"
+            //     }
+            //   }
+            // }
           ],
         },
       },
     };
 
-    await handleCompositeAction(
-      domainController,
-      actionHandlerSplitFountainEntity,
-      actionSplitFountainEntityParams,
+    // await handleCompositeAction(
+    //   domainController,
+    //   actionHandlerSplitFountainEntity,
+    //   actionSplitFountainEntityParams,
+    //   props.currentModel
+    // )
+
+    const actionInsertMunicipalitiesParams = {
+      currentApplicationUuid: props.currentApplicationUuid,
+      currentDeploymentUuid: props.currentDeploymentUuid,
+      splittedEntityDefinition,
+      splittedEntityName,
+      // splittedEntityInstancesQuery: /* DomainManyQueriesWithDeploymentUuid */ {
+      //   queryType: "DomainManyQueries",
+      //   deploymentUuid: {
+      //     templateType: "parameterReference",
+      //     referenceName: "currentDeploymentUuid",
+      //   },
+      //   pageParams,
+      //   queryParams: { elementType: "object", elementValue: {
+      //     currentDeploymentUuid: props.currentDeploymentUuid,
+      //     splittedEntityDefinition,
+      //     splittedEntityName,
+      //   } },
+      //   contextResults: { elementType: "object", elementValue: {} },
+      //   fetchQuery: {
+      //     select: { // TODO: replace with fullObjectTemplate
+      //       [splittedEntityName]: {
+      //         queryType: "selectObjectListByEntity",
+      //         applicationSection: "data",
+      //         parentName: {
+      //           templateType: "parameterReference",
+      //           referenceName: "splittedEntityName",
+      //         },
+      //         parentUuid: {
+      //           referenceType: "constant",
+      //           referenceUuid: {
+      //             templateType: "mustacheStringTemplate",
+      //             definition: "{{splittedEntityDefinition?.entityUuid}}",
+      //           },
+      //         },
+      //       },
+      //     }
+      //   },
+      // },
+    };
+
+    const actionInsertMunicipalities: CompositeInstanceActionTemplate = {
+      actionType: "compositeInstanceAction",
+      actionName: "instanceActionSequence",
+      definition: [
+        {
+          compositeActionType: "query",
+          nameGivenToResult: splittedEntityName,
+          query: {
+            actionType: "queryAction",
+            actionName: "runQuery",
+            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+            deploymentUuid: {
+              templateType: "parameterReference",
+              referenceName: "currentDeploymentUuid"
+            },
+            query: {
+              queryType: "DomainManyQueries",
+              deploymentUuid: {
+                templateType: "parameterReference",
+                referenceName: "currentDeploymentUuid",
+              },
+              pageParams,
+              queryParams: { elementType: "object", elementValue: {} },
+              contextResults: { elementType: "object", elementValue: {} },
+              fetchQuery: {
+                select: { // TODO: replace with fullObjectTemplate
+                  [splittedEntityName]: {
+                    queryType: "selectObjectListByEntity",
+                    applicationSection: "data",
+                    parentName: {
+                      templateType: "parameterReference",
+                      referenceName: "splittedEntityName",
+                    },
+                    parentUuid: {
+                      referenceType: "constant",
+                      referenceUuid: {
+                        templateType: "mustacheStringTemplate",
+                        definition: "{{splittedEntityDefinition.entityUuid}}",
+                      },
+                    },
+                  },
+                }
+              },
+            }
+          }
+        }
+        // {
+        //   compositeActionType: "action",
+        //   action: {
+        //     actionType: "instanceAction",
+        //     actionName: "createInstance",
+        //     applicationSection: "data",
+        //     deploymentUuid: {
+        //       templateType: "parameterReference",
+        //       referenceName: "currentDeploymentUuid",
+        //     },
+        //     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+        //     objects:[
+        //       {
+        //         parentName: {
+        //           templateType: "mustacheStringTemplate",
+        //           definition: "{{newEntity.name}}",
+        //         },
+        //         parentUuid:{
+        //           templateType: "mustacheStringTemplate",
+        //           definition: "{{newEntity.uuid}}",
+        //         },
+        //         applicationSection:'data',
+        //         instances:instances,
+        //       }
+        //     ]
+        //   },
+        // },
+      ]
+    };
+    const actionInsertMunicipalitiesResult = await domainController.handleInstanceActionTemplate(
+      actionInsertMunicipalities,
+      actionInsertMunicipalitiesParams,
       props.currentModel
-    )
+    );
 
-
+    if (actionInsertMunicipalitiesResult.status != "ok") {
+      throw new Error("splitEntity found actionInsertMunicipalities with error " + actionInsertMunicipalitiesResult.error);
+    }
     // // UPDATE MODEL ###############################################################################
 
     // log.info("splitEntity added new Entity", newEntityName, createEntityAction)
@@ -1203,6 +1327,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     // }
     // log.info("splitEntity found splittedEntityInstances", JSON.stringify(splittedEntityInstances));
 
+    let a
     // let municipalities: Set<string> = new Set();
     // for (const m of splittedEntityInstances.returnedDomainElement.elementValue.instances) {
     //   log.info("splitEntity found entity instance", m, (m as any)[splittedEntityAttribute]);

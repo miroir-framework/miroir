@@ -24,34 +24,36 @@ import {
   ActionVoidReturnType,
   ApplicationSection,
   ApplicationVersion,
+  CompositeInstanceActionTemplate,
   DomainAction,
   EntityInstance,
   EntityInstanceCollection,
   InstanceAction,
   MetaModel,
   ModelAction,
+  ObjectTemplate,
   QueryAction,
   RestPersistenceAction,
   TransactionalInstanceAction,
   UndoRedoAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface.js';
+import { ACTION_OK } from '../1_core/constants.js';
+import { defaultMiroirMetaModel, metaModelEntities, miroirModelEntities } from '../1_core/Model.js';
+import { resolveContextReference } from '../2_domain/QuerySelectors.js';
 import { MiroirLoggerFactory } from '../4_services/Logger.js';
 import { packageName } from '../constants.js';
-import { getLoggerName } from '../tools.js';
-import { Endpoint } from './Endpoint.js';
-import { CallUtils } from './ErrorHandling/CallUtils.js';
-import { defaultMiroirMetaModel, metaModelEntities, miroirModelEntities } from '../1_core/Model.js';
-import { cleanLevel } from './constants.js';
-import { ACTION_OK } from '../1_core/constants.js';
-import { resolveContextReference } from '../2_domain/QuerySelectors.js';
 import {
+  renderObjectTemplate,
   selfApplicationMiroir,
   selfApplicationModelBranchMiroirMasterBranch,
   selfApplicationStoreBasedConfigurationMiroir,
   selfApplicationVersionInitialMiroirVersion,
 } from "../index.js";
-import { renderObjectTemplate } from "../2_domain/Templates.js";
+import { getLoggerName } from '../tools.js';
+import { cleanLevel } from './constants.js';
+import { Endpoint } from './Endpoint.js';
+import { CallUtils } from './ErrorHandling/CallUtils.js';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -631,7 +633,7 @@ export class DomainController implements DomainControllerInterface {
   }
 
   // ##############################################################################################
-  // async handleQuery(queryAction: QueryAction, currentModel: MetaModel): Promise<ActionReturnType> {
+  
   async handleQuery(queryAction: QueryAction): Promise<ActionReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     log.info(
@@ -740,6 +742,47 @@ export class DomainController implements DomainControllerInterface {
   }
 
   // ##############################################################################################
+  async handleInstanceActionTemplate(domainAction: CompositeInstanceActionTemplate, actionParamValues: any, currentModel: MetaModel): Promise<ActionVoidReturnType> {
+    const localActionParams = {...actionParamValues};
+    for (const currentAction of domainAction.definition) {
+      log.info("handleInstanceActionTemplate compositeInstanceAction action", currentAction)
+      if (currentAction.compositeActionType == "query") {
+        const resolvedQueryTemplate: QueryAction = renderObjectTemplate(
+          "NO NAME",
+          currentAction.query as ObjectTemplate,
+          localActionParams,
+          undefined
+        );
+        
+        log.info("handleInstanceActionTemplate resolved query", resolvedQueryTemplate, "with actionParamValues", actionParamValues);
+
+        const actionResult = await this.handleQuery(resolvedQueryTemplate)
+        if (actionResult?.status != "ok") {
+          log.error('Error on query',JSON.stringify(actionResult, null, 2));
+        } else { 
+          log.info("handleInstanceActionTemplate query result", actionResult)
+          localActionParams[currentAction.nameGivenToResult] = actionResult.returnedDomainElement.elementValue;
+        }
+      } else {
+        const resolvedActionTemplate: InstanceAction = renderObjectTemplate(
+          "NO NAME",
+          currentAction.action as ObjectTemplate,
+          localActionParams,
+          undefined
+        );
+        const actionResult = await this.handleAction(resolvedActionTemplate, currentModel)
+        if (actionResult?.status != "ok") {
+          log.error('Error on action',JSON.stringify(actionResult, null, 2));
+        }
+      }
+      // const actionResult = await this.handleAction(domainAction.deploymentUuid, currentAction)
+      // if (actionResult?.status != "ok") {
+      //   log.error('Error instanceAction',JSON.stringify(actionResult, null, 2));
+      // }
+    }
+    return Promise.resolve(ACTION_OK);
+  }
+  // ##############################################################################################
   async handleAction(domainAction: DomainAction, currentModel: MetaModel): Promise<ActionVoidReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     // log.info(
@@ -760,18 +803,18 @@ export class DomainController implements DomainControllerInterface {
       
     // }
     switch (domainAction.actionType) {
-      case 'compositeAction':{
+      case 'compositeAction':{ // old school, not used anymore (or should not be used anymore)
         for (const currentAction of domainAction.definition) {
           log.info("handleAction compositeAction resolved action", currentAction)
           if (currentAction.compositeActionType == "query") {
             const actionResult = await this.handleQuery(currentAction.query)
             if (actionResult?.status != "ok") {
-              log.error('Error query afterEach',JSON.stringify(actionResult, null, 2));
+              log.error('Error query',JSON.stringify(actionResult, null, 2));
             }
           } else {
             const actionResult = await this.handleAction(currentAction.action, currentModel)
             if (actionResult?.status != "ok") {
-              log.error('Error action afterEach',JSON.stringify(actionResult, null, 2));
+              log.error('Error action',JSON.stringify(actionResult, null, 2));
             }
           }
         }
