@@ -461,7 +461,7 @@ export {
 export {
   cleanupResultsFromQuery,
   selectByDomainManyQueries,
-  selectEntityInstanceListFromListQuery,
+  selectEntityInstanceUuidIndexFromListQuery,
   selectFetchQueryJzodSchema,
   selectJzodSchemaByDomainModelQuery,
   selectJzodSchemaBySingleSelectQuery,

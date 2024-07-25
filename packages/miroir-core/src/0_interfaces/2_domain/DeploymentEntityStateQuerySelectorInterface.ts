@@ -1,6 +1,8 @@
 import {
   DomainElement,
-  DomainElementObject,
+  DomainElementEntityInstanceOrFailed,
+  DomainElementInstanceUuidIndexOrFailed,
+  DomainElementObjectOrFailed,
   DomainManyQueriesWithDeploymentUuid,
   DomainModelGetEntityDefinitionQueryParams,
   DomainModelGetFetchParamJzodSchemaQueryParams,
@@ -19,10 +21,10 @@ export type RecordOfJzodObject = Record<string, JzodObject | undefined>;
 
 // ################################################################################################
 export type QuerySelectorMap<StateType> = {
-  selectEntityInstanceUuidIndex: QuerySelector<DomainModelGetSingleSelectObjectListQueryQueryParams, StateType, DomainElement>,
-  selectEntityInstanceFromObjectQuery: QuerySelector<DomainModelGetSingleSelectObjectQueryQueryParams, StateType, DomainElement>,
-  selectEntityInstanceListFromListQuery: QuerySelector<DomainModelGetSingleSelectObjectListQueryQueryParams, StateType, DomainElement>,
-  selectByDomainManyQueries: QuerySelector<DomainManyQueriesWithDeploymentUuid, StateType, DomainElementObject>
+  selectByDomainManyQueries: QuerySelector<DomainManyQueriesWithDeploymentUuid, StateType, DomainElementObjectOrFailed>
+  selectEntityInstanceUuidIndex: QuerySelector<DomainModelGetSingleSelectObjectListQueryQueryParams, StateType, DomainElementInstanceUuidIndexOrFailed>,
+  selectEntityInstanceFromObjectQuery: QuerySelector<DomainModelGetSingleSelectObjectQueryQueryParams, StateType, DomainElementEntityInstanceOrFailed>,
+  selectEntityInstanceUuidIndexFromListQuery: QuerySelector<DomainModelGetSingleSelectObjectListQueryQueryParams, StateType, DomainElementInstanceUuidIndexOrFailed>,
 };
 
 // ################################################################################################

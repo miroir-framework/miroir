@@ -15,12 +15,12 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 
 export function applyTransformer(t: Transformer, o: any):any {
   switch (t.transformerType) {
-    case "recordOfTransformers": {
+    case "recordOfTransformers": { // build object from record of transformers
       const result =  Object.fromEntries(Object.entries(t.definition).map(e=>[e[0],applyTransformer(e[1],o)]))
       // log.info("applyTransformer",t, "parameter", o, "return", result)
       return result
     }
-    case "objectTransformer": {
+    case "objectTransformer": { // access object attribute
       const result = o[t.attributeName]
       return result;
       break;

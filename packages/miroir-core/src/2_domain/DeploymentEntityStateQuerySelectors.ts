@@ -2,18 +2,17 @@
 import {
   ApplicationSection,
   DomainElement,
-  DomainElementObject,
+  DomainElementEntityInstanceOrFailed,
+  DomainElementInstanceUuidIndexOrFailed,
   DomainModelGetEntityDefinitionQueryParams,
   DomainModelGetSingleSelectObjectListQueryQueryParams,
   DomainModelGetSingleSelectObjectQueryQueryParams,
-  DomainModelQueryJzodSchemaParams,
   EntityDefinition,
   JzodObject,
   MiroirSelectorQueryParams,
   SelectObjectQuery
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
-  JzodSchemaQuerySelector,
   JzodSchemaQuerySelectorMap,
   JzodSchemaQuerySelectorParams,
   QuerySelector,
@@ -31,7 +30,7 @@ import { getDeploymentEntityStateIndex } from "./DeploymentEntityState.js";
 import {
   resolveContextReference,
   selectByDomainManyQueries,
-  selectEntityInstanceListFromListQuery,
+  selectEntityInstanceUuidIndexFromListQuery,
   selectFetchQueryJzodSchema,
   selectJzodSchemaByDomainModelQuery,
   selectJzodSchemaBySingleSelectQuery,
@@ -54,11 +53,11 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
  * @returns 
  */
 export const selectEntityInstanceFromObjectQueryAndDeploymentEntityState:QuerySelector<
-  DomainModelGetSingleSelectObjectQueryQueryParams, DeploymentEntityState, DomainElement
+  DomainModelGetSingleSelectObjectQueryQueryParams, DeploymentEntityState, DomainElementEntityInstanceOrFailed
 > = (
   deploymentEntityState: DeploymentEntityState,
   selectorParams: QuerySelectorParams<DomainModelGetSingleSelectObjectQueryQueryParams, DeploymentEntityState>
-): DomainElement => {
+): DomainElementEntityInstanceOrFailed => {
   const querySelectorParams: SelectObjectQuery = selectorParams.query.singleSelectQuery.select as SelectObjectQuery;
   const deploymentUuid = selectorParams.query.singleSelectQuery.deploymentUuid;
   const applicationSection: ApplicationSection =
@@ -148,19 +147,31 @@ export const selectEntityInstanceFromObjectQueryAndDeploymentEntityState:QuerySe
       break;
     }
     case "selectObjectByDirectReference": {
-      const instanceUuid = resolveContextReference(
+      const instanceDomainElement = resolveContextReference(
         querySelectorParams.instanceUuid,
         selectorParams.query.queryParams,
         selectorParams.query.contextResults
       );
       // log.info("selectEntityInstanceFromObjectQueryAndDeploymentEntityState selectObjectByDirectReference found domainState", JSON.stringify(domainState))
 
-      log.info("selectEntityInstanceFromObjectQueryAndDeploymentEntityState found instanceUuid", JSON.stringify(instanceUuid))
+      log.info("selectEntityInstanceFromObjectQueryAndDeploymentEntityState found instanceUuid", JSON.stringify(instanceDomainElement))
 
-      if (instanceUuid.elementType != "string" && instanceUuid.elementType != "instanceUuid") {
-        return instanceUuid /* QueryResults, elementType == "failure" */
+      // if (instanceUuid.elementType != "string" && instanceUuid.elementType != "instanceUuid") {
+      if (instanceDomainElement.elementType == "instance") {
+        return instanceDomainElement /* QueryResults, elementType == "failure" */
       }
-      log.info("selectEntityInstanceFromObjectQueryAndDeploymentEntityState resolved instanceUuid =", instanceUuid);
+      if (instanceDomainElement.elementType != "string" && instanceDomainElement.elementType != "instanceUuid") {
+        return {
+          elementType: "failure",
+          elementValue: {
+            queryFailure: "EntityNotFound",
+            deploymentUuid,
+            applicationSection,
+            entityUuid: entityUuidReference.elementValue,
+          },
+        };
+      }
+      log.info("selectEntityInstanceFromObjectQueryAndDeploymentEntityState resolved instanceUuid =", instanceDomainElement);
       if (!deploymentEntityState[index]) {
         return {
           elementType: "failure",
@@ -172,7 +183,7 @@ export const selectEntityInstanceFromObjectQueryAndDeploymentEntityState:QuerySe
           },
         };
       }
-      if (!deploymentEntityState[index].entities[instanceUuid.elementValue]) {
+      if (!deploymentEntityState[index].entities[instanceDomainElement.elementValue]) {
         return {
           elementType: "failure",
           elementValue: {
@@ -180,12 +191,12 @@ export const selectEntityInstanceFromObjectQueryAndDeploymentEntityState:QuerySe
             deploymentUuid,
             applicationSection,
             entityUuid: entityUuidReference.elementValue,
-            instanceUuid: instanceUuid.elementValue,
+            instanceUuid: instanceDomainElement.elementValue,
           },
         };
       }
       
-        log.info("selectEntityInstanceFromObjectQueryAndDeploymentEntityState selectObjectByDirectReference, ############# reference",
+      log.info("selectEntityInstanceFromObjectQueryAndDeploymentEntityState selectObjectByDirectReference, ############# reference",
         querySelectorParams,
         "entityUuidReference",
         entityUuidReference,
@@ -201,7 +212,7 @@ export const selectEntityInstanceFromObjectQueryAndDeploymentEntityState:QuerySe
       return {
         elementType: "instance",
         elementValue:
-          deploymentEntityState[index].entities[instanceUuid.elementValue],
+          deploymentEntityState[index].entities[instanceDomainElement.elementValue],
       };
       break;
     }
@@ -218,11 +229,11 @@ export const selectEntityInstanceFromObjectQueryAndDeploymentEntityState:QuerySe
 // ################################################################################################
 // ACCESSES deploymentEntityState
 export const selectEntityInstanceUuidIndexFromDeploymentEntityState: QuerySelector<
-  DomainModelGetSingleSelectObjectListQueryQueryParams, DeploymentEntityState, DomainElement
+  DomainModelGetSingleSelectObjectListQueryQueryParams, DeploymentEntityState, DomainElementInstanceUuidIndexOrFailed
 > = (
   deploymentEntityState: DeploymentEntityState,
   selectorParams: QuerySelectorParams<DomainModelGetSingleSelectObjectListQueryQueryParams, DeploymentEntityState>
-): DomainElement => {
+): DomainElementInstanceUuidIndexOrFailed => {
   const deploymentUuid = selectorParams.query.singleSelectQuery.deploymentUuid;
   const applicationSection = selectorParams.query.singleSelectQuery.select.applicationSection??"data";
 
@@ -260,7 +271,12 @@ export const selectEntityInstanceUuidIndexFromDeploymentEntityState: QuerySelect
     case "string":
     case "instanceUuid": {
       if (!deploymentEntityState[deploymentEntityStateIndex]) {
-        log.warn("selectEntityInstanceUuidIndexFromDeploymentEntityState could not find index", deploymentEntityStateIndex, "in deploymentEntityState", deploymentEntityState )
+        log.warn(
+          "selectEntityInstanceUuidIndexFromDeploymentEntityState could not find index",
+          deploymentEntityStateIndex,
+          "in deploymentEntityState",
+          deploymentEntityState
+        );
         return {
           elementType: "failure",
           elementValue: {
@@ -273,7 +289,12 @@ export const selectEntityInstanceUuidIndexFromDeploymentEntityState: QuerySelect
       }
     
       // return { elementType: "instanceUuidIndex", elementValue: Object.fromEntries(deploymentEntityState[index].map(e=>[e.uuid,e])) };
-      log.info("selectEntityInstanceUuidIndexFromDeploymentEntityState for", deploymentEntityStateIndex, "result", deploymentEntityState[deploymentEntityStateIndex].entities )
+      log.info(
+        "selectEntityInstanceUuidIndexFromDeploymentEntityState for",
+        deploymentEntityStateIndex,
+        "result",
+        deploymentEntityState[deploymentEntityStateIndex].entities
+      );
       return { elementType: "instanceUuidIndex", elementValue: deploymentEntityState[deploymentEntityStateIndex].entities };
       break;
     }
@@ -383,7 +404,7 @@ export function getDeploymentEntityStateSelectorMap(): QuerySelectorMap<
   return {
     selectEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDeploymentEntityState,
     selectEntityInstanceFromObjectQuery: selectEntityInstanceFromObjectQueryAndDeploymentEntityState,
-    selectEntityInstanceListFromListQuery: selectEntityInstanceListFromListQuery,
+    selectEntityInstanceUuidIndexFromListQuery: selectEntityInstanceUuidIndexFromListQuery,
     selectByDomainManyQueries: selectByDomainManyQueries,
   };
 }

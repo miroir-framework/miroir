@@ -11,19 +11,20 @@ export default (path, options) =>({
   "verbose": true,
   // "verbose": false,
   "rootDir": "./tmp/src/tests",
+  // "rootDir": "./src/tests",
   // "rootDir": "./tests",
   "moduleDirectories": [
     "node_modules",
     "packages/miroir-standalone-app/node_modules",
     // "packages/miroir-core",
-
   ],
+  // modulePaths: ["./packages/miroir-standalone-app/src/"], // <-- This will be set to 'baseUrl' value
+  modulePaths: ["./src/"], // <-- This will be set to 'baseUrl' value
+  // modulePaths: ["./src/", "./tmp/"], // <-- This will be set to 'baseUrl' value
+  // modulePaths: [compilerOptions.baseUrl], // <-- This will be set to 'baseUrl' value
   transformIgnorePatterns: [`<rootDir>\/(?!(/node_modules/(?!${esModules})))\/`],
   // transformIgnorePatterns: ['node_modules','miroir-core'],
   // roots: ["."],
-  // modulePaths: ["./packages/miroir-standalone-app/src/"], // <-- This will be set to 'baseUrl' value
-  modulePaths: ["./src/"], // <-- This will be set to 'baseUrl' value
-  // modulePaths: [compilerOptions.baseUrl], // <-- This will be set to 'baseUrl' value
   transform: {},
   // moduleNameMapper: 
   //   // Object.assign(

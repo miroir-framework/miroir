@@ -90,7 +90,7 @@
                   "referenceName": "uuid"
                 }
               },
-              "parameter": {
+              "rootQueryObjectTransformer": {
                 "transformerType": "recordOfTransformers",
                 "definition": {
                   "uuid": {

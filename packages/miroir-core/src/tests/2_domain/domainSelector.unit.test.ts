@@ -17,8 +17,7 @@ const domainState: DomainState = domainStateImport as DomainState;
 
 describe("domainSelector", () => {
   // ###########################################################################################
-  it(
-    'error on non-existing Entity: EntityNotFound',
+  it('error on non-existing Entity: EntityNotFound',
     () => {
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
@@ -63,8 +62,7 @@ describe("domainSelector", () => {
   )
 
   // ###########################################################################################
-  it(
-    'error on non-existing Entity: EntityNotFound',
+  it('error on non-existing Entity: EntityNotFound',
     () => {
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
@@ -109,8 +107,7 @@ describe("domainSelector", () => {
   )
 
   // ###########################################################################################
-  it(
-    'error on non-existing object uuid: InstanceNotFound',
+  it('error on non-existing object uuid: InstanceNotFound',
     () => {
 
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
@@ -156,32 +153,31 @@ describe("domainSelector", () => {
   )
 
   // ###########################################################################################
-  it(
-    'select 1 object from Domain State',
+  it('select 1 object from Domain State',
     () => {
 
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
-        "deploymentUuid": adminConfigurationDeploymentLibrary.uuid,
-        "contextResults": { elementType: "object", elementValue: {} },
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        contextResults: { elementType: "object", elementValue: {} },
         pageParams: { elementType: "object", elementValue: {} },
         queryParams: { elementType: "object", elementValue: {} },
-        "fetchQuery": {
-          "select": {
-            "book": {
+        fetchQuery: {
+          select: {
+            book: {
               queryType: "selectObjectByDirectReference",
               parentName: "Book",
               parentUuid: {
                 referenceType: "constant",
-                "referenceUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                referenceUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
               },
               instanceUuid: {
                 referenceType: "constant",
-                referenceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
-              }
-            }
-          }
-        }
+                referenceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+              },
+            },
+          },
+        },
       };
 
       const queryResult:any = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam));
@@ -191,36 +187,35 @@ describe("domainSelector", () => {
   )
 
   // ###########################################################################################
-  it(
-    'select 1 object from Domain State using context reference',
+  it('select 1 object from Domain State using context reference',
     () => {
 
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
-        "deploymentUuid": adminConfigurationDeploymentLibrary.uuid,
-        "contextResults": { elementType: "object", elementValue: {} },
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        contextResults: { elementType: "object", elementValue: {} },
         pageParams: { elementType: "object", elementValue: {} },
         queryParams: { elementType: "object", elementValue: {} },
-        "fetchQuery": {
-          "select": {
-            "book": {
+        fetchQuery: {
+          select: {
+            book: {
               queryType: "selectObjectByDirectReference",
               parentName: "Book",
               parentUuid: {
-                "referenceType": "constant",
-                referenceUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                referenceType: "constant",
+                referenceUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
               },
               instanceUuid: {
                 referenceType: "constant",
-                referenceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
-              }
+                referenceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+              },
             },
-            "book2": {
+            book2: {
               queryType: "queryContextReference",
-              queryReference: "book"
-            }
-          }
-        }
+              queryReference: "book",
+            },
+          },
+        },
       };
 
       const queryResult:any = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam));
@@ -230,8 +225,7 @@ describe("domainSelector", () => {
   )
 
   // ###########################################################################################
-  it(
-    'select 1 object from Domain State using direct query parameter reference',
+  it('select 1 object from Domain State using direct query parameter reference',
     () => {
 
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
@@ -266,8 +260,7 @@ describe("domainSelector", () => {
   )
 
   // ###########################################################################################
-  it(
-    'select 1 object from the uuid found in an attribute of another object from Domain State',
+  it('select 1 object from the uuid found in an attribute of another object from Domain State',
     () => {
 
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
@@ -321,8 +314,7 @@ describe("domainSelector", () => {
   )
 
   // ###########################################################################################
-  it(
-    'select Authors',
+  it('select Authors',
     () => {
 
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
@@ -389,8 +381,7 @@ describe("domainSelector", () => {
   )
 
   // ###########################################################################################
-  it(
-    'select Books of Publisher of given Book from Domain State',
+  it('select Books of Publisher of given Book from Domain State',
     () => {
 
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
@@ -464,8 +455,7 @@ describe("domainSelector", () => {
   )
 
   // ###########################################################################################
-  it(
-    'select custom-built result: Books of Publisher of given Book from Domain State',
+  it('select custom-built result: Books of Publisher of given Book from Domain State',
     () => {
 
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
@@ -558,57 +548,59 @@ describe("domainSelector", () => {
   )
 
   // ###########################################################################################
-  it(
-    'select custom-built result with queryCombiner: instances of all Entites from Domain State, indexed by Entity Uuid',
+  it('select custom-built result with queryCombiner: instances of all Entites from Domain State, indexed by Entity Uuid',
     () => {
 
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: { elementType: "object", elementValue: {} },
-        pageParams: { elementType: "object", elementValue: {
-          applicationSection: {
-            elementType: "string",
-            elementValue: "data",
+        pageParams: {
+          elementType: "object",
+          elementValue: {
+            applicationSection: {
+              elementType: "string",
+              elementValue: "data",
+            },
           },
-      } },
+        },
         queryParams: { elementType: "object", elementValue: {} },
         fetchQuery: {
           select: {
-            "entities": {
-              "queryType": "selectObjectListByEntity",
-              "applicationSection": "model",
-              "parentName": "Entity",
-              "parentUuid": {
-                "referenceType": "constant",
-                "referenceUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
-              }
-            },
-            "instancesOfEntities": {
-              "queryType": "queryCombiner",
-              "rootQuery": {
-                "queryType": "queryContextReference",
-                "queryReference": "entities"
+            entities: {
+              queryType: "selectObjectListByEntity",
+              applicationSection: "model",
+              parentName: "Entity",
+              parentUuid: {
+                referenceType: "constant",
+                referenceUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
               },
-              "subQuery": {
-                "query": {
-                  "queryType":"selectObjectListByEntity",
-                  "parentUuid": {
-                    "referenceType": "queryParameterReference",
-                    "referenceName": "uuid"
-                  }
+            },
+            instancesOfEntities: {
+              queryType: "queryCombiner",
+              rootQuery: {
+                queryType: "queryContextReference",
+                queryReference: "entities",
+              },
+              subQuery: {
+                query: {
+                  queryType: "selectObjectListByEntity",
+                  parentUuid: {
+                    referenceType: "queryParameterReference",
+                    referenceName: "uuid",
+                  },
                 },
-                "parameter": {
-                  "transformerType": "recordOfTransformers",
-                  "definition": {
-                    "uuid": {
-                      "transformerType": "objectTransformer",
-                      "attributeName": "uuid"
-                    }
-                  }
-                }
-              }
-            }
+                rootQueryObjectTransformer: {
+                  transformerType: "recordOfTransformers",
+                  definition: {
+                    uuid: {
+                      transformerType: "objectTransformer",
+                      attributeName: "uuid",
+                    },
+                  },
+                },
+              },
+            },
           },
         },
       };

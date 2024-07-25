@@ -5,7 +5,7 @@ import {
   QuerySelectorMap,
   selectByDomainManyQueries,
   selectEntityInstanceFromObjectQueryAndDeploymentEntityState,
-  selectEntityInstanceListFromListQuery,
+  selectEntityInstanceUuidIndexFromListQuery,
   selectEntityInstanceUuidIndexFromDeploymentEntityState,
   selectEntityJzodSchemaFromDeploymentEntityState,
   selectFetchQueryJzodSchema,
@@ -26,9 +26,9 @@ export function getMemoizedDeploymentEntityStateSelectorMap(): QuerySelectorMap<
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
       selectEntityInstanceFromObjectQueryAndDeploymentEntityState
     ),
-    selectEntityInstanceListFromListQuery: createSelector(
+    selectEntityInstanceUuidIndexFromListQuery: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-      selectEntityInstanceListFromListQuery
+      selectEntityInstanceUuidIndexFromListQuery
     ),
     selectByDomainManyQueries: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],

@@ -3,6 +3,8 @@ import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.
 import {
   ApplicationSection,
   DomainElement,
+  DomainElementEntityInstanceOrFailed,
+  DomainElementInstanceUuidIndexOrFailed,
   DomainElementObject,
   DomainManyQueriesWithDeploymentUuid,
   DomainModelGetEntityDefinitionQueryParams,
@@ -31,7 +33,7 @@ import {
   innerSelectElementFromQuery,
   resolveContextReference,
   selectByDomainManyQueries,
-  selectEntityInstanceListFromListQuery,
+  selectEntityInstanceUuidIndexFromListQuery,
   selectFetchQueryJzodSchema,
   selectJzodSchemaByDomainModelQuery,
   selectJzodSchemaBySingleSelectQuery,
@@ -82,11 +84,11 @@ export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: DomainModelGetF
 // ################################################################################################
 // ACCESSES DOMAIN STATE
 export const selectEntityInstanceUuidIndexFromDomainState: QuerySelector<
-  DomainModelGetSingleSelectObjectListQueryQueryParams, DomainState, DomainElement
+  DomainModelGetSingleSelectObjectListQueryQueryParams, DomainState, DomainElementInstanceUuidIndexOrFailed
 > = (
   domainState: DomainState,
   selectorParams: QuerySelectorParams<DomainModelGetSingleSelectObjectListQueryQueryParams, DomainState>
-): DomainElement => {
+): DomainElementInstanceUuidIndexOrFailed => {
   const deploymentUuid = selectorParams.query.singleSelectQuery.deploymentUuid;
   const applicationSection = selectorParams.query.singleSelectQuery.select.applicationSection??"data";
 
@@ -166,11 +168,11 @@ export const selectEntityInstanceUuidIndexFromDomainState: QuerySelector<
  * @returns 
  */
 export const selectEntityInstanceFromObjectQueryAndDomainState:QuerySelector<
-  DomainModelGetSingleSelectObjectQueryQueryParams, DomainState, DomainElement
+  DomainModelGetSingleSelectObjectQueryQueryParams, DomainState, DomainElementEntityInstanceOrFailed
 > = (
   domainState: DomainState,
   selectorParams: QuerySelectorParams<DomainModelGetSingleSelectObjectQueryQueryParams, DomainState>
-): DomainElement => {
+): DomainElementEntityInstanceOrFailed => {
   const querySelectorParams: SelectObjectQuery = selectorParams.query.singleSelectQuery.select as SelectObjectQuery;
   const deploymentUuid = selectorParams.query.singleSelectQuery.deploymentUuid;
   const applicationSection: ApplicationSection =
@@ -264,12 +266,23 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:QuerySelector<
       break;
     }
     case "selectObjectByDirectReference": {
-      const instanceUuid = resolveContextReference(querySelectorParams.instanceUuid, selectorParams.query.queryParams, selectorParams.query.contextResults);
+      const instanceDomainElement = resolveContextReference(querySelectorParams.instanceUuid, selectorParams.query.queryParams, selectorParams.query.contextResults);
 
       // log.info("selectEntityInstanceFromObjectQueryAndDomainState found instanceUuid", JSON.stringify(instanceUuid))
 
-      if (instanceUuid.elementType != "string" && instanceUuid.elementType != "instanceUuid") {
-        return instanceUuid /* QueryResults, elementType == "failure" */
+      if (instanceDomainElement.elementType == "instance") {
+        return instanceDomainElement /* QueryResults, elementType == "failure" */
+      }
+      if (instanceDomainElement.elementType != "string" && instanceDomainElement.elementType != "instanceUuid") {
+        return {
+          elementType: "failure",
+          elementValue: {
+            queryFailure: "EntityNotFound",
+            deploymentUuid,
+            applicationSection,
+            entityUuid: entityUuidReference.elementValue,
+          },
+        };
       }
       // log.info("selectEntityInstanceFromObjectQueryAndDomainState resolved instanceUuid =", instanceUuid);
       if (!domainState) {
@@ -295,7 +308,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:QuerySelector<
           },
         };
       }
-      if (!domainState[deploymentUuid][applicationSection][entityUuidReference.elementValue][instanceUuid.elementValue]) {
+      if (!domainState[deploymentUuid][applicationSection][entityUuidReference.elementValue][instanceDomainElement.elementValue]) {
         return {
           elementType: "failure",
           elementValue: {
@@ -303,7 +316,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:QuerySelector<
             deploymentUuid,
             applicationSection,
             entityUuid: entityUuidReference.elementValue,
-            instanceUuid: instanceUuid.elementValue,
+            instanceUuid: instanceDomainElement.elementValue,
           },
         };
       }
@@ -324,7 +337,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:QuerySelector<
       return {
         elementType: "instance",
         elementValue:
-          domainState[deploymentUuid][applicationSection][entityUuidReference.elementValue][instanceUuid.elementValue],
+          domainState[deploymentUuid][applicationSection][entityUuidReference.elementValue][instanceDomainElement.elementValue],
       };
       break;
     }
@@ -348,8 +361,8 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:QuerySelector<
  * @returns 
  */
 export const selectEntityInstanceListFromListQueryAndDomainState: QuerySelector<
-  DomainModelGetSingleSelectObjectListQueryQueryParams, DomainState, DomainElement
-> = selectEntityInstanceListFromListQuery<DomainState>
+  DomainModelGetSingleSelectObjectListQueryQueryParams, DomainState, DomainElementInstanceUuidIndexOrFailed
+> = selectEntityInstanceUuidIndexFromListQuery<DomainState>
 
 // ################################################################################################
 export const innerSelectElementFromQueryAndDomainState = innerSelectElementFromQuery<DomainState>
@@ -423,7 +436,7 @@ export function getSelectorMap(): QuerySelectorMap<DomainState> {
   return {
     selectEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDomainState,
     selectEntityInstanceFromObjectQuery: selectEntityInstanceFromObjectQueryAndDomainState,
-    selectEntityInstanceListFromListQuery: selectEntityInstanceListFromListQueryAndDomainState,
+    selectEntityInstanceUuidIndexFromListQuery: selectEntityInstanceListFromListQueryAndDomainState,
     selectByDomainManyQueries: selectByDomainManyQueriesFromDomainState,
   };
 }
