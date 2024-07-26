@@ -7,7 +7,7 @@ import {
   EntityInstanceWithName,
   JzodElement,
   MetaEntity, 
-  LocalCacheQueryParams, 
+  LocalCacheExtractor, 
   Report, 
   Uuid, 
   entityDefinitionEntity, 
@@ -47,13 +47,13 @@ export const TestUtilsTableComponent = (
   props: MiroirReportComponentProps
 ) => {
   // const currentModelSelectorParams:EntityInstanceUuidIndexSelectorParams = React.useMemo(
-  // const currentModelSelectorParams:LocalCacheQueryParams = React.useMemo(
+  // const currentModelSelectorParams:LocalCacheExtractor = React.useMemo(
   //   () => ({
-  //     queryType: "LocalCacheEntityInstancesSelectorParams",
+  //     queryType: "localCacheEntityInstancesExtractor",
   //     definition: {
   //       deploymentUuid: props.deploymentUuid,
   //     }
-  //   } as LocalCacheQueryParams),
+  //   } as LocalCacheExtractor),
   //   [props.deploymentUuid]
   // );
 
@@ -92,16 +92,16 @@ export const TestUtilsTableComponent = (
 
 
     // selectInstanceArrayForDeploymentSectionEntity
-    // const instancesToDisplaySelectorParams:LocalCacheEntityInstancesSelectorParams = React.useMemo(
-    const instancesToDisplaySelectorParams:LocalCacheQueryParams = React.useMemo(
+    // const instancesToDisplaySelectorParams:localCacheEntityInstancesExtractor = React.useMemo(
+    const instancesToDisplaySelectorParams:LocalCacheExtractor = React.useMemo(
       () => ({
-        queryType: "LocalCacheEntityInstancesSelectorParams",
+        queryType: "localCacheEntityInstancesExtractor",
         definition: {
           deploymentUuid:props.deploymentUuid,
           applicationSection: props.instancesApplicationSection?props.instancesApplicationSection:'data',
           entityUuid: currentMiroirEntity?.uuid,
         }
-      } as LocalCacheQueryParams),
+      } as LocalCacheExtractor),
       [props.deploymentUuid, props.instancesApplicationSection,currentMiroirEntity]
     );
   

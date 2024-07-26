@@ -5,8 +5,8 @@ import {
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
   DomainModelGetEntityDefinitionQueryParams,
-  DomainModelGetSingleSelectObjectListQueryQueryParams,
-  DomainModelGetSingleSelectObjectQueryQueryParams,
+  DomainModelGetSingleSelectObjectListExtractor,
+  DomainModelGetSingleSelectExtractor,
   EntityDefinition,
   JzodObject,
   MiroirSelectorQueryParams,
@@ -53,15 +53,15 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
  * @returns 
  */
 export const selectEntityInstanceFromObjectQueryAndDeploymentEntityState:QuerySelector<
-  DomainModelGetSingleSelectObjectQueryQueryParams, DeploymentEntityState, DomainElementEntityInstanceOrFailed
+  DomainModelGetSingleSelectExtractor, DeploymentEntityState, DomainElementEntityInstanceOrFailed
 > = (
   deploymentEntityState: DeploymentEntityState,
-  selectorParams: QuerySelectorParams<DomainModelGetSingleSelectObjectQueryQueryParams, DeploymentEntityState>
+  selectorParams: QuerySelectorParams<DomainModelGetSingleSelectExtractor, DeploymentEntityState>
 ): DomainElementEntityInstanceOrFailed => {
-  const querySelectorParams: SelectObjectQuery = selectorParams.query.singleSelectQuery.select as SelectObjectQuery;
-  const deploymentUuid = selectorParams.query.singleSelectQuery.deploymentUuid;
+  const querySelectorParams: SelectObjectQuery = selectorParams.query.singleSelectExtractor.select as SelectObjectQuery;
+  const deploymentUuid = selectorParams.query.singleSelectExtractor.deploymentUuid;
   const applicationSection: ApplicationSection =
-    selectorParams.query.singleSelectQuery.select.applicationSection ??
+    selectorParams.query.singleSelectExtractor.select.applicationSection ??
     ((selectorParams.query.pageParams?.elementValue?.applicationSection?.elementValue ?? "data") as ApplicationSection);
 
   const entityUuidReference: DomainElement = resolveContextReference(
@@ -219,7 +219,7 @@ export const selectEntityInstanceFromObjectQueryAndDeploymentEntityState:QuerySe
     default: {
       throw new Error(
         "selectEntityInstanceFromObjectQueryAndDeploymentEntityState can not handle SelectObjectQuery query with queryType=" +
-          selectorParams.query.singleSelectQuery.select.queryType
+          selectorParams.query.singleSelectExtractor.select.queryType
       );
       break;
     }
@@ -229,16 +229,16 @@ export const selectEntityInstanceFromObjectQueryAndDeploymentEntityState:QuerySe
 // ################################################################################################
 // ACCESSES deploymentEntityState
 export const selectEntityInstanceUuidIndexFromDeploymentEntityState: QuerySelector<
-  DomainModelGetSingleSelectObjectListQueryQueryParams, DeploymentEntityState, DomainElementInstanceUuidIndexOrFailed
+  DomainModelGetSingleSelectObjectListExtractor, DeploymentEntityState, DomainElementInstanceUuidIndexOrFailed
 > = (
   deploymentEntityState: DeploymentEntityState,
-  selectorParams: QuerySelectorParams<DomainModelGetSingleSelectObjectListQueryQueryParams, DeploymentEntityState>
+  selectorParams: QuerySelectorParams<DomainModelGetSingleSelectObjectListExtractor, DeploymentEntityState>
 ): DomainElementInstanceUuidIndexOrFailed => {
-  const deploymentUuid = selectorParams.query.singleSelectQuery.deploymentUuid;
-  const applicationSection = selectorParams.query.singleSelectQuery.select.applicationSection??"data";
+  const deploymentUuid = selectorParams.query.singleSelectExtractor.deploymentUuid;
+  const applicationSection = selectorParams.query.singleSelectExtractor.select.applicationSection??"data";
 
   const entityUuid: DomainElement = resolveContextReference(
-    selectorParams.query.singleSelectQuery.select.parentUuid,
+    selectorParams.query.singleSelectExtractor.select.parentUuid,
     selectorParams.query.queryParams,
     selectorParams.query.contextResults
   );

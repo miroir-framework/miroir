@@ -5,7 +5,7 @@ import {
   ApplicationSection,
   DeploymentEntityState,
   DomainElementObject,
-  DomainManyQueriesWithDeploymentUuid,
+  DomainManyExtractors,
   DomainModelGetFetchParamJzodSchemaQueryParams,
   JzodSchemaQuerySelectorMap,
   JzodSchemaQuerySelectorParams,
@@ -82,12 +82,12 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
     []
   )
 
-  const deploymentEntityStateFetchQueryParams: QuerySelectorParams<DomainManyQueriesWithDeploymentUuid, DeploymentEntityState> = useMemo(
+  const deploymentEntityStateFetchQueryParams: QuerySelectorParams<DomainManyExtractors, DeploymentEntityState> = useMemo(
     () =>
       props.pageParams.deploymentUuid && props.pageParams.applicationSection && props.pageParams.reportUuid
-        ? getDeploymentEntityStateSelectorParams<DomainManyQueriesWithDeploymentUuid>(
+        ? getDeploymentEntityStateSelectorParams<DomainManyExtractors>(
             {
-              queryType: "DomainManyQueries",
+              queryType: "domainManyExtractors",
               deploymentUuid: props.pageParams.deploymentUuid,
               // applicationSection: props.applicationSection,
               pageParams: paramsAsdomainElements,
@@ -98,9 +98,9 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
             deploymentEntityStateSelectorMap
           )
         : // dummy query
-          getDeploymentEntityStateSelectorParams<DomainManyQueriesWithDeploymentUuid>(
+          getDeploymentEntityStateSelectorParams<DomainManyExtractors>(
             {
-              queryType: "DomainManyQueries",
+              queryType: "domainManyExtractors",
               deploymentUuid: "",
               pageParams: paramsAsdomainElements,
               queryParams: { elementType: "object", elementValue: {} },
@@ -174,7 +174,7 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
               queryParams: { elementType: "object", elementValue: {} },
               contextResults: { elementType: "object", elementValue: {} },
               fetchParams: {
-                queryType: "DomainManyQueries",
+                queryType: "domainManyExtractors",
                 deploymentUuid: "",
                 pageParams: paramsAsdomainElements,
                 queryParams: { elementType: "object", elementValue: {} },

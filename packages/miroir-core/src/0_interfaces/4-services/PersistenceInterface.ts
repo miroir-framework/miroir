@@ -1,7 +1,7 @@
 import { HttpMethod } from "../1_core/Http.js";
 import {
   ActionReturnType,
-  DomainManyQueriesWithDeploymentUuid,
+  DomainManyExtractors,
   EntityInstance,
   EntityInstanceCollection,
   PersistenceAction
@@ -16,7 +16,7 @@ export interface HttpRequestBodyFormat {
   instances?: EntityInstance[];
   crudInstances?: EntityInstance[];
   modelUpdate?: any;
-  query?: DomainManyQueriesWithDeploymentUuid;
+  query?: DomainManyExtractors;
   other?: any;
 };
 

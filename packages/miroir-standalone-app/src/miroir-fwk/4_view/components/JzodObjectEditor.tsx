@@ -13,7 +13,7 @@ import {
   ApplicationSection,
   DeploymentEntityState,
   DomainElement,
-  DomainManyQueriesWithDeploymentUuid,
+  DomainManyExtractors,
   EntityAttribute,
   EntityInstance,
   EntityInstanceWithName,
@@ -470,17 +470,17 @@ export const JzodObjectEditor = (
     // ############################################################################################
     // finding foreign objects for uuid schema with targetEntity estra
     const foreignKeyObjectsFetchQueryParams: QuerySelectorParams<
-      DomainManyQueriesWithDeploymentUuid,
+      DomainManyExtractors,
       DeploymentEntityState
     > = useMemo(
       () =>
-        getDeploymentEntityStateSelectorParams<DomainManyQueriesWithDeploymentUuid>(
+        getDeploymentEntityStateSelectorParams<DomainManyExtractors>(
           props.currentDeploymentUuid &&
           unfoldedRawSchema.type == "uuid" &&
           unfoldedRawSchema.tag?.value?.targetEntity
           ?
           {
-            queryType: "DomainManyQueries",
+            queryType: "domainManyExtractors",
             deploymentUuid: props.currentDeploymentUuid,
             // applicationSection: props.applicationSection,
             // pageParams: props.paramsAsdomainElements,
@@ -527,7 +527,7 @@ export const JzodObjectEditor = (
     const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
       useDeploymentEntityStateQuerySelectorForCleanedResult(
         deploymentEntityStateSelectorMap.selectByDomainManyQueries as QuerySelector<
-          DomainManyQueriesWithDeploymentUuid,
+          DomainManyExtractors,
           DeploymentEntityState,
           DomainElement
         >,

@@ -975,62 +975,61 @@ export type MiroirCustomQueryParams = {
     name: "jsonata";
     definition: string;
 };
-export type LocalCacheEntityInstancesSelectorParams = {
-    deploymentUuid?: string | undefined;
-    applicationSection?: ApplicationSection | undefined;
-    entityUuid?: string | undefined;
-    instanceUuid?: string | undefined;
+export type LocalCacheExtractor = {
+    queryType: "localCacheEntityInstancesExtractor";
+    definition: {
+        deploymentUuid?: string | undefined;
+        applicationSection?: ApplicationSection | undefined;
+        entityUuid?: string | undefined;
+        instanceUuid?: string | undefined;
+    };
 };
-export type LocalCacheQueryParams = {
-    queryType: "LocalCacheEntityInstancesSelectorParams";
-    definition: LocalCacheEntityInstancesSelectorParams;
-};
-export type DomainSingleSelectObjectQueryWithDeployment = {
-    queryType: "domainSingleSelectQueryWithDeployment";
+export type DomainSingleSelectObjectExtractor = {
+    queryType: "domainSingleSelectExtractor";
     deploymentUuid: string;
     select: SelectObjectQuery;
 };
-export type DomainSingleSelectObjectListQueryWithDeployment = {
-    queryType: "domainSingleSelectQueryWithDeployment";
+export type DomainSingleSelectObjectListExtractor = {
+    queryType: "domainSingleSelectExtractor";
     deploymentUuid: string;
     select: SelectObjectListQuery;
 };
-export type DomainSingleSelectQueryWithDeployment = {
-    queryType: "domainSingleSelectQueryWithDeployment";
+export type DomainSingleSelectExtractor = {
+    queryType: "domainSingleSelectExtractor";
     deploymentUuid: string;
     select: MiroirSelectQuery;
 };
-export type DomainModelRootQuery = {
+export type DomainModelRootExtractor = {
     pageParams: DomainElementObject;
     queryParams: DomainElementObject;
     contextResults: DomainElementObject;
 };
-export type DomainModelGetSingleSelectObjectQueryQueryParams = {
+export type DomainModelGetSingleSelectExtractor = {
     pageParams: DomainElementObject;
     queryParams: DomainElementObject;
     contextResults: DomainElementObject;
-    queryType: "getSingleSelectQuery";
-    singleSelectQuery: DomainSingleSelectObjectQueryWithDeployment;
+    queryType: "singleSelectExtractor";
+    singleSelectExtractor: DomainSingleSelectObjectExtractor;
 };
-export type DomainModelGetSingleSelectObjectListQueryQueryParams = {
+export type DomainModelGetSingleSelectObjectListExtractor = {
     pageParams: DomainElementObject;
     queryParams: DomainElementObject;
     contextResults: DomainElementObject;
-    queryType: "getSingleSelectQuery";
-    singleSelectQuery: DomainSingleSelectObjectListQueryWithDeployment;
+    queryType: "singleSelectExtractor";
+    singleSelectExtractor: DomainSingleSelectObjectListExtractor;
 };
-export type DomainModelGetSingleSelectQueryQueryParams = {
+export type DomainModelGetSingleExtractor = {
     pageParams: DomainElementObject;
     queryParams: DomainElementObject;
     contextResults: DomainElementObject;
-    queryType: "getSingleSelectQuery";
-    singleSelectQuery: DomainSingleSelectQueryWithDeployment;
+    queryType: "singleSelectExtractor";
+    singleSelectExtractor: DomainSingleSelectExtractor;
 };
-export type DomainManyQueriesWithDeploymentUuid = {
+export type DomainManyExtractors = {
     pageParams: DomainElementObject;
     queryParams: DomainElementObject;
     contextResults: DomainElementObject;
-    queryType: "DomainManyQueries";
+    queryType: "domainManyExtractors";
     deploymentUuid: string;
     fetchQuery: MiroirFetchQuery;
 };
@@ -1047,17 +1046,17 @@ export type DomainModelGetFetchParamJzodSchemaQueryParams = {
     queryParams: DomainElementObject;
     contextResults: DomainElementObject;
     queryType: "getFetchParamsJzodSchema";
-    fetchParams: DomainManyQueriesWithDeploymentUuid;
+    fetchParams: DomainManyExtractors;
 };
 export type DomainModelGetSingleSelectQueryJzodSchemaQueryParams = {
     pageParams: DomainElementObject;
     queryParams: DomainElementObject;
     contextResults: DomainElementObject;
     queryType: "getSingleSelectQueryJzodSchema";
-    singleSelectQuery: DomainSingleSelectQueryWithDeployment;
+    singleSelectExtractor: DomainSingleSelectExtractor;
 };
 export type DomainModelQueryJzodSchemaParams = DomainModelGetEntityDefinitionQueryParams | DomainModelGetFetchParamJzodSchemaQueryParams | DomainModelGetSingleSelectQueryJzodSchemaQueryParams;
-export type MiroirSelectorQueryParams = DomainSingleSelectQueryWithDeployment | DomainModelGetSingleSelectQueryQueryParams | DomainModelGetSingleSelectObjectListQueryQueryParams | DomainManyQueriesWithDeploymentUuid | LocalCacheQueryParams | MiroirCustomQueryParams | DomainModelGetEntityDefinitionQueryParams | DomainModelGetFetchParamJzodSchemaQueryParams | DomainModelGetSingleSelectQueryJzodSchemaQueryParams;
+export type MiroirSelectorQueryParams = DomainSingleSelectExtractor | DomainModelGetSingleExtractor | DomainModelGetSingleSelectObjectListExtractor | DomainManyExtractors | LocalCacheExtractor | MiroirCustomQueryParams | DomainModelGetEntityDefinitionQueryParams | DomainModelGetFetchParamJzodSchemaQueryParams | DomainModelGetSingleSelectQueryJzodSchemaQueryParams;
 export type ______________________________________________actions_____________________________________________ = never;
 export type ActionError = {
     status: "error";
@@ -1421,7 +1420,7 @@ export type QueryAction = {
     actionName: "runQuery";
     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e";
     deploymentUuid: string;
-    query: DomainManyQueriesWithDeploymentUuid;
+    query: DomainManyExtractors;
 };
 export type CompositeAction = {
     actionType: "compositeAction";
@@ -1518,7 +1517,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject_extend =
         } | undefined;
     } | undefined;
 };
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRootQuery_extend = {
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRootExtractor_extend = {
     pageParams: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementObject | CarryOnObject;
     queryParams: DomainElementObject | CarryOnObject;
     contextResults: DomainElementObject | CarryOnObject;
@@ -2535,7 +2534,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction = Carry
         query: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction | CarryOnObject;
     } | CarryOnObject)[] | CarryOnObject;
 };
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRootQuery = CarryOnObject | {
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRootExtractor = CarryOnObject | {
     pageParams: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementObject | CarryOnObject;
     queryParams: DomainElementObject | CarryOnObject;
     contextResults: DomainElementObject | CarryOnObject;
@@ -2648,11 +2647,11 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirFetchQuery = Carr
     select: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQueriesRecord | CarryOnObject;
     crossJoin?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirCrossJoinQuery | undefined) | CarryOnObject) | undefined;
 };
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainManyQueriesWithDeploymentUuid = CarryOnObject | {
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainManyExtractors = CarryOnObject | {
     pageParams: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementObject | CarryOnObject;
     queryParams: DomainElementObject | CarryOnObject;
     contextResults: DomainElementObject | CarryOnObject;
-    queryType: "DomainManyQueries" | CarryOnObject;
+    queryType: "domainManyExtractors" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
     fetchQuery: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirFetchQuery | CarryOnObject;
 };
@@ -2661,7 +2660,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction = CarryOnOb
     actionName: "runQuery" | CarryOnObject;
     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
-    query: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainManyQueriesWithDeploymentUuid | CarryOnObject;
+    query: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainManyExtractors | CarryOnObject;
 };
 export type CompositeInstanceActionTemplate = {
     actionType: "compositeInstanceAction";
@@ -2804,21 +2803,20 @@ export const domainElement: z.ZodType<DomainElement> = z.union([z.lazy(() =>doma
 export const recordOfTransformers: z.ZodType<RecordOfTransformers> = z.object({transformerType:z.literal("recordOfTransformers"), definition:z.record(z.string(),z.lazy(() =>transformer))}).strict();
 export const transformer: z.ZodType<Transformer> = z.union([z.object({transformerType:z.literal("objectTransformer"), attributeName:z.string()}).strict(), z.lazy(() =>recordOfTransformers)]);
 export const miroirCustomQueryParams: z.ZodType<MiroirCustomQueryParams> = z.object({queryType:z.literal("custom"), name:z.literal("jsonata"), definition:z.string()}).strict();
-export const localCacheEntityInstancesSelectorParams: z.ZodType<LocalCacheEntityInstancesSelectorParams> = z.object({deploymentUuid:z.string().uuid().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), entityUuid:z.string().uuid().optional(), instanceUuid:z.string().uuid().optional()}).strict();
-export const localCacheQueryParams: z.ZodType<LocalCacheQueryParams> = z.object({queryType:z.literal("LocalCacheEntityInstancesSelectorParams"), definition:z.lazy(() =>localCacheEntityInstancesSelectorParams)}).strict();
-export const domainSingleSelectObjectQueryWithDeployment: z.ZodType<DomainSingleSelectObjectQueryWithDeployment> = z.object({queryType:z.literal("domainSingleSelectQueryWithDeployment"), deploymentUuid:z.string().uuid(), select:z.lazy(() =>selectObjectQuery)}).strict();
-export const domainSingleSelectObjectListQueryWithDeployment: z.ZodType<DomainSingleSelectObjectListQueryWithDeployment> = z.object({queryType:z.literal("domainSingleSelectQueryWithDeployment"), deploymentUuid:z.string().uuid(), select:z.lazy(() =>selectObjectListQuery)}).strict();
-export const domainSingleSelectQueryWithDeployment: z.ZodType<DomainSingleSelectQueryWithDeployment> = z.object({queryType:z.literal("domainSingleSelectQueryWithDeployment"), deploymentUuid:z.string().uuid(), select:z.lazy(() =>miroirSelectQuery)}).strict();
-export const domainModelRootQuery: z.ZodType<DomainModelRootQuery> = z.object({pageParams:z.lazy(() =>domainElementObject), queryParams:z.lazy(() =>domainElementObject), contextResults:z.lazy(() =>domainElementObject)}).strict();
-export const domainModelGetSingleSelectObjectQueryQueryParams: z.ZodType<DomainModelGetSingleSelectObjectQueryQueryParams> = z.object({pageParams:z.lazy(() =>domainElementObject), queryParams:z.lazy(() =>domainElementObject), contextResults:z.lazy(() =>domainElementObject)}).strict().extend({queryType:z.literal("getSingleSelectQuery"), singleSelectQuery:z.lazy(() =>domainSingleSelectObjectQueryWithDeployment)}).strict();
-export const domainModelGetSingleSelectObjectListQueryQueryParams: z.ZodType<DomainModelGetSingleSelectObjectListQueryQueryParams> = z.object({pageParams:z.lazy(() =>domainElementObject), queryParams:z.lazy(() =>domainElementObject), contextResults:z.lazy(() =>domainElementObject)}).strict().extend({queryType:z.literal("getSingleSelectQuery"), singleSelectQuery:z.lazy(() =>domainSingleSelectObjectListQueryWithDeployment)}).strict();
-export const domainModelGetSingleSelectQueryQueryParams: z.ZodType<DomainModelGetSingleSelectQueryQueryParams> = z.object({pageParams:z.lazy(() =>domainElementObject), queryParams:z.lazy(() =>domainElementObject), contextResults:z.lazy(() =>domainElementObject)}).strict().extend({queryType:z.literal("getSingleSelectQuery"), singleSelectQuery:z.lazy(() =>domainSingleSelectQueryWithDeployment)}).strict();
-export const domainManyQueriesWithDeploymentUuid: z.ZodType<DomainManyQueriesWithDeploymentUuid> = z.object({pageParams:z.lazy(() =>domainElementObject), queryParams:z.lazy(() =>domainElementObject), contextResults:z.lazy(() =>domainElementObject)}).strict().extend({queryType:z.literal("DomainManyQueries"), deploymentUuid:z.string().uuid(), fetchQuery:z.lazy(() =>miroirFetchQuery)}).strict();
+export const localCacheExtractor: z.ZodType<LocalCacheExtractor> = z.object({queryType:z.literal("localCacheEntityInstancesExtractor"), definition:z.object({deploymentUuid:z.string().uuid().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), entityUuid:z.string().uuid().optional(), instanceUuid:z.string().uuid().optional()}).strict()}).strict();
+export const domainSingleSelectObjectExtractor: z.ZodType<DomainSingleSelectObjectExtractor> = z.object({queryType:z.literal("domainSingleSelectExtractor"), deploymentUuid:z.string().uuid(), select:z.lazy(() =>selectObjectQuery)}).strict();
+export const domainSingleSelectObjectListExtractor: z.ZodType<DomainSingleSelectObjectListExtractor> = z.object({queryType:z.literal("domainSingleSelectExtractor"), deploymentUuid:z.string().uuid(), select:z.lazy(() =>selectObjectListQuery)}).strict();
+export const domainSingleSelectExtractor: z.ZodType<DomainSingleSelectExtractor> = z.object({queryType:z.literal("domainSingleSelectExtractor"), deploymentUuid:z.string().uuid(), select:z.lazy(() =>miroirSelectQuery)}).strict();
+export const domainModelRootExtractor: z.ZodType<DomainModelRootExtractor> = z.object({pageParams:z.lazy(() =>domainElementObject), queryParams:z.lazy(() =>domainElementObject), contextResults:z.lazy(() =>domainElementObject)}).strict();
+export const domainModelGetSingleSelectExtractor: z.ZodType<DomainModelGetSingleSelectExtractor> = z.object({pageParams:z.lazy(() =>domainElementObject), queryParams:z.lazy(() =>domainElementObject), contextResults:z.lazy(() =>domainElementObject)}).strict().extend({queryType:z.literal("singleSelectExtractor"), singleSelectExtractor:z.lazy(() =>domainSingleSelectObjectExtractor)}).strict();
+export const domainModelGetSingleSelectObjectListExtractor: z.ZodType<DomainModelGetSingleSelectObjectListExtractor> = z.object({pageParams:z.lazy(() =>domainElementObject), queryParams:z.lazy(() =>domainElementObject), contextResults:z.lazy(() =>domainElementObject)}).strict().extend({queryType:z.literal("singleSelectExtractor"), singleSelectExtractor:z.lazy(() =>domainSingleSelectObjectListExtractor)}).strict();
+export const domainModelGetSingleExtractor: z.ZodType<DomainModelGetSingleExtractor> = z.object({pageParams:z.lazy(() =>domainElementObject), queryParams:z.lazy(() =>domainElementObject), contextResults:z.lazy(() =>domainElementObject)}).strict().extend({queryType:z.literal("singleSelectExtractor"), singleSelectExtractor:z.lazy(() =>domainSingleSelectExtractor)}).strict();
+export const domainManyExtractors: z.ZodType<DomainManyExtractors> = z.object({pageParams:z.lazy(() =>domainElementObject), queryParams:z.lazy(() =>domainElementObject), contextResults:z.lazy(() =>domainElementObject)}).strict().extend({queryType:z.literal("domainManyExtractors"), deploymentUuid:z.string().uuid(), fetchQuery:z.lazy(() =>miroirFetchQuery)}).strict();
 export const domainModelGetEntityDefinitionQueryParams: z.ZodType<DomainModelGetEntityDefinitionQueryParams> = z.object({pageParams:z.lazy(() =>domainElementObject), queryParams:z.lazy(() =>domainElementObject), contextResults:z.lazy(() =>domainElementObject)}).strict().extend({queryType:z.literal("getEntityDefinition"), deploymentUuid:z.string().uuid(), entityUuid:z.string().uuid()}).strict();
-export const domainModelGetFetchParamJzodSchemaQueryParams: z.ZodType<DomainModelGetFetchParamJzodSchemaQueryParams> = z.object({pageParams:z.lazy(() =>domainElementObject), queryParams:z.lazy(() =>domainElementObject), contextResults:z.lazy(() =>domainElementObject)}).strict().extend({queryType:z.literal("getFetchParamsJzodSchema"), fetchParams:z.lazy(() =>domainManyQueriesWithDeploymentUuid)}).strict();
-export const domainModelGetSingleSelectQueryJzodSchemaQueryParams: z.ZodType<DomainModelGetSingleSelectQueryJzodSchemaQueryParams> = z.object({pageParams:z.lazy(() =>domainElementObject), queryParams:z.lazy(() =>domainElementObject), contextResults:z.lazy(() =>domainElementObject)}).strict().extend({queryType:z.literal("getSingleSelectQueryJzodSchema"), singleSelectQuery:z.lazy(() =>domainSingleSelectQueryWithDeployment)}).strict();
+export const domainModelGetFetchParamJzodSchemaQueryParams: z.ZodType<DomainModelGetFetchParamJzodSchemaQueryParams> = z.object({pageParams:z.lazy(() =>domainElementObject), queryParams:z.lazy(() =>domainElementObject), contextResults:z.lazy(() =>domainElementObject)}).strict().extend({queryType:z.literal("getFetchParamsJzodSchema"), fetchParams:z.lazy(() =>domainManyExtractors)}).strict();
+export const domainModelGetSingleSelectQueryJzodSchemaQueryParams: z.ZodType<DomainModelGetSingleSelectQueryJzodSchemaQueryParams> = z.object({pageParams:z.lazy(() =>domainElementObject), queryParams:z.lazy(() =>domainElementObject), contextResults:z.lazy(() =>domainElementObject)}).strict().extend({queryType:z.literal("getSingleSelectQueryJzodSchema"), singleSelectExtractor:z.lazy(() =>domainSingleSelectExtractor)}).strict();
 export const domainModelQueryJzodSchemaParams: z.ZodType<DomainModelQueryJzodSchemaParams> = z.union([z.lazy(() =>domainModelGetEntityDefinitionQueryParams), z.lazy(() =>domainModelGetFetchParamJzodSchemaQueryParams), z.lazy(() =>domainModelGetSingleSelectQueryJzodSchemaQueryParams)]);
-export const miroirSelectorQueryParams: z.ZodType<MiroirSelectorQueryParams> = z.union([z.lazy(() =>domainSingleSelectQueryWithDeployment), z.lazy(() =>domainModelGetSingleSelectQueryQueryParams), z.lazy(() =>domainModelGetSingleSelectObjectListQueryQueryParams), z.lazy(() =>domainManyQueriesWithDeploymentUuid), z.lazy(() =>localCacheQueryParams), z.lazy(() =>miroirCustomQueryParams), z.lazy(() =>domainModelGetEntityDefinitionQueryParams), z.lazy(() =>domainModelGetFetchParamJzodSchemaQueryParams), z.lazy(() =>domainModelGetSingleSelectQueryJzodSchemaQueryParams)]);
+export const miroirSelectorQueryParams: z.ZodType<MiroirSelectorQueryParams> = z.union([z.lazy(() =>domainSingleSelectExtractor), z.lazy(() =>domainModelGetSingleExtractor), z.lazy(() =>domainModelGetSingleSelectObjectListExtractor), z.lazy(() =>domainManyExtractors), z.lazy(() =>localCacheExtractor), z.lazy(() =>miroirCustomQueryParams), z.lazy(() =>domainModelGetEntityDefinitionQueryParams), z.lazy(() =>domainModelGetFetchParamJzodSchemaQueryParams), z.lazy(() =>domainModelGetSingleSelectQueryJzodSchemaQueryParams)]);
 export const ______________________________________________actions_____________________________________________: z.ZodType<______________________________________________actions_____________________________________________> = z.never();
 export const actionError: z.ZodType<ActionError> = z.object({status:z.literal("error"), error:z.object({errorType:z.union([z.enum(["FailedToCreateStore","FailedToDeployModule"]), z.literal("FailedToDeleteStore"), z.literal("FailedToResetAndInitMiroirAndApplicationDatabase"), z.literal("FailedToOpenStore"), z.literal("FailedToCloseStore"), z.literal("FailedToCreateInstance"), z.literal("FailedToGetInstance"), z.literal("FailedToGetInstances")]), errorMessage:z.string().optional(), error:z.object({errorMessage:z.string().optional(), stack:z.array(z.string().optional())}).strict().optional()}).strict()}).strict();
 export const actionVoidSuccess: z.ZodType<ActionVoidSuccess> = z.object({status:z.literal("ok"), returnedDomainElement:z.lazy(() =>domainElementVoid)}).strict();
@@ -2848,7 +2846,7 @@ export const localCacheAction: z.ZodType<LocalCacheAction> = z.union([z.lazy(() 
 export const storeManagementAction: z.ZodType<StoreManagementAction> = z.union([z.object({actionType:z.literal("storeManagementAction"), actionName:z.literal("createStore"), endpoint:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), configuration:z.lazy(() =>storeUnitConfiguration), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("storeManagementAction"), actionName:z.literal("deleteStore"), endpoint:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), deploymentUuid:z.string().uuid(), configuration:z.lazy(() =>storeUnitConfiguration)}).strict(), z.object({actionType:z.literal("storeManagementAction"), actionName:z.literal("resetAndInitMiroirAndApplicationDatabase"), endpoint:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), deployments:z.array(z.lazy(() =>deployment)), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("storeManagementAction"), actionName:z.literal("openStore"), endpoint:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), configuration:z.record(z.string(),z.lazy(() =>storeUnitConfiguration)), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("storeManagementAction"), actionName:z.literal("closeStore"), endpoint:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), deploymentUuid:z.string().uuid()}).strict()]);
 export const persistenceAction: z.ZodType<PersistenceAction> = z.union([z.object({actionType:z.literal("RestPersistenceAction"), actionName:z.enum(["create","read","update","delete"]), endpoint:z.literal("a93598b3-19b6-42e8-828c-f02042d212d4"), section:z.lazy(() =>applicationSection), deploymentUuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().optional(), uuid:z.string().optional(), objects:z.array(z.lazy(() =>entityInstance).optional()).optional()}).strict(), z.lazy(() =>queryAction), z.lazy(() =>bundleAction), z.lazy(() =>instanceAction), z.lazy(() =>modelAction), z.lazy(() =>storeManagementAction)]);
 export const restPersistenceAction: z.ZodType<RestPersistenceAction> = z.object({actionType:z.literal("RestPersistenceAction"), actionName:z.enum(["create","read","update","delete"]), endpoint:z.literal("a93598b3-19b6-42e8-828c-f02042d212d4"), section:z.lazy(() =>applicationSection), deploymentUuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().optional(), uuid:z.string().optional(), objects:z.array(z.lazy(() =>entityInstance).optional()).optional()}).strict();
-export const queryAction: z.ZodType<QueryAction> = z.object({actionType:z.literal("queryAction"), actionName:z.literal("runQuery"), endpoint:z.literal("9e404b3c-368c-40cb-be8b-e3c28550c25e"), deploymentUuid:z.string().uuid(), query:z.lazy(() =>domainManyQueriesWithDeploymentUuid)}).strict();
+export const queryAction: z.ZodType<QueryAction> = z.object({actionType:z.literal("queryAction"), actionName:z.literal("runQuery"), endpoint:z.literal("9e404b3c-368c-40cb-be8b-e3c28550c25e"), deploymentUuid:z.string().uuid(), query:z.lazy(() =>domainManyExtractors)}).strict();
 export const compositeAction: z.ZodType<CompositeAction> = z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), deploymentUuid:z.string().uuid().optional(), definition:z.array(z.union([z.object({compositeActionType:z.literal("action"), action:z.lazy(() =>domainAction)}).strict(), z.object({compositeActionType:z.literal("query"), query:z.lazy(() =>queryAction)}).strict()]))}).strict();
 export const domainAction: z.ZodType<DomainAction> = z.union([z.lazy(() =>undoRedoAction), z.lazy(() =>storeOrBundleAction), z.lazy(() =>modelAction), z.lazy(() =>instanceAction), z.object({actionType:z.literal("transactionalInstanceAction"), deploymentUuid:z.string().uuid().optional(), instanceAction:z.lazy(() =>instanceCUDAction)}).strict(), z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), deploymentUuid:z.string().uuid().optional(), definition:z.array(z.union([z.object({compositeActionType:z.literal("action"), action:z.lazy(() =>domainAction)}).strict(), z.object({compositeActionType:z.literal("query"), query:z.lazy(() =>queryAction)}).strict()]))}).strict()]);
 export const objectTemplateInnerReference: z.ZodType<ObjectTemplateInnerReference> = z.union([z.object({templateType:z.literal("constant"), referenceUuid:z.string()}).strict(), z.object({templateType:z.literal("contextReference"), referenceName:z.string()}).strict(), z.object({templateType:z.literal("parameterReference"), referenceName:z.string()}).strict()]);
@@ -2860,7 +2858,7 @@ export const storeOrBundleAction: z.ZodType<StoreOrBundleAction> = z.union([z.la
 export const actionTransformer: z.ZodType<ActionTransformer> = z.object({transformerType:z.literal("actionTransformer")}).strict();
 export const dataTransformer: z.ZodType<DataTransformer> = z.object({transformerType:z.literal("dataTransformer")}).strict();
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject_extend: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject_extend> = z.object({optional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), nullable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict();
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRootQuery_extend: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRootQuery_extend> = z.object({pageParams:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementObject), z.lazy(() =>carryOnObject)]), queryParams:z.union([z.lazy(() =>domainElementObject), z.lazy(() =>carryOnObject)]), contextResults:z.union([z.lazy(() =>domainElementObject), z.lazy(() =>carryOnObject)])}).strict();
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRootExtractor_extend: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRootExtractor_extend> = z.object({pageParams:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementObject), z.lazy(() =>carryOnObject)]), queryParams:z.union([z.lazy(() =>domainElementObject), z.lazy(() =>carryOnObject)]), contextResults:z.union([z.lazy(() =>domainElementObject), z.lazy(() =>carryOnObject)])}).strict();
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectRootQuery_extend: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectRootQuery_extend> = z.object({label:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection).optional(), z.lazy(() =>carryOnObject)]).optional(), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference), z.lazy(() =>carryOnObject)])}).strict();
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject> = z.union([z.lazy(() =>carryOnObject), z.object({optional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), nullable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodArray: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodArray> = z.union([z.lazy(() =>carryOnObject), z.object({optional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), nullable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.union([z.number().optional(), z.lazy(() =>carryOnObject)]).optional(), defaultLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), initializeTo:z.union([z.any().optional(), z.lazy(() =>carryOnObject)]).optional(), targetEntity:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), editable:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.union([z.literal("array"), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), z.lazy(() =>carryOnObject)])}).strict()]);
@@ -2948,7 +2946,7 @@ export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transactionalInstanceA
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction> = z.union([z.object({actionType:z.union([z.literal("bundleAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("createBundle"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("bundleAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("deleteBundle"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction> = z.union([z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction), z.lazy(() =>carryOnObject)]), z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction), z.lazy(() =>carryOnObject)]), z.object({actionType:z.union([z.literal("transactionalInstanceAction"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), instanceAction:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("compositeAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("sequence"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), definition:z.union([z.array(z.union([z.object({compositeActionType:z.union([z.literal("action"), z.lazy(() =>carryOnObject)]), action:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction), z.lazy(() =>carryOnObject)])}).strict(), z.object({compositeActionType:z.union([z.literal("query"), z.lazy(() =>carryOnObject)]), query:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction> = z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("compositeAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("sequence"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), definition:z.union([z.array(z.union([z.object({compositeActionType:z.union([z.literal("action"), z.lazy(() =>carryOnObject)]), action:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction), z.lazy(() =>carryOnObject)])}).strict(), z.object({compositeActionType:z.union([z.literal("query"), z.lazy(() =>carryOnObject)]), query:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRootQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRootQuery> = z.union([z.lazy(() =>carryOnObject), z.object({pageParams:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementObject), z.lazy(() =>carryOnObject)]), queryParams:z.union([z.lazy(() =>domainElementObject), z.lazy(() =>carryOnObject)]), contextResults:z.union([z.lazy(() =>domainElementObject), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRootExtractor: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRootExtractor> = z.union([z.lazy(() =>carryOnObject), z.object({pageParams:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementObject), z.lazy(() =>carryOnObject)]), queryParams:z.union([z.lazy(() =>domainElementObject), z.lazy(() =>carryOnObject)]), contextResults:z.union([z.lazy(() =>domainElementObject), z.lazy(() =>carryOnObject)])}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectRootQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selectRootQuery> = z.union([z.lazy(() =>carryOnObject), z.object({label:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection).optional(), z.lazy(() =>carryOnObject)]).optional(), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference), z.lazy(() =>carryOnObject)])}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryObjectReference> = z.union([z.object({referenceType:z.union([z.literal("constant"), z.lazy(() =>carryOnObject)]), referenceUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({referenceType:z.union([z.literal("queryContextReference"), z.lazy(() =>carryOnObject)]), referenceName:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict(), z.object({referenceType:z.union([z.literal("queryParameterReference"), z.lazy(() =>carryOnObject)]), referenceName:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryFailed: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryFailed> = z.union([z.lazy(() =>carryOnObject), z.object({queryFailure:z.union([z.enum(["QueryNotExecutable","DomainStateNotLoaded","IncorrectParameters","DeploymentNotFound","ApplicationSectionNotFound","EntityNotFound","InstanceNotFound","ReferenceNotFound","ReferenceFoundButUndefined","ReferenceFoundButAttributeUndefinedOnFoundObject"]), z.lazy(() =>carryOnObject)]), query:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), queryReference:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), queryParameters:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), queryContext:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection).optional(), z.lazy(() =>carryOnObject)]).optional(), entityUuid:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), instanceUuid:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
@@ -2963,8 +2961,8 @@ export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQuery: z.Z
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQueriesRecord: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQueriesRecord> = z.union([z.record(z.string(),z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQuery), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirCrossJoinQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirCrossJoinQuery> = z.union([z.lazy(() =>carryOnObject), z.object({queryType:z.union([z.literal("combineQuery"), z.lazy(() =>carryOnObject)]), a:z.union([z.string(), z.lazy(() =>carryOnObject)]), b:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirFetchQuery: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirFetchQuery> = z.union([z.lazy(() =>carryOnObject), z.object({parameterSchema:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject).optional(), z.lazy(() =>carryOnObject)]).optional(), select:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQueriesRecord), z.lazy(() =>carryOnObject)]), crossJoin:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirCrossJoinQuery).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainManyQueriesWithDeploymentUuid: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainManyQueriesWithDeploymentUuid> = z.union([z.lazy(() =>carryOnObject), z.object({pageParams:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementObject), z.lazy(() =>carryOnObject)]), queryParams:z.union([z.lazy(() =>domainElementObject), z.lazy(() =>carryOnObject)]), contextResults:z.union([z.lazy(() =>domainElementObject), z.lazy(() =>carryOnObject)])}).strict().extend({queryType:z.union([z.literal("DomainManyQueries"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), fetchQuery:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirFetchQuery), z.lazy(() =>carryOnObject)])}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction> = z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("queryAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("runQuery"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("9e404b3c-368c-40cb-be8b-e3c28550c25e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), query:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainManyQueriesWithDeploymentUuid), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainManyExtractors: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainManyExtractors> = z.union([z.lazy(() =>carryOnObject), z.object({pageParams:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementObject), z.lazy(() =>carryOnObject)]), queryParams:z.union([z.lazy(() =>domainElementObject), z.lazy(() =>carryOnObject)]), contextResults:z.union([z.lazy(() =>domainElementObject), z.lazy(() =>carryOnObject)])}).strict().extend({queryType:z.union([z.literal("domainManyExtractors"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), fetchQuery:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirFetchQuery), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction> = z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("queryAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("runQuery"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("9e404b3c-368c-40cb-be8b-e3c28550c25e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), query:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainManyExtractors), z.lazy(() =>carryOnObject)])}).strict()]);
 export const compositeInstanceActionTemplate: z.ZodType<CompositeInstanceActionTemplate> = z.object({actionType:z.literal("compositeInstanceAction"), actionName:z.literal("instanceActionSequence"), definition:z.array(z.union([z.object({compositeActionType:z.literal("action"), action:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction)}).strict(), z.object({compositeActionType:z.literal("query"), nameGivenToResult:z.string(), query:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction)}).strict()]))}).strict();
 export const carryOnObject: z.ZodType<CarryOnObject> = z.union([z.lazy(() =>objectTemplateInnerReference), z.object({templateType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict(), z.object({templateType:z.literal("fullObjectTemplate"), definition:z.array(z.tuple([z.lazy(() =>objectTemplateInnerReference), z.lazy(() =>objectTemplate)]))}).strict()]);
 export const compositeActionTemplate: z.ZodType<CompositeActionTemplate> = z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction), z.lazy(() =>carryOnObject)]);

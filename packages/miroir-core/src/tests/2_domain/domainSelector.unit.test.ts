@@ -8,7 +8,7 @@ import {
 
 import {
   DomainElement,
-  DomainManyQueriesWithDeploymentUuid,
+  DomainManyExtractors,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { circularReplacer } from "../../tools.js";
 import domainStateImport from "./domainState.json";
@@ -19,8 +19,8 @@ describe("domainSelector", () => {
   // ###########################################################################################
   it('error on non-existing Entity: EntityNotFound',
     () => {
-      const queryParam: DomainManyQueriesWithDeploymentUuid = {
-        queryType: "DomainManyQueries",
+      const queryParam: DomainManyExtractors = {
+        queryType: "domainManyExtractors",
         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: { elementType: "object", elementValue: {} },
         pageParams: { elementType: "object", elementValue: {} },
@@ -64,8 +64,8 @@ describe("domainSelector", () => {
   // ###########################################################################################
   it('error on non-existing Entity: EntityNotFound',
     () => {
-      const queryParam: DomainManyQueriesWithDeploymentUuid = {
-        queryType: "DomainManyQueries",
+      const queryParam: DomainManyExtractors = {
+        queryType: "domainManyExtractors",
         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: { elementType: "object", elementValue: {} },
         pageParams: { elementType: "object", elementValue: {} },
@@ -110,8 +110,8 @@ describe("domainSelector", () => {
   it('error on non-existing object uuid: InstanceNotFound',
     () => {
 
-      const queryParam: DomainManyQueriesWithDeploymentUuid = {
-        queryType: "DomainManyQueries",
+      const queryParam: DomainManyExtractors = {
+        queryType: "domainManyExtractors",
         "deploymentUuid": adminConfigurationDeploymentLibrary.uuid,
         "contextResults": { elementType: "object", elementValue: {} },
         pageParams: { elementType: "object", elementValue: {} },
@@ -156,8 +156,8 @@ describe("domainSelector", () => {
   it('select 1 object from Domain State',
     () => {
 
-      const queryParam: DomainManyQueriesWithDeploymentUuid = {
-        queryType: "DomainManyQueries",
+      const queryParam: DomainManyExtractors = {
+        queryType: "domainManyExtractors",
         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: { elementType: "object", elementValue: {} },
         pageParams: { elementType: "object", elementValue: {} },
@@ -190,8 +190,8 @@ describe("domainSelector", () => {
   it('select 1 object from Domain State using context reference',
     () => {
 
-      const queryParam: DomainManyQueriesWithDeploymentUuid = {
-        queryType: "DomainManyQueries",
+      const queryParam: DomainManyExtractors = {
+        queryType: "domainManyExtractors",
         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: { elementType: "object", elementValue: {} },
         pageParams: { elementType: "object", elementValue: {} },
@@ -228,8 +228,8 @@ describe("domainSelector", () => {
   it('select 1 object from Domain State using direct query parameter reference',
     () => {
 
-      const queryParam: DomainManyQueriesWithDeploymentUuid = {
-        queryType: "DomainManyQueries",
+      const queryParam: DomainManyExtractors = {
+        queryType: "domainManyExtractors",
         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: { elementType: "object", elementValue: {} },
         pageParams: { elementType: "object", elementValue: {} },
@@ -263,8 +263,8 @@ describe("domainSelector", () => {
   it('select 1 object from the uuid found in an attribute of another object from Domain State',
     () => {
 
-      const queryParam: DomainManyQueriesWithDeploymentUuid = {
-        queryType: "DomainManyQueries",
+      const queryParam: DomainManyExtractors = {
+        queryType: "domainManyExtractors",
         "deploymentUuid": adminConfigurationDeploymentLibrary.uuid,
         "contextResults": { elementType: "object", elementValue: {} },
         pageParams: { elementType: "object", elementValue: {} },
@@ -317,8 +317,8 @@ describe("domainSelector", () => {
   it('select Authors',
     () => {
 
-      const queryParam: DomainManyQueriesWithDeploymentUuid = {
-        queryType: "DomainManyQueries",
+      const queryParam: DomainManyExtractors = {
+        queryType: "domainManyExtractors",
         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: { elementType: "object", elementValue: {} },
         pageParams: {
@@ -384,8 +384,8 @@ describe("domainSelector", () => {
   it('select Books of Publisher of given Book from Domain State',
     () => {
 
-      const queryParam: DomainManyQueriesWithDeploymentUuid = {
-        queryType: "DomainManyQueries",
+      const queryParam: DomainManyExtractors = {
+        queryType: "domainManyExtractors",
         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: { elementType: "object", elementValue: {} },
         pageParams: {
@@ -458,8 +458,8 @@ describe("domainSelector", () => {
   it('select custom-built result: Books of Publisher of given Book from Domain State',
     () => {
 
-      const queryParam: DomainManyQueriesWithDeploymentUuid = {
-        queryType: "DomainManyQueries",
+      const queryParam: DomainManyExtractors = {
+        queryType: "domainManyExtractors",
         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: { elementType: "object", elementValue: {} },
         pageParams: {
@@ -507,8 +507,8 @@ describe("domainSelector", () => {
                 referenceUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
               },
               objectReference: {
-                referenceType: "constant",
-                referenceUuid: "516a7366-39e7-4998-82cb-80199a7fa667",
+                referenceType: "queryContextReference",
+                referenceName: "publisher",
               },
               AttributeOfListObjectToCompareToReferenceUuid: "publisher",
             },
@@ -551,8 +551,8 @@ describe("domainSelector", () => {
   it('select custom-built result with queryCombiner: instances of all Entites from Domain State, indexed by Entity Uuid',
     () => {
 
-      const queryParam: DomainManyQueriesWithDeploymentUuid = {
-        queryType: "DomainManyQueries",
+      const queryParam: DomainManyExtractors = {
+        queryType: "domainManyExtractors",
         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: { elementType: "object", elementValue: {} },
         pageParams: {
@@ -577,7 +577,7 @@ describe("domainSelector", () => {
               },
             },
             instancesOfEntities: {
-              queryType: "queryCombiner",
+              queryType: "queryCombiner", // heteronomous many-to-many join, not possible with SQL
               rootQuery: {
                 queryType: "queryContextReference",
                 queryReference: "entities",

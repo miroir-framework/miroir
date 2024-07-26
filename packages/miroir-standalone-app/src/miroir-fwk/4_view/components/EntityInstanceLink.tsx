@@ -41,7 +41,7 @@ export const EntityInstanceLink = (props: EntityInstanceLinkProps) => {
 
   const instancesToDisplayUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
     {
-      queryType: "LocalCacheEntityInstancesSelectorParams",
+      queryType: "localCacheEntityInstancesExtractor",
       definition: {
         deploymentUuid: props.deploymentUuid,
         applicationSection: props.applicationSection as ApplicationSection,

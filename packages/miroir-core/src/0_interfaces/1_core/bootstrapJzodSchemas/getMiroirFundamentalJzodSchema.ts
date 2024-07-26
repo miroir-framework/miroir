@@ -1318,56 +1318,49 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        localCacheEntityInstancesSelectorParams: {
-          type: "object",
-          definition: {
-            deploymentUuid: {
-              type: "uuid",
-              optional: true,
-              tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
-            },
-            applicationSection: {
-              type: "schemaReference",
-              optional: true,
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "applicationSection",
-              },
-            },
-            entityUuid: {
-              type: "uuid",
-              optional: true,
-              tag: { value: { id: 1, defaultLabel: "Entity", editable: false } },
-            },
-            instanceUuid: {
-              type: "uuid",
-              optional: true,
-              tag: { value: { id: 1, defaultLabel: "Instance", editable: false } },
-            },
-          },
-        },
-        localCacheQueryParams: {
+        localCacheExtractor: {
           type: "object",
           definition: {
             queryType: {
               type: "literal",
-              definition: "LocalCacheEntityInstancesSelectorParams",
+              definition: "localCacheEntityInstancesExtractor",
             },
             definition: {
-              type: "schemaReference",
+              type: "object",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "localCacheEntityInstancesSelectorParams",
+                deploymentUuid: {
+                  type: "uuid",
+                  optional: true,
+                  tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+                },
+                applicationSection: {
+                  type: "schemaReference",
+                  optional: true,
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "applicationSection",
+                  },
+                },
+                entityUuid: {
+                  type: "uuid",
+                  optional: true,
+                  tag: { value: { id: 1, defaultLabel: "Entity", editable: false } },
+                },
+                instanceUuid: {
+                  type: "uuid",
+                  optional: true,
+                  tag: { value: { id: 1, defaultLabel: "Instance", editable: false } },
+                },
               },
             },
           },
         },
-        domainSingleSelectObjectQueryWithDeployment: {
+        domainSingleSelectObjectExtractor: {
           type: "object",
           definition: {
             queryType: {
               type: "literal",
-              definition: "domainSingleSelectQueryWithDeployment",
+              definition: "domainSingleSelectExtractor",
             },
             deploymentUuid: {
               type: "uuid",
@@ -1382,12 +1375,12 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        domainSingleSelectObjectListQueryWithDeployment: {
+        domainSingleSelectObjectListExtractor: {
           type: "object",
           definition: {
             queryType: {
               type: "literal",
-              definition: "domainSingleSelectQueryWithDeployment",
+              definition: "domainSingleSelectExtractor",
             },
             deploymentUuid: {
               type: "uuid",
@@ -1402,12 +1395,12 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        domainSingleSelectQueryWithDeployment: {
+        domainSingleSelectExtractor: {
           type: "object",
           definition: {
             queryType: {
               type: "literal",
-              definition: "domainSingleSelectQueryWithDeployment",
+              definition: "domainSingleSelectExtractor",
             },
             deploymentUuid: {
               type: "uuid",
@@ -1422,7 +1415,7 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        domainModelRootQuery: {
+        domainModelRootExtractor: {
           type: "object",
           definition: {
             pageParams: {
@@ -1448,92 +1441,92 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        domainModelGetSingleSelectObjectQueryQueryParams: {
+        domainModelGetSingleSelectExtractor: {
           type: "object",
           extend: {
             type: "schemaReference",
             definition: {
               eager: true,
               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "domainModelRootQuery",
+              relativePath: "domainModelRootExtractor",
             },
           },
           definition: {
             queryType: {
               type: "literal",
-              definition: "getSingleSelectQuery",
+              definition: "singleSelectExtractor",
             },
-            singleSelectQuery: {
+            singleSelectExtractor: {
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "domainSingleSelectObjectQueryWithDeployment",
+                relativePath: "domainSingleSelectObjectExtractor",
               },
             },
           },
         },
-        domainModelGetSingleSelectObjectListQueryQueryParams: {
+        domainModelGetSingleSelectObjectListExtractor: {
           type: "object",
           extend: {
             type: "schemaReference",
             definition: {
               eager: true,
               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "domainModelRootQuery",
+              relativePath: "domainModelRootExtractor",
             },
           },
           definition: {
             queryType: {
               type: "literal",
-              definition: "getSingleSelectQuery",
+              definition: "singleSelectExtractor",
             },
-            singleSelectQuery: {
+            singleSelectExtractor: {
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "domainSingleSelectObjectListQueryWithDeployment",
+                relativePath: "domainSingleSelectObjectListExtractor",
               },
             },
           },
         },
-        domainModelGetSingleSelectQueryQueryParams: {
+        domainModelGetSingleExtractor: {
           type: "object",
           extend: {
             type: "schemaReference",
             definition: {
               eager: true,
               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "domainModelRootQuery",
+              relativePath: "domainModelRootExtractor",
             },
           },
           definition: {
             queryType: {
               type: "literal",
-              definition: "getSingleSelectQuery",
+              definition: "singleSelectExtractor",
             },
-            singleSelectQuery: {
+            singleSelectExtractor: {
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "domainSingleSelectQueryWithDeployment",
+                relativePath: "domainSingleSelectExtractor",
               },
             },
           },
         },
-        domainManyQueriesWithDeploymentUuid: {
+        domainManyExtractors: {
           type: "object",
           extend: {
             type: "schemaReference",
             definition: {
               eager: true,
               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "domainModelRootQuery",
+              relativePath: "domainModelRootExtractor",
             },
           },
           definition: {
             queryType: {
               type: "literal",
-              definition: "DomainManyQueries",
+              definition: "domainManyExtractors",
             },
             deploymentUuid: {
               type: "uuid",
@@ -1555,7 +1548,7 @@ export function getMiroirFundamentalJzodSchema(
             definition: {
               eager: true,
               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "domainModelRootQuery",
+              relativePath: "domainModelRootExtractor",
             },
           },
           definition: {
@@ -1581,7 +1574,7 @@ export function getMiroirFundamentalJzodSchema(
             definition: {
               eager: true,
               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "domainModelRootQuery",
+              relativePath: "domainModelRootExtractor",
             },
           },
           definition: {
@@ -1593,7 +1586,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "domainManyQueriesWithDeploymentUuid",
+                relativePath: "domainManyExtractors",
               },
             },
           },
@@ -1605,7 +1598,7 @@ export function getMiroirFundamentalJzodSchema(
             definition: {
               eager: true,
               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "domainModelRootQuery",
+              relativePath: "domainModelRootExtractor",
             },
           },
           definition: {
@@ -1613,11 +1606,11 @@ export function getMiroirFundamentalJzodSchema(
               type: "literal",
               definition: "getSingleSelectQueryJzodSchema",
             },
-            singleSelectQuery: {
+            singleSelectExtractor: {
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "domainSingleSelectQueryWithDeployment",
+                relativePath: "domainSingleSelectExtractor",
               },
             },
           },
@@ -1658,35 +1651,35 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "domainSingleSelectQueryWithDeployment",
+                relativePath: "domainSingleSelectExtractor",
               },
             },
             {
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "domainModelGetSingleSelectQueryQueryParams",
+                relativePath: "domainModelGetSingleExtractor",
               },
             },
             {
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "domainModelGetSingleSelectObjectListQueryQueryParams",
+                relativePath: "domainModelGetSingleSelectObjectListExtractor",
               },
             },
             {
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "domainManyQueriesWithDeploymentUuid",
+                relativePath: "domainManyExtractors",
               },
             },
             {
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "localCacheQueryParams",
+                relativePath: "localCacheExtractor",
               },
             },
             {
@@ -2253,7 +2246,7 @@ export function getMiroirFundamentalJzodSchema(
         // domain elements
         // domainElementObject: (miroirFundamentalJzodSchema as any).definition.context.domainElementObject,
         // root elements
-        domainModelRootQuery: (miroirFundamentalJzodSchema as any).definition.context.domainModelRootQuery,
+        domainModelRootExtractor: (miroirFundamentalJzodSchema as any).definition.context.domainModelRootExtractor,
         selectRootQuery: (miroirFundamentalJzodSchema as any).definition.context.selectRootQuery,
         // queries
         queryObjectReference: (miroirFundamentalJzodSchema as any).definition.context.queryObjectReference,
@@ -2274,8 +2267,8 @@ export function getMiroirFundamentalJzodSchema(
         miroirSelectQueriesRecord: (miroirFundamentalJzodSchema as any).definition.context.miroirSelectQueriesRecord,
         miroirCrossJoinQuery: (miroirFundamentalJzodSchema as any).definition.context.miroirCrossJoinQuery,
         miroirFetchQuery: (miroirFundamentalJzodSchema as any).definition.context.miroirFetchQuery,
-        domainManyQueriesWithDeploymentUuid: (miroirFundamentalJzodSchema as any).definition.context
-          .domainManyQueriesWithDeploymentUuid,
+        domainManyExtractors: (miroirFundamentalJzodSchema as any).definition.context
+          .domainManyExtractors,
         queryAction: queryEndpointVersionV1.definition.actions[0].actionParameters,
       },
       definition: {
@@ -2401,7 +2394,7 @@ export function getMiroirFundamentalJzodSchema(
   // console.log("getMiroirFundamentalJzodSchema", "localizedResolutionStore", JSON.stringify(localizedResolutionStore, null, 2))
   // console.log("getMiroirFundamentalJzodSchema #######################################################")
   // const localizedInnerResolutionStoreReferences: Record<string, JzodReference> = Object.fromEntries(
-  const extendedSchemas = ["jzodBaseObject", "domainModelRootQuery", "selectRootQuery"];
+  const extendedSchemas = ["jzodBaseObject", "domainModelRootExtractor", "selectRootQuery"];
 
   const localizedInnerResolutionStoreExtendedReferences = Object.fromEntries(
     Object.entries(localizedResolutionStore).flatMap((e) =>

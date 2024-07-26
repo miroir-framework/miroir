@@ -14,8 +14,8 @@ import {
   JzodElement,
   JzodSchemaQuerySelector,
   JzodSchemaQuerySelectorParams,
-  LocalCacheEntityInstancesSelectorParams,
-  LocalCacheQueryParams,
+  localCacheEntityInstancesExtractor,
+  LocalCacheExtractor,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
@@ -49,7 +49,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
-export type EntityInstanceUuidIndexSelectorParams = LocalCacheEntityInstancesSelectorParams;
+export type EntityInstanceUuidIndexSelectorParams = localCacheEntityInstancesExtractor;
 
 // ################################################################################################
 export function useDeploymentEntityStateQuerySelector<QueryType extends MiroirSelectorQueryParams, ResultType extends DomainElement>(
@@ -152,13 +152,13 @@ export function useDeploymentEntityStateJzodSchemaSelector<QueryType extends Dom
 // ################################################################################################
 export function useCurrentModel(deploymentUuid: Uuid | undefined): MetaModel {
   const localSelectModelForDeployment = useMemo(selectModelForDeploymentFromReduxState,[]);
-  const selectorParams:LocalCacheQueryParams = useMemo(
+  const selectorParams:LocalCacheExtractor = useMemo(
     () => ({
-      queryType: "LocalCacheEntityInstancesSelectorParams",
+      queryType: "localCacheEntityInstancesExtractor",
       definition: {
         deploymentUuid,
       }
-    } as LocalCacheQueryParams),
+    } as LocalCacheExtractor),
     [deploymentUuid]
   );
 
@@ -169,8 +169,8 @@ export function useCurrentModel(deploymentUuid: Uuid | undefined): MetaModel {
 
 
 // ################################################################################################
-export function useEntityInstanceUuidIndexFromLocalCache(params:LocalCacheQueryParams): EntityInstancesUuidIndex | undefined {
-  const selectorParams:LocalCacheQueryParams = useMemo(
+export function useEntityInstanceUuidIndexFromLocalCache(params:LocalCacheExtractor): EntityInstancesUuidIndex | undefined {
+  const selectorParams:LocalCacheExtractor = useMemo(
     () => ({...params}),
     [params]
   );
@@ -198,7 +198,7 @@ export function useLocalCacheInstancesForJzodAttribute(
     selectInstanceArrayForDeploymentSectionEntity(
       state,
       {
-        queryType: "LocalCacheEntityInstancesSelectorParams",
+        queryType: "localCacheEntityInstancesExtractor",
         definition: {
           deploymentUuid,
           applicationSection,

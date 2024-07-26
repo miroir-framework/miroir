@@ -2,7 +2,7 @@
 
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import {
-  DomainModelGetSingleSelectObjectListQueryQueryParams,
+  DomainModelGetSingleSelectObjectListExtractor,
   DomainElement,
   MiroirSelectorQueryParams,
   DomainElementObject,
@@ -12,7 +12,7 @@ import {
   SelectObjectListByManyToManyRelationQuery,
   MiroirSelectQuery,
   ApplicationSection,
-  DomainManyQueriesWithDeploymentUuid,
+  DomainManyExtractors,
   DomainModelGetEntityDefinitionQueryParams,
   DomainModelGetSingleSelectQueryJzodSchemaQueryParams,
   JzodObject,
@@ -142,11 +142,11 @@ export const resolveContextReference = (
 export const selectEntityInstanceUuidIndexFromListQuery
 = <StateType>(
   deploymentEntityState: StateType,
-  selectorParams: QuerySelectorParams<DomainModelGetSingleSelectObjectListQueryQueryParams, StateType>
+  selectorParams: QuerySelectorParams<DomainModelGetSingleSelectObjectListExtractor, StateType>
 ): DomainElementInstanceUuidIndexOrFailed => {
   // log.info(
   //   "selectEntityInstanceUuidIndexFromListQuery called with queryType",
-  //   selectorParams.query.singleSelectQuery.select.queryType,
+  //   selectorParams.query.singleSelectExtractor.select.queryType,
   //   "selectorParams",
   //   selectorParams
   // );
@@ -171,13 +171,13 @@ export const selectEntityInstanceUuidIndexFromListQuery
   // );
 
 
-  switch (selectorParams.query.singleSelectQuery.select.queryType) {
+  switch (selectorParams.query.singleSelectExtractor.select.queryType) {
     case "selectObjectListByEntity": {
       return selectedInstancesUuidIndex;
       break;
     }
     case "selectObjectListByRelation": {
-      const relationQuery: SelectObjectListByRelationQuery = selectorParams.query.singleSelectQuery.select;
+      const relationQuery: SelectObjectListByRelationQuery = selectorParams.query.singleSelectExtractor.select;
 
       // log.info("selectEntityInstanceUuidIndexFromListQuery selectObjectListByRelation", JSON.stringify(selectedInstances))
       // log.info("selectEntityInstanceUuidIndexFromListQuery selectObjectListByRelation", selectedInstances)
@@ -207,7 +207,7 @@ export const selectEntityInstanceUuidIndexFromListQuery
       )} as DomainElementInstanceUuidIndex;
     }
     case "selectObjectListByManyToManyRelation": {
-      const relationQuery: SelectObjectListByManyToManyRelationQuery = selectorParams.query.singleSelectQuery.select;
+      const relationQuery: SelectObjectListByManyToManyRelationQuery = selectorParams.query.singleSelectExtractor.select;
 
       // log.info("selectEntityInstanceUuidIndexFromListQuery selectObjectListByManyToManyRelation", selectedInstances)
       let otherList: DomainElement | undefined = undefined
@@ -288,7 +288,7 @@ export const selectEntityInstanceUuidIndexFromListQuery
     default: {
       throw new Error(
         "selectEntityInstanceUuidIndexFromListQuery could not handle query, selectorParams=" +
-          JSON.stringify(selectorParams.query.singleSelectQuery.select, undefined, 2)
+          JSON.stringify(selectorParams.query.singleSelectExtractor.select, undefined, 2)
       );
       break;
     }
@@ -318,12 +318,12 @@ export function innerSelectElementFromQuery<StateType>(
       return selectorMap.selectEntityInstanceUuidIndexFromListQuery(deploymentEntityState, {
         selectorMap,
         query: {
-          queryType: "getSingleSelectQuery",
+          queryType: "singleSelectExtractor",
           contextResults: newFetchedData,
           pageParams: pageParams,
           queryParams,
-          singleSelectQuery: {
-            queryType: "domainSingleSelectQueryWithDeployment",
+          singleSelectExtractor: {
+            queryType: "domainSingleSelectExtractor",
             deploymentUuid: deploymentUuid,
             select: query.applicationSection
               ? query
@@ -341,12 +341,12 @@ export function innerSelectElementFromQuery<StateType>(
       return selectorMap.selectEntityInstanceFromObjectQuery(deploymentEntityState, {
         selectorMap,
         query: {
-          queryType: "getSingleSelectQuery",
+          queryType: "singleSelectExtractor",
           contextResults: newFetchedData,
           pageParams,
           queryParams,
-          singleSelectQuery: {
-            queryType: "domainSingleSelectQueryWithDeployment",
+          singleSelectExtractor: {
+            queryType: "domainSingleSelectExtractor",
             deploymentUuid: deploymentUuid,
             select: query.applicationSection // TODO: UGLY!!! WHERE IS THE APPLICATION SECTION PLACED?
             ? query
@@ -470,8 +470,8 @@ export function innerSelectElementFromQuery<StateType>(
 
 export const selectByDomainManyQueries = <StateType>(
   deploymentEntityState: StateType,
-  // selectorParams: QuerySelectorParams<DomainManyQueriesWithDeploymentUuid, DeploymentEntityState>,
-  selectorParams: QuerySelectorParams<DomainManyQueriesWithDeploymentUuid, StateType>,
+  // selectorParams: QuerySelectorParams<DomainManyExtractors, DeploymentEntityState>,
+  selectorParams: QuerySelectorParams<DomainManyExtractors, StateType>,
 ): DomainElementObject => {
 
   // log.info("########## selectByDomainManyQueries begin, query", selectorParams);
@@ -552,11 +552,11 @@ export const selectJzodSchemaBySingleSelectQuery = <StateType>(
   selectorParams: JzodSchemaQuerySelectorParams<DomainModelGetSingleSelectQueryJzodSchemaQueryParams, StateType>
 ): JzodObject | undefined => {
   if (
-    selectorParams.query.singleSelectQuery.select.queryType=="literal" ||
-    selectorParams.query.singleSelectQuery.select.queryType=="queryContextReference" ||
-    selectorParams.query.singleSelectQuery.select.queryType=="wrapperReturningObject" ||
-    selectorParams.query.singleSelectQuery.select.queryType=="wrapperReturningList" ||
-    selectorParams.query.singleSelectQuery.select.queryType=="queryCombiner" 
+    selectorParams.query.singleSelectExtractor.select.queryType=="literal" ||
+    selectorParams.query.singleSelectExtractor.select.queryType=="queryContextReference" ||
+    selectorParams.query.singleSelectExtractor.select.queryType=="wrapperReturningObject" ||
+    selectorParams.query.singleSelectExtractor.select.queryType=="wrapperReturningList" ||
+    selectorParams.query.singleSelectExtractor.select.queryType=="queryCombiner" 
   ) {
     throw new Error(
       "selectJzodSchemaBySingleSelectQuery can not deal with context reference: query=" +
@@ -565,7 +565,7 @@ export const selectJzodSchemaBySingleSelectQuery = <StateType>(
   }
 
   const entityUuidDomainElement: DomainElement = resolveContextReference(
-    selectorParams.query.singleSelectQuery.select.parentUuid,
+    selectorParams.query.singleSelectExtractor.select.parentUuid,
     selectorParams.query.queryParams,
     selectorParams.query.contextResults
   );
@@ -587,7 +587,7 @@ export const selectJzodSchemaBySingleSelectQuery = <StateType>(
       contextResults: { elementType: "object", elementValue: {} },
       pageParams: selectorParams.query.pageParams,
       queryParams: selectorParams.query.queryParams,
-      deploymentUuid: selectorParams.query.singleSelectQuery.deploymentUuid ?? "",
+      deploymentUuid: selectorParams.query.singleSelectExtractor.deploymentUuid ?? "",
       entityUuid: entityUuidDomainElement.elementValue,
     },
   } as JzodSchemaQuerySelectorParams<DomainModelGetEntityDefinitionQueryParams,StateType>) as JzodObject | undefined
@@ -640,7 +640,7 @@ export const selectFetchQueryJzodSchema = <StateType>(
   deploymentEntityState: StateType,
   selectorParams: JzodSchemaQuerySelectorParams<DomainModelGetFetchParamJzodSchemaQueryParams, StateType>
 ):  RecordOfJzodObject | undefined => {
-  const localFetchParams: DomainManyQueriesWithDeploymentUuid = selectorParams.query.fetchParams
+  const localFetchParams: DomainManyExtractors = selectorParams.query.fetchParams
   // log.info("selectFetchQueryJzodSchemaFromDomainState called", selectorParams.query);
   
   const fetchQueryJzodSchema = Object.fromEntries(
@@ -653,8 +653,8 @@ export const selectFetchQueryJzodSchema = <StateType>(
           contextResults: { elementType: "object", elementValue: {} },
           pageParams: selectorParams.query.pageParams,
           queryParams: selectorParams.query.queryParams,
-          singleSelectQuery: {
-            queryType: "domainSingleSelectQueryWithDeployment",
+          singleSelectExtractor: {
+            queryType: "domainSingleSelectExtractor",
             deploymentUuid: localFetchParams.deploymentUuid,
             select: entry[1],
           },

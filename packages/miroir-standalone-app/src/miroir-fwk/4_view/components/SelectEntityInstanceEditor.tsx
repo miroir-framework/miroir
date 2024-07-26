@@ -22,7 +22,7 @@ import { useSelector } from "react-redux";
 
 import {
   EntityInstanceWithName,
-  LocalCacheQueryParams,
+  LocalCacheExtractor,
   LoggerInterface,
   MiroirLoggerFactory,
   getLoggerName
@@ -87,15 +87,15 @@ export const SelectEntityInstanceEditorNotUsed = memo(
     const context = useMiroirContextService();
     const deploymentUuid = context.deploymentUuid;
 
-    const selectorParams:LocalCacheQueryParams = useMemo(
+    const selectorParams:LocalCacheExtractor = useMemo(
       () => ({
-        queryType: "LocalCacheEntityInstancesSelectorParams",
+        queryType: "localCacheEntityInstancesExtractor",
         definition: {
           deploymentUuid,
           applicationSection: "data",
           entityUuid: (props as any).entityUuid,
         }
-      } as LocalCacheQueryParams),
+      } as LocalCacheExtractor),
       [deploymentUuid, (props as any).entityUuid]
     );
     const instancesToDisplay: EntityInstanceWithName[] = useSelector((state: ReduxStateWithUndoRedo) =>

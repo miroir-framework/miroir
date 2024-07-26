@@ -13,7 +13,7 @@ import {
   DeploymentEntityState,
   DomainControllerInterface,
   DomainElement,
-  DomainManyQueriesWithDeploymentUuid,
+  DomainManyExtractors,
   Entity,
   EntityDefinition,
   EntityInstancesUuidIndex,
@@ -317,13 +317,13 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   );
 
   const foreignKeyObjectsFetchQueryParams: QuerySelectorParams<
-    DomainManyQueriesWithDeploymentUuid,
+    DomainManyExtractors,
     DeploymentEntityState
   > = useMemo(
     () =>
-      getDeploymentEntityStateSelectorParams<DomainManyQueriesWithDeploymentUuid>(
+      getDeploymentEntityStateSelectorParams<DomainManyExtractors>(
         {
-          queryType: "DomainManyQueries",
+          queryType: "domainManyExtractors",
           deploymentUuid: props.deploymentUuid,
           // applicationSection: props.applicationSection,
           pageParams: props.paramsAsdomainElements,
@@ -368,7 +368,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
 
   // const foreignKeyObjects:  = useDeploymentEntityStateQuerySelectorForCleanedResult(
   const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = useDeploymentEntityStateQuerySelectorForCleanedResult(
-    deploymentEntityStateSelectorMap.selectByDomainManyQueries as QuerySelector<DomainManyQueriesWithDeploymentUuid, DeploymentEntityState, DomainElement>,
+    deploymentEntityStateSelectorMap.selectByDomainManyQueries as QuerySelector<DomainManyExtractors, DeploymentEntityState, DomainElement>,
     foreignKeyObjectsFetchQueryParams
   );
 

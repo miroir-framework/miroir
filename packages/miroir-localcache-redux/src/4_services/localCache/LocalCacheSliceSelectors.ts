@@ -269,9 +269,9 @@ export const selectEntityInstanceUuidIndexFromLocalCacheQueryAndDeploymentEntity
   deploymentEntityState: DeploymentEntityState,
   params: MiroirSelectorQueryParams
 ): EntityInstancesUuidIndex => {
-  if (params.queryType != "LocalCacheEntityInstancesSelectorParams") {
+  if (params.queryType != "localCacheEntityInstancesExtractor") {
     log.error(
-      "selectEntityInstanceUuidIndexFromLocalCacheQueryAndDeploymentEntityState queryType is not LocalCacheEntityInstancesSelectorParams",
+      "selectEntityInstanceUuidIndexFromLocalCacheQueryAndDeploymentEntityState queryType is not localCacheEntityInstancesExtractor",
       params.queryType,
       "params",
       params

@@ -4920,74 +4920,67 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "localCacheEntityInstancesSelectorParams": {
-        "type": "object",
-        "definition": {
-          "deploymentUuid": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Uuid",
-                "editable": false
-              }
-            }
-          },
-          "applicationSection": {
-            "type": "schemaReference",
-            "optional": true,
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "applicationSection"
-            }
-          },
-          "entityUuid": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Entity",
-                "editable": false
-              }
-            }
-          },
-          "instanceUuid": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Instance",
-                "editable": false
-              }
-            }
-          }
-        }
-      },
-      "localCacheQueryParams": {
+      "localCacheExtractor": {
         "type": "object",
         "definition": {
           "queryType": {
             "type": "literal",
-            "definition": "LocalCacheEntityInstancesSelectorParams"
+            "definition": "localCacheEntityInstancesExtractor"
           },
           "definition": {
-            "type": "schemaReference",
+            "type": "object",
             "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "localCacheEntityInstancesSelectorParams"
+              "deploymentUuid": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Uuid",
+                    "editable": false
+                  }
+                }
+              },
+              "applicationSection": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "entityUuid": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Entity",
+                    "editable": false
+                  }
+                }
+              },
+              "instanceUuid": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Instance",
+                    "editable": false
+                  }
+                }
+              }
             }
           }
         }
       },
-      "domainSingleSelectObjectQueryWithDeployment": {
+      "domainSingleSelectObjectExtractor": {
         "type": "object",
         "definition": {
           "queryType": {
             "type": "literal",
-            "definition": "domainSingleSelectQueryWithDeployment"
+            "definition": "domainSingleSelectExtractor"
           },
           "deploymentUuid": {
             "type": "uuid",
@@ -5008,12 +5001,12 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "domainSingleSelectObjectListQueryWithDeployment": {
+      "domainSingleSelectObjectListExtractor": {
         "type": "object",
         "definition": {
           "queryType": {
             "type": "literal",
-            "definition": "domainSingleSelectQueryWithDeployment"
+            "definition": "domainSingleSelectExtractor"
           },
           "deploymentUuid": {
             "type": "uuid",
@@ -5034,12 +5027,12 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "domainSingleSelectQueryWithDeployment": {
+      "domainSingleSelectExtractor": {
         "type": "object",
         "definition": {
           "queryType": {
             "type": "literal",
-            "definition": "domainSingleSelectQueryWithDeployment"
+            "definition": "domainSingleSelectExtractor"
           },
           "deploymentUuid": {
             "type": "uuid",
@@ -5060,7 +5053,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "domainModelRootQuery": {
+      "domainModelRootExtractor": {
         "type": "object",
         "definition": {
           "pageParams": {
@@ -5086,92 +5079,92 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "domainModelGetSingleSelectObjectQueryQueryParams": {
+      "domainModelGetSingleSelectExtractor": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
           "definition": {
             "eager": true,
             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "domainModelRootQuery"
+            "relativePath": "domainModelRootExtractor"
           }
         },
         "definition": {
           "queryType": {
             "type": "literal",
-            "definition": "getSingleSelectQuery"
+            "definition": "singleSelectExtractor"
           },
-          "singleSelectQuery": {
+          "singleSelectExtractor": {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "domainSingleSelectObjectQueryWithDeployment"
+              "relativePath": "domainSingleSelectObjectExtractor"
             }
           }
         }
       },
-      "domainModelGetSingleSelectObjectListQueryQueryParams": {
+      "domainModelGetSingleSelectObjectListExtractor": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
           "definition": {
             "eager": true,
             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "domainModelRootQuery"
+            "relativePath": "domainModelRootExtractor"
           }
         },
         "definition": {
           "queryType": {
             "type": "literal",
-            "definition": "getSingleSelectQuery"
+            "definition": "singleSelectExtractor"
           },
-          "singleSelectQuery": {
+          "singleSelectExtractor": {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "domainSingleSelectObjectListQueryWithDeployment"
+              "relativePath": "domainSingleSelectObjectListExtractor"
             }
           }
         }
       },
-      "domainModelGetSingleSelectQueryQueryParams": {
+      "domainModelGetSingleExtractor": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
           "definition": {
             "eager": true,
             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "domainModelRootQuery"
+            "relativePath": "domainModelRootExtractor"
           }
         },
         "definition": {
           "queryType": {
             "type": "literal",
-            "definition": "getSingleSelectQuery"
+            "definition": "singleSelectExtractor"
           },
-          "singleSelectQuery": {
+          "singleSelectExtractor": {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "domainSingleSelectQueryWithDeployment"
+              "relativePath": "domainSingleSelectExtractor"
             }
           }
         }
       },
-      "domainManyQueriesWithDeploymentUuid": {
+      "domainManyExtractors": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
           "definition": {
             "eager": true,
             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "domainModelRootQuery"
+            "relativePath": "domainModelRootExtractor"
           }
         },
         "definition": {
           "queryType": {
             "type": "literal",
-            "definition": "DomainManyQueries"
+            "definition": "domainManyExtractors"
           },
           "deploymentUuid": {
             "type": "uuid",
@@ -5199,7 +5192,7 @@ export const miroirFundamentalJzodSchema = {
           "definition": {
             "eager": true,
             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "domainModelRootQuery"
+            "relativePath": "domainModelRootExtractor"
           }
         },
         "definition": {
@@ -5236,7 +5229,7 @@ export const miroirFundamentalJzodSchema = {
           "definition": {
             "eager": true,
             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "domainModelRootQuery"
+            "relativePath": "domainModelRootExtractor"
           }
         },
         "definition": {
@@ -5248,7 +5241,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "domainManyQueriesWithDeploymentUuid"
+              "relativePath": "domainManyExtractors"
             }
           }
         }
@@ -5260,7 +5253,7 @@ export const miroirFundamentalJzodSchema = {
           "definition": {
             "eager": true,
             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "domainModelRootQuery"
+            "relativePath": "domainModelRootExtractor"
           }
         },
         "definition": {
@@ -5268,11 +5261,11 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "getSingleSelectQueryJzodSchema"
           },
-          "singleSelectQuery": {
+          "singleSelectExtractor": {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "domainSingleSelectQueryWithDeployment"
+              "relativePath": "domainSingleSelectExtractor"
             }
           }
         }
@@ -5312,35 +5305,35 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "domainSingleSelectQueryWithDeployment"
+              "relativePath": "domainSingleSelectExtractor"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "domainModelGetSingleSelectQueryQueryParams"
+              "relativePath": "domainModelGetSingleExtractor"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "domainModelGetSingleSelectObjectListQueryQueryParams"
+              "relativePath": "domainModelGetSingleSelectObjectListExtractor"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "domainManyQueriesWithDeploymentUuid"
+              "relativePath": "domainManyExtractors"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "localCacheQueryParams"
+              "relativePath": "localCacheExtractor"
             }
           },
           {
@@ -7603,7 +7596,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": false,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "domainManyQueriesWithDeploymentUuid"
+              "relativePath": "domainManyExtractors"
             }
           }
         }
@@ -8205,7 +8198,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRootQuery_extend": {
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRootExtractor_extend": {
         "type": "object",
         "definition": {
           "pageParams": {
@@ -23078,7 +23071,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRootQuery": {
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRootExtractor": {
         "type": "union",
         "definition": [
           {
@@ -24542,7 +24535,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainManyQueriesWithDeploymentUuid": {
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainManyExtractors": {
         "type": "union",
         "definition": [
           {
@@ -24557,7 +24550,7 @@ export const miroirFundamentalJzodSchema = {
               "type": "schemaReference",
               "definition": {
                 "eager": true,
-                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRootQuery_extend"
+                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRootExtractor_extend"
               },
               "context": {}
             },
@@ -24567,7 +24560,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": [
                   {
                     "type": "literal",
-                    "definition": "DomainManyQueries"
+                    "definition": "domainManyExtractors"
                   },
                   {
                     "type": "schemaReference",
@@ -24720,7 +24713,7 @@ export const miroirFundamentalJzodSchema = {
                     "type": "schemaReference",
                     "optional": false,
                     "definition": {
-                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainManyQueriesWithDeploymentUuid"
+                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainManyExtractors"
                     },
                     "context": {}
                   },

@@ -6,11 +6,11 @@ import {
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
   DomainElementObject,
-  DomainManyQueriesWithDeploymentUuid,
+  DomainManyExtractors,
   DomainModelGetEntityDefinitionQueryParams,
   DomainModelGetFetchParamJzodSchemaQueryParams,
-  DomainModelGetSingleSelectObjectListQueryQueryParams,
-  DomainModelGetSingleSelectObjectQueryQueryParams,
+  DomainModelGetSingleSelectObjectListExtractor,
+  DomainModelGetSingleSelectExtractor,
   EntityDefinition,
   JzodObject,
   MiroirSelectorQueryParams,
@@ -49,8 +49,8 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 
 const emptyDomainObject:DomainElementObject = { elementType: "object", elementValue: {} }
 
-export const dummyDomainManyQueriesWithDeploymentUuid: DomainManyQueriesWithDeploymentUuid = {
-  queryType: "DomainManyQueries",
+export const dummyDomainManyQueriesWithDeploymentUuid: DomainManyExtractors = {
+  queryType: "domainManyExtractors",
   deploymentUuid: "",
   pageParams: emptyDomainObject,
   queryParams: emptyDomainObject,
@@ -71,7 +71,7 @@ export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: DomainModelGetF
   queryParams: { elementType: "object", elementValue: {} },
   contextResults: { elementType: "object", elementValue: {} },
   fetchParams: {
-    queryType: "DomainManyQueries",
+    queryType: "domainManyExtractors",
     deploymentUuid: "",
     pageParams: emptyDomainObject,
     queryParams: emptyDomainObject,
@@ -84,16 +84,16 @@ export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: DomainModelGetF
 // ################################################################################################
 // ACCESSES DOMAIN STATE
 export const selectEntityInstanceUuidIndexFromDomainState: QuerySelector<
-  DomainModelGetSingleSelectObjectListQueryQueryParams, DomainState, DomainElementInstanceUuidIndexOrFailed
+  DomainModelGetSingleSelectObjectListExtractor, DomainState, DomainElementInstanceUuidIndexOrFailed
 > = (
   domainState: DomainState,
-  selectorParams: QuerySelectorParams<DomainModelGetSingleSelectObjectListQueryQueryParams, DomainState>
+  selectorParams: QuerySelectorParams<DomainModelGetSingleSelectObjectListExtractor, DomainState>
 ): DomainElementInstanceUuidIndexOrFailed => {
-  const deploymentUuid = selectorParams.query.singleSelectQuery.deploymentUuid;
-  const applicationSection = selectorParams.query.singleSelectQuery.select.applicationSection??"data";
+  const deploymentUuid = selectorParams.query.singleSelectExtractor.deploymentUuid;
+  const applicationSection = selectorParams.query.singleSelectExtractor.select.applicationSection??"data";
 
   const entityUuid: DomainElement = resolveContextReference(
-    selectorParams.query.singleSelectQuery.select.parentUuid,
+    selectorParams.query.singleSelectExtractor.select.parentUuid,
     selectorParams.query.queryParams,
     selectorParams.query.contextResults
   );
@@ -146,7 +146,7 @@ export const selectEntityInstanceUuidIndexFromDomainState: QuerySelector<
     case "instanceUuidIndex":
     case "instanceUuidIndexUuidIndex":
     case "array": {
-      return { elementType: "failure", elementValue: { queryFailure: "IncorrectParameters", queryReference: JSON.stringify(selectorParams.query.singleSelectQuery.select.parentUuid)} }
+      return { elementType: "failure", elementValue: { queryFailure: "IncorrectParameters", queryReference: JSON.stringify(selectorParams.query.singleSelectExtractor.select.parentUuid)} }
     }
     case "failure": {
       return entityUuid;
@@ -168,15 +168,15 @@ export const selectEntityInstanceUuidIndexFromDomainState: QuerySelector<
  * @returns 
  */
 export const selectEntityInstanceFromObjectQueryAndDomainState:QuerySelector<
-  DomainModelGetSingleSelectObjectQueryQueryParams, DomainState, DomainElementEntityInstanceOrFailed
+  DomainModelGetSingleSelectExtractor, DomainState, DomainElementEntityInstanceOrFailed
 > = (
   domainState: DomainState,
-  selectorParams: QuerySelectorParams<DomainModelGetSingleSelectObjectQueryQueryParams, DomainState>
+  selectorParams: QuerySelectorParams<DomainModelGetSingleSelectExtractor, DomainState>
 ): DomainElementEntityInstanceOrFailed => {
-  const querySelectorParams: SelectObjectQuery = selectorParams.query.singleSelectQuery.select as SelectObjectQuery;
-  const deploymentUuid = selectorParams.query.singleSelectQuery.deploymentUuid;
+  const querySelectorParams: SelectObjectQuery = selectorParams.query.singleSelectExtractor.select as SelectObjectQuery;
+  const deploymentUuid = selectorParams.query.singleSelectExtractor.deploymentUuid;
   const applicationSection: ApplicationSection =
-    selectorParams.query.singleSelectQuery.select.applicationSection ??
+    selectorParams.query.singleSelectExtractor.select.applicationSection ??
     ((selectorParams.query.pageParams?.elementValue?.applicationSection?.elementValue ?? "data") as ApplicationSection);
 
   const entityUuidReference: DomainElement = resolveContextReference(
@@ -344,7 +344,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:QuerySelector<
     default: {
       throw new Error(
         "selectEntityInstanceFromObjectQueryAndDomainState can not handle SelectObjectQuery query with queryType=" +
-          selectorParams.query.singleSelectQuery.select.queryType
+          selectorParams.query.singleSelectExtractor.select.queryType
       );
       break;
     }
@@ -361,7 +361,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:QuerySelector<
  * @returns 
  */
 export const selectEntityInstanceListFromListQueryAndDomainState: QuerySelector<
-  DomainModelGetSingleSelectObjectListQueryQueryParams, DomainState, DomainElementInstanceUuidIndexOrFailed
+  DomainModelGetSingleSelectObjectListExtractor, DomainState, DomainElementInstanceUuidIndexOrFailed
 > = selectEntityInstanceUuidIndexFromListQuery<DomainState>
 
 // ################################################################################################
@@ -369,7 +369,7 @@ export const innerSelectElementFromQueryAndDomainState = innerSelectElementFromQ
 
 // ################################################################################################
 export const selectByDomainManyQueriesFromDomainState:QuerySelector<
-  DomainManyQueriesWithDeploymentUuid, DomainState, DomainElementObject
+  DomainManyExtractors, DomainState, DomainElementObject
 > = selectByDomainManyQueries<DomainState>
 
 // ################################################################################################

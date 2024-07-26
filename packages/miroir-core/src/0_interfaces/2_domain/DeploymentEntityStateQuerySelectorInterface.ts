@@ -3,11 +3,11 @@ import {
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
   DomainElementObjectOrFailed,
-  DomainManyQueriesWithDeploymentUuid,
+  DomainManyExtractors,
   DomainModelGetEntityDefinitionQueryParams,
   DomainModelGetFetchParamJzodSchemaQueryParams,
-  DomainModelGetSingleSelectObjectListQueryQueryParams,
-  DomainModelGetSingleSelectObjectQueryQueryParams,
+  DomainModelGetSingleSelectObjectListExtractor,
+  DomainModelGetSingleSelectExtractor,
   DomainModelGetSingleSelectQueryJzodSchemaQueryParams,
   DomainModelQueryJzodSchemaParams,
   JzodElement,
@@ -21,10 +21,10 @@ export type RecordOfJzodObject = Record<string, JzodObject | undefined>;
 
 // ################################################################################################
 export type QuerySelectorMap<StateType> = {
-  selectByDomainManyQueries: QuerySelector<DomainManyQueriesWithDeploymentUuid, StateType, DomainElementObjectOrFailed>
-  selectEntityInstanceUuidIndex: QuerySelector<DomainModelGetSingleSelectObjectListQueryQueryParams, StateType, DomainElementInstanceUuidIndexOrFailed>,
-  selectEntityInstanceFromObjectQuery: QuerySelector<DomainModelGetSingleSelectObjectQueryQueryParams, StateType, DomainElementEntityInstanceOrFailed>,
-  selectEntityInstanceUuidIndexFromListQuery: QuerySelector<DomainModelGetSingleSelectObjectListQueryQueryParams, StateType, DomainElementInstanceUuidIndexOrFailed>,
+  selectByDomainManyQueries: QuerySelector<DomainManyExtractors, StateType, DomainElementObjectOrFailed>
+  selectEntityInstanceUuidIndex: QuerySelector<DomainModelGetSingleSelectObjectListExtractor, StateType, DomainElementInstanceUuidIndexOrFailed>,
+  selectEntityInstanceFromObjectQuery: QuerySelector<DomainModelGetSingleSelectExtractor, StateType, DomainElementEntityInstanceOrFailed>,
+  selectEntityInstanceUuidIndexFromListQuery: QuerySelector<DomainModelGetSingleSelectObjectListExtractor, StateType, DomainElementInstanceUuidIndexOrFailed>,
 };
 
 // ################################################################################################

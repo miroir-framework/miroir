@@ -32,13 +32,13 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams<Tabl
   //   props.value
   // );
   
-  // const currentModelSelectorParams:LocalCacheQueryParams = useMemo(
+  // const currentModelSelectorParams:LocalCacheExtractor = useMemo(
   //   () => ({
-  //     queryType: "LocalCacheEntityInstancesSelectorParams",
+  //     queryType: "localCacheEntityInstancesExtractor",
   //     definition: {
   //       deploymentUuid: context.deploymentUuid,
   //     }
-  //   } as LocalCacheQueryParams),
+  //   } as LocalCacheExtractor),
   //   [context]
   // );
 
@@ -55,15 +55,15 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams<Tabl
   // ;
   
   // log.info("EntityInstanceCellRenderer currentMiroirEntityDefinition", currentMiroirEntityDefinition)
-  // const selectorParams:LocalCacheQueryParams = useMemo(
+  // const selectorParams:LocalCacheExtractor = useMemo(
   //   () => ({
-  //     queryType: "LocalCacheEntityInstancesSelectorParams",
+  //     queryType: "localCacheEntityInstancesExtractor",
   //     definition: {
   //       deploymentUuid,
   //       applicationSection: context.applicationSection,
   //       entityUuid: entityUuid,
   //     }
-  //   } as LocalCacheQueryParams),
+  //   } as LocalCacheExtractor),
   //   [deploymentUuid, entityUuid]
   // );
   // const instancesToDisplay: EntityInstanceWithName[] = useSelector((state: ReduxStateWithUndoRedo) =>

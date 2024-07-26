@@ -274,7 +274,7 @@ export async function queryHandler(
    * - execute on the persistent store (sql)
    * 
    */
-  // const query: DomainManyQueriesWithDeploymentUuid = body.query as DomainManyQueriesWithDeploymentUuid ;
+  // const query: DomainManyExtractors = body.query as DomainManyExtractors ;
   const queryAction: QueryAction = body as QueryAction ;
 
   const deploymentUuid = queryAction.deploymentUuid
