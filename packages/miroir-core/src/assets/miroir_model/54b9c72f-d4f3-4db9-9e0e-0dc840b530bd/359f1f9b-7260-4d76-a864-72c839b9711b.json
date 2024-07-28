@@ -310,7 +310,7 @@
               }
             }
           },
-          "querySelectQueryCombiner": {
+          "querySelectByQueryCombiner": {
             "type": "object",
             "definition": {
               "queryType": {
@@ -321,7 +321,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "miroirSelectQuery"
+                  "relativePath": "querySelect"
                 }
               },
               "subQuery": {
@@ -331,7 +331,7 @@
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "miroirSelectQuery"
+                      "relativePath": "querySelect"
                     }
                   },
                   "rootQueryObjectTransformer": {
@@ -369,7 +369,7 @@
               }
             ]
           },
-          "miroirSelectQuery": {
+          "querySelect": {
             "type": "union",
             "discriminator": "queryType",
             "definition": [
@@ -394,7 +394,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "querySelectQueryCombiner"
+                  "relativePath": "querySelectByQueryCombiner"
                 }
               },
               {
@@ -441,7 +441,7 @@
                     "definition": {
                       "type": "schemaReference",
                       "definition": {
-                        "relativePath": "miroirSelectQuery"
+                        "relativePath": "querySelect"
                       }
                     }
                   }
@@ -459,7 +459,7 @@
                     "definition": {
                       "type": "schemaReference",
                       "definition": {
-                        "relativePath": "miroirSelectQuery"
+                        "relativePath": "querySelect"
                       }
                     }
                   }
@@ -472,7 +472,7 @@
             "definition": {
               "type": "schemaReference",
               "definition": {
-                "relativePath": "miroirSelectQuery"
+                "relativePath": "querySelect"
               }
             }
           },
@@ -487,7 +487,7 @@
               "b": { "type": "string"}
             }
           },
-          "miroirFetchQuery": {
+          "queryQueriesRecordOrCrossJoin": {
             "type": "object",
             "definition": {
               "parameterSchema": {
@@ -516,7 +516,7 @@
         },
         "definition": {
           "eager": true,
-          "relativePath": "miroirFetchQuery"
+          "relativePath": "queryQueriesRecordOrCrossJoin"
         }
       }
     }

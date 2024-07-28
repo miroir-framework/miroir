@@ -563,7 +563,7 @@
                       }
                     }
                   },
-                  "miroirSelectQuery": {
+                  "querySelect": {
                     "type": "union",
                     "discriminator": "type",
                     "definition": [
@@ -573,7 +573,7 @@
                   },
                   "miroirSelectQueriesRecord": {
                     "type": "record",
-                    "definition": { "type": "schemaReference", "definition": { "relativePath": "miroirSelectQuery" } }
+                    "definition": { "type": "schemaReference", "definition": { "relativePath": "querySelect" } }
                   },
                   "objectInstanceReportSection": {
                     "type": "object",

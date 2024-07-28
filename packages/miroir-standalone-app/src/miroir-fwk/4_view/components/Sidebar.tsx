@@ -133,10 +133,10 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
   //   []
   // )
 
-  // const FetchMiroirMenusQueryParams: QuerySelectorParams<DomainModelManyExtractors, DeploymentEntityState> = useMemo(
+  // const FetchMiroirMenusQueryParams: QuerySelectorParams<DomainModelRecordOfExtractors, DeploymentEntityState> = useMemo(
   //   () => 
-  //   getDeploymentEntityStateSelectorParams<DomainModelManyExtractors>({
-  //     queryType: "domainModelManyExtractors",
+  //   getDeploymentEntityStateSelectorParams<DomainModelRecordOfExtractors>({
+  //     queryType: "domainModelRecordOfExtractors",
   //     deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
   //     // applicationSection: "data",
   //     pageParams: { elementType: "object", elementValue: {} },

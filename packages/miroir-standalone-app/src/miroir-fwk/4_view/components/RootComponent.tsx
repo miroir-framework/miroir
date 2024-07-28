@@ -20,7 +20,7 @@ import {
   DomainControllerInterface,
   DomainElementObject,
   domainEndpointVersionV1,
-  DomainModelManyExtractors,
+  DomainModelRecordOfExtractors,
   EntityDefinition,
   entityDefinitionSelfApplication,
   entityDefinitionSelfApplicationVersion,
@@ -288,8 +288,8 @@ export const RootComponent = (props: RootComponentProps) => {
                         deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                       });
 
-                      const adminDeploymentsQuery: DomainModelManyExtractors = {
-                        queryType: "domainModelManyExtractors",
+                      const adminDeploymentsQuery: DomainModelRecordOfExtractors = {
+                        queryType: "domainModelRecordOfExtractors",
                         deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                         pageParams: emptyDomainElementObject,
                         queryParams: emptyDomainElementObject,
@@ -524,8 +524,8 @@ export const RootComponent = (props: RootComponentProps) => {
                   </button> */}
                   {/* <button
                     onClick={async () => {
-                      const query:DomainModelManyExtractors = {
-                        queryType: "domainModelManyExtractors",
+                      const query:DomainModelRecordOfExtractors = {
+                        queryType: "domainModelRecordOfExtractors",
                         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                         contextResults: {
                           elementType: "object",

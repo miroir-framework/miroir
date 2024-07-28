@@ -18,7 +18,7 @@ import {
   adminConfigurationDeploymentMiroir,
   DeploymentEntityState,
   DomainElementObject,
-  DomainModelManyExtractors,
+  DomainModelRecordOfExtractors,
   entityMenu,
   getApplicationSection,
   getDeploymentEntityStateSelectorParams,
@@ -145,10 +145,10 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
     []
   )
 
-  const fetchDeploymentMenusQueryParams: QuerySelectorParams<DomainModelManyExtractors, DeploymentEntityState> = useMemo(
+  const fetchDeploymentMenusQueryParams: QuerySelectorParams<DomainModelRecordOfExtractors, DeploymentEntityState> = useMemo(
     () => 
-    getDeploymentEntityStateSelectorParams<DomainModelManyExtractors>({
-      queryType: "domainModelManyExtractors",
+    getDeploymentEntityStateSelectorParams<DomainModelRecordOfExtractors>({
+      queryType: "domainModelRecordOfExtractors",
       deploymentUuid: props.deploymentUuid,
       // applicationSection: "data",
       pageParams: { elementType: "object", elementValue: {} },

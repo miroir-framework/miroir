@@ -21,6 +21,7 @@ import { MiroirLoggerFactory } from "../../../4_services/Logger.js";
 import { packageName } from "../../../constants.js";
 import { getLoggerName } from "../../../tools.js";
 import { LoggerInterface } from "../../4-services/LoggerInterface.js";
+import { JzodElement } from "../preprocessor-generated/miroirFundamentalType.js";
 // import { Endpoint } from "../../../3_controllers/Endpoint.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "getMiroirFundamentalJzodSchema");
@@ -29,16 +30,27 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
+/**
+ * 
+ * @param jzodSchema 
+ * @param absolutePath 
+ * @param force 
+ * @returns 
+ */
 function makeReferencesAbsolute(jzodSchema: any, absolutePath: string, force?: boolean): any {
-  // function makeReferencesAbsolute(jzodSchema: JzodElement, absolutePath: string, force?: boolean): JzodElement {
+  // log.info("makeReferencesAbsolute received", JSON.stringify(jzodSchema), absolutePath, force);
   switch (jzodSchema.type) {
     case "schemaReference": {
       const convertedContext = Object.fromEntries(
-        Object.entries(jzodSchema.context ?? {}).map((e: [string, any]) => [
+        Object.entries(jzodSchema.context ?? {}).map((e: [string, any]) => {
+          if (!e[1]) {
+            throw new Error("makeReferencesAbsolute schemaReference: context jzodSchema is undefined for " + e[0]);
+          }
+          return [
           // Object.entries(jzodSchema.context ?? {}).map((e: [string, JzodElement]) => [
-          e[0],
-          makeReferencesAbsolute(e[1], absolutePath, force),
-        ])
+            e[0],
+            makeReferencesAbsolute(e[1], absolutePath, force),
+        ]})
       );
 
       const result =
@@ -88,6 +100,9 @@ function makeReferencesAbsolute(jzodSchema: any, absolutePath: string, force?: b
     case "record":
     case "promise":
     case "set": {
+      if (!jzodSchema.definition) {
+        throw new Error("makeReferencesAbsolute set: jzodSchema.definition is undefined " + JSON.stringify(jzodSchema));
+      }
       return {
         ...jzodSchema,
         definition: makeReferencesAbsolute(jzodSchema.definition, absolutePath, force) as any,
@@ -95,6 +110,12 @@ function makeReferencesAbsolute(jzodSchema: any, absolutePath: string, force?: b
       break;
     }
     case "map": {
+      if (!jzodSchema.definition[0]) {
+        throw new Error("makeReferencesAbsolute map: jzodSchema.definition[0] is undefined " + JSON.stringify(jzodSchema));
+      }
+      if (!jzodSchema.definition[1]) {
+        throw new Error("makeReferencesAbsolute map: jzodSchema.definition[0] is undefined " + JSON.stringify(jzodSchema));
+      }
       return {
         ...jzodSchema,
         definition: [
@@ -104,6 +125,10 @@ function makeReferencesAbsolute(jzodSchema: any, absolutePath: string, force?: b
       };
     }
     case "function": {
+      if (!jzodSchema.definition.returns) {
+        throw new Error("makeReferencesAbsolute: jzodSchema.definition is undefined " + JSON.stringify(jzodSchema));
+      }
+
       return {
         ...jzodSchema,
         definition: {
@@ -116,6 +141,13 @@ function makeReferencesAbsolute(jzodSchema: any, absolutePath: string, force?: b
       break;
     }
     case "intersection": {
+      if (!jzodSchema.definition.left) {
+        throw new Error("makeReferencesAbsolute intersection: jzodSchema.definition.left is undefined " + JSON.stringify(jzodSchema));
+      }
+      if (!jzodSchema.definition.right) {
+        throw new Error("makeReferencesAbsolute intersection: jzodSchema.definition.left is undefined " + JSON.stringify(jzodSchema));
+      }
+
       return {
         ...jzodSchema,
         definition: {
@@ -1370,7 +1402,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "miroirSelectQuery",
+                relativePath: "querySelect",
               },
             },
           },
@@ -1472,12 +1504,12 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "miroirSelectQuery",
+                relativePath: "querySelect",
               },
             },
           },
         },
-        domainModelManyExtractors: {
+        domainModelRecordOfExtractors: {
           type: "object",
           extend: {
             type: "schemaReference",
@@ -1490,13 +1522,13 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             queryType: {
               type: "literal",
-              definition: "domainModelManyExtractors",
+              definition: "domainModelRecordOfExtractors",
             },
             fetchQuery: {
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "miroirFetchQuery",
+                relativePath: "queryQueriesRecordOrCrossJoin",
               },
             },
           },
@@ -1546,7 +1578,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "domainModelManyExtractors",
+                relativePath: "domainModelRecordOfExtractors",
               },
             },
           },
@@ -1570,7 +1602,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "miroirSelectQuery",
+                relativePath: "querySelect",
               },
             },
           },
@@ -1639,7 +1671,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "domainModelManyExtractors",
+                relativePath: "domainModelRecordOfExtractors",
               },
             },
             {
@@ -2238,12 +2270,12 @@ export function getMiroirFundamentalJzodSchema(
         querySelectObjectByDirectReference: (miroirFundamentalJzodSchema as any).definition.context
           .querySelectObjectByDirectReference,
         querySelectObject: (miroirFundamentalJzodSchema as any).definition.context.querySelectObject,
-        querySelectQueryCombiner: (miroirFundamentalJzodSchema as any).definition.context.querySelectQueryCombiner,
-        miroirSelectQuery: (miroirFundamentalJzodSchema as any).definition.context.miroirSelectQuery,
+        querySelectByQueryCombiner: (miroirFundamentalJzodSchema as any).definition.context.querySelectByQueryCombiner,
+        querySelect: (miroirFundamentalJzodSchema as any).definition.context.querySelect,
         miroirSelectQueriesRecord: (miroirFundamentalJzodSchema as any).definition.context.miroirSelectQueriesRecord,
         miroirCrossJoinQuery: (miroirFundamentalJzodSchema as any).definition.context.miroirCrossJoinQuery,
-        miroirFetchQuery: (miroirFundamentalJzodSchema as any).definition.context.miroirFetchQuery,
-        domainModelManyExtractors: (miroirFundamentalJzodSchema as any).definition.context.domainModelManyExtractors,
+        queryQueriesRecordOrCrossJoin: (miroirFundamentalJzodSchema as any).definition.context.queryQueriesRecordOrCrossJoin,
+        domainModelRecordOfExtractors: (miroirFundamentalJzodSchema as any).definition.context.domainModelRecordOfExtractors,
         queryAction: queryEndpointVersionV1.definition.actions[0].actionParameters,
       },
       definition: {
@@ -2251,7 +2283,7 @@ export function getMiroirFundamentalJzodSchema(
       },
     },
   };
-  // log.info("innerResolutionStore", innerResolutionStore);
+  log.info("innerResolutionStore", innerResolutionStore);
   // log.info("innerResolutionStore baseObject", JSON.stringify((innerResolutionStore["fe9b7d99-f216-44de-bb6e-60e1a1ebb739"] as any).context["jzodBaseObject"], null, 2));
   // log.info("innerResolutionStore array", JSON.stringify((innerResolutionStore["fe9b7d99-f216-44de-bb6e-60e1a1ebb739"] as any).context["jzodArray"], null, 2));
 

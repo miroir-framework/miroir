@@ -6,7 +6,7 @@ import {
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
   DomainElementObject,
-  DomainModelManyExtractors,
+  DomainModelRecordOfExtractors,
   DomainModelGetEntityDefinitionExtractor,
   DomainModelGetFetchParamJzodSchemaExtractor,
   DomainModelSingleObjectListExtractor,
@@ -49,8 +49,8 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 
 const emptyDomainObject:DomainElementObject = { elementType: "object", elementValue: {} }
 
-export const dummyDomainManyQueriesWithDeploymentUuid: DomainModelManyExtractors = {
-  queryType: "domainModelManyExtractors",
+export const dummyDomainManyQueriesWithDeploymentUuid: DomainModelRecordOfExtractors = {
+  queryType: "domainModelRecordOfExtractors",
   deploymentUuid: "",
   pageParams: emptyDomainObject,
   queryParams: emptyDomainObject,
@@ -72,7 +72,7 @@ export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: DomainModelGetF
   queryParams: { elementType: "object", elementValue: {} },
   contextResults: { elementType: "object", elementValue: {} },
   fetchParams: {
-    queryType: "domainModelManyExtractors",
+    queryType: "domainModelRecordOfExtractors",
     deploymentUuid: "",
     pageParams: emptyDomainObject,
     queryParams: emptyDomainObject,
@@ -370,7 +370,7 @@ export const innerSelectElementFromQueryAndDomainState = innerSelectElementFromQ
 
 // ################################################################################################
 export const selectByDomainManyQueriesFromDomainState:ExtractorSelector<
-  DomainModelManyExtractors, DomainState, DomainElementObject
+  DomainModelRecordOfExtractors, DomainState, DomainElementObject
 > = selectByDomainManyExtractors<DomainState>
 
 // ################################################################################################

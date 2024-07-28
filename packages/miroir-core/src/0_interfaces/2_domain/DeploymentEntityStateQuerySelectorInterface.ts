@@ -6,7 +6,7 @@ import {
   DomainModelGetEntityDefinitionExtractor,
   DomainModelGetFetchParamJzodSchemaExtractor,
   DomainModelGetSingleSelectQueryJzodSchemaExtractor,
-  DomainModelManyExtractors,
+  DomainModelRecordOfExtractors,
   DomainModelQueryJzodSchemaParams,
   DomainModelSingleObjectExtractor,
   DomainModelSingleObjectListExtractor,
@@ -32,7 +32,7 @@ export type ExtractorSelector<QueryType extends DomainModelExtractor, StateType,
 
 // ################################################################################################
 export type ExtractorSelectorMap<StateType> = {
-  selectByDomainManyExtractors: ExtractorSelector<DomainModelManyExtractors, StateType, DomainElementObjectOrFailed>
+  selectByDomainManyExtractors: ExtractorSelector<DomainModelRecordOfExtractors, StateType, DomainElementObjectOrFailed>
   selectEntityInstanceUuidIndexFromState: ExtractorSelector<DomainModelSingleObjectListExtractor, StateType, DomainElementInstanceUuidIndexOrFailed>,
   selectEntityInstanceFromState: ExtractorSelector<DomainModelSingleObjectExtractor, StateType, DomainElementEntityInstanceOrFailed>,
   selectEntityInstanceUuidIndexFromObjectListExtractor: ExtractorSelector<DomainModelSingleObjectListExtractor, StateType, DomainElementInstanceUuidIndexOrFailed>,

@@ -10,9 +10,9 @@ import {
   EntityInstance,
   DomainElementInstanceUuidIndex,
   QuerySelectObjectListByManyToManyRelation,
-  MiroirSelectQuery,
+  QuerySelect,
   ApplicationSection,
-  DomainModelManyExtractors,
+  DomainModelRecordOfExtractors,
   DomainModelGetEntityDefinitionExtractor,
   DomainModelGetSingleSelectQueryJzodSchemaExtractor,
   JzodObject,
@@ -303,7 +303,7 @@ export function innerSelectElementFromQuery<StateType>(
   queryParams: DomainElementObject,
   selectorMap:ExtractorSelectorMap<StateType>,
   deploymentUuid: Uuid,
-  query: MiroirSelectQuery
+  query: QuerySelect
 ): DomainElement {
   switch (query.queryType) {
     case "literal": {
@@ -359,7 +359,7 @@ export function innerSelectElementFromQuery<StateType>(
       return {
         elementType: "object",
         elementValue: Object.fromEntries(
-          Object.entries(query.definition).map((e: [string, MiroirSelectQuery]) => [
+          Object.entries(query.definition).map((e: [string, QuerySelect]) => [
             e[0],
             innerSelectElementFromQuery(
               deploymentEntityState,
@@ -464,8 +464,8 @@ export function innerSelectElementFromQuery<StateType>(
 
 export const selectByDomainManyExtractors = <StateType>(
   deploymentEntityState: StateType,
-  // selectorParams: QuerySelectorParams<DomainModelManyExtractors, DeploymentEntityState>,
-  selectorParams: QuerySelectorParams<DomainModelManyExtractors, StateType>,
+  // selectorParams: QuerySelectorParams<DomainModelRecordOfExtractors, DeploymentEntityState>,
+  selectorParams: QuerySelectorParams<DomainModelRecordOfExtractors, StateType>,
 ): DomainElementObject => {
 
   // log.info("########## selectByDomainManyExtractors begin, query", selectorParams);
@@ -634,11 +634,11 @@ export const selectFetchQueryJzodSchema = <StateType>(
   deploymentEntityState: StateType,
   selectorParams: JzodSchemaQuerySelectorParams<DomainModelGetFetchParamJzodSchemaExtractor, StateType>
 ):  RecordOfJzodObject | undefined => {
-  const localFetchParams: DomainModelManyExtractors = selectorParams.query.fetchParams
+  const localFetchParams: DomainModelRecordOfExtractors = selectorParams.query.fetchParams
   // log.info("selectFetchQueryJzodSchemaFromDomainState called", selectorParams.query);
   
   const fetchQueryJzodSchema = Object.fromEntries(
-    Object.entries(localFetchParams?.fetchQuery?.select??{}).map((entry: [string, MiroirSelectQuery]) => [
+    Object.entries(localFetchParams?.fetchQuery?.select??{}).map((entry: [string, QuerySelect]) => [
       entry[0],
       selectorParams.selectorMap.selectJzodSchemaBySingleSelectQuery(deploymentEntityState, {
         selectorMap:selectorParams.selectorMap,
