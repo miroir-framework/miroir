@@ -17,8 +17,8 @@ import {
   JzodSchemaQuerySelectorParams,
   LoggerInterface,
   MiroirLoggerFactory,
-  MiroirSelectorQueryParams,
-  QuerySelector,
+  DomainModelExtractor,
+  ExtractorSelector,
   QuerySelectorParams,
   RecordOfJzodElement,
   cleanupResultsFromQuery,
@@ -46,7 +46,7 @@ declare type JzodSchemaSelectorParamsSelector<QueryType extends DomainModelQuery
 
 
 // ################################################################################################
-declare type SelectorParamsSelector<QueryType extends MiroirSelectorQueryParams, StateType> = (
+declare type SelectorParamsSelector<QueryType extends DomainModelExtractor, StateType> = (
   reduxState: ReduxStateWithUndoRedo,
   params: QuerySelectorParams<QueryType, StateType>
 ) => QuerySelectorParams<QueryType, StateType>;
@@ -60,7 +60,7 @@ export const selectCurrentDeploymentEntityStateFromReduxState = (
 };
 
 // ################################################################################################
-export const selectDeploymentEntityStateSelectorParams /*: DomainStateSelectorParamsSelector<Q> */ = <QueryType extends MiroirSelectorQueryParams>(
+export const selectDeploymentEntityStateSelectorParams /*: DomainStateSelectorParamsSelector<Q> */ = <QueryType extends DomainModelExtractor>(
   reduxState: ReduxStateWithUndoRedo,
   params: QuerySelectorParams<QueryType, DeploymentEntityState>
 ): QuerySelectorParams<QueryType, DeploymentEntityState> => {
@@ -68,7 +68,7 @@ export const selectDeploymentEntityStateSelectorParams /*: DomainStateSelectorPa
 };
 
 // ################################################################################################
-export const selectMiroirSelectorQueryParams = (reduxState: ReduxStateWithUndoRedo, params: MiroirSelectorQueryParams):MiroirSelectorQueryParams => {
+export const selectMiroirSelectorQueryParams = (reduxState: ReduxStateWithUndoRedo, params: DomainModelExtractor):DomainModelExtractor => {
   return params;
 }
 
@@ -86,7 +86,7 @@ export const selectDomainStateFromReduxState: (
 
 
 // ################################################################################################
-export const selectSelectorParams /*: SelectorParamsSelector*/ = <Q extends MiroirSelectorQueryParams>(
+export const selectSelectorParams /*: SelectorParamsSelector*/ = <Q extends DomainModelExtractor>(
   reduxState: ReduxStateWithUndoRedo,
   params: Q
 ) => {
@@ -95,7 +95,7 @@ export const selectSelectorParams /*: SelectorParamsSelector*/ = <Q extends Miro
 
 
 // ################################################################################################
-export const selectDomainStateSelectorParams/*:SelectorParamsSelector<Q, DomainState> */ = <QueryType extends MiroirSelectorQueryParams>(
+export const selectDomainStateSelectorParams/*:SelectorParamsSelector<Q, DomainState> */ = <QueryType extends DomainModelExtractor>(
   reduxState: ReduxStateWithUndoRedo,
   params: QuerySelectorParams<QueryType, DomainState>
 ): QuerySelectorParams<QueryType, DomainState> => {
@@ -127,8 +127,8 @@ export const selectJzodSchemaSelectorParams = <QueryType extends DomainModelQuer
 // DOMAIN STATE SELECTORS
 // ################################################################################################
 // ################################################################################################
-export function applyDeploymentEntityStateQuerySelector<QueryType extends MiroirSelectorQueryParams, ResultType>( // TODO: memoize?
-  deploymentEntityStateQuerySelector: QuerySelector<QueryType, DeploymentEntityState, ResultType>
+export function applyDeploymentEntityStateQuerySelector<QueryType extends DomainModelExtractor, ResultType>( // TODO: memoize?
+  deploymentEntityStateQuerySelector: ExtractorSelector<QueryType, DeploymentEntityState, ResultType>
 ): (
   reduxState: ReduxStateWithUndoRedo,
   params: QuerySelectorParams<QueryType, DeploymentEntityState>
@@ -140,8 +140,8 @@ export function applyDeploymentEntityStateQuerySelector<QueryType extends Miroir
 }
 
 // ################################################################################################
-export function applyDeploymentEntityStateQuerySelectorForCleanedResult<QueryType extends MiroirSelectorQueryParams>( // TODO: memoize?
-  deploymentEntityStateQuerySelector: QuerySelector<QueryType, DeploymentEntityState, DomainElement>
+export function applyDeploymentEntityStateQuerySelectorForCleanedResult<QueryType extends DomainModelExtractor>( // TODO: memoize?
+  deploymentEntityStateQuerySelector: ExtractorSelector<QueryType, DeploymentEntityState, DomainElement>
 ): (
   reduxState: ReduxStateWithUndoRedo,
   params: QuerySelectorParams<QueryType, DeploymentEntityState>
@@ -169,8 +169,8 @@ export function applyDeploymentEntityStateQuerySelectorForCleanedResult<QueryTyp
 
 
 // ################################################################################################
-export function applyDomainStateQuerySelector<QueryType extends MiroirSelectorQueryParams, ResultType>( // TODO: memoize?
-  domainStateSelector: QuerySelector<QueryType, DomainState, ResultType>
+export function applyDomainStateQuerySelector<QueryType extends DomainModelExtractor, ResultType>( // TODO: memoize?
+  domainStateSelector: ExtractorSelector<QueryType, DomainState, ResultType>
 ): (
   reduxState: ReduxStateWithUndoRedo,
   params: QuerySelectorParams<QueryType, DomainState>
@@ -215,8 +215,8 @@ export function applyDeploymentEntityStateJzodSchemaSelector<QueryType extends D
 
 
 // ################################################################################################
-export function applyDomainStateQuerySelectorForCleanedResult<QueryType extends MiroirSelectorQueryParams>( // TODO: memoize?
-  domainStateSelector: QuerySelector<QueryType, DomainState, DomainElement>
+export function applyDomainStateQuerySelectorForCleanedResult<QueryType extends DomainModelExtractor>( // TODO: memoize?
+  domainStateSelector: ExtractorSelector<QueryType, DomainState, DomainElement>
 ): (
   reduxState: ReduxStateWithUndoRedo,
   params: QuerySelectorParams<QueryType, DomainState>
@@ -267,7 +267,7 @@ const empty = {}
 // ################################################################################################
 export const selectEntityInstanceUuidIndexFromLocalCacheQueryAndDeploymentEntityState = (
   deploymentEntityState: DeploymentEntityState,
-  params: MiroirSelectorQueryParams
+  params: DomainModelExtractor
 ): EntityInstancesUuidIndex => {
   if (params.queryType != "localCacheEntityInstancesExtractor") {
     log.error(
@@ -317,7 +317,7 @@ export const selectEntityInstanceUuidIndexFromLocalCache = createSelector (
 //#########################################################################################
 export const selectInstanceArrayForDeploymentSectionEntity = createSelector(
   [selectEntityInstanceUuidIndexFromLocalCache, selectSelectorParams],
-  (state: EntityInstancesUuidIndex, params: MiroirSelectorQueryParams) => {
+  (state: EntityInstancesUuidIndex, params: DomainModelExtractor) => {
     // log.info("selectInstanceArrayForDeploymentSectionEntity called", params, state);
 
     return state ? Object.values(state) : [];

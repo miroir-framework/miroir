@@ -8,7 +8,7 @@ import {
   DomainAction,
   DomainControllerInterface,
   DomainElementObject,
-  DomainManyExtractors,
+  DomainModelManyExtractors,
   EntityDefinition,
   EntityInstance,
   InstanceAction,
@@ -601,8 +601,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
 
     // ############################################################################################
     // modify global menu (shall be removed, find another solution! is this solution part of a "Menu" DSL / Endpoint? "add menu item" action?)
-    const miroirMenuInstancesQuery: DomainManyExtractors = {
-      queryType: "domainManyExtractors",
+    const miroirMenuInstancesQuery: DomainModelManyExtractors = {
+      queryType: "domainModelManyExtractors",
       deploymentUuid: currentDeploymentUuid,
       pageParams: { elementType: "object", elementValue: {} },
       queryParams: { elementType: "object", elementValue: {} },
@@ -950,8 +950,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               },
             },
           },
-          // splittedEntityInstancesQuery: /* DomainManyExtractors */ {
-          //   queryType: "domainManyExtractors",
+          // splittedEntityInstancesQuery: /* DomainModelManyExtractors */ {
+          //   queryType: "domainModelManyExtractors",
           //   deploymentUuid: {
           //     templateType: "parameterReference",
           //     referenceName: "currentDeploymentUuid",
@@ -1156,8 +1156,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       currentDeploymentUuid: props.currentDeploymentUuid,
       splittedEntityDefinition,
       splittedEntityName,
-      // splittedEntityInstancesQuery: /* DomainManyExtractors */ {
-      //   queryType: "domainManyExtractors",
+      // splittedEntityInstancesQuery: /* DomainModelManyExtractors */ {
+      //   queryType: "domainModelManyExtractors",
       //   deploymentUuid: {
       //     templateType: "parameterReference",
       //     referenceName: "currentDeploymentUuid",
@@ -1207,7 +1207,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               referenceName: "currentDeploymentUuid"
             },
             query: {
-              queryType: "domainManyExtractors",
+              queryType: "domainModelManyExtractors",
               deploymentUuid: {
                 templateType: "parameterReference",
                 referenceName: "currentDeploymentUuid",
@@ -1285,8 +1285,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
 
     // // ############################################################################################
     // // insert / update instances
-    // const splittedEntityInstancesQuery: DomainManyExtractors = {
-    //   queryType: "domainManyExtractors",
+    // const splittedEntityInstancesQuery: DomainModelManyExtractors = {
+    //   queryType: "domainModelManyExtractors",
     //   deploymentUuid: currentDeploymentUuid,
     //   pageParams,
     //   queryParams: { elementType: "object", elementValue: {} },
@@ -1418,8 +1418,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     //   },
     // };
     
-    // const miroirMenuInstancesQuery: DomainManyExtractors = {
-    //   queryType: "domainManyExtractors",
+    // const miroirMenuInstancesQuery: DomainModelManyExtractors = {
+    //   queryType: "domainModelManyExtractors",
     //   deploymentUuid: currentDeploymentUuid,
     //   pageParams: miroirMenuPageParams,
     //   queryParams: { elementType: "object", elementValue: {} },

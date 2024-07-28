@@ -2,10 +2,10 @@ import { createSelector } from "@reduxjs/toolkit";
 import {
   DeploymentEntityState,
   JzodSchemaQuerySelectorMap,
-  QuerySelectorMap,
-  selectByDomainManyQueries,
-  selectEntityInstanceFromObjectQueryAndDeploymentEntityState,
-  selectEntityInstanceUuidIndexFromListQuery,
+  ExtractorSelectorMap,
+  selectByDomainManyExtractors,
+  selectEntityInstanceFromDeploymentEntityState,
+  selectEntityInstanceUuidIndexFromObjectListExtractor,
   selectEntityInstanceUuidIndexFromDeploymentEntityState,
   selectEntityJzodSchemaFromDeploymentEntityState,
   selectFetchQueryJzodSchema,
@@ -16,23 +16,23 @@ import {
 const deploymentEntityStateSelector = (domainState: DeploymentEntityState, params: any) => domainState;
 const deploymentEntityStateSelectorParams = (domainState: DeploymentEntityState, params: any) => params;
 
-export function getMemoizedDeploymentEntityStateSelectorMap(): QuerySelectorMap<DeploymentEntityState> {
+export function getMemoizedDeploymentEntityStateSelectorMap(): ExtractorSelectorMap<DeploymentEntityState> {
   return {
-    selectEntityInstanceUuidIndex: createSelector(
+    selectEntityInstanceFromState: createSelector(
+      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
+      selectEntityInstanceFromDeploymentEntityState
+    ),
+    selectEntityInstanceUuidIndexFromState: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
       selectEntityInstanceUuidIndexFromDeploymentEntityState
     ),
-    selectEntityInstanceFromObjectQuery: createSelector(
+    selectEntityInstanceUuidIndexFromObjectListExtractor: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-      selectEntityInstanceFromObjectQueryAndDeploymentEntityState
+      selectEntityInstanceUuidIndexFromObjectListExtractor
     ),
-    selectEntityInstanceUuidIndexFromListQuery: createSelector(
+    selectByDomainManyExtractors: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-      selectEntityInstanceUuidIndexFromListQuery
-    ),
-    selectByDomainManyQueries: createSelector(
-      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-      selectByDomainManyQueries
+      selectByDomainManyExtractors
     ),
   };
 }

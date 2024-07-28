@@ -18,7 +18,7 @@ import {
   adminConfigurationDeploymentMiroir,
   DeploymentEntityState,
   DomainElementObject,
-  DomainManyExtractors,
+  DomainModelManyExtractors,
   entityMenu,
   getApplicationSection,
   getDeploymentEntityStateSelectorParams,
@@ -26,8 +26,8 @@ import {
   LoggerInterface,
   menuDefaultMiroir,
   MiroirLoggerFactory,
-  MiroirSelectorQueryParams,
-  QuerySelectorMap,
+  DomainModelExtractor,
+  ExtractorSelectorMap,
   QuerySelectorParams,
   Uuid
 } from "miroir-core";
@@ -140,15 +140,15 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
   // const miroirConfig = context.getMiroirConfig();
   // const context = useMiroirContext();
 
-  const deploymentEntityStateSelectorMap: QuerySelectorMap<DeploymentEntityState> = useMemo(
+  const deploymentEntityStateSelectorMap: ExtractorSelectorMap<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
   )
 
-  const fetchDeploymentMenusQueryParams: QuerySelectorParams<DomainManyExtractors, DeploymentEntityState> = useMemo(
+  const fetchDeploymentMenusQueryParams: QuerySelectorParams<DomainModelManyExtractors, DeploymentEntityState> = useMemo(
     () => 
-    getDeploymentEntityStateSelectorParams<DomainManyExtractors>({
-      queryType: "domainManyExtractors",
+    getDeploymentEntityStateSelectorParams<DomainModelManyExtractors>({
+      queryType: "domainModelManyExtractors",
       deploymentUuid: props.deploymentUuid,
       // applicationSection: "data",
       pageParams: { elementType: "object", elementValue: {} },
@@ -178,7 +178,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
 
   log.info("fetchDeploymentMenusQueryParams",fetchDeploymentMenusQueryParams)
   const miroirMenusDomainElementObject: DomainElementObject = useDeploymentEntityStateQuerySelector(
-    deploymentEntityStateSelectorMap.selectByDomainManyQueries,
+    deploymentEntityStateSelectorMap.selectByDomainManyExtractors,
     fetchDeploymentMenusQueryParams
   );
 

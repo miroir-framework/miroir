@@ -483,7 +483,7 @@
               "definition": {
                 "type": "schemaReference",
                 "context": {
-                  "selectObjectQuery": {
+                  "querySelectObject": {
                     "type": "object",
                     "definition": {
                       "type": { "type": "literal", "definition": "selectObjectByParameterValue" },
@@ -520,7 +520,7 @@
                       }
                     }
                   },
-                  "selectObjectListQuery": {
+                  "querySelectObjectList": {
                     "type": "object",
                     "definition": {
                       "type": { "type": "literal", "definition": "selectObjectListByRelation" },
@@ -567,8 +567,8 @@
                     "type": "union",
                     "discriminator": "type",
                     "definition": [
-                      { "type": "schemaReference", "definition": { "relativePath": "selectObjectListQuery" } },
-                      { "type": "schemaReference", "definition": { "relativePath": "selectObjectQuery" } }
+                      { "type": "schemaReference", "definition": { "relativePath": "querySelectObjectList" } },
+                      { "type": "schemaReference", "definition": { "relativePath": "querySelectObject" } }
                     ]
                   },
                   "miroirSelectQueriesRecord": {
@@ -614,7 +614,7 @@
                       },
                       "definition": {
                         "type": "schemaReference",
-                        "definition": { "relativePath": "selectObjectListQuery" }
+                        "definition": { "relativePath": "querySelectObjectList" }
                       }
                     }
                   },

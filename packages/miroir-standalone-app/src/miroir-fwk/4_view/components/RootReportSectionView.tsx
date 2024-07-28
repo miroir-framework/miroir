@@ -5,30 +5,31 @@ import {
   ApplicationSection,
   DeploymentEntityState,
   DomainElementObject,
-  DomainManyExtractors,
-  DomainModelGetFetchParamJzodSchemaQueryParams,
+  DomainModelManyExtractors,
+  DomainModelGetFetchParamJzodSchemaExtractor,
   JzodSchemaQuerySelectorMap,
   JzodSchemaQuerySelectorParams,
   LoggerInterface,
   MiroirLoggerFactory,
-  QuerySelectorMap,
+  ExtractorSelectorMap,
   QuerySelectorParams,
   RecordOfJzodObject,
   RootReportSection,
   Uuid,
   getDeploymentEntityStateSelectorParams,
-  getLoggerName
+  getLoggerName,
+  DomainElementObjectOrFailed
 } from "miroir-core";
 
 
 
-import { useDeploymentEntityStateJzodSchemaSelector, useDeploymentEntityStateQuerySelector } from '../ReduxHooks';
-import { ReportSectionView } from './ReportSectionView';
-import { ReportUrlParamKeys } from '../routes/ReportPage';
+import { useDeploymentEntityStateJzodSchemaSelector, useDeploymentEntityStateQuerySelector } from '../ReduxHooks.js';
+import { ReportSectionView } from './ReportSectionView.js';
+import { ReportUrlParamKeys } from '../routes/ReportPage.js';
 
 import { getMemoizedDeploymentEntityStateJzodSchemaSelectorMap, getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
-import { packageName } from '../../../constants';
-import { cleanLevel } from '../constants';
+import { packageName } from '../../../constants.js';
+import { cleanLevel } from '../constants.js';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RootReportSectionView");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -77,17 +78,17 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
   //   props.reportSection.fetchQuery
   // );
   
-  const deploymentEntityStateSelectorMap: QuerySelectorMap<DeploymentEntityState> = useMemo(
+  const deploymentEntityStateSelectorMap: ExtractorSelectorMap<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
   )
 
-  const deploymentEntityStateFetchQueryParams: QuerySelectorParams<DomainManyExtractors, DeploymentEntityState> = useMemo(
+  const deploymentEntityStateFetchQueryParams: QuerySelectorParams<DomainModelManyExtractors, DeploymentEntityState> = useMemo(
     () =>
       props.pageParams.deploymentUuid && props.pageParams.applicationSection && props.pageParams.reportUuid
-        ? getDeploymentEntityStateSelectorParams<DomainManyExtractors>(
+        ? getDeploymentEntityStateSelectorParams<DomainModelManyExtractors>(
             {
-              queryType: "domainManyExtractors",
+              queryType: "domainModelManyExtractors",
               deploymentUuid: props.pageParams.deploymentUuid,
               // applicationSection: props.applicationSection,
               pageParams: paramsAsdomainElements,
@@ -98,9 +99,9 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
             deploymentEntityStateSelectorMap
           )
         : // dummy query
-          getDeploymentEntityStateSelectorParams<DomainManyExtractors>(
+          getDeploymentEntityStateSelectorParams<DomainModelManyExtractors>(
             {
-              queryType: "domainManyExtractors",
+              queryType: "domainModelManyExtractors",
               deploymentUuid: "",
               pageParams: paramsAsdomainElements,
               queryParams: { elementType: "object", elementValue: {} },
@@ -118,8 +119,8 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
   // //   props.reportSection?.fetchQuery,
   // // )
 
-  const deploymentEntityStateQueryResults: DomainElementObject = useDeploymentEntityStateQuerySelector(
-    deploymentEntityStateSelectorMap.selectByDomainManyQueries,
+  const deploymentEntityStateQueryResults: DomainElementObjectOrFailed = useDeploymentEntityStateQuerySelector(
+    deploymentEntityStateSelectorMap.selectByDomainManyExtractors,
     deploymentEntityStateFetchQueryParams
   );
 
@@ -139,7 +140,7 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
   )
 
   const fetchedDataJzodSchemaParams: JzodSchemaQuerySelectorParams<
-    DomainModelGetFetchParamJzodSchemaQueryParams,
+    DomainModelGetFetchParamJzodSchemaExtractor,
     DeploymentEntityState
   > = useMemo(
     () => ({
@@ -148,6 +149,7 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
         props.pageParams.deploymentUuid && props.pageParams.applicationSection && props.pageParams.reportUuid
           ? {
               queryType: "getFetchParamsJzodSchema",
+              deploymentUuid: props.pageParams.deploymentUuid,
               pageParams: {
                 elementType: "object",
                 elementValue: {
@@ -158,11 +160,13 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
               },
               queryParams: { elementType: "object", elementValue: {} },
               contextResults: { elementType: "object", elementValue: {} },
-              fetchParams: deploymentEntityStateFetchQueryParams.query,
+              // fetchParams: deploymentEntityStateFetchQueryParams.query,
+              fetchParams: deploymentEntityStateFetchQueryParams.extractor,
             }
           : // dummy query
             {
               queryType: "getFetchParamsJzodSchema",
+              deploymentUuid: "DUMMY",
               pageParams: {
                 elementType: "object",
                 elementValue: {
@@ -174,8 +178,8 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
               queryParams: { elementType: "object", elementValue: {} },
               contextResults: { elementType: "object", elementValue: {} },
               fetchParams: {
-                queryType: "domainManyExtractors",
-                deploymentUuid: "",
+                queryType: "domainModelManyExtractors",
+                deploymentUuid: "DUMMY",
                 pageParams: paramsAsdomainElements,
                 queryParams: { elementType: "object", elementValue: {} },
                 contextResults: { elementType: "object", elementValue: {} },
@@ -233,22 +237,31 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
     return (
       <>
       {
-        props.deploymentUuid?
+        deploymentEntityStateQueryResults.elementType == "failure"?
           <div>
-            <div>RootReportSectionView rendered {count}</div>
-            <ReportSectionView
-              queryResults={deploymentEntityStateQueryResults}
-              fetchedDataJzodSchema={fetchedDataJzodSchema}
-              reportSection={props.rootReportSection?.section}
-              rootReportSection={props.rootReportSection}
-              applicationSection={props.applicationSection}
-              deploymentUuid={props.deploymentUuid}
-              paramsAsdomainElements={paramsAsdomainElements}
-              selectorMap={deploymentEntityStateSelectorMap}
-            />
+            found query failure! {JSON.stringify(deploymentEntityStateQueryResults, null, 2)}
           </div>
         :
-        <div style={{color:"red"}}>no deployment found!</div>
+        <>
+          {
+            props.deploymentUuid?
+              <div>
+                <div>RootReportSectionView rendered {count}</div>
+                <ReportSectionView
+                  queryResults={deploymentEntityStateQueryResults}
+                  fetchedDataJzodSchema={fetchedDataJzodSchema}
+                  reportSection={props.rootReportSection?.section}
+                  rootReportSection={props.rootReportSection}
+                  applicationSection={props.applicationSection}
+                  deploymentUuid={props.deploymentUuid}
+                  paramsAsdomainElements={paramsAsdomainElements}
+                  selectorMap={deploymentEntityStateSelectorMap}
+                />
+              </div>
+            :
+            <div style={{color:"red"}}>no deployment found!</div>
+          }
+        </>
       }
       </>
     );

@@ -13,7 +13,7 @@ import {
   ApplicationSection,
   DeploymentEntityState,
   DomainElement,
-  DomainManyExtractors,
+  DomainModelManyExtractors,
   EntityAttribute,
   EntityInstance,
   EntityInstanceWithName,
@@ -28,8 +28,8 @@ import {
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
-  QuerySelector,
-  QuerySelectorMap,
+  ExtractorSelector,
+  ExtractorSelectorMap,
   QuerySelectorParams,
   ResolvedJzodSchemaReturnType,
   Uuid,
@@ -272,7 +272,7 @@ export const JzodObjectEditor = (
 ): JSX.Element => {
   count++;
   const context = useMiroirContextService();
-  const deploymentEntityStateSelectorMap: QuerySelectorMap<DeploymentEntityState> = useMemo(
+  const deploymentEntityStateSelectorMap: ExtractorSelectorMap<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
   );
@@ -470,17 +470,17 @@ export const JzodObjectEditor = (
     // ############################################################################################
     // finding foreign objects for uuid schema with targetEntity estra
     const foreignKeyObjectsFetchQueryParams: QuerySelectorParams<
-      DomainManyExtractors,
+      DomainModelManyExtractors,
       DeploymentEntityState
     > = useMemo(
       () =>
-        getDeploymentEntityStateSelectorParams<DomainManyExtractors>(
+        getDeploymentEntityStateSelectorParams<DomainModelManyExtractors>(
           props.currentDeploymentUuid &&
           unfoldedRawSchema.type == "uuid" &&
           unfoldedRawSchema.tag?.value?.targetEntity
           ?
           {
-            queryType: "domainManyExtractors",
+            queryType: "domainModelManyExtractors",
             deploymentUuid: props.currentDeploymentUuid,
             // applicationSection: props.applicationSection,
             // pageParams: props.paramsAsdomainElements,
@@ -526,8 +526,8 @@ export const JzodObjectEditor = (
     // const foreignKeyObjects:  = useDeploymentEntityStateQuerySelectorForCleanedResult(
     const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
       useDeploymentEntityStateQuerySelectorForCleanedResult(
-        deploymentEntityStateSelectorMap.selectByDomainManyQueries as QuerySelector<
-          DomainManyExtractors,
+        deploymentEntityStateSelectorMap.selectByDomainManyExtractors as ExtractorSelector<
+          DomainModelManyExtractors,
           DeploymentEntityState,
           DomainElement
         >,

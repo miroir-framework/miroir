@@ -1,18 +1,17 @@
 import {
-  DomainElement,
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
   DomainElementObjectOrFailed,
-  DomainManyExtractors,
-  DomainModelGetEntityDefinitionQueryParams,
-  DomainModelGetFetchParamJzodSchemaQueryParams,
-  DomainModelGetSingleSelectObjectListExtractor,
-  DomainModelGetSingleSelectExtractor,
-  DomainModelGetSingleSelectQueryJzodSchemaQueryParams,
+  DomainModelExtractor,
+  DomainModelGetEntityDefinitionExtractor,
+  DomainModelGetFetchParamJzodSchemaExtractor,
+  DomainModelGetSingleSelectQueryJzodSchemaExtractor,
+  DomainModelManyExtractors,
   DomainModelQueryJzodSchemaParams,
+  DomainModelSingleObjectExtractor,
+  DomainModelSingleObjectListExtractor,
   JzodElement,
-  JzodObject,
-  MiroirSelectorQueryParams
+  JzodObject
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
 // ################################################################################################
@@ -20,27 +19,28 @@ export type RecordOfJzodElement = Record<string, JzodElement | undefined>;
 export type RecordOfJzodObject = Record<string, JzodObject | undefined>;
 
 // ################################################################################################
-export type QuerySelectorMap<StateType> = {
-  selectByDomainManyQueries: QuerySelector<DomainManyExtractors, StateType, DomainElementObjectOrFailed>
-  selectEntityInstanceUuidIndex: QuerySelector<DomainModelGetSingleSelectObjectListExtractor, StateType, DomainElementInstanceUuidIndexOrFailed>,
-  selectEntityInstanceFromObjectQuery: QuerySelector<DomainModelGetSingleSelectExtractor, StateType, DomainElementEntityInstanceOrFailed>,
-  selectEntityInstanceUuidIndexFromListQuery: QuerySelector<DomainModelGetSingleSelectObjectListExtractor, StateType, DomainElementInstanceUuidIndexOrFailed>,
-};
-
-// ################################################################################################
-export interface QuerySelectorParams<QueryType extends MiroirSelectorQueryParams, StateType> {
-  selectorMap?: QuerySelectorMap<StateType>
-  query: QueryType
+export interface QuerySelectorParams<DomainModelExtractorType extends DomainModelExtractor, StateType> {
+  selectorMap?: ExtractorSelectorMap<StateType>
+  extractor: DomainModelExtractorType
 }
-
 // ################################################################################################
-export type QuerySelector<QueryType extends MiroirSelectorQueryParams, StateType, ResultType> = (
+export type ExtractorSelector<QueryType extends DomainModelExtractor, StateType, ResultType> = (
   domainState: StateType,
-  params: QuerySelectorParams<QueryType, StateType>
+  extractorAndParams: QuerySelectorParams<QueryType, StateType>
 ) => ResultType;
 
+
 // ################################################################################################
-export type GenericQuerySelector<QueryType extends MiroirSelectorQueryParams, StateType, ResultType> = (
+export type ExtractorSelectorMap<StateType> = {
+  selectByDomainManyExtractors: ExtractorSelector<DomainModelManyExtractors, StateType, DomainElementObjectOrFailed>
+  selectEntityInstanceUuidIndexFromState: ExtractorSelector<DomainModelSingleObjectListExtractor, StateType, DomainElementInstanceUuidIndexOrFailed>,
+  selectEntityInstanceFromState: ExtractorSelector<DomainModelSingleObjectExtractor, StateType, DomainElementEntityInstanceOrFailed>,
+  selectEntityInstanceUuidIndexFromObjectListExtractor: ExtractorSelector<DomainModelSingleObjectListExtractor, StateType, DomainElementInstanceUuidIndexOrFailed>,
+};
+
+
+// ################################################################################################
+export type GenericQuerySelector<QueryType extends DomainModelExtractor, StateType, ResultType> = (
   domainState: StateType,
   params: QuerySelectorParams<QueryType, StateType>
 ) => ResultType;
@@ -48,9 +48,9 @@ export type GenericQuerySelector<QueryType extends MiroirSelectorQueryParams, St
 // ################################################################################################
 export type JzodSchemaQuerySelectorMap<StateType> = {
   selectJzodSchemaByDomainModelQuery: JzodSchemaQuerySelector<DomainModelQueryJzodSchemaParams, StateType>,
-  selectEntityJzodSchema: JzodSchemaQuerySelector<DomainModelGetEntityDefinitionQueryParams, StateType>,
-  selectFetchQueryJzodSchema: JzodSchemaQuerySelector<DomainModelGetFetchParamJzodSchemaQueryParams, StateType>,
-  selectJzodSchemaBySingleSelectQuery: JzodSchemaQuerySelector<DomainModelGetSingleSelectQueryJzodSchemaQueryParams, StateType>,
+  selectEntityJzodSchema: JzodSchemaQuerySelector<DomainModelGetEntityDefinitionExtractor, StateType>,
+  selectFetchQueryJzodSchema: JzodSchemaQuerySelector<DomainModelGetFetchParamJzodSchemaExtractor, StateType>,
+  selectJzodSchemaBySingleSelectQuery: JzodSchemaQuerySelector<DomainModelGetSingleSelectQueryJzodSchemaExtractor, StateType>,
 };
 
 // ################################################################################################

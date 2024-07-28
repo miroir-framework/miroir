@@ -3,7 +3,7 @@ import {
   ApplicationSection,
   DomainControllerInterface,
   DomainElementObject,
-  DomainManyExtractors,
+  DomainModelManyExtractors,
   EntityDefinition,
   EntityInstance,
   InstanceAction,
@@ -107,8 +107,8 @@ export const deleteCascade = async (p: {
       },
     };
   
-    const foreignKeyObjectsFetchQuery: DomainManyExtractors = {
-      queryType: "domainManyExtractors",
+    const foreignKeyObjectsFetchQuery: DomainModelManyExtractors = {
+      queryType: "domainModelManyExtractors",
       deploymentUuid: p.deploymentUuid,
       pageParams,
       queryParams: { elementType: "object", elementValue: {} },

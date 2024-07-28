@@ -128,15 +128,15 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
   count++;
   const theme = useTheme();
 
-  // const deploymentEntityStateSelectorMap: QuerySelectorMap<DeploymentEntityState> = useMemo(
+  // const deploymentEntityStateSelectorMap: ExtractorSelectorMap<DeploymentEntityState> = useMemo(
   //   () => getMemoizedDeploymentEntityStateSelectorMap(),
   //   []
   // )
 
-  // const FetchMiroirMenusQueryParams: QuerySelectorParams<DomainManyExtractors, DeploymentEntityState> = useMemo(
+  // const FetchMiroirMenusQueryParams: QuerySelectorParams<DomainModelManyExtractors, DeploymentEntityState> = useMemo(
   //   () => 
-  //   getDeploymentEntityStateSelectorParams<DomainManyExtractors>({
-  //     queryType: "domainManyExtractors",
+  //   getDeploymentEntityStateSelectorParams<DomainModelManyExtractors>({
+  //     queryType: "domainModelManyExtractors",
   //     deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
   //     // applicationSection: "data",
   //     pageParams: { elementType: "object", elementValue: {} },
@@ -163,7 +163,7 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
   // );
 
   // const miroirMenusDomainElementObject: DomainElementObject = useDeploymentEntityStateQuerySelector(
-  //   deploymentEntityStateSelectorMap.selectByDomainManyQueries,
+  //   deploymentEntityStateSelectorMap.selectByDomainManyExtractors,
   //   FetchMiroirMenusQueryParams
   // );
 

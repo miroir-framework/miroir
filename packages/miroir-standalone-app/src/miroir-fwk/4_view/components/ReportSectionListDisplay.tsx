@@ -13,7 +13,7 @@ import {
   DeploymentEntityState,
   DomainControllerInterface,
   DomainElement,
-  DomainManyExtractors,
+  DomainModelManyExtractors,
   Entity,
   EntityDefinition,
   EntityInstancesUuidIndex,
@@ -23,8 +23,8 @@ import {
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
-  QuerySelector,
-  QuerySelectorMap,
+  ExtractorSelector,
+  ExtractorSelectorMap,
   QuerySelectorParams,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
@@ -211,7 +211,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
 
-  const deploymentEntityStateSelectorMap: QuerySelectorMap<DeploymentEntityState> = useMemo(
+  const deploymentEntityStateSelectorMap: ExtractorSelectorMap<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
   )
@@ -317,13 +317,13 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   );
 
   const foreignKeyObjectsFetchQueryParams: QuerySelectorParams<
-    DomainManyExtractors,
+    DomainModelManyExtractors,
     DeploymentEntityState
   > = useMemo(
     () =>
-      getDeploymentEntityStateSelectorParams<DomainManyExtractors>(
+      getDeploymentEntityStateSelectorParams<DomainModelManyExtractors>(
         {
-          queryType: "domainManyExtractors",
+          queryType: "domainModelManyExtractors",
           deploymentUuid: props.deploymentUuid,
           // applicationSection: props.applicationSection,
           pageParams: props.paramsAsdomainElements,
@@ -368,7 +368,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
 
   // const foreignKeyObjects:  = useDeploymentEntityStateQuerySelectorForCleanedResult(
   const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = useDeploymentEntityStateQuerySelectorForCleanedResult(
-    deploymentEntityStateSelectorMap.selectByDomainManyQueries as QuerySelector<DomainManyExtractors, DeploymentEntityState, DomainElement>,
+    deploymentEntityStateSelectorMap.selectByDomainManyExtractors as ExtractorSelector<DomainModelManyExtractors, DeploymentEntityState, DomainElement>,
     foreignKeyObjectsFetchQueryParams
   );
 

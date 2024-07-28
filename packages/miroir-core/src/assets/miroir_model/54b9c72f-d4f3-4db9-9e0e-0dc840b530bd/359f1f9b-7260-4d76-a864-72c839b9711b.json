@@ -139,7 +139,7 @@
               }
             ]
           },
-          "selectRootQuery": {
+          "queryRoot": {
             "type": "object",
             "definition": {
               "label": {
@@ -170,13 +170,13 @@
               }
             }
           },
-          "selectObjectByRelationQuery": {
+          "querySelectObjectByRelation": {
             "type": "object",
             "extend": {
               "type": "schemaReference",
               "definition": {
                 "eager": true,
-                "relativePath": "selectRootQuery"
+                "relativePath": "queryRoot"
               }
             },
             "definition": {
@@ -195,13 +195,13 @@
               }
             }
           },
-          "selectObjectByDirectReferenceQuery": {
+          "querySelectObjectByDirectReference": {
             "type": "object",
             "extend": {
               "type": "schemaReference",
               "definition": {
                 "eager": true,
-                "relativePath": "selectRootQuery"
+                "relativePath": "queryRoot"
               }
             },
             "definition": {
@@ -217,31 +217,31 @@
               }
             }
           },
-          "selectObjectQuery": {
+          "querySelectObject": {
             "type": "union",
             "discriminator": "queryType",
             "definition": [
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "selectObjectByRelationQuery"
+                  "relativePath": "querySelectObjectByRelation"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "selectObjectByDirectReferenceQuery"
+                  "relativePath": "querySelectObjectByDirectReference"
                 }
               }
             ]
           },
-          "selectObjectListByEntityQuery": {
+          "querySelectObjectListByEntity": {
             "type": "object",
             "extend": {
               "type": "schemaReference",
               "definition": {
                 "eager": true,
-                "relativePath": "selectRootQuery"
+                "relativePath": "queryRoot"
               }
             },
             "definition": {
@@ -251,13 +251,13 @@
               }
             }
           },
-          "selectObjectListByRelationQuery": {
+          "querySelectObjectListByRelation": {
             "type": "object",
             "extend": {
               "type": "schemaReference",
               "definition": {
                 "eager": true,
-                "relativePath": "selectRootQuery"
+                "relativePath": "queryRoot"
               }
             },
             "definition": {
@@ -280,13 +280,13 @@
               }
             }
           },
-          "selectObjectListByManyToManyRelationQuery": {
+          "querySelectObjectListByManyToManyRelation": {
             "type": "object",
             "extend": {
               "type": "schemaReference",
               "definition": {
                 "eager": true,
-                "relativePath": "selectRootQuery"
+                "relativePath": "queryRoot"
               }
             },
             "definition": {
@@ -310,7 +310,7 @@
               }
             }
           },
-          "selectQueryCombinerQuery": {
+          "querySelectQueryCombiner": {
             "type": "object",
             "definition": {
               "queryType": {
@@ -345,26 +345,26 @@
               }
             }
           },
-          "selectObjectListQuery": {
+          "querySelectObjectList": {
             "type": "union",
             "discriminator": "queryType",
             "definition": [
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "selectObjectListByEntityQuery"
+                  "relativePath": "querySelectObjectListByEntity"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "selectObjectListByRelationQuery"
+                  "relativePath": "querySelectObjectListByRelation"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "selectObjectListByManyToManyRelationQuery"
+                  "relativePath": "querySelectObjectListByManyToManyRelation"
                 }
               }
             ]
@@ -376,37 +376,37 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "selectObjectListByEntityQuery"
+                  "relativePath": "querySelectObjectListByEntity"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "selectObjectListByRelationQuery"
+                  "relativePath": "querySelectObjectListByRelation"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "selectObjectListByManyToManyRelationQuery"
+                  "relativePath": "querySelectObjectListByManyToManyRelation"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "selectQueryCombinerQuery"
+                  "relativePath": "querySelectQueryCombiner"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "selectObjectByRelationQuery"
+                  "relativePath": "querySelectObjectByRelation"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "selectObjectByDirectReferenceQuery"
+                  "relativePath": "querySelectObjectByDirectReference"
                 }
               },
               {

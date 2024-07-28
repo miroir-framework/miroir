@@ -19,8 +19,8 @@ import {
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
-  MiroirSelectorQueryParams,
-  QuerySelector,
+  DomainModelExtractor,
+  ExtractorSelector,
   QuerySelectorParams,
   RecordOfJzodElement,
   Uuid,
@@ -52,10 +52,10 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 export type EntityInstanceUuidIndexSelectorParams = localCacheEntityInstancesExtractor;
 
 // ################################################################################################
-export function useDeploymentEntityStateQuerySelector<QueryType extends MiroirSelectorQueryParams, ResultType extends DomainElement>(
-  deploymentEntityStateQuerySelector:QuerySelector<QueryType, DeploymentEntityState, ResultType>,
+export function useDeploymentEntityStateQuerySelector<QueryType extends DomainModelExtractor, ResultType extends DomainElement>(
+  deploymentEntityStateQuerySelector:ExtractorSelector<QueryType, DeploymentEntityState, ResultType>,
   selectorParams:QuerySelectorParams<QueryType, DeploymentEntityState>,
-  customQueryInterpreter?: { [k: string]: (query:MiroirSelectorQueryParams) => ResultType }
+  customQueryInterpreter?: { [k: string]: (query:DomainModelExtractor) => ResultType }
 ): ResultType {
   const innerSelector = useMemo(
     () => {
@@ -68,11 +68,11 @@ export function useDeploymentEntityStateQuerySelector<QueryType extends MiroirSe
 }
 
 // ################################################################################################
-export function useDeploymentEntityStateQuerySelectorForCleanedResult<QueryType extends MiroirSelectorQueryParams>(
-  // deploymentEntityStateQuerySelector:QuerySelector<QueryType, DeploymentEntityState, DomainElement>,
-  deploymentEntityStateQuerySelector:QuerySelector<QueryType, DeploymentEntityState, DomainElement>,
+export function useDeploymentEntityStateQuerySelectorForCleanedResult<QueryType extends DomainModelExtractor>(
+  // deploymentEntityStateQuerySelector:ExtractorSelector<QueryType, DeploymentEntityState, DomainElement>,
+  deploymentEntityStateQuerySelector:ExtractorSelector<QueryType, DeploymentEntityState, DomainElement>,
   selectorParams:QuerySelectorParams<QueryType, DeploymentEntityState>,
-  customQueryInterpreter?: { [k: string]: (query:MiroirSelectorQueryParams) => DomainElement }
+  customQueryInterpreter?: { [k: string]: (query:DomainModelExtractor) => DomainElement }
 ): any {
   const innerSelector = useMemo(
     () => {
@@ -86,10 +86,10 @@ export function useDeploymentEntityStateQuerySelectorForCleanedResult<QueryType 
 
 
 // ################################################################################################
-export function useDomainStateQuerySelector<QueryType extends MiroirSelectorQueryParams, ResultType >(
-  domainStateSelector:QuerySelector<QueryType, DomainState, ResultType>,
+export function useDomainStateQuerySelector<QueryType extends DomainModelExtractor, ResultType >(
+  domainStateSelector:ExtractorSelector<QueryType, DomainState, ResultType>,
   selectorParams:QuerySelectorParams<QueryType, DomainState>,
-  customQueryInterpreter?: { [k: string]: (query:MiroirSelectorQueryParams) => ResultType }
+  customQueryInterpreter?: { [k: string]: (query:DomainModelExtractor) => ResultType }
 ): ResultType {
   const innerSelector = useMemo(
     () => {
@@ -102,10 +102,10 @@ export function useDomainStateQuerySelector<QueryType extends MiroirSelectorQuer
 }
 
 // ################################################################################################
-export function useDomainStateQuerySelectorForCleanedResult<QueryType extends MiroirSelectorQueryParams, ResultType >(
-  domainStateSelector:QuerySelector<QueryType, DomainState, DomainElement>,
+export function useDomainStateQuerySelectorForCleanedResult<QueryType extends DomainModelExtractor, ResultType >(
+  domainStateSelector:ExtractorSelector<QueryType, DomainState, DomainElement>,
   selectorParams:QuerySelectorParams<QueryType, DomainState>,
-  customQueryInterpreter?: { [k: string]: (query:MiroirSelectorQueryParams) => ResultType }
+  customQueryInterpreter?: { [k: string]: (query:DomainModelExtractor) => ResultType }
 ): ResultType {
   const innerSelector = useMemo(
     () => {

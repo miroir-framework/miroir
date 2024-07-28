@@ -9,7 +9,7 @@ import {
   EntityDefinition,
   LoggerInterface,
   MiroirLoggerFactory,
-  QuerySelectorMap,
+  ExtractorSelectorMap,
   RecordOfJzodObject,
   ReportSection,
   RootReportSection,
@@ -40,7 +40,7 @@ export interface ReportSectionEntityInstanceProps {
   paramsAsdomainElements: DomainElementObject,
   reportSection: ReportSection,
   rootReportSection: RootReportSection,
-  selectorMap: QuerySelectorMap<DeploymentEntityState>
+  selectorMap: ExtractorSelectorMap<DeploymentEntityState>
 }
 
 // ###############################################################################################################

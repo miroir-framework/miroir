@@ -225,8 +225,8 @@ export const HomePage = (props: RootComponentProps) => {
   };
 
     // // const bundleProducerQuery: MiroirSelectQuery = useMemo(()=>queryVersionBundleProducerV1.definition,[])
-    // const bundleProducerQuery: DomainManyExtractors = useMemo(()=>({
-    //   queryType: "domainManyExtractors",
+    // const bundleProducerQuery: DomainModelManyExtractors = useMemo(()=>({
+    //   queryType: "domainModelManyExtractors",
     //   deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
     //   applicationSection: "data",
     //   pageParams: { elementType: "object", elementValue: {} },
@@ -236,7 +236,7 @@ export const HomePage = (props: RootComponentProps) => {
     // }),[miroirMetaModel])
   
     // const producedBundle : DomainElement = useDomainStateCleanSelector(selectByDomainManyQueriesFromDomainState, bundleProducerQuery);
-    // // const producedBundle : any = useDomainStateCleanSelector(selectByDomainManyQueriesFromDomainState, getSelectorParams<DomainManyExtractors>(bundleProducerQuery));
+    // // const producedBundle : any = useDomainStateCleanSelector(selectByDomainManyQueriesFromDomainState, getSelectorParams<DomainModelManyExtractors>(bundleProducerQuery));
   
     // log.info("producedBundle1",producedBundle)
   
