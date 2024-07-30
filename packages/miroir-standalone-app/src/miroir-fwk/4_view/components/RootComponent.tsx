@@ -20,7 +20,7 @@ import {
   DomainControllerInterface,
   DomainElementObject,
   domainEndpointVersionV1,
-  DomainModelRecordOfExtractors,
+  ExtractorForRecordOfExtractors,
   EntityDefinition,
   entityDefinitionSelfApplication,
   entityDefinitionSelfApplicationVersion,
@@ -238,7 +238,9 @@ export const RootComponent = (props: RootComponentProps) => {
                           "no miroirConfig given, it has to be given on the command line starting the server!"
                         );
                       }
-                      const configurations = miroirConfig.client.emulateServer?miroirConfig.client.deploymentStorageConfig:miroirConfig.client.serverConfig.storeSectionConfiguration;
+                      const configurations = miroirConfig.client.emulateServer
+                        ? miroirConfig.client.deploymentStorageConfig
+                        : miroirConfig.client.serverConfig.storeSectionConfiguration;
                       for (const c of Object.entries(configurations)) {
                         const openStoreAction: StoreOrBundleAction = {
                           actionType: "storeManagementAction",
@@ -288,8 +290,8 @@ export const RootComponent = (props: RootComponentProps) => {
                         deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                       });
 
-                      const adminDeploymentsQuery: DomainModelRecordOfExtractors = {
-                        queryType: "domainModelRecordOfExtractors",
+                      const adminDeploymentsQuery: ExtractorForRecordOfExtractors = {
+                        queryType: "extractorForRecordOfExtractors",
                         deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                         pageParams: emptyDomainElementObject,
                         queryParams: emptyDomainElementObject,
@@ -524,8 +526,8 @@ export const RootComponent = (props: RootComponentProps) => {
                   </button> */}
                   {/* <button
                     onClick={async () => {
-                      const query:DomainModelRecordOfExtractors = {
-                        queryType: "domainModelRecordOfExtractors",
+                      const query:ExtractorForRecordOfExtractors = {
+                        queryType: "extractorForRecordOfExtractors",
                         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                         contextResults: {
                           elementType: "object",

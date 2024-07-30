@@ -14,12 +14,12 @@ import {
   EntityInstancesUuidIndex,
   JzodElement,
   JzodSchemaQuerySelector,
-  JzodSchemaQuerySelectorParams,
+  ExtractorRunnerParamsForJzodSchema,
   LoggerInterface,
   MiroirLoggerFactory,
   DomainModelExtractor,
-  ExtractorSelector,
-  QuerySelectorParams,
+  ExtractorRunner,
+  ExtractorRunnerParams,
   RecordOfJzodElement,
   cleanupResultsFromQuery,
   getDeploymentEntityStateIndex,
@@ -41,15 +41,15 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 // ################################################################################################
 declare type JzodSchemaSelectorParamsSelector<QueryType extends DomainModelQueryJzodSchemaParams, StateType> = (
   reduxState: ReduxStateWithUndoRedo,
-  params: JzodSchemaQuerySelectorParams<QueryType, StateType>
-) => JzodSchemaQuerySelectorParams<QueryType, StateType>;
+  params: ExtractorRunnerParamsForJzodSchema<QueryType, StateType>
+) => ExtractorRunnerParamsForJzodSchema<QueryType, StateType>;
 
 
 // ################################################################################################
 declare type SelectorParamsSelector<QueryType extends DomainModelExtractor, StateType> = (
   reduxState: ReduxStateWithUndoRedo,
-  params: QuerySelectorParams<QueryType, StateType>
-) => QuerySelectorParams<QueryType, StateType>;
+  params: ExtractorRunnerParams<QueryType, StateType>
+) => ExtractorRunnerParams<QueryType, StateType>;
 
 
 // ################################################################################################
@@ -62,15 +62,18 @@ export const selectCurrentDeploymentEntityStateFromReduxState = (
 // ################################################################################################
 export const selectDeploymentEntityStateSelectorParams /*: DomainStateSelectorParamsSelector<Q> */ = <QueryType extends DomainModelExtractor>(
   reduxState: ReduxStateWithUndoRedo,
-  params: QuerySelectorParams<QueryType, DeploymentEntityState>
-): QuerySelectorParams<QueryType, DeploymentEntityState> => {
+  params: ExtractorRunnerParams<QueryType, DeploymentEntityState>
+): ExtractorRunnerParams<QueryType, DeploymentEntityState> => {
   return params;
 };
 
 // ################################################################################################
-export const selectMiroirSelectorQueryParams = (reduxState: ReduxStateWithUndoRedo, params: DomainModelExtractor):DomainModelExtractor => {
+export const selectMiroirSelectorQueryParams = (
+  reduxState: ReduxStateWithUndoRedo,
+  params: DomainModelExtractor
+): DomainModelExtractor => {
   return params;
-}
+};
 
 //#########################################################################################
 export const selectDomainStateFromReduxState: (
@@ -97,15 +100,15 @@ export const selectSelectorParams /*: SelectorParamsSelector*/ = <Q extends Doma
 // ################################################################################################
 export const selectDomainStateSelectorParams/*:SelectorParamsSelector<Q, DomainState> */ = <QueryType extends DomainModelExtractor>(
   reduxState: ReduxStateWithUndoRedo,
-  params: QuerySelectorParams<QueryType, DomainState>
-): QuerySelectorParams<QueryType, DomainState> => {
+  params: ExtractorRunnerParams<QueryType, DomainState>
+): ExtractorRunnerParams<QueryType, DomainState> => {
   return params;
 };
 
 // ################################################################################################
 export const selectDomainStateJzodSchemaSelectorParams = <QueryType extends DomainModelQueryJzodSchemaParams>(
   reduxState: ReduxStateWithUndoRedo,
-  params: JzodSchemaQuerySelectorParams<QueryType, DomainState>
+  params: ExtractorRunnerParamsForJzodSchema<QueryType, DomainState>
 ) => {
   return params;
 };
@@ -113,7 +116,7 @@ export const selectDomainStateJzodSchemaSelectorParams = <QueryType extends Doma
 // ################################################################################################
 export const selectJzodSchemaSelectorParams = <QueryType extends DomainModelQueryJzodSchemaParams, StateType>(
   reduxState: ReduxStateWithUndoRedo,
-  params: JzodSchemaQuerySelectorParams<QueryType, StateType>
+  params: ExtractorRunnerParamsForJzodSchema<QueryType, StateType>
 ) => {
   return params;
 };
@@ -127,28 +130,28 @@ export const selectJzodSchemaSelectorParams = <QueryType extends DomainModelQuer
 // DOMAIN STATE SELECTORS
 // ################################################################################################
 // ################################################################################################
-export function applyDeploymentEntityStateQuerySelector<QueryType extends DomainModelExtractor, ResultType>( // TODO: memoize?
-  deploymentEntityStateQuerySelector: ExtractorSelector<QueryType, DeploymentEntityState, ResultType>
+export function applyDeploymentEntityStateQuerySelector<ExtractorType extends DomainModelExtractor, ResultType>( // TODO: memoize?
+  deploymentEntityStateQuerySelector: ExtractorRunner<ExtractorType, DeploymentEntityState, ResultType>
 ): (
   reduxState: ReduxStateWithUndoRedo,
-  params: QuerySelectorParams<QueryType, DeploymentEntityState>
+  params: ExtractorRunnerParams<ExtractorType, DeploymentEntityState>
 ) => ResultType { 
   return createSelector(
-    [selectCurrentDeploymentEntityStateFromReduxState, selectDeploymentEntityStateSelectorParams as SelectorParamsSelector<QueryType, DeploymentEntityState>],
+    [selectCurrentDeploymentEntityStateFromReduxState, selectDeploymentEntityStateSelectorParams as SelectorParamsSelector<ExtractorType, DeploymentEntityState>],
     deploymentEntityStateQuerySelector
   )
 }
 
 // ################################################################################################
 export function applyDeploymentEntityStateQuerySelectorForCleanedResult<QueryType extends DomainModelExtractor>( // TODO: memoize?
-  deploymentEntityStateQuerySelector: ExtractorSelector<QueryType, DeploymentEntityState, DomainElement>
+  deploymentEntityStateQuerySelector: ExtractorRunner<QueryType, DeploymentEntityState, DomainElement>
 ): (
   reduxState: ReduxStateWithUndoRedo,
-  params: QuerySelectorParams<QueryType, DeploymentEntityState>
+  params: ExtractorRunnerParams<QueryType, DeploymentEntityState>
 ) => any { 
   const cleanupFunction = (
     deploymentEntityState: DeploymentEntityState,
-    params: QuerySelectorParams<QueryType, DeploymentEntityState>
+    params: ExtractorRunnerParams<QueryType, DeploymentEntityState>
   ): DomainElement => {
     const partial: DomainElement = deploymentEntityStateQuerySelector(deploymentEntityState, params);
     const result: any = cleanupResultsFromQuery(partial);
@@ -170,10 +173,10 @@ export function applyDeploymentEntityStateQuerySelectorForCleanedResult<QueryTyp
 
 // ################################################################################################
 export function applyDomainStateQuerySelector<QueryType extends DomainModelExtractor, ResultType>( // TODO: memoize?
-  domainStateSelector: ExtractorSelector<QueryType, DomainState, ResultType>
+  domainStateSelector: ExtractorRunner<QueryType, DomainState, ResultType>
 ): (
   reduxState: ReduxStateWithUndoRedo,
-  params: QuerySelectorParams<QueryType, DomainState>
+  params: ExtractorRunnerParams<QueryType, DomainState>
 ) => ResultType { 
   return createSelector(
     // [selectDomainStateFromReduxState, selectDomainStateSelectorParams],
@@ -187,7 +190,7 @@ export function applyDomainStateJzodSchemaSelector<QueryType extends DomainModel
   domainStateSelector: JzodSchemaQuerySelector<QueryType, DomainState>
 ): (
   reduxState: ReduxStateWithUndoRedo,
-  params: JzodSchemaQuerySelectorParams<QueryType, DomainState>
+  params: ExtractorRunnerParamsForJzodSchema<QueryType, DomainState>
 ) => RecordOfJzodElement | JzodElement | undefined { 
   return createSelector(
     [selectDomainStateFromReduxState, selectDomainStateJzodSchemaSelectorParams as JzodSchemaSelectorParamsSelector<QueryType, DomainState>],
@@ -202,7 +205,7 @@ export function applyDeploymentEntityStateJzodSchemaSelector<QueryType extends D
   domainStateSelector: JzodSchemaQuerySelector<QueryType, DeploymentEntityState>
 ): (
   reduxState: ReduxStateWithUndoRedo,
-  params: JzodSchemaQuerySelectorParams<QueryType, DeploymentEntityState>
+  params: ExtractorRunnerParamsForJzodSchema<QueryType, DeploymentEntityState>
 ) => RecordOfJzodElement | JzodElement | undefined { 
   return createSelector(
     [
@@ -216,12 +219,12 @@ export function applyDeploymentEntityStateJzodSchemaSelector<QueryType extends D
 
 // ################################################################################################
 export function applyDomainStateQuerySelectorForCleanedResult<QueryType extends DomainModelExtractor>( // TODO: memoize?
-  domainStateSelector: ExtractorSelector<QueryType, DomainState, DomainElement>
+  domainStateSelector: ExtractorRunner<QueryType, DomainState, DomainElement>
 ): (
   reduxState: ReduxStateWithUndoRedo,
-  params: QuerySelectorParams<QueryType, DomainState>
+  params: ExtractorRunnerParams<QueryType, DomainState>
 ) => any { 
-  const cleanupFunction = (domainState: DomainState, params: QuerySelectorParams<QueryType, DomainState>):DomainElement => {
+  const cleanupFunction = (domainState: DomainState, params: ExtractorRunnerParams<QueryType, DomainState>):DomainElement => {
     const partial:DomainElement = domainStateSelector(domainState, params);
     const result:any = cleanupResultsFromQuery(partial)
     return result;

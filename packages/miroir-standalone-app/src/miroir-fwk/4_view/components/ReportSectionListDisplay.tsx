@@ -13,7 +13,7 @@ import {
   DeploymentEntityState,
   DomainControllerInterface,
   DomainElement,
-  DomainModelRecordOfExtractors,
+  ExtractorForRecordOfExtractors,
   Entity,
   EntityDefinition,
   EntityInstancesUuidIndex,
@@ -23,9 +23,9 @@ import {
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
-  ExtractorSelector,
-  ExtractorSelectorMap,
-  QuerySelectorParams,
+  ExtractorRunner,
+  ExtractorRunnerMap,
+  ExtractorRunnerParams,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
@@ -211,7 +211,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
 
-  const deploymentEntityStateSelectorMap: ExtractorSelectorMap<DeploymentEntityState> = useMemo(
+  const deploymentEntityStateSelectorMap: ExtractorRunnerMap<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
   )
@@ -316,14 +316,14 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     ]
   );
 
-  const foreignKeyObjectsFetchQueryParams: QuerySelectorParams<
-    DomainModelRecordOfExtractors,
+  const foreignKeyObjectsFetchQueryParams: ExtractorRunnerParams<
+    ExtractorForRecordOfExtractors,
     DeploymentEntityState
   > = useMemo(
     () =>
-      getDeploymentEntityStateSelectorParams<DomainModelRecordOfExtractors>(
+      getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>(
         {
-          queryType: "domainModelRecordOfExtractors",
+          queryType: "extractorForRecordOfExtractors",
           deploymentUuid: props.deploymentUuid,
           // applicationSection: props.applicationSection,
           pageParams: props.paramsAsdomainElements,
@@ -368,7 +368,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
 
   // const foreignKeyObjects:  = useDeploymentEntityStateQuerySelectorForCleanedResult(
   const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = useDeploymentEntityStateQuerySelectorForCleanedResult(
-    deploymentEntityStateSelectorMap.selectByDomainManyExtractors as ExtractorSelector<DomainModelRecordOfExtractors, DeploymentEntityState, DomainElement>,
+    deploymentEntityStateSelectorMap.extractWithManyExtractors as ExtractorRunner<ExtractorForRecordOfExtractors, DeploymentEntityState, DomainElement>,
     foreignKeyObjectsFetchQueryParams
   );
 

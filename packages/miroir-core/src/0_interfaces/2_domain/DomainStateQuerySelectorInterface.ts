@@ -13,7 +13,7 @@ export type RecordOfJzodObject = Record<string, JzodObject | undefined>;
 // export type DomainStateQuerySelectorMap<Q extends DomainModelExtractor> = {[k:string]: DomainStateQuerySelector<Q, any>};
 
 // export interface DomainStateQuerySelectorParams<Q extends DomainModelExtractor> {
-//   selectorMap?: DomainStateQuerySelectorMap<Q>
+//   extractorRunnerMap?: DomainStateQuerySelectorMap<Q>
 //   query: Q
 // }
 
@@ -32,7 +32,7 @@ export type RecordOfJzodObject = Record<string, JzodObject | undefined>;
 // export type DomainStateJzodSchemaSelectorMap = {[k:string]: DomainStateJzodSchemaSelector<DomainModelQueryJzodSchemaParams>};
 
 // export interface DomainStateJzodSchemaSelectorParams<Q extends DomainModelQueryJzodSchemaParams> {
-//   selectorMap: DomainStateJzodSchemaSelectorMap
+//   extractorRunnerMap: DomainStateJzodSchemaSelectorMap
 //   query: Q
 // }
 

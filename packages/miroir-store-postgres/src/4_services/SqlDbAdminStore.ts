@@ -1,7 +1,7 @@
 import { ACTION_OK, ActionError, ActionReturnType, ActionVoidReturnType, AdminStoreInterface, LoggerInterface, MiroirLoggerFactory, SqlDbStoreSectionConfiguration, StoreSectionConfiguration, getLoggerName } from "miroir-core";
 import { packageName } from "../constants.js";
-import { SqlDbStore } from "./SqlDbStore";
-import { cleanLevel } from "./constants";
+import { SqlDbStore } from "./SqlDbStore.js";
+import { cleanLevel } from "./constants.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "SqlDbAdminStore");
 let log: LoggerInterface = console as any as LoggerInterface;

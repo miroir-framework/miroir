@@ -8,6 +8,7 @@ import {
   EntityInstance,
   LoggerInterface,
   MiroirLoggerFactory,
+  QueryAction,
   getLoggerName,
 } from "miroir-core";
 import { IndexedDbStoreSection, MixableIndexedDbStoreSection } from "./IndexedDbStoreSection.js";
@@ -69,6 +70,17 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
         return { status: "error", error: { errorType: "FailedToGetInstances", errorMessage: error as string}}
       }
     }
+
+    // // #############################################################################################
+    // async handleQuery(query: QueryAction): Promise<ActionReturnType> {
+    //   // TODO: fix applicationSection!!!
+    //   log.info(this.logHeader,'handleQuery', 'query',query);
+      
+    //   const result: ActionReturnType = await this.localUuidIndexedDb.handleQuery(query);
+
+    //   log.info(this.logHeader,'handleQuery','query',query, "result", result);
+    //   return result;
+    // }
 
     // #############################################################################################
     async upsertInstance(parentUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {

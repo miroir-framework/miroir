@@ -60,7 +60,7 @@ export class PersistenceReduxSaga implements PersistenceInterface {
 
   constructor(
     private remoteStoreNetworkClient: RestPersistenceClientAndRestClientInterface | undefined,
-    private persistenceStoreControllerManager?: PersistenceStoreControllerManagerInterface | undefined,
+    private persistenceStoreControllerManager?: PersistenceStoreControllerManagerInterface | undefined
   ) {}
 
   //#########################################################################################
@@ -73,7 +73,7 @@ export class PersistenceReduxSaga implements PersistenceInterface {
   }
 
   // ###############################################################################
-  private *rootSaga():Generator<AllEffect<any>, void, unknown> {
+  private *rootSaga(): Generator<AllEffect<any>, void, unknown> {
     // log.info("LocalCache rootSaga running", this.PersistenceReduxSaga);
     yield allEffect([this.persistenceRootSaga()]);
   }
@@ -83,16 +83,17 @@ export class PersistenceReduxSaga implements PersistenceInterface {
     this.localCache = localCache;
     localCache.sagaMiddleware.run(this.rootSaga.bind(this));
   }
-  
+
   // ###############################################################################
   async handlePersistenceAction(
     // deploymentUuid: string,
-    action: PersistenceAction,
+    action: PersistenceAction
   ): Promise<ActionReturnType> {
     if (this.localCache) {
       const result: ActionReturnType = await this.localCache.innerReduxStore.dispatch(
         // persistent store access is accomplished through asynchronous sagas
-        this.persistenceActionReduxSaga.handlePersistenceAction.creator( { action } ));
+        this.persistenceActionReduxSaga.handlePersistenceAction.creator({ action })
+      );
       // log.info("LocalCache handleRemoteStoreModelAction", action, "returned", result)
       return Promise.resolve(result);
     } else {
@@ -102,9 +103,14 @@ export class PersistenceReduxSaga implements PersistenceInterface {
 
   //#########################################################################################
   public persistenceActionReduxSaga: {
-    "handlePersistenceAction": {
+    handlePersistenceAction: {
       name: "handlePersistenceAction";
-      creator: SagaPromiseActionCreator<any, any, "handlePersistenceAction", ActionCreatorWithPayload<any, "handlePersistenceAction">>;
+      creator: SagaPromiseActionCreator<
+        any,
+        any,
+        "handlePersistenceAction",
+        ActionCreatorWithPayload<any, "handlePersistenceAction">
+      >;
       generator: (a: any) => PersistenceSagaGenReturnType;
     };
   } = {
@@ -120,117 +126,145 @@ export class PersistenceReduxSaga implements PersistenceInterface {
       ): Generator<ActionReturnType | CallEffect<ActionReturnType> | CallEffect<RestClientCallReturnType>> {
         const { action } = p.payload;
         try {
-          if (this.persistenceStoreControllerManager) { // direct access to store controller, action is executed locally
-          
+          if (this.persistenceStoreControllerManager) {
+            // direct access to store controller, action is executed locally
+
             switch (action.actionType) {
-              case 'storeManagementAction':
-              case 'bundleAction': {
-                const result = yield* call(() =>storeActionOrBundleActionStoreRunner(action.actionName,
-                  action,
-                  this.persistenceStoreControllerManager as PersistenceStoreControllerManagerInterface,
-                ));
+              case "storeManagementAction":
+              case "bundleAction": {
+                const result = yield* call(() =>
+                  storeActionOrBundleActionStoreRunner(
+                    action.actionName,
+                    action,
+                    this.persistenceStoreControllerManager as PersistenceStoreControllerManagerInterface
+                  )
+                );
                 break;
               }
-              case 'instanceAction':
-              case 'modelAction': {
+              case "instanceAction":
+              case "modelAction": {
                 const localPersistenceStoreController =
-                  this.persistenceStoreControllerManager.getPersistenceStoreController(
-                    action.deploymentUuid
-                  );
+                  this.persistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
 
                 if (!localPersistenceStoreController) {
-                  throw new Error("restMethodGetHandler could not find controller for deployment: " + action.deploymentUuid);
-                } 
-                const localStoreResult = yield* call(() =>localPersistenceStoreController.handleAction(action));
+                  throw new Error(
+                    "restMethodGetHandler could not find controller for deployment: " + action.deploymentUuid
+                  );
+                }
+                const localStoreResult = yield* call(() => localPersistenceStoreController.handleAction(action));
                 break;
               }
-              case 'RestPersistenceAction': {
-                const localPersistenceStoreController = this.persistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
+              case "RestPersistenceAction": {
+                const localPersistenceStoreController =
+                  this.persistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
 
                 if (!localPersistenceStoreController) {
-                  throw new Error("restMethodGetHandler could not find controller for deployment: " + action.deploymentUuid);
-                } 
-                const actionMap: {[k: string]: "createInstance" | "deleteInstance" | "updateInstance" | "getInstances"} = {
-                  "create": "createInstance",
-                  "delete": "deleteInstance",
-                  "update": "updateInstance",
-                  "read": "getInstances"
+                  throw new Error(
+                    "restMethodGetHandler could not find controller for deployment: " + action.deploymentUuid
+                  );
                 }
+                const actionMap: {
+                  [k: string]: "createInstance" | "deleteInstance" | "updateInstance" | "getInstances";
+                } = {
+                  create: "createInstance",
+                  delete: "deleteInstance",
+                  update: "updateInstance",
+                  read: "getInstances",
+                };
                 const localStoreAction: PersistenceStoreControllerAction = {
                   actionType: "instanceAction",
                   actionName: actionMap[action.actionName],
                   applicationSection: action.section,
-                  parentName: action.parentName??"",
-                  parentUuid: action.parentUuid??"",
+                  parentName: action.parentName ?? "",
+                  parentUuid: action.parentUuid ?? "",
                   deploymentUuid: action.deploymentUuid,
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                  objects: [{ // type issue: read action does not have "objects" attribute
-                    parentName: action.parentName??"",
-                    parentUuid: action.parentUuid??"",
-                    applicationSection:action.section,
-                    instances: (Array.isArray(action.objects)?action.objects:[]) as EntityInstance[]
-                  }]
-                } as PersistenceStoreControllerAction
+                  objects: [
+                    {
+                      // type issue: read action does not have "objects" attribute
+                      parentName: action.parentName ?? "",
+                      parentUuid: action.parentUuid ?? "",
+                      applicationSection: action.section,
+                      instances: (Array.isArray(action.objects) ? action.objects : []) as EntityInstance[],
+                    },
+                  ],
+                } as PersistenceStoreControllerAction;
                 log.info(
                   "PersistenceActionReduxSaga handlePersistenceAction handle RestPersistenceAction",
                   JSON.stringify(action, undefined, 2),
                   "localStoreAction=",
                   JSON.stringify(localStoreAction, undefined, 2)
                 );
-                const localStoreResult: ActionReturnType = yield* call(() =>localPersistenceStoreController.handleAction(localStoreAction));
-                log.info("PersistenceActionReduxSaga handlePersistenceAction handle RestPersistenceAction result", JSON.stringify(localStoreResult, undefined, 2))
+                const localStoreResult: ActionReturnType = yield* call(() =>
+                  localPersistenceStoreController.handleAction(localStoreAction)
+                );
+                log.info(
+                  "PersistenceActionReduxSaga handlePersistenceAction handle RestPersistenceAction result",
+                  JSON.stringify(localStoreResult, undefined, 2)
+                );
                 return yield localStoreResult;
                 break;
               }
-              case 'queryAction':
+              case "queryAction": {
+                throw new Error(
+                  "PersistenceActionReduxSaga handlePersistenceAction could not handle action " + JSON.stringify(action)
+                );
+                break;
+              }
               default: {
-                throw new Error("PersistenceActionReduxSaga handlePersistenceAction could not handle action " + JSON.stringify(action));
+                throw new Error(
+                  "PersistenceActionReduxSaga handlePersistenceAction could not handle action " + JSON.stringify(action)
+                );
                 break;
               }
             }
             return yield ACTION_OK;
           }
 
-          if (this.remoteStoreNetworkClient != undefined) { // indirect access to a remote storeController through the network
+          if (this.remoteStoreNetworkClient != undefined) {
+            // indirect access to a remote storeController through the network
             // log.info("handlePersistenceAction calling remoteStoreNetworkClient on action",JSON.stringify(action));
-            const clientResult: RestClientCallReturnType
-             = yield* call(() =>
-              (this.remoteStoreNetworkClient as RestPersistenceClientAndRestClientInterface).handleNetworkPersistenceAction(action)
+            const clientResult: RestClientCallReturnType = yield* call(() =>
+              (
+                this.remoteStoreNetworkClient as RestPersistenceClientAndRestClientInterface
+              ).handleNetworkPersistenceAction(action)
             );
             log.debug("handlePersistenceAction from remoteStoreNetworkClient received clientResult", clientResult);
-  
+
             switch (action.actionType) {
-              case 'RestPersistenceAction': {
-                const result:ActionReturnType = {
+              case "RestPersistenceAction": {
+                const result: ActionReturnType = {
                   status: "ok",
                   returnedDomainElement: {
                     elementType: "entityInstanceCollection",
                     elementValue: {
-                      parentUuid: action.parentUuid??"", // TODO: action.parentUuid should not be optional!
+                      parentUuid: action.parentUuid ?? "", // TODO: action.parentUuid should not be optional!
                       applicationSection: action.section,
-                      instances: clientResult.data.instances
-                    }
-                  }
+                      instances: clientResult.data.instances,
+                    },
+                  },
                 };
                 log.debug("handlePersistenceAction remoteStoreNetworkClient received result", result.status);
                 return yield result;
                 break;
               }
-              case 'queryAction': {
+              case "queryAction": {
                 // log.info("handlePersistenceAction calling remoteStoreNetworkClient on action",JSON.stringify(action));
-                const clientResult: RestClientCallReturnType = yield* call(() =>
-                  (this.remoteStoreNetworkClient as RestPersistenceClientAndRestClientInterface).handleNetworkPersistenceAction(action)
-                );
+                // const clientResult: RestClientCallReturnType = yield* call(() =>
+                //   (
+                //     this.remoteStoreNetworkClient as RestPersistenceClientAndRestClientInterface
+                //   ).handleNetworkPersistenceAction(action)
+                // );
                 log.info("handlePersistenceAction received from remoteStoreNetworkClient clientResult", clientResult);
                 log.debug("handlePersistenceAction remoteStoreNetworkClient received result", clientResult.status);
                 return yield clientResult.data;
-    
+
                 break;
               }
-              case 'bundleAction':
-              case 'instanceAction':
-              case 'modelAction':
-              case 'storeManagementAction':
+              case "bundleAction":
+              case "instanceAction":
+              case "modelAction":
+              case "storeManagementAction":
               default: {
                 log.debug("handlePersistenceAction received result", clientResult.status);
                 return yield ACTION_OK;
@@ -248,17 +282,16 @@ export class PersistenceReduxSaga implements PersistenceInterface {
           const result: ActionReturnType = {
             status: "error",
             error: {
-              errorType: "FailedToDeployModule",  // TODO: correct errorType!
+              errorType: "FailedToDeployModule", // TODO: correct errorType!
               errorMessage: e["message"],
               error: { errorMessage: e["message"], stack: [e["message"]] },
-            }
+            },
           };
           return result;
         }
       }.bind(this),
     },
   };
-
 }// end class PersistenceReduxSaga
 
 export default PersistenceReduxSaga;

@@ -2,13 +2,10 @@
   "compilerOptions": {  
     "types": ["node", "jest"],
     "removeComments": true,
-    "module": "NodeNext",
-    "target": "ESNext",
     "jsx": "react-jsx",
     "esModuleInterop": true,
     "allowJs": true,
     "allowSyntheticDefaultImports":true,
-    "resolveJsonModule": true,
     "lib": ["es6", "dom"],
     "strict": true,
     "noImplicitAny": true,

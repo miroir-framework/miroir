@@ -171,10 +171,7 @@ export class DomainController implements DomainControllerInterface {
           break;
         }
         default: {
-          log.warn(
-            "DomainController handleDomainUndoRedoAction cannot handle action name for",
-            undoRedoAction
-          );
+          log.warn("DomainController handleDomainUndoRedoAction cannot handle action name for", undoRedoAction);
           break;
         }
       }
@@ -194,10 +191,7 @@ export class DomainController implements DomainControllerInterface {
   }
 
   // ##############################################################################################
-  async handleInstanceAction(
-    deploymentUuid: Uuid,
-    instanceAction: InstanceAction
-  ): Promise<ActionVoidReturnType> {
+  async handleInstanceAction(deploymentUuid: Uuid, instanceAction: InstanceAction): Promise<ActionVoidReturnType> {
     log.info(
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainNonTransactionalInstanceAction deployment",
       deploymentUuid,
@@ -209,30 +203,30 @@ export class DomainController implements DomainControllerInterface {
     // non-transactional modification: perform the changes immediately on the remote datastore (thereby commited)
 
     // The same action is performed on the local cache and on the remote store for Data Instances.
-      await this.callUtil.callPersistenceAction(
-        {}, // context
-        {}, // context update
-        // deploymentUuid,
-        instanceAction
-      );
-      log.info(
-        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
-        deploymentUuid,
-        "handleDomainNonTransactionalInstanceAction done calling handleRemoteStoreRestCRUDAction",
-        instanceAction
-      );
-      await this.callUtil.callLocalCacheAction(
-        {}, // context
-        {}, // context update
-        instanceAction
-      );
+    await this.callUtil.callPersistenceAction(
+      {}, // context
+      {}, // context update
+      // deploymentUuid,
+      instanceAction
+    );
+    log.info(
+      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
+      deploymentUuid,
+      "handleDomainNonTransactionalInstanceAction done calling handleRemoteStoreRestCRUDAction",
+      instanceAction
+    );
+    await this.callUtil.callLocalCacheAction(
+      {}, // context
+      {}, // context update
+      instanceAction
+    );
 
-      log.info(
-        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
-        deploymentUuid,
-        "handleDomainNonTransactionalInstanceAction end",
-        instanceAction
-      );
+    log.info(
+      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
+      deploymentUuid,
+      "handleDomainNonTransactionalInstanceAction end",
+      instanceAction
+    );
     return Promise.resolve(ACTION_OK);
   }
 
@@ -253,11 +247,11 @@ export class DomainController implements DomainControllerInterface {
     );
     try {
       switch (modelAction.actionName) {
-        case 'remoteLocalCacheRollback': {
+        case "remoteLocalCacheRollback": {
           if (this.hasDirectAccessToPersistenceStore) {
-            log.info("handleModelAction reloading current configuration from local PersistenceStore!")
+            log.info("handleModelAction reloading current configuration from local PersistenceStore!");
             await this.loadConfigurationFromPersistenceStore(deploymentUuid);
-            log.info("handleModelAction reloading current configuration from local PersistenceStore DONE!")
+            log.info("handleModelAction reloading current configuration from local PersistenceStore DONE!");
           } else {
             // send action to (remote) persistence action interface handler.
             await this.callUtil.callPersistenceAction(
@@ -272,24 +266,24 @@ export class DomainController implements DomainControllerInterface {
           await this.loadConfigurationFromPersistenceStore(deploymentUuid);
           break;
         }
-        case 'alterEntityAttribute':
-        case 'createEntity':
-        case 'renameEntity':
-        case 'dropEntity': {
+        case "alterEntityAttribute":
+        case "createEntity":
+        case "renameEntity":
+        case "dropEntity": {
           if (modelAction.transactional == false) {
             // the modelAction is not transactional, we update the persistentStore directly
-            log.warn("handleModelAction running for non-transactional action!")
+            log.warn("handleModelAction running for non-transactional action!");
             await this.callUtil.callPersistenceAction(
               {}, // context
               {}, // context update
               modelAction
             );
-            log.info("handleModelAction running for non-transactional action DONE!")
+            log.info("handleModelAction running for non-transactional action DONE!");
           }
           await this.callUtil.callLocalCacheAction(
             {}, // context
             {}, // context update
-              modelAction,
+            modelAction
           );
           break;
         }
@@ -304,7 +298,10 @@ export class DomainController implements DomainControllerInterface {
           break;
         }
         case "commit": {
-          log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit", this.localCache.currentTransaction());
+          log.debug(
+            "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit",
+            this.localCache.currentTransaction()
+          );
 
           if (!currentModel) {
             throw new Error(
@@ -328,7 +325,10 @@ export class DomainController implements DomainControllerInterface {
               // modelStructureMigration: this.localCache.currentTransaction(),
             };
 
-            log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit create new version", newModelVersion);
+            log.debug(
+              "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit create new version",
+              newModelVersion
+            );
             const newModelVersionAction: RestPersistenceAction = {
               actionType: "RestPersistenceAction",
               actionName: "create",
@@ -345,29 +345,35 @@ export class DomainController implements DomainControllerInterface {
               // deploymentUuid,
               newModelVersionAction
             );
-            log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit new version created", newModelVersion);
+            log.debug(
+              "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit new version created",
+              newModelVersion
+            );
 
             for (const replayAction of this.localCache.currentTransaction()) {
               // const localReplayAction: LocalCacheTransactionalInstanceActionWithDeployment | ModelAction = replayAction;
-              log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit replayAction", replayAction);
+              log.info(
+                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit replayAction",
+                replayAction
+              );
               switch (replayAction.actionType) {
                 case "transactionalInstanceAction": {
                   // const localReplayAction: LocalCacheTransactionalInstanceActionWithDeployment = replayAction;
-                      //  log.warn("handleModelAction commit ignored transactional action" + replayAction)
-                      await this.callUtil.callPersistenceAction(
-                        {}, // context
-                        {}, // context update
-                        {
-                          actionType: "RestPersistenceAction",
-                          actionName: replayAction.instanceAction.actionName.toString() as CRUDActionName,
-                          endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
-                          deploymentUuid,
-                          section: replayAction.instanceAction.applicationSection,
-                          parentName: replayAction.instanceAction.objects[0].parentName,
-                          parentUuid: replayAction.instanceAction.objects[0].parentUuid,
-                          objects: replayAction.instanceAction.objects[0].instances,
-                        }
-                      );
+                  //  log.warn("handleModelAction commit ignored transactional action" + replayAction)
+                  await this.callUtil.callPersistenceAction(
+                    {}, // context
+                    {}, // context update
+                    {
+                      actionType: "RestPersistenceAction",
+                      actionName: replayAction.instanceAction.actionName.toString() as CRUDActionName,
+                      endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
+                      deploymentUuid,
+                      section: replayAction.instanceAction.applicationSection,
+                      parentName: replayAction.instanceAction.objects[0].parentName,
+                      parentUuid: replayAction.instanceAction.objects[0].parentUuid,
+                      objects: replayAction.instanceAction.objects[0].instances,
+                    }
+                  );
                   break;
                 }
                 case "modelAction": {
@@ -376,7 +382,7 @@ export class DomainController implements DomainControllerInterface {
                     {}, // context update
                     {
                       ...replayAction,
-                      "transactional": false
+                      transactional: false,
                     }
                   );
                   break;
@@ -402,7 +408,7 @@ export class DomainController implements DomainControllerInterface {
                 {
                   actionType: "modelAction",
                   actionName: "commit",
-                  deploymentUuid:modelAction.deploymentUuid,
+                  deploymentUuid: modelAction.deploymentUuid,
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 }
               )
@@ -418,7 +424,7 @@ export class DomainController implements DomainControllerInterface {
                     actionType: "instanceAction",
                     actionName: "createInstance",
                     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                    deploymentUuid:modelAction.deploymentUuid,
+                    deploymentUuid: modelAction.deploymentUuid,
                     applicationSection: "model",
                     objects: [
                       {
@@ -453,8 +459,7 @@ export class DomainController implements DomainControllerInterface {
                   newStoreBasedConfiguration
                 );
               });
-              log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit done!");
-
+            log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit done!");
           }
           break;
         }
@@ -522,7 +527,7 @@ export class DomainController implements DomainControllerInterface {
           ) {
             throw new Error(
               "DomainController loadConfigurationFromRemoteDataStore could not fetch entity instance list " +
-                JSON.stringify(context.dataEntitiesFromModelSection,undefined,2)
+                JSON.stringify(context.dataEntitiesFromModelSection, undefined, 2)
             );
           }
           // TODO: information has to come from localCacheSlice, not from hard-coded source!
@@ -610,7 +615,6 @@ export class DomainController implements DomainControllerInterface {
             }
           );
 
-
           log.info(
             "DomainController loadConfigurationFromRemoteDataStore done rollback, currentTransaction=",
             this.currentTransaction()
@@ -625,15 +629,14 @@ export class DomainController implements DomainControllerInterface {
           );
           return context;
         });
-
-      } catch (error) {
-        log.warn("DomainController loadConfigurationFromRemoteDataStore caught error:", error);
-      }
-      return Promise.resolve(ACTION_OK);
+    } catch (error) {
+      log.warn("DomainController loadConfigurationFromRemoteDataStore caught error:", error);
+    }
+    return Promise.resolve(ACTION_OK);
   }
 
   // ##############################################################################################
-  
+
   async handleQuery(queryAction: QueryAction): Promise<ActionReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     log.info(
@@ -648,46 +651,51 @@ export class DomainController implements DomainControllerInterface {
       JSON.stringify((queryAction as any)["objects"], null, 2)
     );
     if (this.hasDirectAccessToPersistenceStore) {
-      // we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
-      // const result = await this.callUtil.callLocalCacheAction(
-      //   {}, // context
-      //   {}, // context update
-      //   domainAction
-      // );
-      // log.info("handleAction queryAction callLocalCacheAction Result=", result);
-      // return result;
+      /**
+       * we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
+       */
       const queries = Object.entries(queryAction.query.fetchQuery.select);
       if (queries.length != 1) {
-        throw new Error("DomainController handleQuery queryAction no query found in fetchQuery.select! " + JSON.stringify(queryAction));
+        throw new Error(
+          "DomainController handleQuery queryAction no query found in fetchQuery.select! " + JSON.stringify(queryAction)
+        );
       }
       const query = queries[0][1];
       const queryName = queries[0][0];
 
-      
-      log.info("DomainController handleQuery queryAction executing query", JSON.stringify(query))
+      log.info("DomainController handleQuery queryAction executing query", JSON.stringify(query));
       switch (query.queryType) {
-        case 'selectObjectListByEntity': {
-          const parentUuid = resolveContextReference(query.parentUuid,queryAction.query.queryParams, queryAction.query.contextResults)
+        case "selectObjectListByEntity": {
+          const parentUuid = resolveContextReference(
+            query.parentUuid,
+            queryAction.query.queryParams,
+            queryAction.query.contextResults
+          );
 
-          log.info("DomainController handleQuery queryAction resolved parentUuid", JSON.stringify(parentUuid))
+          log.info("DomainController handleQuery queryAction resolved parentUuid", JSON.stringify(parentUuid));
 
           if (parentUuid.elementType != "instanceUuid") {
-            throw new Error("DomainController handleQuery queryAction no parentUuid found for query " + JSON.stringify(query) + " parentUuid " + JSON.stringify(parentUuid));
+            throw new Error(
+              "DomainController handleQuery queryAction no parentUuid found for query " +
+                JSON.stringify(query) +
+                " parentUuid " +
+                JSON.stringify(parentUuid)
+            );
           }
 
           if (!query.applicationSection) {
-            throw new Error("DomainController handleQuery queryAction no applicationSection found for query " + JSON.stringify(query));
+            throw new Error(
+              "DomainController handleQuery queryAction no applicationSection found for query " + JSON.stringify(query)
+            );
           }
 
-          const result = await this.callUtil
-          .callPersistenceAction(
+          const result = await this.callUtil.callPersistenceAction(
             {}, // context
-            {
+            { // context update
               addResultToContextAsName: "dataEntitiesFromModelSection",
               expectedDomainElementType: "entityInstanceCollection",
-            }, // context update
-            // deploymentUuid,
-            {
+            },
+            { // persistence action
               actionType: "RestPersistenceAction",
               actionName: "read",
               endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
@@ -696,37 +704,43 @@ export class DomainController implements DomainControllerInterface {
               parentUuid: parentUuid.elementValue,
               section: query.applicationSection,
             }
-          )
-  
-          log.info("DomainController handleQuery queryName=", queryName)
-          log.info("DomainController handleQuery result=", JSON.stringify(result))
+          );
+
+          log.info("DomainController handleQuery queryName=", queryName);
+          log.info("DomainController handleQuery result=", JSON.stringify(result));
 
           return result["dataEntitiesFromModelSection"];
           break;
         }
-        case 'literal':
-        case 'selectObjectListByRelation':
-        case 'selectObjectListByManyToManyRelation':
-        case 'queryCombiner':
-        case 'selectObjectByRelation':
-        case 'selectObjectByDirectReference':
-        case 'queryContextReference':
-        case 'wrapperReturningObject':
-        case 'wrapperReturningList':
+        case "literal":
+        case "selectObjectListByRelation":
+        case "selectObjectListByManyToManyRelation":
+        case "queryCombiner":
+        case "selectObjectByRelation":
+        case "selectObjectByDirectReference":
+        case "queryContextReference":
+        case "wrapperReturningObject":
+        case "wrapperReturningList":
         default: {
-          throw new Error("DomainController handleQuery queryAction no query found in fetchQuery.select! " + JSON.stringify(queryAction));
+          throw new Error(
+            "DomainController handleQuery queryAction no query found in fetchQuery.select! " +
+              JSON.stringify(queryAction)
+          );
           break;
         }
       }
-
     } else {
       // we're on the client, the query is sent to the server for execution.
       // is it right? We're limiting querying for script execution to remote queries right there!
       // principle: the scripts using transactional (thus Model) actions are limited to localCache access
       // while non-transactional accesses are limited to persistence store access (does this make sense?)
       // in both cases this enforces only the most up-to-date data is accessed.
-      log.info("DomainController handleQuery queryAction sending query to server for execution", JSON.stringify(queryAction))
-      const result = await this.callUtil.callPersistenceAction( // what if it is a REAL persistence store?? exception?
+      log.info(
+        "DomainController handleQuery queryAction sending query to server for execution",
+        JSON.stringify(queryAction)
+      );
+      const result = await this.callUtil.callPersistenceAction(
+        // what if it is a REAL persistence store?? exception?
         {}, // context
         {
           addResultToContextAsName: "dataEntitiesFromModelSection",
@@ -737,15 +751,19 @@ export class DomainController implements DomainControllerInterface {
       log.info("handleQuery queryAction callPersistenceAction Result=", result);
       return result["dataEntitiesFromModelSection"];
     }
-    
+
     return ACTION_OK;
   }
 
   // ##############################################################################################
-  async handleInstanceActionTemplate(domainAction: CompositeInstanceActionTemplate, actionParamValues: any, currentModel: MetaModel): Promise<ActionVoidReturnType> {
-    const localActionParams = {...actionParamValues};
+  async handleInstanceActionTemplate(
+    domainAction: CompositeInstanceActionTemplate,
+    actionParamValues: any,
+    currentModel: MetaModel
+  ): Promise<ActionVoidReturnType> {
+    const localActionParams = { ...actionParamValues };
     for (const currentAction of domainAction.definition) {
-      log.info("handleInstanceActionTemplate compositeInstanceAction action", currentAction)
+      log.info("handleInstanceActionTemplate compositeInstanceAction action", currentAction);
       if (currentAction.compositeActionType == "query") {
         const resolvedQueryTemplate: QueryAction = renderObjectTemplate(
           "NO NAME",
@@ -753,14 +771,19 @@ export class DomainController implements DomainControllerInterface {
           localActionParams,
           undefined
         );
-        
-        log.info("handleInstanceActionTemplate resolved query", resolvedQueryTemplate, "with actionParamValues", actionParamValues);
 
-        const actionResult = await this.handleQuery(resolvedQueryTemplate)
+        log.info(
+          "handleInstanceActionTemplate resolved query",
+          resolvedQueryTemplate,
+          "with actionParamValues",
+          actionParamValues
+        );
+
+        const actionResult = await this.handleQuery(resolvedQueryTemplate);
         if (actionResult?.status != "ok") {
-          log.error('Error on query',JSON.stringify(actionResult, null, 2));
-        } else { 
-          log.info("handleInstanceActionTemplate query result", actionResult)
+          log.error("Error on query", JSON.stringify(actionResult, null, 2));
+        } else {
+          log.info("handleInstanceActionTemplate query result", actionResult);
           localActionParams[currentAction.nameGivenToResult] = actionResult.returnedDomainElement.elementValue;
         }
       } else {
@@ -770,9 +793,9 @@ export class DomainController implements DomainControllerInterface {
           localActionParams,
           undefined
         );
-        const actionResult = await this.handleAction(resolvedActionTemplate, currentModel)
+        const actionResult = await this.handleAction(resolvedActionTemplate, currentModel);
         if (actionResult?.status != "ok") {
-          log.error('Error on action',JSON.stringify(actionResult, null, 2));
+          log.error("Error on action", JSON.stringify(actionResult, null, 2));
         }
       }
       // const actionResult = await this.handleAction(domainAction.deploymentUuid, currentAction)
@@ -800,21 +823,22 @@ export class DomainController implements DomainControllerInterface {
     log.debug("DomainController handleAction domainAction", domainAction);
     // if (!domainAction.deploymentUuid) {
     //   throw new Error("waaaaa");
-      
+
     // }
     switch (domainAction.actionType) {
-      case 'compositeAction':{ // old school, not used anymore (or should not be used anymore)
+      case "compositeAction": {
+        // old school, not used anymore (or should not be used anymore)
         for (const currentAction of domainAction.definition) {
-          log.info("handleAction compositeAction resolved action", currentAction)
+          log.info("handleAction compositeAction resolved action", currentAction);
           if (currentAction.compositeActionType == "query") {
-            const actionResult = await this.handleQuery(currentAction.query)
+            const actionResult = await this.handleQuery(currentAction.query);
             if (actionResult?.status != "ok") {
-              log.error('Error query',JSON.stringify(actionResult, null, 2));
+              log.error("Error query", JSON.stringify(actionResult, null, 2));
             }
           } else {
-            const actionResult = await this.handleAction(currentAction.action, currentModel)
+            const actionResult = await this.handleAction(currentAction.action, currentModel);
             if (actionResult?.status != "ok") {
-              log.error('Error action',JSON.stringify(actionResult, null, 2));
+              log.error("Error action", JSON.stringify(actionResult, null, 2));
             }
           }
         }
@@ -825,22 +849,19 @@ export class DomainController implements DomainControllerInterface {
         return this.handleModelAction(domainAction.deploymentUuid, domainAction, currentModel);
       }
       case "instanceAction": {
-        return this.handleInstanceAction(
-          domainAction.deploymentUuid,
-          domainAction
-        );
+        return this.handleInstanceAction(domainAction.deploymentUuid, domainAction);
       }
-      case 'storeManagementAction': {
+      case "storeManagementAction": {
         if (domainAction.actionName == "resetAndInitMiroirAndApplicationDatabase") {
-          await resetAndInitMiroirAndApplicationDatabase(this,domainAction.deployments)          
+          await resetAndInitMiroirAndApplicationDatabase(this, domainAction.deployments);
         } else {
           try {
             await this.callUtil.callPersistenceAction(
-            {}, // context
-            {}, // context update
-            // deploymentUuid,
-            domainAction
-          );
+              {}, // context
+              {}, // context update
+              // deploymentUuid,
+              domainAction
+            );
           } catch (error) {
             log.warn(
               "DomainController handleAction caught exception when handling",
@@ -857,14 +878,14 @@ export class DomainController implements DomainControllerInterface {
         return Promise.resolve(ACTION_OK);
         break;
       }
-      case 'bundleAction': {
+      case "bundleAction": {
         try {
           await this.callUtil.callPersistenceAction(
-          {}, // context
-          {}, // context update
-          // deploymentUuid,
-          domainAction
-        );
+            {}, // context
+            {}, // context update
+            // deploymentUuid,
+            domainAction
+          );
         } catch (error) {
           log.warn(
             "DomainController handleAction caught exception when handling",
@@ -881,11 +902,7 @@ export class DomainController implements DomainControllerInterface {
         break;
       }
       case "undoRedoAction": {
-        return this.handleDomainUndoRedoAction(
-          domainAction.deploymentUuid,
-          domainAction,
-          currentModel
-        );
+        return this.handleDomainUndoRedoAction(domainAction.deploymentUuid, domainAction, currentModel);
       }
       case "transactionalInstanceAction": {
         try {
@@ -910,11 +927,8 @@ export class DomainController implements DomainControllerInterface {
         break;
       }
       default:
-        log.error(
-          "DomainController handleAction action could not be taken into account, unkown action",
-          domainAction
-        );
+        log.error("DomainController handleAction action could not be taken into account, unkown action", domainAction);
     }
-    return Promise.resolve(ACTION_OK)
+    return Promise.resolve(ACTION_OK);
   }
 }

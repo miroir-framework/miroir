@@ -12,9 +12,9 @@ import {
   ACTION_OK
 } from "miroir-core";
 import { packageName } from "../constants.js";
-import { IndexedDb } from "./IndexedDb";
-import { cleanLevel } from "./constants";
-import { IndexedDbStore } from "./IndexedDbStore";
+import { IndexedDb } from "./IndexedDb.js";
+import { cleanLevel } from "./constants.js";
+import { IndexedDbStore } from "./IndexedDbStore.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "IndexedDbStoreSection");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -27,7 +27,10 @@ type GConstructor<T = {}> = new (...args: any[]) => T;
 export type MixableIndexedDbStoreSection = GConstructor<IndexedDbStoreSection>;
 
 // base class for IndexedDb store mixins
-export class IndexedDbStoreSection extends IndexedDbStore implements AbstractStoreSectionInterface, StorageSpaceHandlerInterface {
+export class IndexedDbStoreSection
+  extends IndexedDbStore
+  implements AbstractStoreSectionInterface, StorageSpaceHandlerInterface
+{
   // ##############################################################################################
   constructor(
     // public indexedDbStoreName: string; // used only for debugging purposes
@@ -35,7 +38,7 @@ export class IndexedDbStoreSection extends IndexedDbStore implements AbstractSto
     // public logHeader: string;
     ...args: any[] // mixin constructors are limited to args:any[] parameters
   ) {
-    super(args[0], args[1], args[2])
+    super(args[0], args[1], args[2]);
   }
 
   // ##################################################################################################
@@ -56,7 +59,10 @@ export class IndexedDbStoreSection extends IndexedDbStore implements AbstractSto
   }
 
   // #############################################################################################
-  async createStorageSpaceForInstancesOfEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<ActionVoidReturnType> {
+  async createStorageSpaceForInstancesOfEntity(
+    entity: MetaEntity,
+    entityDefinition: EntityDefinition
+  ): Promise<ActionVoidReturnType> {
     log.info(
       this.logHeader,
       "createStorageSpaceForInstancesOfEntity",
@@ -116,7 +122,7 @@ export class IndexedDbStoreSection extends IndexedDbStore implements AbstractSto
         this.localUuidIndexedDb.getSubLevels()
       );
     }
-    return Promise.resolve( ACTION_OK );
+    return Promise.resolve(ACTION_OK);
   }
 
   // ##############################################################################################
@@ -133,6 +139,6 @@ export class IndexedDbStoreSection extends IndexedDbStore implements AbstractSto
       ", since Entities are indexed by Uuid! Existing entities:",
       this.localUuidIndexedDb.getSubLevels()
     );
-    return Promise.resolve( ACTION_OK );
+    return Promise.resolve(ACTION_OK);
   }
 }

@@ -23,7 +23,7 @@ import {
 import { ReduxStateWithUndoRedo, selectInstanceArrayForDeploymentSectionEntity, selectModelForDeploymentFromReduxState } from "miroir-localcache-redux";
 import { useSelector } from "react-redux";
 
-import { EntityInstanceUuidIndexSelectorParams, useCurrentModel } from "../../src/miroir-fwk/4_view/ReduxHooks";
+import { useCurrentModel } from "../../src/miroir-fwk/4_view/ReduxHooks";
 import { packageName } from "../../src/constants";
 import { cleanLevel } from "../../src/miroir-fwk/4_view/constants";
 export interface MiroirReportComponentProps {

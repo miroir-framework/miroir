@@ -13,7 +13,7 @@ import {
   ApplicationSection,
   DeploymentEntityState,
   DomainElement,
-  DomainModelRecordOfExtractors,
+  ExtractorForRecordOfExtractors,
   EntityAttribute,
   EntityInstance,
   EntityInstanceWithName,
@@ -28,9 +28,9 @@ import {
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
-  ExtractorSelector,
-  ExtractorSelectorMap,
-  QuerySelectorParams,
+  ExtractorRunner,
+  ExtractorRunnerMap,
+  ExtractorRunnerParams,
   ResolvedJzodSchemaReturnType,
   Uuid,
   adminConfigurationDeploymentMiroir,
@@ -272,7 +272,7 @@ export const JzodObjectEditor = (
 ): JSX.Element => {
   count++;
   const context = useMiroirContextService();
-  const deploymentEntityStateSelectorMap: ExtractorSelectorMap<DeploymentEntityState> = useMemo(
+  const deploymentEntityStateSelectorMap: ExtractorRunnerMap<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
   );
@@ -469,18 +469,18 @@ export const JzodObjectEditor = (
 
     // ############################################################################################
     // finding foreign objects for uuid schema with targetEntity estra
-    const foreignKeyObjectsFetchQueryParams: QuerySelectorParams<
-      DomainModelRecordOfExtractors,
+    const foreignKeyObjectsFetchQueryParams: ExtractorRunnerParams<
+      ExtractorForRecordOfExtractors,
       DeploymentEntityState
     > = useMemo(
       () =>
-        getDeploymentEntityStateSelectorParams<DomainModelRecordOfExtractors>(
+        getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>(
           props.currentDeploymentUuid &&
           unfoldedRawSchema.type == "uuid" &&
           unfoldedRawSchema.tag?.value?.targetEntity
           ?
           {
-            queryType: "domainModelRecordOfExtractors",
+            queryType: "extractorForRecordOfExtractors",
             deploymentUuid: props.currentDeploymentUuid,
             // applicationSection: props.applicationSection,
             // pageParams: props.paramsAsdomainElements,
@@ -526,8 +526,8 @@ export const JzodObjectEditor = (
     // const foreignKeyObjects:  = useDeploymentEntityStateQuerySelectorForCleanedResult(
     const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
       useDeploymentEntityStateQuerySelectorForCleanedResult(
-        deploymentEntityStateSelectorMap.selectByDomainManyExtractors as ExtractorSelector<
-          DomainModelRecordOfExtractors,
+        deploymentEntityStateSelectorMap.extractWithManyExtractors as ExtractorRunner<
+          ExtractorForRecordOfExtractors,
           DeploymentEntityState,
           DomainElement
         >,

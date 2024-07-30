@@ -1437,7 +1437,7 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        domainModelSingleObjectExtractor: {
+        extractorForSingleObject: {
           type: "object",
           extend: {
             type: "schemaReference",
@@ -1461,7 +1461,7 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        domainModelSingleObjectListExtractor: {
+        extractorForSingleObjectList: {
           type: "object",
           extend: {
             type: "schemaReference",
@@ -1509,7 +1509,7 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        domainModelRecordOfExtractors: {
+        extractorForRecordOfExtractors: {
           type: "object",
           extend: {
             type: "schemaReference",
@@ -1522,7 +1522,7 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             queryType: {
               type: "literal",
-              definition: "domainModelRecordOfExtractors",
+              definition: "extractorForRecordOfExtractors",
             },
             fetchQuery: {
               type: "schemaReference",
@@ -1578,7 +1578,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "domainModelRecordOfExtractors",
+                relativePath: "extractorForRecordOfExtractors",
               },
             },
           },
@@ -1650,7 +1650,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "domainModelSingleObjectExtractor",
+                relativePath: "extractorForSingleObject",
               },
             },
             {
@@ -1664,14 +1664,14 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "domainModelSingleObjectListExtractor",
+                relativePath: "extractorForSingleObjectList",
               },
             },
             {
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "domainModelRecordOfExtractors",
+                relativePath: "extractorForRecordOfExtractors",
               },
             },
             {
@@ -2275,7 +2275,7 @@ export function getMiroirFundamentalJzodSchema(
         miroirSelectQueriesRecord: (miroirFundamentalJzodSchema as any).definition.context.miroirSelectQueriesRecord,
         miroirCrossJoinQuery: (miroirFundamentalJzodSchema as any).definition.context.miroirCrossJoinQuery,
         queryQueriesRecordOrCrossJoin: (miroirFundamentalJzodSchema as any).definition.context.queryQueriesRecordOrCrossJoin,
-        domainModelRecordOfExtractors: (miroirFundamentalJzodSchema as any).definition.context.domainModelRecordOfExtractors,
+        extractorForRecordOfExtractors: (miroirFundamentalJzodSchema as any).definition.context.extractorForRecordOfExtractors,
         queryAction: queryEndpointVersionV1.definition.actions[0].actionParameters,
       },
       definition: {

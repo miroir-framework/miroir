@@ -18,7 +18,7 @@ import {
   adminConfigurationDeploymentMiroir,
   DeploymentEntityState,
   DomainElementObject,
-  DomainModelRecordOfExtractors,
+  ExtractorForRecordOfExtractors,
   entityMenu,
   getApplicationSection,
   getDeploymentEntityStateSelectorParams,
@@ -27,8 +27,8 @@ import {
   menuDefaultMiroir,
   MiroirLoggerFactory,
   DomainModelExtractor,
-  ExtractorSelectorMap,
-  QuerySelectorParams,
+  ExtractorRunnerMap,
+  ExtractorRunnerParams,
   Uuid
 } from "miroir-core";
 import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
@@ -140,15 +140,15 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
   // const miroirConfig = context.getMiroirConfig();
   // const context = useMiroirContext();
 
-  const deploymentEntityStateSelectorMap: ExtractorSelectorMap<DeploymentEntityState> = useMemo(
+  const deploymentEntityStateSelectorMap: ExtractorRunnerMap<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
   )
 
-  const fetchDeploymentMenusQueryParams: QuerySelectorParams<DomainModelRecordOfExtractors, DeploymentEntityState> = useMemo(
+  const fetchDeploymentMenusQueryParams: ExtractorRunnerParams<ExtractorForRecordOfExtractors, DeploymentEntityState> = useMemo(
     () => 
-    getDeploymentEntityStateSelectorParams<DomainModelRecordOfExtractors>({
-      queryType: "domainModelRecordOfExtractors",
+    getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>({
+      queryType: "extractorForRecordOfExtractors",
       deploymentUuid: props.deploymentUuid,
       // applicationSection: "data",
       pageParams: { elementType: "object", elementValue: {} },
@@ -178,7 +178,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
 
   log.info("fetchDeploymentMenusQueryParams",fetchDeploymentMenusQueryParams)
   const miroirMenusDomainElementObject: DomainElementObject = useDeploymentEntityStateQuerySelector(
-    deploymentEntityStateSelectorMap.selectByDomainManyExtractors,
+    deploymentEntityStateSelectorMap.extractWithManyExtractors,
     fetchDeploymentMenusQueryParams
   );
 

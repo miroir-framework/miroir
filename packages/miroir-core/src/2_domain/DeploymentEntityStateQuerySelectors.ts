@@ -5,20 +5,20 @@ import {
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
   DomainModelGetEntityDefinitionExtractor,
-  DomainModelSingleObjectListExtractor,
-  DomainModelSingleObjectExtractor,
+  ExtractorForSingleObjectList,
+  ExtractorForSingleObject,
   EntityDefinition,
   JzodObject,
   DomainModelExtractor,
   QuerySelectObject
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
-  JzodSchemaQuerySelectorMap,
-  JzodSchemaQuerySelectorParams,
-  ExtractorSelector,
-  ExtractorSelectorMap,
-  QuerySelectorParams
-} from "../0_interfaces/2_domain/DeploymentEntityStateQuerySelectorInterface.js";
+  ExtractorRunnerMapForJzodSchema,
+  ExtractorRunnerParamsForJzodSchema,
+  ExtractorRunner,
+  ExtractorRunnerMap,
+  ExtractorRunnerParams
+} from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
 import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
@@ -29,11 +29,11 @@ import { cleanLevel } from "./constants.js";
 import { getDeploymentEntityStateIndex } from "./DeploymentEntityState.js";
 import {
   resolveContextReference,
-  selectByDomainManyExtractors,
-  selectEntityInstanceUuidIndexFromObjectListExtractor,
-  selectFetchQueryJzodSchema,
-  selectJzodSchemaByDomainModelQuery,
-  selectJzodSchemaBySingleSelectQuery,
+  extractWithManyExtractors,
+  extractEntityInstanceUuidIndexWithObjectListExtractor,
+  extractFetchQueryJzodSchema,
+  extractJzodSchemaForDomainModelQuery,
+  extractzodSchemaForSingleSelectQuery,
 } from "./QuerySelectors.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DeploymentEntityStateQuerySelector");
@@ -52,11 +52,11 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
  * @param selectorParams 
  * @returns 
  */
-export const selectEntityInstanceFromDeploymentEntityState:ExtractorSelector<
-  DomainModelSingleObjectExtractor, DeploymentEntityState, DomainElementEntityInstanceOrFailed
+export const selectEntityInstanceFromDeploymentEntityState:ExtractorRunner<
+  ExtractorForSingleObject, DeploymentEntityState, DomainElementEntityInstanceOrFailed
 > = (
   deploymentEntityState: DeploymentEntityState,
-  selectorParams: QuerySelectorParams<DomainModelSingleObjectExtractor, DeploymentEntityState>
+  selectorParams: ExtractorRunnerParams<ExtractorForSingleObject, DeploymentEntityState>
 ): DomainElementEntityInstanceOrFailed => {
   const querySelectorParams: QuerySelectObject = selectorParams.extractor.select as QuerySelectObject;
   const deploymentUuid = selectorParams.extractor.deploymentUuid;
@@ -228,11 +228,11 @@ export const selectEntityInstanceFromDeploymentEntityState:ExtractorSelector<
 
 // ################################################################################################
 // ACCESSES deploymentEntityState
-export const selectEntityInstanceUuidIndexFromDeploymentEntityState: ExtractorSelector<
-  DomainModelSingleObjectListExtractor, DeploymentEntityState, DomainElementInstanceUuidIndexOrFailed
+export const selectEntityInstanceUuidIndexFromDeploymentEntityState: ExtractorRunner<
+  ExtractorForSingleObjectList, DeploymentEntityState, DomainElementInstanceUuidIndexOrFailed
 > = (
   deploymentEntityState: DeploymentEntityState,
-  selectorParams: QuerySelectorParams<DomainModelSingleObjectListExtractor, DeploymentEntityState>
+  selectorParams: ExtractorRunnerParams<ExtractorForSingleObjectList, DeploymentEntityState>
 ): DomainElementInstanceUuidIndexOrFailed => {
   const deploymentUuid = selectorParams.extractor.deploymentUuid;
   const applicationSection = selectorParams.extractor.select.applicationSection??"data";
@@ -318,7 +318,7 @@ export const selectEntityInstanceUuidIndexFromDeploymentEntityState: ExtractorSe
 // ACCESSES deploymentEntityState
 export const selectEntityJzodSchemaFromDeploymentEntityState = (
   deploymentEntityState: DeploymentEntityState,
-  selectorParams: JzodSchemaQuerySelectorParams<DomainModelGetEntityDefinitionExtractor, DeploymentEntityState>
+  selectorParams: ExtractorRunnerParamsForJzodSchema<DomainModelGetEntityDefinitionExtractor, DeploymentEntityState>
 ): JzodObject | undefined => {
   const localQuery: DomainModelGetEntityDefinitionExtractor = selectorParams.query;
 
@@ -398,35 +398,35 @@ export const selectEntityJzodSchemaFromDeploymentEntityState = (
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-export function getDeploymentEntityStateSelectorMap(): ExtractorSelectorMap<
+export function getDeploymentEntityStateSelectorMap(): ExtractorRunnerMap<
   DeploymentEntityState
 > {
   return {
-    selectEntityInstanceUuidIndexFromState: selectEntityInstanceUuidIndexFromDeploymentEntityState,
-    selectEntityInstanceFromState: selectEntityInstanceFromDeploymentEntityState,
-    selectEntityInstanceUuidIndexFromObjectListExtractor: selectEntityInstanceUuidIndexFromObjectListExtractor,
-    selectByDomainManyExtractors: selectByDomainManyExtractors,
+    extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDeploymentEntityState,
+    extractEntityInstance: selectEntityInstanceFromDeploymentEntityState,
+    extractEntityInstanceUuidIndexWithObjectListExtractor: extractEntityInstanceUuidIndexWithObjectListExtractor,
+    extractWithManyExtractors: extractWithManyExtractors,
   };
 }
 
 
 // ################################################################################################
-export function getDeploymentEntityStateJzodSchemaSelectorMap(): JzodSchemaQuerySelectorMap<DeploymentEntityState> {
+export function getDeploymentEntityStateJzodSchemaSelectorMap(): ExtractorRunnerMapForJzodSchema<DeploymentEntityState> {
   return {
-    selectJzodSchemaByDomainModelQuery: selectJzodSchemaByDomainModelQuery,
-    selectEntityJzodSchema: selectEntityJzodSchemaFromDeploymentEntityState,
-    selectFetchQueryJzodSchema: selectFetchQueryJzodSchema,
-    selectJzodSchemaBySingleSelectQuery: selectJzodSchemaBySingleSelectQuery,
+    extractJzodSchemaForDomainModelQuery: extractJzodSchemaForDomainModelQuery,
+    extractEntityJzodSchema: selectEntityJzodSchemaFromDeploymentEntityState,
+    extractFetchQueryJzodSchema: extractFetchQueryJzodSchema,
+    extractzodSchemaForSingleSelectQuery: extractzodSchemaForSingleSelectQuery,
   };
 }
 
 // ################################################################################################
 export function getDeploymentEntityStateSelectorParams<QueryType extends DomainModelExtractor>(
   query: QueryType,
-  selectorMap?: ExtractorSelectorMap<DeploymentEntityState>
-): QuerySelectorParams<QueryType, DeploymentEntityState> {
+  extractorRunnerMap?: ExtractorRunnerMap<DeploymentEntityState>
+): ExtractorRunnerParams<QueryType, DeploymentEntityState> {
   return {
     extractor: query,
-    selectorMap: selectorMap ?? getDeploymentEntityStateSelectorMap(),
+    extractorRunnerMap: extractorRunnerMap ?? getDeploymentEntityStateSelectorMap(),
   };
 }

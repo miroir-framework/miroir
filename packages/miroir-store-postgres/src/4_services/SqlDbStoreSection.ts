@@ -34,8 +34,10 @@ export type MixableSqlDbStoreSection = GConstructor<SqlDbStoreSection>;
 // ##############################################################################################
 // ##############################################################################################
 // ##############################################################################################
-export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectionInterface, StorageSpaceHandlerInterface {
-
+export class SqlDbStoreSection
+  extends SqlDbStore
+  implements AbstractStoreSectionInterface, StorageSpaceHandlerInterface
+{
   // ##############################################################################################
   constructor(
     // applicationSection: ApplicationSection,
@@ -45,13 +47,7 @@ export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectio
     // logHeader:string,
     ...args: any[] // mixin constructors are limited to args:any[] parameters
   ) {
-    super(
-      args[0],
-      args[1],
-      args[2],
-      args[3],
-      args[4],
-    )
+    super(args[0], args[1], args[2], args[3], args[4]);
   }
 
   // ##############################################################################################
@@ -66,11 +62,14 @@ export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectio
     this.sqlSchemaTableAccess = {};
     log.info(this.logHeader, "clear done, entities", this.getEntityUuids());
 
-    return Promise.resolve( ACTION_OK );
+    return Promise.resolve(ACTION_OK);
   }
 
   // ##############################################################################################
-  async bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<ActionVoidReturnType> {
+  async bootFromPersistedState(
+    entities: MetaEntity[],
+    entityDefinitions: EntityDefinition[]
+  ): Promise<ActionVoidReturnType> {
     log.info(
       this.logHeader,
       "bootFromPersistedState called!",
@@ -92,11 +91,14 @@ export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectio
           return prev;
         }
       }, {});
-      return Promise.resolve( ACTION_OK );
-    }
+    return Promise.resolve(ACTION_OK);
+  }
 
   // ##############################################################################################
-  getAccessToDataSectionEntity(entity: MetaEntity, entityDefinition: EntityDefinition): EntityUuidIndexedSequelizeModel {
+  getAccessToDataSectionEntity(
+    entity: MetaEntity,
+    entityDefinition: EntityDefinition
+  ): EntityUuidIndexedSequelizeModel {
     // TODO: does side effect => refactor!
     return {
       [entity.uuid]: {
@@ -114,27 +116,20 @@ export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectio
   }
 
   // ##############################################################################################
-  async createStorageSpaceForInstancesOfEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<ActionVoidReturnType> {
+  async createStorageSpaceForInstancesOfEntity(
+    entity: MetaEntity,
+    entityDefinition: EntityDefinition
+  ): Promise<ActionVoidReturnType> {
     this.sqlSchemaTableAccess = Object.assign(
       {},
       this.sqlSchemaTableAccess,
       this.getAccessToDataSectionEntity(entity, entityDefinition)
     );
-    log.info(
-      this.logHeader,
-      "createStorageSpaceForInstancesOfEntity",
-      "creating data schema table",
-      entity.name
-    );
-    const sequelizeModel = this.sqlSchemaTableAccess[entity.uuid].sequelizeModel
+    log.info(this.logHeader, "createStorageSpaceForInstancesOfEntity", "creating data schema table", entity.name);
+    const sequelizeModel = this.sqlSchemaTableAccess[entity.uuid].sequelizeModel;
     await sequelizeModel.sync({ force: true }); // TODO: replace sync!
-    log.debug(
-      this.logHeader,
-      "createStorageSpaceForInstancesOfEntity",
-      "done creating data schema table",
-      entity.name
-    );
-    return Promise.resolve( ACTION_OK );
+    log.debug(this.logHeader, "createStorageSpaceForInstancesOfEntity", "done creating data schema table", entity.name);
+    return Promise.resolve(ACTION_OK);
   }
 
   // ##############################################################################################
@@ -158,7 +153,7 @@ export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectio
         entityDefinition
       )
     );
-    return Promise.resolve( ACTION_OK );
+    return Promise.resolve(ACTION_OK);
   }
 
   // // ##############################################################################################
@@ -200,6 +195,6 @@ export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectio
     } else {
       log.warn("dropStorageSpaceForInstancesOfEntity entityUuid", entityUuid, "NOT FOUND.");
     }
-    return Promise.resolve( ACTION_OK );
+    return Promise.resolve(ACTION_OK);
   }
 }

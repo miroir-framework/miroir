@@ -157,10 +157,9 @@ describe("templates.unit.test", () => {
         undefined
       );
 
-
       console.log("################################ converted template", testResult)
       expect(testResult).toEqual("testApplication");
-    console.log("convert mustache string END")
+      console.log("convert mustache string END")
     }
   );
 

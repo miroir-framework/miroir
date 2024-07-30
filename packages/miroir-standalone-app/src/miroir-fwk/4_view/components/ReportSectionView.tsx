@@ -9,7 +9,7 @@ import {
   EntityDefinition,
   LoggerInterface,
   MiroirLoggerFactory,
-  ExtractorSelectorMap,
+  ExtractorRunnerMap,
   RecordOfJzodObject,
   ReportSection,
   RootReportSection,
@@ -40,7 +40,7 @@ export interface ReportSectionEntityInstanceProps {
   paramsAsdomainElements: DomainElementObject,
   reportSection: ReportSection,
   rootReportSection: RootReportSection,
-  selectorMap: ExtractorSelectorMap<DeploymentEntityState>
+  extractorRunnerMap: ExtractorRunnerMap<DeploymentEntityState>
 }
 
 // ###############################################################################################################
@@ -222,7 +222,7 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
                               paramsAsdomainElements={props.paramsAsdomainElements}
                               reportSection={innerReportSection}
                               rootReportSection={props.rootReportSection}
-                              selectorMap={props.selectorMap}
+                              extractorRunnerMap={props.extractorRunnerMap}
                               // instanceUuid={props.instanceUuid}
                             />
                           </td>

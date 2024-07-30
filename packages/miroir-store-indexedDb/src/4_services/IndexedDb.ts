@@ -1,8 +1,8 @@
 import { Level } from 'level';
-import { ApplicationSection, LoggerInterface, MiroirLoggerFactory, entityDefinitionEntityDefinition, getLoggerName } from "miroir-core";
+import { ActionReturnType, ApplicationSection, LoggerInterface, MiroirLoggerFactory, QueryAction, entityDefinitionEntityDefinition, getLoggerName } from "miroir-core";
 
 import { packageName } from "../constants.js";
-import { cleanLevel } from "./constants";
+import { cleanLevel } from "./constants.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"IndexedDb");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -184,6 +184,18 @@ export class IndexedDb {
     return Promise.resolve(result);
   }
 
+  // // #############################################################################################
+  // async handleQuery(query: QueryAction): Promise<ActionReturnType> {
+  //   // TODO: fix applicationSection!!!
+  //   log.info(this.logHeader,'handleQuery', 'query', query);
+    
+  //   throw new Error('Method not implemented.');
+  //   // const result: ActionReturnType = await this.localUuidIndexedDb.handleQuery(query);
+
+  //   // log.info(this.logHeader,'handleQuery','query', query, "result", result);
+  //   // return result;
+  // }
+  
   // #############################################################################################
   public async putValue(parentUuid: string, value: any):Promise<any> {
     const store = this.subLevels.get(parentUuid);

@@ -16,6 +16,7 @@ import {
   ModelActionInitModel,
   ModelActionInitModelParams,
   ModelActionRenameEntity,
+  QueryAction,
   StoreSectionConfiguration
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DataStoreApplicationType } from "../0_interfaces/3_controllers/ApplicationControllerInterface.js";
@@ -514,7 +515,6 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
   
   // #############################################################################################
-  // async getInstance(section: ApplicationSection, entityUuid: string, uuid: Uuid): Promise<EntityInstance | undefined> {
   async getInstance(section: ApplicationSection, entityUuid: string, uuid: Uuid): Promise<ActionEntityInstanceReturnType> {
     log.info(this.logHeader,'getInstance','section',section,'entity',entityUuid, "uuid", uuid);
     
@@ -530,7 +530,6 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
   
   // #############################################################################################
-  // async getInstances(section: ApplicationSection, entityUuid: string): Promise<EntityInstanceCollection> {
   async getInstances(section: ApplicationSection, entityUuid: string): Promise<ActionEntityInstanceCollectionReturnType> {
     // TODO: fix applicationSection!!!
     log.info(this.logHeader,'getInstances','section',section,'entity',entityUuid);
@@ -565,6 +564,21 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     }
 
     log.info(this.logHeader,'getInstances','section',section,'entity',entityUuid, "result", result);
+    return result;
+  }
+  
+  // #############################################################################################
+  async handleQuery(section: ApplicationSection, query: QueryAction): Promise<ActionReturnType> {
+    // TODO: fix applicationSection!!!
+    log.info(this.logHeader,'handleQuery','section',section,'query',query);
+    log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
+    log.info(this.logHeader,'this.modelStoreSection',this.modelStoreSection);
+    
+    const currentStore: StoreDataSectionInterface | StoreModelSectionInterface =
+      section == "data" ? this.dataStoreSection : this.modelStoreSection;
+    const result: ActionReturnType = await currentStore.handleQuery(query);
+
+    log.info(this.logHeader,'handleQuery','section',section,'query',query, "result", result);
     return result;
   }
   

@@ -5,14 +5,14 @@ import {
   ApplicationSection,
   DeploymentEntityState,
   DomainElementObject,
-  DomainModelRecordOfExtractors,
+  ExtractorForRecordOfExtractors,
   DomainModelGetFetchParamJzodSchemaExtractor,
-  JzodSchemaQuerySelectorMap,
-  JzodSchemaQuerySelectorParams,
+  ExtractorRunnerMapForJzodSchema,
+  ExtractorRunnerParamsForJzodSchema,
   LoggerInterface,
   MiroirLoggerFactory,
-  ExtractorSelectorMap,
-  QuerySelectorParams,
+  ExtractorRunnerMap,
+  ExtractorRunnerParams,
   RecordOfJzodObject,
   RootReportSection,
   Uuid,
@@ -78,17 +78,17 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
   //   props.reportSection.fetchQuery
   // );
   
-  const deploymentEntityStateSelectorMap: ExtractorSelectorMap<DeploymentEntityState> = useMemo(
+  const deploymentEntityStateSelectorMap: ExtractorRunnerMap<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
   )
 
-  const deploymentEntityStateFetchQueryParams: QuerySelectorParams<DomainModelRecordOfExtractors, DeploymentEntityState> = useMemo(
+  const deploymentEntityStateFetchQueryParams: ExtractorRunnerParams<ExtractorForRecordOfExtractors, DeploymentEntityState> = useMemo(
     () =>
       props.pageParams.deploymentUuid && props.pageParams.applicationSection && props.pageParams.reportUuid
-        ? getDeploymentEntityStateSelectorParams<DomainModelRecordOfExtractors>(
+        ? getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>(
             {
-              queryType: "domainModelRecordOfExtractors",
+              queryType: "extractorForRecordOfExtractors",
               deploymentUuid: props.pageParams.deploymentUuid,
               // applicationSection: props.applicationSection,
               pageParams: paramsAsdomainElements,
@@ -99,9 +99,9 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
             deploymentEntityStateSelectorMap
           )
         : // dummy query
-          getDeploymentEntityStateSelectorParams<DomainModelRecordOfExtractors>(
+          getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>(
             {
-              queryType: "domainModelRecordOfExtractors",
+              queryType: "extractorForRecordOfExtractors",
               deploymentUuid: "",
               pageParams: paramsAsdomainElements,
               queryParams: { elementType: "object", elementValue: {} },
@@ -120,7 +120,7 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
   // // )
 
   const deploymentEntityStateQueryResults: DomainElementObjectOrFailed = useDeploymentEntityStateQuerySelector(
-    deploymentEntityStateSelectorMap.selectByDomainManyExtractors,
+    deploymentEntityStateSelectorMap.extractWithManyExtractors,
     deploymentEntityStateFetchQueryParams
   );
 
@@ -134,17 +134,17 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
   //   // fetchedDataJzodSchema
   // );
 
-  const jzodSchemaSelectorMap: JzodSchemaQuerySelectorMap<DeploymentEntityState> = useMemo(
+  const jzodSchemaSelectorMap: ExtractorRunnerMapForJzodSchema<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateJzodSchemaSelectorMap(),
     []
   )
 
-  const fetchedDataJzodSchemaParams: JzodSchemaQuerySelectorParams<
+  const fetchedDataJzodSchemaParams: ExtractorRunnerParamsForJzodSchema<
     DomainModelGetFetchParamJzodSchemaExtractor,
     DeploymentEntityState
   > = useMemo(
     () => ({
-      selectorMap: jzodSchemaSelectorMap,
+      extractorRunnerMap: jzodSchemaSelectorMap,
       query:
         props.pageParams.deploymentUuid && props.pageParams.applicationSection && props.pageParams.reportUuid
           ? {
@@ -178,7 +178,7 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
               queryParams: { elementType: "object", elementValue: {} },
               contextResults: { elementType: "object", elementValue: {} },
               fetchParams: {
-                queryType: "domainModelRecordOfExtractors",
+                queryType: "extractorForRecordOfExtractors",
                 deploymentUuid: "DUMMY",
                 pageParams: paramsAsdomainElements,
                 queryParams: { elementType: "object", elementValue: {} },
@@ -192,7 +192,7 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
   ;
 
   const fetchedDataJzodSchema: RecordOfJzodObject | undefined = useDeploymentEntityStateJzodSchemaSelector(
-    jzodSchemaSelectorMap.selectFetchQueryJzodSchema,
+    jzodSchemaSelectorMap.extractFetchQueryJzodSchema,
     fetchedDataJzodSchemaParams
   ) as RecordOfJzodObject | undefined; // TODO: use correct return type
 
@@ -255,7 +255,7 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
                   applicationSection={props.applicationSection}
                   deploymentUuid={props.deploymentUuid}
                   paramsAsdomainElements={paramsAsdomainElements}
-                  selectorMap={deploymentEntityStateSelectorMap}
+                  extractorRunnerMap={deploymentEntityStateSelectorMap}
                 />
               </div>
             :

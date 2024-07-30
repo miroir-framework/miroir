@@ -4,6 +4,8 @@
     "outDir": "dist",
     "baseUrl": "./src/",
     "rootDir": "./",
+    "target": "ESNext",
+    "module": "NodeNext",
     "moduleResolution": "NodeNext"
     // "traceResolution": true,
   },

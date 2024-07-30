@@ -73,7 +73,7 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
     if (this.localCache) {
       return this.localCache;
     } else {
-      throw new Error("PersistenceStoreControllerManager getLocalCache no localCache yet!");
+      throw new Error("PersistenceStoreControllerManager getLocalCachae no localCache yet!");
     }
   }
 

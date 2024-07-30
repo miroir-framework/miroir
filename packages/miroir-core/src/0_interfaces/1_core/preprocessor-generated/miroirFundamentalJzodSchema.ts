@@ -5021,7 +5021,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "domainModelSingleObjectExtractor": {
+      "extractorForSingleObject": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
@@ -5045,7 +5045,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "domainModelSingleObjectListExtractor": {
+      "extractorForSingleObjectList": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
@@ -5093,7 +5093,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "domainModelRecordOfExtractors": {
+      "extractorForRecordOfExtractors": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
@@ -5106,7 +5106,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "queryType": {
             "type": "literal",
-            "definition": "domainModelRecordOfExtractors"
+            "definition": "extractorForRecordOfExtractors"
           },
           "fetchQuery": {
             "type": "schemaReference",
@@ -5173,7 +5173,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "domainModelRecordOfExtractors"
+              "relativePath": "extractorForRecordOfExtractors"
             }
           }
         }
@@ -5244,7 +5244,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "domainModelSingleObjectExtractor"
+              "relativePath": "extractorForSingleObject"
             }
           },
           {
@@ -5258,14 +5258,14 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "domainModelSingleObjectListExtractor"
+              "relativePath": "extractorForSingleObjectList"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "domainModelRecordOfExtractors"
+              "relativePath": "extractorForRecordOfExtractors"
             }
           },
           {
@@ -7528,7 +7528,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": false,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "domainModelRecordOfExtractors"
+              "relativePath": "extractorForRecordOfExtractors"
             }
           }
         }
@@ -24523,7 +24523,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRecordOfExtractors": {
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorForRecordOfExtractors": {
         "type": "union",
         "definition": [
           {
@@ -24548,7 +24548,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": [
                   {
                     "type": "literal",
-                    "definition": "domainModelRecordOfExtractors"
+                    "definition": "extractorForRecordOfExtractors"
                   },
                   {
                     "type": "schemaReference",
@@ -24673,7 +24673,7 @@ export const miroirFundamentalJzodSchema = {
                     "type": "schemaReference",
                     "optional": false,
                     "definition": {
-                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainModelRecordOfExtractors"
+                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorForRecordOfExtractors"
                     },
                     "context": {}
                   },

@@ -9,8 +9,8 @@ import {
 } from "miroir-core";
 import { Sequelize } from "sequelize";
 import { packageName } from "../constants.js";
-import { EntityUuidIndexedSequelizeModel } from "../utils";
-import { cleanLevel } from "./constants";
+import { EntityUuidIndexedSequelizeModel } from "../utils.js";
+import { cleanLevel } from "./constants.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "SqlDbStore");
 let log: LoggerInterface = console as any as LoggerInterface;

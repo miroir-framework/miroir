@@ -6,23 +6,23 @@ import {
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
   DomainElementObject,
-  DomainModelRecordOfExtractors,
+  ExtractorForRecordOfExtractors,
   DomainModelGetEntityDefinitionExtractor,
   DomainModelGetFetchParamJzodSchemaExtractor,
-  DomainModelSingleObjectListExtractor,
-  DomainModelSingleObjectExtractor,
+  ExtractorForSingleObjectList,
+  ExtractorForSingleObject,
   EntityDefinition,
   JzodObject,
   DomainModelExtractor,
   QuerySelectObject
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
-  JzodSchemaQuerySelectorMap,
-  JzodSchemaQuerySelectorParams,
-  ExtractorSelector,
-  ExtractorSelectorMap,
-  QuerySelectorParams,
-} from "../0_interfaces/2_domain/DeploymentEntityStateQuerySelectorInterface.js";
+  ExtractorRunnerMapForJzodSchema,
+  ExtractorRunnerParamsForJzodSchema,
+  ExtractorRunner,
+  ExtractorRunnerMap,
+  ExtractorRunnerParams,
+} from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import entityEntityDefinition from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
@@ -32,11 +32,11 @@ import { cleanLevel } from "./constants.js";
 import {
   innerSelectElementFromQuery,
   resolveContextReference,
-  selectByDomainManyExtractors,
-  selectEntityInstanceUuidIndexFromObjectListExtractor,
-  selectFetchQueryJzodSchema,
-  selectJzodSchemaByDomainModelQuery,
-  selectJzodSchemaBySingleSelectQuery,
+  extractWithManyExtractors,
+  extractEntityInstanceUuidIndexWithObjectListExtractor,
+  extractFetchQueryJzodSchema,
+  extractJzodSchemaForDomainModelQuery,
+  extractzodSchemaForSingleSelectQuery,
 } from "./QuerySelectors.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainSelector");
@@ -49,8 +49,8 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 
 const emptyDomainObject:DomainElementObject = { elementType: "object", elementValue: {} }
 
-export const dummyDomainManyQueriesWithDeploymentUuid: DomainModelRecordOfExtractors = {
-  queryType: "domainModelRecordOfExtractors",
+export const dummyDomainManyQueriesWithDeploymentUuid: ExtractorForRecordOfExtractors = {
+  queryType: "extractorForRecordOfExtractors",
   deploymentUuid: "",
   pageParams: emptyDomainObject,
   queryParams: emptyDomainObject,
@@ -72,7 +72,7 @@ export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: DomainModelGetF
   queryParams: { elementType: "object", elementValue: {} },
   contextResults: { elementType: "object", elementValue: {} },
   fetchParams: {
-    queryType: "domainModelRecordOfExtractors",
+    queryType: "extractorForRecordOfExtractors",
     deploymentUuid: "",
     pageParams: emptyDomainObject,
     queryParams: emptyDomainObject,
@@ -84,11 +84,11 @@ export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: DomainModelGetF
 
 // ################################################################################################
 // ACCESSES DOMAIN STATE
-export const selectEntityInstanceUuidIndexFromDomainState: ExtractorSelector<
-  DomainModelSingleObjectListExtractor, DomainState, DomainElementInstanceUuidIndexOrFailed
+export const selectEntityInstanceUuidIndexFromDomainState: ExtractorRunner<
+  ExtractorForSingleObjectList, DomainState, DomainElementInstanceUuidIndexOrFailed
 > = (
   domainState: DomainState,
-  selectorParams: QuerySelectorParams<DomainModelSingleObjectListExtractor, DomainState>
+  selectorParams: ExtractorRunnerParams<ExtractorForSingleObjectList, DomainState>
 ): DomainElementInstanceUuidIndexOrFailed => {
   const deploymentUuid = selectorParams.extractor.deploymentUuid;
   const applicationSection = selectorParams.extractor.select.applicationSection??"data";
@@ -168,11 +168,11 @@ export const selectEntityInstanceUuidIndexFromDomainState: ExtractorSelector<
  * @param selectorParams 
  * @returns 
  */
-export const selectEntityInstanceFromObjectQueryAndDomainState:ExtractorSelector<
-  DomainModelSingleObjectExtractor, DomainState, DomainElementEntityInstanceOrFailed
+export const selectEntityInstanceFromObjectQueryAndDomainState:ExtractorRunner<
+  ExtractorForSingleObject, DomainState, DomainElementEntityInstanceOrFailed
 > = (
   domainState: DomainState,
-  selectorParams: QuerySelectorParams<DomainModelSingleObjectExtractor, DomainState>
+  selectorParams: ExtractorRunnerParams<ExtractorForSingleObject, DomainState>
 ): DomainElementEntityInstanceOrFailed => {
   const querySelectorParams: QuerySelectObject = selectorParams.extractor.select as QuerySelectObject;
   const deploymentUuid = selectorParams.extractor.deploymentUuid;
@@ -361,29 +361,29 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:ExtractorSelector
  * @param selectorParams 
  * @returns 
  */
-export const selectEntityInstanceListFromListQueryAndDomainState: ExtractorSelector<
-  DomainModelSingleObjectListExtractor, DomainState, DomainElementInstanceUuidIndexOrFailed
-> = selectEntityInstanceUuidIndexFromObjectListExtractor<DomainState>
+export const selectEntityInstanceListFromListQueryAndDomainState: ExtractorRunner<
+  ExtractorForSingleObjectList, DomainState, DomainElementInstanceUuidIndexOrFailed
+> = extractEntityInstanceUuidIndexWithObjectListExtractor<DomainState>
 
 // ################################################################################################
 export const innerSelectElementFromQueryAndDomainState = innerSelectElementFromQuery<DomainState>
 
 // ################################################################################################
-export const selectByDomainManyQueriesFromDomainState:ExtractorSelector<
-  DomainModelRecordOfExtractors, DomainState, DomainElementObject
-> = selectByDomainManyExtractors<DomainState>
+export const selectByDomainManyQueriesFromDomainState:ExtractorRunner<
+  ExtractorForRecordOfExtractors, DomainState, DomainElementObject
+> = extractWithManyExtractors<DomainState>
 
 // ################################################################################################
 // JZOD SCHEMAs selectors
 // ################################################################################################
 // ################################################################################################
-export const selectJzodSchemaBySingleSelectQueryFromDomainStateNew = selectJzodSchemaBySingleSelectQuery<DomainState>
+export const selectJzodSchemaBySingleSelectQueryFromDomainStateNew = extractzodSchemaForSingleSelectQuery<DomainState>
 
 // ################################################################################################
 // ACCESSES DOMAIN STATE
 export const selectEntityJzodSchemaFromDomainStateNew = (
   domainState: DomainState,
-  selectorParams: JzodSchemaQuerySelectorParams<DomainModelGetEntityDefinitionExtractor, DomainState>
+  selectorParams: ExtractorRunnerParamsForJzodSchema<DomainModelGetEntityDefinitionExtractor, DomainState>
 ): JzodObject | undefined => {
   const localQuery: DomainModelGetEntityDefinitionExtractor = selectorParams.query;
   if (
@@ -417,10 +417,10 @@ export const selectEntityJzodSchemaFromDomainStateNew = (
  * @param query 
  * @returns 
  */
-export const selectFetchQueryJzodSchemaFromDomainStateNew = selectFetchQueryJzodSchema<DomainState>
+export const selectFetchQueryJzodSchemaFromDomainStateNew = extractFetchQueryJzodSchema<DomainState>
 
 // ################################################################################################
-export const selectJzodSchemaByDomainModelQueryFromDomainStateNew = selectJzodSchemaByDomainModelQuery<DomainState>
+export const selectJzodSchemaByDomainModelQueryFromDomainStateNew = extractJzodSchemaForDomainModelQuery<DomainState>
 
 // ################################################################################################
 // ################################################################################################
@@ -433,33 +433,33 @@ export const selectJzodSchemaByDomainModelQueryFromDomainStateNew = selectJzodSc
 // DEPENDENT ON RESELECT / REDUX. TO MOVE TO miroir-localCache-redux!
 // ################################################################################################
 
-export function getSelectorMap(): ExtractorSelectorMap<DomainState> {
+export function getSelectorMap(): ExtractorRunnerMap<DomainState> {
   return {
-    selectEntityInstanceUuidIndexFromState: selectEntityInstanceUuidIndexFromDomainState,
-    selectEntityInstanceFromState: selectEntityInstanceFromObjectQueryAndDomainState,
-    selectEntityInstanceUuidIndexFromObjectListExtractor: selectEntityInstanceListFromListQueryAndDomainState,
-    selectByDomainManyExtractors: selectByDomainManyQueriesFromDomainState,
+    extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDomainState,
+    extractEntityInstance: selectEntityInstanceFromObjectQueryAndDomainState,
+    extractEntityInstanceUuidIndexWithObjectListExtractor: selectEntityInstanceListFromListQueryAndDomainState,
+    extractWithManyExtractors: selectByDomainManyQueriesFromDomainState,
   };
 }
 
 
 
-export function getJzodSchemaSelectorMap(): JzodSchemaQuerySelectorMap<DomainState> {
+export function getJzodSchemaSelectorMap(): ExtractorRunnerMapForJzodSchema<DomainState> {
   return {
-    selectJzodSchemaByDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNew,
-    selectEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNew,
-    selectFetchQueryJzodSchema: selectFetchQueryJzodSchemaFromDomainStateNew,
-    selectJzodSchemaBySingleSelectQuery: selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
+    extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNew,
+    extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNew,
+    extractFetchQueryJzodSchema: selectFetchQueryJzodSchemaFromDomainStateNew,
+    extractzodSchemaForSingleSelectQuery: selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
   };
 }
 
 // ################################################################################################
 export function getSelectorParams<QueryType extends DomainModelExtractor>(
   query: QueryType,
-  selectorMap?: ExtractorSelectorMap<DomainState>
-): QuerySelectorParams<QueryType, DomainState> {
+  extractorRunnerMap?: ExtractorRunnerMap<DomainState>
+): ExtractorRunnerParams<QueryType, DomainState> {
   return {
     extractor: query,
-    selectorMap: selectorMap ?? getSelectorMap(),
+    extractorRunnerMap: extractorRunnerMap ?? getSelectorMap(),
   };
 }

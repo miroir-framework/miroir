@@ -274,7 +274,7 @@ export async function queryHandler(
    * - execute on the persistent store (sql)
    * 
    */
-  // const query: DomainModelRecordOfExtractors = body.query as DomainModelRecordOfExtractors ;
+  // const query: ExtractorForRecordOfExtractors = body.query as ExtractorForRecordOfExtractors ;
   const queryAction: QueryAction = body as QueryAction ;
 
   const deploymentUuid = queryAction.deploymentUuid
@@ -298,7 +298,10 @@ export async function queryHandler(
     log.info("RestServer queryHandler query=", JSON.stringify(queryAction, undefined, 2))
     log.info("RestServer queryHandler domainState=", JSON.stringify(domainState, undefined, 2))
     // const queryResult: DomainElement = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(query));
-    const queryResult: DomainElement = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryAction.query));
+    const queryResult: DomainElement = selectByDomainManyQueriesFromDomainState(
+      domainState,
+      getSelectorParams(queryAction.query)
+    );
     const result:ActionReturnType = {
       status: "ok",
       returnedDomainElement: queryResult

@@ -31,8 +31,8 @@ export {
   CompositeInstanceActionTemplate,
   compositeInstanceActionTemplate,
   DomainAction,
-  DomainModelRecordOfExtractors,
-  domainModelRecordOfExtractors,
+  ExtractorForRecordOfExtractors,
+  extractorForRecordOfExtractors,
   DomainModelGetEntityDefinitionExtractor,
   domainModelGetEntityDefinitionExtractor,
   DomainModelGetFetchParamJzodSchemaExtractor,
@@ -193,6 +193,8 @@ export {
   querySelectObject,
   QuerySelectObjectList,
   querySelectObjectList,
+  QueryAction,
+  queryAction,
   ServerConfigForClientConfig,
   serverConfigForClientConfig,
   SqlDbStoreSectionConfiguration,
@@ -317,12 +319,12 @@ export {
 } from './0_interfaces/2_domain/DomainStateQuerySelectorInterface.js';
 export {
   JzodSchemaQuerySelector,
-  JzodSchemaQuerySelectorMap,
-  JzodSchemaQuerySelectorParams,
-  ExtractorSelector,
-  ExtractorSelectorMap,
-  QuerySelectorParams,
-} from './0_interfaces/2_domain/DeploymentEntityStateQuerySelectorInterface.js';
+  ExtractorRunnerMapForJzodSchema,
+  ExtractorRunnerParamsForJzodSchema,
+  ExtractorRunner,
+  ExtractorRunnerMap,
+  ExtractorRunnerParams,
+} from './0_interfaces/2_domain/ExtractorRunnerInterface.js';
 export {
   ZEntityState,
   ZEntityStateSchema,
@@ -458,11 +460,11 @@ export {
 } from './2_domain/DeploymentEntityStateQuerySelectors.js';
 export {
   cleanupResultsFromQuery,
-  selectByDomainManyExtractors,
-  selectEntityInstanceUuidIndexFromObjectListExtractor,
-  selectFetchQueryJzodSchema,
-  selectJzodSchemaByDomainModelQuery,
-  selectJzodSchemaBySingleSelectQuery,
+  extractWithManyExtractors,
+  extractEntityInstanceUuidIndexWithObjectListExtractor,
+  extractFetchQueryJzodSchema,
+  extractJzodSchemaForDomainModelQuery,
+  extractzodSchemaForSingleSelectQuery,
 } from './2_domain/QuerySelectors.js';
 export{
   getLocalCacheIndexDeploymentSection,
