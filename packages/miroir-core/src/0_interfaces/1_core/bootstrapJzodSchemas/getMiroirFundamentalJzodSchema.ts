@@ -1387,26 +1387,6 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        domainSingleExtractor: {
-          type: "object",
-          definition: {
-            queryType: {
-              type: "literal",
-              definition: "domainSingleExtractor",
-            },
-            deploymentUuid: {
-              type: "uuid",
-              tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
-            },
-            select: {
-              type: "schemaReference",
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "querySelect",
-              },
-            },
-          },
-        },
         domainModelRootExtractor: {
           type: "object",
           definition: {
@@ -1639,13 +1619,6 @@ export function getMiroirFundamentalJzodSchema(
           type: "union",
           discriminator: "queryType",
           definition: [
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "domainSingleExtractor",
-              },
-            },
             {
               type: "schemaReference",
               definition: {

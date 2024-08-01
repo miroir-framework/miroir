@@ -83,7 +83,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           const sequelizeModel = this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel;
           rawResult = (await sequelizeModel?.findAll()) as unknown as EntityInstance[];
           cleanResult = rawResult.map((i) => i["dataValues"]);
-          consoleLog("getInstances result", cleanResult);
+          log.info("getInstances result", cleanResult);
         } catch (e) {
           log.warn(this.logHeader, "getInstances", "failed to fetch instances of entityUuid", parentUuid);
           return {

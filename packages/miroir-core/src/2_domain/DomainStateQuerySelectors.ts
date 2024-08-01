@@ -38,6 +38,7 @@ import {
   extractJzodSchemaForDomainModelQuery,
   extractzodSchemaForSingleSelectQuery,
 } from "./QuerySelectors.js";
+import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainSelector");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -81,6 +82,15 @@ export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: DomainModelGetF
   },
 };
 
+// function getInstances(entityUuid: Uuid): DomainElementInstanceUuidIndexOrFailed {
+//   return {
+//     elementType: "failure",
+//     elementValue: {
+//       queryFailure: "NotImplemented",
+//       queryParameters: JSON.stringify(entityUuid),
+//     },
+//   };
+//  }
 
 // ################################################################################################
 // ACCESSES DOMAIN STATE

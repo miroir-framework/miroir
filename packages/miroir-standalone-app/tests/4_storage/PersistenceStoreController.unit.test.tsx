@@ -718,50 +718,57 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
   //   )
   // });
 
-  // ################################################################################################
-  it("get Library Entities", async () => {
-    await chainTestSteps(
-      "actualTest_getInstancesAndCheckResult_runQuery",
-      {},
-      async () => localAppPersistenceStoreController.handleQuery("model",
-        {
-          actionType: 'queryAction',
-          actionName: "runQuery",
-          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-          query: {
-            queryType: "extractorForRecordOfExtractors",
-            pageParams: {elementType: "object", elementValue: {}},
-            queryParams: {elementType: "object", elementValue: {}},
-            contextResults: {elementType: "object", elementValue: {}},
-            "deploymentUuid": adminConfigurationDeploymentLibrary.uuid,
-            fetchQuery: {
-                select: {
-                entities: {
-                  queryType: "selectObjectListByEntity",
-                  applicationSection: "model",
-                  parentName: "Entity",
-                  parentUuid: {
-                    referenceType: "constant",
-                    referenceUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  },
-                },
-              }
-            }
-          }
-        }
-      ),
-      // (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
-      undefined, // expected result transformation
-      undefined, // name to give to result
-      "entityInstanceCollection",
-      {
-        "applicationSection": "model",
-        "instances": [],
-        "parentUuid": entityEntity.uuid,
-      }
-    )
 
-  });
+  // ################################################################################################
+  // ################################################################################################
+  // ################################################################################################
+  // ################################################################################################
+  // ################################################################################################
+  // ################################################################################################
+  // ################################################################################################
+  // it("get Library Entities", async () => {
+  //   await chainTestSteps(
+  //     "actualTest_getInstancesAndCheckResult_runQuery",
+  //     {},
+  //     async () => localAppPersistenceStoreController.handleQuery("model",
+  //       {
+  //         actionType: 'queryAction',
+  //         actionName: "runQuery",
+  //         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+  //         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+  //         query: {
+  //           queryType: "extractorForRecordOfExtractors",
+  //           pageParams: {elementType: "object", elementValue: {}},
+  //           queryParams: {elementType: "object", elementValue: {}},
+  //           contextResults: {elementType: "object", elementValue: {}},
+  //           "deploymentUuid": adminConfigurationDeploymentLibrary.uuid,
+  //           fetchQuery: {
+  //               select: {
+  //               entities: {
+  //                 queryType: "selectObjectListByEntity",
+  //                 applicationSection: "model",
+  //                 parentName: "Entity",
+  //                 parentUuid: {
+  //                   referenceType: "constant",
+  //                   referenceUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  //                 },
+  //               },
+  //             }
+  //           }
+  //         }
+  //       }
+  //     ),
+  //     // (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
+  //     undefined, // expected result transformation
+  //     undefined, // name to give to result
+  //     "entityInstanceCollection",
+  //     {
+  //       "applicationSection": "model",
+  //       "instances": [],
+  //       "parentUuid": entityEntity.uuid,
+  //     }
+  //   )
+
+  // });
   
 });

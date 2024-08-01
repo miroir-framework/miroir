@@ -567,20 +567,20 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     return result;
   }
   
-  // #############################################################################################
-  async handleQuery(section: ApplicationSection, query: QueryAction): Promise<ActionReturnType> {
-    // TODO: fix applicationSection!!!
-    log.info(this.logHeader,'handleQuery','section',section,'query',query);
-    log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
-    log.info(this.logHeader,'this.modelStoreSection',this.modelStoreSection);
+  // // #############################################################################################
+  // async handleQuery(section: ApplicationSection, query: QueryAction): Promise<ActionReturnType> {
+  //   // TODO: fix applicationSection!!!
+  //   log.info(this.logHeader,'handleQuery','section',section,'query',query);
+  //   log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
+  //   log.info(this.logHeader,'this.modelStoreSection',this.modelStoreSection);
     
-    const currentStore: StoreDataSectionInterface | StoreModelSectionInterface =
-      section == "data" ? this.dataStoreSection : this.modelStoreSection;
-    const result: ActionReturnType = await currentStore.handleQuery(query);
+  //   const currentStore: StoreDataSectionInterface | StoreModelSectionInterface =
+  //     section == "data" ? this.dataStoreSection : this.modelStoreSection;
+  //   // const result: ActionReturnType = await currentStore.handleQuery(query);
 
-    log.info(this.logHeader,'handleQuery','section',section,'query',query, "result", result);
-    return result;
-  }
+  //   log.info(this.logHeader,'handleQuery','section',section,'query',query, "result", result);
+  //   return result;
+  // }
   
   // ##############################################################################################
   async upsertInstance(section: ApplicationSection, instance:EntityInstance):Promise<ActionVoidReturnType>{

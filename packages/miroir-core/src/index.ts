@@ -228,10 +228,26 @@ export {
   domainElementObject,
   DomainElementObjectOrFailed,
   domainElementObjectOrFailed,
+  DomainElementInstanceUuidIndexOrFailed,
+  domainElementInstanceUuidIndexOrFailed,
+  DomainElementEntityInstanceCollectionOrFailed,
+  domainElementEntityInstanceCollectionOrFailed,
+  DomainElementEntityInstanceOrFailed,
+  domainElementEntityInstanceOrFailed, 
+  DomainElementInstanceArrayOrFailed,
+  domainElementInstanceArrayOrFailed,
+  DomainElementFailed,
+  domainElementFailed,
+  DomainElementVoid,
+  domainElementVoid,
   DomainElement,
   domainElement,
   RootReportSection,
   rootReportSection,
+  ExtractorForSingleObject,
+  extractorForSingleObject,
+  ExtractorForSingleObjectList,
+  extractorForSingleObjectList,
 }
 from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js"
 
@@ -321,6 +337,7 @@ export {
   JzodSchemaQuerySelector,
   ExtractorRunnerMapForJzodSchema,
   ExtractorRunnerParamsForJzodSchema,
+  AsyncExtractorRunner,
   ExtractorRunner,
   ExtractorRunnerMap,
   ExtractorRunnerParams,
@@ -460,6 +477,7 @@ export {
 } from './2_domain/DeploymentEntityStateQuerySelectors.js';
 export {
   cleanupResultsFromQuery,
+  resolveContextReference,
   extractWithManyExtractors,
   extractEntityInstanceUuidIndexWithObjectListExtractor,
   extractFetchQueryJzodSchema,

@@ -29,6 +29,12 @@ export type ExtractorRunner<QueryType extends DomainModelExtractor, StateType, R
   extractorAndParams: ExtractorRunnerParams<QueryType, StateType>
 ) => ResultType;
 
+// ################################################################################################
+export type AsyncExtractorRunner<QueryType extends DomainModelExtractor, StateType, ResultType> = (
+  domainState: StateType,
+  extractorAndParams: ExtractorRunnerParams<QueryType, StateType>
+) => Promise<ResultType>;
+
 
 // ################################################################################################
 export type ExtractorRunnerMap<StateType> = {

@@ -306,9 +306,15 @@ export async function miroirBeforeAll(
       }
 
       if (localDataStoreServer) {
-        log.warn("tests-utils localDataStoreWorkers starting, listHandlers", localDataStoreServer.listHandlers().map(h=>h.info.header));
+        log.warn(
+          "tests-utils localDataStoreWorkers starting, listHandlers",
+          localDataStoreServer.listHandlers().map((h) => h.info.header)
+        );
         await localDataStoreServer.listen();
-        log.warn("tests-utils localDataStoreWorkers STARTED, listHandlers", localDataStoreServer.listHandlers().map(h=>h.info.header));
+        log.warn(
+          "tests-utils localDataStoreWorkers STARTED, listHandlers",
+          localDataStoreServer.listHandlers().map((h) => h.info.header)
+        );
       } else {
         throw new Error("tests-utils localDataStoreServer not found.");
         
@@ -326,11 +332,20 @@ export async function miroirBeforeAll(
           deployment[1]
         );
       }
-      const localMiroirPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(adminConfigurationDeploymentMiroir.uuid);
-      const localAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(adminConfigurationDeploymentLibrary.uuid);
+      const localMiroirPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
+        adminConfigurationDeploymentMiroir.uuid
+      );
+      const localAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
+        adminConfigurationDeploymentLibrary.uuid
+      );
 
       if (!localMiroirPersistenceStoreController || !localAppPersistenceStoreController) {
-        throw new Error("could not find controller:" + localMiroirPersistenceStoreController + " " + localAppPersistenceStoreController);
+        throw new Error(
+          "could not find controller:" +
+            localMiroirPersistenceStoreController +
+            " " +
+            localAppPersistenceStoreController
+        );
       }
 
       await startLocalPersistenceStoreControllers(localMiroirPersistenceStoreController, localAppPersistenceStoreController)

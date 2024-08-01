@@ -979,11 +979,6 @@ export type LocalCacheExtractor = {
         instanceUuid?: string | undefined;
     };
 };
-export type DomainSingleExtractor = {
-    queryType: "domainSingleExtractor";
-    deploymentUuid: string;
-    select: QuerySelect;
-};
 export type DomainModelRootExtractor = {
     deploymentUuid: string;
     pageParams: DomainElementObject;
@@ -1047,7 +1042,7 @@ export type DomainModelGetSingleSelectQueryJzodSchemaExtractor = {
     select: QuerySelect;
 };
 export type DomainModelQueryJzodSchemaParams = DomainModelGetEntityDefinitionExtractor | DomainModelGetFetchParamJzodSchemaExtractor | DomainModelGetSingleSelectQueryJzodSchemaExtractor;
-export type DomainModelExtractor = DomainSingleExtractor | ExtractorForSingleObject | DomainModelSingleExtractor | ExtractorForSingleObjectList | ExtractorForRecordOfExtractors | LocalCacheExtractor | DomainModelGetEntityDefinitionExtractor | DomainModelGetFetchParamJzodSchemaExtractor | DomainModelGetSingleSelectQueryJzodSchemaExtractor;
+export type DomainModelExtractor = ExtractorForSingleObject | DomainModelSingleExtractor | ExtractorForSingleObjectList | ExtractorForRecordOfExtractors | LocalCacheExtractor | DomainModelGetEntityDefinitionExtractor | DomainModelGetFetchParamJzodSchemaExtractor | DomainModelGetSingleSelectQueryJzodSchemaExtractor;
 export type ______________________________________________actions_____________________________________________ = never;
 export type ActionError = {
     status: "error";
@@ -2796,7 +2791,6 @@ export const domainElement: z.ZodType<DomainElement> = z.union([z.lazy(() =>doma
 export const recordOfTransformers: z.ZodType<RecordOfTransformers> = z.object({transformerType:z.literal("recordOfTransformers"), definition:z.record(z.string(),z.lazy(() =>transformer))}).strict();
 export const transformer: z.ZodType<Transformer> = z.union([z.object({transformerType:z.literal("objectTransformer"), attributeName:z.string()}).strict(), z.lazy(() =>recordOfTransformers)]);
 export const localCacheExtractor: z.ZodType<LocalCacheExtractor> = z.object({queryType:z.literal("localCacheEntityInstancesExtractor"), definition:z.object({deploymentUuid:z.string().uuid().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), entityUuid:z.string().uuid().optional(), instanceUuid:z.string().uuid().optional()}).strict()}).strict();
-export const domainSingleExtractor: z.ZodType<DomainSingleExtractor> = z.object({queryType:z.literal("domainSingleExtractor"), deploymentUuid:z.string().uuid(), select:z.lazy(() =>querySelect)}).strict();
 export const domainModelRootExtractor: z.ZodType<DomainModelRootExtractor> = z.object({deploymentUuid:z.string().uuid(), pageParams:z.lazy(() =>domainElementObject), queryParams:z.lazy(() =>domainElementObject), contextResults:z.lazy(() =>domainElementObject)}).strict();
 export const extractorForSingleObject: z.ZodType<ExtractorForSingleObject> = z.object({deploymentUuid:z.string().uuid(), pageParams:z.lazy(() =>domainElementObject), queryParams:z.lazy(() =>domainElementObject), contextResults:z.lazy(() =>domainElementObject)}).strict().extend({queryType:z.literal("domainModelSingleExtractor"), select:z.lazy(() =>querySelectObject)}).strict();
 export const extractorForSingleObjectList: z.ZodType<ExtractorForSingleObjectList> = z.object({deploymentUuid:z.string().uuid(), pageParams:z.lazy(() =>domainElementObject), queryParams:z.lazy(() =>domainElementObject), contextResults:z.lazy(() =>domainElementObject)}).strict().extend({queryType:z.literal("domainModelSingleExtractor"), select:z.lazy(() =>querySelectObjectList)}).strict();
@@ -2806,7 +2800,7 @@ export const domainModelGetEntityDefinitionExtractor: z.ZodType<DomainModelGetEn
 export const domainModelGetFetchParamJzodSchemaExtractor: z.ZodType<DomainModelGetFetchParamJzodSchemaExtractor> = z.object({deploymentUuid:z.string().uuid(), pageParams:z.lazy(() =>domainElementObject), queryParams:z.lazy(() =>domainElementObject), contextResults:z.lazy(() =>domainElementObject)}).strict().extend({queryType:z.literal("getFetchParamsJzodSchema"), fetchParams:z.lazy(() =>extractorForRecordOfExtractors)}).strict();
 export const domainModelGetSingleSelectQueryJzodSchemaExtractor: z.ZodType<DomainModelGetSingleSelectQueryJzodSchemaExtractor> = z.object({deploymentUuid:z.string().uuid(), pageParams:z.lazy(() =>domainElementObject), queryParams:z.lazy(() =>domainElementObject), contextResults:z.lazy(() =>domainElementObject)}).strict().extend({queryType:z.literal("getSingleSelectQueryJzodSchema"), select:z.lazy(() =>querySelect)}).strict();
 export const domainModelQueryJzodSchemaParams: z.ZodType<DomainModelQueryJzodSchemaParams> = z.union([z.lazy(() =>domainModelGetEntityDefinitionExtractor), z.lazy(() =>domainModelGetFetchParamJzodSchemaExtractor), z.lazy(() =>domainModelGetSingleSelectQueryJzodSchemaExtractor)]);
-export const domainModelExtractor: z.ZodType<DomainModelExtractor> = z.union([z.lazy(() =>domainSingleExtractor), z.lazy(() =>extractorForSingleObject), z.lazy(() =>domainModelSingleExtractor), z.lazy(() =>extractorForSingleObjectList), z.lazy(() =>extractorForRecordOfExtractors), z.lazy(() =>localCacheExtractor), z.lazy(() =>domainModelGetEntityDefinitionExtractor), z.lazy(() =>domainModelGetFetchParamJzodSchemaExtractor), z.lazy(() =>domainModelGetSingleSelectQueryJzodSchemaExtractor)]);
+export const domainModelExtractor: z.ZodType<DomainModelExtractor> = z.union([z.lazy(() =>extractorForSingleObject), z.lazy(() =>domainModelSingleExtractor), z.lazy(() =>extractorForSingleObjectList), z.lazy(() =>extractorForRecordOfExtractors), z.lazy(() =>localCacheExtractor), z.lazy(() =>domainModelGetEntityDefinitionExtractor), z.lazy(() =>domainModelGetFetchParamJzodSchemaExtractor), z.lazy(() =>domainModelGetSingleSelectQueryJzodSchemaExtractor)]);
 export const ______________________________________________actions_____________________________________________: z.ZodType<______________________________________________actions_____________________________________________> = z.never();
 export const actionError: z.ZodType<ActionError> = z.object({status:z.literal("error"), error:z.object({errorType:z.union([z.enum(["FailedToCreateStore","FailedToDeployModule"]), z.literal("FailedToDeleteStore"), z.literal("FailedToResetAndInitMiroirAndApplicationDatabase"), z.literal("FailedToOpenStore"), z.literal("FailedToCloseStore"), z.literal("FailedToCreateInstance"), z.literal("FailedToGetInstance"), z.literal("FailedToGetInstances")]), errorMessage:z.string().optional(), error:z.object({errorMessage:z.string().optional(), stack:z.array(z.string().optional())}).strict().optional()}).strict()}).strict();
 export const actionVoidSuccess: z.ZodType<ActionVoidSuccess> = z.object({status:z.literal("ok"), returnedDomainElement:z.lazy(() =>domainElementVoid)}).strict();
