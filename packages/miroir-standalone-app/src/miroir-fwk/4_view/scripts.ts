@@ -122,8 +122,8 @@ export const deleteCascade = async (p: {
               applicationSection: p.applicationSection,
               parentName: "",
               parentUuid: {
-                referenceType: "constant",
-                referenceUuid: entityUuid,
+                queryTemplateType: "constantUuid",
+                constantUuidValue: entityUuid,
               },
             },
           ])

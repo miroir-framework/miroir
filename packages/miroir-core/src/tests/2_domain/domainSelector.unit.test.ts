@@ -3,7 +3,8 @@ import adminConfigurationDeploymentLibrary from "../../assets/admin_data/7959d81
 import { DomainState } from "../../0_interfaces/2_domain/DomainControllerInterface.js";
 import {
   getSelectorParams,
-  selectByDomainManyQueriesFromDomainState
+  extractWithManyExtractorsFromDomainState,
+  extractWithExtractorFromDomainState
 } from "../../2_domain/DomainStateQuerySelectors.js";
 
 import {
@@ -31,18 +32,19 @@ describe("domainSelector", () => {
               queryType: "selectObjectByDirectReference",
               parentName: "Book",
               parentUuid: {
-                referenceType: "constant",
-                referenceUuid: "XXXXXX"
+                queryTemplateType: "constantUuid",
+                constantUuidValue: "XXXXXX"
               },
               instanceUuid: {
-                referenceType: "constant",
-                referenceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+                queryTemplateType: "constantUuid",
+                constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
               }
             },
           },
         },
       };
-      const result = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam));
+      // const result = extractWithManyExtractorsFromDomainState(domainState, getSelectorParams(queryParam));
+      const result = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
       console.info("result", result);
       expect(result).toEqual({
         elementType: "object",
@@ -76,18 +78,19 @@ describe("domainSelector", () => {
               queryType: "selectObjectByDirectReference",
               parentName: "Book",
               parentUuid: {
-                "referenceType": "constant",
-                "referenceUuid": "XXXXXX"
+                "queryTemplateType": "constantUuid",
+                "constantUuidValue": "XXXXXX"
               },
               instanceUuid: {
-                referenceType: "constant",
-                referenceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+                queryTemplateType: "constantUuid",
+                constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
               }
             },
           },
         },
       };
-      const result = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam));
+      // const result = extractWithManyExtractorsFromDomainState(domainState, getSelectorParams(queryParam));
+      const result = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
       console.info("result", result);
       expect(result).toEqual({
         elementType: "object",
@@ -122,19 +125,22 @@ describe("domainSelector", () => {
               queryType: "selectObjectByDirectReference",
               parentName: "Book",
               parentUuid: {
-                referenceType: "constant",
-                referenceUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                queryTemplateType: "constantUuid",
+                constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
               },
               instanceUuid: {
-                referenceType: "constant",
-                referenceUuid: "XXXXXXXXX"
+                queryTemplateType: "constantUuid",
+                constantUuidValue: "XXXXXXXXX"
               }
             }
           }
         }
       };
 
-      expect(selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam))).toEqual({
+      expect(
+        // extractWithManyExtractorsFromDomainState(domainState, getSelectorParams(queryParam)))
+        extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam)))
+        .toEqual({
         elementType: "object",
         elementValue: {
           book: {
@@ -168,19 +174,19 @@ describe("domainSelector", () => {
               queryType: "selectObjectByDirectReference",
               parentName: "Book",
               parentUuid: {
-                referenceType: "constant",
-                referenceUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                queryTemplateType: "constantUuid",
+                constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
               },
               instanceUuid: {
-                referenceType: "constant",
-                referenceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+                queryTemplateType: "constantUuid",
+                constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
               },
             },
           },
         },
       };
 
-      const queryResult:any = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam));
+      const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
 
       expect(queryResult.elementValue.book.elementValue).toBe(domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"])
     }
@@ -202,12 +208,12 @@ describe("domainSelector", () => {
               queryType: "selectObjectByDirectReference",
               parentName: "Book",
               parentUuid: {
-                referenceType: "constant",
-                referenceUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                queryTemplateType: "constantUuid",
+                constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
               },
               instanceUuid: {
-                referenceType: "constant",
-                referenceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+                queryTemplateType: "constantUuid",
+                constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
               },
             },
             book2: {
@@ -218,7 +224,7 @@ describe("domainSelector", () => {
         },
       };
 
-      const queryResult:any = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam));
+      const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
 
       expect(queryResult.elementValue.book2.elementValue).toBe(domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"])
     }
@@ -240,11 +246,11 @@ describe("domainSelector", () => {
               queryType: "selectObjectByDirectReference",
               parentName: "Book",
               parentUuid: {
-                referenceType: "constant",
-                referenceUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                queryTemplateType: "constantUuid",
+                constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
               },
               instanceUuid: {
-                referenceType: "queryParameterReference",
+                queryTemplateType: "queryParameterReference",
                 referenceName: "wantedBookUuid",
               },
             },
@@ -252,7 +258,7 @@ describe("domainSelector", () => {
         },
       };
 
-      const queryResult:any = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam));
+      const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
       console.log("queryResult", JSON.stringify(queryResult, circularReplacer(), 2));
 
       expect(queryResult.elementValue.book.elementValue).toBe(domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"])
@@ -265,47 +271,47 @@ describe("domainSelector", () => {
 
       const queryParam: ExtractorForRecordOfExtractors = {
         queryType: "extractorForRecordOfExtractors",
-        "deploymentUuid": adminConfigurationDeploymentLibrary.uuid,
-        "contextResults": { elementType: "object", elementValue: {} },
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        contextResults: { elementType: "object", elementValue: {} },
         pageParams: { elementType: "object", elementValue: {} },
         queryParams: { elementType: "object", elementValue: {} },
-        "fetchQuery": {
-          "select": {
-            "book": {
+        fetchQuery: {
+          select: {
+            book: {
               queryType: "selectObjectByDirectReference",
               parentName: "Book",
               parentUuid: {
-                "referenceType": "constant",
-                referenceUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                queryTemplateType: "constantUuid",
+                constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
               },
               instanceUuid: {
-                referenceType: "constant",
-                referenceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
-              }
+                queryTemplateType: "constantUuid",
+                constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+              },
             },
-            "publisher": {
-              "queryType": "selectObjectByRelation",
-              "parentName": "Publisher",
+            publisher: {
+              queryType: "selectObjectByRelation",
+              parentName: "Publisher",
               parentUuid: {
-                "referenceType": "constant",
-                referenceUuid: "a027c379-8468-43a5-ba4d-bf618be25cab"
+                queryTemplateType: "constantUuid",
+                constantUuidValue: "a027c379-8468-43a5-ba4d-bf618be25cab",
               },
-              "objectReference": {
-                "referenceType": "queryContextReference",
-                "referenceName": "book"
+              objectReference: {
+                queryTemplateType: "queryContextReference",
+                referenceName: "book",
               },
-              "AttributeOfObjectToCompareToReferenceUuid": "publisher",
-            }
-          }
-        }
+              AttributeOfObjectToCompareToReferenceUuid: "publisher",
+            },
+          },
+        },
       };
 
-      const result:DomainElement = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam));
+      const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
 
-      console.log("result XXXXXXXXXXXXXXXXXXXXXXXXXXXXX", JSON.stringify(result, circularReplacer(), 2));
+      console.log("result XXXXXXXXXXXXXXXXXXXXXXXXXXXXX", JSON.stringify(queryResult, circularReplacer(), 2));
       
-      expect(result.elementType).toBe("object")
-      expect((result.elementValue as any)["publisher"].elementValue).toBe(
+      expect(queryResult.elementType).toBe("object")
+      expect((queryResult.elementValue as any)["publisher"].elementValue).toBe(
         domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["a027c379-8468-43a5-ba4d-bf618be25cab"][
           "516a7366-39e7-4998-82cb-80199a7fa667"
         ]
@@ -337,19 +343,19 @@ describe("domainSelector", () => {
               queryType: "selectObjectListByEntity",
               parentName: "Author",
               parentUuid: {
-                referenceType: "constant",
-                referenceUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                queryTemplateType: "constantUuid",
+                constantUuidValue: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
               },
             },
           },
         },
       };
 
-      const result:DomainElement = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam));
+      const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
 
-      console.log("result", result);
+      console.log("result", queryResult);
       
-      expect((result.elementValue as any)["authors"].elementValue).toEqual({
+      expect((queryResult.elementValue as any)["authors"].elementValue).toEqual({
           '4441169e-0c22-4fbc-81b2-28c87cf48ab2': {
             uuid: '4441169e-0c22-4fbc-81b2-28c87cf48ab2',
             parentName: 'Author',
@@ -404,23 +410,23 @@ describe("domainSelector", () => {
               queryType: "selectObjectByDirectReference",
               parentName: "Book",
               parentUuid: {
-                referenceType: "constant",
-                referenceUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                queryTemplateType: "constantUuid",
+                constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
               },
               instanceUuid: {
-                referenceType: "constant",
-                referenceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+                queryTemplateType: "constantUuid",
+                constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
               },
             },
             publisher: {
               queryType: "selectObjectByRelation",
               parentName: "Publisher",
               parentUuid: {
-                referenceType: "constant",
-                referenceUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
+                queryTemplateType: "constantUuid",
+                constantUuidValue: "a027c379-8468-43a5-ba4d-bf618be25cab",
               },
               objectReference: {
-                referenceType: "queryContextReference",
+                queryTemplateType: "queryContextReference",
                 referenceName: "book",
               },
               AttributeOfObjectToCompareToReferenceUuid: "publisher",
@@ -429,12 +435,12 @@ describe("domainSelector", () => {
               queryType: "selectObjectListByRelation",
               parentName: "Book",
               parentUuid: {
-                referenceType: "constant",
-                referenceUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                queryTemplateType: "constantUuid",
+                constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
               },
               objectReference: {
-                referenceType: "constant",
-                referenceUuid: "516a7366-39e7-4998-82cb-80199a7fa667",
+                queryTemplateType: "constantUuid",
+                constantUuidValue: "516a7366-39e7-4998-82cb-80199a7fa667",
               },
               AttributeOfListObjectToCompareToReferenceUuid: "publisher",
             },
@@ -442,11 +448,11 @@ describe("domainSelector", () => {
         },
       };
 
-      const result:DomainElement = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam));
+      const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
 
-      console.log("result", result);
+      console.log("result", queryResult);
       
-      expect((result.elementValue as any)["booksOfPublisher"].elementValue).toEqual({
+      expect((queryResult.elementValue as any)["booksOfPublisher"].elementValue).toEqual({
         "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7": domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
         "c6852e89-3c3c-447f-b827-4b5b9d830975": domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
         "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
@@ -478,23 +484,23 @@ describe("domainSelector", () => {
               queryType: "selectObjectByDirectReference",
               parentName: "Book",
               parentUuid: {
-                referenceType: "constant",
-                referenceUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                queryTemplateType: "constantUuid",
+                constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
               },
               instanceUuid: {
-                referenceType: "constant",
-                referenceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+                queryTemplateType: "constantUuid",
+                constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
               },
             },
             publisher: {
               queryType: "selectObjectByRelation",
               parentName: "Publisher",
               parentUuid: {
-                referenceType: "constant",
-                referenceUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
+                queryTemplateType: "constantUuid",
+                constantUuidValue: "a027c379-8468-43a5-ba4d-bf618be25cab",
               },
               objectReference: {
-                referenceType: "queryContextReference",
+                queryTemplateType: "queryContextReference",
                 referenceName: "book",
               },
               AttributeOfObjectToCompareToReferenceUuid: "publisher",
@@ -503,11 +509,11 @@ describe("domainSelector", () => {
               queryType: "selectObjectListByRelation",
               parentName: "Book",
               parentUuid: {
-                referenceType: "constant",
-                referenceUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                queryTemplateType: "constantUuid",
+                constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
               },
               objectReference: {
-                referenceType: "queryContextReference",
+                queryTemplateType: "queryContextReference",
                 referenceName: "publisher",
               },
               AttributeOfListObjectToCompareToReferenceUuid: "publisher",
@@ -532,7 +538,7 @@ describe("domainSelector", () => {
         },
       };
 
-      const result:DomainElement = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam));
+      const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
 
       const expectedValue = {
         "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7": domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
@@ -540,10 +546,10 @@ describe("domainSelector", () => {
         "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
       };
 
-      expect((result.elementValue as any)["result1"].elementValue["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"].elementValue).toEqual(expectedValue)
+      expect((queryResult.elementValue as any)["result1"].elementValue["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"].elementValue).toEqual(expectedValue)
       
-      expect((result.elementValue as any)["result2"].elementValue[0].elementValue).toEqual(expectedValue);
-      expect((result.elementValue as any)["result2"].elementValue[1].elementValue).toEqual(expectedValue);
+      expect((queryResult.elementValue as any)["result2"].elementValue[0].elementValue).toEqual(expectedValue);
+      expect((queryResult.elementValue as any)["result2"].elementValue[1].elementValue).toEqual(expectedValue);
     }
   )
 
@@ -572,8 +578,8 @@ describe("domainSelector", () => {
               applicationSection: "model",
               parentName: "Entity",
               parentUuid: {
-                referenceType: "constant",
-                referenceUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                queryTemplateType: "constantUuid",
+                constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
               },
             },
             instancesOfEntities: {
@@ -586,7 +592,7 @@ describe("domainSelector", () => {
                 query: {
                   queryType: "selectObjectListByEntity",
                   parentUuid: {
-                    referenceType: "queryParameterReference",
+                    queryTemplateType: "queryParameterReference",
                     referenceName: "uuid",
                   },
                 },
@@ -605,7 +611,7 @@ describe("domainSelector", () => {
         },
       };
 
-      const result:DomainElement = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(queryParam));
+      const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
       // console.log("result", result.elementValue.instancesOfEntities);
       const expectedValue = {
         elementType: "object",
@@ -617,7 +623,7 @@ describe("domainSelector", () => {
         )
       }
       // console.log("expectedValue", expectedValue);
-      expect(result.elementValue.instancesOfEntities).toEqual(expectedValue);
+      expect(queryResult.elementValue.instancesOfEntities).toEqual(expectedValue);
     }
   )
 

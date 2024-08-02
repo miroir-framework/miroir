@@ -14,8 +14,8 @@
           "queryType": "selectObjectListByEntity",
           "parentName": "Commit",
           "parentUuid": {
-            "referenceType": "constant",
-            "referenceUuid": "73bb0c69-e636-4e3b-a230-51f25469c089"
+            "queryTemplateType": "constantUuid",
+            "constantUuidValue": "73bb0c69-e636-4e3b-a230-51f25469c089"
           }
         }
       }

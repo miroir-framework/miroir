@@ -1,4 +1,4 @@
-import { getLoggerName, LoggerInterface, MiroirLoggerFactory, AdminStoreInterface, StoreModelSectionInterface, StoreDataSectionInterface, ActionReturnType, ApplicationSection, QueryAction, ExtractorRunner, ExtractorRunnerParams, DomainElement, DomainElementInstanceUuidIndexOrFailed, DomainState, ExtractorForSingleObjectList, ExtractorRunnerMap, ExtractorRunnerMapForJzodSchema, selectByDomainManyQueriesFromDomainState, selectEntityInstanceFromObjectQueryAndDomainState, selectEntityInstanceListFromListQueryAndDomainState, selectEntityInstanceUuidIndexFromDomainState, selectEntityJzodSchemaFromDomainStateNew, selectFetchQueryJzodSchemaFromDomainStateNew, selectJzodSchemaByDomainModelQueryFromDomainStateNew, selectJzodSchemaBySingleSelectQueryFromDomainStateNew, DomainModelExtractor, AsyncExtractorRunner, resolveContextReference, ActionEntityInstanceCollectionReturnType, PersistenceStoreControllerInterface, DomainElementEntityInstanceOrFailed, ExtractorForSingleObject, QuerySelectObject } from "miroir-core";
+import { getLoggerName, LoggerInterface, MiroirLoggerFactory, AdminStoreInterface, StoreModelSectionInterface, StoreDataSectionInterface, ActionReturnType, ApplicationSection, QueryAction, ExtractorRunner, ExtractorRunnerParams, DomainElement, DomainElementInstanceUuidIndexOrFailed, DomainState, ExtractorForSingleObjectList, ExtractorRunnerMap, ExtractorRunnerMapForJzodSchema, extractWithManyExtractorsFromDomainState, selectEntityInstanceFromObjectQueryAndDomainState, selectEntityInstanceListFromListQueryAndDomainState, selectEntityInstanceUuidIndexFromDomainState, selectEntityJzodSchemaFromDomainStateNew, selectFetchQueryJzodSchemaFromDomainStateNew, selectJzodSchemaByDomainModelQueryFromDomainStateNew, selectJzodSchemaBySingleSelectQueryFromDomainStateNew, DomainModelExtractor, AsyncExtractorRunner, resolveContextReference, ActionEntityInstanceCollectionReturnType, PersistenceStoreControllerInterface, DomainElementEntityInstanceOrFailed, ExtractorForSingleObject, QuerySelectObject, AsyncExtractorRunnerMap, extractWithExtractor } from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 
@@ -15,9 +15,6 @@ export class IndexedDbExtractorRunner {
 
   constructor(
     private persistenceStoreController: PersistenceStoreControllerInterface
-    // private adminStore: AdminStoreInterface,
-    // private modelStoreSection:StoreModelSectionInterface,
-    // private dataStoreSection:StoreDataSectionInterface,
   ){
     this.logHeader = 'PersistenceStoreController '+ persistenceStoreController.getStoreName();
   }
@@ -32,6 +29,10 @@ export class IndexedDbExtractorRunner {
     //   section == "data" ? this.dataStoreSection : this.modelStoreSection;
     const result = { status: "ok", returnedDomainElement: { elementType: "object", elementValue: {}}} as ActionReturnType;
     // const result: ActionReturnType = await currentStore.handleQuery(query);
+    const queryResult: DomainElement = extractWithManyExtractorsFromI(
+      domainState,
+      getSelectorParams(queryAction.query)
+    );
 
     log.info(this.logHeader,'handleQuery','section',section,'query',query, "result", result);
     return result;
@@ -387,18 +388,20 @@ export class IndexedDbExtractorRunner {
     }
   };
 
+  public getSelectorMap(): AsyncExtractorRunnerMap<any> {
+    return {
+      extractEntityInstanceUuidIndex: this.selectEntityInstanceUuidIndexFromIndexedDb,
+      extractEntityInstance: this.selectEntityInstanceFromIndexedDb,
+      extractEntityInstanceUuidIndexWithObjectListExtractor: async (...args) => selectEntityInstanceListFromListQueryAndDomainState(...args),
+      extractWithManyExtractors: async (...args) => extractWithManyExtractorsFromDomainState(...args),
+      extractWithExtractor: async (...args) => extractWithExtractor(...args),
+    };
+  }
+  
 
 }
 
 
-export function getSelectorMap(): ExtractorRunnerMap<DomainState> {
-  return {
-    extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDomainState,
-    extractEntityInstance: selectEntityInstanceFromObjectQueryAndDomainState,
-    extractEntityInstanceUuidIndexWithObjectListExtractor: selectEntityInstanceListFromListQueryAndDomainState,
-    extractWithManyExtractors: selectByDomainManyQueriesFromDomainState,
-  };
-}
 
 
 

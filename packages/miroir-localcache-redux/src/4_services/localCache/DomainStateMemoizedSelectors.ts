@@ -7,7 +7,7 @@ import {
   selectEntityInstanceFromDeploymentEntityState,
   extractEntityInstanceUuidIndexWithObjectListExtractor,
   selectEntityInstanceUuidIndexFromDeploymentEntityState,
-  selectEntityJzodSchemaFromDeploymentEntityState,
+  extractEntityJzodSchemaFromDeploymentEntityState,
   extractFetchQueryJzodSchema,
   extractJzodSchemaForDomainModelQuery,
   extractzodSchemaForSingleSelectQuery
@@ -45,7 +45,7 @@ export function getMemoizedDeploymentEntityStateJzodSchemaSelectorMap(): Extract
     ),
     extractEntityJzodSchema: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-      selectEntityJzodSchemaFromDeploymentEntityState
+      extractEntityJzodSchemaFromDeploymentEntityState
     ),
     extractFetchQueryJzodSchema: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],

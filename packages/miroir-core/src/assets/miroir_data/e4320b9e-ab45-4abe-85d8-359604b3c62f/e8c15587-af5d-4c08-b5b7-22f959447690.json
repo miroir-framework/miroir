@@ -21,11 +21,11 @@
             "queryType": "selectObjectByDirectReference",
             "parentName": "ApplicationVersion",
             "parentUuid": {
-              "referenceType": "constant",
-              "referenceUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24"
+              "queryTemplateType": "constantUuid",
+              "constantUuidValue": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24"
             },
             "instanceUuid": {
-              "referenceType": "queryParameterReference",
+              "queryTemplateType": "queryParameterReference",
               "referenceName": "applicationVersion"
             }
           },
@@ -34,8 +34,8 @@
             "applicationSection": "model",
             "parentName": "Entity",
             "parentUuid": {
-              "referenceType": "constant",
-              "referenceUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+              "queryTemplateType": "constantUuid",
+              "constantUuidValue": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
             }
           },
           "entityDefinitions": {
@@ -43,32 +43,32 @@
             "applicationSection": "model",
             "parentName": "Entity",
             "parentUuid": {
-              "referenceType": "constant",
-              "referenceUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd"
+              "queryTemplateType": "constantUuid",
+              "constantUuidValue": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd"
             }
           },
           "reports": {
             "queryType": "selectObjectListByEntity",
             "parentName": "Report",
             "parentUuid": {
-              "referenceType": "constant",
-              "referenceUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916"
+              "queryTemplateType": "constantUuid",
+              "constantUuidValue": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916"
             }
           },
           "queries": {
             "queryType": "selectObjectListByEntity",
             "parentName": "Query",
             "parentUuid": {
-              "referenceType": "constant",
-              "referenceUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f"
+              "queryTemplateType": "constantUuid",
+              "constantUuidValue": "e4320b9e-ab45-4abe-85d8-359604b3c62f"
             }
           },
           "endpoints": {
             "queryType": "selectObjectListByEntity",
             "parentName": "Query",
             "parentUuid": {
-              "referenceType": "constant",
-              "referenceUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c"
+              "queryTemplateType": "constantUuid",
+              "constantUuidValue": "3d8da4d4-8f76-4bb4-9212-14869d81c00c"
             }
           },
           "instancesOfEntities": {
@@ -78,15 +78,15 @@
               "applicationSection": "model",
               "parentName": "Entity",
               "parentUuid": {
-                "referenceType": "constant",
-                "referenceUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+                "queryTemplateType": "constantUuid",
+                "constantUuidValue": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
               }
             },
             "subQuery": {
               "query": {
                 "queryType":"selectObjectListByEntity",
                 "parentUuid": {
-                  "referenceType": "queryParameterReference",
+                  "queryTemplateType": "queryParameterReference",
                   "referenceName": "uuid"
                 }
               },

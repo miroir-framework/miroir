@@ -15,7 +15,7 @@
           "parentName": "Deployment",
           "parentUuid": "84bda435-3b9c-46ca-aa74-19d3a2511b24",
           "objectReference": {
-            "referenceType": "queryParameterReference",
+            "queryTemplateType": "queryParameterReference",
             "referenceName": "instanceUuid"
           }
         }

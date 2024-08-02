@@ -13,8 +13,8 @@
           "queryType": "selectObjectListByEntity",
           "parentName": "Menu",
           "parentUuid": {
-            "referenceType": "constant",
-            "referenceUuid": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842"
+            "queryTemplateType": "constantUuid",
+            "constantUuidValue": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842"
           }
         }
       }

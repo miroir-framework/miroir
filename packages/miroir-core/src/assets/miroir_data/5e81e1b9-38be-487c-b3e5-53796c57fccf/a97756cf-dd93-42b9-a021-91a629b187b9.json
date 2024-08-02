@@ -16,9 +16,9 @@
             "definition": {
               "templateType": {
                 "type": "literal",
-                "definition": "constant"
+                "definition": "constantUuid"
               },
-              "referenceUuid": {
+              "constantUuidValue": {
                 "type": "string"
               }
             }

@@ -14,8 +14,8 @@
           "queryType": "selectObjectListByEntity",
           "parentName": "User",
           "parentUuid": {
-            "referenceType": "constant",
-            "referenceUuid": "ca794e28-b2dc-45b3-8137-00151557eea8"
+            "queryTemplateType": "constantUuid",
+            "constantUuidValue": "ca794e28-b2dc-45b3-8137-00151557eea8"
           }
         }
       }

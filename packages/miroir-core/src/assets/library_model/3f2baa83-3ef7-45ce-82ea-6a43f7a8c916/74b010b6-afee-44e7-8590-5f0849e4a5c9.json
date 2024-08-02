@@ -15,8 +15,8 @@
         "books": {
           "queryType": "selectObjectListByEntity",
           "parentUuid": {
-            "referenceType": "constant",
-            "referenceUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            "queryTemplateType": "constantUuid",
+            "constantUuidValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
           }
         }
       }

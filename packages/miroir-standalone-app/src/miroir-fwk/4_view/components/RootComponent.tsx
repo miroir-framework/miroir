@@ -303,8 +303,8 @@ export const RootComponent = (props: RootComponentProps) => {
                               applicationSection: "data",
                               parentName: "Deployment",
                               parentUuid: {
-                                referenceType: "constant",
-                                referenceUuid: entityDeployment.uuid,
+                                queryTemplateType: "constantUuid",
+                                constantUuidValue: entityDeployment.uuid,
                               },
                             },
                           }
@@ -547,8 +547,8 @@ export const RootComponent = (props: RootComponentProps) => {
                               "queryType": "selectObjectListByEntity",
                               "parentName": "Author",
                               "parentUuid": {
-                                "referenceType": "constant",
-                                "referenceUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
+                                "queryTemplateType": "constantUuid",
+                                "constantUuidValue": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
                               }
                             }
                           }

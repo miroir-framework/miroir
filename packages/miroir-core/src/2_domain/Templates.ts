@@ -35,30 +35,30 @@ export const domainElementTemplateSchema: JzodReference = {
 // ################################################################################################
 // duplicate from QuerySelectors.ts
 export const resolveActionTemplateContextReference = (
-  queryObjectReference: ObjectTemplateInnerReference,
+  queryTemplateConstantOrReference: ObjectTemplateInnerReference,
   queryParams: any,
   contextResults: any
 ): any => {
   // TODO: copy / paste (almost?) from query parameter lookup!
-  // log.info("resolveActionTemplateContextReference for queryObjectReference=", queryObjectReference, "queryParams=", queryParams,"contextResults=", contextResults)
+  // log.info("resolveActionTemplateContextReference for queryTemplateConstantOrReference=", queryTemplateConstantOrReference, "queryParams=", queryParams,"contextResults=", contextResults)
   if (
-    (queryObjectReference.templateType == "contextReference" &&
-      (!contextResults || !contextResults[queryObjectReference.referenceName])) ||
-    (queryObjectReference.templateType == "parameterReference" &&
-      (typeof queryParams != "object" || !Object.keys(queryParams).includes(queryObjectReference.referenceName)))
+    (queryTemplateConstantOrReference.templateType == "contextReference" &&
+      (!contextResults || !contextResults[queryTemplateConstantOrReference.referenceName])) ||
+    (queryTemplateConstantOrReference.templateType == "parameterReference" &&
+      (typeof queryParams != "object" || !Object.keys(queryParams).includes(queryTemplateConstantOrReference.referenceName)))
   ) {
     // checking that given reference does exist
-    log.warn("could not find", queryObjectReference.templateType, queryObjectReference.referenceName, "in", queryObjectReference.templateType == "contextReference"?JSON.stringify(contextResults):Object.keys(queryParams))
+    log.warn("could not find", queryTemplateConstantOrReference.templateType, queryTemplateConstantOrReference.referenceName, "in", queryTemplateConstantOrReference.templateType == "contextReference"?JSON.stringify(contextResults):Object.keys(queryParams))
     return {
       elementType: "failure",
-      elementValue: { queryFailure: "ReferenceNotFound", queryContext: "no " + queryObjectReference.referenceName + " in " + queryObjectReference.templateType == "contextReference"?JSON.stringify(contextResults):Object.keys(queryParams) },
+      elementValue: { queryFailure: "ReferenceNotFound", queryContext: "no " + queryTemplateConstantOrReference.referenceName + " in " + queryTemplateConstantOrReference.templateType == "contextReference"?JSON.stringify(contextResults):Object.keys(queryParams) },
     };
   }
 
   if (
-    (queryObjectReference.templateType == "contextReference" &&
-      !contextResults[queryObjectReference.referenceName].elementValue) ||
-    (queryObjectReference.templateType == "parameterReference" && !queryParams[queryObjectReference.referenceName])
+    (queryTemplateConstantOrReference.templateType == "contextReference" &&
+      !contextResults[queryTemplateConstantOrReference.referenceName].elementValue) ||
+    (queryTemplateConstantOrReference.templateType == "parameterReference" && !queryParams[queryTemplateConstantOrReference.referenceName])
   ) {
     // checking that given reference does exist
     return {
@@ -68,17 +68,17 @@ export const resolveActionTemplateContextReference = (
   }
 
   const reference: DomainElement =
-    queryObjectReference.templateType == "contextReference"
-      ? contextResults[queryObjectReference.referenceName]
-      : queryObjectReference.templateType == "parameterReference"
-      ? queryParams[queryObjectReference.referenceName]
-      : queryObjectReference.templateType == "constant"
-      ? { elementType: "instanceUuid", elementValue: queryObjectReference.referenceUuid } // new object
+    queryTemplateConstantOrReference.templateType == "contextReference"
+      ? contextResults[queryTemplateConstantOrReference.referenceName]
+      : queryTemplateConstantOrReference.templateType == "parameterReference"
+      ? queryParams[queryTemplateConstantOrReference.referenceName]
+      : queryTemplateConstantOrReference.templateType == "constantUuid"
+      ? { elementType: "instanceUuid", elementValue: queryTemplateConstantOrReference.constantUuidValue } // new object
       : undefined; /* this should not happen. Provide "error" value instead?*/
 
   log.info(
-    "resolveActionTemplateContextReference for queryObjectReference=",
-    queryObjectReference,
+    "resolveActionTemplateContextReference for queryTemplateConstantOrReference=",
+    queryTemplateConstantOrReference,
     "resolved as",
     reference,
     "for queryParams",
@@ -156,7 +156,7 @@ export function renderObjectTemplate(
             return result;
             break;
           }
-          case "constant":
+          case "constantUuid":
           case "contextReference":
           case "parameterReference":
           default: {

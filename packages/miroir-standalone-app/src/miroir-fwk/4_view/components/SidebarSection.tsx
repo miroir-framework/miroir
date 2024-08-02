@@ -162,12 +162,12 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
             applicationSection: getApplicationSection(props.deploymentUuid,entityMenu.uuid),
             // applicationSection: "model",
             parentUuid: {
-              referenceType: "constant",
-              referenceUuid: entityMenu.uuid,
+              queryTemplateType: "constantUuid",
+              constantUuidValue: entityMenu.uuid,
             },
             instanceUuid: {
-              referenceType: "constant",
-              referenceUuid: props.menuUuid,
+              queryTemplateType: "constantUuid",
+              constantUuidValue: props.menuUuid,
             }
           },
         },

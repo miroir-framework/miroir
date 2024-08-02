@@ -158,7 +158,7 @@ const initialValues = {
   newDeploymentUuid: adminConfigurationDeploymentParis.uuid,
 }
 
-// export interface ActionObjectReference extends QueryObjectReference {
+// export interface ActionObjectReference extends QueryTemplateConstantOrReference {
 
 // }
 

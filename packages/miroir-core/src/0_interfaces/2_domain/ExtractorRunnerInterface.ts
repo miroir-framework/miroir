@@ -11,7 +11,8 @@ import {
   ExtractorForSingleObject,
   ExtractorForSingleObjectList,
   JzodElement,
-  JzodObject
+  JzodObject,
+  DomainElement
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
 // ################################################################################################
@@ -37,7 +38,17 @@ export type AsyncExtractorRunner<QueryType extends DomainModelExtractor, StateTy
 
 
 // ################################################################################################
+export type AsyncExtractorRunnerMap<StateType> = {
+  extractWithExtractor: AsyncExtractorRunner<ExtractorForSingleObject | ExtractorForSingleObjectList | ExtractorForRecordOfExtractors, StateType, DomainElement>
+  extractWithManyExtractors: AsyncExtractorRunner<ExtractorForRecordOfExtractors, StateType, DomainElementObjectOrFailed>
+  extractEntityInstanceUuidIndex: AsyncExtractorRunner<ExtractorForSingleObjectList, StateType, DomainElementInstanceUuidIndexOrFailed>,
+  extractEntityInstance: AsyncExtractorRunner<ExtractorForSingleObject, StateType, DomainElementEntityInstanceOrFailed>,
+  extractEntityInstanceUuidIndexWithObjectListExtractor: AsyncExtractorRunner<ExtractorForSingleObjectList, StateType, DomainElementInstanceUuidIndexOrFailed>,
+};
+
+// ################################################################################################
 export type ExtractorRunnerMap<StateType> = {
+  extractWithExtractor: ExtractorRunner<ExtractorForSingleObject | ExtractorForSingleObjectList | ExtractorForRecordOfExtractors, StateType, DomainElement>
   extractWithManyExtractors: ExtractorRunner<ExtractorForRecordOfExtractors, StateType, DomainElementObjectOrFailed>
   extractEntityInstanceUuidIndex: ExtractorRunner<ExtractorForSingleObjectList, StateType, DomainElementInstanceUuidIndexOrFailed>,
   extractEntityInstance: ExtractorRunner<ExtractorForSingleObject, StateType, DomainElementEntityInstanceOrFailed>,

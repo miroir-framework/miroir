@@ -27,7 +27,7 @@ import { generateRestServiceResponse } from "./RestTools.js";
 import { cleanLevel } from "./constants.js";
 
 import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface.js";
-import { getSelectorParams, selectByDomainManyQueriesFromDomainState } from "../2_domain/DomainStateQuerySelectors.js";
+import { getSelectorParams, extractWithManyExtractorsFromDomainState } from "../2_domain/DomainStateQuerySelectors.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RestServer");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -297,8 +297,8 @@ export async function queryHandler(
     const domainState = localCache.getDomainState();
     log.info("RestServer queryHandler query=", JSON.stringify(queryAction, undefined, 2))
     log.info("RestServer queryHandler domainState=", JSON.stringify(domainState, undefined, 2))
-    // const queryResult: DomainElement = selectByDomainManyQueriesFromDomainState(domainState, getSelectorParams(query));
-    const queryResult: DomainElement = selectByDomainManyQueriesFromDomainState(
+    // const queryResult: DomainElement = extractWithManyExtractorsFromDomainState(domainState, getSelectorParams(query));
+    const queryResult: DomainElement = extractWithManyExtractorsFromDomainState(
       domainState,
       getSelectorParams(queryAction.query)
     );

@@ -34,6 +34,7 @@ import {
   extractFetchQueryJzodSchema,
   extractJzodSchemaForDomainModelQuery,
   extractzodSchemaForSingleSelectQuery,
+  extractWithExtractor,
 } from "./QuerySelectors.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DeploymentEntityStateQuerySelector");
@@ -316,7 +317,7 @@ export const selectEntityInstanceUuidIndexFromDeploymentEntityState: ExtractorRu
 // ################################################################################################
 // ################################################################################################
 // ACCESSES deploymentEntityState
-export const selectEntityJzodSchemaFromDeploymentEntityState = (
+export const extractEntityJzodSchemaFromDeploymentEntityState = (
   deploymentEntityState: DeploymentEntityState,
   selectorParams: ExtractorRunnerParamsForJzodSchema<DomainModelGetEntityDefinitionExtractor, DeploymentEntityState>
 ): JzodObject | undefined => {
@@ -328,7 +329,7 @@ export const selectEntityJzodSchemaFromDeploymentEntityState = (
     entityEntityDefinition.uuid
   )
 
-  log.info("selectEntityJzodSchemaFromDeploymentEntityState called with selectorParams", selectorParams)
+  log.info("extractEntityJzodSchemaFromDeploymentEntityState called with selectorParams", selectorParams)
 
   if (
     deploymentEntityState &&
@@ -342,7 +343,7 @@ export const selectEntityJzodSchemaFromDeploymentEntityState = (
     ).find((e: EntityDefinition) => e.entityUuid == selectorParams.query.entityUuid);
     if (!entityDefinition) {
       log.warn(
-        "selectEntityJzodSchemaFromDeploymentEntityState selectorParams",
+        "extractEntityJzodSchemaFromDeploymentEntityState selectorParams",
         selectorParams,
         "could not find entity definition for index",
         deploymentEntityStateIndex,
@@ -360,12 +361,12 @@ export const selectEntityJzodSchemaFromDeploymentEntityState = (
     //   deploymentEntityState[deploymentEntityStateIndex].entities[selectorParams.query.entityUuid] as EntityDefinition
     // ).jzodSchema;
   
-    log.info("selectEntityJzodSchemaFromDeploymentEntityState selectorParams",selectorParams,"result", result);
+    log.info("extractEntityJzodSchemaFromDeploymentEntityState selectorParams",selectorParams,"result", result);
   
     return result
   } else {
     log.warn(
-      "selectEntityJzodSchemaFromDeploymentEntityState selectorParams",
+      "extractEntityJzodSchemaFromDeploymentEntityState selectorParams",
       selectorParams,
       "could not find index",
       deploymentEntityStateIndex,
@@ -377,7 +378,7 @@ export const selectEntityJzodSchemaFromDeploymentEntityState = (
       localQuery.deploymentUuid,
     );
     // throw new Error(
-    //   "DomainSelector selectEntityJzodSchemaFromDeploymentEntityState could not find entity " +
+    //   "DomainSelector extractEntityJzodSchemaFromDeploymentEntityState could not find entity " +
     //     entityEntityDefinition.uuid +
     //     " in deployment " +
     //     localQuery.deploymentUuid +
@@ -406,6 +407,7 @@ export function getDeploymentEntityStateSelectorMap(): ExtractorRunnerMap<
     extractEntityInstance: selectEntityInstanceFromDeploymentEntityState,
     extractEntityInstanceUuidIndexWithObjectListExtractor: extractEntityInstanceUuidIndexWithObjectListExtractor,
     extractWithManyExtractors: extractWithManyExtractors,
+    extractWithExtractor: extractWithExtractor,
   };
 }
 
@@ -414,7 +416,7 @@ export function getDeploymentEntityStateSelectorMap(): ExtractorRunnerMap<
 export function getDeploymentEntityStateJzodSchemaSelectorMap(): ExtractorRunnerMapForJzodSchema<DeploymentEntityState> {
   return {
     extractJzodSchemaForDomainModelQuery: extractJzodSchemaForDomainModelQuery,
-    extractEntityJzodSchema: selectEntityJzodSchemaFromDeploymentEntityState,
+    extractEntityJzodSchema: extractEntityJzodSchemaFromDeploymentEntityState,
     extractFetchQueryJzodSchema: extractFetchQueryJzodSchema,
     extractzodSchemaForSingleSelectQuery: extractzodSchemaForSingleSelectQuery,
   };

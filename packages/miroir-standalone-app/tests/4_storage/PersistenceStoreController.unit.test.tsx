@@ -749,8 +749,8 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
   //                 applicationSection: "model",
   //                 parentName: "Entity",
   //                 parentUuid: {
-  //                   referenceType: "constant",
-  //                   referenceUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  //                   queryTemplateType: "constantUuid",
+  //                   constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   //                 },
   //               },
   //             }

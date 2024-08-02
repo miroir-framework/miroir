@@ -339,8 +339,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                   applicationSection: getApplicationSection(props.deploymentUuid,e[1].tag?.value?.targetEntity??"undefined"),
                   parentName: "",
                   parentUuid: {
-                    referenceType: "constant",
-                    referenceUuid: e[1].tag?.value?.targetEntity,
+                    queryTemplateType: "constantUuid",
+                    constantUuidValue: e[1].tag?.value?.targetEntity,
                   },
                 },
               ])

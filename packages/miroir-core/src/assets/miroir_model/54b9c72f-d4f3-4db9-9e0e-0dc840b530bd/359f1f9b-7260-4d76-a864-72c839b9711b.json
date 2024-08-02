@@ -96,27 +96,65 @@
               }
             }
           },
-          "queryObjectReference": {
+          "queryTemplateConstantOrReference": {
             "type": "union",
-            "discriminator": "referenceType",
+            "discriminator": "queryTemplateType",
             "definition": [
               {
                 "type": "object",
                 "definition": {
-                  "referenceType": {
+                  "queryTemplateType": {
                     "type": "literal",
-                    "definition": "constant"
+                    "definition": "constantString"
                   },
-                  "referenceUuid": {
-                    "type": "uuid",
-                    "tag": { "value": {  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad" }}
+                  "definition": {
+                    "type": "string"
                   }
                 }
               },
               {
                 "type": "object",
                 "definition": {
-                  "referenceType": {
+                  "queryTemplateType": {
+                    "type": "literal",
+                    "definition": "constantNumber"
+                  },
+                  "definition": {
+                    "type": "number"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "queryTemplateType": {
+                    "type": "literal",
+                    "definition": "constantObject"
+                  },
+                  "definition": {
+                    "type": "record",
+                    "definition": {
+                      "type": "any"
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "queryTemplateType": {
+                    "type": "literal",
+                    "definition": "constantUuid"
+                  },
+                  "constantUuidValue": {
+                    "type": "uuid"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "queryTemplateType": {
                     "type": "literal",
                     "definition": "queryContextReference"
                   },
@@ -128,7 +166,7 @@
               {
                 "type": "object",
                 "definition": {
-                  "referenceType": {
+                  "queryTemplateType": {
                     "type": "literal",
                     "definition": "queryParameterReference"
                   },
@@ -165,7 +203,7 @@
                 "type": "schemaReference",
                 "tag": { "value": {  "id":4, "defaultLabel": "Parent Uuid", "editable": false }},
                 "definition": {
-                  "relativePath": "queryObjectReference"
+                  "relativePath": "queryTemplateConstantOrReference"
                 }
               }
             }
@@ -187,7 +225,7 @@
               "objectReference": {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "queryObjectReference"
+                  "relativePath": "queryTemplateConstantOrReference"
                 }
               },
               "AttributeOfObjectToCompareToReferenceUuid": {
@@ -212,7 +250,7 @@
               "instanceUuid": {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "queryObjectReference"
+                  "relativePath": "queryTemplateConstantOrReference"
                 }
               }
             }
@@ -268,7 +306,7 @@
               "objectReference": {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "queryObjectReference"
+                  "relativePath": "queryTemplateConstantOrReference"
                 }
               },
               "objectReferenceAttribute": {
@@ -297,7 +335,7 @@
               "objectListReference": {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "queryObjectReference"
+                  "relativePath": "queryTemplateConstantOrReference"
                 }
               },
               "objectListReferenceAttribute": {
@@ -309,6 +347,30 @@
                 "optional": true
               }
             }
+          },
+          "querySelectObjectList": {
+            "type": "union",
+            "discriminator": "queryType",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "querySelectObjectListByEntity"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "querySelectObjectListByRelation"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "querySelectObjectListByManyToManyRelation"
+                }
+              }
+            ]
           },
           "querySelectByQueryCombiner": {
             "type": "object",
@@ -344,30 +406,6 @@
                 }
               }
             }
-          },
-          "querySelectObjectList": {
-            "type": "union",
-            "discriminator": "queryType",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "querySelectObjectListByEntity"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "querySelectObjectListByRelation"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "querySelectObjectListByManyToManyRelation"
-                }
-              }
-            ]
           },
           "querySelect": {
             "type": "union",
@@ -476,17 +514,6 @@
               }
             }
           },
-          "miroirCrossJoinQuery": {
-            "type": "object",
-            "definition": {
-              "queryType": {
-                "type": "literal",
-                "definition": "combineQuery"
-              },
-              "a": { "type": "string"},
-              "b": { "type": "string"}
-            }
-          },
           "queryQueriesRecordOrCrossJoin": {
             "type": "object",
             "definition": {
@@ -502,13 +529,6 @@
                 "type": "schemaReference",
                 "definition": {
                   "relativePath": "miroirSelectQueriesRecord"
-                }
-              },
-              "crossJoin": {
-                "type": "schemaReference",
-                "optional": true,
-                "definition": {
-                  "relativePath": "miroirCrossJoinQuery"
                 }
               }
             }

@@ -148,12 +148,12 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
   //           queryType: "selectObjectByDirectReference",
   //           parentName: "Menu",
   //           parentUuid: {
-  //             referenceType: "constant",
-  //             referenceUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+  //             queryTemplateType: "constantUuid",
+  //             constantUuidValue: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
   //           },
   //           instanceUuid: {
-  //             referenceType: "constant",
-  //             referenceUuid: menuDefaultMiroir.uuid,
+  //             queryTemplateType: "constantUuid",
+  //             constantUuidValue: menuDefaultMiroir.uuid,
   //           }
   //         },
   //       },

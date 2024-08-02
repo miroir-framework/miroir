@@ -37,6 +37,7 @@ import {
   extractFetchQueryJzodSchema,
   extractJzodSchemaForDomainModelQuery,
   extractzodSchemaForSingleSelectQuery,
+  extractWithExtractor,
 } from "./QuerySelectors.js";
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 
@@ -379,9 +380,14 @@ export const selectEntityInstanceListFromListQueryAndDomainState: ExtractorRunne
 export const innerSelectElementFromQueryAndDomainState = innerSelectElementFromQuery<DomainState>
 
 // ################################################################################################
-export const selectByDomainManyQueriesFromDomainState:ExtractorRunner<
-  ExtractorForRecordOfExtractors, DomainState, DomainElementObject
+export const extractWithManyExtractorsFromDomainState:ExtractorRunner<
+ExtractorForRecordOfExtractors, DomainState, DomainElementObject
 > = extractWithManyExtractors<DomainState>
+
+// ################################################################################################
+export const extractWithExtractorFromDomainState:ExtractorRunner<
+  ExtractorForSingleObject | ExtractorForRecordOfExtractors | ExtractorForRecordOfExtractors, DomainState, DomainElement
+> = extractWithExtractor<DomainState>
 
 // ################################################################################################
 // JZOD SCHEMAs selectors
@@ -448,7 +454,8 @@ export function getSelectorMap(): ExtractorRunnerMap<DomainState> {
     extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDomainState,
     extractEntityInstance: selectEntityInstanceFromObjectQueryAndDomainState,
     extractEntityInstanceUuidIndexWithObjectListExtractor: selectEntityInstanceListFromListQueryAndDomainState,
-    extractWithManyExtractors: selectByDomainManyQueriesFromDomainState,
+    extractWithManyExtractors: extractWithManyExtractorsFromDomainState,
+    extractWithExtractor: extractWithExtractor,
   };
 }
 

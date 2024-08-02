@@ -184,7 +184,7 @@ describe.sequential("PersistenceStoreExtractorRunner.test", () => {
   // ################################################################################################
   it("get Library Entities", async () => {
     await chainTestSteps(
-      "actualTest_getInstancesAndCheckResult_runQuery",
+      "PersistenceStoreExtractorRunner_selectEntityInstanceUuidIndex",
       {},
       async () => {
         const extractorRunner = new IndexedDbExtractorRunner(
@@ -198,6 +198,7 @@ describe.sequential("PersistenceStoreExtractorRunner.test", () => {
               extractEntityInstanceUuidIndex: undefined as any,
               extractEntityInstanceUuidIndexWithObjectListExtractor: undefined as any,
               extractWithManyExtractors: undefined as any,
+              extractWithExtractor: undefined as any,
             },
             extractor: {
               queryType: "domainModelSingleExtractor",
@@ -210,8 +211,8 @@ describe.sequential("PersistenceStoreExtractorRunner.test", () => {
                 applicationSection: "model",
                 parentName: "Entity",
                 parentUuid: {
-                  referenceType: "constant",
-                  referenceUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  queryTemplateType: "constantUuid",
+                  constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                 },
               }
             }
@@ -359,9 +360,10 @@ describe.sequential("PersistenceStoreExtractorRunner.test", () => {
     )
   });
   
-  it("get Library Entities", async () => {
+  // ################################################################################################
+  it("get Entity Entity from Library", async () => {
     await chainTestSteps(
-      "actualTest_getInstanceAndCheckResult_selectEntityInstanceFromIndexedDb",
+      "PersistenceStoreExtractorRunner_selectEntityInstance_selectObjectByDirectReference",
       {},
       async () => {
         const extractorRunner = new IndexedDbExtractorRunner(localMiroirPersistenceStoreController);
@@ -371,6 +373,7 @@ describe.sequential("PersistenceStoreExtractorRunner.test", () => {
             extractEntityInstanceUuidIndex: undefined as any,
             extractEntityInstanceUuidIndexWithObjectListExtractor: undefined as any,
             extractWithManyExtractors: undefined as any,
+            extractWithExtractor: undefined as any,
           },
           extractor: {
             queryType: "domainModelSingleExtractor",
@@ -383,12 +386,12 @@ describe.sequential("PersistenceStoreExtractorRunner.test", () => {
               applicationSection: "model",
               parentName: "Entity",
               parentUuid: {
-                referenceType: "constant",
-                referenceUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                queryTemplateType: "constantUuid",
+                constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
               },
               instanceUuid: {
-                referenceType: "constant",
-                referenceUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                queryTemplateType: "constantUuid",
+                constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
               },
             },
           },
@@ -425,5 +428,72 @@ describe.sequential("PersistenceStoreExtractorRunner.test", () => {
       }
     );
   });
+  
+  // it("get Library Entities", async () => {
+  //   await chainTestSteps(
+  //     "PersistenceStoreExtractorRunner_selectEntityInstance_selectObjectByRelation",
+  //     {},
+  //     async () => {
+  //       const extractorRunner = new IndexedDbExtractorRunner(localMiroirPersistenceStoreController);
+  //       const queryResult = await extractorRunner.selectEntityInstanceFromIndexedDb(undefined, {
+  //         extractorRunnerMap: {
+  //           extractEntityInstance: undefined as any,
+  //           extractEntityInstanceUuidIndex: undefined as any,
+  //           extractEntityInstanceUuidIndexWithObjectListExtractor: undefined as any,
+  //           extractWithManyExtractors: undefined as any,
+  //         },
+  //         extractor: {
+  //           queryType: "",
+  //           pageParams: { elementType: "object", elementValue: {} },
+  //           queryParams: { elementType: "object", elementValue: {} },
+  //           contextResults: { elementType: "object", elementValue: {} },
+  //           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+  //           select: {
+  //             queryType: "selectObjectByDirectReference",
+  //             applicationSection: "model",
+  //             parentName: "Entity",
+  //             parentUuid: {
+  //               queryTemplateType: "constantUuid",
+  //               constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  //             },
+  //             instanceUuid: {
+  //               queryTemplateType: "constantUuid",
+  //               constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  //             },
+  //           },
+  //         },
+  //       });
+  //       console.log("queryResult", JSON.stringify(queryResult, null, 2));
+  //       const result: ActionReturnType =
+  //         queryResult.elementType == "instance"
+  //           ? {
+  //               status: "ok",
+  //               returnedDomainElement: queryResult,
+  //             }
+  //           : {
+  //               status: "error",
+  //               error: {
+  //                 errorType: "FailedToGetInstances",
+  //                 errorMessage: JSON.stringify(queryResult, undefined, 2),
+  //               },
+  //             };
+  //       return result;
+  //     },
+  //     // (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
+  //     undefined, // expected result transformation
+  //     undefined, // name to give to result
+  //     "instance",
+  //     {
+  //       uuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  //       parentName: "Entity",
+  //       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  //       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  //       name: "Entity",
+  //       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  //       conceptLevel: "MetaModel",
+  //       description: "The Metaclass for entities.",
+  //     }
+  //   );
+  // });
   
 });

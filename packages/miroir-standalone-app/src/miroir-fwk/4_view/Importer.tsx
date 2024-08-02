@@ -285,8 +285,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                       referenceName: "newEntityName",
                     },
                     parentUuid: {
-                      referenceType: "constant",
-                      referenceUuid: {
+                      queryTemplateType: "constantUuid",
+                      constantUuidValue: {
                         templateType: "mustacheStringTemplate",
                         definition: "{{newEntity.uuid}}",
                       },
@@ -344,14 +344,14 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                       referenceName: "newEntityName",
                     },
                     parentUuid: {
-                      referenceType: "constant",
-                      referenceUuid: {
+                      queryTemplateType: "constantUuid",
+                      constantUuidValue: {
                         templateType: "mustacheStringTemplate",
                         definition: "{{newEntity.uuid}}",
                       },
                     },
                     instanceUuid: {
-                      referenceType: "queryParameterReference",
+                      queryTemplateType: "queryParameterReference",
                       referenceName: "instanceUuid",
                     },
                   },
@@ -608,8 +608,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             applicationSection: "model",
             parentName: "Menu",
             parentUuid: {
-              referenceType: "constant",
-              referenceUuid: entityMenu.uuid,
+              queryTemplateType: "constantUuid",
+              constantUuidValue: entityMenu.uuid,
             },
           },
         }
@@ -849,8 +849,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                       referenceName: "newEntityName",
                     },
                     parentUuid: {
-                      referenceType: "constant",
-                      referenceUuid: {
+                      queryTemplateType: "constantUuid",
+                      constantUuidValue: {
                         templateType: "mustacheStringTemplate",
                         definition: "{{newEntity.uuid}}",
                       },
@@ -890,14 +890,14 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                     queryType: "selectObjectByDirectReference",
                     parentName: newEntityName,
                     parentUuid: {
-                      referenceType: "constant",
-                      referenceUuid: {
+                      queryTemplateType: "constantUuid",
+                      constantUuidValue: {
                         templateType: "mustacheStringTemplate",
                         definition: "{{newEntity.uuid}}",
                       },
                     },
                     instanceUuid: {
-                      referenceType: "queryParameterReference",
+                      queryTemplateType: "queryParameterReference",
                       referenceName: "instanceUuid",
                     },
                   },
@@ -905,12 +905,12 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                     queryType: "selectObjectListByRelation",
                     parentName: "Fountain",
                     parentUuid: {
-                      referenceType: "constant",
-                      referenceUuid: splittedEntityDefinition.entityUuid,
+                      queryTemplateType: "constantUuid",
+                      constantUuidValue: splittedEntityDefinition.entityUuid,
                     },
                     objectReference: {
                       referenceName: "elementToDisplay",
-                      referenceType: "queryContextReference",
+                      queryTemplateType: "queryContextReference",
                     },
                     AttributeOfListObjectToCompareToReferenceUuid: newEntityName,
                   },
@@ -1144,8 +1144,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       //           referenceName: "splittedEntityName",
       //         },
       //         parentUuid: {
-      //           referenceType: "constant",
-      //           referenceUuid: {
+      //           queryTemplateType: "constantUuid",
+      //           constantUuidValue: {
       //             templateType: "mustacheStringTemplate",
       //             definition: "{{splittedEntityDefinition?.entityUuid}}",
       //           },
@@ -1190,8 +1190,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                       referenceName: "splittedEntityName",
                     },
                     parentUuid: {
-                      referenceType: "constant",
-                      referenceUuid: {
+                      queryTemplateType: "constantUuid",
+                      constantUuidValue: {
                         templateType: "mustacheStringTemplate",
                         definition: "{{splittedEntityDefinition.entityUuid}}",
                       },
@@ -1263,8 +1263,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     //         applicationSection: "data",
     //         parentName: splittedEntityName,
     //         parentUuid: {
-    //           referenceType: "constant",
-    //           referenceUuid: splittedEntityDefinition?.entityUuid,
+    //           queryTemplateType: "constantUuid",
+    //           constantUuidValue: splittedEntityDefinition?.entityUuid,
     //         },
     //       },
     //     }
@@ -1396,8 +1396,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     //         applicationSection: "model",
     //         parentName: "Menu",
     //         parentUuid: {
-    //           referenceType: "constant",
-    //           referenceUuid: entityMenu.uuid,
+    //           queryTemplateType: "constantUuid",
+    //           constantUuidValue: entityMenu.uuid,
     //         },
     //       },
     //     }

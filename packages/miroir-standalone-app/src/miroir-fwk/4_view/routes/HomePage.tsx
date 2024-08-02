@@ -235,8 +235,8 @@ export const HomePage = (props: RootComponentProps) => {
     //   fetchQuery: queryVersionBundleProducerV1.definition as QueryQueriesRecordOrCrossJoin
     // }),[miroirMetaModel])
   
-    // const producedBundle : DomainElement = useDomainStateCleanSelector(selectByDomainManyQueriesFromDomainState, bundleProducerQuery);
-    // // const producedBundle : any = useDomainStateCleanSelector(selectByDomainManyQueriesFromDomainState, getSelectorParams<ExtractorForRecordOfExtractors>(bundleProducerQuery));
+    // const producedBundle : DomainElement = useDomainStateCleanSelector(extractWithManyExtractorsFromDomainState, bundleProducerQuery);
+    // // const producedBundle : any = useDomainStateCleanSelector(extractWithManyExtractorsFromDomainState, getSelectorParams<ExtractorForRecordOfExtractors>(bundleProducerQuery));
   
     // log.info("producedBundle1",producedBundle)
   

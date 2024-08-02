@@ -1465,30 +1465,6 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        domainModelSingleExtractor: {
-          type: "object",
-          extend: {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "domainModelRootExtractor",
-            },
-          },
-          definition: {
-            queryType: {
-              type: "literal",
-              definition: "domainModelSingleExtractor",
-            },
-            select: {
-              type: "schemaReference",
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "querySelect",
-              },
-            },
-          },
-        },
         extractorForRecordOfExtractors: {
           type: "object",
           extend: {
@@ -1624,13 +1600,6 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                 relativePath: "extractorForSingleObject",
-              },
-            },
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "domainModelSingleExtractor",
               },
             },
             {
@@ -2230,7 +2199,7 @@ export function getMiroirFundamentalJzodSchema(
         domainModelRootExtractor: (miroirFundamentalJzodSchema as any).definition.context.domainModelRootExtractor,
         queryRoot: (miroirFundamentalJzodSchema as any).definition.context.queryRoot,
         // queries
-        queryObjectReference: (miroirFundamentalJzodSchema as any).definition.context.queryObjectReference,
+        queryTemplateConstantOrReference: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateConstantOrReference,
         queryFailed: (miroirFundamentalJzodSchema as any).definition.context.queryFailed,
         querySelectObjectListByManyToManyRelation: (miroirFundamentalJzodSchema as any).definition.context
           .querySelectObjectListByManyToManyRelation,
@@ -2246,7 +2215,6 @@ export function getMiroirFundamentalJzodSchema(
         querySelectByQueryCombiner: (miroirFundamentalJzodSchema as any).definition.context.querySelectByQueryCombiner,
         querySelect: (miroirFundamentalJzodSchema as any).definition.context.querySelect,
         miroirSelectQueriesRecord: (miroirFundamentalJzodSchema as any).definition.context.miroirSelectQueriesRecord,
-        miroirCrossJoinQuery: (miroirFundamentalJzodSchema as any).definition.context.miroirCrossJoinQuery,
         queryQueriesRecordOrCrossJoin: (miroirFundamentalJzodSchema as any).definition.context.queryQueriesRecordOrCrossJoin,
         extractorForRecordOfExtractors: (miroirFundamentalJzodSchema as any).definition.context.extractorForRecordOfExtractors,
         queryAction: queryEndpointVersionV1.definition.actions[0].actionParameters,

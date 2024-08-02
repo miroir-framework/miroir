@@ -14,8 +14,8 @@
           "queryType": "selectObjectListByEntity",
           "parentName": "Country",
           "parentUuid": {
-            "referenceType": "constant",
-            "referenceUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
+            "queryTemplateType": "constantUuid",
+            "constantUuidValue": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
           }
         }
       }

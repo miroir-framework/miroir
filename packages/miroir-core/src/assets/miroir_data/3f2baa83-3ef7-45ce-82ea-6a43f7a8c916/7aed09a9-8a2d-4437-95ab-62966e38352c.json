@@ -13,8 +13,8 @@
           "queryType": "selectObjectListByEntity",
           "parentName": "Query",
           "parentUuid": {
-            "referenceType": "constant",
-            "referenceUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f"
+            "queryTemplateType": "constantUuid",
+            "constantUuidValue": "e4320b9e-ab45-4abe-85d8-359604b3c62f"
           }
         }
       }
