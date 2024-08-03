@@ -8,14 +8,12 @@
   "definition": {
     "reportParameters": {},
     "fetchQuery": {
-      "select": {
-        "endpoints": {
-          "queryType": "selectObjectListByEntity",
-          "parentName": "Endpoint",
-          "parentUuid": {
-            "queryTemplateType": "constantUuid",
-            "constantUuidValue": "3d8da4d4-8f76-4bb4-9212-14869d81c00c"
-          }
+      "endpoints": {
+        "queryType": "selectObjectListByEntity",
+        "parentName": "Endpoint",
+        "parentUuid": {
+          "queryTemplateType": "constantUuid",
+          "constantUuidValue": "3d8da4d4-8f76-4bb4-9212-14869d81c00c"
         }
       }
     },

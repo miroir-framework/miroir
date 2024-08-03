@@ -8,14 +8,12 @@
   "definition": {
     "reportParameters": {},
     "fetchQuery": {
-      "select": {
-        "ApplicationDeployments": {
-          "queryType": "selectObjectListByEntity",
-          "parentName": "Deployment",
-          "parentUuid": {
-            "queryTemplateType": "constantUuid",
-            "constantUuidValue": "35c5608a-7678-4f07-a4ec-76fc5bc35424"
-          }
+      "ApplicationDeployments": {
+        "queryType": "selectObjectListByEntity",
+        "parentName": "Deployment",
+        "parentUuid": {
+          "queryTemplateType": "constantUuid",
+          "constantUuidValue": "35c5608a-7678-4f07-a4ec-76fc5bc35424"
         }
       }
     },

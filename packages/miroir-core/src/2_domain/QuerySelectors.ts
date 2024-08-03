@@ -547,7 +547,7 @@ export const extractWithManyExtractors = <StateType>(
   const localSelectorMap: ExtractorRunnerMap<StateType> =
     selectorParams?.extractorRunnerMap ?? emptySelectorMap;
 
-  for (const query of Object.entries(selectorParams.extractor.fetchQuery.select)) {
+  for (const query of Object.entries(selectorParams.extractor.fetchQuery)) {
     let result = innerSelectElementFromQuery(
       state,
       context,
@@ -701,7 +701,7 @@ export const extractFetchQueryJzodSchema = <StateType>(
   // log.info("selectFetchQueryJzodSchemaFromDomainState called", selectorParams.query);
   
   const fetchQueryJzodSchema = Object.fromEntries(
-    Object.entries(localFetchParams?.fetchQuery?.select??{}).map((entry: [string, QuerySelect]) => [
+    Object.entries(localFetchParams?.fetchQuery??{}).map((entry: [string, QuerySelect]) => [
       entry[0],
       selectorParams.extractorRunnerMap.extractzodSchemaForSingleSelectQuery(deploymentEntityState, {
         extractorRunnerMap:selectorParams.extractorRunnerMap,

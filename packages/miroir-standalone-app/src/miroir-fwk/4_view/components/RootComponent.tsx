@@ -297,17 +297,15 @@ export const RootComponent = (props: RootComponentProps) => {
                         queryParams: emptyDomainElementObject,
                         contextResults: { elementType: "object", elementValue: {} },
                         fetchQuery: {
-                          select: {
-                            deployments: {
-                              queryType: "selectObjectListByEntity",
-                              applicationSection: "data",
-                              parentName: "Deployment",
-                              parentUuid: {
-                                queryTemplateType: "constantUuid",
-                                constantUuidValue: entityDeployment.uuid,
-                              },
+                          deployments: {
+                            queryType: "selectObjectListByEntity",
+                            applicationSection: "data",
+                            parentName: "Deployment",
+                            parentUuid: {
+                              queryTemplateType: "constantUuid",
+                              constantUuidValue: entityDeployment.uuid,
                             },
-                          }
+                          },
                         },
                       };
                       const adminDeployments: ActionReturnType = 

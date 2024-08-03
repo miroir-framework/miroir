@@ -8,18 +8,16 @@
   "defaultLabel": "Detailed information about an Entity Definition",
   "definition": {
     "fetchQuery": {
-      "select": {
-        "entityDefinition": {
-          "queryType": "selectObjectByDirectReference",
-          "parentName": "EntityDefinition",
-          "parentUuid": {
-            "queryTemplateType": "constantUuid",
-            "constantUuidValue": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd"
-          },
-          "instanceUuid": {
-            "queryTemplateType": "queryParameterReference",
-            "referenceName": "instanceUuid"
-          }
+      "entityDefinition": {
+        "queryType": "selectObjectByDirectReference",
+        "parentName": "EntityDefinition",
+        "parentUuid": {
+          "queryTemplateType": "constantUuid",
+          "constantUuidValue": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd"
+        },
+        "instanceUuid": {
+          "queryTemplateType": "queryParameterReference",
+          "referenceName": "instanceUuid"
         }
       }
     },

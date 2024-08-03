@@ -8,18 +8,16 @@
   "defaultLabel": "Detailed information about a Deployment",
   "definition": {
     "fetchQuery": {
-      "select": {
-        "deployment": {
-          "queryType": "selectObjectByDirectReference",
-          "parentName": "Deployment",
-          "parentUuid": {
-            "queryTemplateType": "constantUuid",
-            "constantUuidValue": "7959d814-400c-4e80-988f-a00fe582ab98"
-          },
-          "instanceUuid": {
-            "queryTemplateType": "queryParameterReference",
-            "referenceName": "instanceUuid"
-          }
+      "deployment": {
+        "queryType": "selectObjectByDirectReference",
+        "parentName": "Deployment",
+        "parentUuid": {
+          "queryTemplateType": "constantUuid",
+          "constantUuidValue": "7959d814-400c-4e80-988f-a00fe582ab98"
+        },
+        "instanceUuid": {
+          "queryTemplateType": "queryParameterReference",
+          "referenceName": "instanceUuid"
         }
       }
     },

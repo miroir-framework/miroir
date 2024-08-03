@@ -113,22 +113,20 @@ export const deleteCascade = async (p: {
       pageParams,
       queryParams: { elementType: "object", elementValue: {} },
       contextResults: { elementType: "object", elementValue: {} },
-      fetchQuery: {
-        select: Object.fromEntries(
-          Object.keys(foreignKeysPointingToEntity).map((entityUuid) => [
-            entityUuid,
-            {
-              queryType: "selectObjectListByEntity",
-              applicationSection: p.applicationSection,
-              parentName: "",
-              parentUuid: {
-                queryTemplateType: "constantUuid",
-                constantUuidValue: entityUuid,
-              },
+      fetchQuery: Object.fromEntries(
+        Object.keys(foreignKeysPointingToEntity).map((entityUuid) => [
+          entityUuid,
+          {
+            queryType: "selectObjectListByEntity",
+            applicationSection: p.applicationSection,
+            parentName: "",
+            parentUuid: {
+              queryTemplateType: "constantUuid",
+              constantUuidValue: entityUuid,
             },
-          ])
-        ) as any,
-      },
+          },
+        ])
+      ) as any,
     };
   
     const foreignKeyUnfilteredObjects: ActionReturnType = 

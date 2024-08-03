@@ -9,15 +9,13 @@
   "definition": {
     "reportParameters": {},
     "fetchQuery": {
-      "select": {
-        "entities": {
-          "queryType": "selectObjectListByEntity",
-          "applicationSection": "model",
-          "parentName": "Entity",
-          "parentUuid": {
-            "queryTemplateType": "constantUuid",
-            "constantUuidValue": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
-          }
+      "entities": {
+        "queryType": "selectObjectListByEntity",
+        "applicationSection": "model",
+        "parentName": "Entity",
+        "parentUuid": {
+          "queryTemplateType": "constantUuid",
+          "constantUuidValue": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
         }
       }
     },

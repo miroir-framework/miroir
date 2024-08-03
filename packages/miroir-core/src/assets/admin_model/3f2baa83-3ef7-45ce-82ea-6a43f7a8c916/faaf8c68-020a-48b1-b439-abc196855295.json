@@ -8,18 +8,16 @@
   "defaultLabel": "Detailed information about a Bundle",
   "definition": {
     "fetchQuery": {
-      "select": {
-        "bundle": {
-          "queryType": "selectObjectByDirectReference",
-          "parentName": "Deployment",
-          "parentUuid": {
-            "queryTemplateType": "constantUuid",
-            "constantUuidValue": "9f9170da-538d-425c-8cb7-551640623eed"
-          },
-          "instanceUuid": {
-            "queryTemplateType": "queryParameterReference",
-            "referenceName": "instanceUuid"
-          }
+      "bundle": {
+        "queryType": "selectObjectByDirectReference",
+        "parentName": "Deployment",
+        "parentUuid": {
+          "queryTemplateType": "constantUuid",
+          "constantUuidValue": "9f9170da-538d-425c-8cb7-551640623eed"
+        },
+        "instanceUuid": {
+          "queryTemplateType": "queryParameterReference",
+          "referenceName": "instanceUuid"
         }
       }
     },

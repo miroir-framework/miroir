@@ -329,23 +329,21 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           pageParams: props.paramsAsdomainElements,
           queryParams: { elementType: "object", elementValue: {} },
           contextResults: { elementType: "object", elementValue: {} },
-          fetchQuery: {
-            select: Object.fromEntries(
-              foreignKeyObjectsAttributeDefinition.map((e) => [
-                e[1].tag?.value?.targetEntity,
-                {
-                  queryType: "selectObjectListByEntity",
-                  // applicationSection: (props.paramsAsdomainElements as any)["applicationSection"],
-                  applicationSection: getApplicationSection(props.deploymentUuid,e[1].tag?.value?.targetEntity??"undefined"),
-                  parentName: "",
-                  parentUuid: {
-                    queryTemplateType: "constantUuid",
-                    constantUuidValue: e[1].tag?.value?.targetEntity,
-                  },
+          fetchQuery: Object.fromEntries(
+            foreignKeyObjectsAttributeDefinition.map((e) => [
+              e[1].tag?.value?.targetEntity,
+              {
+                queryType: "selectObjectListByEntity",
+                // applicationSection: (props.paramsAsdomainElements as any)["applicationSection"],
+                applicationSection: getApplicationSection(props.deploymentUuid,e[1].tag?.value?.targetEntity??"undefined"),
+                parentName: "",
+                parentUuid: {
+                  queryTemplateType: "constantUuid",
+                  constantUuidValue: e[1].tag?.value?.targetEntity,
                 },
-              ])
-            ) as any,
-          },
+              },
+            ])
+          ) as any,
         },
         deploymentEntityStateSelectorMap
       ),

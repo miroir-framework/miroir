@@ -106,7 +106,7 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
               pageParams: paramsAsdomainElements,
               queryParams: { elementType: "object", elementValue: {} },
               contextResults: { elementType: "object", elementValue: {} },
-              fetchQuery: { select: {} },
+              fetchQuery: { },
             },
             deploymentEntityStateSelectorMap
           ),
@@ -183,7 +183,7 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
                 pageParams: paramsAsdomainElements,
                 queryParams: { elementType: "object", elementValue: {} },
                 contextResults: { elementType: "object", elementValue: {} },
-                fetchQuery: { select: {} },
+                fetchQuery: { },
               },
             },
     }),

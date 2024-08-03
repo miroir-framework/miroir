@@ -9,14 +9,12 @@
   "definition": {
     "reportParameters": {},
     "fetchQuery": {
-      "select": {
-        "commits": {
-          "queryType": "selectObjectListByEntity",
-          "parentName": "Commit",
-          "parentUuid": {
-            "queryTemplateType": "constantUuid",
-            "constantUuidValue": "73bb0c69-e636-4e3b-a230-51f25469c089"
-          }
+      "commits": {
+        "queryType": "selectObjectListByEntity",
+        "parentName": "Commit",
+        "parentUuid": {
+          "queryTemplateType": "constantUuid",
+          "constantUuidValue": "73bb0c69-e636-4e3b-a230-51f25469c089"
         }
       }
     },

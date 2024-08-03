@@ -8,14 +8,12 @@
   "definition": {
     "reportParameters": {},
     "fetchQuery": {
-      "select": {
-        "bundles": {
-          "queryType": "selectObjectListByEntity",
-          "parentName": "Bundle",
-          "parentUuid": {
-            "queryTemplateType": "constantUuid",
-            "constantUuidValue": "9f9170da-538d-425c-8cb7-551640623eed"
-          }
+      "bundles": {
+        "queryType": "selectObjectListByEntity",
+        "parentName": "Bundle",
+        "parentUuid": {
+          "queryTemplateType": "constantUuid",
+          "constantUuidValue": "9f9170da-538d-425c-8cb7-551640623eed"
         }
       }
     },

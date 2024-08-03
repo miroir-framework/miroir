@@ -654,7 +654,7 @@ export class DomainController implements DomainControllerInterface {
       /**
        * we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
        */
-      const queries = Object.entries(queryAction.query.fetchQuery.select);
+      const queries = Object.entries(queryAction.query.fetchQuery);
       if (queries.length != 1) {
         throw new Error(
           "DomainController handleQuery queryAction no query found in fetchQuery.select! " + JSON.stringify(queryAction)

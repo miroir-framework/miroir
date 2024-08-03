@@ -57,7 +57,7 @@ export const dummyDomainManyQueriesWithDeploymentUuid: ExtractorForRecordOfExtra
   pageParams: emptyDomainObject,
   queryParams: emptyDomainObject,
   contextResults: emptyDomainObject,
-  fetchQuery: { select: {} },
+  fetchQuery: {},
 };
 
 export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: DomainModelGetFetchParamJzodSchemaExtractor = {
@@ -79,7 +79,7 @@ export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: DomainModelGetF
     pageParams: emptyDomainObject,
     queryParams: emptyDomainObject,
     contextResults: emptyDomainObject,
-    fetchQuery: { select: {} },
+    fetchQuery: {  },
   },
 };
 

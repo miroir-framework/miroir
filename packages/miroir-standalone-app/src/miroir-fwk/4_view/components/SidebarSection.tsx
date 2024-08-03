@@ -29,13 +29,21 @@ import {
   DomainModelExtractor,
   ExtractorRunnerMap,
   ExtractorRunnerParams,
-  Uuid
+  Uuid,
+  DomainElementObjectOrFailed
 } from "miroir-core";
 import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
 import { FC, useMemo } from 'react';
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 import { useDeploymentEntityStateQuerySelector } from '../ReduxHooks.js';
+
+const MatDivider: any = Divider;
+const MatList: any = List;
+const MatListItem: any = ListItem;
+const MatListItemButton: any = ListItemButton;
+const MatListItemIcon: any = ListItemIcon;
+const MatListItemText: any = ListItemText;
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"Sidebar");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -155,21 +163,19 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
       queryParams: { elementType: "object", elementValue: {} },
       contextResults: { elementType: "object", elementValue: {} },
       fetchQuery: {
-        select: {
-          menus: {
-            queryType: "selectObjectByDirectReference",
-            parentName: "Menu",
-            applicationSection: getApplicationSection(props.deploymentUuid,entityMenu.uuid),
-            // applicationSection: "model",
-            parentUuid: {
-              queryTemplateType: "constantUuid",
-              constantUuidValue: entityMenu.uuid,
-            },
-            instanceUuid: {
-              queryTemplateType: "constantUuid",
-              constantUuidValue: props.menuUuid,
-            }
+        menus: {
+          queryType: "selectObjectByDirectReference",
+          parentName: "Menu",
+          applicationSection: getApplicationSection(props.deploymentUuid,entityMenu.uuid),
+          // applicationSection: "model",
+          parentUuid: {
+            queryTemplateType: "constantUuid",
+            constantUuidValue: entityMenu.uuid,
           },
+          instanceUuid: {
+            queryTemplateType: "constantUuid",
+            constantUuidValue: props.menuUuid,
+          }
         },
       },
     }, deploymentEntityStateSelectorMap),
@@ -177,7 +183,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
   );
 
   log.info("fetchDeploymentMenusQueryParams",fetchDeploymentMenusQueryParams)
-  const miroirMenusDomainElementObject: DomainElementObject = useDeploymentEntityStateQuerySelector(
+  const miroirMenusDomainElementObject: DomainElementObjectOrFailed = useDeploymentEntityStateQuerySelector(
     deploymentEntityStateSelectorMap.extractWithManyExtractors,
     fetchDeploymentMenusQueryParams
   );
@@ -189,72 +195,88 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
     count++,
     "found miroir menu:",
     miroirMenusDomainElementObject,
-    miroirMenusDomainElementObject?.elementValue?.menus?.elementValue
+    miroirMenusDomainElementObject?.elementValue
   );
   const drawerSx = useMemo(()=>({flexDirection:'column'}),[])
   const styledDrawerSx = useMemo(()=>({alignItems: "end"}),[])
 
 
   // const dynIcon = React.createElement(AutoStories, {});
+  // <StyledDrawer
+  //   sx={drawerSx}
+  //   variant="permanent"
+  //   // variant="persistent"
+  //   open={props.open}
+  // >
+  //   <StyledDrawerHeader sx={styledDrawerSx}>
+  //     <IconButton onClick={() => props.setOpen(false)}>
+  //       {theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+  //     </IconButton>
+  //   </StyledDrawerHeader>
+  //   count: {count}
+  //   <Divider />
 
   return (
-    // <StyledDrawer
-    //   sx={drawerSx}
-    //   variant="permanent"
-    //   // variant="persistent"
-    //   open={props.open}
-    // >
-    //   <StyledDrawerHeader sx={styledDrawerSx}>
-    //     <IconButton onClick={() => props.setOpen(false)}>
-    //       {theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-    //     </IconButton>
-    //   </StyledDrawerHeader>
-    //   count: {count}
-    //   <Divider />
     <>
       {
-        !(miroirMenusDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.menuType ||
-        (miroirMenusDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.menuType == "simpleMenu"?
-        <List disablePadding dense>
-          {(
-            (miroirMenusDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.definition ?? sideBarDefaultItems
-            ).map((i: any, index: number) => (
-            <ListItem key={i.label} disablePadding>
-              <ListItemButton sx={{padding: 0}} component={Link} to={`/report/${i.application}/${i.section}/${i.reportUuid}/xxxxxx`}>
-                <ListItemIcon>
-                  {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
-                  <Icon>{i.icon}</Icon>
-                </ListItemIcon>
-                <ListItemText primary={i.label} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
+        miroirMenusDomainElementObject.elementType == "failure"
+        ?
+        <MatList disablePadding dense>
+          <MatListItem key={"failed"} disablePadding>
+            <MatListItemButton>
+              <MatListItemIcon>
+                {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
+                <Icon>error</Icon>
+              </MatListItemIcon>
+              <MatListItemText primary="Failed to load menu" />
+            </MatListItemButton>
+          </MatListItem>
+        </MatList>
         :
-        <List disablePadding dense>
-          {(
-            (miroirMenusDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.definition ?? []
-            ).flatMap((menuSection: any, index: number) => (
-              menuSection.items.map(
-                (curr:any, index: number) => (
-                  <ListItem key={curr.label + index} disablePadding>
-                    <ListItemButton component={Link} to={`/report/${curr.application}/${curr.section}/${curr.reportUuid}/xxxxxx`}>
-                      <ListItemIcon>
-                        {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
-                        <Icon>{curr.icon}</Icon>
-                      </ListItemIcon>
-                      <ListItemText primary={curr.label} />
-                    </ListItemButton>
-                  </ListItem>
-                ), 
-              ).concat([<Divider key={menuSection.label + "Divider"}/>])
-            )
-          )}
-        </List>
+        <>
+          {
+          !(miroirMenusDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.menuType ||
+          (miroirMenusDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.menuType == "simpleMenu"?
+          <MatList disablePadding dense>
+            {(
+              (miroirMenusDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.definition ?? sideBarDefaultItems
+              ).map((i: any, index: number) => (
+              <MatListItem key={i.label} disablePadding>
+                <MatListItemButton sx={{padding: 0}} component={Link} to={`/report/${i.application}/${i.section}/${i.reportUuid}/xxxxxx`}>
+                  <MatListItemIcon>
+                    {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
+                    <Icon>{i.icon}</Icon>
+                  </MatListItemIcon>
+                  <MatListItemText primary={i.label} />
+                </MatListItemButton>
+              </MatListItem>
+            ))}
+          </MatList>
+          :
+          <MatList disablePadding dense>
+            {(
+              (miroirMenusDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.definition ?? []
+              ).flatMap((menuSection: any, index: number) => (
+                menuSection.items.map(
+                  (curr:any, index: number) => (
+                    <MatListItem key={curr.label + index} disablePadding>
+                      <MatListItemButton component={Link} to={`/report/${curr.application}/${curr.section}/${curr.reportUuid}/xxxxxx`}>
+                        <MatListItemIcon>
+                          {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
+                          <Icon>{curr.icon}</Icon>
+                        </MatListItemIcon>
+                        <MatListItemText primary={curr.label} />
+                      </MatListItemButton>
+                    </MatListItem>
+                  ), 
+                ).concat([<MatDivider key={menuSection.label + "Divider"}/>])
+              )
+            )}
+          </MatList>
+          }
+        </>
       }
     </>
-      // <Divider />
-    // </StyledDrawer>
   );
 }
 

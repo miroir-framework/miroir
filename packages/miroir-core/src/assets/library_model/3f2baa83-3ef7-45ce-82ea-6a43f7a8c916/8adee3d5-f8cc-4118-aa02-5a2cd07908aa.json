@@ -8,18 +8,16 @@
   "defaultLabel": "Detailed information about a User",
   "definition": {
     "fetchQuery": {
-      "select": {
-        "user": {
-          "queryType": "selectObjectByDirectReference",
-          "parentName": "User",
-          "parentUuid": {
-            "queryTemplateType": "constantUuid",
-            "constantUuidValue": "ca794e28-b2dc-45b3-8137-00151557eea8"
-          },
-          "instanceUuid": {
-            "queryTemplateType": "queryParameterReference",
-            "referenceName": "instanceUuid"
-          }
+      "user": {
+        "queryType": "selectObjectByDirectReference",
+        "parentName": "User",
+        "parentUuid": {
+          "queryTemplateType": "constantUuid",
+          "constantUuidValue": "ca794e28-b2dc-45b3-8137-00151557eea8"
+        },
+        "instanceUuid": {
+          "queryTemplateType": "queryParameterReference",
+          "referenceName": "instanceUuid"
         }
       }
     },

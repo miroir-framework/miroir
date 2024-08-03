@@ -277,19 +277,17 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             type: "list",
             definition: {
               fetchQuery: {
-                select: {
-                  instanceList: {
-                    queryType: "selectObjectListByEntity",
-                    parentName: {
-                      templateType: "parameterReference",
-                      referenceName: "newEntityName",
-                    },
-                    parentUuid: {
-                      queryTemplateType: "constantUuid",
-                      constantUuidValue: {
-                        templateType: "mustacheStringTemplate",
-                        definition: "{{newEntity.uuid}}",
-                      },
+                instanceList: {
+                  queryType: "selectObjectListByEntity",
+                  parentName: {
+                    templateType: "parameterReference",
+                    referenceName: "newEntityName",
+                  },
+                  parentUuid: {
+                    queryTemplateType: "constantUuid",
+                    constantUuidValue: {
+                      templateType: "mustacheStringTemplate",
+                      definition: "{{newEntity.uuid}}",
                     },
                   },
                 },
@@ -336,24 +334,22 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             },
             definition: {
               fetchQuery: {
-                select: {
-                  elementToDisplay: {
-                    queryType: "selectObjectByDirectReference",
-                    parentName: {
-                      templateType: "parameterReference",
-                      referenceName: "newEntityName",
+                elementToDisplay: {
+                  queryType: "selectObjectByDirectReference",
+                  parentName: {
+                    templateType: "parameterReference",
+                    referenceName: "newEntityName",
+                  },
+                  parentUuid: {
+                    queryTemplateType: "constantUuid",
+                    constantUuidValue: {
+                      templateType: "mustacheStringTemplate",
+                      definition: "{{newEntity.uuid}}",
                     },
-                    parentUuid: {
-                      queryTemplateType: "constantUuid",
-                      constantUuidValue: {
-                        templateType: "mustacheStringTemplate",
-                        definition: "{{newEntity.uuid}}",
-                      },
-                    },
-                    instanceUuid: {
-                      queryTemplateType: "queryParameterReference",
-                      referenceName: "instanceUuid",
-                    },
+                  },
+                  instanceUuid: {
+                    queryTemplateType: "queryParameterReference",
+                    referenceName: "instanceUuid",
                   },
                 },
               },
@@ -602,17 +598,15 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       queryParams: { elementType: "object", elementValue: {} },
       contextResults: { elementType: "object", elementValue: {} },
       fetchQuery: {
-        select: {
-          menus: {
-            queryType: "selectObjectListByEntity",
-            applicationSection: "model",
-            parentName: "Menu",
-            parentUuid: {
-              queryTemplateType: "constantUuid",
-              constantUuidValue: entityMenu.uuid,
-            },
+        menus: {
+          queryType: "selectObjectListByEntity",
+          applicationSection: "model",
+          parentName: "Menu",
+          parentUuid: {
+            queryTemplateType: "constantUuid",
+            constantUuidValue: entityMenu.uuid,
           },
-        }
+        },
       },
     };
     const miroirMenuInstances: ActionReturnType = 
@@ -841,19 +835,17 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             type: "list",
             definition: {
               fetchQuery: {
-                select: {
-                  listReportSectionElements: {
-                    queryType: "selectObjectListByEntity",
-                    parentName: {
-                      templateType: "parameterReference",
-                      referenceName: "newEntityName",
-                    },
-                    parentUuid: {
-                      queryTemplateType: "constantUuid",
-                      constantUuidValue: {
-                        templateType: "mustacheStringTemplate",
-                        definition: "{{newEntity.uuid}}",
-                      },
+                listReportSectionElements: {
+                  queryType: "selectObjectListByEntity",
+                  parentName: {
+                    templateType: "parameterReference",
+                    referenceName: "newEntityName",
+                  },
+                  parentUuid: {
+                    queryTemplateType: "constantUuid",
+                    constantUuidValue: {
+                      templateType: "mustacheStringTemplate",
+                      definition: "{{newEntity.uuid}}",
                     },
                   },
                 },
@@ -885,35 +877,33 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             defaultLabel: "Details of " + newEntityDescription,
             definition: {
               fetchQuery: {
-                select: {
-                  elementToDisplay: {
-                    queryType: "selectObjectByDirectReference",
-                    parentName: newEntityName,
-                    parentUuid: {
-                      queryTemplateType: "constantUuid",
-                      constantUuidValue: {
-                        templateType: "mustacheStringTemplate",
-                        definition: "{{newEntity.uuid}}",
-                      },
-                    },
-                    instanceUuid: {
-                      queryTemplateType: "queryParameterReference",
-                      referenceName: "instanceUuid",
+                elementToDisplay: {
+                  queryType: "selectObjectByDirectReference",
+                  parentName: newEntityName,
+                  parentUuid: {
+                    queryTemplateType: "constantUuid",
+                    constantUuidValue: {
+                      templateType: "mustacheStringTemplate",
+                      definition: "{{newEntity.uuid}}",
                     },
                   },
-                  fountainsOfMunicipality: {
-                    queryType: "selectObjectListByRelation",
-                    parentName: "Fountain",
-                    parentUuid: {
-                      queryTemplateType: "constantUuid",
-                      constantUuidValue: splittedEntityDefinition.entityUuid,
-                    },
-                    objectReference: {
-                      referenceName: "elementToDisplay",
-                      queryTemplateType: "queryContextReference",
-                    },
-                    AttributeOfListObjectToCompareToReferenceUuid: newEntityName,
+                  instanceUuid: {
+                    queryTemplateType: "queryParameterReference",
+                    referenceName: "instanceUuid",
                   },
+                },
+                fountainsOfMunicipality: {
+                  queryType: "selectObjectListByRelation",
+                  parentName: "Fountain",
+                  parentUuid: {
+                    queryTemplateType: "constantUuid",
+                    constantUuidValue: splittedEntityDefinition.entityUuid,
+                  },
+                  objectReference: {
+                    referenceName: "elementToDisplay",
+                    queryTemplateType: "queryContextReference",
+                  },
+                  AttributeOfListObjectToCompareToReferenceUuid: newEntityName,
                 },
               },
               section: {
@@ -1181,20 +1171,18 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               queryParams: { elementType: "object", elementValue: {} },
               contextResults: { elementType: "object", elementValue: {} },
               fetchQuery: {
-                select: { // TODO: replace with fullObjectTemplate
-                  [splittedEntityName]: {
-                    queryType: "selectObjectListByEntity",
-                    applicationSection: "data",
-                    parentName: {
-                      templateType: "parameterReference",
-                      referenceName: "splittedEntityName",
-                    },
-                    parentUuid: {
-                      queryTemplateType: "constantUuid",
-                      constantUuidValue: {
-                        templateType: "mustacheStringTemplate",
-                        definition: "{{splittedEntityDefinition.entityUuid}}",
-                      },
+                [splittedEntityName]: {
+                  queryType: "selectObjectListByEntity",
+                  applicationSection: "data",
+                  parentName: {
+                    templateType: "parameterReference",
+                    referenceName: "splittedEntityName",
+                  },
+                  parentUuid: {
+                    queryTemplateType: "constantUuid",
+                    constantUuidValue: {
+                      templateType: "mustacheStringTemplate",
+                      definition: "{{splittedEntityDefinition.entityUuid}}",
                     },
                   },
                 }

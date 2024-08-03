@@ -1480,6 +1480,16 @@ export function getMiroirFundamentalJzodSchema(
               type: "literal",
               definition: "extractorForRecordOfExtractors",
             },
+            // extractors: {
+            //   type: "record",
+            //   definition: {
+            //     type: "schemaReference",
+            //     definition: {
+            //       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            //       relativePath: "transformer",
+            //     },
+            //   },
+            // },
             fetchQuery: {
               type: "schemaReference",
               definition: {

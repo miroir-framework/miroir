@@ -515,22 +515,9 @@
             }
           },
           "queryQueriesRecordOrCrossJoin": {
-            "type": "object",
+            "type": "schemaReference",
             "definition": {
-              "parameterSchema": {
-                "type": "schemaReference",
-                "optional": true,
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodObject"
-                }
-              },
-              "select": {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "miroirSelectQueriesRecord"
-                }
-              }
+              "relativePath": "miroirSelectQueriesRecord"
             }
           }
         },

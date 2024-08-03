@@ -8,32 +8,30 @@
   "defaultLabel": "Detailed information about a Publisher",
   "definition": {
     "fetchQuery": {
-      "select": {
-        "publisher": {
-          "queryType": "selectObjectByDirectReference",
-          "parentName": "Author",
-          "parentUuid": {
-            "queryTemplateType": "constantUuid",
-            "constantUuidValue": "a027c379-8468-43a5-ba4d-bf618be25cab"
-          },
-          "instanceUuid": {
-            "queryTemplateType": "queryParameterReference",
-            "referenceName": "instanceUuid"
-          }
+      "publisher": {
+        "queryType": "selectObjectByDirectReference",
+        "parentName": "Author",
+        "parentUuid": {
+          "queryTemplateType": "constantUuid",
+          "constantUuidValue": "a027c379-8468-43a5-ba4d-bf618be25cab"
         },
-        "booksOfPublisher": {
-          "queryType": "selectObjectListByRelation",
-          "parentName": "Book",
-          "parentUuid": {
-            "queryTemplateType": "constantUuid",
-            "constantUuidValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-          },
-          "objectReference": {
-            "queryTemplateType": "queryContextReference",
-            "referenceName": "publisher"
-          },
-          "AttributeOfListObjectToCompareToReferenceUuid": "publisher"
+        "instanceUuid": {
+          "queryTemplateType": "queryParameterReference",
+          "referenceName": "instanceUuid"
         }
+      },
+      "booksOfPublisher": {
+        "queryType": "selectObjectListByRelation",
+        "parentName": "Book",
+        "parentUuid": {
+          "queryTemplateType": "constantUuid",
+          "constantUuidValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+        },
+        "objectReference": {
+          "queryTemplateType": "queryContextReference",
+          "referenceName": "publisher"
+        },
+        "AttributeOfListObjectToCompareToReferenceUuid": "publisher"
       }
     },
     "section": {

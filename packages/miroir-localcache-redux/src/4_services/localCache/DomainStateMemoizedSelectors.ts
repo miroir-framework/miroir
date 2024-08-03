@@ -10,7 +10,8 @@ import {
   extractEntityJzodSchemaFromDeploymentEntityState,
   extractFetchQueryJzodSchema,
   extractJzodSchemaForDomainModelQuery,
-  extractzodSchemaForSingleSelectQuery
+  extractzodSchemaForSingleSelectQuery,
+  extractWithExtractor
 } from "miroir-core";
 
 const deploymentEntityStateSelector = (domainState: DeploymentEntityState, params: any) => domainState;
@@ -33,6 +34,10 @@ export function getMemoizedDeploymentEntityStateSelectorMap(): ExtractorRunnerMa
     extractWithManyExtractors: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
       extractWithManyExtractors
+    ),
+    extractWithExtractor: createSelector(
+      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
+      extractWithExtractor
     ),
   };
 }

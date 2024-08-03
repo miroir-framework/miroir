@@ -10,14 +10,12 @@
   "definition": {
     "reportParameters": {},
     "fetchQuery": {
-      "select": {
-        "publishers": {
-          "queryType": "selectObjectListByEntity",
-          "parentName": "Publisher",
-          "parentUuid": {
-            "queryTemplateType": "constantUuid",
-            "constantUuidValue": "a027c379-8468-43a5-ba4d-bf618be25cab"
-          }
+      "publishers": {
+        "queryType": "selectObjectListByEntity",
+        "parentName": "Publisher",
+        "parentUuid": {
+          "queryTemplateType": "constantUuid",
+          "constantUuidValue": "a027c379-8468-43a5-ba4d-bf618be25cab"
         }
       }
     },

@@ -8,14 +8,12 @@
   "definition": {
     "reportParameters": {},
     "fetchQuery": {
-      "select": {
-        "applicationModelBranches": {
-          "queryType": "selectObjectListByEntity",
-          "parentName": "ApplicationModelBranch",
-          "parentUuid": {
-            "queryTemplateType": "constantUuid",
-            "constantUuidValue": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1"
-          }
+      "applicationModelBranches": {
+        "queryType": "selectObjectListByEntity",
+        "parentName": "ApplicationModelBranch",
+        "parentUuid": {
+          "queryTemplateType": "constantUuid",
+          "constantUuidValue": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1"
         }
       }
     },

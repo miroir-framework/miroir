@@ -4482,26 +4482,12 @@ export const miroirFundamentalJzodSchema = {
         }
       },
       "queryQueriesRecordOrCrossJoin": {
-        "type": "object",
+        "type": "schemaReference",
         "definition": {
-          "parameterSchema": {
-            "type": "schemaReference",
-            "optional": true,
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "jzodObject"
-            },
-            "context": {}
-          },
-          "select": {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "miroirSelectQueriesRecord",
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-            },
-            "context": {}
-          }
-        }
+          "relativePath": "miroirSelectQueriesRecord",
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+        },
+        "context": {}
       },
       "domainElementVoid": {
         "type": "object",
@@ -24335,50 +24321,14 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "carryOnObject"
-            }
+              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQueriesRecord"
+            },
+            "context": {}
           },
           {
-            "type": "object",
+            "type": "schemaReference",
             "definition": {
-              "parameterSchema": {
-                "optional": true,
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "schemaReference",
-                    "optional": true,
-                    "definition": {
-                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject"
-                    },
-                    "context": {}
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "carryOnObject"
-                    }
-                  }
-                ]
-              },
-              "select": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirSelectQueriesRecord"
-                    },
-                    "context": {}
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "carryOnObject"
-                    }
-                  }
-                ]
-              }
+              "relativePath": "carryOnObject"
             }
           }
         ]

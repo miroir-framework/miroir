@@ -488,17 +488,15 @@ export const JzodObjectEditor = (
             queryParams: { elementType: "object", elementValue: {} },
             contextResults: { elementType: "object", elementValue: {} },
             fetchQuery: {
-              select: {
-                [unfoldedRawSchema.tag?.value?.targetEntity]:
-                {
-                  queryType: "selectObjectListByEntity",
-                  applicationSection: getApplicationSection(props.currentDeploymentUuid,unfoldedRawSchema.tag?.value?.targetEntity),
-                  parentName: "",
-                  parentUuid: {
-                    queryTemplateType: "constantUuid",
-                    constantUuidValue: unfoldedRawSchema.tag?.value?.targetEntity,
-                  },
-                }
+              [unfoldedRawSchema.tag?.value?.targetEntity]:
+              {
+                queryType: "selectObjectListByEntity",
+                applicationSection: getApplicationSection(props.currentDeploymentUuid,unfoldedRawSchema.tag?.value?.targetEntity),
+                parentName: "",
+                parentUuid: {
+                  queryTemplateType: "constantUuid",
+                  constantUuidValue: unfoldedRawSchema.tag?.value?.targetEntity,
+                },
               }
             }
           }
@@ -1022,7 +1020,7 @@ export const JzodObjectEditor = (
                     }
 
                     const attributeDisplayedLabel: string =
-                      currentAttributeDefinition?.tag?.defaultLabel ?? attribute[0];
+                      currentAttributeDefinition?.tag?.value?.defaultLabel ?? attribute[0];
 
                     // determine raw schema of attribute
                     switch (unfoldedRawSchema?.type) {
