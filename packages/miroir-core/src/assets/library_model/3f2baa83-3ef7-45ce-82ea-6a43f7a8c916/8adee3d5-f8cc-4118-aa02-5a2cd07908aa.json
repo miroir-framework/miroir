@@ -21,8 +21,6 @@
         }
       }
     },
-    "fetchQuery": {
-    },
     "section": {
       "type": "list",
       "definition": [

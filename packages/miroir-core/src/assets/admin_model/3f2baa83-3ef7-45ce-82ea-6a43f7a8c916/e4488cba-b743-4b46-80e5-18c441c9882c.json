@@ -17,8 +17,6 @@
         }
       }
     },
-    "fetchQuery": {
-    },
     "section": {
       "type":"objectListReportSection",
       "definition": {
