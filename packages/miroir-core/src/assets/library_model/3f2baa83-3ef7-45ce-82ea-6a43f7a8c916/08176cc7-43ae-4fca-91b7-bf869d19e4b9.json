@@ -8,7 +8,7 @@
   "defaultLabel": "List of Countries",
   "definition": {
     "reportParameters": {},
-    "fetchQuery": {
+    "extractors": {
       "countries": {
         "queryType": "selectObjectListByEntity",
         "parentName": "Country",

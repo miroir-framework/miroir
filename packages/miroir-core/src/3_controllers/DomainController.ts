@@ -654,80 +654,90 @@ export class DomainController implements DomainControllerInterface {
       /**
        * we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
        */
-      const queries = Object.entries(queryAction.query.fetchQuery);
-      if (queries.length != 1) {
-        throw new Error(
-          "DomainController handleQuery queryAction no query found in fetchQuery.select! " + JSON.stringify(queryAction)
-        );
-      }
-      const query = queries[0][1];
-      const queryName = queries[0][0];
+      const extractors = Object.entries(queryAction.query.extractors??{});
+      const fetchQueries = Object.entries(queryAction.query.fetchQuery??{});
 
-      log.info("DomainController handleQuery queryAction executing query", JSON.stringify(query));
-      switch (query.queryType) {
-        case "selectObjectListByEntity": {
-          const parentUuid = resolveContextReference(
-            query.parentUuid,
-            queryAction.query.queryParams,
-            queryAction.query.contextResults
+      for (const a of [extractors, fetchQueries]) {
+        const queries = a;
+        if (queries.length != 1) {
+          log.warn(
+            "DomainController handleQuery queryAction no query found in fetchQuery.select! " + JSON.stringify(queryAction)
           );
-
-          log.info("DomainController handleQuery queryAction resolved parentUuid", JSON.stringify(parentUuid));
-
-          if (parentUuid.elementType != "instanceUuid") {
-            throw new Error(
-              "DomainController handleQuery queryAction no parentUuid found for query " +
-                JSON.stringify(query) +
-                " parentUuid " +
-                JSON.stringify(parentUuid)
-            );
-          }
-
-          if (!query.applicationSection) {
-            throw new Error(
-              "DomainController handleQuery queryAction no applicationSection found for query " + JSON.stringify(query)
-            );
-          }
-
-          const result = await this.callUtil.callPersistenceAction(
-            {}, // context
-            { // context update
-              addResultToContextAsName: "dataEntitiesFromModelSection",
-              expectedDomainElementType: "entityInstanceCollection",
-            },
-            { // persistence action
-              actionType: "RestPersistenceAction",
-              actionName: "read",
-              endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
-              deploymentUuid: queryAction.deploymentUuid,
-              parentName: query.parentName,
-              parentUuid: parentUuid.elementValue,
-              section: query.applicationSection,
+          // throw new Error(
+          //   "DomainController handleQuery queryAction no query found in fetchQuery.select! " + JSON.stringify(queryAction)
+          // );
+        } else {
+          const query = queries[0][1];
+          const queryName = queries[0][0];
+    
+          log.info("DomainController handleQuery queryAction executing query", JSON.stringify(query));
+          switch (query.queryType) {
+            case "selectObjectListByEntity": {
+              const parentUuid = resolveContextReference(
+                query.parentUuid,
+                queryAction.query.queryParams,
+                queryAction.query.contextResults
+              );
+    
+              log.info("DomainController handleQuery queryAction resolved parentUuid", JSON.stringify(parentUuid));
+    
+              if (parentUuid.elementType != "instanceUuid") {
+                throw new Error(
+                  "DomainController handleQuery queryAction no parentUuid found for query " +
+                    JSON.stringify(query) +
+                    " parentUuid " +
+                    JSON.stringify(parentUuid)
+                );
+              }
+    
+              if (!query.applicationSection) {
+                throw new Error(
+                  "DomainController handleQuery queryAction no applicationSection found for query " + JSON.stringify(query)
+                );
+              }
+    
+              const result = await this.callUtil.callPersistenceAction(
+                {}, // context
+                { // context update
+                  addResultToContextAsName: "dataEntitiesFromModelSection",
+                  expectedDomainElementType: "entityInstanceCollection",
+                },
+                { // persistence action
+                  actionType: "RestPersistenceAction",
+                  actionName: "read",
+                  endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
+                  deploymentUuid: queryAction.deploymentUuid,
+                  parentName: query.parentName,
+                  parentUuid: parentUuid.elementValue,
+                  section: query.applicationSection,
+                }
+              );
+    
+              log.info("DomainController handleQuery queryName=", queryName);
+              log.info("DomainController handleQuery result=", JSON.stringify(result));
+    
+              return result["dataEntitiesFromModelSection"];
+              break;
             }
-          );
-
-          log.info("DomainController handleQuery queryName=", queryName);
-          log.info("DomainController handleQuery result=", JSON.stringify(result));
-
-          return result["dataEntitiesFromModelSection"];
-          break;
+            case "literal":
+            case "selectObjectListByRelation":
+            case "selectObjectListByManyToManyRelation":
+            case "queryCombiner":
+            case "selectObjectByRelation":
+            case "selectObjectByDirectReference":
+            case "queryContextReference":
+            case "wrapperReturningObject":
+            case "wrapperReturningList":
+            default: {
+              throw new Error(
+                "DomainController handleQuery queryAction no query found in fetchQuery.select! " +
+                  JSON.stringify(queryAction)
+              );
+              break;
+            }
+          }
         }
-        case "literal":
-        case "selectObjectListByRelation":
-        case "selectObjectListByManyToManyRelation":
-        case "queryCombiner":
-        case "selectObjectByRelation":
-        case "selectObjectByDirectReference":
-        case "queryContextReference":
-        case "wrapperReturningObject":
-        case "wrapperReturningList":
-        default: {
-          throw new Error(
-            "DomainController handleQuery queryAction no query found in fetchQuery.select! " +
-              JSON.stringify(queryAction)
-          );
-          break;
-        }
+
       }
     } else {
       // we're on the client, the query is sent to the server for execution.

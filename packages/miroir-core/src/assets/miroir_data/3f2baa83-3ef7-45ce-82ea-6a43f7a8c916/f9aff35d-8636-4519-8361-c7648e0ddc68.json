@@ -7,7 +7,7 @@
   "defaultLabel": "Entity Definitions",
   "definition": {
     "reportParameters": {},
-    "fetchQuery": {
+    "extractors": {
       "entityDefinitions": {
         "queryType": "selectObjectListByEntity",
         "applicationSection": "model",

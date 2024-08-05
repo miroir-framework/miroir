@@ -7,7 +7,7 @@
   "name":"EntityDetails",
   "defaultLabel": "Detailed information about an Entity",
   "definition": {
-    "fetchQuery": {
+    "extractors": {
       "entity": {
         "queryType": "selectObjectByDirectReference",
         "parentName": "Entity",

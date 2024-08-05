@@ -96,7 +96,7 @@
               }
             }
           },
-          "queryTemplateConstantOrReference": {
+          "queryTemplateConstant": {
             "type": "union",
             "discriminator": "queryTemplateType",
             "definition": [
@@ -150,29 +150,71 @@
                     "type": "uuid"
                   }
                 }
+              }
+            ]
+          },
+          "queryTemplateContextReference": {
+            "type": "object",
+            "definition": {
+              "queryTemplateType": {
+                "type": "literal",
+                "definition": "queryContextReference"
               },
+              "referenceName": {
+                "type": "string"
+              }
+            }
+          },
+          "queryTemplateParameterReference": {
+            "type": "object",
+            "definition": {
+              "queryTemplateType": {
+                "type": "literal",
+                "definition": "queryParameterReference"
+              },
+              "referenceName": {
+                "type": "string"
+              }
+            }
+          },
+          "queryTemplateConstantOrParameterReference": {
+            "type": "union",
+            "discriminator": "queryTemplateType",
+            "definition": [
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "queryTemplateType": {
-                    "type": "literal",
-                    "definition": "queryContextReference"
-                  },
-                  "referenceName": {
-                    "type": "string"
-                  }
+                  "relativePath": "queryTemplateConstant"
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "queryTemplateType": {
-                    "type": "literal",
-                    "definition": "queryParameterReference"
-                  },
-                  "referenceName": {
-                    "type": "string"
-                  }
+                  "relativePath": "queryTemplateParameterReference"
+                }
+              }
+            ]
+          },
+          "queryTemplateConstantOrAnyReference": {
+            "type": "union",
+            "discriminator": "queryTemplateType",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "queryTemplateConstant"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "queryTemplateContextReference"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "queryTemplateParameterReference"
                 }
               }
             ]
@@ -203,7 +245,7 @@
                 "type": "schemaReference",
                 "tag": { "value": {  "id":4, "defaultLabel": "Parent Uuid", "editable": false }},
                 "definition": {
-                  "relativePath": "queryTemplateConstantOrReference"
+                  "relativePath": "queryTemplateConstantOrAnyReference"
                 }
               }
             }
@@ -225,7 +267,7 @@
               "objectReference": {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "queryTemplateConstantOrReference"
+                  "relativePath": "queryTemplateConstantOrAnyReference"
                 }
               },
               "AttributeOfObjectToCompareToReferenceUuid": {
@@ -250,7 +292,7 @@
               "instanceUuid": {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "queryTemplateConstantOrReference"
+                  "relativePath": "queryTemplateConstantOrAnyReference"
                 }
               }
             }
@@ -306,7 +348,7 @@
               "objectReference": {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "queryTemplateConstantOrReference"
+                  "relativePath": "queryTemplateConstantOrAnyReference"
                 }
               },
               "objectReferenceAttribute": {
@@ -335,7 +377,7 @@
               "objectListReference": {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "queryTemplateConstantOrReference"
+                  "relativePath": "queryTemplateConstantOrAnyReference"
                 }
               },
               "objectListReferenceAttribute": {
@@ -407,7 +449,37 @@
               }
             }
           },
-          "querySelect": {
+          "querySelectExtractorObject": {
+            "type": "union",
+            "discriminator": "queryType",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "querySelectObjectByDirectReference"
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "queryType": {
+                    "type": "literal",
+                    "definition": "extractorWrapperReturningObject"
+                  },
+                  "definition": {
+                    "type": "record",
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "querySelectExtractorObject"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "querySelectExtractorList": {
             "type": "union",
             "discriminator": "queryType",
             "definition": [
@@ -418,55 +490,47 @@
                 }
               },
               {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "querySelectObjectListByRelation"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "querySelectObjectListByManyToManyRelation"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "querySelectByQueryCombiner"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "querySelectObjectByRelation"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "querySelectObjectByDirectReference"
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "queryType": { "type": "literal", "definition": "literal" },
-                  "definition": { "type": "string" }
-                }
-              },
-              {
                 "type": "object",
                 "definition": {
                   "queryType": {
                     "type": "literal",
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "definition": "queryContextReference"
+                    "definition": "extractorWrapperReturningList"
                   },
-                  "queryReference": {
-                    "type": "string"
+                  "definition": {
+                    "type": "array",
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "querySelectExtractorList"
+                      }
+                    }
                   }
                 }
+              }
+            ]
+          },
+          "querySelectExtractor": {
+            "type": "union",
+            "discriminator": "queryType",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "querySelectExtractorObject"
+                }
               },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "querySelectExtractorList"
+                }
+              }
+            ]
+          },
+          "querySelect": {
+            "type": "union",
+            "discriminator": "queryType",
+            "definition": [
               {
                 "type": "object",
                 "definition": {
@@ -502,6 +566,62 @@
                     }
                   }
                 }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "querySelectExtractor"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "querySelectObjectByRelation"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "querySelectObjectListByEntity"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "querySelectObjectListByRelation"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "querySelectObjectListByManyToManyRelation"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "querySelectByQueryCombiner"
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "queryType": { "type": "literal", "definition": "literal" },
+                  "definition": { "type": "string" }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "queryType": {
+                    "type": "literal",
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "definition": "queryContextReference"
+                  },
+                  "queryReference": {
+                    "type": "string"
+                  }
+                }
               }
             ]
           },
@@ -513,17 +633,11 @@
                 "relativePath": "querySelect"
               }
             }
-          },
-          "queryQueriesRecordOrCrossJoin": {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "miroirSelectQueriesRecord"
-            }
           }
         },
         "definition": {
           "eager": true,
-          "relativePath": "queryQueriesRecordOrCrossJoin"
+          "relativePath": "miroirSelectQueriesRecord"
         }
       }
     }

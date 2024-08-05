@@ -7,7 +7,7 @@
   "name":"UserDetails",
   "defaultLabel": "Detailed information about a User",
   "definition": {
-    "fetchQuery": {
+    "extractors": {
       "user": {
         "queryType": "selectObjectByDirectReference",
         "parentName": "User",
@@ -20,6 +20,8 @@
           "referenceName": "instanceUuid"
         }
       }
+    },
+    "fetchQuery": {
     },
     "section": {
       "type": "list",

@@ -7,7 +7,7 @@
   "defaultLabel": "Deployments",
   "definition": {
     "reportParameters": {},
-    "fetchQuery": {
+    "extractors":{
       "ApplicationDeployments": {
         "queryType": "selectObjectListByEntity",
         "parentName": "Deployment",
@@ -16,6 +16,8 @@
           "constantUuidValue": "7959d814-400c-4e80-988f-a00fe582ab98"
         }
       }
+    },
+    "fetchQuery": {
     },
     "section": {
       "type":"objectListReportSection",

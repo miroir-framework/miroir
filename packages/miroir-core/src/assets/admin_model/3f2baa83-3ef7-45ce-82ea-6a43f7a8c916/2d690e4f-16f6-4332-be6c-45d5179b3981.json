@@ -7,7 +7,7 @@
   "defaultLabel": "Bundles",
   "definition": {
     "reportParameters": {},
-    "fetchQuery": {
+    "extractors": {
       "bundles": {
         "queryType": "selectObjectListByEntity",
         "parentName": "Bundle",
@@ -16,6 +16,8 @@
           "constantUuidValue": "9f9170da-538d-425c-8cb7-551640623eed"
         }
       }
+    },
+    "fetchQuery": {
     },
     "section": {
       "type":"objectListReportSection",

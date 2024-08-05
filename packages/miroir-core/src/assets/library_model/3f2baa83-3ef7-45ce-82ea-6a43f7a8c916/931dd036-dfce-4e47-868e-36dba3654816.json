@@ -9,7 +9,7 @@
   "type": "list",
   "definition": {
     "reportParameters": {},
-    "fetchQuery": {
+    "extractors": {
       "tests": {
         "queryType": "selectObjectListByEntity",
         "parentName": "Test",

@@ -10,7 +10,7 @@
     "reportParameters": {
 
     },
-    "fetchQuery": {
+    "extractors": {
       "books": {
         "queryType": "selectObjectListByEntity",
         "parentUuid": {

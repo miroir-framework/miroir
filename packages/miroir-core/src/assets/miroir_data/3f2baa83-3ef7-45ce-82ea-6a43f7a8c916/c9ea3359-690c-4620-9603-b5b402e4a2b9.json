@@ -8,7 +8,7 @@
   "type": "list",
   "definition": {
     "reportParameters": {},
-    "fetchQuery": {
+    "extractors": {
       "entities": {
         "queryType": "selectObjectListByEntity",
         "applicationSection": "model",

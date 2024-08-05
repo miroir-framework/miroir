@@ -7,7 +7,7 @@
   "name":"DeploymentDetails",
   "defaultLabel": "Detailed information about a Deployment",
   "definition": {
-    "fetchQuery": {
+    "extractors": {
       "deployment": {
         "queryType": "selectObjectByDirectReference",
         "parentName": "Deployment",
@@ -20,6 +20,8 @@
           "referenceName": "instanceUuid"
         }
       }
+    },
+    "fetchQuery": {
     },
     "section": {
       "type": "list",

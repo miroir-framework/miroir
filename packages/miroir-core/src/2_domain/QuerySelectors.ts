@@ -19,7 +19,7 @@ import {
   DomainModelGetFetchParamJzodSchemaExtractor,
   DomainModelQueryJzodSchemaParams,
   JzodElement,
-  QueryTemplateConstantOrReference,
+  QueryTemplateConstantOrAnyReference,
   DomainElementInstanceUuidIndexOrFailed,
   DomainElementObjectOrFailed,
   DomainElementEntityInstanceOrFailed,
@@ -85,17 +85,17 @@ export function cleanupResultsFromQuery(r:DomainElement): any {
 
 // ################################################################################################
 export const resolveContextReference = (
-  queryTemplateConstantOrReference: QueryTemplateConstantOrReference,
+  queryTemplateConstantOrAnyReference: QueryTemplateConstantOrAnyReference,
   queryParams: DomainElementObject,
   contextResults: DomainElement,
 ) : DomainElement => {
-  // log.info("resolveContextReference for queryTemplateConstantOrReference=", queryTemplateConstantOrReference, "queryParams=", queryParams,"contextResults=", contextResults)
+  // log.info("resolveContextReference for queryTemplateConstantOrAnyReference=", queryTemplateConstantOrAnyReference, "queryParams=", queryParams,"contextResults=", contextResults)
   if (
-    (queryTemplateConstantOrReference.queryTemplateType == "queryContextReference" &&
+    (queryTemplateConstantOrAnyReference.queryTemplateType == "queryContextReference" &&
       (!contextResults.elementValue ||
-        !(contextResults.elementValue as any)[queryTemplateConstantOrReference.referenceName])) ||
-    (queryTemplateConstantOrReference.queryTemplateType == "queryParameterReference" &&
-      (!Object.keys(queryParams.elementValue).includes(queryTemplateConstantOrReference.referenceName)))
+        !(contextResults.elementValue as any)[queryTemplateConstantOrAnyReference.referenceName])) ||
+    (queryTemplateConstantOrAnyReference.queryTemplateType == "queryParameterReference" &&
+      (!Object.keys(queryParams.elementValue).includes(queryTemplateConstantOrAnyReference.referenceName)))
 
   ) {
     // checking that given reference does exist
@@ -107,12 +107,12 @@ export const resolveContextReference = (
 
   if (
     (
-      queryTemplateConstantOrReference.queryTemplateType == "queryContextReference" &&
-        !(contextResults.elementValue as any)[queryTemplateConstantOrReference.referenceName].elementValue
+      queryTemplateConstantOrAnyReference.queryTemplateType == "queryContextReference" &&
+        !(contextResults.elementValue as any)[queryTemplateConstantOrAnyReference.referenceName].elementValue
     ) ||
     (
-      (queryTemplateConstantOrReference.queryTemplateType == "queryParameterReference" &&
-      (!queryParams.elementValue[queryTemplateConstantOrReference.referenceName]))
+      (queryTemplateConstantOrAnyReference.queryTemplateType == "queryParameterReference" &&
+      (!queryParams.elementValue[queryTemplateConstantOrAnyReference.referenceName]))
     )
   ) { // checking that given reference does exist
     return {
@@ -122,12 +122,12 @@ export const resolveContextReference = (
   }
 
   const reference: DomainElement =
-  queryTemplateConstantOrReference.queryTemplateType == "queryContextReference"
-    ? (contextResults.elementValue as any)[queryTemplateConstantOrReference.referenceName]
-    : queryTemplateConstantOrReference.queryTemplateType == "queryParameterReference"
-    ? queryParams.elementValue[queryTemplateConstantOrReference.referenceName]
-    : queryTemplateConstantOrReference.queryTemplateType == "constantUuid"
-    ? {elementType: "instanceUuid", elementValue: queryTemplateConstantOrReference.constantUuidValue } // new object
+  queryTemplateConstantOrAnyReference.queryTemplateType == "queryContextReference"
+    ? (contextResults.elementValue as any)[queryTemplateConstantOrAnyReference.referenceName]
+    : queryTemplateConstantOrAnyReference.queryTemplateType == "queryParameterReference"
+    ? queryParams.elementValue[queryTemplateConstantOrAnyReference.referenceName]
+    : queryTemplateConstantOrAnyReference.queryTemplateType == "constantUuid"
+    ? {elementType: "instanceUuid", elementValue: queryTemplateConstantOrAnyReference.constantUuidValue } // new object
     : undefined /* this should not happen. Provide "error" value instead?*/;
 
   return reference
@@ -362,7 +362,7 @@ export function innerSelectElementFromQuery<StateType>(
       break;
     }
     // ############################################################################################
-    
+    case "extractorWrapperReturningObject":
     case "wrapperReturningObject": { // build object
       return {
         elementType: "object",
@@ -383,6 +383,7 @@ export function innerSelectElementFromQuery<StateType>(
       };
       break;
     }
+    case "extractorWrapperReturningList":
     case "wrapperReturningList": { // List map
       return {
         elementType: "array",
@@ -547,7 +548,30 @@ export const extractWithManyExtractors = <StateType>(
   const localSelectorMap: ExtractorRunnerMap<StateType> =
     selectorParams?.extractorRunnerMap ?? emptySelectorMap;
 
-  for (const query of Object.entries(selectorParams.extractor.fetchQuery)) {
+  for (const query of Object.entries(
+    selectorParams.extractor.extractors ?? {}
+  )) {
+    let result = innerSelectElementFromQuery(
+      state,
+      context,
+      selectorParams.extractor.pageParams,
+      {
+        elementType: "object",
+        elementValue: {
+          ...selectorParams.extractor.pageParams.elementValue,
+          ...selectorParams.extractor.queryParams.elementValue,
+        },
+      },
+      localSelectorMap as any,
+      selectorParams.extractor.deploymentUuid,
+      query[1]
+    );
+    context.elementValue[query[0]] = result; // does side effect!
+    // log.info("extractWithManyExtractors done for entry", entry[0], "query", entry[1], "result=", result);
+  }
+  for (const query of Object.entries(
+    selectorParams.extractor.fetchQuery ?? {}
+  )) {
     let result = innerSelectElementFromQuery(
       state,
       context,
@@ -611,7 +635,9 @@ export const extractzodSchemaForSingleSelectQuery = <StateType>(
   if (
     selectorParams.query.select.queryType=="literal" ||
     selectorParams.query.select.queryType=="queryContextReference" ||
+    selectorParams.query.select.queryType=="extractorWrapperReturningObject" ||
     selectorParams.query.select.queryType=="wrapperReturningObject" ||
+    selectorParams.query.select.queryType=="extractorWrapperReturningList" ||
     selectorParams.query.select.queryType=="wrapperReturningList" ||
     selectorParams.query.select.queryType=="queryCombiner" 
   ) {

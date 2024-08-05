@@ -7,7 +7,7 @@
   "defaultLabel": "Queries",
   "definition": {
     "reportParameters": {},
-    "fetchQuery": {
+    "extractors": {
       "queries": {
         "queryType": "selectObjectListByEntity",
         "parentName": "Query",

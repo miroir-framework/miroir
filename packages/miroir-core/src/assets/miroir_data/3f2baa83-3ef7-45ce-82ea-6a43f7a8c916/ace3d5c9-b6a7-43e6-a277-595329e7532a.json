@@ -7,7 +7,7 @@
   "defaultLabel": "Endpoints",
   "definition": {
     "reportParameters": {},
-    "fetchQuery": {
+    "extractors": {
       "endpoints": {
         "queryType": "selectObjectListByEntity",
         "parentName": "Endpoint",

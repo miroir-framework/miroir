@@ -7,7 +7,7 @@
   "name":"AuthorDetails",
   "defaultLabel": "Detailed information about an Author",
   "definition": {
-    "fetchQuery": {
+    "extractors": {
       "author": {
         "queryType": "selectObjectByDirectReference",
         "parentName": "Author",
@@ -19,7 +19,9 @@
           "queryTemplateType": "queryParameterReference",
           "referenceName": "instanceUuid"
         }
-      },
+      }
+    },
+    "fetchQuery": {
       "booksOfAuthor": {
         "queryType": "selectObjectListByRelation",
         "parentName": "Book",

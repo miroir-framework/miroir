@@ -7,7 +7,7 @@
   "defaultLabel": "Jzod Schemas",
   "definition": {
     "reportParameters": {},
-    "fetchQuery": {
+    "extractors": {
       "jzodSchemas": {
         "queryType": "selectObjectListByEntity",
         "parentName": "JzodSchema",

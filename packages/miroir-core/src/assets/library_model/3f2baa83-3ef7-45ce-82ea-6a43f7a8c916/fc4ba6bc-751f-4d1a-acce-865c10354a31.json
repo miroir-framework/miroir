@@ -7,7 +7,7 @@
   "name":"CountryDetails",
   "defaultLabel": "Detailed information about a Country",
   "definition": {
-    "fetchQuery": {
+    "extractors": {
       "country": {
         "queryType": "selectObjectByDirectReference",
         "parentName": "Country",
@@ -19,7 +19,9 @@
           "queryTemplateType": "queryParameterReference",
           "referenceName": "instanceUuid"
         }
-      },
+      }
+    },
+    "fetchQuery": {
       "publishersOfCountry": {
         "queryType": "selectObjectListByRelation",
         "parentName": "Publisher",

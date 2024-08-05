@@ -7,7 +7,7 @@
   "defaultLabel": "Menus",
   "definition": {
     "reportParameters": {},
-    "fetchQuery": {
+    "extractors": {
       "menus": {
         "queryType": "selectObjectListByEntity",
         "parentName": "Menu",

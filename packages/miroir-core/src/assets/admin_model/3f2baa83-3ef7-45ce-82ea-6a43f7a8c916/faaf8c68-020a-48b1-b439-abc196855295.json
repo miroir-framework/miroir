@@ -7,7 +7,7 @@
   "name":"BundleDetails",
   "defaultLabel": "Detailed information about a Bundle",
   "definition": {
-    "fetchQuery": {
+    "extractors": {
       "bundle": {
         "queryType": "selectObjectByDirectReference",
         "parentName": "Deployment",
@@ -20,6 +20,8 @@
           "referenceName": "instanceUuid"
         }
       }
+    },
+    "fetchQuery": {
     },
     "section": {
       "type": "list",

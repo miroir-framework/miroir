@@ -9,7 +9,7 @@
   "type": "list",
   "definition": {
     "reportParameters": {},
-    "fetchQuery": {
+    "extractors": {
       "publishers": {
         "queryType": "selectObjectListByEntity",
         "parentName": "Publisher",

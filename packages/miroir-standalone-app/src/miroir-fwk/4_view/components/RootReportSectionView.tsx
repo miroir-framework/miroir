@@ -94,6 +94,7 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
               pageParams: paramsAsdomainElements,
               queryParams: { elementType: "object", elementValue: {} },
               contextResults: { elementType: "object", elementValue: {} },
+              extractors: props.rootReportSection.extractors,
               fetchQuery: props.rootReportSection.fetchQuery,
             },
             deploymentEntityStateSelectorMap
@@ -202,6 +203,8 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
     fetchedDataJzodSchema,
     "fetchedDataJzodSchemaParams",
     fetchedDataJzodSchemaParams,
+    "props.reportSection?.extractors",
+    props.rootReportSection?.extractors,
     "props.reportSection?.fetchQuery",
     props.rootReportSection?.fetchQuery,
     "props.deploymentEntityStateQueryResults",

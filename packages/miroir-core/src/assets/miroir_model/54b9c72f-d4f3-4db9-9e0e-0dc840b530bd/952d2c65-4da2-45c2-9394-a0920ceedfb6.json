@@ -1,65 +1,66 @@
 {
   "uuid": "952d2c65-4da2-45c2-9394-a0920ceedfb6",
-  "parentName":"EntityDefinition",
-  "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentName": "EntityDefinition",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-  "conceptLevel":"Model",
-  "name":"Report",
+  "conceptLevel": "Model",
+  "name": "Report",
   "icon": "Interests",
   "defaultInstanceDetailsReportUuid": "ef57aada-6b77-4384-8007-12f13eddd337",
-  "viewAttributes": [
-    "name",
-    "defaultLabel",
-    "type",
-    "application",
-    "uuid"
-  ],
+  "viewAttributes": ["name", "defaultLabel", "type", "application", "uuid"],
   "jzodSchema": {
     "type": "object",
     "definition": {
       "uuid": {
         "type": "uuid",
-        "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
+        "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
       },
       "parentName": {
         "type": "string",
         "optional": true,
-        "tag": { "value": {  "id":2, "defaultLabel": "Entity Name", "editable": false }}
+        "tag": { "value": { "id": 2, "defaultLabel": "Entity Name", "editable": false } }
       },
       "parentUuid": {
         "type": "uuid",
-        "tag": { "value": {  "id":3, "defaultLabel": "Entity Uuid", "editable": false }}
+        "tag": { "value": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false } }
       },
       "parentDefinitionVersionUuid": {
         "type": "uuid",
         "optional": true,
-        "tag": { "value": {  "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }}
+        "tag": { "value": { "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false } }
       },
       "conceptLevel": {
         "type": "enum",
         "definition": ["MetaModel", "Model", "Data"],
         "optional": true,
-        "tag": { "value": {  "id": 5, "defaultLabel": "Concept Level", "editable": false }}
+        "tag": { "value": { "id": 5, "defaultLabel": "Concept Level", "editable": false } }
       },
       "name": {
         "type": "string",
-        "tag": { "value": {  "id":6, "defaultLabel": "Name", "editable": true }}
+        "tag": { "value": { "id": 6, "defaultLabel": "Name", "editable": true } }
       },
       "defaultLabel": {
         "type": "string",
-        "tag": { "value": {  "id":7, "defaultLabel": "Default Label", "editable": true }}
+        "tag": { "value": { "id": 7, "defaultLabel": "Default Label", "editable": true } }
       },
       "type": {
         "type": "enum",
-        "definition": ["list","grid"],
+        "definition": ["list", "grid"],
         "optional": true,
-        "tag": { "value": {  "id":8, "defaultLabel": "Type of Report", "editable": true }}
+        "tag": { "value": { "id": 8, "defaultLabel": "Type of Report", "editable": true } }
       },
       "application": {
         "type": "uuid",
         "optional": true,
-        "tag": { "value": {  "id":9, "defaultLabel": "Application", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": true }}
+        "tag": {
+          "value": {
+            "id": 9,
+            "defaultLabel": "Application",
+            "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+            "editable": true
+          }
+        }
       },
       "definition": {
         "type": "schemaReference",
@@ -76,7 +77,7 @@
                 "optional": true,
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "queryQueriesRecordOrCrossJoin"
+                  "relativePath": "miroirSelectQueriesRecord"
                 }
               },
               "definition": {
@@ -85,17 +86,17 @@
                   "label": {
                     "type": "string",
                     "optional": true,
-                    "tag": { "value": {  "id":1, "defaultLabel": "Label", "editable": false }}
+                    "tag": { "value": { "id": 1, "defaultLabel": "Label", "editable": false } }
                   },
                   "parentUuid": {
                     "type": "string",
                     "validations": [{ "type": "uuid" }],
-                    "tag": { "value": {  "id":2, "defaultLabel": "Entity Uuid", "editable": false }}
+                    "tag": { "value": { "id": 2, "defaultLabel": "Entity Uuid", "editable": false } }
                   },
                   "fetchedDataReference": {
                     "type": "string",
                     "optional": true,
-                    "tag": { "value": {  "id": 3, "defaultLabel": "Fetched Data Reference", "editable": false }}
+                    "tag": { "value": { "id": 3, "defaultLabel": "Fetched Data Reference", "editable": false } }
                   },
                   "query": {
                     "type": "schemaReference",
@@ -122,21 +123,28 @@
                   "label": {
                     "type": "string",
                     "optional": true,
-                    "tag": { "value": {  "id":1, "defaultLabel": "Label", "editable": false }}
+                    "tag": { "value": { "id": 1, "defaultLabel": "Label", "editable": false } }
                   },
                   "parentName": {
                     "type": "string",
                     "optional": true,
-                    "tag": { "value": {  "id":2, "defaultLabel": "Entity Name", "editable": false }}
+                    "tag": { "value": { "id": 2, "defaultLabel": "Entity Name", "editable": false } }
                   },
                   "parentUuid": {
                     "type": "uuid",
-                    "tag": { "value": {  "id":2, "defaultLabel": "Entity Uuid", "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad", "editable": false }}
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Uuid",
+                        "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                        "editable": false
+                      }
+                    }
                   },
                   "fetchedDataReference": {
                     "type": "string",
                     "optional": true,
-                    "tag": { "value": {  "id": 3, "defaultLabel": "Fetched Data Reference", "editable": false }}
+                    "tag": { "value": { "id": 3, "defaultLabel": "Fetched Data Reference", "editable": false } }
                   },
                   "query": {
                     "type": "schemaReference",
@@ -166,7 +174,7 @@
                 "optional": true,
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "queryQueriesRecordOrCrossJoin"
+                  "relativePath": "miroirSelectQueriesRecord"
                 }
               },
               "selectData": {
@@ -204,7 +212,7 @@
                 "optional": true,
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "queryQueriesRecordOrCrossJoin"
+                  "relativePath": "miroirSelectQueriesRecord"
                 }
               },
               "selectData": {
@@ -294,11 +302,22 @@
                   "type": "string"
                 }
               },
+              "extractors": {
+                "type": "record",
+                "optional": true,
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "querySelectExtractor"
+                  }
+                }
+              },
               "fetchQuery": {
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "queryQueriesRecordOrCrossJoin"
+                  "relativePath": "miroirSelectQueriesRecord"
                 }
               },
               "section": {
@@ -316,7 +335,7 @@
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           "relativePath": "rootReportSection"
         },
-        "tag": { "value": {  "id": 9, "defaultLabel": "Definition", "editable": true }}
+        "tag": { "value": { "id": 9, "defaultLabel": "Definition", "editable": true } }
       }
     }
   }
