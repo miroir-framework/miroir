@@ -10,7 +10,7 @@
     "reportParameters": {},
     "extractors": {
       "applicationVersions": {
-        "queryType": "selectObjectListByEntity",
+        "queryType": "extractObjectListByEntity",
         "parentName": "ApplicationVersion",
         "parentUuid": {
           "queryTemplateType": "constantUuid",

@@ -745,7 +745,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
   //           fetchQuery: {
   //               select: {
   //               entities: {
-  //                 queryType: "selectObjectListByEntity",
+  //                 queryType: "extractObjectListByEntity",
   //                 applicationSection: "model",
   //                 parentName: "Entity",
   //                 parentUuid: {

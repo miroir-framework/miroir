@@ -50,7 +50,7 @@ export class IndexedDbExtractorRunner {
   //   switch (extractor.queryType) {
   //     case "domainModelSingleExtractor": {
   //       switch (extractor.select.queryType) {
-  //         case "selectObjectListByEntity": {
+  //         case "extractObjectListByEntity": {
   //           const entityUuid = extractor.select.parentUuid;
   //           const entityInstanceUuidIndex = await this.dataStoreSection.getInstances(entityUuid);
   //           return {

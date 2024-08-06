@@ -298,7 +298,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         contextResults: { elementType: "object", elementValue: {} },
                         fetchQuery: {
                           deployments: {
-                            queryType: "selectObjectListByEntity",
+                            queryType: "extractObjectListByEntity",
                             applicationSection: "data",
                             parentName: "Deployment",
                             parentUuid: {
@@ -542,7 +542,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         fetchQuery: {
                           "select": {
                             "authors": {
-                              "queryType": "selectObjectListByEntity",
+                              "queryType": "extractObjectListByEntity",
                               "parentName": "Author",
                               "parentUuid": {
                                 "queryTemplateType": "constantUuid",

@@ -169,10 +169,8 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractor
     selectorParams?.extractorRunnerMap ?? emptySelectorMap
   ;
 
-  const selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed = localSelectorMap.extractEntityInstanceUuidIndex(
-    deploymentEntityState,
-    selectorParams
-  );
+  const selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed =
+    localSelectorMap.extractEntityInstanceUuidIndex(deploymentEntityState, selectorParams);
 
   // log.info(
   //   "extractEntityInstanceUuidIndexWithObjectListExtractor found selectedInstances", selectedInstances
@@ -180,8 +178,42 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractor
 
 
   switch (selectorParams.extractor.select.queryType) {
-    case "selectObjectListByEntity": {
-      return selectedInstancesUuidIndex;
+    case "extractObjectListByEntity": {
+      const filterTest = (selectorParams as any).extractor.select.filter
+        ? new RegExp((selectorParams as any).extractor.select.filter.value.definition, "i")
+        : undefined;
+      log.info("extractEntityInstanceUuidIndexWithObjectListExtractor extractObjectListByEntity filter", JSON.stringify((selectorParams as any).extractor.select.filter))
+      const result:DomainElementInstanceUuidIndexOrFailed = selectorParams.extractor.select.filter
+        ? {
+            elementType: "instanceUuidIndex",
+            elementValue: Object.fromEntries(
+              Object.entries(selectedInstancesUuidIndex.elementValue).filter((i: [string, EntityInstance]) => {
+                const matchResult = filterTest?.test(
+                  (i as any)[1][(selectorParams as any).extractor.select.filter.attributeName]
+                )
+                log.info(
+                  "extractEntityInstanceUuidIndexWithObjectListExtractor extractObjectListByEntity filter",
+                  JSON.stringify(i[1]),
+                  "matchResult",
+                  matchResult
+                );
+                return matchResult
+              }
+              )
+            )
+          }
+        // }
+        // Object.fromEntries(
+        //     Object.entries(selectedInstancesUuidIndex.elementValue).filter((i: [string, EntityInstance]) =>
+        //       (selectorParams as any).extractor.select.filter.value.match(
+        //         (i as any)[1][(selectorParams as any).extractor.select.filter.attributeName]
+        //       )
+        //     )
+        //   )
+        : selectedInstancesUuidIndex;
+      ;
+
+      return result;
       break;
     }
     case "selectObjectListByRelation": {
@@ -320,7 +352,7 @@ export function innerSelectElementFromQuery<StateType>(
     }
     // ############################################################################################
     // Impure Monads
-    case "selectObjectListByEntity":
+    case "extractObjectListByEntity":
     case "selectObjectListByRelation": 
     case "selectObjectListByManyToManyRelation": {
       return extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractor(state, {

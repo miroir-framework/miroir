@@ -490,7 +490,7 @@ export const JzodObjectEditor = (
             fetchQuery: {
               [unfoldedRawSchema.tag?.value?.targetEntity]:
               {
-                queryType: "selectObjectListByEntity",
+                queryType: "extractObjectListByEntity",
                 applicationSection: getApplicationSection(props.currentDeploymentUuid,unfoldedRawSchema.tag?.value?.targetEntity),
                 parentName: "",
                 parentUuid: {

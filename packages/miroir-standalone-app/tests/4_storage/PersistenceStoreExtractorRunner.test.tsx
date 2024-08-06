@@ -207,7 +207,7 @@ describe.sequential("PersistenceStoreExtractorRunner.test", () => {
               contextResults: {elementType: "object", elementValue: {}},
               "deploymentUuid": adminConfigurationDeploymentLibrary.uuid,
               select: {
-                queryType: "selectObjectListByEntity",
+                queryType: "extractObjectListByEntity",
                 applicationSection: "model",
                 parentName: "Entity",
                 parentUuid: {

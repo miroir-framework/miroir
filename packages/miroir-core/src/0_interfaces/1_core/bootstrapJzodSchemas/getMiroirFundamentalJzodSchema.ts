@@ -2230,14 +2230,14 @@ export function getMiroirFundamentalJzodSchema(
         queryFailed: (miroirFundamentalJzodSchema as any).definition.context.queryFailed,
         querySelectObjectListByManyToManyRelation: (miroirFundamentalJzodSchema as any).definition.context
           .querySelectObjectListByManyToManyRelation,
-        querySelectObjectListByEntity: (miroirFundamentalJzodSchema as any).definition.context
-          .querySelectObjectListByEntity,
+        extractObjectListByEntity: (miroirFundamentalJzodSchema as any).definition.context
+          .extractObjectListByEntity,
         querySelectObjectListByRelation: (miroirFundamentalJzodSchema as any).definition.context
           .querySelectObjectListByRelation,
         querySelectObjectByRelation: (miroirFundamentalJzodSchema as any).definition.context
           .querySelectObjectByRelation,
-        querySelectObjectByDirectReference: (miroirFundamentalJzodSchema as any).definition.context
-          .querySelectObjectByDirectReference,
+        extractObjectByDirectReference: (miroirFundamentalJzodSchema as any).definition.context
+          .extractObjectByDirectReference,
         querySelectExtractorObject: (miroirFundamentalJzodSchema as any).definition.context.querySelectExtractorObject,
         querySelectExtractorList: (miroirFundamentalJzodSchema as any).definition.context.querySelectExtractorList,
         querySelectExtractor: (miroirFundamentalJzodSchema as any).definition.context.querySelectExtractor,

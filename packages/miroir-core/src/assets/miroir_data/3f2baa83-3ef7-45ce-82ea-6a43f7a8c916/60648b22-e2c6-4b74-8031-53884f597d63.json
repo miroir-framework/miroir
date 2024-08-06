@@ -9,7 +9,7 @@
     "reportParameters": {},
     "extractors": {
       "applicationModelBranches": {
-        "queryType": "selectObjectListByEntity",
+        "queryType": "extractObjectListByEntity",
         "parentName": "ApplicationModelBranch",
         "parentUuid": {
           "queryTemplateType": "constantUuid",

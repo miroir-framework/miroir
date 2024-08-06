@@ -17,140 +17,140 @@ import domainStateImport from "./domainState.json";
 const domainState: DomainState = domainStateImport as DomainState;
 
 describe("domainSelector", () => {
-  // // ###########################################################################################
-  // it('error on non-existing Entity: EntityNotFound',
-  //   () => {
-  //     const queryParam: ExtractorForRecordOfExtractors = {
-  //       queryType: "extractorForRecordOfExtractors",
-  //       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-  //       contextResults: { elementType: "object", elementValue: {} },
-  //       pageParams: { elementType: "object", elementValue: {} },
-  //       queryParams: { elementType: "object", elementValue: {} },
-  //       fetchQuery: {
-  //         book: {
-  //           queryType: "selectObjectByDirectReference",
-  //           parentName: "Book",
-  //           parentUuid: {
-  //             queryTemplateType: "constantUuid",
-  //             constantUuidValue: "XXXXXX"
-  //           },
-  //           instanceUuid: {
-  //             queryTemplateType: "constantUuid",
-  //             constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
-  //           }
-  //         },
-  //       },
-  //     };
-  //     // const result = extractWithManyExtractorsFromDomainState(domainState, getSelectorParams(queryParam));
-  //     const result = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
-  //     console.info("result", result);
-  //     expect(result).toEqual({
-  //       elementType: "object",
-  //       elementValue: {
-  //         book: {
-  //           elementType: "failure",
-  //           elementValue: {
-  //             applicationSection: "data",
-  //             deploymentUuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-  //             entityUuid: "XXXXXX",
-  //             queryFailure: "EntityNotFound",
-  //           },
-  //         },
-  //       },
-  //     });
-  //   }
-  // )
+  // ###########################################################################################
+  it('error on non-existing Entity: EntityNotFound',
+    () => {
+      const queryParam: ExtractorForRecordOfExtractors = {
+        queryType: "extractorForRecordOfExtractors",
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        contextResults: { elementType: "object", elementValue: {} },
+        pageParams: { elementType: "object", elementValue: {} },
+        queryParams: { elementType: "object", elementValue: {} },
+        fetchQuery: {
+          book: {
+            queryType: "selectObjectByDirectReference",
+            parentName: "Book",
+            parentUuid: {
+              queryTemplateType: "constantUuid",
+              constantUuidValue: "XXXXXX"
+            },
+            instanceUuid: {
+              queryTemplateType: "constantUuid",
+              constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+            }
+          },
+        },
+      };
+      // const result = extractWithManyExtractorsFromDomainState(domainState, getSelectorParams(queryParam));
+      const result = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
+      console.info("result", result);
+      expect(result).toEqual({
+        elementType: "object",
+        elementValue: {
+          book: {
+            elementType: "failure",
+            elementValue: {
+              applicationSection: "data",
+              deploymentUuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+              entityUuid: "XXXXXX",
+              queryFailure: "EntityNotFound",
+            },
+          },
+        },
+      });
+    }
+  )
 
-  // // ###########################################################################################
-  // it('error on non-existing Entity: EntityNotFound',
-  //   () => {
-  //     const queryParam: ExtractorForRecordOfExtractors = {
-  //       queryType: "extractorForRecordOfExtractors",
-  //       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-  //       contextResults: { elementType: "object", elementValue: {} },
-  //       pageParams: { elementType: "object", elementValue: {} },
-  //       queryParams: { elementType: "object", elementValue: {} },
-  //       fetchQuery: {
-  //         book: {
-  //           queryType: "selectObjectByDirectReference",
-  //           parentName: "Book",
-  //           parentUuid: {
-  //             "queryTemplateType": "constantUuid",
-  //             "constantUuidValue": "XXXXXX"
-  //           },
-  //           instanceUuid: {
-  //             queryTemplateType: "constantUuid",
-  //             constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
-  //           }
-  //         },
-  //       },
-  //     };
-  //     // const result = extractWithManyExtractorsFromDomainState(domainState, getSelectorParams(queryParam));
-  //     const result = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
-  //     console.info("result", result);
-  //     expect(result).toEqual({
-  //       elementType: "object",
-  //       elementValue: {
-  //         book: {
-  //           elementType: "failure",
-  //           elementValue: {
-  //             applicationSection: "data",
-  //             deploymentUuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-  //             entityUuid: "XXXXXX",
-  //             queryFailure: "EntityNotFound",
-  //           },
-  //         },
-  //       },
-  //     });
-  //   }
-  // )
+  // ###########################################################################################
+  it('error on non-existing Entity: EntityNotFound',
+    () => {
+      const queryParam: ExtractorForRecordOfExtractors = {
+        queryType: "extractorForRecordOfExtractors",
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        contextResults: { elementType: "object", elementValue: {} },
+        pageParams: { elementType: "object", elementValue: {} },
+        queryParams: { elementType: "object", elementValue: {} },
+        fetchQuery: {
+          book: {
+            queryType: "selectObjectByDirectReference",
+            parentName: "Book",
+            parentUuid: {
+              "queryTemplateType": "constantUuid",
+              "constantUuidValue": "XXXXXX"
+            },
+            instanceUuid: {
+              queryTemplateType: "constantUuid",
+              constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+            }
+          },
+        },
+      };
+      // const result = extractWithManyExtractorsFromDomainState(domainState, getSelectorParams(queryParam));
+      const result = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
+      console.info("result", result);
+      expect(result).toEqual({
+        elementType: "object",
+        elementValue: {
+          book: {
+            elementType: "failure",
+            elementValue: {
+              applicationSection: "data",
+              deploymentUuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+              entityUuid: "XXXXXX",
+              queryFailure: "EntityNotFound",
+            },
+          },
+        },
+      });
+    }
+  )
 
-  // // ###########################################################################################
-  // it('error on non-existing object uuid: InstanceNotFound',
-  //   () => {
+  // ###########################################################################################
+  it('error on non-existing object uuid: InstanceNotFound',
+    () => {
 
-  //     const queryParam: ExtractorForRecordOfExtractors = {
-  //       queryType: "extractorForRecordOfExtractors",
-  //       "deploymentUuid": adminConfigurationDeploymentLibrary.uuid,
-  //       "contextResults": { elementType: "object", elementValue: {} },
-  //       pageParams: { elementType: "object", elementValue: {} },
-  //       queryParams: { elementType: "object", elementValue: {} },
-  //       "fetchQuery": {
-  //         "book": {
-  //           queryType: "selectObjectByDirectReference",
-  //           parentName: "Book",
-  //           parentUuid: {
-  //             queryTemplateType: "constantUuid",
-  //             constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-  //           },
-  //           instanceUuid: {
-  //             queryTemplateType: "constantUuid",
-  //             constantUuidValue: "XXXXXXXXX"
-  //           }
-  //         }
-  //       }
-  //     };
+      const queryParam: ExtractorForRecordOfExtractors = {
+        queryType: "extractorForRecordOfExtractors",
+        "deploymentUuid": adminConfigurationDeploymentLibrary.uuid,
+        "contextResults": { elementType: "object", elementValue: {} },
+        pageParams: { elementType: "object", elementValue: {} },
+        queryParams: { elementType: "object", elementValue: {} },
+        "fetchQuery": {
+          "book": {
+            queryType: "selectObjectByDirectReference",
+            parentName: "Book",
+            parentUuid: {
+              queryTemplateType: "constantUuid",
+              constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            },
+            instanceUuid: {
+              queryTemplateType: "constantUuid",
+              constantUuidValue: "XXXXXXXXX"
+            }
+          }
+        }
+      };
 
-  //     expect(
-  //       // extractWithManyExtractorsFromDomainState(domainState, getSelectorParams(queryParam)))
-  //       extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam)))
-  //       .toEqual({
-  //       elementType: "object",
-  //       elementValue: {
-  //         book: {
-  //           elementType: "failure",
-  //           elementValue: {
-  //             applicationSection: "data",
-  //             deploymentUuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-  //             entityUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //             instanceUuid: "XXXXXXXXX",
-  //             queryFailure: "InstanceNotFound",
-  //           },
-  //         },
-  //       },
-  //     });
-  //   }
-  // )
+      expect(
+        // extractWithManyExtractorsFromDomainState(domainState, getSelectorParams(queryParam)))
+        extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam)))
+        .toEqual({
+        elementType: "object",
+        elementValue: {
+          book: {
+            elementType: "failure",
+            elementValue: {
+              applicationSection: "data",
+              deploymentUuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+              entityUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              instanceUuid: "XXXXXXXXX",
+              queryFailure: "InstanceNotFound",
+            },
+          },
+        },
+      });
+    }
+  )
 
   // ###########################################################################################
   it('select 1 object from Domain State',
@@ -332,7 +332,7 @@ describe("domainSelector", () => {
         queryParams: { elementType: "object", elementValue: {} },
         extractors: {
           authors: {
-            queryType: "selectObjectListByEntity",
+            queryType: "extractObjectListByEntity",
             parentName: "Author",
             parentUuid: {
               queryTemplateType: "constantUuid",
@@ -379,6 +379,66 @@ describe("domainSelector", () => {
     }
   )
 
+  // ###########################################################################################
+  it('select Authors with filter',
+    () => {
+
+      const queryParam: ExtractorForRecordOfExtractors = {
+        queryType: "extractorForRecordOfExtractors",
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        contextResults: { elementType: "object", elementValue: {} },
+        pageParams: {
+          elementType: "object",
+          elementValue: {
+            applicationSection: {
+              elementType: "string",
+              elementValue: "data",
+            },
+          },
+        },
+        queryParams: { elementType: "object", elementValue: {} },
+        extractors: {
+          authors: {
+            queryType: "extractObjectListByEntity",
+            parentName: "Author",
+            parentUuid: {
+              queryTemplateType: "constantUuid",
+              constantUuidValue: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            },
+            filter: {
+              attributeName: "name",
+              value: {
+                queryTemplateType: "constantString",
+                definition: "or",
+              },
+            },
+          },
+        },
+      };
+
+      const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
+
+      console.log("result", queryResult);
+      
+      expect((queryResult.elementValue as any)["authors"].elementValue).toEqual({
+          '4441169e-0c22-4fbc-81b2-28c87cf48ab2': {
+            uuid: '4441169e-0c22-4fbc-81b2-28c87cf48ab2',
+            parentName: 'Author',
+            parentUuid: 'd7a144ff-d1b9-4135-800c-a7cfc1f38733',
+            name: 'Don Norman'
+          },
+          'd14c1c0c-eb2e-42d1-8ac1-2d58f5143c17': {
+            uuid: 'd14c1c0c-eb2e-42d1-8ac1-2d58f5143c17',
+            parentName: 'Author',
+            parentUuid: 'd7a144ff-d1b9-4135-800c-a7cfc1f38733',
+            conceptLevel: 'Data',
+            name: 'Cornell Woolrich'
+          },
+        });
+    }
+  )
+  
+  
   // ###########################################################################################
   it('select Books of Publisher of given Book from Domain State',
     () => {
@@ -566,7 +626,7 @@ describe("domainSelector", () => {
         queryParams: { elementType: "object", elementValue: {} },
         extractors: {
           entities: {
-            queryType: "selectObjectListByEntity",
+            queryType: "extractObjectListByEntity",
             applicationSection: "model",
             parentName: "Entity",
             parentUuid: {
@@ -584,7 +644,7 @@ describe("domainSelector", () => {
             },
             subQuery: {
               query: {
-                queryType: "selectObjectListByEntity",
+                queryType: "extractObjectListByEntity",
                 parentUuid: {
                   queryTemplateType: "queryParameterReference",
                   referenceName: "uuid",

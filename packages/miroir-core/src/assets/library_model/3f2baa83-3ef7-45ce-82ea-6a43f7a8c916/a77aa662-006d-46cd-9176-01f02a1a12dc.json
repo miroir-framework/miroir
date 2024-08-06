@@ -11,7 +11,7 @@
     "reportParameters": {},
     "extractors": {
       "publishers": {
-        "queryType": "selectObjectListByEntity",
+        "queryType": "extractObjectListByEntity",
         "parentName": "Publisher",
         "parentUuid": {
           "queryTemplateType": "constantUuid",

@@ -9,7 +9,7 @@
     "reportParameters": {},
     "extractors": {
       "jzodSchemas": {
-        "queryType": "selectObjectListByEntity",
+        "queryType": "extractObjectListByEntity",
         "parentName": "JzodSchema",
         "parentUuid": {
           "queryTemplateType": "constantUuid",

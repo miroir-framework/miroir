@@ -275,7 +275,7 @@
               }
             }
           },
-          "querySelectObjectByDirectReference": {
+          "extractObjectByDirectReference": {
             "type": "object",
             "extend": {
               "type": "schemaReference",
@@ -310,12 +310,12 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "querySelectObjectByDirectReference"
+                  "relativePath": "extractObjectByDirectReference"
                 }
               }
             ]
           },
-          "querySelectObjectListByEntity": {
+          "extractObjectListByEntity": {
             "type": "object",
             "extend": {
               "type": "schemaReference",
@@ -327,7 +327,22 @@
             "definition": {
               "queryType": {
                 "type": "literal",
-                "definition": "selectObjectListByEntity"
+                "definition": "extractObjectListByEntity"
+              },
+              "filter": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "attributeName": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "queryTemplateConstantOrParameterReference"
+                    }
+                  }
+                }
               }
             }
           },
@@ -397,7 +412,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "querySelectObjectListByEntity"
+                  "relativePath": "extractObjectListByEntity"
                 }
               },
               {
@@ -456,7 +471,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "querySelectObjectByDirectReference"
+                  "relativePath": "extractObjectByDirectReference"
                 }
               },
               {
@@ -486,7 +501,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "querySelectObjectListByEntity"
+                  "relativePath": "extractObjectListByEntity"
                 }
               },
               {
@@ -582,7 +597,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "querySelectObjectListByEntity"
+                  "relativePath": "extractObjectListByEntity"
                 }
               },
               {

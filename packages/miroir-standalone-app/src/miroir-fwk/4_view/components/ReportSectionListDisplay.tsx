@@ -333,7 +333,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             foreignKeyObjectsAttributeDefinition.map((e) => [
               e[1].tag?.value?.targetEntity,
               {
-                queryType: "selectObjectListByEntity",
+                queryType: "extractObjectListByEntity",
                 // applicationSection: (props.paramsAsdomainElements as any)["applicationSection"],
                 applicationSection: getApplicationSection(props.deploymentUuid,e[1].tag?.value?.targetEntity??"undefined"),
                 parentName: "",

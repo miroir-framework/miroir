@@ -672,7 +672,7 @@ export class DomainController implements DomainControllerInterface {
     
           log.info("DomainController handleQuery queryAction executing query", JSON.stringify(query));
           switch (query.queryType) {
-            case "selectObjectListByEntity": {
+            case "extractObjectListByEntity": {
               const parentUuid = resolveContextReference(
                 query.parentUuid,
                 queryAction.query.queryParams,
