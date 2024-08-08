@@ -480,6 +480,32 @@ export function innerSelectElementFromQuery<StateType>(
       }
       break;
     }
+    case "extractorTransformer": {
+      const resolvedReference = resolveContextReference(
+        query.referencedQuery,
+        queryParams,
+        newFetchedData
+      );
+
+      log.info("innerSelectElementFromQuery extractorTransformer resolvedReference", resolvedReference);
+      const result = new Set<string>();
+      if (resolvedReference.elementType == "instanceUuidIndex") {
+        for (const entry of Object.entries(resolvedReference.elementValue)) {
+            result.add((entry[1] as any)[query.attribute]);
+        }
+        return { elementType: "any", elementValue: [...result] };
+      }
+
+      // // Object.entries(resolvedReference.elementValue).map(
+      // //   (entry: [string, DomainElement]) => {
+      // //   }
+      // // );
+      // )
+      log.info("innerSelectElementFromQuery extractorTransformer resolvedReference", resolvedReference);
+
+      return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } };
+      break;
+    }
     case "queryContextReference": {
       return newFetchedData && newFetchedData.elementType == "object" && newFetchedData.elementValue[query.queryReference]
         ? newFetchedData.elementValue[query.queryReference]
@@ -667,6 +693,7 @@ export const extractzodSchemaForSingleSelectQuery = <StateType>(
   if (
     selectorParams.query.select.queryType=="literal" ||
     selectorParams.query.select.queryType=="queryContextReference" ||
+    selectorParams.query.select.queryType=="extractorTransformer" ||
     selectorParams.query.select.queryType=="extractorWrapperReturningObject" ||
     selectorParams.query.select.queryType=="wrapperReturningObject" ||
     selectorParams.query.select.queryType=="extractorWrapperReturningList" ||

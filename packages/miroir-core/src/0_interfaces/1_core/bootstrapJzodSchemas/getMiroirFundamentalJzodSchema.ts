@@ -961,6 +961,18 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
+        domainElementAny: {
+          type: "object",
+          definition: {
+            elementType: {
+              type: "literal",
+              definition: "any",
+            },
+            elementValue: {
+              type: "any",
+            },
+          },
+        },
         domainElementFailed: {
           type: "object",
           definition: {
@@ -1160,6 +1172,7 @@ export function getMiroirFundamentalJzodSchema(
         domainElementType: {
           type: "enum",
           definition: [
+            "any",
             "object",
             "instanceUuidIndex",
             "entityInstanceCollection",
@@ -1177,6 +1190,13 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                 relativePath: "domainElementVoid",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainElementAny",
               },
             },
             {
@@ -2151,6 +2171,7 @@ export function getMiroirFundamentalJzodSchema(
         //   },
         // ],
         domainElementVoid: (miroirFundamentalJzodSchema as any).definition.context.domainElementVoid,
+        domainElementAny: (miroirFundamentalJzodSchema as any).definition.context.domainElementAny,
         domainElementFailed: (miroirFundamentalJzodSchema as any).definition.context.domainElementFailed,
         domainElementObject: (miroirFundamentalJzodSchema as any).definition.context.domainElementObject,
         domainElementObjectOrFailed: (miroirFundamentalJzodSchema as any).definition.context

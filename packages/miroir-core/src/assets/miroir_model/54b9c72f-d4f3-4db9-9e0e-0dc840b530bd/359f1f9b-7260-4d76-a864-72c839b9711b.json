@@ -547,6 +547,30 @@
             "discriminator": "queryType",
             "definition": [
               {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "querySelectExtractor"
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "queryType": {
+                    "type": "literal",
+                    "definition": "extractorTransformer"
+                  },
+                  "referencedQuery": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "queryTemplateContextReference"
+                    }
+                  },
+                  "attribute": {
+                    "type": "string"
+                  }
+                }
+              },
+              {
                 "type": "object",
                 "definition": {
                   "queryType": {
@@ -585,19 +609,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "querySelectExtractor"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
                   "relativePath": "querySelectObjectByRelation"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "extractObjectListByEntity"
                 }
               },
               {
