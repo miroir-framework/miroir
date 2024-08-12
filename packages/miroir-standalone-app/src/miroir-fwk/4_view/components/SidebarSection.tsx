@@ -27,8 +27,8 @@ import {
   menuDefaultMiroir,
   MiroirLoggerFactory,
   DomainModelExtractor,
-  ExtractorRunnerMap,
-  ExtractorRunnerParams,
+  SyncExtractorRunnerMap,
+  SyncExtractorRunnerParams,
   Uuid,
   DomainElementObjectOrFailed
 } from "miroir-core";
@@ -148,12 +148,12 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
   // const miroirConfig = context.getMiroirConfig();
   // const context = useMiroirContext();
 
-  const deploymentEntityStateSelectorMap: ExtractorRunnerMap<DeploymentEntityState> = useMemo(
+  const deploymentEntityStateSelectorMap: SyncExtractorRunnerMap<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
   )
 
-  const fetchDeploymentMenusQueryParams: ExtractorRunnerParams<ExtractorForRecordOfExtractors, DeploymentEntityState> = useMemo(
+  const fetchDeploymentMenusQueryParams: SyncExtractorRunnerParams<ExtractorForRecordOfExtractors, DeploymentEntityState> = useMemo(
     () => 
     getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>({
       queryType: "extractorForRecordOfExtractors",

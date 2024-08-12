@@ -43,7 +43,8 @@ import {
   restServerDefaultHandlers,
   startLocalPersistenceStoreControllers,
   selfApplicationDeploymentMiroir,
-  selfApplicationDeploymentLibrary
+  selfApplicationDeploymentLibrary,
+  DomainElementType
 } from "miroir-core";
 import { LocalCache, PersistenceReduxSaga, ReduxStoreWithUndoRedo, RestPersistenceClientAndRestClient } from 'miroir-localcache-redux';
 import { createMswRestServer } from 'miroir-server-msw-stub';
@@ -51,6 +52,7 @@ import path from 'path';
 import { packageName } from '../../src/constants';
 import { MiroirContextReactProvider } from '../../src/miroir-fwk/4_view/MiroirContextReactProvider';
 import { cleanLevel } from '../../src/miroir-fwk/4_view/constants';
+import { expect } from 'vitest';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"tests-utils");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -625,3 +627,56 @@ export async function loadTestConfigFiles(env:any) {
   return {miroirConfig,logConfig}
 }
 
+// ################################################################################################
+export const chainVitestSteps = async (
+  stepName: string,
+  context: {[k:string]: any},
+  functionCallingActionToTest: () => Promise<ActionReturnType>,
+  resultTransformation?: (a:ActionReturnType,p:{[k:string]: any}) => any,
+  addResultToContextAsName?: string,
+  expectedDomainElementType?: DomainElementType,
+  expectedValue?: any,
+): Promise<{[k:string]: any}> => {
+  console.log("########################################### chainTestAsyncDomainCalls", stepName, "previousResult:", JSON.stringify(context,undefined, 2));
+  const domainElement = await functionCallingActionToTest();
+  console.log("########################################### chainTestAsyncDomainCalls", stepName, "result:", JSON.stringify(domainElement,undefined, 2));
+  let testResult
+  if (domainElement.status == "ok") {
+    testResult = resultTransformation
+      ? resultTransformation(domainElement, context)
+      : domainElement.status == "ok"
+      ? domainElement?.returnedDomainElement?.elementValue
+      : undefined;
+
+    console.log("########################################### chainTestAsyncDomainCalls", stepName, "testResult that will be compared", JSON.stringify(testResult, null, 2));
+    if (expectedDomainElementType) {
+      if (domainElement.returnedDomainElement?.elementType != expectedDomainElementType) {
+        expect(
+          domainElement.returnedDomainElement?.elementType,
+          stepName + "received wrong type for result: " + domainElement.returnedDomainElement?.elementType + " expected: " + expectedDomainElementType
+        ).toEqual(expectedDomainElementType); // fails
+      } else {
+        // const testResult = ignorePostgresExtraAttributes(domainElement?.returnedDomainElement.elementValue)
+        if (expectedValue) {
+          expect(testResult).toEqual(expectedValue);
+        } else {
+          // no test to be done
+        }
+      }
+    } else {
+     // no test to be done 
+     console.log("########################################### chainTestAsyncDomainCalls", stepName, "no test done because expectedDomainElementType is undefined", expectedDomainElementType);
+    }
+  } else {
+    expect(
+      domainElement.status,
+      domainElement.error?.errorType ?? "no errorType" + ": " + domainElement.error?.errorMessage ?? "no errorMessage"
+    ).toEqual("ok");
+  }
+  console.log("########################################### chainTestAsyncDomainCalls", stepName, "testResult:", JSON.stringify(testResult,undefined, 2));
+  if (testResult && addResultToContextAsName) {
+    return {...context, [addResultToContextAsName]: testResult}
+  } else {
+    return context
+  }
+}

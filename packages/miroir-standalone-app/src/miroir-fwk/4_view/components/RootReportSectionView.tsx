@@ -11,8 +11,8 @@ import {
   ExtractorRunnerParamsForJzodSchema,
   LoggerInterface,
   MiroirLoggerFactory,
-  ExtractorRunnerMap,
-  ExtractorRunnerParams,
+  SyncExtractorRunnerMap,
+  SyncExtractorRunnerParams,
   RecordOfJzodObject,
   RootReportSection,
   Uuid,
@@ -78,12 +78,12 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
   //   props.reportSection.fetchQuery
   // );
   
-  const deploymentEntityStateSelectorMap: ExtractorRunnerMap<DeploymentEntityState> = useMemo(
+  const deploymentEntityStateSelectorMap: SyncExtractorRunnerMap<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
   )
 
-  const deploymentEntityStateFetchQueryParams: ExtractorRunnerParams<ExtractorForRecordOfExtractors, DeploymentEntityState> = useMemo(
+  const deploymentEntityStateFetchQueryParams: SyncExtractorRunnerParams<ExtractorForRecordOfExtractors, DeploymentEntityState> = useMemo(
     () =>
       props.pageParams.deploymentUuid && props.pageParams.applicationSection && props.pageParams.reportUuid
         ? getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>(

@@ -340,13 +340,15 @@ export {
 } from './0_interfaces/2_domain/DomainStateQuerySelectorInterface.js';
 export {
   JzodSchemaQuerySelector,
+  PersistenceStoreExtractorRunner,
   ExtractorRunnerMapForJzodSchema,
   ExtractorRunnerParamsForJzodSchema,
   AsyncExtractorRunner,
   AsyncExtractorRunnerMap,
-  ExtractorRunner,
-  ExtractorRunnerMap,
-  ExtractorRunnerParams,
+  AsyncExtractorRunnerParams,
+  SyncExtractorRunner,
+  SyncExtractorRunnerMap,
+  SyncExtractorRunnerParams,
 } from './0_interfaces/2_domain/ExtractorRunnerInterface.js';
 export {
   ZEntityState,
@@ -469,7 +471,7 @@ export {
   selectEntityJzodSchemaFromDomainStateNew,
   selectEntityInstanceUuidIndexFromDomainState,
   selectEntityInstanceFromObjectQueryAndDomainState,
-  selectEntityInstanceListFromListQueryAndDomainState,
+  exractEntityInstanceListFromListQueryAndDomainState,
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
 } from './2_domain/DomainStateQuerySelectors.js';
@@ -484,12 +486,16 @@ export {
 export {
   cleanupResultsFromQuery,
   resolveContextReference,
-  extractWithManyExtractors,
-  extractWithExtractor,
+  asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+  asyncExtractWithExtractor,
+  asyncExtractWithManyExtractors,
+  asyncInnerSelectElementFromQuery,
   extractEntityInstanceUuidIndexWithObjectListExtractor,
   extractFetchQueryJzodSchema,
   extractJzodSchemaForDomainModelQuery,
   extractzodSchemaForSingleSelectQuery,
+  extractWithManyExtractors,
+  extractWithExtractor,
 } from './2_domain/QuerySelectors.js';
 export{
   getLocalCacheIndexDeploymentSection,

@@ -24,14 +24,19 @@ import {
   DomainElementObjectOrFailed,
   DomainElementEntityInstanceOrFailed,
   ExtractorForSingleObject,
+  QuerySelectObjectList,
+  ExtractObjectListByEntity,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
-  ExtractorRunnerParams,
-  ExtractorRunner,
-  ExtractorRunnerMap,
+  SyncExtractorRunnerParams,
+  SyncExtractorRunner,
+  SyncExtractorRunnerMap,
   ExtractorRunnerParamsForJzodSchema,
   RecordOfJzodElement,
   RecordOfJzodObject,
+  ExtractorRunnerMap,
+  AsyncExtractorRunnerMap,
+  AsyncExtractorRunnerParams,
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
 import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
@@ -41,7 +46,7 @@ import { getLoggerName } from "../tools.js";
 import { applyTransformer } from "./Transformers.js";
 import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"ExtractorRunner");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"SyncExtractorRunner");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   (value: LoggerInterface) => {
@@ -49,7 +54,17 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   }
 );
 
-const emptySelectorMap:ExtractorRunnerMap<any> = {
+const emptySelectorMap:SyncExtractorRunnerMap<any> = {
+  extractorType: "sync",
+  extractWithExtractor: undefined as any, 
+  extractWithManyExtractors: undefined as any, 
+  extractEntityInstance: undefined as any,
+  extractEntityInstanceUuidIndexWithObjectListExtractor: undefined as any,
+  extractEntityInstanceUuidIndex: undefined as any,
+}
+
+const emptyAsyncSelectorMap:AsyncExtractorRunnerMap<any> = {
+  extractorType: "async",
   extractWithExtractor: undefined as any, 
   extractWithManyExtractors: undefined as any, 
   extractEntityInstance: undefined as any,
@@ -141,55 +156,28 @@ export const resolveContextReference = (
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-/**
- * returns an Entity Instance List, from a ListQuery
- * @param deploymentEntityState 
- * @param selectorParams 
- * @returns 
- */
-export const extractEntityInstanceUuidIndexWithObjectListExtractor
-= <StateType>(
-  deploymentEntityState: StateType,
-  selectorParams: ExtractorRunnerParams<ExtractorForSingleObjectList, StateType>
-): DomainElementInstanceUuidIndexOrFailed => {
-  // log.info(
-  //   "extractEntityInstanceUuidIndexWithObjectListExtractor called with queryType",
-  //   selectorParams.query.domainSingleExtractor.select.queryType,
-  //   "selectorParams",
-  //   selectorParams
-  // );
-  // const emptySelectorMap = {
-  //   extractWithManyExtractors: {} as ExtractorRunner<DomainModelExtractor, StateType, DomainElementObjectOrFailed>, 
-  //   extractEntityInstance: {} as ExtractorRunner<DomainModelExtractor, StateType, DomainElementEntityInstanceOrFailed>,
-  //   extractEntityInstanceUuidIndexWithObjectListExtractor: {} as ExtractorRunner<DomainModelExtractor, StateType, DomainElementInstanceUuidIndexOrFailed>,
-  //   extractEntityInstanceUuidIndex: {} as ExtractorRunner<DomainModelExtractor, StateType, DomainElementInstanceUuidIndexOrFailed>,
-  // }
-
-  const localSelectorMap: ExtractorRunnerMap<StateType> =
-    selectorParams?.extractorRunnerMap ?? emptySelectorMap
-  ;
-
-  const selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed =
-    localSelectorMap.extractEntityInstanceUuidIndex(deploymentEntityState, selectorParams);
-
-  // log.info(
-  //   "extractEntityInstanceUuidIndexWithObjectListExtractor found selectedInstances", selectedInstances
-  // );
-
-
-  switch (selectorParams.extractor.select.queryType) {
+// ################################################################################################
+const applyExtractorForSingleObjectListToSelectedInstancesUuidIndex = (
+  selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed,
+  extractor: ExtractorForSingleObjectList,
+) => {
+  switch (extractor.select.queryType) {
     case "extractObjectListByEntity": {
-      const filterTest = (selectorParams as any).extractor.select.filter
-        ? new RegExp((selectorParams as any).extractor.select.filter.value.definition, "i")
+      const localQuery: ExtractObjectListByEntity = extractor.select;
+      const filterTest = localQuery.filter
+        ? new RegExp((localQuery.filter.value as any).definition, "i") // TODO: check for correct type
         : undefined;
-      log.info("extractEntityInstanceUuidIndexWithObjectListExtractor extractObjectListByEntity filter", JSON.stringify((selectorParams as any).extractor.select.filter))
-      const result:DomainElementInstanceUuidIndexOrFailed = selectorParams.extractor.select.filter
+      log.info(
+        "extractEntityInstanceUuidIndexWithObjectListExtractor extractObjectListByEntity filter",
+        JSON.stringify(localQuery.filter)
+      );
+      const result:DomainElementInstanceUuidIndexOrFailed = localQuery.filter
         ? {
             elementType: "instanceUuidIndex",
             elementValue: Object.fromEntries(
               Object.entries(selectedInstancesUuidIndex.elementValue).filter((i: [string, EntityInstance]) => {
                 const matchResult = filterTest?.test(
-                  (i as any)[1][(selectorParams as any).extractor.select.filter.attributeName]
+                  (i as any)[1][localQuery.filter?.attributeName??""]
                 )
                 log.info(
                   "extractEntityInstanceUuidIndexWithObjectListExtractor extractObjectListByEntity filter",
@@ -217,7 +205,7 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractor
       break;
     }
     case "selectObjectListByRelation": {
-      const relationQuery: QuerySelectObjectListByRelation = selectorParams.extractor.select;
+      const relationQuery: QuerySelectObjectListByRelation = extractor.select;
 
       // log.info("extractEntityInstanceUuidIndexWithObjectListExtractor selectObjectListByRelation", JSON.stringify(selectedInstances))
       // log.info("extractEntityInstanceUuidIndexWithObjectListExtractor selectObjectListByRelation", selectedInstances)
@@ -229,11 +217,11 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractor
             let otherIndex = undefined
             if (
               relationQuery.objectReference?.queryTemplateType == "queryContextReference" &&
-              selectorParams?.extractor.contextResults?.elementType == "object" &&
-              selectorParams?.extractor.contextResults.elementValue &&
-              selectorParams?.extractor.contextResults.elementValue[relationQuery.objectReference.referenceName ?? ""]
+              extractor.contextResults?.elementType == "object" &&
+              extractor.contextResults.elementValue &&
+              extractor.contextResults.elementValue[relationQuery.objectReference.referenceName ?? ""]
             ) {
-              otherIndex = ((selectorParams?.extractor.contextResults?.elementValue[
+              otherIndex = ((extractor.contextResults?.elementValue[
                 relationQuery.objectReference.referenceName
               ].elementValue as any) ?? {})[relationQuery.objectReferenceAttribute ?? "uuid"];
             } else if (relationQuery.objectReference?.queryTemplateType == "constantUuid") {
@@ -247,17 +235,19 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractor
       )} as DomainElementInstanceUuidIndex;
     }
     case "selectObjectListByManyToManyRelation": {
-      const relationQuery: QuerySelectObjectListByManyToManyRelation = selectorParams.extractor.select;
+      // const relationQuery: QuerySelectObjectListByManyToManyRelation = query;
+      // const relationQuery: QuerySelectObjectListByManyToManyRelation = selectorParams.extractor.select;
+      const relationQuery: QuerySelectObjectListByManyToManyRelation = extractor.select;
 
       // log.info("extractEntityInstanceUuidIndexWithObjectListExtractor selectObjectListByManyToManyRelation", selectedInstances)
       let otherList: DomainElement | undefined = undefined
       if (
         relationQuery.objectListReference?.queryTemplateType == "queryContextReference" &&
-        selectorParams?.extractor.contextResults?.elementType == "object" &&
-        selectorParams?.extractor.contextResults.elementValue &&
-        selectorParams?.extractor.contextResults.elementValue[relationQuery.objectListReference.referenceName ?? ""]
+        extractor.contextResults?.elementType == "object" &&
+        extractor.contextResults.elementValue &&
+        extractor.contextResults.elementValue[relationQuery.objectListReference.referenceName ?? ""]
       ) {
-        otherList = ((selectorParams?.extractor.contextResults?.elementValue[
+        otherList = ((extractor.contextResults?.elementValue[
           relationQuery.objectListReference.referenceName
         ]) ?? {elementType: "void", elementValue: undefined });
         
@@ -328,20 +318,76 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractor
     default: {
       throw new Error(
         "extractEntityInstanceUuidIndexWithObjectListExtractor could not handle query, selectorParams=" +
-          JSON.stringify(selectorParams.extractor.select, undefined, 2)
+          JSON.stringify(extractor.select, undefined, 2)
       );
       break;
     }
   }
 };
 
+
 // ################################################################################################
-export function innerSelectElementFromQuery<StateType>(
+/**
+ * returns an Entity Instance List, from a ListQuery
+ * @param deploymentEntityState 
+ * @param selectorParams 
+ * @returns 
+ */
+export const extractEntityInstanceUuidIndexWithObjectListExtractor
+= <StateType>(
+  deploymentEntityState: StateType,
+  selectorParams: SyncExtractorRunnerParams<ExtractorForSingleObjectList, StateType>
+): DomainElementInstanceUuidIndexOrFailed => {
+  const selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed =
+    (selectorParams?.extractorRunnerMap ?? emptySelectorMap).extractEntityInstanceUuidIndex(deploymentEntityState, selectorParams);
+
+  log.info(
+    "extractEntityInstanceUuidIndexWithObjectListExtractor found selectedInstances", selectedInstancesUuidIndex
+  );
+
+  return applyExtractorForSingleObjectListToSelectedInstancesUuidIndex(
+    selectedInstancesUuidIndex,
+    selectorParams.extractor,
+  );
+
+};
+
+// ################################################################################################
+/**
+ * returns an Entity Instance List, from a ListQuery
+ * @param deploymentEntityState 
+ * @param selectorParams 
+ * @returns 
+ */
+export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
+= <StateType>(
+  deploymentEntityState: StateType,
+  selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList, StateType>
+): Promise<DomainElementInstanceUuidIndexOrFailed> => {
+  const result: Promise<DomainElementInstanceUuidIndexOrFailed> =
+    (selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap).extractEntityInstanceUuidIndex(deploymentEntityState, selectorParams)
+    .then((selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed) => {
+      log.info(
+        "extractEntityInstanceUuidIndexWithObjectListExtractor found selectedInstances", selectedInstancesUuidIndex
+      );
+
+      return applyExtractorForSingleObjectListToSelectedInstancesUuidIndex(
+        selectedInstancesUuidIndex,
+        selectorParams.extractor,
+      );
+    });
+  ;
+
+  return result;
+};
+
+// ################################################################################################
+export function innerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
   state: StateType,
   newFetchedData: DomainElementObject,
   pageParams: DomainElementObject,
   queryParams: DomainElementObject,
-  extractorRunnerMap:ExtractorRunnerMap<StateType>,
+  extractorRunnerMap:SyncExtractorRunnerMap<StateType>,
   deploymentUuid: Uuid,
   query: QuerySelect
 ): DomainElement {
@@ -401,7 +447,7 @@ export function innerSelectElementFromQuery<StateType>(
         elementValue: Object.fromEntries(
           Object.entries(query.definition).map((e: [string, QuerySelect]) => [
             e[0],
-            innerSelectElementFromQuery(
+            innerSelectElementFromQuery( // recursive call
               state,
               newFetchedData,
               pageParams ?? {},
@@ -420,7 +466,7 @@ export function innerSelectElementFromQuery<StateType>(
       return {
         elementType: "array",
         elementValue: query.definition.map((e) =>
-          innerSelectElementFromQuery(
+          innerSelectElementFromQuery( // recursive call
             state,
             newFetchedData,
             pageParams ?? {},
@@ -450,7 +496,7 @@ export function innerSelectElementFromQuery<StateType>(
             Object.entries(rootQueryResults.elementValue).map((entry) => {
               return [
                 entry[1].uuid,
-                innerSelectElementFromQuery(
+                innerSelectElementFromQuery( // recursive call
                   state,
                   newFetchedData,
                   pageParams,
@@ -520,36 +566,265 @@ export function innerSelectElementFromQuery<StateType>(
 }
 
 // ################################################################################################
-export const extractWithExtractor = <StateType>(
+export function asyncInnerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
   state: StateType,
-  // selectorParams: ExtractorRunnerParams<ExtractorForRecordOfExtractors, DeploymentEntityState>,
-  selectorParams: ExtractorRunnerParams<
+  newFetchedData: DomainElementObject,
+  pageParams: DomainElementObject,
+  queryParams: DomainElementObject,
+  extractorRunnerMap:AsyncExtractorRunnerMap<StateType>,
+  deploymentUuid: Uuid,
+  query: QuerySelect
+): Promise<DomainElement> {
+  switch (query.queryType) {
+    case "literal": {
+      return Promise.resolve({ elementType: "string", elementValue: query.definition });
+      break;
+    }
+    // ############################################################################################
+    // Impure Monads
+    case "extractObjectListByEntity":
+    case "selectObjectListByRelation": 
+    case "selectObjectListByManyToManyRelation": {
+      return extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractor(state, {
+        extractorRunnerMap,
+        extractor: {
+          queryType: "domainModelSingleExtractor",
+          deploymentUuid: deploymentUuid,
+          contextResults: newFetchedData,
+          pageParams: pageParams,
+          queryParams,
+          select: query.applicationSection
+          ? query
+          : {
+              ...query,
+              applicationSection: pageParams.elementValue.applicationSection.elementValue as ApplicationSection,
+            },
+        },
+      });
+      break;
+    }
+    case "selectObjectByRelation":
+    case "selectObjectByDirectReference": {
+      return extractorRunnerMap.extractEntityInstance(state, {
+        extractorRunnerMap,
+        extractor: {
+          queryType: "domainModelSingleExtractor",
+          deploymentUuid: deploymentUuid,
+          contextResults: newFetchedData,
+          pageParams,
+          queryParams,
+          select: query.applicationSection // TODO: UGLY!!! WHERE IS THE APPLICATION SECTION PLACED?
+          ? query
+          : {
+              ...query,
+              applicationSection: pageParams?.elementValue?.applicationSection?.elementValue as ApplicationSection,
+            },
+        }
+      });
+      break;
+    }
+    // ############################################################################################
+    case "extractorWrapperReturningObject":
+    case "wrapperReturningObject": { // build object
+      const entries = Object.entries(query.definition);
+      const promises = entries.map((e: [string, QuerySelect]) => {
+        return asyncInnerSelectElementFromQuery(
+          state,
+          newFetchedData,
+          pageParams ?? {},
+          queryParams ?? {},
+          extractorRunnerMap,
+          deploymentUuid,
+          e[1]
+        ).then((result) => {
+          return [e[0], result];
+        });
+      });
+      return Promise.all(promises).then((results) => {
+        return Promise.resolve({
+          elementType: "object",
+          elementValue: Object.fromEntries(results),
+        });
+      });
+      break;
+    }
+    case "extractorWrapperReturningList":
+    case "wrapperReturningList": { // List map
+      const promises = query.definition.map((e) =>{
+        return asyncInnerSelectElementFromQuery(
+          state,
+          newFetchedData,
+          pageParams ?? {},
+          queryParams ?? {},
+          extractorRunnerMap,
+          deploymentUuid,
+          e
+        );
+      })
+      return Promise.all(promises).then((results) => {
+        return Promise.resolve({
+          elementType: "array",
+          elementValue: results,
+        });
+      });
+      // return Promise.resolve({
+      //   elementType: "array",
+      //   elementValue: query.definition.map((e) =>
+      //     innerSelectElementFromQuery(
+      //       state,
+      //       newFetchedData,
+      //       pageParams ?? {},
+      //       queryParams ?? {},
+      //       extractorRunnerMap,
+      //       deploymentUuid,
+      //       e
+      //     )
+      //   ),
+      // });
+      break;
+    }
+    case "queryCombiner": { // join
+      const rootQueryResults = asyncInnerSelectElementFromQuery(
+        state,
+        newFetchedData,
+        pageParams,
+        queryParams,
+        extractorRunnerMap,
+        deploymentUuid,
+        query.rootQuery
+      );
+      return rootQueryResults.then((rootQueryResults) => {
+        if (rootQueryResults.elementType == "instanceUuidIndex") {
+          const entries = Object.entries(rootQueryResults.elementValue);
+          const promises = entries.map((entry: [string, EntityInstance]) => {
+            return asyncInnerSelectElementFromQuery(
+              state,
+              newFetchedData,
+              pageParams,
+              {
+                elementType: "object",
+                elementValue: {
+                  ...queryParams.elementValue,
+                  ...Object.fromEntries(
+                    Object.entries(applyTransformer(query.subQuery.rootQueryObjectTransformer, entry[1])).map((e: [string, any]) => [
+                      e[0],
+                      { elementType: "instanceUuid", elementValue: e[1] },
+                    ])
+                  ),
+                },
+              },
+              extractorRunnerMap,
+              deploymentUuid,
+              query.subQuery.query
+            ).then((result) => {
+              return [entry[1].uuid, result];
+            });
+          });
+
+          return Promise.all(promises).then((results) => {
+            return {
+              elementType: "object",
+              elementValue: Object.fromEntries(results),
+            };
+          });
+          // const result: DomainElementObject = {
+          //   elementType: "object",
+          //   elementValue: Object.fromEntries(
+          //     Object.entries(rootQueryResults.elementValue).map((entry) => {
+          //       return [
+          //         entry[1].uuid,
+          //         asyncInnerSelectElementFromQuery(
+          //           state,
+          //           newFetchedData,
+          //           pageParams,
+          //           {
+          //             elementType: "object",
+          //             elementValue: {
+          //               ...queryParams.elementValue,
+          //               ...Object.fromEntries(
+          //                 Object.entries(applyTransformer(query.subQuery.rootQueryObjectTransformer, entry[1])).map((e: [string, any]) => [
+          //                   e[0],
+          //                   { elementType: "instanceUuid", elementValue: e[1] },
+          //                 ])
+          //               ),
+          //             },
+          //           },
+          //           extractorRunnerMap,
+          //           deploymentUuid,
+          //           query.subQuery.query
+          //         ),
+          //       ];
+          //     })
+          //   ),
+          // };
+          // return result;
+        } else {
+          return { elementType: "failure", elementValue: { queryFailure: "IncorrectParameters", query: JSON.stringify(query.rootQuery) } }
+        }
+      });
+
+      break;
+    }
+    case "extractorTransformer": {
+      const resolvedReference = resolveContextReference(
+        query.referencedQuery,
+        queryParams,
+        newFetchedData
+      );
+
+      log.info("innerSelectElementFromQuery extractorTransformer resolvedReference", resolvedReference);
+      const result = new Set<string>();
+      if (resolvedReference.elementType == "instanceUuidIndex") {
+        for (const entry of Object.entries(resolvedReference.elementValue)) {
+            result.add((entry[1] as any)[query.attribute]);
+        }
+        return Promise.resolve({ elementType: "any", elementValue: [...result] });
+      }
+
+      // // Object.entries(resolvedReference.elementValue).map(
+      // //   (entry: [string, DomainElement]) => {
+      // //   }
+      // // );
+      // )
+      log.info("innerSelectElementFromQuery extractorTransformer resolvedReference", resolvedReference);
+
+      return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
+      break;
+    }
+    case "queryContextReference": {
+      return newFetchedData && newFetchedData.elementType == "object" && newFetchedData.elementValue[query.queryReference]
+        ? Promise.resolve(newFetchedData.elementValue[query.queryReference])
+        : Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "ReferenceNotFound", query: JSON.stringify(query) } });
+      break;
+    }
+    default: {
+      return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable", query } });
+      break;
+    }
+  }
+}
+
+// ################################################################################################
+export const extractWithExtractor /**: SyncExtractorRunner */= <StateType>(
+  state: StateType,
+  // selectorParams: SyncExtractorRunnerParams<ExtractorForRecordOfExtractors, DeploymentEntityState>,
+  selectorParams: SyncExtractorRunnerParams<
     ExtractorForSingleObject | ExtractorForSingleObjectList | ExtractorForRecordOfExtractors,
     StateType
   >
 ): DomainElement => {
   // log.info("########## extractExtractor begin, query", selectorParams);
-
-  // const context: DomainElementObject = {
-  //   elementType: "object",
-  //   elementValue: { ...selectorParams.extractor.contextResults.elementValue },
-  // };
-  // log.info("########## DomainSelector extractExtractor will use context", context);
-  const localSelectorMap: ExtractorRunnerMap<StateType> = selectorParams?.extractorRunnerMap ?? emptySelectorMap;
+  const localSelectorMap: SyncExtractorRunnerMap<StateType> = selectorParams?.extractorRunnerMap ?? emptySelectorMap;
 
   switch (selectorParams.extractor.queryType) {
     case "extractorForRecordOfExtractors": {
       return extractWithManyExtractors(
         state,
-        selectorParams as ExtractorRunnerParams<ExtractorForRecordOfExtractors, StateType>
+        selectorParams as SyncExtractorRunnerParams<ExtractorForRecordOfExtractors, StateType>
       );
       break;
     }
     case "domainModelSingleExtractor": {
-  // case "localCacheEntityInstancesExtractor":
-  // case "getEntityDefinition":
-  // case "getFetchParamsJzodSchema":
-    // case "getSingleSelectQueryJzodSchema": {
       const result = innerSelectElementFromQuery(
         state,
         selectorParams.extractor.contextResults,
@@ -562,10 +837,62 @@ export const extractWithExtractor = <StateType>(
       return result;
         break;
       }
-      default:
-        return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } };
-        break;
+    default: {
+      return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } };
+      break;
     }
+  }
+
+  // log.info(
+  //   "extractExtractor",
+  //   "query",
+  //   selectorParams,
+  //   "domainState",
+  //   deploymentEntityState,
+  //   "newFetchedData",
+  //   context
+  // );
+  // return result;
+};
+
+// ################################################################################################
+export const asyncExtractWithExtractor /**: SyncExtractorRunner */= <StateType>(
+  state: StateType,
+  // selectorParams: SyncExtractorRunnerParams<ExtractorForRecordOfExtractors, DeploymentEntityState>,
+  selectorParams: AsyncExtractorRunnerParams<
+    ExtractorForSingleObject | ExtractorForSingleObjectList | ExtractorForRecordOfExtractors,
+    StateType
+  >
+): Promise<DomainElement> => {
+  // log.info("########## extractExtractor begin, query", selectorParams);
+  const localSelectorMap: AsyncExtractorRunnerMap<StateType> = selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
+
+  switch (selectorParams.extractor.queryType) {
+    case "extractorForRecordOfExtractors": {
+      return asyncExtractWithManyExtractors(
+        state,
+        selectorParams as AsyncExtractorRunnerParams<ExtractorForRecordOfExtractors, StateType>
+      );
+      break;
+    }
+    case "domainModelSingleExtractor": {
+      const result = asyncInnerSelectElementFromQuery(
+        state,
+        selectorParams.extractor.contextResults,
+        selectorParams.extractor.pageParams,
+        selectorParams.extractor.queryParams,
+        localSelectorMap as any,
+        selectorParams.extractor.deploymentUuid,
+        selectorParams.extractor.select
+      );
+      return result;
+        break;
+      }
+    default: {
+      return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
+      break;
+    }
+  }
 
   // log.info(
   //   "extractExtractor",
@@ -591,8 +918,8 @@ export const extractWithExtractor = <StateType>(
 
 export const extractWithManyExtractors = <StateType>(
   state: StateType,
-  // selectorParams: ExtractorRunnerParams<ExtractorForRecordOfExtractors, DeploymentEntityState>,
-  selectorParams: ExtractorRunnerParams<ExtractorForRecordOfExtractors, StateType>,
+  // selectorParams: SyncExtractorRunnerParams<ExtractorForRecordOfExtractors, DeploymentEntityState>,
+  selectorParams: SyncExtractorRunnerParams<ExtractorForRecordOfExtractors, StateType>,
 ): DomainElementObject => {
 
   // log.info("########## extractWithManyExtractors begin, query", selectorParams);
@@ -603,7 +930,7 @@ export const extractWithManyExtractors = <StateType>(
     elementValue: { ...selectorParams.extractor.contextResults.elementValue },
   };
   // log.info("########## DomainSelector extractWithManyExtractors will use context", context);
-  const localSelectorMap: ExtractorRunnerMap<StateType> =
+  const localSelectorMap: SyncExtractorRunnerMap<StateType> =
     selectorParams?.extractorRunnerMap ?? emptySelectorMap;
 
   for (const query of Object.entries(
@@ -625,7 +952,7 @@ export const extractWithManyExtractors = <StateType>(
       query[1]
     );
     context.elementValue[query[0]] = result; // does side effect!
-    // log.info("extractWithManyExtractors done for entry", entry[0], "query", entry[1], "result=", result);
+    log.info("extractWithManyExtractors done for extractors", query[0], "query", query[1], "result=", result);
   }
   for (const query of Object.entries(
     selectorParams.extractor.fetchQuery ?? {}
@@ -649,24 +976,140 @@ export const extractWithManyExtractors = <StateType>(
     // log.info("extractWithManyExtractors done for entry", entry[0], "query", entry[1], "result=", result);
   }
 
-  // not used
-  // if (selectorParams.extractor.fetchQuery?.crossJoin) {
-  //   // log.info("DomainSelector extractWithManyExtractors fetchQuery?.crossJoin", selectorParams.query.fetchQuery?.crossJoin);
+  // log.info(
+  //   "extractWithManyExtractors",
+  //   "query",
+  //   selectorParams,
+  //   "domainState",
+  //   deploymentEntityState,
+  //   "newFetchedData",
+  //   context
+  // );
+  return context;
+};
 
-  //   // performs a cross-join
-  //   // TODO: NOT USED, REALLY? DO WE REALLY NEED THIS?
-  //   // context.elementValue["crossJoin"] = {elementType: "instanceUuidIndex", elementValue: Object.fromEntries(
-  //   //   Object.values(context.elementValue[selectorParams.extractor.fetchQuery?.crossJoin?.a ?? ""] ?? {}).flatMap((a) =>
-  //   //     Object.values(context.elementValue[selectorParams.extractor.fetchQuery?.crossJoin?.b ?? ""] ?? {}).map((b) => [
-  //   //       a.uuid + "-" + b.uuid,
-  //   //       Object.fromEntries(
-  //   //         Object.entries(a)
-  //   //           .map((eA) => ["a-" + eA[0], eA[1]])
-  //   //           .concat(Object.entries(b).map((eB) => ["b-" + eB[0], eB[1]]))
-  //   //       ),
-  //   //     ])
-  //   //   )
-  //   // )};
+// ################################################################################################
+/**
+ * StateType is the type of the deploymentEntityState, which may be a DeploymentEntityState or a DeploymentEntityStateWithUuidIndex
+ * 
+ * 
+ * @param state: StateType
+ * @param selectorParams 
+ * @returns 
+ */
+
+export const asyncExtractWithManyExtractors = async <StateType>(
+  state: StateType,
+  // selectorParams: SyncExtractorRunnerParams<ExtractorForRecordOfExtractors, DeploymentEntityState>,
+  selectorParams: AsyncExtractorRunnerParams<ExtractorForRecordOfExtractors, StateType>,
+): Promise<DomainElementObject> => {
+
+  // log.info("########## extractWithManyExtractors begin, query", selectorParams);
+
+
+  const context: DomainElementObject = {
+    elementType: "object",
+    elementValue: { ...selectorParams.extractor.contextResults.elementValue },
+  };
+  // log.info("########## DomainSelector extractWithManyExtractors will use context", context);
+  const localSelectorMap: AsyncExtractorRunnerMap<StateType> =
+    selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
+
+  // const extractorsPromises: Promise<> = Object.entries(selectorParams.extractor.extractors ?? {}).map((query: [string, QuerySelect]) => {
+  const extractorsPromises = Object.entries(selectorParams.extractor.extractors ?? {}).map((query: [string, QuerySelect]) => {
+    return asyncInnerSelectElementFromQuery(
+      state,
+      context,
+      selectorParams.extractor.pageParams,
+      {
+        elementType: "object",
+        elementValue: {
+          ...selectorParams.extractor.pageParams.elementValue,
+          ...selectorParams.extractor.queryParams.elementValue,
+        },
+      },
+      localSelectorMap as any,
+      selectorParams.extractor.deploymentUuid,
+      query[1]
+    ).then((result):[string, DomainElement] => {
+      return [query[0], result];
+    });
+  });
+
+  // TODO: remove await / side effect
+  await Promise.all(extractorsPromises).then((results) => {
+    results.forEach((result) => {
+      context.elementValue[result[0]] = result[1]; // does side effect!
+    });
+    return context;
+  });
+
+  const fetchQueryPromises = Object.entries(selectorParams.extractor.fetchQuery ?? {}).map((query: [string, QuerySelect]) => {
+    return asyncInnerSelectElementFromQuery(
+      state,
+      context,
+      selectorParams.extractor.pageParams,
+      {
+        elementType: "object",
+        elementValue: {
+          ...selectorParams.extractor.pageParams.elementValue,
+          ...selectorParams.extractor.queryParams.elementValue,
+        },
+      },
+      localSelectorMap as any,
+      selectorParams.extractor.deploymentUuid,
+      query[1]
+    ).then((result):[string, DomainElement] => {
+      return [query[0], result];
+    });
+  });
+  await Promise.all(fetchQueryPromises).then((results) => {
+    results.forEach((result) => {
+      context.elementValue[result[0]] = result[1]; // does side effect!
+    });
+    return context;
+  });
+  // for (const query of Object.entries(
+  //   selectorParams.extractor.extractors ?? {}
+  // )) {
+  //   let result = innerSelectElementFromQuery(
+  //     state,
+  //     context,
+  //     selectorParams.extractor.pageParams,
+  //     {
+  //       elementType: "object",
+  //       elementValue: {
+  //         ...selectorParams.extractor.pageParams.elementValue,
+  //         ...selectorParams.extractor.queryParams.elementValue,
+  //       },
+  //     },
+  //     localSelectorMap as any,
+  //     selectorParams.extractor.deploymentUuid,
+  //     query[1]
+  //   );
+  //   context.elementValue[query[0]] = result; // does side effect!
+  //   log.info("extractWithManyExtractors done for extractors", query[0], "query", query[1], "result=", result);
+  // }
+  // for (const query of Object.entries(
+  //   selectorParams.extractor.fetchQuery ?? {}
+  // )) {
+  //   let result = innerSelectElementFromQuery(
+  //     state,
+  //     context,
+  //     selectorParams.extractor.pageParams,
+  //     {
+  //       elementType: "object",
+  //       elementValue: {
+  //         ...selectorParams.extractor.pageParams.elementValue,
+  //         ...selectorParams.extractor.queryParams.elementValue,
+  //       },
+  //     },
+  //     localSelectorMap as any,
+  //     selectorParams.extractor.deploymentUuid,
+  //     query[1]
+  //   );
+  //   context.elementValue[query[0]] = result; // does side effect!
+  //   // log.info("extractWithManyExtractors done for entry", entry[0], "query", entry[1], "result=", result);
   // }
 
   // log.info(

@@ -96,9 +96,12 @@ Ran all test suites with tests matching "domainSelector".
 
 
 
-### Miroir-standalone-app: Automated Integration Tests
+### Miroir-standalone-app: Automated Tests
 
 #### Unit tests
+
+
+#### Persistence store integration tests
 
 The LocalStoreController can be tested:
 
@@ -106,10 +109,10 @@ The LocalStoreController can be tested:
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run test -w miroir-standalone-app -- PersistenceStoreController
 ```
 
-Should result in:
+Should result in something resembling:
 
 ```sh
- ✓ 4_storage/LocalStoreController.unit.test.tsx  (12 tests) 1522ms
+ ✓ 4_storage/PersistenceStoreController.integ.test.tsx  (12 tests) 1522ms
 
  Test Files  1 passed (1)
       Tests  12 passed (12)
@@ -117,6 +120,13 @@ Should result in:
    Duration  10.38s (transform 943ms, setup 114ms, collect 3.30s, tests 1.52s, environment 480ms, prepare 260ms)
 ```
 
+#### Persistence store Extractor runner intergration tests
+
+The extractor runners PersistenceStoreExtractorRunner (for indexedDb, Postgres/sql, filesystem peristent storage) can be tested:
+
+```sh
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run test -w miroir-standalone-app -- PersistenceStoreExtractorRunner
+```
 
 
 #### automated integration tests On File System

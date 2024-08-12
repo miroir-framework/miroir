@@ -28,9 +28,9 @@ import {
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
-  ExtractorRunner,
-  ExtractorRunnerMap,
-  ExtractorRunnerParams,
+  SyncExtractorRunner,
+  SyncExtractorRunnerMap,
+  SyncExtractorRunnerParams,
   ResolvedJzodSchemaReturnType,
   Uuid,
   adminConfigurationDeploymentMiroir,
@@ -272,7 +272,7 @@ export const JzodObjectEditor = (
 ): JSX.Element => {
   count++;
   const context = useMiroirContextService();
-  const deploymentEntityStateSelectorMap: ExtractorRunnerMap<DeploymentEntityState> = useMemo(
+  const deploymentEntityStateSelectorMap: SyncExtractorRunnerMap<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
   );
@@ -469,7 +469,7 @@ export const JzodObjectEditor = (
 
     // ############################################################################################
     // finding foreign objects for uuid schema with targetEntity estra
-    const foreignKeyObjectsFetchQueryParams: ExtractorRunnerParams<
+    const foreignKeyObjectsFetchQueryParams: SyncExtractorRunnerParams<
       ExtractorForRecordOfExtractors,
       DeploymentEntityState
     > = useMemo(
@@ -524,7 +524,7 @@ export const JzodObjectEditor = (
     // const foreignKeyObjects:  = useDeploymentEntityStateQuerySelectorForCleanedResult(
     const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
       useDeploymentEntityStateQuerySelectorForCleanedResult(
-        deploymentEntityStateSelectorMap.extractWithManyExtractors as ExtractorRunner<
+        deploymentEntityStateSelectorMap.extractWithManyExtractors as SyncExtractorRunner<
           ExtractorForRecordOfExtractors,
           DeploymentEntityState,
           DomainElement
