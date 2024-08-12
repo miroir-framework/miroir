@@ -26,6 +26,7 @@ import {
   ExtractorForSingleObject,
   QuerySelectObjectList,
   ExtractObjectListByEntity,
+  DomainModelSingleExtractor,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   SyncExtractorRunnerParams,
@@ -809,7 +810,7 @@ export const extractWithExtractor /**: SyncExtractorRunner */= <StateType>(
   state: StateType,
   // selectorParams: SyncExtractorRunnerParams<ExtractorForRecordOfExtractors, DeploymentEntityState>,
   selectorParams: SyncExtractorRunnerParams<
-    ExtractorForSingleObject | ExtractorForSingleObjectList | ExtractorForRecordOfExtractors,
+  DomainModelSingleExtractor | ExtractorForRecordOfExtractors,
     StateType
   >
 ): DomainElement => {

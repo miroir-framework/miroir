@@ -27,7 +27,7 @@ import { generateRestServiceResponse } from "./RestTools.js";
 import { cleanLevel } from "./constants.js";
 
 import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface.js";
-import { getSelectorParams, extractWithManyExtractorsFromDomainState } from "../2_domain/DomainStateQuerySelectors.js";
+import { getSelectorParams, extractWithManyExtractorsFromDomainState, extractWithExtractorFromDomainState } from "../2_domain/DomainStateQuerySelectors.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RestServer");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -298,10 +298,30 @@ export async function queryHandler(
     log.info("RestServer queryHandler query=", JSON.stringify(queryAction, undefined, 2))
     log.info("RestServer queryHandler domainState=", JSON.stringify(domainState, undefined, 2))
     // const queryResult: DomainElement = extractWithManyExtractorsFromDomainState(domainState, getSelectorParams(query));
-    const queryResult: DomainElement = extractWithManyExtractorsFromDomainState(
-      domainState,
-      getSelectorParams(queryAction.query)
-    );
+    let queryResult: DomainElement
+    switch (queryAction.query.queryType) {
+      case "domainModelSingleExtractor": {
+        queryResult = extractWithExtractorFromDomainState(
+          domainState,
+          getSelectorParams(queryAction.query)
+        );
+        break;
+      }
+      case "extractorForRecordOfExtractors": {
+        queryResult = extractWithManyExtractorsFromDomainState(
+          domainState,
+          getSelectorParams(queryAction.query)
+        );
+        break;
+      }
+      default: {
+        return continuationFunction(response)({
+          status: "error",
+          error: "RestServer queryHandler could not handle queryAction.query: " + queryAction.query,
+        })
+        break;
+      }
+    }
     const result:ActionReturnType = {
       status: "ok",
       returnedDomainElement: queryResult

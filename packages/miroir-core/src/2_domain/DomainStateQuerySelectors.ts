@@ -14,7 +14,8 @@ import {
   EntityDefinition,
   JzodObject,
   DomainModelExtractor,
-  QuerySelectObject
+  QuerySelectObject,
+  DomainModelSingleExtractor
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   ExtractorRunnerMapForJzodSchema,
@@ -386,7 +387,7 @@ ExtractorForRecordOfExtractors, DomainState, DomainElementObject
 
 // ################################################################################################
 export const extractWithExtractorFromDomainState:SyncExtractorRunner<
-  ExtractorForSingleObject | ExtractorForRecordOfExtractors | ExtractorForRecordOfExtractors, DomainState, DomainElement
+ DomainModelSingleExtractor | ExtractorForRecordOfExtractors, DomainState, DomainElement
 > = extractWithExtractor<DomainState>
 
 // ################################################################################################

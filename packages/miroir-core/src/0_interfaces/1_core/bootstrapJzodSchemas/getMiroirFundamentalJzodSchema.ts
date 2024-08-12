@@ -1486,6 +1486,26 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
+        domainModelSingleExtractor: {
+          type: "union",
+          discriminator: "queryType",
+          definition: [
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "extractorForSingleObject",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "extractorForSingleObjectList",
+              },
+            },
+          ]
+        },
         extractorForRecordOfExtractors: {
           type: "object",
           extend: {
@@ -1642,16 +1662,23 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "extractorForSingleObject",
+                relativePath: "domainModelSingleExtractor",
               },
             },
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "extractorForSingleObjectList",
-              },
-            },
+            // {
+            //   type: "schemaReference",
+            //   definition: {
+            //     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            //     relativePath: "extractorForSingleObject",
+            //   },
+            // },
+            // {
+            //   type: "schemaReference",
+            //   definition: {
+            //     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            //     relativePath: "extractorForSingleObjectList",
+            //   },
+            // },
             {
               type: "schemaReference",
               definition: {
@@ -2259,13 +2286,17 @@ export function getMiroirFundamentalJzodSchema(
           .querySelectObjectByRelation,
         extractObjectByDirectReference: (miroirFundamentalJzodSchema as any).definition.context
           .extractObjectByDirectReference,
-        querySelectExtractorObject: (miroirFundamentalJzodSchema as any).definition.context.querySelectExtractorObject,
-        querySelectExtractorList: (miroirFundamentalJzodSchema as any).definition.context.querySelectExtractorList,
+        querySelectExtractorWrapperReturningObject: (miroirFundamentalJzodSchema as any).definition.context.querySelectExtractorWrapperReturningObject,
+        querySelectExtractorWrapperReturningList: (miroirFundamentalJzodSchema as any).definition.context.querySelectExtractorWrapperReturningList,
         querySelectExtractor: (miroirFundamentalJzodSchema as any).definition.context.querySelectExtractor,
         querySelectObject: (miroirFundamentalJzodSchema as any).definition.context.querySelectObject,
+        querySelectObjectList: (miroirFundamentalJzodSchema as any).definition.context.querySelectObjectList,
         querySelectByQueryCombiner: (miroirFundamentalJzodSchema as any).definition.context.querySelectByQueryCombiner,
         querySelect: (miroirFundamentalJzodSchema as any).definition.context.querySelect,
         miroirSelectQueriesRecord: (miroirFundamentalJzodSchema as any).definition.context.miroirSelectQueriesRecord,
+        extractorForSingleObject: (miroirFundamentalJzodSchema as any).definition.context.extractorForSingleObject,
+        extractorForSingleObjectList: (miroirFundamentalJzodSchema as any).definition.context.extractorForSingleObjectList,
+        domainModelSingleExtractor: (miroirFundamentalJzodSchema as any).definition.context.domainModelSingleExtractor,
         extractorForRecordOfExtractors: (miroirFundamentalJzodSchema as any).definition.context.extractorForRecordOfExtractors,
         queryAction: queryEndpointVersionV1.definition.actions[0].actionParameters,
       },

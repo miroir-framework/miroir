@@ -253,6 +253,8 @@ export {
   extractorForSingleObject,
   ExtractorForSingleObjectList,
   extractorForSingleObjectList,
+  DomainModelSingleExtractor,
+  domainModelSingleExtractor,
 }
 from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js"
 

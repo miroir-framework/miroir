@@ -650,6 +650,14 @@ export class DomainController implements DomainControllerInterface {
       "objects",
       JSON.stringify((queryAction as any)["objects"], null, 2)
     );
+
+    // TODO: handleQuery for queryAction.query.queryType == "domainModelSingleExtractor"
+    if (queryAction.query.queryType == "domainModelSingleExtractor" ) {
+    // if (["domainModelSingleExtractor","extractorForRecordOfExtractors"].includes(queryAction.query.queryType) ) {
+      log.info("handleQuery queryAction", queryAction);
+      throw new Error("DomainController handleQuery queryAction not implemented for queryType " + queryAction.query.queryType);
+    }
+
     if (this.hasDirectAccessToPersistenceStore) {
       /**
        * we're on the server side. Shall we execute the query on the localCache or on the persistentStore?

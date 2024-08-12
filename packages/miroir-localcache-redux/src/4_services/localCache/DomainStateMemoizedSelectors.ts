@@ -19,6 +19,7 @@ const deploymentEntityStateSelectorParams = (domainState: DeploymentEntityState,
 
 export function getMemoizedDeploymentEntityStateSelectorMap(): SyncExtractorRunnerMap<DeploymentEntityState> {
   return {
+    extractorType: "sync",
     extractEntityInstance: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
       selectEntityInstanceFromDeploymentEntityState

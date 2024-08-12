@@ -63,29 +63,8 @@ export class IndexedDbExtractorRunner implements PersistenceStoreExtractorRunner
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex,
       extractEntityInstance: this.extractEntityInstance,
       extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
-      // extractEntityInstanceUuidIndexWithObjectListExtractor: async (
-      //   domainState: any,
-      //   extractorAndParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList, any>
-      // ) =>
-      //   exractEntityInstanceListFromListQueryAndDomainState(
-      //     domainState,
-      //     getSelectorParams(extractorAndParams.extractor)
-      //   ),
       extractWithManyExtractors: asyncExtractWithManyExtractors,
-    //   extractWithManyExtractors: async (
-    //     domainState: any,
-    //     extractorAndParams: AsyncExtractorRunnerParams<ExtractorForRecordOfExtractors, any>
-    //   ) => extractWithManyExtractorsFromDomainState(
-    //     domainState,
-    //     getSelectorParams(extractorAndParams.extractor)
-    // ),
       extractWithExtractor: asyncExtractWithExtractor,
-    //   extractWithExtractor: async (
-    //     domainState: any,
-    //     extractorAndParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors, any>
-    //   ) => extractWithExtractor(domainState,
-    //     getSelectorParams(extractorAndParams.extractor)
-    //   ),
     };
   }
 
@@ -99,14 +78,38 @@ export class IndexedDbExtractorRunner implements PersistenceStoreExtractorRunner
     // const currentStore: StoreDataSectionInterface | StoreModelSectionInterface =
     //   section == "data" ? this.dataStoreSection : this.modelStoreSection;
     // const result: ActionReturnType = await currentStore.handleQuery(query);
-    const queryResult: DomainElement = await this.selectorMap.extractWithManyExtractors(
-      undefined /* domainState*/,
-      // getSelectorParams(queryAction.query)
-      {
-        extractor: queryAction.query,
-        extractorRunnerMap: this.selectorMap,
+    let queryResult: DomainElement;
+    switch (queryAction.query.queryType) {
+      case "domainModelSingleExtractor": {
+        queryResult = await this.selectorMap.extractWithExtractor(
+          undefined /* domainState*/,
+          // getSelectorParams(queryAction.query)
+          {
+            extractor: queryAction.query,
+            extractorRunnerMap: this.selectorMap,
+          }
+        );
+        break;
       }
-    );
+      case "extractorForRecordOfExtractors": {
+        queryResult = await this.selectorMap.extractWithManyExtractors(
+          undefined /* domainState*/,
+          // getSelectorParams(queryAction.query)
+          {
+            extractor: queryAction.query,
+            extractorRunnerMap: this.selectorMap,
+          }
+        );
+        break;
+      }
+      default: {
+        return {
+          status: "error",
+          error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryAction) },
+        } as ActionReturnType;
+        break;
+      }
+    }
     if (queryResult.elementType == "failure") {
       return {
         status: "error",

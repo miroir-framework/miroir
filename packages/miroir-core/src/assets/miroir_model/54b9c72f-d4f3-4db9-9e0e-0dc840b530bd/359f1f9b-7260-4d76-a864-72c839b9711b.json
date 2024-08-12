@@ -464,7 +464,7 @@
               }
             }
           },
-          "querySelectExtractorObject": {
+          "querySelectExtractorWrapperReturningObject": {
             "type": "union",
             "discriminator": "queryType",
             "definition": [
@@ -486,7 +486,7 @@
                     "definition": {
                       "type": "schemaReference",
                       "definition": {
-                        "relativePath": "querySelectExtractorObject"
+                        "relativePath": "querySelectExtractorWrapperReturningObject"
                       }
                     }
                   }
@@ -494,7 +494,7 @@
               }
             ]
           },
-          "querySelectExtractorList": {
+          "querySelectExtractorWrapperReturningList": {
             "type": "union",
             "discriminator": "queryType",
             "definition": [
@@ -516,7 +516,7 @@
                     "definition": {
                       "type": "schemaReference",
                       "definition": {
-                        "relativePath": "querySelectExtractorList"
+                        "relativePath": "querySelectExtractorWrapperReturningList"
                       }
                     }
                   }
@@ -531,13 +531,13 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "querySelectExtractorObject"
+                  "relativePath": "querySelectExtractorWrapperReturningObject"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "querySelectExtractorList"
+                  "relativePath": "querySelectExtractorWrapperReturningList"
                 }
               }
             ]
