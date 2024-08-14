@@ -80,7 +80,6 @@ export async function restMethodGetHandler
   const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
     deploymentUuid
   );
-  // const domainController = persistenceStoreControllerManager.getDomainController();
   if (!localPersistenceStoreController) {
     throw new Error("restMethodGetHandler could not find controller for deployment:" + deploymentUuid);
   }

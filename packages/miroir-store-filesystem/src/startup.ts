@@ -4,12 +4,12 @@ import {
   StoreSectionConfiguration,
   ErrorDataStore,
   ErrorModelStore,
-  StoreDataSectionInterface,
-  StoreModelSectionInterface,
+  PersistenceStoreDataSectionInterface,
+  PersistenceStoreModelSectionInterface,
   LoggerInterface,
   MiroirLoggerFactory,
   getLoggerName,
-  AdminStoreInterface,
+  PersistenceStoreAdminSectionInterface,
   ErrorAdminStore,
 } from "miroir-core";
 import { FileSystemDataStoreSection } from "./4_services/FileSystemDataStoreSection.js";
@@ -27,7 +27,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 export function miroirFileSystemStoreSectionStartup() {
   ConfigurationService.registerAdminStoreFactory(
     "filesystem",
-    async (config: StoreSectionConfiguration): Promise<AdminStoreInterface> => {
+    async (config: StoreSectionConfiguration): Promise<PersistenceStoreAdminSectionInterface> => {
       if (config.emulatedServerType == "filesystem") {
         const filesystemStoreName: string = config.directory
         // return Promise.resolve(new SqlDbAdminStore(sqlDbStoreName, config.connectionString, config.schema))
@@ -43,8 +43,8 @@ export function miroirFileSystemStoreSectionStartup() {
     async (
       section: ApplicationSection, // TODO: remove!
       config: StoreSectionConfiguration,
-      dataStore?: StoreDataSectionInterface
-    ): Promise<StoreDataSectionInterface | StoreModelSectionInterface> => {
+      dataStore?: PersistenceStoreDataSectionInterface
+    ): Promise<PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface> => {
       
       if (config.emulatedServerType == "filesystem" && dataStore) {
         const filesystemStoreName: string = config.directory
@@ -66,8 +66,8 @@ export function miroirFileSystemStoreSectionStartup() {
     async (
       section: ApplicationSection,
       config: StoreSectionConfiguration,
-      dataStore?: StoreDataSectionInterface
-    ): Promise<StoreDataSectionInterface | StoreModelSectionInterface> => {
+      dataStore?: PersistenceStoreDataSectionInterface
+    ): Promise<PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface> => {
       if (config.emulatedServerType == "filesystem") {
         log.info('called registerStoreSectionFactory function for', 'filesystem');
         const filesystemStoreName: string = config.directory

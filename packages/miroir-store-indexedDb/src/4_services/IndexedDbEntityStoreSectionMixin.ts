@@ -1,7 +1,7 @@
 import {
   ACTION_OK,
-  AbstractEntityStoreSectionInterface,
-  AbstractInstanceStoreSectionInterface,
+  PersistenceStoreEntitySectionAbstractInterface,
+  PersistenceStoreInstanceSectionAbstractInterface,
   ActionEntityInstanceCollectionReturnType,
   ActionEntityInstanceReturnType,
   ActionVoidReturnType,
@@ -13,7 +13,7 @@ import {
   MiroirLoggerFactory,
   ModelActionAlterEntityAttribute,
   ModelActionRenameEntity,
-  StoreDataSectionInterface,
+  PersistenceStoreDataSectionInterface,
   entityEntity,
   entityEntityDefinition,
   getLoggerName
@@ -39,15 +39,15 @@ export const MixedIndexedDbEntityAndInstanceStoreSection = IndexedDbEntityStoreS
 export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndexedDbInstanceStoreSection>(Base: TBase) {
   return class MixedIndexedDbEntityStoreSection
     extends Base
-    implements AbstractEntityStoreSectionInterface, AbstractInstanceStoreSectionInterface
+    implements PersistenceStoreEntitySectionAbstractInterface, PersistenceStoreInstanceSectionAbstractInterface
   {
-    public dataStore: StoreDataSectionInterface;
+    public dataStore: PersistenceStoreDataSectionInterface;
 
     constructor(
       //   indexedDbStoreName: string,
       //   localUuidIndexedDb: IndexedDb,
       //   logHeader: string,
-      //   public dataStore: StoreDataSectionInterface,
+      //   public dataStore: PersistenceStoreDataSectionInterface,
       ...args: any[]
     ) {
       super(...args.slice(0, 3));

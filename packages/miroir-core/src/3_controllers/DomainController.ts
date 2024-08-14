@@ -26,13 +26,17 @@ import {
   ApplicationVersion,
   CompositeInstanceActionTemplate,
   DomainAction,
+  DomainElementObject,
   EntityInstance,
   EntityInstanceCollection,
+  ExtractorForRecordOfExtractors,
   InstanceAction,
   MetaModel,
   ModelAction,
   ObjectTemplate,
   QueryAction,
+  QuerySelect,
+  QuerySelectExtractorWrapper,
   RestPersistenceAction,
   TransactionalInstanceAction,
   UndoRedoAction
@@ -54,6 +58,7 @@ import { getLoggerName } from '../tools.js';
 import { cleanLevel } from './constants.js';
 import { Endpoint } from './Endpoint.js';
 import { CallUtils } from './ErrorHandling/CallUtils.js';
+import { ExtractorRunner, PersistenceStoreExtractorRunner } from '../0_interfaces/2_domain/ExtractorRunnerInterface.js';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -120,12 +125,13 @@ async function resetAndInitMiroirAndApplicationDatabase(
  */
 export class DomainController implements DomainControllerInterface {
   private callUtil: CallUtils;
+
   constructor(
     private hasDirectAccessToPersistenceStore: boolean,
     private miroirContext: MiroirContextInterface,
     private localCache: LocalCacheInterface,
-    private persistenceStore: PersistenceInterface,
-    private endpoint: Endpoint
+    private persistenceStore: PersistenceInterface, // instance of PersistenceReduxSaga
+    private endpoint: Endpoint,
   ) {
     this.callUtil = new CallUtils(miroirContext.errorLogService, localCache, persistenceStore);
   }
@@ -635,8 +641,84 @@ export class DomainController implements DomainControllerInterface {
     return Promise.resolve(ACTION_OK);
   }
 
+  
   // ##############################################################################################
+  async handleLocalPersistenceStoreQuery(
+    // queryAction: QueryAction,
+    deploymentUuid: Uuid,
+    queryParams: DomainElementObject,
+    contextResults: DomainElementObject,
+    queryName: string,
+    query: QuerySelectExtractorWrapper | QuerySelect,
+  ): Promise<ActionReturnType> {
+    switch (query.queryType) {
+      case "extractObjectListByEntity": {
+        const parentUuid = resolveContextReference(
+          query.parentUuid,
+          queryParams,
+          contextResults
+        );
 
+        log.info("DomainController handleQuery queryAction resolved parentUuid", JSON.stringify(parentUuid));
+
+        if (parentUuid.elementType != "instanceUuid") {
+          throw new Error(
+            "DomainController handleQuery queryAction no parentUuid found for query " +
+              JSON.stringify(query) +
+              " parentUuid " +
+              JSON.stringify(parentUuid)
+          );
+        }
+
+        if (!query.applicationSection) {
+          throw new Error(
+            "DomainController handleQuery queryAction no applicationSection found for query " + JSON.stringify(query)
+          );
+        }
+
+        const result = await this.callUtil.callPersistenceAction(
+          {}, // context
+          { // context update
+            addResultToContextAsName: "dataEntitiesFromModelSection",
+            expectedDomainElementType: "entityInstanceCollection",
+          },
+          { // persistence action
+            actionType: "LocalPersistenceAction",
+            actionName: "read",
+            endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
+            deploymentUuid: deploymentUuid,
+            parentName: query.parentName,
+            parentUuid: parentUuid.elementValue,
+            section: query.applicationSection,
+          }
+        );
+
+        log.info("DomainController handleQuery queryName=", queryName);
+        log.info("DomainController handleQuery result=", JSON.stringify(result));
+
+        return result["dataEntitiesFromModelSection"];
+        break;
+      }
+      case "literal":
+      case "selectObjectListByRelation":
+      case "selectObjectListByManyToManyRelation":
+      case "queryCombiner":
+      case "selectObjectByRelation":
+      case "selectObjectByDirectReference":
+      case "queryContextReference":
+      case "wrapperReturningObject":
+      case "wrapperReturningList":
+      default: {
+        throw new Error(
+          "DomainController handleQuery queryAction no query found in fetchQuery.select! " +
+            JSON.stringify(query)
+        );
+        break;
+      }
+    }
+
+  }
+  // ##############################################################################################
   async handleQuery(queryAction: QueryAction): Promise<ActionReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     log.info(
@@ -651,22 +733,40 @@ export class DomainController implements DomainControllerInterface {
       JSON.stringify((queryAction as any)["objects"], null, 2)
     );
 
-    // TODO: handleQuery for queryAction.query.queryType == "domainModelSingleExtractor"
-    if (queryAction.query.queryType == "domainModelSingleExtractor" ) {
-    // if (["domainModelSingleExtractor","extractorForRecordOfExtractors"].includes(queryAction.query.queryType) ) {
-      log.info("handleQuery queryAction", queryAction);
-      throw new Error("DomainController handleQuery queryAction not implemented for queryType " + queryAction.query.queryType);
-    }
+    // if (queryAction.query.queryType == "domainModelSingleExtractor" ) {
+    // // if (["domainModelSingleExtractor","extractorForRecordOfExtractors"].includes(queryAction.query.queryType) ) {
+    //   log.info("handleQuery queryAction", queryAction);
+    //   throw new Error("DomainController handleQuery queryAction not implemented for queryType " + queryAction.query.queryType);
+    // }
 
     if (this.hasDirectAccessToPersistenceStore) {
       /**
        * we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
        */
-      const extractors = Object.entries(queryAction.query.extractors??{});
-      const fetchQueries = Object.entries(queryAction.query.fetchQuery??{});
+      let extractors:[string, QuerySelectExtractorWrapper][] = [], fetchQueries:[string, QuerySelect][] = [];
+
+      switch (queryAction.query.queryType) {
+        case 'domainModelSingleExtractor': {
+          // extractors = queryAction.query.select;
+          // fetchQueries = {};
+          fetchQueries = [["default", queryAction.query.select]]
+          break;
+        }
+        case 'extractorForRecordOfExtractors': {
+          extractors = Object.entries(queryAction.query.extractors??{});
+          fetchQueries = Object.entries(queryAction.query.fetchQuery??{});
+          break;
+        }
+        // default: {
+        //   extractors = {};
+        //   fetchQueries = {};
+        //   // throw new Error("DomainController handleQuery queryAction not implemented for queryType " + queryAction.query);
+        //   break;
+        // }
+      }
 
       for (const a of [extractors, fetchQueries]) {
-        const queries = a;
+        const queries:[string, QuerySelectExtractorWrapper | QuerySelect][] = a;
         if (queries.length != 1) {
           log.warn(
             "DomainController handleQuery queryAction no query found in fetchQuery.select! " + JSON.stringify(queryAction)
@@ -679,71 +779,14 @@ export class DomainController implements DomainControllerInterface {
           const queryName = queries[0][0];
     
           log.info("DomainController handleQuery queryAction executing query", JSON.stringify(query));
-          switch (query.queryType) {
-            case "extractObjectListByEntity": {
-              const parentUuid = resolveContextReference(
-                query.parentUuid,
-                queryAction.query.queryParams,
-                queryAction.query.contextResults
-              );
-    
-              log.info("DomainController handleQuery queryAction resolved parentUuid", JSON.stringify(parentUuid));
-    
-              if (parentUuid.elementType != "instanceUuid") {
-                throw new Error(
-                  "DomainController handleQuery queryAction no parentUuid found for query " +
-                    JSON.stringify(query) +
-                    " parentUuid " +
-                    JSON.stringify(parentUuid)
-                );
-              }
-    
-              if (!query.applicationSection) {
-                throw new Error(
-                  "DomainController handleQuery queryAction no applicationSection found for query " + JSON.stringify(query)
-                );
-              }
-    
-              const result = await this.callUtil.callPersistenceAction(
-                {}, // context
-                { // context update
-                  addResultToContextAsName: "dataEntitiesFromModelSection",
-                  expectedDomainElementType: "entityInstanceCollection",
-                },
-                { // persistence action
-                  actionType: "RestPersistenceAction",
-                  actionName: "read",
-                  endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
-                  deploymentUuid: queryAction.deploymentUuid,
-                  parentName: query.parentName,
-                  parentUuid: parentUuid.elementValue,
-                  section: query.applicationSection,
-                }
-              );
-    
-              log.info("DomainController handleQuery queryName=", queryName);
-              log.info("DomainController handleQuery result=", JSON.stringify(result));
-    
-              return result["dataEntitiesFromModelSection"];
-              break;
-            }
-            case "literal":
-            case "selectObjectListByRelation":
-            case "selectObjectListByManyToManyRelation":
-            case "queryCombiner":
-            case "selectObjectByRelation":
-            case "selectObjectByDirectReference":
-            case "queryContextReference":
-            case "wrapperReturningObject":
-            case "wrapperReturningList":
-            default: {
-              throw new Error(
-                "DomainController handleQuery queryAction no query found in fetchQuery.select! " +
-                  JSON.stringify(queryAction)
-              );
-              break;
-            }
-          }
+          // const a = queryAction.query.contextResults
+          return this.handleLocalPersistenceStoreQuery(
+            queryAction.deploymentUuid,
+            queryAction.query.queryParams,
+            queryAction.query.contextResults,
+            queryName,
+            query,
+          )
         }
 
       }

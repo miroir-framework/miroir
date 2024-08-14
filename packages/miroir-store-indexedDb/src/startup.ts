@@ -3,13 +3,13 @@ import {
   ConfigurationService,
   ErrorDataStore,
   ErrorModelStore,
-  DataOrModelStoreInterface,
-  StoreDataSectionInterface,
+  PersistenceStoreDataOrModelSectionInterface,
+  PersistenceStoreDataSectionInterface,
   LoggerInterface,
   MiroirLoggerFactory,
   StoreSectionConfiguration,
   getLoggerName,
-  AdminStoreInterface,
+  PersistenceStoreAdminSectionInterface,
   ErrorAdminStore
 } from "miroir-core";
 import { IndexedDbDataStoreSection } from "./4_services/IndexedDbDataStoreSection.js";
@@ -28,7 +28,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 export function miroirIndexedDbStoreSectionStartup() {
   ConfigurationService.registerAdminStoreFactory(
     "indexedDb",
-    async (config: StoreSectionConfiguration): Promise<AdminStoreInterface> => {
+    async (config: StoreSectionConfiguration): Promise<PersistenceStoreAdminSectionInterface> => {
       if (config.emulatedServerType == "indexedDb") {
         const indexedDbStoreName: string = config.indexedDbName + '-model'
         // return Promise.resolve(new SqlDbAdminStore(sqlDbStoreName, config.connectionString, config.schema))
@@ -44,8 +44,8 @@ export function miroirIndexedDbStoreSectionStartup() {
     async (
       section: ApplicationSection, // TODO: remove?
       config: StoreSectionConfiguration,
-      dataStore?: StoreDataSectionInterface
-    ): Promise<DataOrModelStoreInterface> => {
+      dataStore?: PersistenceStoreDataSectionInterface
+    ): Promise<PersistenceStoreDataOrModelSectionInterface> => {
       log.info('called registerStoreSectionFactory function for',section, config.emulatedServerType, dataStore);
       
       if (config.emulatedServerType == "indexedDb" && dataStore) {
@@ -65,8 +65,8 @@ export function miroirIndexedDbStoreSectionStartup() {
     async (
       section: ApplicationSection, // TODO: remove?
       config: StoreSectionConfiguration,
-      dataStore?: StoreDataSectionInterface
-    ): Promise<DataOrModelStoreInterface> => {
+      dataStore?: PersistenceStoreDataSectionInterface
+    ): Promise<PersistenceStoreDataOrModelSectionInterface> => {
       if (config.emulatedServerType == "indexedDb") {
         log.info('called registerStoreSectionFactory function for', section, config);
         const indexedDbStoreName = config.indexedDbName + '-data'

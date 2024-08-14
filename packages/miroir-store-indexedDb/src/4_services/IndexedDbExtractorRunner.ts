@@ -2,9 +2,9 @@ import {
   getLoggerName,
   LoggerInterface,
   MiroirLoggerFactory,
-  AdminStoreInterface,
-  StoreModelSectionInterface,
-  StoreDataSectionInterface,
+  PersistenceStoreAdminSectionInterface,
+  PersistenceStoreModelSectionInterface,
+  PersistenceStoreDataSectionInterface,
   ActionReturnType,
   ApplicationSection,
   QueryAction,
@@ -75,7 +75,7 @@ export class IndexedDbExtractorRunner implements PersistenceStoreExtractorRunner
     // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
     // log.info(this.logHeader,'this.modelStoreSection',this.modelStoreSection);
 
-    // const currentStore: StoreDataSectionInterface | StoreModelSectionInterface =
+    // const currentStore: PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface =
     //   section == "data" ? this.dataStoreSection : this.modelStoreSection;
     // const result: ActionReturnType = await currentStore.handleQuery(query);
     let queryResult: DomainElement;

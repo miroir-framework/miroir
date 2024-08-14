@@ -1,7 +1,7 @@
 import {
   DataStoreApplicationType,
   EntityDefinition,
-  AbstractStoreSectionInterface,
+  PersistenceStoreAbstractSectionInterface,
   StorageSpaceHandlerInterface,
   LoggerInterface,
   MetaEntity,
@@ -29,7 +29,7 @@ export type MixableIndexedDbStoreSection = GConstructor<IndexedDbStoreSection>;
 // base class for IndexedDb store mixins
 export class IndexedDbStoreSection
   extends IndexedDbStore
-  implements AbstractStoreSectionInterface, StorageSpaceHandlerInterface
+  implements PersistenceStoreAbstractSectionInterface, StorageSpaceHandlerInterface
 {
   // ##############################################################################################
   constructor(

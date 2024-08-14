@@ -1,6 +1,6 @@
 import {
   ACTION_OK,
-  AbstractInstanceStoreSectionInterface,
+  PersistenceStoreInstanceSectionAbstractInterface,
   ActionEntityInstanceCollectionReturnType,
   ActionEntityInstanceReturnType,
   ActionReturnType,
@@ -25,7 +25,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 export const MixedIndexedDbInstanceStoreSection = IndexedDbInstanceStoreSectionMixin(IndexedDbStoreSection);
 
 export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedDbStoreSection>(Base: TBase) {
-  return class MixedIndexedDbInstanceStoreSection extends Base implements AbstractInstanceStoreSectionInterface {
+  return class MixedIndexedDbInstanceStoreSection extends Base implements PersistenceStoreInstanceSectionAbstractInterface {
     constructor(
       // public indexedDbStoreName: string;
       // public localUuidIndexedDb: IndexedDb;

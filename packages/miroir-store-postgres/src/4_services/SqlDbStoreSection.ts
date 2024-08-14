@@ -1,14 +1,14 @@
 import {
   DataStoreApplicationType,
   EntityDefinition,
-  AbstractStoreSectionInterface,
+  PersistenceStoreAbstractSectionInterface,
   StorageSpaceHandlerInterface,
   LoggerInterface,
   MetaEntity,
   MiroirLoggerFactory,
   Uuid,
   getLoggerName,
-  AbstractStoreInterface,
+  PersistenceStoreAbstractInterface,
   ActionReturnType,
   ActionVoidReturnType,
   ACTION_OK,
@@ -36,7 +36,7 @@ export type MixableSqlDbStoreSection = GConstructor<SqlDbStoreSection>;
 // ##############################################################################################
 export class SqlDbStoreSection
   extends SqlDbStore
-  implements AbstractStoreSectionInterface, StorageSpaceHandlerInterface
+  implements PersistenceStoreAbstractSectionInterface, StorageSpaceHandlerInterface
 {
   // ##############################################################################################
   constructor(

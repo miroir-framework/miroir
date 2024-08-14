@@ -2795,7 +2795,7 @@ export const miroirFundamentalJzodSchema = {
               "type": "schemaReference",
               "definition": {
                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "querySelectExtractor"
+                "relativePath": "querySelectExtractorWrapper"
               }
             }
           },
@@ -3359,7 +3359,7 @@ export const miroirFundamentalJzodSchema = {
                       "type": "schemaReference",
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "querySelectExtractor"
+                        "relativePath": "querySelectExtractorWrapper"
                       }
                     }
                   },
@@ -4512,7 +4512,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "querySelectExtractor": {
+      "querySelectExtractorWrapper": {
         "type": "union",
         "discriminator": "queryType",
         "definition": [
@@ -4541,7 +4541,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "querySelectExtractor",
+              "relativePath": "querySelectExtractorWrapper",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
             "context": {}
@@ -4605,6 +4605,22 @@ export const miroirFundamentalJzodSchema = {
                 }
               }
             }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "extractObjectByDirectReference",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "querySelectObjectList",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
           },
           {
             "type": "schemaReference",
@@ -5256,7 +5272,7 @@ export const miroirFundamentalJzodSchema = {
               "type": "schemaReference",
               "definition": {
                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "querySelectExtractor"
+                "relativePath": "querySelectExtractorWrapper"
               }
             }
           },
@@ -7405,6 +7421,100 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "actionType": {
                 "type": "literal",
+                "definition": "LocalPersistenceAction"
+              },
+              "actionName": {
+                "type": "enum",
+                "definition": [
+                  "create",
+                  "read",
+                  "update",
+                  "delete"
+                ]
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "a93598b3-19b6-42e8-828c-f02042d212d4"
+              },
+              "section": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Uuid",
+                    "editable": false
+                  }
+                }
+              },
+              "parentName": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Parent Name",
+                    "editable": false
+                  }
+                }
+              },
+              "parentUuid": {
+                "type": "string",
+                "optional": true,
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Parent Uuid",
+                    "editable": false
+                  }
+                }
+              },
+              "uuid": {
+                "type": "string",
+                "optional": true,
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Uuid",
+                    "editable": false
+                  }
+                }
+              },
+              "objects": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "schemaReference",
+                  "optional": true,
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entityInstance"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
                 "definition": "RestPersistenceAction"
               },
               "actionName": {
@@ -7535,6 +7645,100 @@ export const miroirFundamentalJzodSchema = {
             }
           }
         ]
+      },
+      "localPersistenceAction": {
+        "type": "object",
+        "definition": {
+          "actionType": {
+            "type": "literal",
+            "definition": "LocalPersistenceAction"
+          },
+          "actionName": {
+            "type": "enum",
+            "definition": [
+              "create",
+              "read",
+              "update",
+              "delete"
+            ]
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "a93598b3-19b6-42e8-828c-f02042d212d4"
+          },
+          "section": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "applicationSection"
+            }
+          },
+          "deploymentUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Uuid",
+                "editable": false
+              }
+            }
+          },
+          "parentName": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Parent Name",
+                "editable": false
+              }
+            }
+          },
+          "parentUuid": {
+            "type": "string",
+            "optional": true,
+            "validations": [
+              {
+                "type": "uuid"
+              }
+            ],
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Parent Uuid",
+                "editable": false
+              }
+            }
+          },
+          "uuid": {
+            "type": "string",
+            "optional": true,
+            "validations": [
+              {
+                "type": "uuid"
+              }
+            ],
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Uuid",
+                "editable": false
+              }
+            }
+          },
+          "objects": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "schemaReference",
+              "optional": true,
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "entityInstance"
+              }
+            }
+          }
+        }
       },
       "restPersistenceAction": {
         "type": "object",
@@ -16340,7 +16544,7 @@ export const miroirFundamentalJzodSchema = {
                         {
                           "type": "schemaReference",
                           "definition": {
-                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_querySelectExtractor"
+                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_querySelectExtractorWrapper"
                           },
                           "context": {}
                         },
@@ -17529,7 +17733,7 @@ export const miroirFundamentalJzodSchema = {
                                         {
                                           "type": "schemaReference",
                                           "definition": {
-                                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_querySelectExtractor"
+                                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_querySelectExtractorWrapper"
                                           },
                                           "context": {}
                                         },
@@ -24571,7 +24775,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_querySelectExtractor": {
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_querySelectExtractorWrapper": {
         "type": "union",
         "discriminator": "queryType",
         "definition": [
@@ -24845,7 +25049,7 @@ export const miroirFundamentalJzodSchema = {
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_querySelectExtractor"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_querySelectExtractorWrapper"
                 },
                 "context": {}
               },
@@ -25012,6 +25216,42 @@ export const miroirFundamentalJzodSchema = {
                 ]
               }
             }
+          },
+          {
+            "type": "union",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractObjectByDirectReference"
+                },
+                "context": {}
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "carryOnObject"
+                }
+              }
+            ]
+          },
+          {
+            "type": "union",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_querySelectObjectList"
+                },
+                "context": {}
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "carryOnObject"
+                }
+              }
+            ]
           },
           {
             "type": "union",
@@ -25405,7 +25645,7 @@ export const miroirFundamentalJzodSchema = {
                         {
                           "type": "schemaReference",
                           "definition": {
-                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_querySelectExtractor"
+                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_querySelectExtractorWrapper"
                           },
                           "context": {}
                         },

@@ -2,7 +2,7 @@ import {
   ACTION_OK,
   ActionReturnType,
   ActionVoidReturnType,
-  AdminStoreInterface,
+  PersistenceStoreAdminSectionInterface,
   LoggerInterface,
   MiroirLoggerFactory,
   StoreSectionConfiguration,
@@ -18,7 +18,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
-export class FileSystemAdminStore extends FileSystemStore implements AdminStoreInterface {
+export class FileSystemAdminStore extends FileSystemStore implements PersistenceStoreAdminSectionInterface {
   // for the sake of uniformity, we follow the mixin pattern also for this class although it's not mixed in any other class
 
   // ##############################################################################################

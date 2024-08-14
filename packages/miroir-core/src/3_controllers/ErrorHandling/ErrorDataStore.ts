@@ -10,9 +10,9 @@ import {
   ApplicationSection,
   QueryAction,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { StoreDataSectionInterface } from "../../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
+import { PersistenceStoreDataSectionInterface } from "../../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
 
-export class ErrorDataStore implements StoreDataSectionInterface {
+export class ErrorDataStore implements PersistenceStoreDataSectionInterface {
   constructor() {}
   getStoreName(): string {
     throw new Error("Method not implemented.");

@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 
-import { ACTION_OK, AbstractStoreInterface, ActionReturnType, ActionVoidReturnType, ApplicationSection, LoggerInterface, MiroirLoggerFactory, getLoggerName } from "miroir-core";
+import { ACTION_OK, PersistenceStoreAbstractInterface, ActionReturnType, ActionVoidReturnType, ApplicationSection, LoggerInterface, MiroirLoggerFactory, getLoggerName } from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants";
 
@@ -11,7 +11,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
-export class FileSystemStore implements AbstractStoreInterface {
+export class FileSystemStore implements PersistenceStoreAbstractInterface {
   // ##############################################################################################
   constructor(
     public applicationSection: ApplicationSection,

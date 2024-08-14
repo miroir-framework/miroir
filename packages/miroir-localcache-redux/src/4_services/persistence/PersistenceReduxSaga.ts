@@ -53,14 +53,22 @@ export function getPersistenceActionReduxEventNames(persistenceActionNames:strin
 //#########################################################################################
 //# SLICE
 //#########################################################################################
+/**
+ * handles calls to the persistence store, either local or remote
+ * 
+ * This produces a weird architecture, where the persistence store is accessed through a saga,
+ * because the redux store "imposes" to make asynchronous calls through sagas,
+ * which may have side-effects on the local cache / redux store (data is loaded this way from the Persistent store).
+ * 
+ */
 export class PersistenceReduxSaga implements PersistenceInterface {
   // TODO:!!!!!!!!!!! Model instances or data instances? They must be treated differently regarding to caching, transactions, undo/redo, etc.
   // TODO: do not use client directly, it is a dependence on implementation. Use an interface to hide Rest/graphql implementation.
   private localCache: LocalCache | undefined;
 
-  constructor(
-    private remoteStoreNetworkClient: RestPersistenceClientAndRestClientInterface | undefined,
-    private persistenceStoreControllerManager?: PersistenceStoreControllerManagerInterface | undefined
+  constructor( // TODO: either remoteStoreNetworkClient or persistenceStoreControllerManager must be defined, not both! Force this distinction in the constructor.
+    private remotePersistenceStoreRestClient: RestPersistenceClientAndRestClientInterface | undefined,
+    private localPersistenceStoreControllerManager?: PersistenceStoreControllerManagerInterface | undefined
   ) {}
 
   //#########################################################################################
@@ -126,7 +134,7 @@ export class PersistenceReduxSaga implements PersistenceInterface {
       ): Generator<ActionReturnType | CallEffect<ActionReturnType> | CallEffect<RestClientCallReturnType>> {
         const { action } = p.payload;
         try {
-          if (this.persistenceStoreControllerManager) {
+          if (this.localPersistenceStoreControllerManager) {
             // direct access to store controller, action is executed locally
 
             switch (action.actionType) {
@@ -136,7 +144,7 @@ export class PersistenceReduxSaga implements PersistenceInterface {
                   storeActionOrBundleActionStoreRunner(
                     action.actionName,
                     action,
-                    this.persistenceStoreControllerManager as PersistenceStoreControllerManagerInterface
+                    this.localPersistenceStoreControllerManager as PersistenceStoreControllerManagerInterface
                   )
                 );
                 break;
@@ -144,7 +152,7 @@ export class PersistenceReduxSaga implements PersistenceInterface {
               case "instanceAction":
               case "modelAction": {
                 const localPersistenceStoreController =
-                  this.persistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
+                  this.localPersistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
 
                 if (!localPersistenceStoreController) {
                   throw new Error(
@@ -154,9 +162,9 @@ export class PersistenceReduxSaga implements PersistenceInterface {
                 const localStoreResult = yield* call(() => localPersistenceStoreController.handleAction(action));
                 break;
               }
-              case "RestPersistenceAction": {
+              case "LocalPersistenceAction": {
                 const localPersistenceStoreController =
-                  this.persistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
+                  this.localPersistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
 
                 if (!localPersistenceStoreController) {
                   throw new Error(
@@ -205,12 +213,8 @@ export class PersistenceReduxSaga implements PersistenceInterface {
                 return yield localStoreResult;
                 break;
               }
-              case "queryAction": {
-                throw new Error(
-                  "PersistenceActionReduxSaga handlePersistenceAction could not handle action " + JSON.stringify(action)
-                );
-                break;
-              }
+              case "queryAction":
+              case "RestPersistenceAction":
               default: {
                 throw new Error(
                   "PersistenceActionReduxSaga handlePersistenceAction could not handle action " + JSON.stringify(action)
@@ -221,12 +225,12 @@ export class PersistenceReduxSaga implements PersistenceInterface {
             return yield ACTION_OK;
           }
 
-          if (this.remoteStoreNetworkClient != undefined) {
+          if (this.remotePersistenceStoreRestClient != undefined) {
             // indirect access to a remote storeController through the network
             // log.info("handlePersistenceAction calling remoteStoreNetworkClient on action",JSON.stringify(action));
             const clientResult: RestClientCallReturnType = yield* call(() =>
               (
-                this.remoteStoreNetworkClient as RestPersistenceClientAndRestClientInterface
+                this.remotePersistenceStoreRestClient as RestPersistenceClientAndRestClientInterface
               ).handleNetworkPersistenceAction(action)
             );
             log.debug("handlePersistenceAction from remoteStoreNetworkClient received clientResult", clientResult);
@@ -265,6 +269,7 @@ export class PersistenceReduxSaga implements PersistenceInterface {
               case "instanceAction":
               case "modelAction":
               case "storeManagementAction":
+              case 'LocalPersistenceAction':
               default: {
                 log.debug("handlePersistenceAction received result", clientResult.status);
                 return yield ACTION_OK;

@@ -4,7 +4,7 @@
 import { StorageType } from "../0_interfaces/1_core/StorageConfiguration.js";
 import { ApplicationSection, StoreSectionConfiguration } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { AdminStoreFactory, AdminStoreFactoryRegister, AdminStoreInterface, DataOrModelStoreInterface, StoreSectionFactory, StoreSectionFactoryRegister } from "../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
+import { PersistenceStoreAdminSectionFactory, AdminStoreFactoryRegister, PersistenceStoreAdminSectionInterface, PersistenceStoreDataOrModelSectionInterface, PersistenceStoreSectionFactory, StoreSectionFactoryRegister } from "../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
@@ -52,14 +52,14 @@ export class ConfigurationService {
     this.packages.push(packageConfiguration);
   }
 
-  public static registerStoreSectionFactory(storageType:StorageType, section: ApplicationSection, storeSectionFactory: StoreSectionFactory) {
+  public static registerStoreSectionFactory(storageType:StorageType, section: ApplicationSection, storeSectionFactory: PersistenceStoreSectionFactory) {
     log.info("ConfigurationService registerStoreSectionFactory",this.StoreSectionFactoryRegister);
     this.StoreSectionFactoryRegister.set(
       JSON.stringify({storageType, section}), storeSectionFactory
     );
   }
 
-  public static registerAdminStoreFactory(storageType:StorageType, adminStoreFactory: AdminStoreFactory) {
+  public static registerAdminStoreFactory(storageType:StorageType, adminStoreFactory: PersistenceStoreAdminSectionFactory) {
     log.info("ConfigurationService registerAdminStoreFactory in",this.adminStoreFactoryRegister);
     this.adminStoreFactoryRegister.set(
       JSON.stringify({storageType}), adminStoreFactory

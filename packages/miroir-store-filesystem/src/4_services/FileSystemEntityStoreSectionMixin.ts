@@ -3,8 +3,8 @@ import * as path from "path";
 
 import {
   ACTION_OK,
-  AbstractEntityStoreSectionInterface,
-  AbstractInstanceStoreSectionInterface,
+  PersistenceStoreEntitySectionAbstractInterface,
+  PersistenceStoreInstanceSectionAbstractInterface,
   ActionEntityInstanceCollectionReturnType,
   ActionEntityInstanceReturnType,
   ActionVoidReturnType,
@@ -16,7 +16,7 @@ import {
   MiroirLoggerFactory,
   ModelActionAlterEntityAttribute,
   ModelActionRenameEntity,
-  StoreDataSectionInterface,
+  PersistenceStoreDataSectionInterface,
   entityEntity,
   entityEntityDefinition,
   getLoggerName
@@ -43,16 +43,16 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
 ) {
   return class MixedSqlDbEntityStoreSection
     extends Base
-    implements AbstractEntityStoreSectionInterface, AbstractInstanceStoreSectionInterface
+    implements PersistenceStoreEntitySectionAbstractInterface, PersistenceStoreInstanceSectionAbstractInterface
   {
-    public dataStore: StoreDataSectionInterface;
+    public dataStore: PersistenceStoreDataSectionInterface;
 
     constructor(
       // applicationSection: ApplicationSection,
       // filesystemStoreName: string,
       // directory: string,
       // logHeader: string,
-      // dataStore: StoreDataSectionInterface,
+      // dataStore: PersistenceStoreDataSectionInterface,
       ...args: any[]
     ) {
       super(

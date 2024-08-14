@@ -1,6 +1,6 @@
 import {
   ACTION_OK,
-  AbstractStoreInterface,
+  PersistenceStoreAbstractInterface,
   ActionVoidReturnType,
   ApplicationSection,
   LoggerInterface,
@@ -18,7 +18,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
-export class SqlDbStore implements AbstractStoreInterface {
+export class SqlDbStore implements PersistenceStoreAbstractInterface {
   public sqlSchemaTableAccess: EntityUuidIndexedSequelizeModel = {};
   public sequelize: Sequelize;
 

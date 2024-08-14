@@ -22,11 +22,11 @@ import {
 import { DataStoreApplicationType } from "../0_interfaces/3_controllers/ApplicationControllerInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import {
-  AdminStoreInterface,
+  PersistenceStoreAdminSectionInterface,
   PersistenceStoreControllerAction,
   PersistenceStoreControllerInterface,
-  StoreDataSectionInterface,
-  StoreModelSectionInterface,
+  PersistenceStoreDataSectionInterface,
+  PersistenceStoreModelSectionInterface,
   StoreSectionFactoryRegister,
 } from "../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
 // import { applyModelEntityUpdate } from "../3_controllers/ActionRunner.js";
@@ -60,8 +60,8 @@ export async function storeSectionFactory (
   StoreSectionFactoryRegister:StoreSectionFactoryRegister,
   section:ApplicationSection,
   config: StoreSectionConfiguration,
-  dataStore?: StoreDataSectionInterface,
-):Promise<StoreDataSectionInterface | StoreModelSectionInterface> {
+  dataStore?: PersistenceStoreDataSectionInterface,
+):Promise<PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface> {
   log.info('PersistenceStoreController storeSectionFactory called for', section, config, StoreSectionFactoryRegister);
   if (section == 'model' && !dataStore) {
     throw new Error('PersistenceStoreController storeSectionFactory model section factory must receive data section store.')
@@ -91,9 +91,9 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   private logHeader: string;
 
   constructor(
-    private adminStore: AdminStoreInterface,
-    private modelStoreSection:StoreModelSectionInterface,
-    private dataStoreSection:StoreDataSectionInterface,
+    private adminStore: PersistenceStoreAdminSectionInterface,
+    private modelStoreSection: PersistenceStoreModelSectionInterface,
+    private dataStoreSection: PersistenceStoreDataSectionInterface,
   ){
     this.logHeader = 'PersistenceStoreController '+ modelStoreSection.getStoreName();
   }
@@ -574,7 +574,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   //   log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
   //   log.info(this.logHeader,'this.modelStoreSection',this.modelStoreSection);
     
-  //   const currentStore: StoreDataSectionInterface | StoreModelSectionInterface =
+  //   const currentStore: PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface =
   //     section == "data" ? this.dataStoreSection : this.modelStoreSection;
   //   // const result: ActionReturnType = await currentStore.handleQuery(query);
 

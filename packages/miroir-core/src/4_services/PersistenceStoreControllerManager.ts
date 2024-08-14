@@ -3,8 +3,8 @@ import {
   AdminStoreFactoryRegister,
   InitApplicationParameters,
   PersistenceStoreControllerInterface,
-  StoreDataSectionInterface,
-  StoreModelSectionInterface,
+  PersistenceStoreDataSectionInterface,
+  PersistenceStoreModelSectionInterface,
   StoreSectionFactoryRegister,
 } from "../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
 import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface.js";
@@ -38,7 +38,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 // ################################################################################################
 export class PersistenceStoreControllerManager implements PersistenceStoreControllerManagerInterface {
   private persistenceStoreControllers: { [deploymentUuid: Uuid]: PersistenceStoreControllerInterface } = {};
-  private persistenceStore: PersistenceInterface | undefined;
+  private persistenceStore: PersistenceInterface | undefined; // receives instance of PersistenceReduxSaga
   private localCache: LocalCacheInterface | undefined;
   private domainController: DomainController | undefined;
 
@@ -108,11 +108,12 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
         );
       }
 
+      // TODO: domainController instance is also created in index.tsx and test-utils.tsx (the overall setup sequence). Isn't it redundant?
       this.domainController = new DomainController(
         true, // we are on the server, use localCache for queries upon receiving "remoteLocalCacheRollback" action
         new MiroirContext(),
         this.localCache, // implements LocalCacheInterface
-        this.persistenceStore, // implements PersistenceInterface
+        this.persistenceStore, // implements PersistenceInterface, instance of PersistenceReduxSaga
         new Endpoint(this.localCache)
       );
 
@@ -132,14 +133,14 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
         this.storeSectionFactoryRegister,
         "data",
         config.data
-      )) as StoreDataSectionInterface;
+      )) as PersistenceStoreDataSectionInterface;
       log.info("addPersistenceStoreController found dataStore", dataStore)
       const modelStore = (await storeSectionFactory(
         this.storeSectionFactoryRegister,
         "model",
         config.model,
         dataStore
-      )) as StoreModelSectionInterface;
+      )) as PersistenceStoreModelSectionInterface;
 
       this.persistenceStoreControllers[deploymentUuid] = new PersistenceStoreController(adminStore, modelStore, dataStore);
 

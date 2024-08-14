@@ -1,6 +1,6 @@
 import {
   EntityInstance,
-  AbstractInstanceStoreSectionInterface,
+  PersistenceStoreInstanceSectionAbstractInterface,
   LoggerInterface,
   MiroirLoggerFactory,
   getLoggerName,
@@ -26,7 +26,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 export const MixedSqlDbInstanceStoreSection = SqlDbInstanceStoreSectionMixin(SqlDbStoreSection);
 
 export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSection>(Base: TBase) {
-  return class MixedIndexedDbInstanceStoreSection extends Base implements AbstractInstanceStoreSectionInterface {
+  return class MixedIndexedDbInstanceStoreSection extends Base implements PersistenceStoreInstanceSectionAbstractInterface {
     // ##############################################################################################
     constructor(
       // actual arguments are:

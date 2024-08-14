@@ -1457,7 +1457,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "querySelectObject",
+                relativePath: "querySelectObject", // TODO: is this still an extractor, while it includes querySelectObjectByRelation?
               },
             },
           },
@@ -1538,7 +1538,7 @@ export function getMiroirFundamentalJzodSchema(
                 type: "schemaReference",
                 definition: {
                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  relativePath: "querySelectExtractor",
+                  relativePath: "querySelectExtractorWrapper",
                 },
               }
             },
@@ -1947,7 +1947,8 @@ export function getMiroirFundamentalJzodSchema(
           type: "union",
           definition: persistenceEndpointVersionV1.definition.actions.map((e: any) => e.actionParameters),
         },
-        restPersistenceAction: persistenceEndpointVersionV1.definition.actions[0].actionParameters,
+        localPersistenceAction: persistenceEndpointVersionV1.definition.actions[0].actionParameters,
+        restPersistenceAction: persistenceEndpointVersionV1.definition.actions[1].actionParameters,
         queryAction: queryEndpointVersionV1.definition.actions[0].actionParameters,
         compositeAction: domainEndpointVersionV1.definition.actions.find(
           (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
@@ -2288,7 +2289,7 @@ export function getMiroirFundamentalJzodSchema(
           .extractObjectByDirectReference,
         querySelectExtractorWrapperReturningObject: (miroirFundamentalJzodSchema as any).definition.context.querySelectExtractorWrapperReturningObject,
         querySelectExtractorWrapperReturningList: (miroirFundamentalJzodSchema as any).definition.context.querySelectExtractorWrapperReturningList,
-        querySelectExtractor: (miroirFundamentalJzodSchema as any).definition.context.querySelectExtractor,
+        querySelectExtractorWrapper: (miroirFundamentalJzodSchema as any).definition.context.querySelectExtractorWrapper,
         querySelectObject: (miroirFundamentalJzodSchema as any).definition.context.querySelectObject,
         querySelectObjectList: (miroirFundamentalJzodSchema as any).definition.context.querySelectObjectList,
         querySelectByQueryCombiner: (miroirFundamentalJzodSchema as any).definition.context.querySelectByQueryCombiner,

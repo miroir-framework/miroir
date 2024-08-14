@@ -12,6 +12,59 @@
         "actionParameters": {
           "type": "object",
           "definition": {
+            "actionType": {"type": "literal", "definition":"LocalPersistenceAction"},
+            "actionName": {"type": "enum", "definition": ["create", "read", "update", "delete"]},
+            "endpoint": {"type": "literal", "definition":"a93598b3-19b6-42e8-828c-f02042d212d4"},
+            "section": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "applicationSection"
+              }
+            },
+            "deploymentUuid": {
+              "type": "uuid",
+              "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
+            },
+            "parentName": {
+              "type": "string",
+              "optional": true,
+              "tag": { "value": {  "id":1, "defaultLabel": "Parent Name", "editable": false }}
+            },
+            "parentUuid": {
+              "type": "string",
+              "optional": true,
+              "validations": [{ "type": "uuid" }],
+              "tag": { "value": {  "id":1, "defaultLabel": "Parent Uuid", "editable": false }}
+            },
+            "uuid": {
+              "type": "string",
+              "optional": true,
+              "validations": [{ "type": "uuid" }],
+              "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
+            },
+            "objects": {
+              "type": "array",
+              "optional": true,
+              "definition": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "entityInstance"
+                }
+              }
+            }
+          }
+        },
+        "actionErrors": {
+          "type":"literal", "definition": "FailedToUndo"
+        }
+      },
+      {
+        "actionParameters": {
+          "type": "object",
+          "definition": {
             "actionType": {"type": "literal", "definition":"RestPersistenceAction"},
             "actionName": {"type": "enum", "definition": ["create", "read", "update", "delete"]},
             "endpoint": {"type": "literal", "definition":"a93598b3-19b6-42e8-828c-f02042d212d4"},

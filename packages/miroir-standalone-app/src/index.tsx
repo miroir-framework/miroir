@@ -280,6 +280,7 @@ async function start(root:Root) {
 
     persistenceSaga.run(localCache)
 
+    // TODO: domainController instance is also created in PersistenceStoreControllerManager. Isn't it redundant?
     const domainController: DomainControllerInterface = new DomainController(
       false, // we are on the client, we have to send "remoteLocalCacheRollback" actions to the (remote) persistenceStore
       miroirContext,

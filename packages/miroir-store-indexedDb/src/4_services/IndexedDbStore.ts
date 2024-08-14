@@ -1,6 +1,6 @@
 import {
   ACTION_OK,
-  AbstractStoreInterface,
+  PersistenceStoreAbstractInterface,
   ActionReturnType,
   ActionVoidReturnType,
   LoggerInterface,
@@ -17,7 +17,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
-export class IndexedDbStore implements AbstractStoreInterface {
+export class IndexedDbStore implements PersistenceStoreAbstractInterface {
   // public indexedDbStoreName: string;
   // public localUuidIndexedDb: IndexedDb;
   // public logHeader: string;

@@ -3,13 +3,13 @@ import {
   ConfigurationService,
   ErrorDataStore,
   ErrorModelStore,
-  StoreDataSectionInterface,
-  StoreModelSectionInterface,
+  PersistenceStoreDataSectionInterface,
+  PersistenceStoreModelSectionInterface,
   LoggerInterface,
   MiroirLoggerFactory,
   StoreSectionConfiguration,
   getLoggerName,
-  AdminStoreInterface,
+  PersistenceStoreAdminSectionInterface,
   ErrorAdminStore
 } from "miroir-core";
 import { SqlDbDataStoreSection } from "./4_services/SqlDbDataStoreSection.js";
@@ -29,7 +29,7 @@ export function miroirPostgresStoreSectionStartup() {
   log.info("miroirPostgresStoreSectionStartup called!")
   ConfigurationService.registerAdminStoreFactory(
     "sql",
-    async (config: StoreSectionConfiguration): Promise<AdminStoreInterface> => {
+    async (config: StoreSectionConfiguration): Promise<PersistenceStoreAdminSectionInterface> => {
       if (config.emulatedServerType == "sql") {
         const sqlDbStoreName: string = config.connectionString + ":" + config.schema
         // return Promise.resolve(new SqlDbAdminStore(sqlDbStoreName, config.connectionString, config.schema))
@@ -45,8 +45,8 @@ export function miroirPostgresStoreSectionStartup() {
     async (
       section: ApplicationSection,
       config: StoreSectionConfiguration,
-      dataStore?: StoreDataSectionInterface
-    ): Promise<StoreDataSectionInterface | StoreModelSectionInterface> => {
+      dataStore?: PersistenceStoreDataSectionInterface
+    ): Promise<PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface> => {
       log.info('called registerStoreSectionFactory function for', section, 'sql', config);
       
       if (config.emulatedServerType == "sql" && dataStore) {
@@ -68,8 +68,8 @@ export function miroirPostgresStoreSectionStartup() {
     async (
       section: ApplicationSection,
       config: StoreSectionConfiguration,
-      dataStore?: StoreDataSectionInterface
-    ): Promise<StoreDataSectionInterface | StoreModelSectionInterface> => {
+      dataStore?: PersistenceStoreDataSectionInterface
+    ): Promise<PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface> => {
       log.info('called registerStoreSectionFactory function for', section, 'sql', config);
       if (config.emulatedServerType == "sql") {
         const sqlDbStoreName: string = config.connectionString + ":" + config.schema

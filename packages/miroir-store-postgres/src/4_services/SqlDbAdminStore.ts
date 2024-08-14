@@ -1,4 +1,4 @@
-import { ACTION_OK, ActionError, ActionReturnType, ActionVoidReturnType, AdminStoreInterface, LoggerInterface, MiroirLoggerFactory, SqlDbStoreSectionConfiguration, StoreSectionConfiguration, getLoggerName } from "miroir-core";
+import { ACTION_OK, ActionError, ActionReturnType, ActionVoidReturnType, PersistenceStoreAdminSectionInterface, LoggerInterface, MiroirLoggerFactory, SqlDbStoreSectionConfiguration, StoreSectionConfiguration, getLoggerName } from "miroir-core";
 import { packageName } from "../constants.js";
 import { SqlDbStore } from "./SqlDbStore.js";
 import { cleanLevel } from "./constants.js";
@@ -9,7 +9,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
-export class SqlDbAdminStore extends SqlDbStore implements AdminStoreInterface {
+export class SqlDbAdminStore extends SqlDbStore implements PersistenceStoreAdminSectionInterface {
   // for the sake of uniformity, we follow the mixin pattern also for this class although it's not mixed in any other class
 
   // ##############################################################################################

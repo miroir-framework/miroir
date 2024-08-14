@@ -222,6 +222,7 @@ export async function miroirBeforeAll(
     persistenceStoreControllerManager.setPersistenceStore(persistenceSaga); // useless?
     persistenceStoreControllerManager.setLocalCache(localCache);
 
+    // TODO: domainController instance is also created in PersistenceStoreControllerManager. Isn't it redundant?
     const domainController: DomainControllerInterface = new DomainController(
       false, // we are on the client, we have to use persistenceStore to execute (remote) Queries
       miroirContext,
@@ -326,7 +327,7 @@ export async function miroirBeforeAll(
 
       log.info("miroirBeforeAll emulated server config",miroirConfig)
 
-      console.warn('miroirBeforeAll: emulateServer is true in miroirConfig, a real server is used, tests results depend on the availability of the server.');
+      console.warn('miroirBeforeAll: emulateServer is true in miroirConfig, no server is used, persistent store layer is accessed directly by the client.');
       // TODO: send openStore action instead?
       for (const deployment of Object.entries(miroirConfig.client.deploymentStorageConfig)) {
         await persistenceStoreControllerManager.addPersistenceStoreController(

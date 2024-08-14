@@ -524,7 +524,7 @@
               }
             ]
           },
-          "querySelectExtractor": {
+          "querySelectExtractorWrapper": {
             "type": "union",
             "discriminator": "queryType",
             "definition": [
@@ -549,7 +549,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "querySelectExtractor"
+                  "relativePath": "querySelectExtractorWrapper"
                 }
               },
               {
@@ -604,6 +604,18 @@
                       }
                     }
                   }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "extractObjectByDirectReference"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "querySelectObjectList"
                 }
               },
               {

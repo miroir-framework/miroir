@@ -4,7 +4,7 @@ import * as path from "path";
 import {
   DataStoreApplicationType,
   EntityDefinition,
-  AbstractStoreSectionInterface,
+  PersistenceStoreAbstractSectionInterface,
   StorageSpaceHandlerInterface,
   LoggerInterface,
   MetaEntity,
@@ -33,7 +33,7 @@ export type MixableFileSystemDbStore = GConstructor<FileSystemStoreSection>;
 
 export class FileSystemStoreSection
   extends FileSystemStore
-  implements AbstractStoreSectionInterface, StorageSpaceHandlerInterface
+  implements PersistenceStoreAbstractSectionInterface, StorageSpaceHandlerInterface
 {
   // public filesystemStoreName: string;
   // public directory: string;

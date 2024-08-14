@@ -30,7 +30,7 @@ export type PersistenceStoreControllerAction =
 
 // ###########################################################################################
 // Abstract store interfaces
-export interface AbstractStoreInterface {
+export interface PersistenceStoreAbstractInterface {
   getStoreName(): string;
   open():Promise<ActionVoidReturnType>;
   close():Promise<ActionVoidReturnType>;
@@ -38,14 +38,14 @@ export interface AbstractStoreInterface {
 
 // ###########################################################################################
 // Abstract store interfaces
-export interface AdminStoreInterface extends AbstractStoreInterface {
+export interface PersistenceStoreAdminSectionInterface extends PersistenceStoreAbstractInterface {
   createStore(config: StoreSectionConfiguration): Promise<ActionVoidReturnType>;
   deleteStore(config: StoreSectionConfiguration): Promise<ActionVoidReturnType>;
 }
 
 // ###########################################################################################
 // Abstract store interfaces
-export interface AbstractStoreSectionInterface extends AbstractStoreInterface {
+export interface PersistenceStoreAbstractSectionInterface extends PersistenceStoreAbstractInterface {
   bootFromPersistedState(
     entities : Entity[],
     entityDefinitions : EntityDefinition[],
@@ -75,7 +75,7 @@ export interface StorageSpaceHandlerInterface {
 }
 
 // ###########################################################################################
-export interface AbstractInstanceStoreSectionInterface {
+export interface PersistenceStoreInstanceSectionAbstractInterface {
   getInstance(parentUuid: string, uuid: string): Promise<ActionEntityInstanceReturnType>;
   getInstances(parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType>;
   // handleQuery(query: QueryAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
@@ -85,7 +85,7 @@ export interface AbstractInstanceStoreSectionInterface {
 }
 
 // ###########################################################################################
-export interface AbstractEntityStoreSectionInterface {
+export interface PersistenceStoreEntitySectionAbstractInterface {
   existsEntity(entityUuid:string):boolean;
 
   createEntity(
@@ -109,40 +109,40 @@ export interface AbstractEntityStoreSectionInterface {
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-export interface StoreModelSectionInterface
-  extends AbstractStoreSectionInterface,
+export interface PersistenceStoreModelSectionInterface
+  extends PersistenceStoreAbstractSectionInterface,
     StorageSpaceHandlerInterface,
-    AbstractInstanceStoreSectionInterface,
-    AbstractEntityStoreSectionInterface {
+    PersistenceStoreInstanceSectionAbstractInterface,
+    PersistenceStoreEntitySectionAbstractInterface {
   getState(): Promise<{ [uuid: string]: EntityInstanceCollection }>; // used only for testing purposes!
 }
 
-export interface StoreDataSectionInterface
-  extends AbstractStoreSectionInterface,
+export interface PersistenceStoreDataSectionInterface
+  extends PersistenceStoreAbstractSectionInterface,
     StorageSpaceHandlerInterface,
-    AbstractInstanceStoreSectionInterface {
+    PersistenceStoreInstanceSectionAbstractInterface {
   getState(): Promise<{ [uuid: string]: EntityInstanceCollection }>; // used only for testing purposes!
 }
 
 
 // ###############################################################################################################
-export type DataOrModelStoreInterface = StoreDataSectionInterface | StoreModelSectionInterface;
+export type PersistenceStoreDataOrModelSectionInterface = PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface;
 
 // ###############################################################################################################
-export type StoreSectionFactory = (
+export type PersistenceStoreSectionFactory = (
   section:ApplicationSection,
   config: StoreSectionConfiguration,
-  dataStore?: StoreDataSectionInterface,
-)=>Promise<DataOrModelStoreInterface>;
+  dataStore?: PersistenceStoreDataSectionInterface,
+)=>Promise<PersistenceStoreDataOrModelSectionInterface>;
 
-export type StoreSectionFactoryRegister = Map<string,StoreSectionFactory>;
+export type StoreSectionFactoryRegister = Map<string,PersistenceStoreSectionFactory>;
 
 // ###############################################################################################################
-export type AdminStoreFactory = (
+export type PersistenceStoreAdminSectionFactory = (
   config: StoreSectionConfiguration,
-)=>Promise<AdminStoreInterface>;
+)=>Promise<PersistenceStoreAdminSectionInterface>;
 
-export type AdminStoreFactoryRegister = Map<string,AdminStoreFactory>;
+export type AdminStoreFactoryRegister = Map<string,PersistenceStoreAdminSectionFactory>;
 
 export interface InitApplicationParameters {
   metaModel:MetaModel, 
@@ -156,11 +156,11 @@ export interface InitApplicationParameters {
 
 // ###############################################################################################################
 // store Controller
-// TODO: remove AdminStoreInterface?
+// TODO: remove PersistenceStoreAdminSectionInterface?
 export interface PersistenceStoreControllerInterface
-  extends AbstractStoreSectionInterface,
-  AdminStoreInterface,
-  AbstractEntityStoreSectionInterface /**, AbstractInstanceStoreSectionInterface */
+  extends PersistenceStoreAbstractSectionInterface,
+  PersistenceStoreAdminSectionInterface,
+  PersistenceStoreEntitySectionAbstractInterface /**, PersistenceStoreInstanceSectionAbstractInterface */
 {
 
   //  TODO: remove anything but handleAction from interface!
@@ -182,7 +182,7 @@ export interface PersistenceStoreControllerInterface
   getModelState(): Promise<{ [uuid: string]: EntityInstanceCollection }>; // used only for testing purposes!
   getDataState(): Promise<{ [uuid: string]: EntityInstanceCollection }>; // used only for testing purposes!
 
-  // // instance interface differs from the one in AbstractInstanceStoreSectionInterface: it has an ApplicationSection as first parameter
+  // // instance interface differs from the one in PersistenceStoreInstanceSectionAbstractInterface: it has an ApplicationSection as first parameter
   getInstance(section: ApplicationSection, parentUuid: string, uuid: Uuid): Promise<ActionEntityInstanceReturnType>;
   getInstances(section: ApplicationSection, parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType>;
   // handleQuery(section: ApplicationSection, query: QueryAction): Promise<ActionReturnType>;

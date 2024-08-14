@@ -259,9 +259,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       "actualTest_getInstancesAndCheckResult",
       {},
       async () => localMiroirPersistenceStoreController.getInstance("model",entityEntity.uuid, entityReport.uuid),
-      // (a) => (a as any).returnedDomainElement.elementValue.instances.map((i: EntityInstance) => i["uuid"]),
       (a) => (a as any).returnedDomainElement.elementValue.uuid,
-      // undefined, // transformation function to apply to result
       undefined, // name to give to result
       "instance",
       "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
@@ -276,7 +274,6 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       {},
       async () => localMiroirPersistenceStoreController.getInstances("model", entityEntity.uuid),
       (a) => (a as any).returnedDomainElement.elementValue.instances.map((i: EntityInstance) => i["uuid"]).sort(),
-      // (a) => (a as any).returnedDomainElement.elementValue.instances,
       undefined, // name to give to result
       "entityInstanceCollection",
       [

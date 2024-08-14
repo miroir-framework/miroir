@@ -3,9 +3,9 @@ import {
   ActionVoidReturnType,
   StoreSectionConfiguration,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { AdminStoreInterface } from "../../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
+import { PersistenceStoreAdminSectionInterface } from "../../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
 
-export class ErrorAdminStore implements AdminStoreInterface {
+export class ErrorAdminStore implements PersistenceStoreAdminSectionInterface {
   constructor() {}
 
   createStore(config: StoreSectionConfiguration): Promise<ActionVoidReturnType> {
