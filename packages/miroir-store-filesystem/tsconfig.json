@@ -1,10 +1,12 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "dist/out-tsc",
+    "outDir": "dist3/out-tsc",
     "declaration": true,
-    "declarationDir": "dist/out-tsc/dts",
+    "declarationDir": "dist3/out-tsc/dts",
     "module": "ESNext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
     "rootDir": "./",
     "baseUrl": "./",
   },

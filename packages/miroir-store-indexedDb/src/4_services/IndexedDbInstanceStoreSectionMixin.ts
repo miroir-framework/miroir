@@ -15,6 +15,7 @@ import { IndexedDbStoreSection, MixableIndexedDbStoreSection } from "./IndexedDb
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
+import { IndexedDbExtractorRunner } from "./IndexedDbExtractorRunner.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "IndexedDbInstanceStoreSectionMixin");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -26,6 +27,7 @@ export const MixedIndexedDbInstanceStoreSection = IndexedDbInstanceStoreSectionM
 
 export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedDbStoreSection>(Base: TBase) {
   return class MixedIndexedDbInstanceStoreSection extends Base implements PersistenceStoreInstanceSectionAbstractInterface {
+    public extractorRunner: IndexedDbExtractorRunner;
     constructor(
       // public indexedDbStoreName: string;
       // public localUuidIndexedDb: IndexedDb;
@@ -33,7 +35,18 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
       ...args: any[]
     ) {
       super(...args);
+      this.extractorRunner = new IndexedDbExtractorRunner(this);
       // log.info(this.logHeader,'MixedIndexedDbInstanceStoreSection constructor','this.localUuidIndexedDb',this.localUuidIndexedDb)
+    }
+
+    // #############################################################################################
+    async handleQuery(query: QueryAction): Promise<ActionReturnType> {
+      log.info(this.logHeader,'handleQuery', 'query',query);
+      
+      const result: ActionReturnType = await this.extractorRunner.handleQuery(query);
+
+      log.info(this.logHeader,'handleQuery','query',query, "result", result);
+      return result;
     }
 
     // #############################################################################################
@@ -70,17 +83,6 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
         return { status: "error", error: { errorType: "FailedToGetInstances", errorMessage: error as string}}
       }
     }
-
-    // // #############################################################################################
-    // async handleQuery(query: QueryAction): Promise<ActionReturnType> {
-    //   // TODO: fix applicationSection!!!
-    //   log.info(this.logHeader,'handleQuery', 'query',query);
-      
-    //   const result: ActionReturnType = await this.localUuidIndexedDb.handleQuery(query);
-
-    //   log.info(this.logHeader,'handleQuery','query',query, "result", result);
-    //   return result;
-    // }
 
     // #############################################################################################
     async upsertInstance(parentUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {

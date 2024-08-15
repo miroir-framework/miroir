@@ -20,13 +20,15 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
-export class IndexedDbModelStoreSection extends MixedIndexedDbEntityAndInstanceStoreSection implements PersistenceStoreModelSectionInterface {
-
+export class IndexedDbModelStoreSection
+  extends MixedIndexedDbEntityAndInstanceStoreSection
+  implements PersistenceStoreModelSectionInterface
+{
   // ##############################################################################################
   constructor(
     indexedDbStoreName: string,
     localUuidIndexedDb: IndexedDb,
-    dataStore: PersistenceStoreDataSectionInterface,
+    dataStore: PersistenceStoreDataSectionInterface
   ) {
     super(
       indexedDbStoreName,
@@ -34,7 +36,7 @@ export class IndexedDbModelStoreSection extends MixedIndexedDbEntityAndInstanceS
       "IndexedDbModelStoreSection " + indexedDbStoreName, // logheader
       dataStore
     );
-    log.info("IndexedDbModelStoreSection " + indexedDbStoreName, dataStore)
+    log.info("IndexedDbModelStoreSection " + indexedDbStoreName, dataStore);
   }
 
   // ##############################################################################################
@@ -49,11 +51,11 @@ export class IndexedDbModelStoreSection extends MixedIndexedDbEntityAndInstanceS
       // log.info(this.logHeader, "getState found instances", parentUuid, instances);
       // TODO: proper treatment of errors!
       if (instances.status != "ok") {
-        Object.assign(result,{[parentUuid]:{parentUuid, instances: []}});
+        Object.assign(result, { [parentUuid]: { parentUuid, instances: [] } });
       } else if (instances.returnedDomainElement?.elementType != "entityInstanceCollection") {
-        Object.assign(result,{[parentUuid]:{parentUuid, instances: []}});
+        Object.assign(result, { [parentUuid]: { parentUuid, instances: [] } });
       } else {
-        Object.assign(result,{[parentUuid]:instances.returnedDomainElement.elementValue});
+        Object.assign(result, { [parentUuid]: instances.returnedDomainElement.elementValue });
       }
     }
     return Promise.resolve(result);

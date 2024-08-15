@@ -37,7 +37,8 @@ import {
   entityEntityDefinition,
   entityReport,
   PersistenceStoreExtractorRunner,
-  ApplicationSection
+  ApplicationSection,
+  DomainControllerInterface
 } from "miroir-core";
 
 
@@ -46,12 +47,13 @@ import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 import { setupServer } from "msw/node";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
-import { chainVitestSteps, loadTestConfigFiles, miroirAfterEach, miroirBeforeAll, miroirBeforeEach } from "../utils/tests-utils.js";
+import { chainVitestSteps, ignorePostgresExtraAttributesOnList, ignorePostgresExtraAttributesOnObject, ignorePostgresExtraAttributesOnRecord, loadTestConfigFiles, miroirAfterEach, miroirBeforeAll, miroirBeforeEach } from "../utils/tests-utils.js";
 import { IndexedDbExtractorRunner } from 'miroir-store-indexedDb/src/index.js';
 
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
 let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface | undefined;
+let domainController: DomainControllerInterface;
 
 const env:any = (import.meta as any).env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
@@ -83,6 +85,7 @@ beforeAll(
       );
       if (wrapped) {
         if (wrapped.localMiroirPersistenceStoreController && wrapped.localAppPersistenceStoreController) {
+          domainController = wrapped.domainController;
           localMiroirPersistenceStoreController = wrapped.localMiroirPersistenceStoreController;
           localAppPersistenceStoreController = wrapped.localAppPersistenceStoreController;
           persistenceStoreControllerManager = wrapped.persistenceStoreControllerManager;
@@ -160,9 +163,9 @@ function getExtractorRunner(
 // ##############################################################################################
 // ##############################################################################################
 
-function ignorePostgresExtraAttributes(instances: EntityInstance[]){
-  return instances.map(i => Object.fromEntries(Object.entries(i).filter(e=>!["createdAt", "updatedAt", "author"].includes(e[0]))))
-}
+// function ignorePostgresExtraAttributes(instances: EntityInstance[]){
+//   return instances.map(i => Object.fromEntries(Object.entries(i).filter(e=>!["createdAt", "updatedAt", "author"].includes(e[0]))))
+// }
 
 describe.sequential("PersistenceStoreExtractorRunner.test", () => {
 
@@ -172,11 +175,8 @@ describe.sequential("PersistenceStoreExtractorRunner.test", () => {
       "PersistenceStoreExtractorRunner_selectEntityInstanceUuidIndex",
       {},
       async () => {
-        const extractorRunner = new IndexedDbExtractorRunner(
-          localMiroirPersistenceStoreController
-        );
         const applicationSection:ApplicationSection = "model";
-        const queryResult:ActionReturnType = await extractorRunner.handleQuery(
+        const queryResult:ActionReturnType = await localMiroirPersistenceStoreController.handleQuery(
           applicationSection,
           {
             actionType: "queryAction",
@@ -206,8 +206,8 @@ describe.sequential("PersistenceStoreExtractorRunner.test", () => {
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;// == "ok" ? queryResult : {status: "error", error: queryResult.error};
       },
-      // (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue),
-      (a) => (a as any).returnedDomainElement.elementValue.entities.elementValue,
+      (a) => ignorePostgresExtraAttributesOnRecord((a as any).returnedDomainElement.elementValue.entities.elementValue),
+      // (a) => (a as any).returnedDomainElement.elementValue.entities.elementValue,
       // undefined, // expected result transformation
       undefined, // name to give to result
       "object",//"instanceUuidIndex",
@@ -342,9 +342,9 @@ describe.sequential("PersistenceStoreExtractorRunner.test", () => {
       "PersistenceStoreExtractorRunner_selectEntityInstance_selectObjectByDirectReference",
       {},
       async () => {
-        const extractorRunner = new IndexedDbExtractorRunner(localMiroirPersistenceStoreController);
+        // const extractorRunner = new IndexedDbExtractorRunner(localMiroirPersistenceStoreController);
         const applicationSection:ApplicationSection = "model";
-        const queryResult:ActionReturnType = await extractorRunner.handleQuery(
+        const queryResult:ActionReturnType = await localMiroirPersistenceStoreController.handleQuery(
           applicationSection,
           {
             actionType: "queryAction",
@@ -376,8 +376,8 @@ describe.sequential("PersistenceStoreExtractorRunner.test", () => {
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      // (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
-      undefined, // expected result transformation
+      (a) => ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement.elementValue),
+      // undefined, // expected result transformation
       undefined, // name to give to result
       "instance",
       {
@@ -393,74 +393,74 @@ describe.sequential("PersistenceStoreExtractorRunner.test", () => {
     );
   });
   
-  // // ################################################################################################
-  // it("get Filtered Entity Entity from Library", async () => {
-  //   await chainVitestSteps(
-  //     "PersistenceStoreExtractorRunner_selectEntityInstance_selectObjectByDirectReference",
-  //     {},
-  //     async () => {
-  //       // const extractorRunner = new IndexedDbExtractorRunner(localMiroirPersistenceStoreController);
-  //       const extractorRunner = getExtractorRunner(miroirConfig, localMiroirPersistenceStoreController);
-  //       const queryResult = await extractorRunner.extractEntityInstance(undefined, {
-  //         extractorRunnerMap: {
-  //           extractEntityInstance: undefined as any,
-  //           extractEntityInstanceUuidIndex: undefined as any,
-  //           extractEntityInstanceUuidIndexWithObjectListExtractor: undefined as any,
-  //           extractWithManyExtractors: undefined as any,
-  //           extractWithExtractor: undefined as any,
-  //         },
-  //         extractor: {
-  //           queryType: "domainModelSingleExtractor",
-  //           pageParams: { elementType: "object", elementValue: {} },
-  //           queryParams: { elementType: "object", elementValue: {} },
-  //           contextResults: { elementType: "object", elementValue: {} },
-  //           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-  //           select: {
-  //             queryType: "selectObjectByDirectReference",
-  //             applicationSection: "model",
-  //             parentName: "Entity",
-  //             parentUuid: {
-  //               queryTemplateType: "constantUuid",
-  //               constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-  //             },
-  //             instanceUuid: {
-  //               queryTemplateType: "constantUuid",
-  //               constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-  //             },
-  //           },
-  //         },
-  //       });
-  //       console.log("queryResult", JSON.stringify(queryResult, null, 2));
-  //       const result: ActionReturnType =
-  //         queryResult.elementType == "instance"
-  //           ? {
-  //               status: "ok",
-  //               returnedDomainElement: queryResult,
-  //             }
-  //           : {
-  //               status: "error",
-  //               error: {
-  //                 errorType: "FailedToGetInstances",
-  //                 errorMessage: JSON.stringify(queryResult, undefined, 2),
-  //               },
-  //             };
-  //       return result;
-  //     },
-  //     // (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
-  //     undefined, // expected result transformation
-  //     undefined, // name to give to result
-  //     "instance",
-  //     {
-  //       uuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-  //       parentName: "Entity",
-  //       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-  //       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
-  //       name: "Entity",
-  //       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-  //       conceptLevel: "MetaModel",
-  //       description: "The Metaclass for entities.",
-  //     }
-  //   );
-  // });
+  // // // ################################################################################################
+  // // it("get Filtered Entity Entity from Library", async () => {
+  // //   await chainVitestSteps(
+  // //     "PersistenceStoreExtractorRunner_selectEntityInstance_selectObjectByDirectReference",
+  // //     {},
+  // //     async () => {
+  // //       // const extractorRunner = new IndexedDbExtractorRunner(localMiroirPersistenceStoreController);
+  // //       const extractorRunner = getExtractorRunner(miroirConfig, localMiroirPersistenceStoreController);
+  // //       const queryResult = await extractorRunner.extractEntityInstance(undefined, {
+  // //         extractorRunnerMap: {
+  // //           extractEntityInstance: undefined as any,
+  // //           extractEntityInstanceUuidIndex: undefined as any,
+  // //           extractEntityInstanceUuidIndexWithObjectListExtractor: undefined as any,
+  // //           extractWithManyExtractors: undefined as any,
+  // //           extractWithExtractor: undefined as any,
+  // //         },
+  // //         extractor: {
+  // //           queryType: "domainModelSingleExtractor",
+  // //           pageParams: { elementType: "object", elementValue: {} },
+  // //           queryParams: { elementType: "object", elementValue: {} },
+  // //           contextResults: { elementType: "object", elementValue: {} },
+  // //           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+  // //           select: {
+  // //             queryType: "selectObjectByDirectReference",
+  // //             applicationSection: "model",
+  // //             parentName: "Entity",
+  // //             parentUuid: {
+  // //               queryTemplateType: "constantUuid",
+  // //               constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  // //             },
+  // //             instanceUuid: {
+  // //               queryTemplateType: "constantUuid",
+  // //               constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  // //             },
+  // //           },
+  // //         },
+  // //       });
+  // //       console.log("queryResult", JSON.stringify(queryResult, null, 2));
+  // //       const result: ActionReturnType =
+  // //         queryResult.elementType == "instance"
+  // //           ? {
+  // //               status: "ok",
+  // //               returnedDomainElement: queryResult,
+  // //             }
+  // //           : {
+  // //               status: "error",
+  // //               error: {
+  // //                 errorType: "FailedToGetInstances",
+  // //                 errorMessage: JSON.stringify(queryResult, undefined, 2),
+  // //               },
+  // //             };
+  // //       return result;
+  // //     },
+  // //     // (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
+  // //     undefined, // expected result transformation
+  // //     undefined, // name to give to result
+  // //     "instance",
+  // //     {
+  // //       uuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  // //       parentName: "Entity",
+  // //       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  // //       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  // //       name: "Entity",
+  // //       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  // //       conceptLevel: "MetaModel",
+  // //       description: "The Metaclass for entities.",
+  // //     }
+  // //   );
+  // // });
   
 });

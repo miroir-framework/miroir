@@ -3,9 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "description": "The Miroir implementation for accessing indexedDb databases (on web browser, or file-based on nodejs server).",
-  "main": "dist/bundle.esm.js",
-  "types": "dist/bundle.d.ts",
-  "module": "dist/bundle.esm.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "module": "dist/index.js",
   "type": "module",
   "dependencies": {
     "miroir-core": "*",
@@ -28,7 +28,7 @@
   },
   "scripts": {
     "watch": "lerna watch --scope='miroir-store-indexedDb' --include-dependencies -- lerna run build --scope='miroir-store-indexedDb'",
-    "build": "tsup --target=node20 --format esm src/index.ts",
+    "build": "tsup",
     "build4": "npm run build",
     "build5": "npm run build",
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",

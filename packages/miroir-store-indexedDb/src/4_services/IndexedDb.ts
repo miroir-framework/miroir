@@ -183,19 +183,6 @@ export class IndexedDb {
     log.trace(this.logHeader, 'getAllValue', parentUuid, "result", JSON.stringify(result));
     return Promise.resolve(result);
   }
-
-  // // #############################################################################################
-  // async handleQuery(query: QueryAction): Promise<ActionReturnType> {
-  //   // TODO: fix applicationSection!!!
-  //   log.info(this.logHeader,'handleQuery', 'query', query);
-    
-  //   throw new Error('Method not implemented.');
-  //   // const result: ActionReturnType = await this.localUuidIndexedDb.handleQuery(query);
-
-  //   // log.info(this.logHeader,'handleQuery','query', query, "result", result);
-  //   // return result;
-  // }
-  
   // #############################################################################################
   public async putValue(parentUuid: string, value: any):Promise<any> {
     const store = this.subLevels.get(parentUuid);

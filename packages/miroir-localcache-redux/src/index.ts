@@ -1,9 +1,6 @@
 export { LocalCache } from "./4_services/LocalCache.js";
 // export {  } from "./4_services/LocalCache/LocalCacheSlice";
 export {
-  createReduxStoreAndPersistenceClient,
-} from "./4_services/createReduxStoreAndPersistenceClient.js";
-export {
   getLocalCacheKeysDeploymentSectionEntitiesList,
   getDeploymentUuidListFromLocalCacheKeys,
   getLocalCacheKeysDeploymentSectionList,

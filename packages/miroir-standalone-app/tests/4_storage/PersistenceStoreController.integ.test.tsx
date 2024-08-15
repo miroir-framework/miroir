@@ -44,7 +44,7 @@ import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 import { setupServer } from "msw/node";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
-import { loadTestConfigFiles, miroirAfterEach, miroirBeforeAll, miroirBeforeEach } from "../utils/tests-utils.js";
+import { ignorePostgresExtraAttributesOnList, loadTestConfigFiles, miroirAfterEach, miroirBeforeAll, miroirBeforeEach } from "../utils/tests-utils.js";
 
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
@@ -172,10 +172,6 @@ const chainVitestSteps = async (
   } else {
     return context
   }
-}
-
-function ignorePostgresExtraAttributes(instances: EntityInstance[]){
-  return instances.map(i => Object.fromEntries(Object.entries(i).filter(e=>!["createdAt", "updatedAt", "author"].includes(e[0]))))
 }
 
 describe.sequential("PersistenceStoreController.unit.test", () => {
@@ -330,7 +326,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       "actualTest_getInstancesAndCheckResult",
       {},
       async () => localAppPersistenceStoreController.getInstances("model",entityEntity.uuid),
-      (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
+      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances),
       undefined, // name to give to result
       "entityInstanceCollection",
       [entityAuthor]
@@ -392,7 +388,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
         "getEntityInstancesToCheckResult",
         v,
         async () => await localAppPersistenceStoreController.getInstances("model", entityEntity.uuid),
-        (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
+        (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances),
         undefined, // name to give to result
         "entityInstanceCollection",
         [
@@ -408,7 +404,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
         "getEntityDefinitionInstancesToCheckResult",
         v,
         async () => await localAppPersistenceStoreController.getInstances("model", entityEntityDefinition.uuid),
-        (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
+        (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances),
         undefined, // name to give to result
         "entityInstanceCollection",
         [
@@ -490,7 +486,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
         "actualTest_getInstancesAndCheckResult",
         v,
         async () => await localAppPersistenceStoreController.getInstances("model", entityEntity.uuid),
-        (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
+        (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances),
         undefined, // name to give to result
         "entityInstanceCollection",
         []
@@ -567,7 +563,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
         "getEntityInstancesToCheckResult",
         v,
         async () => await localAppPersistenceStoreController.getInstances("model", entityEntityDefinition.uuid),
-        (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
+        (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances),
         undefined, // name to give to result
         "entityInstanceCollection",
         [
@@ -642,7 +638,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       "actualTest_getInstancesAndCheckResult",
       {},
       async () => localAppPersistenceStoreController.getInstances("data",entityAuthor.uuid),
-      (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
+      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances),
       undefined, // name to give to result
       "entityInstanceCollection",
       [author1]
@@ -672,7 +668,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       "actualTest_getInstancesAndCheckResult",
       {},
       async () => localAppPersistenceStoreController.getInstances("data",entityAuthor.uuid),
-      (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
+      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances),
       undefined, // name to give to result
       "entityInstanceCollection",
       [{...author1, "name": author1.name + "ssss"}]
@@ -708,7 +704,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       "actualTest_getInstancesAndCheckResult",
       {},
       async () => localAppPersistenceStoreController.getInstances("data",entityAuthor.uuid),
-      (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
+      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances),
       undefined, // name to give to result
       "entityInstanceCollection",
       []

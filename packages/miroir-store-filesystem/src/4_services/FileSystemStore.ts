@@ -3,7 +3,7 @@ import * as path from "path";
 
 import { ACTION_OK, PersistenceStoreAbstractInterface, ActionReturnType, ActionVoidReturnType, ApplicationSection, LoggerInterface, MiroirLoggerFactory, getLoggerName } from "miroir-core";
 import { packageName } from "../constants.js";
-import { cleanLevel } from "./constants";
+import { cleanLevel } from "./constants.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "SqlDbStore");
 let log: LoggerInterface = console as any as LoggerInterface;

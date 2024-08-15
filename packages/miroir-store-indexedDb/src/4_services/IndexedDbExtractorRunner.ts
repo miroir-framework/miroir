@@ -41,6 +41,9 @@ import {
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   asyncExtractWithManyExtractors,
   asyncExtractWithExtractor,
+  PersistenceStoreInstanceSectionAbstractInterface,
+  PersistenceStoreAbstractInterface,
+  PersistenceStoreDataOrModelSectionInterface,
 } from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
@@ -56,7 +59,9 @@ export class IndexedDbExtractorRunner implements PersistenceStoreExtractorRunner
   private selectorMap: AsyncExtractorRunnerMap<any>;
 
   // ################################################################################################
-  constructor(private persistenceStoreController: PersistenceStoreControllerInterface) {
+  // constructor(private persistenceStoreController: PersistenceStoreControllerInterface) {
+  // constructor(private persistenceStoreController: PersistenceStoreDataOrModelSectionInterface) {
+  constructor(private persistenceStoreController: PersistenceStoreInstanceSectionAbstractInterface) {
     this.logHeader = "PersistenceStoreController " + persistenceStoreController.getStoreName();
     this.selectorMap = {
       extractorType: "async",
@@ -69,9 +74,10 @@ export class IndexedDbExtractorRunner implements PersistenceStoreExtractorRunner
   }
 
   // ################################################################################################
-  async handleQuery(section: ApplicationSection, queryAction: QueryAction): Promise<ActionReturnType> {
+  // async handleQuery(section: ApplicationSection, queryAction: QueryAction): Promise<ActionReturnType> {
+  async handleQuery(queryAction: QueryAction): Promise<ActionReturnType> {
     // TODO: fix applicationSection!!!
-    log.info(this.logHeader, "handleQuery", "section", section, "queryAction", JSON.stringify(queryAction, null, 2));
+    log.info(this.logHeader, "handleQuery", "queryAction", JSON.stringify(queryAction, null, 2));
     // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
     // log.info(this.logHeader,'this.modelStoreSection',this.modelStoreSection);
 
@@ -117,7 +123,7 @@ export class IndexedDbExtractorRunner implements PersistenceStoreExtractorRunner
       } as ActionReturnType;
     } else {
       const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
-      log.info(this.logHeader, "handleQuery", "section", section, "queryAction", queryAction, "result", JSON.stringify(result, null, 2));
+      log.info(this.logHeader, "handleQuery", "queryAction", queryAction, "result", JSON.stringify(result, null, 2));
       return result;
     }
     // const result = { status: "ok", returnedDomainElement: { elementType: "object", elementValue: {}}} as ActionReturnType;
@@ -268,7 +274,7 @@ export class IndexedDbExtractorRunner implements PersistenceStoreExtractorRunner
         }
 
         const result = await this.persistenceStoreController.getInstance(
-          applicationSection,
+          // applicationSection,
           entityUuidReference.elementValue,
           (referenceObject.elementValue as any)[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
         );
@@ -360,7 +366,7 @@ export class IndexedDbExtractorRunner implements PersistenceStoreExtractorRunner
         //   };
         // }
         const result = await this.persistenceStoreController.getInstance(
-          applicationSection,
+          // applicationSection,
           entityUuidReference.elementValue,
           instanceDomainElement.elementValue
         );
@@ -445,7 +451,7 @@ export class IndexedDbExtractorRunner implements PersistenceStoreExtractorRunner
       case "string":
       case "instanceUuid": {
         const entityInstanceCollection: ActionEntityInstanceCollectionReturnType =
-          await this.persistenceStoreController.getInstances(applicationSection, entityUuid.elementValue);
+          await this.persistenceStoreController.getInstances(/*applicationSection, */ entityUuid.elementValue);
 
         if (entityInstanceCollection.status == "error") {
           // return data;

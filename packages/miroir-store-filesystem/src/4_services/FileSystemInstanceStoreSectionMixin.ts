@@ -12,12 +12,14 @@ import {
   ActionEntityInstanceCollectionReturnType,
   ActionEntityInstanceReturnType,
   ActionVoidReturnType,
-  ACTION_OK
+  ACTION_OK,
+  QueryAction,
 } from "miroir-core";
 
 import { packageName } from "../constants.js";
 import { FileSystemStoreSection, MixableFileSystemDbStore } from "./FileSystemStoreSection.js";
 import { cleanLevel } from "./constants.js";
+import { FileSystemExtractorRunner } from "./FileSystemExtractorRunner.js";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"FileSystemInstanceStoreSectionMixin");
@@ -38,6 +40,8 @@ export const MixedFileSystemInstanceStoreSection = FileSystemInstanceStoreSectio
 
 export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSystemDbStore>(Base: TBase) {
   return class MixedIndexedDbInstanceStoreSection extends Base implements PersistenceStoreInstanceSectionAbstractInterface {
+    public extractorRunner: FileSystemExtractorRunner;
+
     // ##############################################################################################
     constructor(
       // ...args stands for:
@@ -48,8 +52,19 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
       ...args: any[]
     ) {
       super(...args);
+      this.extractorRunner = new FileSystemExtractorRunner(this);
     }
 
+    // #############################################################################################
+    async handleQuery(query: QueryAction): Promise<ActionReturnType> {
+      log.info(this.logHeader,'handleQuery', 'query',query);
+      
+      const result: ActionReturnType = await this.extractorRunner.handleQuery(query);
+
+      log.info(this.logHeader,'handleQuery','query',query, "result", result);
+      return result;
+    }
+    
     // #############################################################################################
     getInstance(entityUuid: string, uuid: string): Promise<ActionEntityInstanceReturnType> {
       const entityInstancePath = path.join(this.directory, entityUuid, fullName(uuid));

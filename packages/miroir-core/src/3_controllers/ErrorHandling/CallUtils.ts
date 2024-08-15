@@ -6,13 +6,13 @@ import {
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { ErrorLogServiceInterface, MError } from "../../0_interfaces/3_controllers/ErrorLogServiceInterface.js";
 import { LocalCacheInterface } from "../../0_interfaces/4-services/LocalCacheInterface.js";
-import { PersistenceInterface } from "../../0_interfaces/4-services/PersistenceInterface.js";
+import { PersistenceStoreLocalOrRemoteInterface } from "../../0_interfaces/4-services/PersistenceInterface.js";
 
 export class CallUtils {
   constructor(
     private errorLogService: ErrorLogServiceInterface,
     private localCache: LocalCacheInterface,
-    private persistenceStore: PersistenceInterface
+    private persistenceStore: PersistenceStoreLocalOrRemoteInterface
   ) {}
 
   // ######################################################################################

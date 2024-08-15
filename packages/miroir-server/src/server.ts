@@ -1,6 +1,6 @@
 import express, { Request } from 'express';
 
-import { fetch } from 'cross-fetch';
+// import { fetch } from 'cross-fetch';
 
 import {
   ConfigurationService,
@@ -86,7 +86,7 @@ miroirPostgresStoreSectionStartup();
 
 
 
-const client: RestClient = new RestClient(fetch);
+// const client: RestClient = new RestClient(fetch);
 // const persistenceClientAndRestClient = new RestPersistenceClientAndRestClient("", client);
 
 const localCache: LocalCache = new LocalCache();
@@ -98,13 +98,15 @@ const persistenceStoreControllerManager = new PersistenceStoreControllerManager(
 );
 
 const persistenceSaga: PersistenceReduxSaga = new PersistenceReduxSaga(
-  undefined,
-  persistenceStoreControllerManager
+  {
+    persistenceStoreAccessMode: "local",
+    localPersistenceStoreControllerManager: persistenceStoreControllerManager,
+  }
 );
 
 persistenceSaga.run(localCache)
 
-persistenceStoreControllerManager.setPersistenceStore(persistenceSaga); // useless?
+persistenceStoreControllerManager.setPersistenceStoreLocalOrRemote(persistenceSaga); // useless?
 persistenceStoreControllerManager.setLocalCache(localCache);
 
 // open all configured stores

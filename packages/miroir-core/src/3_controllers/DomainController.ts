@@ -11,7 +11,7 @@ import { MiroirContextInterface } from '../0_interfaces/3_controllers/MiroirCont
 import {
   LocalCacheInterface
 } from "../0_interfaces/4-services/LocalCacheInterface.js";
-import { PersistenceInterface } from '../0_interfaces/4-services/PersistenceInterface.js';
+import { PersistenceStoreLocalOrRemoteInterface } from '../0_interfaces/4-services/PersistenceInterface.js';
 
 
 import adminConfigurationDeploymentMiroir from "../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
@@ -127,16 +127,17 @@ export class DomainController implements DomainControllerInterface {
   private callUtil: CallUtils;
 
   constructor(
-    private hasDirectAccessToPersistenceStore: boolean,
+    private domainControllerIsDeployedOn: "server" | "client",
     private miroirContext: MiroirContextInterface,
     private localCache: LocalCacheInterface,
-    private persistenceStore: PersistenceInterface, // instance of PersistenceReduxSaga
+    private persistenceStore: PersistenceStoreLocalOrRemoteInterface, // instance of PersistenceReduxSaga
     private endpoint: Endpoint,
   ) {
     this.callUtil = new CallUtils(miroirContext.errorLogService, localCache, persistenceStore);
   }
 
-  getRemoteStore(): PersistenceInterface {
+  // TODO: remove? only used in commented code in index.tsx
+  getRemoteStore(): PersistenceStoreLocalOrRemoteInterface {
     return this.persistenceStore;
   }
   // ##############################################################################################
@@ -254,12 +255,13 @@ export class DomainController implements DomainControllerInterface {
     try {
       switch (modelAction.actionName) {
         case "remoteLocalCacheRollback": {
-          if (this.hasDirectAccessToPersistenceStore) {
+          if (this.domainControllerIsDeployedOn == "server") {
+            // if the domain controller is deployed on the server, we refresh the local cache from the remote store
             log.info("handleModelAction reloading current configuration from local PersistenceStore!");
             await this.loadConfigurationFromPersistenceStore(deploymentUuid);
             log.info("handleModelAction reloading current configuration from local PersistenceStore DONE!");
           } else {
-            // send action to (remote) persistence action interface handler.
+            // if the domain controller is deployed on the client, we send the "remoteLocalCacheRollback" action to the server
             await this.callUtil.callPersistenceAction(
               {}, // context
               {}, // context update
@@ -733,13 +735,7 @@ export class DomainController implements DomainControllerInterface {
       JSON.stringify((queryAction as any)["objects"], null, 2)
     );
 
-    // if (queryAction.query.queryType == "domainModelSingleExtractor" ) {
-    // // if (["domainModelSingleExtractor","extractorForRecordOfExtractors"].includes(queryAction.query.queryType) ) {
-    //   log.info("handleQuery queryAction", queryAction);
-    //   throw new Error("DomainController handleQuery queryAction not implemented for queryType " + queryAction.query.queryType);
-    // }
-
-    if (this.hasDirectAccessToPersistenceStore) {
+    if (this.domainControllerIsDeployedOn == "server") {
       /**
        * we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
        */

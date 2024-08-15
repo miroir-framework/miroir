@@ -89,10 +89,10 @@ export default {};
 /**
  * Decorator to the Redux Store, handing specific Miroir entity slices
  */
-export declare interface PersistenceInterface {
+export declare interface PersistenceStoreLocalOrRemoteInterface {
   handlePersistenceAction(
     action: PersistenceAction
   ): Promise<ActionReturnType>;
 }
 
-export interface StoreInterface extends LocalCacheInterface, PersistenceInterface {};
+export interface StoreInterface extends LocalCacheInterface, PersistenceStoreLocalOrRemoteInterface {};

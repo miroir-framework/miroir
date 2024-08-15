@@ -9,12 +9,14 @@ import {
   ActionEntityInstanceReturnType,
   ActionVoidReturnType,
   ACTION_OK,
+  QueryAction,
 } from "miroir-core";
 import { MixableSqlDbStoreSection, SqlDbStoreSection } from "./SqlDbStoreSection.js";
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 import { Error } from "sequelize";
+import { SqlDbExtractRunner } from "./SqlDbExtractorRunner.js";
 
 const consoleLog: any = console.log.bind(console, packageName, cleanLevel, "SqlDbInstanceStoreSectionMixin");
 const loggerName: string = getLoggerName(packageName, cleanLevel, "SqlDbInstanceStoreSectionMixin");
@@ -27,6 +29,8 @@ export const MixedSqlDbInstanceStoreSection = SqlDbInstanceStoreSectionMixin(Sql
 
 export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSection>(Base: TBase) {
   return class MixedIndexedDbInstanceStoreSection extends Base implements PersistenceStoreInstanceSectionAbstractInterface {
+    public extractorRunner: SqlDbExtractRunner;
+
     // ##############################################################################################
     constructor(
       // actual arguments are:
@@ -38,8 +42,19 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       ...args: any[]
     ) {
       super(...args);
+      this.extractorRunner = new SqlDbExtractRunner(this);
     }
 
+    // #############################################################################################
+    async handleQuery(query: QueryAction): Promise<ActionReturnType> {
+      log.info(this.logHeader,'handleQuery', 'query',query);
+      
+      const result: ActionReturnType = await this.extractorRunner.handleQuery(query);
+
+      log.info(this.logHeader,'handleQuery','query',query, "result", result);
+      return result;
+    }
+    
     // ##############################################################################################
     async getInstance(parentUuid: string, uuid: string): Promise<ActionEntityInstanceReturnType> {
       try {

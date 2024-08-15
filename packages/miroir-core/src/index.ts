@@ -391,7 +391,7 @@ export {
 export {
   HttpRequestBodyFormat,
   HttpResponseBodyFormat,
-  PersistenceInterface,
+  PersistenceStoreLocalOrRemoteInterface,
   RemoteStoreActionReturnType,
   RestPersistenceClientAndRestClientInterface,
   RestClientCallReturnType,

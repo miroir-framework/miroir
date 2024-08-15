@@ -12,7 +12,7 @@ import {
   QueryAction,
   TransactionalInstanceAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
-import { PersistenceInterface } from "../4-services/PersistenceInterface.js";
+import { PersistenceStoreLocalOrRemoteInterface } from "../4-services/PersistenceInterface.js";
 
 
 // #############################################################################################
@@ -122,6 +122,6 @@ export interface DomainControllerInterface {
   // TODO: currentTransaction should not depend on localCache types?! Use DomainActions instead?
   currentTransaction(): (TransactionalInstanceAction | ModelAction)[],
   currentLocalCacheInfo(): LocalCacheInfo,
-  getRemoteStore(): PersistenceInterface,
+  getRemoteStore(): PersistenceStoreLocalOrRemoteInterface,
   
 }

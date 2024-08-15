@@ -24,7 +24,7 @@ import {
   MiroirContext,
   miroirCoreStartup,
   MiroirLoggerFactory,
-  PersistenceInterface,
+  PersistenceStoreLocalOrRemoteInterface,
   RestClient,
   restServerDefaultHandlers,
   SpecificLoggerOptionsMap,
@@ -275,17 +275,20 @@ async function start(root:Root) {
     );
 
     const persistenceSaga: PersistenceReduxSaga = new PersistenceReduxSaga(
-        persistenceClientAndRestClient
-      );
+      {
+        persistenceStoreAccessMode: "remote",
+        remotePersistenceStoreRestClient: persistenceClientAndRestClient
+      }
+    );
 
     persistenceSaga.run(localCache)
 
     // TODO: domainController instance is also created in PersistenceStoreControllerManager. Isn't it redundant?
     const domainController: DomainControllerInterface = new DomainController(
-      false, // we are on the client, we have to send "remoteLocalCacheRollback" actions to the (remote) persistenceStore
+      "client", // we are on the client, we have to send "remoteLocalCacheRollback" actions to the (remote) persistenceStore
       miroirContext,
       localCache, // implements LocalCacheInterface
-      persistenceSaga, // implements PersistenceInterface
+      persistenceSaga, // implements PersistenceStoreLocalOrRemoteInterface
       new Endpoint(localCache)
     );
 

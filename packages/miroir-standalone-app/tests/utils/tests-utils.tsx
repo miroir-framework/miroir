@@ -21,7 +21,7 @@ import {
   MiroirContext,
   MiroirContextInterface,
   MiroirLoggerFactory,
-  PersistenceInterface,
+  PersistenceStoreLocalOrRemoteInterface,
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManager,
   RestClient,
@@ -44,7 +44,8 @@ import {
   startLocalPersistenceStoreControllers,
   selfApplicationDeploymentMiroir,
   selfApplicationDeploymentLibrary,
-  DomainElementType
+  DomainElementType,
+  EntityInstance
 } from "miroir-core";
 import { LocalCache, PersistenceReduxSaga, ReduxStoreWithUndoRedo, RestPersistenceClientAndRestClient } from 'miroir-localcache-redux';
 import { createMswRestServer } from 'miroir-server-msw-stub';
@@ -62,6 +63,22 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   }
 );
 
+// ################################################################################################
+export function ignorePostgresExtraAttributesOnRecord(instances: Record<string, EntityInstance>){
+  return Object.fromEntries(Object.entries(instances).map(i => [i[0], ignorePostgresExtraAttributesOnObject(i[1])]))
+}
+
+// ################################################################################################
+export function ignorePostgresExtraAttributesOnList(instances: EntityInstance[]){
+  return instances.map(i => ignorePostgresExtraAttributesOnObject(i))
+}
+
+// ################################################################################################
+export function ignorePostgresExtraAttributesOnObject(instance: EntityInstance){
+  return Object.fromEntries(Object.entries(instance).filter(e=>!["createdAt", "updatedAt", "author"].includes(e[0])))
+}
+
+// ################################################################################################
 export interface BeforeAllReturnType {
   localCache: LocalCache,
   miroirContext: MiroirContext,
@@ -213,26 +230,32 @@ export async function miroirBeforeAll(
       ConfigurationService.StoreSectionFactoryRegister,
     );
 
-    const persistenceSaga: PersistenceReduxSaga = new PersistenceReduxSaga(
-        persistenceClientAndRestClient
-      );
 
-    persistenceSaga.run(localCache)
-
-    persistenceStoreControllerManager.setPersistenceStore(persistenceSaga); // useless?
     persistenceStoreControllerManager.setLocalCache(localCache);
 
-    // TODO: domainController instance is also created in PersistenceStoreControllerManager. Isn't it redundant?
-    const domainController: DomainControllerInterface = new DomainController(
-      false, // we are on the client, we have to use persistenceStore to execute (remote) Queries
-      miroirContext,
-      localCache, // implements LocalCacheInterface
-      persistenceSaga, // implements PersistenceInterface
-      new Endpoint(localCache)
-    );
 
     if (!miroirConfig.client.emulateServer) {
       console.warn('miroirBeforeAll: emulateServer is true in miroirConfig, a real server is used, tests results depend on the availability of the server.');
+
+      const persistenceSaga: PersistenceReduxSaga = new PersistenceReduxSaga(
+        {
+          persistenceStoreAccessMode: "remote",
+          remotePersistenceStoreRestClient: persistenceClientAndRestClient
+        }
+      );
+
+      persistenceSaga.run(localCache)
+      persistenceStoreControllerManager.setPersistenceStoreLocalOrRemote(persistenceSaga); // useless?
+      // TODO: domainController instance is also created in PersistenceStoreControllerManager. Isn't it redundant?
+      const domainController: DomainControllerInterface = new DomainController(
+        "client", // we are on the client, we have to use persistenceStore to execute (remote) Queries
+        miroirContext,
+        localCache, // implements LocalCacheInterface
+        persistenceSaga, // implements PersistenceStoreLocalOrRemoteInterface
+        new Endpoint(localCache)
+      );
+
+
       for (const c of Object.entries(miroirConfig.client.serverConfig.storeSectionConfiguration)) {
         const openStoreAction: StoreOrBundleAction = {
           actionType: "storeManagementAction",
@@ -286,6 +309,29 @@ export async function miroirBeforeAll(
       });
     } else {
       console.log("EMULATED SERVER, DATASTORE WILL BE ACCESSED DIRECTLY FROM NODEJS TEST ENVIRONMENT, NO SERVER WILL BE USED")
+
+      // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      // TODO: The creation of the domainController is identical to the remote case, but should it be?
+      // this is the same as for the remote case
+      // we are passing through msw calls, thus simulating the Rest calls to the server
+      const persistenceSaga: PersistenceReduxSaga = new PersistenceReduxSaga(
+        {
+          persistenceStoreAccessMode: "remote",
+          remotePersistenceStoreRestClient: persistenceClientAndRestClient,
+        }
+      );
+
+      persistenceSaga.run(localCache)
+      persistenceStoreControllerManager.setPersistenceStoreLocalOrRemote(persistenceSaga); // useless?
+      // TODO: domainController instance is also created in PersistenceStoreControllerManager. Isn't it redundant?
+      const domainController: DomainControllerInterface = new DomainController(
+        "client", // although we are on the client here, we are using persistenceStore with "remote" configuration to execute Queries, so we do not access the persistenceStore directly
+        miroirContext,
+        localCache, // implements LocalCacheInterface
+        persistenceSaga, // implements PersistenceStoreLocalOrRemoteInterface
+        new Endpoint(localCache)
+      );
+
       let localDataStoreWorker; // browser
       let localDataStoreServer; // nodejs
 
@@ -554,7 +600,7 @@ export async function miroirAfterAll(
       }
   
       console.log('miroirAfterAll closing deployment:', adminConfigurationDeploymentMiroir.uuid); // TODO: really???
-      const remoteStore:PersistenceInterface = domainController.getRemoteStore();
+      const remoteStore:PersistenceStoreLocalOrRemoteInterface = domainController.getRemoteStore();
       await remoteStore.handlePersistenceAction({
         actionType: "storeManagementAction",
         actionName: "closeStore",

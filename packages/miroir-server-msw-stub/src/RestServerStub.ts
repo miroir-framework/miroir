@@ -45,29 +45,29 @@ export class RestServerStub {
 
 
     this.handlers = restServerHandlers.map(
-      (h:RestServiceHandler)=> (http as any)[h.method](this.rootApiUrl + h.url,
+      (restService:RestServiceHandler)=> (http as any)[restService.method](this.rootApiUrl + restService.url,
         async (p:{ request: any/* StrictRequest<DefaultBodyType> */, params: any /*PathParams*/}) => {
           const { request, params} = p;
           // log.info("RestServerStub received request",h.method, h.rootApiUrl + h.url,"request", request, "params", params);
           
           let body: HttpRequestBodyFormat = {}
-          if (h.method !== "get") {
+          if (restService.method !== "get") {
             try {
               body = (await request.json()) as HttpRequestBodyFormat;
             } catch (e) {
-              log.error("RestServerStub could not read body for", h.method,h.url,":",e);
+              log.error("RestServerStub could not read body for", restService.method,restService.url,":",e);
             }
           }
           // log.info("RestServerStub received request",h.method, h.rootApiUrl + h.url, "body", body);
           try {
-            const result = await h.handler(
+            const result = await restService.handler(
               false, // useDomainControllerToHandleModelAndInstanceActions: since we're emulating the REST server, we have direct access the persistenceStore, do not use the domainController
               (response: any) => (localData: any) => HttpResponse.json(localData),
               undefined /* response object provided by Express Rest interface, which is not needed by MSW, that uses class HttpResponse*/,
               persistenceStoreControllerManager,
               localCache,
-              h.method /* method */,
-              this.rootApiUrl + h.url,
+              restService.method /* method */,
+              this.rootApiUrl + restService.url,
               body, // body
               params
             );

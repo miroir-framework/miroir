@@ -221,7 +221,7 @@ export async function restActionHandler(
     case "modelAction": 
     case "instanceAction": {
       const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
-      const domainController = persistenceStoreControllerManager.getDomainController();
+      const domainController = persistenceStoreControllerManager.getServerDomainController();
       if (!localPersistenceStoreController) {
         throw new Error("could not find controller for deployment: " + action.deploymentUuid);
       }
@@ -280,7 +280,7 @@ export async function queryHandler(
   const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
     deploymentUuid
   );
-  const domainController = persistenceStoreControllerManager.getDomainController();
+  const domainController = persistenceStoreControllerManager.getServerDomainController();
   if (!localPersistenceStoreController) {
     throw new Error("RestServer could not find controller for deployment:" + deploymentUuid);
   }

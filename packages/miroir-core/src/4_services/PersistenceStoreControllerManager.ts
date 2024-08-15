@@ -20,7 +20,7 @@ import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { MiroirLoggerFactory } from "./Logger.js";
 import { cleanLevel } from "./constants.js";
-import { PersistenceInterface } from "../0_interfaces/4-services/PersistenceInterface.js";
+import { PersistenceStoreLocalOrRemoteInterface } from "../0_interfaces/4-services/PersistenceInterface.js";
 import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface.js";
 import { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { DomainController } from "../3_controllers/DomainController.js";
@@ -38,7 +38,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 // ################################################################################################
 export class PersistenceStoreControllerManager implements PersistenceStoreControllerManagerInterface {
   private persistenceStoreControllers: { [deploymentUuid: Uuid]: PersistenceStoreControllerInterface } = {};
-  private persistenceStore: PersistenceInterface | undefined; // receives instance of PersistenceReduxSaga
+  private persistenceStoreLocalOrRemote: PersistenceStoreLocalOrRemoteInterface | undefined; // receives instance of PersistenceReduxSaga
   private localCache: LocalCacheInterface | undefined;
   private domainController: DomainController | undefined;
 
@@ -49,16 +49,20 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
   ) {}
 
   // ################################################################################################
-  setPersistenceStore(persistenceStore: PersistenceInterface)  {
-    this.persistenceStore = persistenceStore;
+  /**
+   * this is like prop drilling, this is not directly used by this class, but by the created DomainController (this.domainController)
+   * @param persistenceStore 
+   */
+  setPersistenceStoreLocalOrRemote(persistenceStore: PersistenceStoreLocalOrRemoteInterface)  {
+    this.persistenceStoreLocalOrRemote = persistenceStore;
   }
 
   // ################################################################################################
-  getPersistenceStore(): PersistenceInterface {
-    if (this.persistenceStore) {
-      return this.persistenceStore;
+  getPersistenceStoreLocalOrRemote(): PersistenceStoreLocalOrRemoteInterface {
+    if (this.persistenceStoreLocalOrRemote) {
+      return this.persistenceStoreLocalOrRemote;
     } else {
-      throw new Error("PersistenceStoreControllerManager getPersistenceStore no persistenceStore yet!");
+      throw new Error("PersistenceStoreControllerManager getPersistenceStoreLocalOrRemote no persistenceStore yet!");
       
     }
   }
@@ -78,11 +82,34 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
   }
 
   // ################################################################################################
-  getDomainController(): DomainControllerInterface {
+  /**
+   * USED ONLY ON THE SERVER SIDE, INCLUDING EMULATED SIDE, FOR NOW.
+   * @returns 
+   */
+  getServerDomainController(): DomainControllerInterface {
     if (this.domainController) {
       return this.domainController;
     } else {
-      throw new Error("PersistenceStoreControllerManager getDomainController no domainController yet!");
+      if (!this.localCache || !this.persistenceStoreLocalOrRemote) {
+        throw new Error(
+          "PersistenceStoreControllerManager getLocalCache no localCache or persitenceStore yet! localCache=" +
+            this.localCache +
+            " persistenceStore=" +
+            this.persistenceStoreLocalOrRemote
+        );
+      }
+
+      // TODO: domainController instance is also created in index.tsx and test-utils.tsx (the overall setup sequence). Isn't it redundant?
+      // TODO: THIS IS OVERLOADED BY EACH CALL TO addPersistenceStoreController!
+      this.domainController = new DomainController(
+        "server", // we are on the server, use localCache for queries upon receiving "remoteLocalCacheRollback" action
+        new MiroirContext(),
+        this.localCache, // implements LocalCacheInterface
+        this.persistenceStoreLocalOrRemote, // implements PersistenceStoreLocalOrRemoteInterface, instance of PersistenceReduxSaga
+        new Endpoint(this.localCache)
+      );
+      return this.domainController;
+      // throw new Error("PersistenceStoreControllerManager getServerDomainController no domainController yet!");
     }
   }
 
@@ -98,25 +125,6 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
       const adminStoreFactory = this.adminStoreFactoryRegister.get(
         JSON.stringify({ storageType: config.admin.emulatedServerType })
       );
-
-      if (!this.localCache || !this.persistenceStore) {
-        throw new Error(
-          "PersistenceStoreControllerManager getLocalCache no localCache or persitenceStore yet! localCache=" +
-            this.localCache +
-            " persistenceStore=" +
-            this.persistenceStore
-        );
-      }
-
-      // TODO: domainController instance is also created in index.tsx and test-utils.tsx (the overall setup sequence). Isn't it redundant?
-      this.domainController = new DomainController(
-        true, // we are on the server, use localCache for queries upon receiving "remoteLocalCacheRollback" action
-        new MiroirContext(),
-        this.localCache, // implements LocalCacheInterface
-        this.persistenceStore, // implements PersistenceInterface, instance of PersistenceReduxSaga
-        new Endpoint(this.localCache)
-      );
-
 
       if (!adminStoreFactory) {
         log.info(

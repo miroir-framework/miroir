@@ -44,7 +44,7 @@ import {
   MiroirLoggerFactory,
   modelEndpointV1,
   persistenceEndpointVersionV1,
-  PersistenceInterface,
+  PersistenceStoreLocalOrRemoteInterface,
   queryEndpointVersionV1,
   storeManagementEndpoint,
   StoreOrBundleAction,
@@ -229,7 +229,6 @@ export const RootComponent = (props: RootComponentProps) => {
                 <span>
                   <button
                     onClick={async () => {
-                      const remoteStore: PersistenceInterface = domainController.getRemoteStore();
                       log.info(
                         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ OPENSTORE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
                       );
@@ -424,7 +423,7 @@ export const RootComponent = (props: RootComponentProps) => {
 
                   {/* <button
                     onClick={async () => {
-                      const remoteStore:PersistenceInterface = domainController.getRemoteStore();
+                      const remoteStore:PersistenceStoreLocalOrRemoteInterface = domainController.getRemoteStore();
                       if (!miroirConfig) {
                         throw new Error("no miroirConfig given, it has to be given on the command line starting the server!");
                       }
@@ -489,7 +488,7 @@ export const RootComponent = (props: RootComponentProps) => {
                   {/* <button
                     onClick={async () => {
                       log.info("creating bundle")
-                      const remoteStore:PersistenceInterface = domainController.getRemoteStore();
+                      const remoteStore:PersistenceStoreLocalOrRemoteInterface = domainController.getRemoteStore();
                       await remoteStore.handlePersistenceAction({
                         actionType: "bundleAction",
                         actionName: "createBundle",

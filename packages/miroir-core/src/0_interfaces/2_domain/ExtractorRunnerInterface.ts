@@ -95,7 +95,8 @@ export type ExtractorRunnerMap<StateType> = AsyncExtractorRunnerMap<StateType> |
 
 // ################################################################################################
 export interface PersistenceStoreExtractorRunner {
-  handleQuery(section: ApplicationSection, query: QueryAction): Promise<ActionReturnType>;
+  // handleQuery(section: ApplicationSection, query: QueryAction): Promise<ActionReturnType>;
+  handleQuery(query: QueryAction): Promise<ActionReturnType>;
   extractEntityInstance:AsyncExtractorRunner<
     ExtractorForSingleObject, any, DomainElementEntityInstanceOrFailed
   >;

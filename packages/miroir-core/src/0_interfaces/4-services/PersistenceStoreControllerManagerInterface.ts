@@ -2,7 +2,7 @@ import { Uuid } from "../1_core/EntityDefinition.js";
 import { ActionReturnType, StoreUnitConfiguration } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainControllerInterface } from "../2_domain/DomainControllerInterface.js";
 import { LocalCacheInterface } from "./LocalCacheInterface.js";
-import { PersistenceInterface } from "./PersistenceInterface.js";
+import { PersistenceStoreLocalOrRemoteInterface } from "./PersistenceInterface.js";
 import { InitApplicationParameters, PersistenceStoreControllerInterface } from "./PersistenceStoreControllerInterface.js";
 
 
@@ -13,9 +13,9 @@ export interface PersistenceStoreControllerManagerInterface {
   ): Promise<void>;
 
   // getReduxStore(): LocalCacheInterface;
-  getPersistenceStore(): PersistenceInterface;
+  getPersistenceStoreLocalOrRemote(): PersistenceStoreLocalOrRemoteInterface;
   getLocalCache(): LocalCacheInterface;
-  getDomainController(): DomainControllerInterface;
+  getServerDomainController(): DomainControllerInterface;
 
   getPersistenceStoreControllers(): string[];
   getPersistenceStoreController(deploymentUuid: Uuid): PersistenceStoreControllerInterface | undefined;

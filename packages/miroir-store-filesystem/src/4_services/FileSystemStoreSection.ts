@@ -17,8 +17,8 @@ import {
 
 
 import { packageName } from "../constants.js";
-import { cleanLevel } from "./constants";
-import { FileSystemStore } from "./FileSystemStore";
+import { cleanLevel } from "./constants.js";
+import { FileSystemStore } from "./FileSystemStore.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"FileSystemStoreSection");
 let log:LoggerInterface = console as any as LoggerInterface;

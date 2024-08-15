@@ -34,7 +34,7 @@
   },
   "scripts": {
     "watch": "lerna watch --scope='miroir-store-filesystem' --include-dependencies -- lerna run build --scope='miroir-store-filesystem'",
-    "build-tsup": "tsup --target=node20 --format esm src/index.ts",
+    "build-tsup": "tsup",
     "build": "rollup --config --logLevel info",
     "build4": "npm run build",
     "build5": "npm run build",
