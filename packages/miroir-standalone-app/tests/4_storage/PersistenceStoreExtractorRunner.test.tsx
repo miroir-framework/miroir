@@ -393,74 +393,89 @@ describe.sequential("PersistenceStoreExtractorRunner.test", () => {
     );
   });
   
-  // // // ################################################################################################
-  // // it("get Filtered Entity Entity from Library", async () => {
-  // //   await chainVitestSteps(
-  // //     "PersistenceStoreExtractorRunner_selectEntityInstance_selectObjectByDirectReference",
-  // //     {},
-  // //     async () => {
-  // //       // const extractorRunner = new IndexedDbExtractorRunner(localMiroirPersistenceStoreController);
-  // //       const extractorRunner = getExtractorRunner(miroirConfig, localMiroirPersistenceStoreController);
-  // //       const queryResult = await extractorRunner.extractEntityInstance(undefined, {
-  // //         extractorRunnerMap: {
-  // //           extractEntityInstance: undefined as any,
-  // //           extractEntityInstanceUuidIndex: undefined as any,
-  // //           extractEntityInstanceUuidIndexWithObjectListExtractor: undefined as any,
-  // //           extractWithManyExtractors: undefined as any,
-  // //           extractWithExtractor: undefined as any,
-  // //         },
-  // //         extractor: {
-  // //           queryType: "domainModelSingleExtractor",
-  // //           pageParams: { elementType: "object", elementValue: {} },
-  // //           queryParams: { elementType: "object", elementValue: {} },
-  // //           contextResults: { elementType: "object", elementValue: {} },
-  // //           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-  // //           select: {
-  // //             queryType: "selectObjectByDirectReference",
-  // //             applicationSection: "model",
-  // //             parentName: "Entity",
-  // //             parentUuid: {
-  // //               queryTemplateType: "constantUuid",
-  // //               constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-  // //             },
-  // //             instanceUuid: {
-  // //               queryTemplateType: "constantUuid",
-  // //               constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-  // //             },
-  // //           },
-  // //         },
-  // //       });
-  // //       console.log("queryResult", JSON.stringify(queryResult, null, 2));
-  // //       const result: ActionReturnType =
-  // //         queryResult.elementType == "instance"
-  // //           ? {
-  // //               status: "ok",
-  // //               returnedDomainElement: queryResult,
-  // //             }
-  // //           : {
-  // //               status: "error",
-  // //               error: {
-  // //                 errorType: "FailedToGetInstances",
-  // //                 errorMessage: JSON.stringify(queryResult, undefined, 2),
-  // //               },
-  // //             };
-  // //       return result;
-  // //     },
-  // //     // (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
-  // //     undefined, // expected result transformation
-  // //     undefined, // name to give to result
-  // //     "instance",
-  // //     {
-  // //       uuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-  // //       parentName: "Entity",
-  // //       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-  // //       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
-  // //       name: "Entity",
-  // //       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-  // //       conceptLevel: "MetaModel",
-  // //       description: "The Metaclass for entities.",
-  // //     }
-  // //   );
-  // // });
+  // ################################################################################################
+  it("get Filtered Entity Entity from Library", async () => {
+    await chainVitestSteps(
+      "PersistenceStoreExtractorRunner_selectObjectListByEntity_filtered",
+      {},
+      async () => {
+        const applicationSection:ApplicationSection = "model";
+        const queryResult = await localMiroirPersistenceStoreController.handleQuery(
+          applicationSection,
+          {
+            actionType: "queryAction",
+            actionName: "runQuery",
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+            query: {
+              queryType: "extractorForRecordOfExtractors",
+              pageParams: { elementType: "object", elementValue: {} },
+              queryParams: { elementType: "object", elementValue: {} },
+              contextResults: { elementType: "object", elementValue: {} },
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+              extractors: {
+                entities: {
+                  queryType: "extractObjectListByEntity",
+                  applicationSection: applicationSection,
+                  parentName: "Entity",
+                  parentUuid: {
+                    queryTemplateType: "constantUuid",
+                    constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  },
+                  filter: {
+                    attributeName: "name",
+                    value: {
+                      queryTemplateType: "constantString",
+                      definition: "or",
+                    },
+                  },
+                },
+              },
+            },
+          }
+        );
+        console.log("queryResult", JSON.stringify(queryResult, null, 2));
+        // const result: ActionReturnType =
+        //   queryResult.elementType == "instance"
+        //     ? {
+        //         status: "ok",
+        //         returnedDomainElement: queryResult,
+        //       }
+        //     : {
+        //         status: "error",
+        //         error: {
+        //           errorType: "FailedToGetInstances",
+        //           errorMessage: JSON.stringify(queryResult, undefined, 2),
+        //         },
+        //       };
+        return queryResult;
+      },
+      (a) => ignorePostgresExtraAttributesOnRecord((a as any).returnedDomainElement.elementValue.entities.elementValue),
+      undefined, // name to give to result
+      "object",
+      {
+        "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916": {
+          "uuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+          "parentName": "Entity",
+          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+          "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+          "name": "Report",
+          "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+          "conceptLevel": "Model",
+          "description": "Report, allowing to display model instances"
+        },
+        "7990c0c9-86c3-40a1-a121-036c91b55ed7": {
+          "uuid": "7990c0c9-86c3-40a1-a121-036c91b55ed7",
+          "parentName": "Entity",
+          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+          "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+          "name": "StoreBasedConfiguration",
+          "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+          "conceptLevel": "Model",
+          "description": "A configuration of storage-related aspects of a Model."
+        },
+      }
+    );
+  });
   
 });
