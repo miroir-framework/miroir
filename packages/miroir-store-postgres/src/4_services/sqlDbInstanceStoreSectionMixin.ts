@@ -15,7 +15,7 @@ import { MixableSqlDbStoreSection, SqlDbStoreSection } from "./SqlDbStoreSection
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
-import { Error } from "sequelize";
+import { Error, Op } from "sequelize";
 import { SqlDbExtractRunner } from "./SqlDbExtractorRunner.js";
 
 const consoleLog: any = console.log.bind(console, packageName, cleanLevel, "SqlDbInstanceStoreSectionMixin");
@@ -42,7 +42,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       ...args: any[]
     ) {
       super(...args);
-      this.extractorRunner = new SqlDbExtractRunner(this);
+      this.extractorRunner = new SqlDbExtractRunner(this as any /*SqlDbExtractRunner takes a concrete implementation*/);
     }
 
     // #############################################################################################
@@ -82,6 +82,56 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         );
         return Promise.resolve({ status: "error", error: { errorType: "FailedToGetInstance" } });
       }
+    }
+
+    // ##############################################################################################
+    async getInstancesWithFilter(
+      parentUuid: string,
+      filter: {
+        attribute: string;
+        value: string;
+      }
+    ): Promise<ActionEntityInstanceCollectionReturnType> {
+      let rawResult: any[] = [];
+      let cleanResult: EntityInstance[] = [];
+      if (
+        this.sqlSchemaTableAccess &&
+        this.sqlSchemaTableAccess[parentUuid] &&
+        this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel
+      ) {
+        log.info("getInstancesWithFilter calling this.sqlEntities findall", parentUuid);
+        try {
+          const sequelizeModel = this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel;
+          rawResult = (await sequelizeModel?.findAll(
+            { where: { [filter.attribute]: { [Op.like]: "%" + filter.value + "%"} } }
+          )) as unknown as EntityInstance[];
+          cleanResult = rawResult.map((i) => i["dataValues"]);
+          log.info("getInstancesWithFilter result", cleanResult);
+        } catch (e) {
+          log.warn(this.logHeader, "getInstancesWithFilter", "failed to fetch instances of entityUuid", parentUuid);
+          return {
+            status: "error",
+            error: {
+              errorType: "FailedToGetInstances",
+              errorMessage: `could not get instances for entity ${parentUuid}`,
+            },
+          };
+        }
+      } else {
+        log.warn(this.logHeader, "getInstancesWithFilter", "could not find entity in database: entityUuid", parentUuid);
+        return {
+          status: "error",
+          error: { errorType: "FailedToGetInstances", errorMessage: `could not find entity ${parentUuid}` },
+        };
+      }
+      // TODO: CORRECT APPLICATION SECTION
+      return Promise.resolve({
+        status: "ok",
+        returnedDomainElement: {
+          elementType: "entityInstanceCollection",
+          elementValue: { parentUuid, applicationSection: this.applicationSection, instances: cleanResult },
+        },
+      });
     }
 
     // ##############################################################################################

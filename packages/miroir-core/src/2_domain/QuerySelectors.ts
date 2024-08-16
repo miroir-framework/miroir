@@ -169,7 +169,7 @@ const applyExtractorForSingleObjectListToSelectedInstancesUuidIndex = (
         ? new RegExp((localQuery.filter.value as any).definition, "i") // TODO: check for correct type
         : undefined;
       log.info(
-        "extractEntityInstanceUuidIndexWithObjectListExtractor extractObjectListByEntity filter",
+        "applyExtractorForSingleObjectListToSelectedInstancesUuidIndex extractObjectListByEntity filter",
         JSON.stringify(localQuery.filter)
       );
       const result:DomainElementInstanceUuidIndexOrFailed = localQuery.filter
@@ -181,7 +181,7 @@ const applyExtractorForSingleObjectListToSelectedInstancesUuidIndex = (
                   (i as any)[1][localQuery.filter?.attributeName??""]
                 )
                 log.info(
-                  "extractEntityInstanceUuidIndexWithObjectListExtractor extractObjectListByEntity filter",
+                  "applyExtractorForSingleObjectListToSelectedInstancesUuidIndex extractObjectListByEntity filter",
                   JSON.stringify(i[1]),
                   "matchResult",
                   matchResult
@@ -208,8 +208,8 @@ const applyExtractorForSingleObjectListToSelectedInstancesUuidIndex = (
     case "selectObjectListByRelation": {
       const relationQuery: QuerySelectObjectListByRelation = extractor.select;
 
-      // log.info("extractEntityInstanceUuidIndexWithObjectListExtractor selectObjectListByRelation", JSON.stringify(selectedInstances))
-      // log.info("extractEntityInstanceUuidIndexWithObjectListExtractor selectObjectListByRelation", selectedInstances)
+      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndex selectObjectListByRelation", JSON.stringify(selectedInstances))
+      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndex selectObjectListByRelation", selectedInstances)
       return { "elementType": "instanceUuidIndex", "elementValue": Object.fromEntries(
         Object.entries(selectedInstancesUuidIndex.elementValue ?? {}).filter(
           (i: [string, EntityInstance]) => {
@@ -240,7 +240,7 @@ const applyExtractorForSingleObjectListToSelectedInstancesUuidIndex = (
       // const relationQuery: QuerySelectObjectListByManyToManyRelation = selectorParams.extractor.select;
       const relationQuery: QuerySelectObjectListByManyToManyRelation = extractor.select;
 
-      // log.info("extractEntityInstanceUuidIndexWithObjectListExtractor selectObjectListByManyToManyRelation", selectedInstances)
+      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndex selectObjectListByManyToManyRelation", selectedInstances)
       let otherList: DomainElement | undefined = undefined
       if (
         relationQuery.objectListReference?.queryTemplateType == "queryContextReference" &&
@@ -252,11 +252,11 @@ const applyExtractorForSingleObjectListToSelectedInstancesUuidIndex = (
           relationQuery.objectListReference.referenceName
         ]) ?? {elementType: "void", elementValue: undefined });
         
-        // log.info("extractEntityInstanceUuidIndexWithObjectListExtractor selectObjectListByManyToManyRelation found otherList", otherList);
+        // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndex selectObjectListByManyToManyRelation found otherList", otherList);
         
       } else if (relationQuery.objectListReference?.queryTemplateType == "constantUuid") {
         throw new Error(
-          "extractEntityInstanceUuidIndexWithObjectListExtractor selectObjectListByManyToManyRelation provided constant for objectListReference. This cannot be a constant, it must be a reference to a List of Objects."
+          "applyExtractorForSingleObjectListToSelectedInstancesUuidIndex selectObjectListByManyToManyRelation provided constant for objectListReference. This cannot be a constant, it must be a reference to a List of Objects."
         );
       }
 
@@ -277,7 +277,7 @@ const applyExtractorForSingleObjectListToSelectedInstancesUuidIndex = (
                       (v: any) => v[otherListAttribute] == (selectedInstancesEntry[1] as any)[rootListAttribute]
                     ) >= 0;
                   // log.info(
-                  //   "extractEntityInstanceUuidIndexWithObjectListExtractor selectObjectListByManyToManyRelation search otherList for attribute",
+                  //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndex selectObjectListByManyToManyRelation search otherList for attribute",
                   //   otherListAttribute,
                   //   "on object",
                   //   selectedInstancesEntry[1],
@@ -300,7 +300,7 @@ const applyExtractorForSingleObjectListToSelectedInstancesUuidIndex = (
                 case "array":
                 default: {
                   throw new Error(
-                    "extractEntityInstanceUuidIndexWithObjectListExtractor selectObjectListByManyToManyRelation can not use objectListReference, selectedInstances elementType=" +
+                    "applyExtractorForSingleObjectListToSelectedInstancesUuidIndex selectObjectListByManyToManyRelation can not use objectListReference, selectedInstances elementType=" +
                     selectedInstancesUuidIndex.elementType + " other list elementType" + localOtherList.elementType
                   );
                   break;
@@ -311,14 +311,14 @@ const applyExtractorForSingleObjectListToSelectedInstancesUuidIndex = (
         )} as DomainElementInstanceUuidIndex;
       } else {
         throw new Error(
-          "extractEntityInstanceUuidIndexWithObjectListExtractor selectObjectListByManyToManyRelation could not find list for objectListReference, selectedInstances elementType=" +
+          "applyExtractorForSingleObjectListToSelectedInstancesUuidIndex selectObjectListByManyToManyRelation could not find list for objectListReference, selectedInstances elementType=" +
             selectedInstancesUuidIndex.elementType
         );
       }
     }
     default: {
       throw new Error(
-        "extractEntityInstanceUuidIndexWithObjectListExtractor could not handle query, selectorParams=" +
+        "applyExtractorForSingleObjectListToSelectedInstancesUuidIndex could not handle query, selectorParams=" +
           JSON.stringify(extractor.select, undefined, 2)
       );
       break;

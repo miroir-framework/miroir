@@ -1,6 +1,9 @@
 import { getLoggerName, LoggerInterface, MiroirLoggerFactory, PersistenceStoreAdminSectionInterface, PersistenceStoreModelSectionInterface, PersistenceStoreDataSectionInterface, ActionReturnType, ApplicationSection, QueryAction, SyncExtractorRunner, SyncExtractorRunnerParams, DomainElement, DomainElementInstanceUuidIndexOrFailed, DomainState, ExtractorForSingleObjectList, SyncExtractorRunnerMap, ExtractorRunnerMapForJzodSchema, extractWithManyExtractorsFromDomainState, selectEntityInstanceFromObjectQueryAndDomainState, exractEntityInstanceListFromListQueryAndDomainState, selectEntityInstanceUuidIndexFromDomainState, selectEntityJzodSchemaFromDomainStateNew, selectFetchQueryJzodSchemaFromDomainStateNew, selectJzodSchemaByDomainModelQueryFromDomainStateNew, selectJzodSchemaBySingleSelectQueryFromDomainStateNew, DomainModelExtractor, AsyncExtractorRunner, resolveContextReference, ActionEntityInstanceCollectionReturnType, PersistenceStoreControllerInterface, DomainElementEntityInstanceOrFailed, ExtractorForSingleObject, QuerySelectObject, AsyncExtractorRunnerMap, extractWithExtractor, AsyncExtractorRunnerParams, asyncExtractEntityInstanceUuidIndexWithObjectListExtractor, asyncExtractWithManyExtractors, asyncExtractWithExtractor, PersistenceStoreInstanceSectionAbstractInterface } from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
+import { SqlDbDataStoreSection } from "./SqlDbDataStoreSection.js";
+import { SqlDbModelStoreSection } from "./SqlDbModelStoreSection.js";
+import { MixedSqlDbInstanceStoreSection } from "./sqlDbInstanceStoreSectionMixin.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"PostgresExtractorRunner");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -12,46 +15,117 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 
 export class SqlDbExtractRunner {
   private logHeader: string;
-  private selectorMap: AsyncExtractorRunnerMap<any>;
+  private extractorRunnerMap: AsyncExtractorRunnerMap<any>;
 
   constructor(
     // private persistenceStoreController: PersistenceStoreControllerInterface
-    private persistenceStoreController: PersistenceStoreInstanceSectionAbstractInterface
+    // private persistenceStoreController: PersistenceStoreInstanceSectionAbstractInterface
+    private persistenceStoreController: SqlDbDataStoreSection | SqlDbModelStoreSection /* concrete types for MixedSqlDbInstanceStoreSection */
+    // private persistenceStoreController: typeof MixedSqlDbInstanceStoreSection
   ){
     this.logHeader = 'PersistenceStoreController '+ persistenceStoreController.getStoreName();
-    this.selectorMap = {
+    this.extractorRunnerMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex,
       extractEntityInstance: this.extractEntityInstance,
-      extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+      // extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+      extractEntityInstanceUuidIndexWithObjectListExtractor: this.asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor,
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
     };
 
   }
 
+  // ################################################################################################
+/**
+ * returns an Entity Instance List, from a ListQuery
+ * @param deploymentEntityState 
+ * @param selectorParams 
+ * @returns 
+ */
+  private asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor
+= <StateType>(
+  state: StateType,
+  selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList, StateType>
+): Promise<DomainElementInstanceUuidIndexOrFailed> => {
+  // (
+  //   state: any,
+  //   selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList, any>
+  // ): Promise<DomainElementInstanceUuidIndexOrFailed> {
+  let result: Promise<DomainElementInstanceUuidIndexOrFailed>;
+  switch (selectorParams.extractor.select.queryType) {
+    case "extractObjectListByEntity": {
+      return this.extractEntityInstanceUuidIndexWithFilter(state, selectorParams)
+    }
+    case "selectObjectListByRelation":
+    case "selectObjectListByManyToManyRelation": {
+      return this.extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractor(state, {
+        extractorRunnerMap: this.extractorRunnerMap,
+        extractor: {
+          queryType: "domainModelSingleExtractor",
+          deploymentUuid: selectorParams.extractor.deploymentUuid,
+          contextResults: selectorParams.extractor.contextResults,
+          pageParams: selectorParams.extractor.pageParams,
+          queryParams: selectorParams.extractor.queryParams,
+          select: selectorParams.extractor.select.applicationSection
+          ? selectorParams.extractor.select
+          : {
+              ...selectorParams.extractor.select,
+              applicationSection: selectorParams.extractor.pageParams.elementValue.applicationSection.elementValue as ApplicationSection,
+            },
+        },
+      });
+      break;
+    }
+    default: {
+      return Promise.resolve({
+        elementType: "failure",
+        elementValue: {
+          queryFailure: "IncorrectParameters",
+          queryParameters: JSON.stringify(selectorParams),
+        },
+      });
+      break;
+    }
+  }
+  // const result: Promise<DomainElementInstanceUuidIndexOrFailed> =
+  //   (selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap).extractEntityInstanceUuidIndex(deploymentEntityState, selectorParams)
+  //   .then((selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed) => {
+  //     log.info(
+  //       "extractEntityInstanceUuidIndexWithObjectListExtractor found selectedInstances", selectedInstancesUuidIndex
+  //     );
+
+  //     return applyExtractorForSingleObjectListToSelectedInstancesUuidIndex(
+  //       selectedInstancesUuidIndex,
+  //       selectorParams.extractor,
+  //     );
+  //   });
+  // ;
+
+  // return result;
+};
+
+  // ##############################################################################################
   async handleQuery(queryAction: QueryAction): Promise<ActionReturnType> {
     log.info(this.logHeader, "handleQuery", "queryAction", JSON.stringify(queryAction, null, 2));
     let queryResult: DomainElement;
     switch (queryAction.query.queryType) {
       case "domainModelSingleExtractor": {
-        queryResult = await this.selectorMap.extractWithExtractor(
+        queryResult = await this.extractorRunnerMap.extractWithExtractor(
           undefined /* domainState*/,
-          // getSelectorParams(queryAction.query)
           {
             extractor: queryAction.query,
-            extractorRunnerMap: this.selectorMap,
+            extractorRunnerMap: this.extractorRunnerMap,
           }
         );
         break;
       }
       case "extractorForRecordOfExtractors": {
-        queryResult = await this.selectorMap.extractWithManyExtractors(
+        queryResult = await this.extractorRunnerMap.extractWithManyExtractors(
           undefined /* domainState*/,
-          // getSelectorParams(queryAction.query)
           {
             extractor: queryAction.query,
-            extractorRunnerMap: this.selectorMap,
+            extractorRunnerMap: this.extractorRunnerMap,
           }
         );
         break;
@@ -76,79 +150,7 @@ export class SqlDbExtractRunner {
     }
   }
 
-  // /**
-  //  * Needed because IndexedDb does not support joins, DomainState is extracted then selectors are applied
-  //  * 
-  //  * @param extractor 
-  //  * @returns 
-  //  */
-  // private async extractDomainStateForExtractor(
-  //   extractor: DomainModelExtractor,
-  // ): Promise<DomainState> {
-  //   switch (extractor.queryType) {
-  //     case "domainModelSingleExtractor": {
-  //       switch (extractor.select.queryType) {
-  //         case "extractObjectListByEntity": {
-  //           const entityUuid = extractor.select.parentUuid;
-  //           const entityInstanceUuidIndex = await this.dataStoreSection.getInstances(entityUuid);
-  //           return {
-  //             [extractor.deploymentUuid]: {
-  //               data: {
-  //                 [entityUuid]: entityInstanceUuidIndex,
-  //               },
-  //               model: {},
-  //             },
-  //           };
-  //           break;
-  //         }
-  //         case "selectObjectByRelation":
-  //         case "selectObjectByDirectReference":
-  //         case "selectObjectListByRelation":
-  //         case "selectObjectListByManyToManyRelation":
-  //         case "queryCombiner":
-  //         case "literal":
-  //         case "queryContextReference":
-  //         case "wrapperReturningObject":
-  //         case "wrapperReturningList":
-            
-  //           break;
-        
-  //         default:
-  //           break;
-  //       }
-  //       return {
-  //         [""]: {
-  //           data: {},
-  //           model: {},
-  //         },
-  //       };
-  //       break;
-  //     }
-  //     case "extractorForRecordOfExtractors":
-  //     case "getEntityDefinition":
-  //     case "getFetchParamsJzodSchema":
-  //     case "getSingleSelectQueryJzodSchema": {
-  //       return {
-  //         [""]: {
-  //           data: {},
-  //           model: {},
-  //         },
-  //       };
-  //       break;
-  //     }
-  //     case "localCacheEntityInstancesExtractor":
-  //     default: {
-  //       return {
-  //         [""]: {
-  //           data: {},
-  //           model: {},
-  //         },
-  //       };
-  //       break;
-  //     }
-  //   }
-  // }
-
+  // ##############################################################################################
   public extractEntityInstance:AsyncExtractorRunner<
     ExtractorForSingleObject, any, DomainElementEntityInstanceOrFailed
   > = async (
@@ -347,8 +349,8 @@ export class SqlDbExtractRunner {
     }
   };
 
-  // ##############################################################################################
-  public extractEntityInstanceUuidIndex: AsyncExtractorRunner<
+    // ##############################################################################################
+    public extractEntityInstanceUuidIndex: AsyncExtractorRunner<
     ExtractorForSingleObjectList, any, DomainElementInstanceUuidIndexOrFailed
   > = async (
     domainState: any,
@@ -426,15 +428,138 @@ export class SqlDbExtractRunner {
     }
   };
 
+  // ##############################################################################################
+  public extractEntityInstanceUuidIndexWithFilter: AsyncExtractorRunner<
+    ExtractorForSingleObjectList, any, DomainElementInstanceUuidIndexOrFailed
+  > = async (
+    domainState: any,
+    extractorRunnerParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList, any>
+  ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
+    const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
+    const applicationSection = extractorRunnerParams.extractor.select.applicationSection??"data";
+
+    const entityUuid: DomainElement = resolveContextReference(
+      extractorRunnerParams.extractor.select.parentUuid,
+      extractorRunnerParams.extractor.queryParams,
+      extractorRunnerParams.extractor.contextResults
+    );
+
+    // log.info("selectEntityInstanceUuidIndexFromDomainState params", selectorParams, deploymentUuid, applicationSection, entityUuid);
+    // log.info("selectEntityInstanceUuidIndexFromDomainState domainState", domainState);
+
+    if (!deploymentUuid || !applicationSection || !entityUuid) {
+      return { // new object
+        elementType: "failure",
+        elementValue: {
+          queryFailure: "IncorrectParameters",
+          queryParameters: JSON.stringify(extractorRunnerParams),
+        },
+      };
+      // resolving by fetchDataReference, fetchDataReferenceAttribute
+    }
+
+    switch (entityUuid.elementType) {
+      case "string":
+      case "instanceUuid": {
+        let entityInstanceCollection: ActionEntityInstanceCollectionReturnType;
+        if (extractorRunnerParams.extractor.select.queryType == "extractObjectListByEntity" && extractorRunnerParams.extractor.select.filter) {
+          // TODO: resolve filter value
+          // const resolvedFilterValue: DomainElement = resolveContextReference(
+          //   extractorRunnerParams.extractor.select.parentUuid,
+          //   extractorRunnerParams.extractor.queryParams,
+          //   extractorRunnerParams.extractor.contextResults
+          // );
+          // log.info("selectEntityInstanceUuidIndexFromDomainState resolvedFilterValue", resolvedFilterValue);
+          // if (resolvedFilterValue.elementType != "string") {
+          //   return {
+          //     elementType: "failure",
+          //     elementValue: {
+          //       queryFailure: "IncorrectParameters",
+          //       queryParameters: JSON.stringify(extractorRunnerParams),
+          //     },
+          //   };
+          // }
+          if (extractorRunnerParams.extractor.select.filter.value.queryTemplateType != "constantString") {
+            return {
+              elementType: "failure",
+              elementValue: {
+                queryFailure: "IncorrectParameters",
+                queryParameters: JSON.stringify(extractorRunnerParams),
+              },
+            };
+          }
+          entityInstanceCollection = await this.persistenceStoreController.getInstancesWithFilter(
+            // applicationSection,
+            entityUuid.elementValue,
+            {
+              attribute: extractorRunnerParams.extractor.select.filter.attributeName,
+              value: extractorRunnerParams.extractor.select.filter.value.definition,
+            }
+          );
+          // if (entityInstanceCollection.status == "error") {
+          //   return {
+          //     elementType: "failure",
+          //     elementValue: {
+          //       queryFailure: "EntityNotFound",
+          //       deploymentUuid,
+          //       applicationSection,
+          //       entityUuid: entityUuid.elementValue,
+          //     },
+          //   };
+          // }
+          // const entityInstanceUuidIndex = Object.fromEntries(entityInstanceCollection.returnedDomainElement.elementValue.instances.map(i => [i.uuid, i]));
+          // return { elementType: "instanceUuidIndex", elementValue: entityInstanceUuidIndex };
+        } else {
+          entityInstanceCollection = await this.persistenceStoreController.getInstances(
+            // applicationSection,
+            entityUuid.elementValue
+          );
+        }
+
+        if (entityInstanceCollection.status == "error") {
+          // return data;
+          return {
+            elementType: "failure",
+            elementValue: {
+              queryFailure: "EntityNotFound", // TODO: find corresponding queryFailure from data.status
+              deploymentUuid,
+              applicationSection,
+              entityUuid: entityUuid.elementValue,
+            },
+          };
+          
+        }
+        const entityInstanceUuidIndex = Object.fromEntries(entityInstanceCollection.returnedDomainElement.elementValue.instances.map(i => [i.uuid, i]));
+        return { elementType: "instanceUuidIndex", elementValue: entityInstanceUuidIndex };
+        break;
+      }
+      case "object":
+      case "instance":
+      case "instanceUuidIndex":
+      case "instanceUuidIndexUuidIndex":
+      case "array": {
+        return {
+          elementType: "failure",
+          elementValue: {
+            queryFailure: "IncorrectParameters",
+            queryReference: JSON.stringify(extractorRunnerParams.extractor.select.parentUuid),
+          },
+        };
+      }
+      case "failure": {
+        return entityUuid;
+        break;
+      }
+      default: {
+        throw new Error("selectEntityInstanceUuidIndexFromDomainState could not handle reference entityUuid=" + entityUuid);
+        break;
+      }
+    }
+  };
+
+  // ##############################################################################################
   public getSelectorMap(): AsyncExtractorRunnerMap<any> {
-    return {
-      extractorType: "async",
-      extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex,
-      extractEntityInstance: this.extractEntityInstance,
-      extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
-      extractWithManyExtractors: asyncExtractWithManyExtractors,
-      extractWithExtractor: asyncExtractWithExtractor,
-    };
+    return this.extractorRunnerMap;
   }
   
 
