@@ -48,7 +48,7 @@ import {
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel, "IndexedDbExtractorRunner");
+const loggerName: string = getLoggerName(packageName, cleanLevel, "FilesystemExtractorRunner");
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;

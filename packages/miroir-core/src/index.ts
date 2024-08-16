@@ -486,6 +486,9 @@ export {
   extractEntityJzodSchemaFromDeploymentEntityState,
 } from './2_domain/DeploymentEntityStateQuerySelectors.js';
 export {
+  ExtractorRunnerInMemory
+} from './2_domain/ExtractorRunnerInMemory.js';
+export {
   cleanupResultsFromQuery,
   resolveContextReference,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,

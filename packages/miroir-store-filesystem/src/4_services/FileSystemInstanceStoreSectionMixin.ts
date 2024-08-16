@@ -14,12 +14,13 @@ import {
   ActionVoidReturnType,
   ACTION_OK,
   QueryAction,
+  ExtractorRunnerInMemory,
 } from "miroir-core";
 
 import { packageName } from "../constants.js";
 import { FileSystemStoreSection, MixableFileSystemDbStore } from "./FileSystemStoreSection.js";
 import { cleanLevel } from "./constants.js";
-import { FileSystemExtractorRunner } from "./FileSystemExtractorRunner.js";
+// import { FileSystemExtractorRunner } from "./FileSystemExtractorRunner.js";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"FileSystemInstanceStoreSectionMixin");
@@ -40,7 +41,7 @@ export const MixedFileSystemInstanceStoreSection = FileSystemInstanceStoreSectio
 
 export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSystemDbStore>(Base: TBase) {
   return class MixedIndexedDbInstanceStoreSection extends Base implements PersistenceStoreInstanceSectionAbstractInterface {
-    public extractorRunner: FileSystemExtractorRunner;
+    public extractorRunner: ExtractorRunnerInMemory;
 
     // ##############################################################################################
     constructor(
@@ -52,7 +53,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
       ...args: any[]
     ) {
       super(...args);
-      this.extractorRunner = new FileSystemExtractorRunner(this);
+      this.extractorRunner = new ExtractorRunnerInMemory(this);
     }
 
     // #############################################################################################

@@ -1,66 +1,83 @@
+// import {
+//   ActionEntityInstanceCollectionReturnType,
+//   ActionReturnType,
+//   ApplicationSection,
+//   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+//   AsyncExtractorRunner,
+//   AsyncExtractorRunnerMap,
+//   AsyncExtractorRunnerParams,
+//   asyncExtractWithExtractor,
+//   asyncExtractWithManyExtractors,
+//   DomainElement,
+//   DomainElementEntityInstanceOrFailed,
+//   DomainElementInstanceUuidIndexOrFailed,
+//   DomainState,
+//   ExtractorForSingleObject,
+//   ExtractorForSingleObjectList,
+//   ExtractorRunnerMapForJzodSchema,
+//   getLoggerName,
+//   LoggerInterface,
+//   MiroirLoggerFactory,
+//   PersistenceStoreExtractorRunner,
+//   PersistenceStoreInstanceSectionAbstractInterface,
+//   QueryAction,
+//   QuerySelectObject,
+//   resolveContextReference,
+//   selectEntityJzodSchemaFromDomainStateNew,
+//   selectFetchQueryJzodSchemaFromDomainStateNew,
+//   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
+//   selectJzodSchemaBySingleSelectQueryFromDomainStateNew
+// } from "miroir-core";
 import {
-  getLoggerName,
-  LoggerInterface,
-  MiroirLoggerFactory,
-  PersistenceStoreAdminSectionInterface,
-  PersistenceStoreModelSectionInterface,
-  PersistenceStoreDataSectionInterface,
-  ActionReturnType,
-  ApplicationSection,
   QueryAction,
-  SyncExtractorRunner,
-  SyncExtractorRunnerParams,
+  ActionReturnType,
   DomainElement,
-  DomainElementInstanceUuidIndexOrFailed,
-  DomainState,
+  ExtractorForSingleObject,
+  DomainElementEntityInstanceOrFailed,
+  QuerySelectObject,
+  ApplicationSection,
   ExtractorForSingleObjectList,
-  SyncExtractorRunnerMap,
+  DomainElementInstanceUuidIndexOrFailed,
+  ActionEntityInstanceCollectionReturnType,
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.js";
+import {
+  PersistenceStoreExtractorRunner,
+  AsyncExtractorRunnerMap,
+  AsyncExtractorRunner,
+  AsyncExtractorRunnerParams,
   ExtractorRunnerMapForJzodSchema,
-  extractWithManyExtractorsFromDomainState,
-  selectEntityInstanceFromObjectQueryAndDomainState,
-  exractEntityInstanceListFromListQueryAndDomainState,
-  selectEntityInstanceUuidIndexFromDomainState,
+} from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
+import { PersistenceStoreInstanceSectionAbstractInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
+import { MiroirLoggerFactory } from "../4_services/Logger.js";
+import { packageName } from "../constants.js";
+import { getLoggerName } from "../tools.js";
+import { cleanLevel } from "./constants.js";
+import {
+  selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectEntityJzodSchemaFromDomainStateNew,
   selectFetchQueryJzodSchemaFromDomainStateNew,
-  selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
-  DomainModelExtractor,
-  AsyncExtractorRunner,
-  resolveContextReference,
-  ActionEntityInstanceCollectionReturnType,
-  PersistenceStoreControllerInterface,
-  DomainElementEntityInstanceOrFailed,
-  ExtractorForSingleObject,
-  QuerySelectObject,
-  AsyncExtractorRunnerMap,
-  extractWithExtractor,
-  PersistenceStoreExtractorRunner,
-  getSelectorParams,
-  AsyncExtractorRunnerParams,
-  ExtractorForRecordOfExtractors,
+} from "./DomainStateQuerySelectors.js";
+import {
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   asyncExtractWithManyExtractors,
   asyncExtractWithExtractor,
-  PersistenceStoreInstanceSectionAbstractInterface,
-  PersistenceStoreAbstractInterface,
-  PersistenceStoreDataOrModelSectionInterface,
-} from "miroir-core";
-import { packageName } from "../constants.js";
-import { cleanLevel } from "./constants.js";
+  resolveContextReference,
+} from "./QuerySelectors.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel, "IndexedDbExtractorRunner");
+const loggerName: string = getLoggerName(packageName, cleanLevel, "ExtractorRunnerInMemory");
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;
 });
 
-export class IndexedDbExtractorRunner implements PersistenceStoreExtractorRunner {
+export class ExtractorRunnerInMemory implements PersistenceStoreExtractorRunner {
   private logHeader: string;
   private selectorMap: AsyncExtractorRunnerMap<any>;
 
   // ################################################################################################
-  // constructor(private persistenceStoreController: PersistenceStoreControllerInterface) {
-  // constructor(private persistenceStoreController: PersistenceStoreDataOrModelSectionInterface) {
   constructor(private persistenceStoreController: PersistenceStoreInstanceSectionAbstractInterface) {
     this.logHeader = "PersistenceStoreController " + persistenceStoreController.getStoreName();
     this.selectorMap = {
@@ -74,16 +91,9 @@ export class IndexedDbExtractorRunner implements PersistenceStoreExtractorRunner
   }
 
   // ################################################################################################
-  // async handleQuery(section: ApplicationSection, queryAction: QueryAction): Promise<ActionReturnType> {
   async handleQuery(queryAction: QueryAction): Promise<ActionReturnType> {
     // TODO: fix applicationSection!!!
     log.info(this.logHeader, "handleQuery", "queryAction", JSON.stringify(queryAction, null, 2));
-    // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
-    // log.info(this.logHeader,'this.modelStoreSection',this.modelStoreSection);
-
-    // const currentStore: PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface =
-    //   section == "data" ? this.dataStoreSection : this.modelStoreSection;
-    // const result: ActionReturnType = await currentStore.handleQuery(query);
     let queryResult: DomainElement;
     switch (queryAction.query.queryType) {
       case "domainModelSingleExtractor": {
@@ -132,7 +142,7 @@ export class IndexedDbExtractorRunner implements PersistenceStoreExtractorRunner
   }
 
   // /**
-  //  * Needed because IndexedDb does not support joins, DomainState is extracted then selectors are applied
+  //  * Needed because filesystem does not support joins, DomainState is extracted then selectors are applied
   //  *
   //  * @param extractor
   //  * @returns
@@ -466,7 +476,7 @@ export class IndexedDbExtractorRunner implements PersistenceStoreExtractorRunner
           };
         }
         const entityInstanceUuidIndex = Object.fromEntries(
-          entityInstanceCollection.returnedDomainElement.elementValue.instances.map((i) => [i.uuid, i])
+          entityInstanceCollection.returnedDomainElement.elementValue.instances.map((i:any) => [i.uuid, i])
         );
         return { elementType: "instanceUuidIndex", elementValue: entityInstanceUuidIndex };
         break;

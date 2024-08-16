@@ -1,44 +1,16 @@
-import { v4 as uuidv4 } from 'uuid';
-import { describe, expect } from 'vitest';
+import { describe } from 'vitest';
 
 // import { miroirFileSystemStoreSectionStartup } from "../dist/bundle";
 import {
-  ACTION_OK,
   ActionReturnType,
-  ActionVoidReturnType,
-  DomainElementType,
-  EntityDefinition,
-  EntityInstance,
-  JzodElement,
-  MetaEntity,
+  adminConfigurationDeploymentLibrary,
+  ApplicationSection,
+  defaultLevels,
+  DomainControllerInterface,
   MiroirConfigClient,
   MiroirLoggerFactory,
-  ModelAction,
-  ModelActionDropEntity,
-  ModelActionRenameEntity,
   PersistenceStoreControllerInterface,
-  PersistenceStoreControllerManagerInterface,
-  adminConfigurationDeploymentLibrary,
-  adminConfigurationDeploymentMiroir,
-  selfApplicationLibrary,
-  selfApplicationMiroir,
-  selfApplicationModelBranchLibraryMasterBranch,
-  selfApplicationModelBranchMiroirMasterBranch,
-  selfApplicationStoreBasedConfigurationLibrary,
-  selfApplicationStoreBasedConfigurationMiroir,
-  selfApplicationVersionInitialMiroirVersion,
-  selfApplicationVersionLibraryInitialVersion,
-  author1,
-  defaultLevels,
-  defaultMiroirMetaModel,
-  entityAuthor,
-  entityDefinitionAuthor,
-  entityEntity,
-  entityEntityDefinition,
-  entityReport,
-  PersistenceStoreExtractorRunner,
-  ApplicationSection,
-  DomainControllerInterface
+  PersistenceStoreControllerManagerInterface
 } from "miroir-core";
 
 
@@ -47,8 +19,7 @@ import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 import { setupServer } from "msw/node";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
-import { chainVitestSteps, ignorePostgresExtraAttributesOnList, ignorePostgresExtraAttributesOnObject, ignorePostgresExtraAttributesOnRecord, loadTestConfigFiles, miroirAfterEach, miroirBeforeAll, miroirBeforeEach } from "../utils/tests-utils.js";
-import { IndexedDbExtractorRunner } from 'miroir-store-indexedDb/src/index.js';
+import { chainVitestSteps, ignorePostgresExtraAttributesOnObject, ignorePostgresExtraAttributesOnRecord, loadTestConfigFiles, miroirAfterEach, miroirBeforeAll, miroirBeforeEach } from "../utils/tests-utils.js";
 
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
@@ -127,37 +98,37 @@ afterAll(
   }
 )
 
-// ################################################################################################
-function getExtractorRunner(
-  miroirConfig: MiroirConfigClient,
-  miroirStoreController: PersistenceStoreControllerInterface
-): PersistenceStoreExtractorRunner {
-  if (!miroirConfig.client.emulateServer) {
-    throw new Error(
-      "LocalPersistenceStoreController state do not make sense for real server configurations! Please use only 'emulateServer: true' configurations for this test."
-    );
-  } else {
-    switch (miroirConfig.client.deploymentStorageConfig.miroir.data.emulatedServerType) {
-      case "indexedDb": {
-        return new IndexedDbExtractorRunner(miroirStoreController);
-        break;
-      }
-      case "sql": {
-        throw new Error(
-          "PersistenceStoreExtractorRunner.getExtractorRunner: sql not implemented yet!"
-        );
-            // return new PostgresE(miroirStoreController);
-        break;
-      }
-      case "filesystem": {
-        throw new Error("PersistenceStoreExtractorRunner.getExtractorRunner: filesystem not implemented yet!");
-      }
-      default:
-        break;
-    }
-  }
-  throw new Error("PersistenceStoreExtractorRunner.getExtractorRunner: unknown emulatedServerType!");
-}
+// // ################################################################################################
+// function getExtractorRunner(
+//   miroirConfig: MiroirConfigClient,
+//   miroirStoreController: PersistenceStoreControllerInterface
+// ): PersistenceStoreExtractorRunner {
+//   if (!miroirConfig.client.emulateServer) {
+//     throw new Error(
+//       "LocalPersistenceStoreController state do not make sense for real server configurations! Please use only 'emulateServer: true' configurations for this test."
+//     );
+//   } else {
+//     switch (miroirConfig.client.deploymentStorageConfig.miroir.data.emulatedServerType) {
+//       case "indexedDb": {
+//         return new IndexedDbExtractorRunner(miroirStoreController);
+//         break;
+//       }
+//       case "sql": {
+//         throw new Error(
+//           "PersistenceStoreExtractorRunner.getExtractorRunner: sql not implemented yet!"
+//         );
+//             // return new PostgresE(miroirStoreController);
+//         break;
+//       }
+//       case "filesystem": {
+//         throw new Error("PersistenceStoreExtractorRunner.getExtractorRunner: filesystem not implemented yet!");
+//       }
+//       default:
+//         break;
+//     }
+//   }
+//   throw new Error("PersistenceStoreExtractorRunner.getExtractorRunner: unknown emulatedServerType!");
+// }
 
 // ##############################################################################################
 // ##############################################################################################
@@ -342,7 +313,6 @@ describe.sequential("PersistenceStoreExtractorRunner.test", () => {
       "PersistenceStoreExtractorRunner_selectEntityInstance_selectObjectByDirectReference",
       {},
       async () => {
-        // const extractorRunner = new IndexedDbExtractorRunner(localMiroirPersistenceStoreController);
         const applicationSection:ApplicationSection = "model";
         const queryResult:ActionReturnType = await localMiroirPersistenceStoreController.handleQuery(
           applicationSection,

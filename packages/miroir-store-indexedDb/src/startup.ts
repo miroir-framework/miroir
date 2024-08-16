@@ -18,7 +18,6 @@ import { IndexedDb } from "./4_services/IndexedDb.js";
 import { cleanLevel } from "./4_services/constants.js";
 import { packageName } from "./constants.js";
 import { IndexedDbAdminStore } from "./4_services/IndexedDbAdminStore.js";
-import { IndexedDbExtractorRunner } from "./4_services/IndexedDbExtractorRunner.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"startup");
 let log:LoggerInterface = console as any as LoggerInterface;

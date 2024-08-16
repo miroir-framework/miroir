@@ -2,7 +2,7 @@ import { getLoggerName, LoggerInterface, MiroirLoggerFactory, PersistenceStoreAd
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"IndexedDbExtractorRunner");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"PostgresExtractorRunner");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   (value: LoggerInterface) => {
