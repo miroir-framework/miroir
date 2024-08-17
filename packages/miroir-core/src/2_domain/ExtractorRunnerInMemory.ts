@@ -61,11 +61,13 @@ import {
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
 } from "./DomainStateQuerySelectors.js";
 import {
+  resolveContextReference,
+} from "./QuerySelectors.js";
+import {
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   asyncExtractWithManyExtractors,
   asyncExtractWithExtractor,
-  resolveContextReference,
-} from "./QuerySelectors.js";
+} from "./AsyncQuerySelectors.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "ExtractorRunnerInMemory");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -99,7 +101,6 @@ export class ExtractorRunnerInMemory implements PersistenceStoreExtractorRunner 
       case "domainModelSingleExtractor": {
         queryResult = await this.selectorMap.extractWithExtractor(
           undefined /* domainState*/,
-          // getSelectorParams(queryAction.query)
           {
             extractor: queryAction.query,
             extractorRunnerMap: this.selectorMap,
@@ -110,7 +111,6 @@ export class ExtractorRunnerInMemory implements PersistenceStoreExtractorRunner 
       case "extractorForRecordOfExtractors": {
         queryResult = await this.selectorMap.extractWithManyExtractors(
           undefined /* domainState*/,
-          // getSelectorParams(queryAction.query)
           {
             extractor: queryAction.query,
             extractorRunnerMap: this.selectorMap,

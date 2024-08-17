@@ -735,7 +735,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
   //           queryParams: {elementType: "object", elementValue: {}},
   //           contextResults: {elementType: "object", elementValue: {}},
   //           "deploymentUuid": adminConfigurationDeploymentLibrary.uuid,
-  //           fetchQuery: {
+  //           queryTransformers: {
   //               select: {
   //               entities: {
   //                 queryType: "extractObjectListByEntity",

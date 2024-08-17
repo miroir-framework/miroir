@@ -26,7 +26,7 @@ describe("domainSelector", () => {
         contextResults: { elementType: "object", elementValue: {} },
         pageParams: { elementType: "object", elementValue: {} },
         queryParams: { elementType: "object", elementValue: {} },
-        fetchQuery: {
+        queryTransformers: {
           book: {
             queryType: "selectObjectByDirectReference",
             parentName: "Book",
@@ -70,7 +70,7 @@ describe("domainSelector", () => {
         contextResults: { elementType: "object", elementValue: {} },
         pageParams: { elementType: "object", elementValue: {} },
         queryParams: { elementType: "object", elementValue: {} },
-        fetchQuery: {
+        queryTransformers: {
           book: {
             queryType: "selectObjectByDirectReference",
             parentName: "Book",
@@ -115,7 +115,7 @@ describe("domainSelector", () => {
         "contextResults": { elementType: "object", elementValue: {} },
         pageParams: { elementType: "object", elementValue: {} },
         queryParams: { elementType: "object", elementValue: {} },
-        "fetchQuery": {
+        "queryTransformers": {
           "book": {
             queryType: "selectObjectByDirectReference",
             parentName: "Book",
@@ -209,7 +209,7 @@ describe("domainSelector", () => {
             },
           },
         },
-        fetchQuery: {
+        queryTransformers: {
           book2: {
             queryType: "queryContextReference",
             queryReference: "book",
@@ -247,7 +247,7 @@ describe("domainSelector", () => {
             },
           },
         },
-        fetchQuery: {
+        queryTransformers: {
         },
       };
 
@@ -282,7 +282,7 @@ describe("domainSelector", () => {
             },
           },
         },
-        fetchQuery: {
+        queryTransformers: {
           publisher: {
             queryType: "selectObjectByRelation",
             parentName: "Publisher",
@@ -340,7 +340,7 @@ describe("domainSelector", () => {
             },
           },
         },
-        fetchQuery: {
+        queryTransformers: {
         },
       };
 
@@ -471,7 +471,7 @@ describe("domainSelector", () => {
             },
           },
         },
-        fetchQuery: {
+        queryTransformers: {
           publisher: {
             queryType: "selectObjectByRelation",
             parentName: "Publisher",
@@ -545,7 +545,7 @@ describe("domainSelector", () => {
             },
           },
         },
-        fetchQuery: {
+        queryTransformers: {
           publisher: {
             queryType: "selectObjectByRelation",
             parentName: "Publisher",
@@ -635,7 +635,7 @@ describe("domainSelector", () => {
             },
           },
         },
-        fetchQuery: {
+        queryTransformers: {
           instancesOfEntities: {
             queryType: "queryCombiner", // heteronomous many-to-many join, not possible with SQL
             rootQuery: {
@@ -709,7 +709,7 @@ describe("domainSelector", () => {
             },
           },
         },
-        fetchQuery: {
+        queryTransformers: {
           publishers: {
             queryType: "extractorTransformer",
             referencedQuery: {

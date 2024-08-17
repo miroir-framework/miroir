@@ -21,7 +21,7 @@
         }
       }
     },
-    "fetchQuery": {
+    "queryTransformers": {
       "publisher": {
         "queryType": "selectObjectByRelation",
         "parentName": "Publisher",

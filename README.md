@@ -100,6 +100,23 @@ Ran all test suites with tests matching "domainSelector".
 
 #### Unit tests
 
+To test the DomainSelector, first compile miroir-core:
+
+```sh
+npm run preTestNodeNext -w miroir-core
+```
+
+then run the test:
+
+```sh
+npm run testNode -w miroir-core -- domainSelector
+```
+
+to run all the miroir-core unit tests:
+
+```sh
+npm run testNode -w miroir-core
+```
 
 #### Persistence store integration tests
 

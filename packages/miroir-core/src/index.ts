@@ -491,10 +491,6 @@ export {
 export {
   cleanupResultsFromQuery,
   resolveContextReference,
-  asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
-  asyncExtractWithExtractor,
-  asyncExtractWithManyExtractors,
-  asyncInnerSelectElementFromQuery,
   extractEntityInstanceUuidIndexWithObjectListExtractor,
   extractFetchQueryJzodSchema,
   extractJzodSchemaForDomainModelQuery,
@@ -502,6 +498,12 @@ export {
   extractWithManyExtractors,
   extractWithExtractor,
 } from './2_domain/QuerySelectors.js';
+export {
+  asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+  asyncExtractWithExtractor,
+  asyncExtractWithManyExtractors,
+  asyncInnerSelectElementFromQuery,
+} from './2_domain/AsyncQuerySelectors.js';
 export{
   getLocalCacheIndexDeploymentSection,
   getLocalCacheIndexDeploymentUuid,

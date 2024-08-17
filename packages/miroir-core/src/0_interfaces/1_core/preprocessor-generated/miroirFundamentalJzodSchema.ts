@@ -2521,7 +2521,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "objectInstanceReportSection"
           },
-          "fetchQuery": {
+          "queryTransformers": {
             "type": "schemaReference",
             "optional": true,
             "definition": {
@@ -2658,7 +2658,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "grid"
           },
-          "fetchQuery": {
+          "queryTransformers": {
             "type": "schemaReference",
             "optional": true,
             "definition": {
@@ -2696,7 +2696,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "list"
           },
-          "fetchQuery": {
+          "queryTransformers": {
             "type": "schemaReference",
             "optional": true,
             "definition": {
@@ -2799,7 +2799,7 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
-          "fetchQuery": {
+          "queryTransformers": {
             "type": "schemaReference",
             "optional": true,
             "definition": {
@@ -3082,7 +3082,7 @@ export const miroirFundamentalJzodSchema = {
                     "type": "literal",
                     "definition": "objectInstanceReportSection"
                   },
-                  "fetchQuery": {
+                  "queryTransformers": {
                     "type": "schemaReference",
                     "optional": true,
                     "definition": {
@@ -3219,7 +3219,7 @@ export const miroirFundamentalJzodSchema = {
                     "type": "literal",
                     "definition": "grid"
                   },
-                  "fetchQuery": {
+                  "queryTransformers": {
                     "type": "schemaReference",
                     "optional": true,
                     "definition": {
@@ -3257,7 +3257,7 @@ export const miroirFundamentalJzodSchema = {
                     "type": "literal",
                     "definition": "list"
                   },
-                  "fetchQuery": {
+                  "queryTransformers": {
                     "type": "schemaReference",
                     "optional": true,
                     "definition": {
@@ -3363,7 +3363,7 @@ export const miroirFundamentalJzodSchema = {
                       }
                     }
                   },
-                  "fetchQuery": {
+                  "queryTransformers": {
                     "type": "schemaReference",
                     "optional": true,
                     "definition": {
@@ -5276,7 +5276,7 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
-          "fetchQuery": {
+          "queryTransformers": {
             "type": "schemaReference",
             "optional": true,
             "definition": {
@@ -15762,7 +15762,7 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "fetchQuery": {
+              "queryTransformers": {
                 "optional": true,
                 "type": "union",
                 "definition": [
@@ -16150,7 +16150,7 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "fetchQuery": {
+              "queryTransformers": {
                 "optional": true,
                 "type": "union",
                 "definition": [
@@ -16268,7 +16268,7 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "fetchQuery": {
+              "queryTransformers": {
                 "optional": true,
                 "type": "union",
                 "definition": [
@@ -16565,7 +16565,7 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "fetchQuery": {
+              "queryTransformers": {
                 "optional": true,
                 "type": "union",
                 "definition": [
@@ -16932,7 +16932,7 @@ export const miroirFundamentalJzodSchema = {
                                   }
                                 ]
                               },
-                              "fetchQuery": {
+                              "queryTransformers": {
                                 "optional": true,
                                 "type": "union",
                                 "definition": [
@@ -17321,7 +17321,7 @@ export const miroirFundamentalJzodSchema = {
                                   }
                                 ]
                               },
-                              "fetchQuery": {
+                              "queryTransformers": {
                                 "optional": true,
                                 "type": "union",
                                 "definition": [
@@ -17440,7 +17440,7 @@ export const miroirFundamentalJzodSchema = {
                                   }
                                 ]
                               },
-                              "fetchQuery": {
+                              "queryTransformers": {
                                 "optional": true,
                                 "type": "union",
                                 "definition": [
@@ -17754,7 +17754,7 @@ export const miroirFundamentalJzodSchema = {
                                   }
                                 ]
                               },
-                              "fetchQuery": {
+                              "queryTransformers": {
                                 "optional": true,
                                 "type": "union",
                                 "definition": [
@@ -25666,7 +25666,7 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "fetchQuery": {
+              "queryTransformers": {
                 "optional": true,
                 "type": "union",
                 "definition": [

@@ -74,8 +74,8 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
   //   props.applicationSection,
   //   "paramsAsdomainElements",
   //   paramsAsdomainElements,
-  //   "fetchQuery",
-  //   props.reportSection.fetchQuery
+  //   "queryTransformers",
+  //   props.reportSection.queryTransformers
   // );
   
   const deploymentEntityStateSelectorMap: SyncExtractorRunnerMap<DeploymentEntityState> = useMemo(
@@ -95,7 +95,7 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
               queryParams: { elementType: "object", elementValue: {} },
               contextResults: { elementType: "object", elementValue: {} },
               extractors: props.rootReportSection.extractors,
-              fetchQuery: props.rootReportSection.fetchQuery,
+              queryTransformers: props.rootReportSection.queryTransformers,
             },
             deploymentEntityStateSelectorMap
           )
@@ -107,7 +107,7 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
               pageParams: paramsAsdomainElements,
               queryParams: { elementType: "object", elementValue: {} },
               contextResults: { elementType: "object", elementValue: {} },
-              fetchQuery: { },
+              queryTransformers: { },
             },
             deploymentEntityStateSelectorMap
           ),
@@ -116,8 +116,8 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
   // // log.info(
   // //   "-------------------------------------------------- props.reportSection",
   // //   props.reportSection,
-  // //   "props.reportSection?.fetchQuery",
-  // //   props.reportSection?.fetchQuery,
+  // //   "props.reportSection?.queryTransformers",
+  // //   props.reportSection?.queryTransformers,
   // // )
 
   const deploymentEntityStateQueryResults: DomainElementObjectOrFailed = useDeploymentEntityStateQuerySelector(
@@ -184,7 +184,7 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
                 pageParams: paramsAsdomainElements,
                 queryParams: { elementType: "object", elementValue: {} },
                 contextResults: { elementType: "object", elementValue: {} },
-                fetchQuery: { },
+                queryTransformers: { },
               },
             },
     }),
@@ -205,8 +205,8 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
     fetchedDataJzodSchemaParams,
     "props.reportSection?.extractors",
     props.rootReportSection?.extractors,
-    "props.reportSection?.fetchQuery",
-    props.rootReportSection?.fetchQuery,
+    "props.reportSection?.queryTransformers",
+    props.rootReportSection?.queryTransformers,
     "props.deploymentEntityStateQueryResults",
     deploymentEntityStateQueryResults,
   );

@@ -276,7 +276,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             },
             type: "list",
             definition: {
-              fetchQuery: {
+              queryTransformers: {
                 instanceList: {
                   queryType: "extractObjectListByEntity",
                   parentName: {
@@ -333,7 +333,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               definition: "Details of {{newEntityName}}",
             },
             definition: {
-              fetchQuery: {
+              queryTransformers: {
                 elementToDisplay: {
                   queryType: "selectObjectByDirectReference",
                   parentName: {
@@ -597,7 +597,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       pageParams: { elementType: "object", elementValue: {} },
       queryParams: { elementType: "object", elementValue: {} },
       contextResults: { elementType: "object", elementValue: {} },
-      fetchQuery: {
+      queryTransformers: {
         menus: {
           queryType: "extractObjectListByEntity",
           applicationSection: "model",
@@ -834,7 +834,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             },
             type: "list",
             definition: {
-              fetchQuery: {
+              queryTransformers: {
                 listReportSectionElements: {
                   queryType: "extractObjectListByEntity",
                   parentName: {
@@ -876,7 +876,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             name: newEntityName + "Details",
             defaultLabel: "Details of " + newEntityDescription,
             definition: {
-              fetchQuery: {
+              queryTransformers: {
                 elementToDisplay: {
                   queryType: "selectObjectByDirectReference",
                   parentName: newEntityName,
@@ -1124,7 +1124,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       //     splittedEntityName,
       //   } },
       //   contextResults: { elementType: "object", elementValue: {} },
-      //   fetchQuery: {
+      //   queryTransformers: {
       //     select: { // TODO: replace with fullObjectTemplate
       //       [splittedEntityName]: {
       //         queryType: "extractObjectListByEntity",
@@ -1170,7 +1170,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               pageParams,
               queryParams: { elementType: "object", elementValue: {} },
               contextResults: { elementType: "object", elementValue: {} },
-              fetchQuery: {
+              queryTransformers: {
                 [splittedEntityName]: {
                   queryType: "extractObjectListByEntity",
                   applicationSection: "data",
@@ -1244,7 +1244,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     //   pageParams,
     //   queryParams: { elementType: "object", elementValue: {} },
     //   contextResults: { elementType: "object", elementValue: {} },
-    //   fetchQuery: {
+    //   queryTransformers: {
     //     select: {
     //       [splittedEntityName]: {
     //         queryType: "extractObjectListByEntity",
@@ -1377,7 +1377,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     //   pageParams: miroirMenuPageParams,
     //   queryParams: { elementType: "object", elementValue: {} },
     //   contextResults: { elementType: "object", elementValue: {} },
-    //   fetchQuery: {
+    //   queryTransformers: {
     //     select: {
     //       menus: {
     //         queryType: "extractObjectListByEntity",

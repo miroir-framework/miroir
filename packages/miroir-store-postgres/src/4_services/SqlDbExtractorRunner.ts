@@ -18,13 +18,20 @@ export class SqlDbExtractRunner {
   private extractorRunnerMap: AsyncExtractorRunnerMap<any>;
 
   constructor(
-    // private persistenceStoreController: PersistenceStoreControllerInterface
-    // private persistenceStoreController: PersistenceStoreInstanceSectionAbstractInterface
     private persistenceStoreController: SqlDbDataStoreSection | SqlDbModelStoreSection /* concrete types for MixedSqlDbInstanceStoreSection */
-    // private persistenceStoreController: typeof MixedSqlDbInstanceStoreSection
+    // private persistenceStoreController: typeof MixedSqlDbInstanceStoreSection // does not work
   ){
     this.logHeader = 'PersistenceStoreController '+ persistenceStoreController.getStoreName();
-    this.extractorRunnerMap = {
+    const InMemoryImplementationExtractorRunnerMap: AsyncExtractorRunnerMap<any> = {
+      extractorType: "async",
+      extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex,
+      extractEntityInstance: this.extractEntityInstance,
+      extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+      // extractEntityInstanceUuidIndexWithObjectListExtractor: this.asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor,
+      extractWithManyExtractors: asyncExtractWithManyExtractors,
+      extractWithExtractor: asyncExtractWithExtractor,
+    };
+    const dbImplementationExtractorRunnerMap: AsyncExtractorRunnerMap<any> = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex,
       extractEntityInstance: this.extractEntityInstance,
@@ -33,6 +40,9 @@ export class SqlDbExtractRunner {
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
     };
+
+    // this.extractorRunnerMap = InMemoryImplementationExtractorRunnerMap;
+    this.extractorRunnerMap = dbImplementationExtractorRunnerMap;
 
   }
 

@@ -1542,7 +1542,7 @@ export function getMiroirFundamentalJzodSchema(
                 },
               }
             },
-            fetchQuery: {
+            queryTransformers: {
               type: "schemaReference",
               optional: true,
               definition: {

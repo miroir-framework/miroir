@@ -712,7 +712,7 @@ export class DomainController implements DomainControllerInterface {
       case "wrapperReturningList":
       default: {
         throw new Error(
-          "DomainController handleQuery queryAction no query found in fetchQuery.select! " +
+          "DomainController handleQuery queryAction no query found in queryTransformers.select! " +
             JSON.stringify(query)
         );
         break;
@@ -750,7 +750,7 @@ export class DomainController implements DomainControllerInterface {
         }
         case 'extractorForRecordOfExtractors': {
           extractors = Object.entries(queryAction.query.extractors??{});
-          fetchQueries = Object.entries(queryAction.query.fetchQuery??{});
+          fetchQueries = Object.entries(queryAction.query.queryTransformers??{});
           break;
         }
         // default: {
@@ -765,10 +765,10 @@ export class DomainController implements DomainControllerInterface {
         const queries:[string, QuerySelectExtractorWrapper | QuerySelect][] = a;
         if (queries.length != 1) {
           log.warn(
-            "DomainController handleQuery queryAction no query found in fetchQuery.select! " + JSON.stringify(queryAction)
+            "DomainController handleQuery queryAction no query found in queryTransformers.select! " + JSON.stringify(queryAction)
           );
           // throw new Error(
-          //   "DomainController handleQuery queryAction no query found in fetchQuery.select! " + JSON.stringify(queryAction)
+          //   "DomainController handleQuery queryAction no query found in queryTransformers.select! " + JSON.stringify(queryAction)
           // );
         } else {
           const query = queries[0][1];

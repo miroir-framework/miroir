@@ -72,7 +72,7 @@
                 "type": "literal",
                 "definition": "objectInstanceReportSection"
               },
-              "fetchQuery": {
+              "queryTransformers": {
                 "type": "schemaReference",
                 "optional": true,
                 "definition": {
@@ -169,7 +169,7 @@
                 "type": "literal",
                 "definition": "grid"
               },
-              "fetchQuery": {
+              "queryTransformers": {
                 "type": "schemaReference",
                 "optional": true,
                 "definition": {
@@ -207,7 +207,7 @@
                 "type": "literal",
                 "definition": "list"
               },
-              "fetchQuery": {
+              "queryTransformers": {
                 "type": "schemaReference",
                 "optional": true,
                 "definition": {
@@ -313,7 +313,7 @@
                   }
                 }
               },
-              "fetchQuery": {
+              "queryTransformers": {
                 "type": "schemaReference",
                 "optional":true,
                 "definition": {
