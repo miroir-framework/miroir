@@ -542,6 +542,24 @@
               }
             ]
           },
+          "queryExtractorTransformer": {
+            "type": "object",
+            "definition": {
+              "queryType": {
+                "type": "literal",
+                "definition": "extractorTransformer"
+              },
+              "referencedQuery": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "queryTemplateContextReference"
+                }
+              },
+              "attribute": {
+                "type": "string"
+              }
+            }
+          },
           "querySelect": {
             "type": "union",
             "discriminator": "queryType",
@@ -553,21 +571,9 @@
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "queryType": {
-                    "type": "literal",
-                    "definition": "extractorTransformer"
-                  },
-                  "referencedQuery": {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "queryTemplateContextReference"
-                    }
-                  },
-                  "attribute": {
-                    "type": "string"
-                  }
+                  "relativePath": "queryExtractorTransformer"
                 }
               },
               {

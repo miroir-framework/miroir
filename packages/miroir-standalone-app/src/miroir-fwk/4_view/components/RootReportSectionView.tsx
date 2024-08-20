@@ -74,8 +74,8 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
   //   props.applicationSection,
   //   "paramsAsdomainElements",
   //   paramsAsdomainElements,
-  //   "queryTransformers",
-  //   props.reportSection.queryTransformers
+  //   "extractors",
+  //   props.reportSection.extractors
   // );
   
   const deploymentEntityStateSelectorMap: SyncExtractorRunnerMap<DeploymentEntityState> = useMemo(
@@ -107,7 +107,7 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
               pageParams: paramsAsdomainElements,
               queryParams: { elementType: "object", elementValue: {} },
               contextResults: { elementType: "object", elementValue: {} },
-              queryTransformers: { },
+              extractors: { },
             },
             deploymentEntityStateSelectorMap
           ),
@@ -116,8 +116,8 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
   // // log.info(
   // //   "-------------------------------------------------- props.reportSection",
   // //   props.reportSection,
-  // //   "props.reportSection?.queryTransformers",
-  // //   props.reportSection?.queryTransformers,
+  // //   "props.reportSection?.extractors",
+  // //   props.reportSection?.extractors,
   // // )
 
   const deploymentEntityStateQueryResults: DomainElementObjectOrFailed = useDeploymentEntityStateQuerySelector(
@@ -184,7 +184,7 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
                 pageParams: paramsAsdomainElements,
                 queryParams: { elementType: "object", elementValue: {} },
                 contextResults: { elementType: "object", elementValue: {} },
-                queryTransformers: { },
+                extractors: { },
               },
             },
     }),
@@ -203,6 +203,8 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
     fetchedDataJzodSchema,
     "fetchedDataJzodSchemaParams",
     fetchedDataJzodSchemaParams,
+    "props.reportSection?.extractors",
+    props.rootReportSection?.extractors,
     "props.reportSection?.extractors",
     props.rootReportSection?.extractors,
     "props.reportSection?.queryTransformers",

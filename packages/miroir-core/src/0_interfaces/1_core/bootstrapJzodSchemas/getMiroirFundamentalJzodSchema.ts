@@ -2290,6 +2290,7 @@ export function getMiroirFundamentalJzodSchema(
         querySelectExtractorWrapperReturningObject: (miroirFundamentalJzodSchema as any).definition.context.querySelectExtractorWrapperReturningObject,
         querySelectExtractorWrapperReturningList: (miroirFundamentalJzodSchema as any).definition.context.querySelectExtractorWrapperReturningList,
         querySelectExtractorWrapper: (miroirFundamentalJzodSchema as any).definition.context.querySelectExtractorWrapper,
+        queryExtractorTransformer: (miroirFundamentalJzodSchema as any).definition.context.queryExtractorTransformer,
         querySelectObject: (miroirFundamentalJzodSchema as any).definition.context.querySelectObject,
         querySelectObjectList: (miroirFundamentalJzodSchema as any).definition.context.querySelectObjectList,
         querySelectByQueryCombiner: (miroirFundamentalJzodSchema as any).definition.context.querySelectByQueryCombiner,

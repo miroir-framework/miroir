@@ -276,7 +276,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             },
             type: "list",
             definition: {
-              queryTransformers: {
+              extractors: {
                 instanceList: {
                   queryType: "extractObjectListByEntity",
                   parentName: {
@@ -333,7 +333,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               definition: "Details of {{newEntityName}}",
             },
             definition: {
-              queryTransformers: {
+              extractors: {
                 elementToDisplay: {
                   queryType: "selectObjectByDirectReference",
                   parentName: {
@@ -597,7 +597,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       pageParams: { elementType: "object", elementValue: {} },
       queryParams: { elementType: "object", elementValue: {} },
       contextResults: { elementType: "object", elementValue: {} },
-      queryTransformers: {
+      extractors: {
         menus: {
           queryType: "extractObjectListByEntity",
           applicationSection: "model",
@@ -834,7 +834,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             },
             type: "list",
             definition: {
-              queryTransformers: {
+              extractors: {
                 listReportSectionElements: {
                   queryType: "extractObjectListByEntity",
                   parentName: {
@@ -876,7 +876,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             name: newEntityName + "Details",
             defaultLabel: "Details of " + newEntityDescription,
             definition: {
-              queryTransformers: {
+              extractors: {
                 elementToDisplay: {
                   queryType: "selectObjectByDirectReference",
                   parentName: newEntityName,
@@ -1170,7 +1170,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               pageParams,
               queryParams: { elementType: "object", elementValue: {} },
               contextResults: { elementType: "object", elementValue: {} },
-              queryTransformers: {
+              extractors: {
                 [splittedEntityName]: {
                   queryType: "extractObjectListByEntity",
                   applicationSection: "data",

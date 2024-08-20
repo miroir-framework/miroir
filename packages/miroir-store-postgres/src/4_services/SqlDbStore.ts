@@ -32,7 +32,7 @@ export class SqlDbStore implements PersistenceStoreAbstractInterface {
     public logHeader: string
   ) // ...args: any[] // mixin constructors are limited to args:any[] parameters
   {
-    this.sequelize = new Sequelize(this.connectionString, { schema: this.schema }); // Example for postgres
+    this.sequelize = new Sequelize(this.connectionString, { dialect: "postgres", schema: this.schema }); // Example for postgres
   }
 
   // ##############################################################################################

@@ -487,7 +487,7 @@ export const JzodObjectEditor = (
             pageParams: { elementType: "object", elementValue: {} },
             queryParams: { elementType: "object", elementValue: {} },
             contextResults: { elementType: "object", elementValue: {} },
-            queryTransformers: {
+            extractors: {
               [unfoldedRawSchema.tag?.value?.targetEntity]:
               {
                 queryType: "extractObjectListByEntity",

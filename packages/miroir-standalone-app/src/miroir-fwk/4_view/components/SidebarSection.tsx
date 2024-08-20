@@ -162,7 +162,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
       pageParams: { elementType: "object", elementValue: {} },
       queryParams: { elementType: "object", elementValue: {} },
       contextResults: { elementType: "object", elementValue: {} },
-      queryTransformers: {
+      extractors: {
         menus: {
           queryType: "selectObjectByDirectReference",
           parentName: "Menu",

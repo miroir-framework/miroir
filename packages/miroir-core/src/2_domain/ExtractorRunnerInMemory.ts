@@ -67,6 +67,7 @@ import {
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   asyncExtractWithManyExtractors,
   asyncExtractWithExtractor,
+  processExtractorTransformerInMemory,
 } from "./AsyncQuerySelectors.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "ExtractorRunnerInMemory");
@@ -89,6 +90,7 @@ export class ExtractorRunnerInMemory implements PersistenceStoreExtractorRunner 
       extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
+      processExtractorTransformer: processExtractorTransformerInMemory,
     };
   }
 
@@ -140,79 +142,6 @@ export class ExtractorRunnerInMemory implements PersistenceStoreExtractorRunner 
 
     // return result;
   }
-
-  // /**
-  //  * Needed because filesystem does not support joins, DomainState is extracted then selectors are applied
-  //  *
-  //  * @param extractor
-  //  * @returns
-  //  */
-  // private async extractDomainStateForExtractor(
-  //   extractor: DomainModelExtractor,
-  // ): Promise<DomainState> {
-  //   switch (extractor.queryType) {
-  //     case "domainModelSingleExtractor": {
-  //       switch (extractor.select.queryType) {
-  //         case "extractObjectListByEntity": {
-  //           const entityUuid = extractor.select.parentUuid;
-  //           const entityInstanceUuidIndex = await this.dataStoreSection.getInstances(entityUuid);
-  //           return {
-  //             [extractor.deploymentUuid]: {
-  //               data: {
-  //                 [entityUuid]: entityInstanceUuidIndex,
-  //               },
-  //               model: {},
-  //             },
-  //           };
-  //           break;
-  //         }
-  //         case "selectObjectByRelation":
-  //         case "selectObjectByDirectReference":
-  //         case "selectObjectListByRelation":
-  //         case "selectObjectListByManyToManyRelation":
-  //         case "queryCombiner":
-  //         case "literal":
-  //         case "queryContextReference":
-  //         case "wrapperReturningObject":
-  //         case "wrapperReturningList":
-
-  //           break;
-
-  //         default:
-  //           break;
-  //       }
-  //       return {
-  //         [""]: {
-  //           data: {},
-  //           model: {},
-  //         },
-  //       };
-  //       break;
-  //     }
-  //     case "extractorForRecordOfExtractors":
-  //     case "getEntityDefinition":
-  //     case "getFetchParamsJzodSchema":
-  //     case "getSingleSelectQueryJzodSchema": {
-  //       return {
-  //         [""]: {
-  //           data: {},
-  //           model: {},
-  //         },
-  //       };
-  //       break;
-  //     }
-  //     case "localCacheEntityInstancesExtractor":
-  //     default: {
-  //       return {
-  //         [""]: {
-  //           data: {},
-  //           model: {},
-  //         },
-  //       };
-  //       break;
-  //     }
-  //   }
-  // }
 
   // ################################################################################################
   public extractEntityInstance: AsyncExtractorRunner<
@@ -507,6 +436,7 @@ export class ExtractorRunnerInMemory implements PersistenceStoreExtractorRunner 
     }
   };
 
+  // ##############################################################################################
   public getSelectorMap(): AsyncExtractorRunnerMap<any> {
     return this.selectorMap;
     // return {
@@ -517,8 +447,11 @@ export class ExtractorRunnerInMemory implements PersistenceStoreExtractorRunner 
     //   extractWithExtractor: async (...args) => extractWithExtractor(...args),
     // };
   }
-}
+} // end of class ExtractorRunnerInMemory
 
+// ##############################################################################################
+// ##############################################################################################
+// ##############################################################################################
 export function getJzodSchemaSelectorMap(): ExtractorRunnerMapForJzodSchema<DomainState> {
   return {
     extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNew,

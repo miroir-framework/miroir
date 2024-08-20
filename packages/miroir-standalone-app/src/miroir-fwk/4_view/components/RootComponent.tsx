@@ -295,7 +295,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         pageParams: emptyDomainElementObject,
                         queryParams: emptyDomainElementObject,
                         contextResults: { elementType: "object", elementValue: {} },
-                        queryTransformers: {
+                        extractors: {
                           deployments: {
                             queryType: "extractObjectListByEntity",
                             applicationSection: "data",
@@ -538,7 +538,7 @@ export const RootComponent = (props: RootComponentProps) => {
                           elementType: "object",
                           elementValue: {}
                         },
-                        queryTransformers: {
+                        extractors: {
                           "select": {
                             "authors": {
                               "queryType": "extractObjectListByEntity",

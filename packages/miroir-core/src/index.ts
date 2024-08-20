@@ -255,6 +255,14 @@ export {
   extractorForSingleObjectList,
   DomainModelSingleExtractor,
   domainModelSingleExtractor,
+  QueryExtractorTransformer,
+  queryExtractorTransformer,
+  QuerySelectExtractorWrapper,
+  querySelectExtractorWrapper,
+  QuerySelectExtractorWrapperReturningList,
+  querySelectExtractorWrapperReturningList,
+  QuerySelectExtractorWrapperReturningObject,
+  querySelectExtractorWrapperReturningObject,
 }
 from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js"
 

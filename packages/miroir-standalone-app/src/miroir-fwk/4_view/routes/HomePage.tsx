@@ -232,7 +232,7 @@ export const HomePage = (props: RootComponentProps) => {
     //   pageParams: { elementType: "object", elementValue: {} },
     //   contextResults: { elementType: "object", elementValue: {} },
     //   queryParams: { elementType: "object", elementValue: { "applicationVersion": { elementType: "instanceUuid", elementValue: "695826c2-aefa-4f5f-a131-dee46fe21c13" } } },
-    //   queryTransformers: queryVersionBundleProducerV1.definition as MiroirSelectQueriesRecord
+    //   extractors: queryVersionBundleProducerV1.definition as MiroirSelectQueriesRecord
     // }),[miroirMetaModel])
   
     // const producedBundle : DomainElement = useDomainStateCleanSelector(extractWithManyExtractorsFromDomainState, bundleProducerQuery);

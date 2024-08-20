@@ -1,3 +1,5 @@
+// import { sql } from '@sequelize/postgres';
+
 import {
   EntityInstance,
   PersistenceStoreInstanceSectionAbstractInterface,
@@ -10,13 +12,17 @@ import {
   ActionVoidReturnType,
   ACTION_OK,
   QueryAction,
+  ExtractorForSingleObjectList,
+  ExtractorForRecordOfExtractors,
+  ExtractorForSingleObject,
+  QuerySelectExtractorWrapper,
 } from "miroir-core";
 import { MixableSqlDbStoreSection, SqlDbStoreSection } from "./SqlDbStoreSection.js";
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
-import { Error, Op } from "sequelize";
-import { SqlDbExtractRunner } from "./SqlDbExtractorRunner.js";
+import { Op } from "sequelize";
+import { RecursiveStringRecords, SqlDbExtractRunner } from "./SqlDbExtractorRunner.js";
 
 const consoleLog: any = console.log.bind(console, packageName, cleanLevel, "SqlDbInstanceStoreSectionMixin");
 const loggerName: string = getLoggerName(packageName, cleanLevel, "SqlDbInstanceStoreSectionMixin");
@@ -43,6 +49,68 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     ) {
       super(...args);
       this.extractorRunner = new SqlDbExtractRunner(this as any /*SqlDbExtractRunner takes a concrete implementation*/);
+    }
+
+    async executeRawQuery(query: string): Promise<ActionReturnType> {
+      const rawResult = await this.sequelize.query(query);
+      log.info(this.logHeader, "executeRawQuery", "query", query, "result", rawResult);
+      const result:ActionReturnType = {
+        status: "ok",
+        returnedDomainElement: { elementType: "any", elementValue: rawResult[0] },
+      }
+      log.info(this.logHeader, "executeRawQuery", "query", query, "result", JSON.stringify(result));
+      return Promise.resolve(result);
+    }
+    // ##############################################################################################
+  // sqlForExtractor(extractor: ExtractorForSingleObjectList | ExtractorForSingleObject | QuerySelectExtractorWrapper | ExtractorForRecordOfExtractors): string | Record<string, string> {
+    sqlForExtractor(extractor: ExtractorForSingleObjectList | ExtractorForSingleObject | QuerySelectExtractorWrapper | ExtractorForRecordOfExtractors): RecursiveStringRecords {
+      // log.info(this.logHeader, "sqlForExtractor called with parameter", "extractor", extractor);
+      // log.info(this.logHeader, "sqlForExtractor called with sequelize", this.sequelize);
+      // log.info(this.logHeader, "sqlForExtractor called with dialect", (this.sequelize as any).dialect);
+      // // log.info(this.logHeader, "sqlForExtractor called with queryGenerator", (this.sequelize as any).dialect.queryGenerator);
+      // // log.info(this.logHeader, "sqlForExtractor called with selectQuery", (this.sequelize as any).dialect.selectQuery);
+      // // log.info(this.logHeader, "sqlForExtractor called with queryInterface", this.sequelize.getQueryInterface());
+      // // log.info(this.logHeader, "sqlForExtractor called with dialect", (this.sequelize.getQueryInterface().queryGenerator as any).dialect);
+      // // log.info(this.logHeader, "sqlForExtractor called with queryGenerator", this.sequelize.getQueryInterface().queryGenerator);
+      // log.info(this.logHeader, "sqlForExtractor called with selectQuery", (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery);
+      switch (extractor.queryType) {
+        case "extractObjectListByEntity":{
+          // const result = (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery(extractor.parentUuid
+          //   , {
+          // // const result = (this.sequelize as any).dialect.queryGenerator.selectQuery(extractor.parentUuid, {
+          //   attributes: ["*"],
+          // }
+          // );
+          // log.info(this.logHeader, "sqlForExtractor", "domainModelSingleExtractor", result);
+          if (extractor.parentUuid.queryTemplateType != "constantUuid") {
+            throw new Error("sqlForExtractor can not handle queryTemplateType for extractor" + JSON.stringify(extractor));
+          }
+          return `SELECT * FROM "miroir"."${extractor.parentName}"`;
+          // return result;
+          break;
+        }
+        case "domainModelSingleExtractor": {
+          const result = (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery(extractor.select.parentUuid, {
+            attributes: ["*"],
+          });
+          log.info(this.logHeader, "sqlForExtractor", "domainModelSingleExtractor", result);
+          // return "SELECT * FROM domainModel WHERE uuid = " + extractor.deploymentUuid;
+          return result;
+          break;
+        }
+        case "extractorForRecordOfExtractors": {
+          return Object.fromEntries(Object.entries(extractor.extractors??{}).map((e) => [e[0], this.sqlForExtractor(e[1])]));
+          break;
+        }
+        case "selectObjectByDirectReference":
+        case "extractorWrapperReturningObject":
+        case "extractorWrapperReturningList":
+        default: {
+          return "SQL for extractor could not handle queryType for extractor" + extractor;
+          break;
+        }
+      }
+      return "SQL for extractor not implemented";
     }
 
     // #############################################################################################

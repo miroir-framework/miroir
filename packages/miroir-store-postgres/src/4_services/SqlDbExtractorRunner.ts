@@ -1,9 +1,8 @@
-import { getLoggerName, LoggerInterface, MiroirLoggerFactory, PersistenceStoreAdminSectionInterface, PersistenceStoreModelSectionInterface, PersistenceStoreDataSectionInterface, ActionReturnType, ApplicationSection, QueryAction, SyncExtractorRunner, SyncExtractorRunnerParams, DomainElement, DomainElementInstanceUuidIndexOrFailed, DomainState, ExtractorForSingleObjectList, SyncExtractorRunnerMap, ExtractorRunnerMapForJzodSchema, extractWithManyExtractorsFromDomainState, selectEntityInstanceFromObjectQueryAndDomainState, exractEntityInstanceListFromListQueryAndDomainState, selectEntityInstanceUuidIndexFromDomainState, selectEntityJzodSchemaFromDomainStateNew, selectFetchQueryJzodSchemaFromDomainStateNew, selectJzodSchemaByDomainModelQueryFromDomainStateNew, selectJzodSchemaBySingleSelectQueryFromDomainStateNew, DomainModelExtractor, AsyncExtractorRunner, resolveContextReference, ActionEntityInstanceCollectionReturnType, PersistenceStoreControllerInterface, DomainElementEntityInstanceOrFailed, ExtractorForSingleObject, QuerySelectObject, AsyncExtractorRunnerMap, extractWithExtractor, AsyncExtractorRunnerParams, asyncExtractEntityInstanceUuidIndexWithObjectListExtractor, asyncExtractWithManyExtractors, asyncExtractWithExtractor, PersistenceStoreInstanceSectionAbstractInterface } from "miroir-core";
+import { ActionEntityInstanceCollectionReturnType, ActionReturnType, ApplicationSection, asyncExtractEntityInstanceUuidIndexWithObjectListExtractor, AsyncExtractorRunner, AsyncExtractorRunnerMap, AsyncExtractorRunnerParams, asyncExtractWithExtractor, asyncExtractWithManyExtractors, DomainElement, DomainElementEntityInstanceOrFailed, DomainElementInstanceUuidIndexOrFailed, DomainElementObject, DomainState, ExtractorForRecordOfExtractors, ExtractorForSingleObject, ExtractorForSingleObjectList, ExtractorRunnerMapForJzodSchema, getLoggerName, LoggerInterface, MiroirLoggerFactory, QueryAction, QueryExtractorTransformer, QuerySelectObject, resolveContextReference, selectEntityJzodSchemaFromDomainStateNew, selectFetchQueryJzodSchemaFromDomainStateNew, selectJzodSchemaByDomainModelQueryFromDomainStateNew, selectJzodSchemaBySingleSelectQueryFromDomainStateNew } from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 import { SqlDbDataStoreSection } from "./SqlDbDataStoreSection.js";
 import { SqlDbModelStoreSection } from "./SqlDbModelStoreSection.js";
-import { MixedSqlDbInstanceStoreSection } from "./sqlDbInstanceStoreSectionMixin.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"PostgresExtractorRunner");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -12,6 +11,8 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
     log = value;
   }
 );
+
+export type RecursiveStringRecords = string | {[x: string]: RecursiveStringRecords};
 
 export class SqlDbExtractRunner {
   private logHeader: string;
@@ -24,28 +25,101 @@ export class SqlDbExtractRunner {
     this.logHeader = 'PersistenceStoreController '+ persistenceStoreController.getStoreName();
     const InMemoryImplementationExtractorRunnerMap: AsyncExtractorRunnerMap<any> = {
       extractorType: "async",
-      extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex,
-      extractEntityInstance: this.extractEntityInstance,
+      extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex.bind(this),
+      extractEntityInstance: this.extractEntityInstance.bind(this),
       extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
       // extractEntityInstanceUuidIndexWithObjectListExtractor: this.asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor,
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
+      processExtractorTransformer: this.processExtractorTransformerSql.bind(this),
     };
     const dbImplementationExtractorRunnerMap: AsyncExtractorRunnerMap<any> = {
       extractorType: "async",
-      extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex,
-      extractEntityInstance: this.extractEntityInstance,
+      extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex.bind(this),
+      extractEntityInstance: this.extractEntityInstance.bind(this),
       // extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
-      extractEntityInstanceUuidIndexWithObjectListExtractor: this.asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor,
+      extractEntityInstanceUuidIndexWithObjectListExtractor: this.asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor.bind(this),
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
+      processExtractorTransformer: this.processExtractorTransformerSql.bind(this),
     };
 
     // this.extractorRunnerMap = InMemoryImplementationExtractorRunnerMap;
     this.extractorRunnerMap = dbImplementationExtractorRunnerMap;
-
   }
 
+  // ################################################################################################
+  async processExtractorTransformerSql(
+    query: QueryExtractorTransformer,
+    queryParams: DomainElementObject,
+    newFetchedData: DomainElementObject,
+    extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>,
+  ): Promise<DomainElement> {
+    const resolvedReference = resolveContextReference(
+      query.referencedQuery,
+      queryParams,
+      newFetchedData
+    );
+  
+    log.info("processExtractorTransformerSql extractors", extractors);
+    for (const ex of Object.entries(extractors)) {
+      log.info("processExtractorTransformerSql getting sqlForExtractor", ex[0], ex[1]);
+      const sqlQuery = this.persistenceStoreController.sqlForExtractor(ex[1])
+      log.info("processExtractorTransformerSql sqlForExtractor", ex[0], sqlQuery);
+      // const rawResult = await this.persistenceStoreController.executeRawQuery(sqlQuery as any);
+      // log.info("processExtractorTransformerSql rawResult", rawResult);
+    }
+
+    const extractorRawQueries = Object.entries(extractors).map(
+      ([key, value]) => {
+        return [
+          key,
+          this.persistenceStoreController.sqlForExtractor(value)
+        ]
+      }
+    )
+
+    log.info("processExtractorTransformerSql extractorRawQueries", extractorRawQueries);
+
+    if (resolvedReference.elementType != "instanceUuidIndex") {
+      return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
+    }
+
+    log.info("processExtractorTransformerSql query.attribute", query.attribute);
+    const aggregateRawQuery = `
+      WITH ${extractorRawQueries.map(q => q[0] + " AS (" + q[1] + " )").join(", ")}
+      SELECT DISTINCT ON (${query.attribute}) ${query.attribute} FROM ${extractorRawQueries[0][0]}
+    `
+    // const aggregateRawQuery = `
+    //   WITH ${extractorRawQueries.map(q => q[0] + " AS (" + q[1] + " )").join(", ")}
+    //   SELECT * FROM ${extractorRawQueries[0][0]}
+    // `
+    log.info("processExtractorTransformerSql aggregateRawQuery", aggregateRawQuery);
+
+    const rawResult = await this.persistenceStoreController.executeRawQuery(aggregateRawQuery);
+    log.info("processExtractorTransformerSql rawResult", JSON.stringify(rawResult));
+
+    if (rawResult.status == "error") {
+      return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
+    }
+
+    const sqlResult = rawResult.returnedDomainElement.elementValue.map((row: any) => row[query.attribute]);
+    log.info("processExtractorTransformerSql sqlResult", JSON.stringify(sqlResult));
+
+    // const result = new Set<string>();
+    // if (resolvedReference.elementType == "instanceUuidIndex") {
+    //   for (const entry of Object.entries(resolvedReference.elementValue)) {
+    //     result.add((entry[1] as any)[query.attribute]);
+    //   }
+    //   log.info("processExtractorTransformerSql inMemory result", JSON.stringify(Array.from(result.values())));
+    //   return Promise.resolve({ elementType: "any", elementValue: [...result] });
+    // }
+    
+    return Promise.resolve({ elementType: "any", elementValue: sqlResult });
+  
+    return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
+  }
+  
   // ################################################################################################
 /**
  * returns an Entity Instance List, from a ListQuery

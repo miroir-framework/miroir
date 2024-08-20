@@ -15,7 +15,9 @@ import {
   DomainElement,
   ApplicationSection,
   QueryAction,
-  ActionReturnType
+  ActionReturnType,
+  QueryExtractorTransformer,
+  DomainElementObject
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
 // ################################################################################################
@@ -55,23 +57,29 @@ export type AsyncExtractorRunnerMap<StateType> = {
     ExtractorForSingleObject | ExtractorForSingleObjectList | ExtractorForRecordOfExtractors,
     StateType,
     DomainElement
-  >;
+  >,
   extractWithManyExtractors: AsyncExtractorRunner<
     ExtractorForRecordOfExtractors,
     StateType,
     DomainElementObjectOrFailed
-  >;
+  >,
   extractEntityInstanceUuidIndex: AsyncExtractorRunner<
     ExtractorForSingleObjectList,
     StateType,
     DomainElementInstanceUuidIndexOrFailed
-  >;
+  >,
   extractEntityInstance: AsyncExtractorRunner<ExtractorForSingleObject, StateType, DomainElementEntityInstanceOrFailed>;
   extractEntityInstanceUuidIndexWithObjectListExtractor: AsyncExtractorRunner<
     ExtractorForSingleObjectList,
     StateType,
     DomainElementInstanceUuidIndexOrFailed
-  >;
+  >,
+  processExtractorTransformer(
+    query: QueryExtractorTransformer,
+    queryParams: DomainElementObject,
+    newFetchedData: DomainElementObject,
+    extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>,
+  ): Promise<DomainElement>
 };
 
 // ################################################################################################
