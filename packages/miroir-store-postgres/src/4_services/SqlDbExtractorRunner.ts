@@ -88,13 +88,15 @@ export class SqlDbExtractRunner {
       return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
     }
 
+    const orderBy = query.orderBy ? `ORDER BY ${query.orderBy}` : "";
     switch (query.queryName) {
       case "unique": {
         log.info("applyExtractorTransformerSql query.attribute", query.attribute);
         // TODO: resolve query.referencedExtractor.referenceName properly
         const aggregateRawQuery = `
           WITH ${extractorRawQueries.map(q => q[0] + " AS (" + q[1] + " )").join(", ")}
-          SELECT DISTINCT ON (${query.attribute}) ${query.attribute} FROM ${query.referencedExtractor.referenceName} 
+          SELECT DISTINCT ON (${query.attribute}) ${query.attribute} FROM ${query.referencedExtractor.referenceName}
+          ${orderBy}
         `
         log.info("applyExtractorTransformerSql unique aggregateRawQuery", aggregateRawQuery);
     
@@ -105,7 +107,7 @@ export class SqlDbExtractRunner {
           return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
         }
     
-        const sqlResult = rawResult.returnedDomainElement.elementValue.map((row: any) => row[query.attribute]);
+        const sqlResult = rawResult.returnedDomainElement.elementValue;
         log.info("applyExtractorTransformerSql unique sqlResult", JSON.stringify(sqlResult));
         return Promise.resolve({ elementType: "any", elementValue: sqlResult });
         break;
@@ -117,9 +119,11 @@ export class SqlDbExtractRunner {
         `WITH ${extractorRawQueries.map(q => q[0] + " AS (" + q[1] + " )").join(", ")}
           SELECT ${query.groupBy}, COUNT("uuid") FROM ${query.referencedExtractor.referenceName}
           GROUP BY ${query.groupBy}
+          ${orderBy}
         ` :
         `WITH ${extractorRawQueries.map(q => q[0] + " AS (" + q[1] + " )").join(", ")}
           SELECT COUNT("uuid") FROM ${query.referencedExtractor.referenceName}
+          ${orderBy}
         `;
         log.info("applyExtractorTransformerSql count aggregateRawQuery", aggregateRawQuery);
     

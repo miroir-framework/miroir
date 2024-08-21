@@ -554,6 +554,10 @@
                 "definition": {
                   "relativePath": "queryTemplateContextReference"
                 }
+              },
+              "orderBy": {
+                "type": "string",
+                "optional": true
               }
             }
           },

@@ -368,6 +368,7 @@ export const applyExtractorTransformer = (
   );
 
   log.info("innerSelectElementFromQuery extractorTransformer resolvedReference", resolvedReference);
+  const sortByAttribute = query.orderBy?(a: any[])=>a.sort((a, b) => a[query.orderBy??""].localeCompare(b[query.orderBy??""], "en", { sensitivity: "base" })):(a: any[])=>a;
   switch (query.queryName) {
     case "unique": {
       const result = new Set<string>();
@@ -375,7 +376,9 @@ export const applyExtractorTransformer = (
         for (const entry of Object.entries(resolvedReference.elementValue)) {
           result.add((entry[1] as any)[query.attribute]);
         }
-        return { elementType: "any", elementValue: [...result] };
+        return { elementType: "any", elementValue: sortByAttribute([...result].map(e => ({[query.attribute]: e}))) };
+      } else {
+        return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } };
       }
       break;
     }
@@ -395,7 +398,7 @@ export const applyExtractorTransformer = (
         }
         return {
           elementType: "any",
-          elementValue: [...result.entries()].map((e) => ({ [query.groupBy as any]: e[0], count: e[1] })),
+          elementValue: sortByAttribute([...result.entries()].map((e) => ({ [query.groupBy as any]: e[0], count: e[1] }))),
         };
       } else {
         return { elementType: "any" /* TODO: number? */, elementValue: [{count: Object.keys(resolvedReference.elementValue).length}] };

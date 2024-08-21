@@ -499,6 +499,7 @@ describe.sequential("PersistenceStoreExtractorRunner.integ.test", () => {
                   referenceName: "books",
                 },
                 attribute: "author",
+                orderBy: "author",
               },
             },
           },
@@ -506,16 +507,15 @@ describe.sequential("PersistenceStoreExtractorRunner.integ.test", () => {
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      (a) => (a as any).returnedDomainElement.elementValue.uniqueAuthors.elementValue.sort(),
+      (a) => (a as any).returnedDomainElement.elementValue.uniqueAuthors.elementValue,
       undefined, // name to give to result
       "object",
       [
-        "4441169e-0c22-4fbc-81b2-28c87cf48ab2",
-        "ce7b601d-be5f-4bc6-a5af-14091594046a",
-        "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
-        "e4376314-d197-457c-aa5e-d2da5f8d5977",
+        { author: "4441169e-0c22-4fbc-81b2-28c87cf48ab2" },
+        { author: "ce7b601d-be5f-4bc6-a5af-14091594046a" },
+        { author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17" },
+        { author: "e4376314-d197-457c-aa5e-d2da5f8d5977" },
       ]
-      // ["4441169e-0c22-4fbc-81b2-28c87cf48ab2","ce7b601d-be5f-4bc6-a5af-14091594046a","d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17"]
     );
   });
   
@@ -544,7 +544,6 @@ describe.sequential("PersistenceStoreExtractorRunner.integ.test", () => {
                 parentName: "Book",
                 parentUuid: {
                   queryTemplateType: "constantUuid",
-                  // constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                   constantUuidValue: entityBook.uuid,
                 },
               },
@@ -599,7 +598,6 @@ describe.sequential("PersistenceStoreExtractorRunner.integ.test", () => {
                 parentName: "Book",
                 parentUuid: {
                   queryTemplateType: "constantUuid",
-                  // constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                   constantUuidValue: entityBook.uuid,
                 },
               },
@@ -613,6 +611,7 @@ describe.sequential("PersistenceStoreExtractorRunner.integ.test", () => {
                   referenceName: "books",
                 },
                 groupBy: "author",
+                orderBy: "author",
               },
             },
           },
@@ -620,7 +619,7 @@ describe.sequential("PersistenceStoreExtractorRunner.integ.test", () => {
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      (a) => (a as any).returnedDomainElement.elementValue.countBooksByAuthors.elementValue.sort((a, b) => a.author.localeCompare(b.author)),
+      (a) => (a as any).returnedDomainElement.elementValue.countBooksByAuthors.elementValue,
       undefined, // name to give to result
       "object", // must equal a.returnedDomainElement.elementType
       [
