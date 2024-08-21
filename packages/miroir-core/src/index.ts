@@ -256,7 +256,7 @@ export {
   DomainModelSingleExtractor,
   domainModelSingleExtractor,
   QueryExtractorTransformer,
-  queryExtractorTransformer,
+  queryExtractorTransformerUnique,
   QuerySelectExtractorWrapper,
   querySelectExtractorWrapper,
   QuerySelectExtractorWrapperReturningList,
@@ -510,7 +510,7 @@ export {
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   asyncExtractWithExtractor,
   asyncExtractWithManyExtractors,
-  asyncInnerSelectElementFromQuery,
+  asyncApplyExtractorTransformerInMemory,
 } from './2_domain/AsyncQuerySelectors.js';
 export{
   getLocalCacheIndexDeploymentSection,

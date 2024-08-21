@@ -67,7 +67,7 @@ import {
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   asyncExtractWithManyExtractors,
   asyncExtractWithExtractor,
-  processExtractorTransformerInMemory,
+  asyncApplyExtractorTransformerInMemory,
 } from "./AsyncQuerySelectors.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "ExtractorRunnerInMemory");
@@ -90,7 +90,7 @@ export class ExtractorRunnerInMemory implements PersistenceStoreExtractorRunner 
       extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
-      processExtractorTransformer: processExtractorTransformerInMemory,
+      applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
     };
   }
 
@@ -439,13 +439,6 @@ export class ExtractorRunnerInMemory implements PersistenceStoreExtractorRunner 
   // ##############################################################################################
   public getSelectorMap(): AsyncExtractorRunnerMap<any> {
     return this.selectorMap;
-    // return {
-    //   extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex,
-    //   extractEntityInstance: this.extractEntityInstance,
-    //   extractEntityInstanceUuidIndexWithObjectListExtractor: async (...args) => exractEntityInstanceListFromListQueryAndDomainState(...args),
-    //   extractWithManyExtractors: async (...args) => extractWithManyExtractorsFromDomainState(...args),
-    //   extractWithExtractor: async (...args) => extractWithExtractor(...args),
-    // };
   }
 } // end of class ExtractorRunnerInMemory
 

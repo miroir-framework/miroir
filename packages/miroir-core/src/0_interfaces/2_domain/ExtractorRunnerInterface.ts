@@ -74,7 +74,7 @@ export type AsyncExtractorRunnerMap<StateType> = {
     StateType,
     DomainElementInstanceUuidIndexOrFailed
   >,
-  processExtractorTransformer(
+  applyExtractorTransformer(
     query: QueryExtractorTransformer,
     queryParams: DomainElementObject,
     newFetchedData: DomainElementObject,

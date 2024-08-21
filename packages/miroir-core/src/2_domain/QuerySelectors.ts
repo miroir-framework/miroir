@@ -27,6 +27,7 @@ import {
   QuerySelectObjectList,
   ExtractObjectListByEntity,
   DomainModelSingleExtractor,
+  QueryExtractorTransformer,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   SyncExtractorRunnerParams,
@@ -71,7 +72,7 @@ const emptyAsyncSelectorMap:AsyncExtractorRunnerMap<any> = {
   extractEntityInstance: undefined as any,
   extractEntityInstanceUuidIndexWithObjectListExtractor: undefined as any,
   extractEntityInstanceUuidIndex: undefined as any,
-  processExtractorTransformer: undefined as any,
+  applyExtractorTransformer: undefined as any,
 }
 
 // ################################################################################################
@@ -354,34 +355,46 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractor
 
 };
 
-// // ################################################################################################
-// /**
-//  * returns an Entity Instance List, from a ListQuery
-//  * @param deploymentEntityState 
-//  * @param selectorParams 
-//  * @returns 
-//  */
-// export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
-// = <StateType>(
-//   deploymentEntityState: StateType,
-//   selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList, StateType>
-// ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
-//   const result: Promise<DomainElementInstanceUuidIndexOrFailed> =
-//     (selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap).extractEntityInstanceUuidIndex(deploymentEntityState, selectorParams)
-//     .then((selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed) => {
-//       log.info(
-//         "extractEntityInstanceUuidIndexWithObjectListExtractor found selectedInstances", selectedInstancesUuidIndex
-//       );
+// ################################################################################################
+export const applyExtractorTransformer = (
+  query: QueryExtractorTransformer,
+  queryParams: DomainElementObject,
+  newFetchedData: DomainElementObject
+): DomainElement => {
+  const resolvedReference = resolveContextReference(
+    query.referencedExtractor,
+    queryParams,
+    newFetchedData
+  );
 
-//       return applyExtractorForSingleObjectListToSelectedInstancesUuidIndex(
-//         selectedInstancesUuidIndex,
-//         selectorParams.extractor,
-//       );
-//     });
-//   ;
+  log.info("innerSelectElementFromQuery extractorTransformer resolvedReference", resolvedReference);
+  switch (query.queryName) {
+    case "unique": {
+      const result = new Set<string>();
+      if (resolvedReference.elementType == "instanceUuidIndex") {
+        for (const entry of Object.entries(resolvedReference.elementValue)) {
+          result.add((entry[1] as any)[query.attribute]);
+        }
+        return { elementType: "any", elementValue: [...result] };
+      }
+      break;
+    }
+    case "count": {
+      if (resolvedReference.elementType == "instanceUuidIndex") {
+        return { elementType: "any" /* TODO: number? */, elementValue: Object.keys(resolvedReference.elementValue).length };
+      }
+      break;
+    }
+    default: {
+      return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } };
+      break;
+    }
+  }
 
-//   return result;
-// };
+  log.info("innerSelectElementFromQuery extractorTransformer resolvedReference", resolvedReference);
+
+  return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } };
+};
 
 // ################################################################################################
 export function innerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
@@ -529,29 +542,45 @@ export function innerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
       break;
     }
     case "extractorTransformer": {
-      const resolvedReference = resolveContextReference(
-        query.referencedQuery,
-        queryParams,
-        newFetchedData
-      );
+      // const resolvedReference = resolveContextReference(
+      //   (query as any).referencedExtractor,
+      //   queryParams,
+      //   newFetchedData
+      // );
 
-      log.info("innerSelectElementFromQuery extractorTransformer resolvedReference", resolvedReference);
-      const result = new Set<string>();
-      if (resolvedReference.elementType == "instanceUuidIndex") {
-        for (const entry of Object.entries(resolvedReference.elementValue)) {
-            result.add((entry[1] as any)[query.attribute]);
-        }
-        return { elementType: "any", elementValue: [...result] };
-      }
+      // log.info("innerSelectElementFromQuery extractorTransformer resolvedReference", resolvedReference);
+      // switch (query.queryName) {
+      //   case "unique": {
+      //     const result = new Set<string>();
+      //     if (resolvedReference.elementType == "instanceUuidIndex") {
+      //       for (const entry of Object.entries(resolvedReference.elementValue)) {
+      //           result.add((entry[1] as any)[query.attribute]);
+      //       }
+      //       return { elementType: "any", elementValue: [...result] };
+      //     }
+      //     break;
+      //   }
+      //   case "count": {
+      //     if (resolvedReference.elementType == "instanceUuidIndex") {
+      //       return { elementType: "string" /* TODO: number? */, elementValue: Object.keys(resolvedReference.elementValue).length.toString() };
+      //     }
+      //     break;
+      //   }
+      //   default: {
+      //     return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } };
+      //     break;
+      //   }
+      // }
 
-      // // Object.entries(resolvedReference.elementValue).map(
-      // //   (entry: [string, DomainElement]) => {
-      // //   }
-      // // );
-      // )
-      log.info("innerSelectElementFromQuery extractorTransformer resolvedReference", resolvedReference);
+      // // // Object.entries(resolvedReference.elementValue).map(
+      // // //   (entry: [string, DomainElement]) => {
+      // // //   }
+      // // // );
+      // // )
+      // log.info("innerSelectElementFromQuery extractorTransformer resolvedReference", resolvedReference);
 
-      return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } };
+      // return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } };
+      return applyExtractorTransformer(query, queryParams, newFetchedData);
       break;
     }
     case "queryContextReference": {

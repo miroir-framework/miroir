@@ -45,7 +45,11 @@ import {
   selfApplicationDeploymentMiroir,
   selfApplicationDeploymentLibrary,
   DomainElementType,
-  EntityInstance
+  EntityInstance,
+  EntityDefinition,
+  MetaEntity,
+  DomainAction,
+  InstanceAction
 } from "miroir-core";
 import { LocalCache, PersistenceReduxSaga, ReduxStoreWithUndoRedo, RestPersistenceClientAndRestClient } from 'miroir-localcache-redux';
 import { createMswRestServer } from 'miroir-server-msw-stub';
@@ -202,6 +206,173 @@ export async function miroirIntegrationTestEnvironmentFactory(miroirConfig: Miro
   // }
 
   return result;
+}
+
+// ################################################################################################
+export async function addEntitiesAndInstancesForEmulatedServer(
+  localAppPersistenceStoreController: PersistenceStoreControllerInterface,
+  entityAuthor: MetaEntity,
+  entityDefinitionAuthor: EntityDefinition,
+  entityBook: MetaEntity,
+  entityDefinitionBook: EntityDefinition,
+  reportBookList: EntityInstance,
+  author1: EntityInstance,
+  author2: EntityInstance,
+  author3: EntityInstance,
+  book1: EntityInstance,
+  book2: EntityInstance,
+  book4: EntityInstance,
+) {
+  await localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
+  await localAppPersistenceStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
+  await localAppPersistenceStoreController?.upsertInstance('model', reportBookList as EntityInstance);
+  await localAppPersistenceStoreController?.upsertInstance('data', author1 as EntityInstance);
+  await localAppPersistenceStoreController?.upsertInstance('data', author2 as EntityInstance);
+  await localAppPersistenceStoreController?.upsertInstance('data', author3 as EntityInstance);
+  await localAppPersistenceStoreController?.upsertInstance('data', book1 as EntityInstance);
+  await localAppPersistenceStoreController?.upsertInstance('data', book2 as EntityInstance);
+  // await localAppPersistenceStoreController?.upsertInstance('data',book3.parentUuid, book3 as Instance);
+  await localAppPersistenceStoreController?.upsertInstance('data', book4 as EntityInstance);
+}
+
+export async function addEntitiesAndInstancesForRealServer(
+  domainController: DomainControllerInterface,
+  localCache: LocalCache,
+  adminConfigurationDeploymentLibrary: EntityInstance,
+  entityAuthor: MetaEntity,
+  entityBook: MetaEntity,
+  entityDefinitionAuthor: EntityDefinition,
+  entityDefinitionBook: EntityDefinition,
+  author1: EntityInstance,
+  author2: EntityInstance,
+  author3: EntityInstance,
+  book1: EntityInstance,
+  book2: EntityInstance,
+  book4: EntityInstance,
+  act?: unknown,
+) {
+  const createAction: DomainAction = {
+    actionType: "modelAction",
+    actionName: "createEntity",
+    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+    entities: [
+      { entity: entityAuthor as MetaEntity, entityDefinition: entityDefinitionAuthor as EntityDefinition },
+      { entity: entityBook as MetaEntity, entityDefinition: entityDefinitionBook as EntityDefinition },
+    ],
+  };
+
+  if (act) {
+    await (act as any)(async () => {
+      await domainController.handleAction(createAction, localCache.currentModel(adminConfigurationDeploymentLibrary.uuid));
+      await domainController.handleAction(
+        {
+          actionName: "commit",
+          actionType: "modelAction",
+          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        },
+        localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
+      );
+    });
+  } else {
+    await domainController.handleAction(createAction, localCache.currentModel(adminConfigurationDeploymentLibrary.uuid));
+    await domainController.handleAction(
+      {
+        actionName: "commit",
+        actionType: "modelAction",
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      },
+      localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
+    );
+  }
+
+  const createInstancesAction: InstanceAction = {
+    actionType: "instanceAction",
+    actionName: "createInstance",
+    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    applicationSection: "data",
+    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+    objects: [
+      {
+        parentName: entityAuthor.name,
+        parentUuid: entityAuthor.uuid,
+        applicationSection: "data",
+        instances: [author1 as EntityInstance, author2 as EntityInstance, author3 as EntityInstance],
+      },
+      {
+        parentName: entityBook.name,
+        parentUuid: entityBook.uuid,
+        applicationSection: "data",
+        instances: [book1 as EntityInstance, book2 as EntityInstance, book4 as EntityInstance],
+      },
+    ],
+  };
+
+  if (act) {
+    await (act as any)(async () => {
+      await domainController.handleAction(createInstancesAction);
+    });
+  } else {
+    await domainController.handleAction(createInstancesAction);
+  }
+}
+
+// ################################################################################################
+export async function addEntitiesAndInstances(
+  localAppPersistenceStoreController: PersistenceStoreControllerInterface,
+  domainController: DomainControllerInterface,
+  localCache: LocalCache,
+  miroirConfig: MiroirConfigClient,
+  adminConfigurationDeploymentLibrary: EntityInstance,
+  entityAuthor: MetaEntity,
+  entityBook: MetaEntity,
+  entityDefinitionAuthor: EntityDefinition,
+  entityDefinitionBook: EntityDefinition,
+  reportBookList: EntityInstance,
+  author1: EntityInstance,
+  author2: EntityInstance,
+  author3: EntityInstance,
+  book1: EntityInstance,
+  book2: EntityInstance,
+  book3: EntityInstance,
+  book4: EntityInstance,
+  act?: unknown,
+) {
+  if (miroirConfig.client.emulateServer) {
+    await addEntitiesAndInstancesForEmulatedServer(
+      localAppPersistenceStoreController,
+      entityAuthor,
+      entityDefinitionAuthor,
+      entityBook,
+      entityDefinitionBook,
+      reportBookList,
+      author1,
+      author2,
+      author3,
+      book1,
+      book2,
+      book4,
+    );
+  } else {
+    await addEntitiesAndInstancesForRealServer(
+      domainController,
+      localCache,
+      adminConfigurationDeploymentLibrary,
+      entityAuthor,
+      entityBook,
+      entityDefinitionAuthor,
+      entityDefinitionBook,
+      author1,
+      author2,
+      author3,
+      book1,
+      book2,
+      book4,
+      act,
+    );
+  }
 }
 
 // ################################################################################################

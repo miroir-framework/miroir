@@ -2290,6 +2290,9 @@ export function getMiroirFundamentalJzodSchema(
         querySelectExtractorWrapperReturningObject: (miroirFundamentalJzodSchema as any).definition.context.querySelectExtractorWrapperReturningObject,
         querySelectExtractorWrapperReturningList: (miroirFundamentalJzodSchema as any).definition.context.querySelectExtractorWrapperReturningList,
         querySelectExtractorWrapper: (miroirFundamentalJzodSchema as any).definition.context.querySelectExtractorWrapper,
+        queryExtractorTransformerAbstract: (miroirFundamentalJzodSchema as any).definition.context.queryExtractorTransformerAbstract,
+        queryExtractorTransformerUnique: (miroirFundamentalJzodSchema as any).definition.context.queryExtractorTransformerUnique,
+        queryExtractorTransformerCount: (miroirFundamentalJzodSchema as any).definition.context.queryExtractorTransformerCount,
         queryExtractorTransformer: (miroirFundamentalJzodSchema as any).definition.context.queryExtractorTransformer,
         querySelectObject: (miroirFundamentalJzodSchema as any).definition.context.querySelectObject,
         querySelectObjectList: (miroirFundamentalJzodSchema as any).definition.context.querySelectObjectList,
@@ -2425,7 +2428,7 @@ export function getMiroirFundamentalJzodSchema(
   // console.log("getMiroirFundamentalJzodSchema", "localizedResolutionStore", JSON.stringify(localizedResolutionStore, null, 2))
   // console.log("getMiroirFundamentalJzodSchema #######################################################")
   // const localizedInnerResolutionStoreReferences: Record<string, JzodReference> = Object.fromEntries(
-  const extendedSchemas = ["jzodBaseObject", "domainModelRootExtractor", "queryRoot"];
+  const extendedSchemas = ["jzodBaseObject", "domainModelRootExtractor", "queryRoot", "queryExtractorTransformerAbstract"];
 
   const localizedInnerResolutionStoreExtendedReferences = Object.fromEntries(
     Object.entries(localizedResolutionStore).flatMap((e) =>

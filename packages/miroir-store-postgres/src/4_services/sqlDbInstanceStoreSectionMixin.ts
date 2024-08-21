@@ -43,7 +43,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       // public applicationSection: ApplicationSection,
       // public sqlDbStoreName: string,
       // public dataConnectionString:string,
-      // public dataSchema:string,
+      // public schema:string,
       // public logHeader: string,
       ...args: any[]
     ) {
@@ -53,9 +53,10 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
 
     async executeRawQuery(query: string): Promise<ActionReturnType> {
       const rawResult = await this.sequelize.query(query);
-      log.info(this.logHeader, "executeRawQuery", "query", query, "result", rawResult);
-      const result:ActionReturnType = {
+      log.info(this.logHeader, "executeRawQuery", "query", query, "rawResult", rawResult);
+      const result: ActionReturnType = {
         status: "ok",
+        // returnedDomainElement: { elementType: "any", elementValue: Number((rawResult[0] as any).count) },
         returnedDomainElement: { elementType: "any", elementValue: rawResult[0] },
       }
       log.info(this.logHeader, "executeRawQuery", "query", query, "result", JSON.stringify(result));
@@ -85,7 +86,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           if (extractor.parentUuid.queryTemplateType != "constantUuid") {
             throw new Error("sqlForExtractor can not handle queryTemplateType for extractor" + JSON.stringify(extractor));
           }
-          return `SELECT * FROM "miroir"."${extractor.parentName}"`;
+          return `SELECT * FROM "${this.schema}"."${extractor.parentName}"`;
           // return result;
           break;
         }

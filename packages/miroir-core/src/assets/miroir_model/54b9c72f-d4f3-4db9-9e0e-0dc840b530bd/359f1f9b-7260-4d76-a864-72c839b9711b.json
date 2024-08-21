@@ -542,23 +542,77 @@
               }
             ]
           },
-          "queryExtractorTransformer": {
+          "queryExtractorTransformerAbstract": {
             "type": "object",
             "definition": {
               "queryType": {
                 "type": "literal",
                 "definition": "extractorTransformer"
               },
-              "referencedQuery": {
+              "referencedExtractor": {
                 "type": "schemaReference",
                 "definition": {
                   "relativePath": "queryTemplateContextReference"
                 }
+              }
+            }
+          },
+          "queryExtractorTransformerUnique": {
+            "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "queryExtractorTransformerAbstract"
+              }
+            },
+            "definition": {
+              "queryName": {
+                "type": "literal",
+                "definition": "unique"
               },
               "attribute": {
                 "type": "string"
               }
             }
+          },
+          "queryExtractorTransformerCount": {
+            "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "queryExtractorTransformerAbstract"
+              }
+            },
+            "definition": {
+              "queryName": {
+                "type": "literal",
+                "definition": "count"
+              },
+              "groupBy": {
+                "type": "string",
+                "optional": true
+              }
+            }
+          },
+          "queryExtractorTransformer": {
+            "type": "union",
+            "discriminator": "queryType",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "queryExtractorTransformerUnique"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "queryExtractorTransformerCount"
+                }
+              }
+            ]
           },
           "querySelect": {
             "type": "union",

@@ -712,7 +712,8 @@ describe("domainSelector", () => {
         queryTransformers: {
           publishers: {
             queryType: "extractorTransformer",
-            referencedQuery: {
+            queryName: "unique",
+            referencedExtractor: {
               queryTemplateType: "queryContextReference",
               referenceName: "books",
             },
