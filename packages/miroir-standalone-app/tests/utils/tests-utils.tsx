@@ -216,23 +216,18 @@ export async function addEntitiesAndInstancesForEmulatedServer(
   entityBook: MetaEntity,
   entityDefinitionBook: EntityDefinition,
   reportBookList: EntityInstance,
-  author1: EntityInstance,
-  author2: EntityInstance,
-  author3: EntityInstance,
-  book1: EntityInstance,
-  book2: EntityInstance,
-  book4: EntityInstance,
+  authorList: EntityInstance[],
+  bookList: EntityInstance[],
 ) {
   await localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
   await localAppPersistenceStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
   await localAppPersistenceStoreController?.upsertInstance('model', reportBookList as EntityInstance);
-  await localAppPersistenceStoreController?.upsertInstance('data', author1 as EntityInstance);
-  await localAppPersistenceStoreController?.upsertInstance('data', author2 as EntityInstance);
-  await localAppPersistenceStoreController?.upsertInstance('data', author3 as EntityInstance);
-  await localAppPersistenceStoreController?.upsertInstance('data', book1 as EntityInstance);
-  await localAppPersistenceStoreController?.upsertInstance('data', book2 as EntityInstance);
-  // await localAppPersistenceStoreController?.upsertInstance('data',book3.parentUuid, book3 as Instance);
-  await localAppPersistenceStoreController?.upsertInstance('data', book4 as EntityInstance);
+  for (const author of authorList) {
+    await localAppPersistenceStoreController?.upsertInstance('data', author as EntityInstance);
+  }
+  for (const book of bookList) {
+    await localAppPersistenceStoreController?.upsertInstance('data', book as EntityInstance);
+  }
 }
 
 export async function addEntitiesAndInstancesForRealServer(
@@ -243,12 +238,8 @@ export async function addEntitiesAndInstancesForRealServer(
   entityBook: MetaEntity,
   entityDefinitionAuthor: EntityDefinition,
   entityDefinitionBook: EntityDefinition,
-  author1: EntityInstance,
-  author2: EntityInstance,
-  author3: EntityInstance,
-  book1: EntityInstance,
-  book2: EntityInstance,
-  book4: EntityInstance,
+  authorList: EntityInstance[],
+  bookList: EntityInstance[],
   act?: unknown,
 ) {
   const createAction: DomainAction = {
@@ -299,13 +290,13 @@ export async function addEntitiesAndInstancesForRealServer(
         parentName: entityAuthor.name,
         parentUuid: entityAuthor.uuid,
         applicationSection: "data",
-        instances: [author1 as EntityInstance, author2 as EntityInstance, author3 as EntityInstance],
+        instances: authorList,
       },
       {
         parentName: entityBook.name,
         parentUuid: entityBook.uuid,
         applicationSection: "data",
-        instances: [book1 as EntityInstance, book2 as EntityInstance, book4 as EntityInstance],
+        instances: bookList,
       },
     ],
   };
@@ -331,13 +322,8 @@ export async function addEntitiesAndInstances(
   entityDefinitionAuthor: EntityDefinition,
   entityDefinitionBook: EntityDefinition,
   reportBookList: EntityInstance,
-  author1: EntityInstance,
-  author2: EntityInstance,
-  author3: EntityInstance,
-  book1: EntityInstance,
-  book2: EntityInstance,
-  book3: EntityInstance,
-  book4: EntityInstance,
+  authorList: EntityInstance[],
+  bookList: EntityInstance[],
   act?: unknown,
 ) {
   if (miroirConfig.client.emulateServer) {
@@ -348,12 +334,8 @@ export async function addEntitiesAndInstances(
       entityBook,
       entityDefinitionBook,
       reportBookList,
-      author1,
-      author2,
-      author3,
-      book1,
-      book2,
-      book4,
+      authorList,
+      bookList,
     );
   } else {
     await addEntitiesAndInstancesForRealServer(
@@ -364,12 +346,8 @@ export async function addEntitiesAndInstances(
       entityBook,
       entityDefinitionAuthor,
       entityDefinitionBook,
-      author1,
-      author2,
-      author3,
-      book1,
-      book2,
-      book4,
+      authorList,
+      bookList,
       act,
     );
   }

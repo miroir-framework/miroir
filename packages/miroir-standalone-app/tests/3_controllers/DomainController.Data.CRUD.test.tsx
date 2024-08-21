@@ -174,9 +174,6 @@ describe.sequential('DomainController.Data.CRUD',
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
           const user = userEvent.setup()
   
-          // await localDataStore.clear();
-          // await localDataStore.initModel();
-
           await addEntitiesAndInstances(
             localAppPersistenceStoreController,
             domainController,
@@ -188,13 +185,17 @@ describe.sequential('DomainController.Data.CRUD',
             entityDefinitionAuthor as EntityDefinition,
             entityDefinitionBook as EntityDefinition,
             reportBookList as Report,
-            author1,
-            author2,
-            author3 as EntityInstance,
-            book1 as EntityInstance,
-            book2 as EntityInstance,
-            book3 as EntityInstance,
-            book4 as EntityInstance,
+            [
+              author1,
+              author2,
+              author3 as EntityInstance,
+            ],
+            [
+              book1 as EntityInstance,
+              book2 as EntityInstance,
+              // book3 as EntityInstance,
+              book4 as EntityInstance,
+            ],
             act,
           );
 
@@ -332,81 +333,32 @@ describe.sequential('DomainController.Data.CRUD',
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
           const user = userEvent.setup()
 
-          if (miroirConfig.client.emulateServer) {
-            await localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
-            await localAppPersistenceStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
-            await localAppPersistenceStoreController.upsertInstance('model', reportBookList as EntityInstance);
-            await localAppPersistenceStoreController.upsertInstance('data', author1 as EntityInstance);
-            await localAppPersistenceStoreController.upsertInstance('data', author2 as EntityInstance);
-            await localAppPersistenceStoreController.upsertInstance('data', author3 as EntityInstance);
-            await localAppPersistenceStoreController.upsertInstance('data', book1 as EntityInstance);
-            await localAppPersistenceStoreController.upsertInstance('data', book2 as EntityInstance);
-            await localAppPersistenceStoreController.upsertInstance('data', book3 as EntityInstance);
-            await localAppPersistenceStoreController.upsertInstance('data', book4 as EntityInstance);
-          } else {
-            const createAction: DomainAction = {
-              actionType: "modelAction",
-              actionName: "createEntity",
-              deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
-              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              entities: [
-                {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
-                {entity:entityBook as MetaEntity, entityDefinition:entityDefinitionBook as EntityDefinition},
-              ],
-            };
+          // TODO: replace with call to addEntitiesAndInstances
+          await addEntitiesAndInstances(
+            localAppPersistenceStoreController,
+            domainController,
+            localCache,
+            miroirConfig,
+            adminConfigurationDeploymentLibrary,
+            entityAuthor as MetaEntity,
+            entityBook as MetaEntity,
+            entityDefinitionAuthor as EntityDefinition,
+            entityDefinitionBook as EntityDefinition,
+            reportBookList as Report,
+            [
+              author1,
+              author2,
+              author3 as EntityInstance,
+            ],
+            [
+              book1 as EntityInstance,
+              book2 as EntityInstance,
+              book3 as EntityInstance,
+              book4 as EntityInstance,
+            ],
+            act,
+          );
 
-            await act(
-              async () => {
-                await domainController.handleAction(createAction, localCache.currentModel(adminConfigurationDeploymentLibrary.uuid));
-                await domainController.handleAction(
-                  {
-                    actionName: "commit",
-                    actionType: "modelAction",
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  },
-                  localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
-                );
-              }
-            );
-              
-            const createInstancesAction: InstanceAction = {
-              actionType: "instanceAction",
-              actionName: "createInstance",
-              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-              applicationSection: "data",
-              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-              objects: [
-                {
-                  parentName: entityAuthor.name,
-                  parentUuid: entityAuthor.uuid,
-                  applicationSection: "data",
-                  instances: [
-                    author1 as EntityInstance,
-                    author2 as EntityInstance,
-                    author3 as EntityInstance,
-                  ],
-                },
-                {
-                  parentName: entityBook.name,
-                  parentUuid: entityBook.uuid,
-                  applicationSection: "data",
-                  instances: [
-                    book1 as EntityInstance,
-                    book2 as EntityInstance,
-                    book3 as EntityInstance,
-                    book4 as EntityInstance,
-                  ],
-                },
-              ],
-            };
-    
-            await act(
-              async () => {
-                await domainController.handleAction(createInstancesAction);
-              }
-            );
-          }
           const {
             getByText,
             getAllByRole,

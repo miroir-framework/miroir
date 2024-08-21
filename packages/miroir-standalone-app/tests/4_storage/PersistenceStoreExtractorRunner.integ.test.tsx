@@ -27,7 +27,9 @@ import {
   EntityInstance,
   MetaEntity,
   reportBookList,
-  Report
+  Report,
+  book5,
+  book6
 } from "miroir-core";
 
 
@@ -105,13 +107,19 @@ beforeEach(
       entityDefinitionAuthor as EntityDefinition,
       entityDefinitionBook as EntityDefinition,
       reportBookList as Report,
-      author1,
-      author2,
-      author3 as EntityInstance,
-      book1 as EntityInstance,
-      book2 as EntityInstance,
-      book3 as EntityInstance,
-      book4 as EntityInstance,
+      [
+        author1,
+        author2,
+        author3 as EntityInstance,
+      ],
+      [
+        book1 as EntityInstance,
+        book2 as EntityInstance,
+        book3 as EntityInstance,
+        book4 as EntityInstance,
+        book5 as EntityInstance,
+        book6 as EntityInstance,
+      ]
     )
   }
 )
@@ -504,7 +512,8 @@ describe.sequential("PersistenceStoreExtractorRunner.integ.test", () => {
       [
         "4441169e-0c22-4fbc-81b2-28c87cf48ab2",
         "ce7b601d-be5f-4bc6-a5af-14091594046a",
-        "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17"
+        "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+        "e4376314-d197-457c-aa5e-d2da5f8d5977",
       ]
       // ["4441169e-0c22-4fbc-81b2-28c87cf48ab2","ce7b601d-be5f-4bc6-a5af-14091594046a","d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17"]
     );
@@ -558,9 +567,68 @@ describe.sequential("PersistenceStoreExtractorRunner.integ.test", () => {
       (a) => (a as any).returnedDomainElement.elementValue.uniqueAuthors.elementValue,
       undefined, // name to give to result
       "object",// must equal a.returnedDomainElement.elementType
-      3,
+      // 3,
+      [{count: 6}],
       // [{count: "3"}],
       // ["4441169e-0c22-4fbc-81b2-28c87cf48ab2","ce7b601d-be5f-4bc6-a5af-14091594046a","d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17"]
+    );
+  });
+  
+  // ################################################################################################
+  it("get count books by author uuid", async () => {
+    await chainVitestSteps(
+      "PersistenceStoreExtractorRunner_selectUniqueEntityApplication",
+      {},
+      async () => {
+        const applicationSection: ApplicationSection = "data";
+        const queryResult = await localAppPersistenceStoreController.handleQuery(applicationSection, {
+          actionType: "queryAction",
+          actionName: "runQuery",
+          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+          query: {
+            queryType: "extractorForRecordOfExtractors",
+            pageParams: { elementType: "object", elementValue: {} },
+            queryParams: { elementType: "object", elementValue: {} },
+            contextResults: { elementType: "object", elementValue: {} },
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+            extractors: {
+              books: {
+                queryType: "extractObjectListByEntity",
+                applicationSection: applicationSection,
+                parentName: "Book",
+                parentUuid: {
+                  queryTemplateType: "constantUuid",
+                  // constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  constantUuidValue: entityBook.uuid,
+                },
+              },
+            },
+            queryTransformers: {
+              countBooksByAuthors: {
+                queryType: "extractorTransformer",
+                queryName: "count",
+                referencedExtractor: {
+                  queryTemplateType: "queryContextReference",
+                  referenceName: "books",
+                },
+                groupBy: "author",
+              },
+            },
+          },
+        });
+        console.log("queryResult", JSON.stringify(queryResult, null, 2));
+        return queryResult;
+      },
+      (a) => (a as any).returnedDomainElement.elementValue.countBooksByAuthors.elementValue.sort((a, b) => a.author.localeCompare(b.author)),
+      undefined, // name to give to result
+      "object", // must equal a.returnedDomainElement.elementType
+      [
+        { author: "4441169e-0c22-4fbc-81b2-28c87cf48ab2", count: 1 },
+        { author: "ce7b601d-be5f-4bc6-a5af-14091594046a", count: 2 },
+        { author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17", count: 2 },
+        { author: "e4376314-d197-457c-aa5e-d2da5f8d5977", count: 1 },
+      ]
     );
   });
   

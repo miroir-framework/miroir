@@ -91,14 +91,11 @@ export class SqlDbExtractRunner {
     switch (query.queryName) {
       case "unique": {
         log.info("applyExtractorTransformerSql query.attribute", query.attribute);
+        // TODO: resolve query.referencedExtractor.referenceName properly
         const aggregateRawQuery = `
           WITH ${extractorRawQueries.map(q => q[0] + " AS (" + q[1] + " )").join(", ")}
-          SELECT DISTINCT ON (${query.attribute}) ${query.attribute} FROM ${extractorRawQueries[0][0]}
+          SELECT DISTINCT ON (${query.attribute}) ${query.attribute} FROM ${query.referencedExtractor.referenceName} 
         `
-        // const aggregateRawQuery = `
-        //   WITH ${extractorRawQueries.map(q => q[0] + " AS (" + q[1] + " )").join(", ")}
-        //   SELECT * FROM ${extractorRawQueries[0][0]}
-        // `
         log.info("applyExtractorTransformerSql unique aggregateRawQuery", aggregateRawQuery);
     
         const rawResult = await this.persistenceStoreController.executeRawQuery(aggregateRawQuery);
@@ -115,10 +112,15 @@ export class SqlDbExtractRunner {
       }
       case "count": {
         log.info("applyExtractorTransformerSql count query.groupBy", query.groupBy);
-        const aggregateRawQuery = `
-          WITH ${extractorRawQueries.map(q => q[0] + " AS (" + q[1] + " )").join(", ")}
-          SELECT COUNT("uuid") FROM ${extractorRawQueries[0][0]}
-        `
+        // TODO: resolve query.referencedExtractor.referenceName properly
+        const aggregateRawQuery = query.groupBy ? 
+        `WITH ${extractorRawQueries.map(q => q[0] + " AS (" + q[1] + " )").join(", ")}
+          SELECT ${query.groupBy}, COUNT("uuid") FROM ${query.referencedExtractor.referenceName}
+          GROUP BY ${query.groupBy}
+        ` :
+        `WITH ${extractorRawQueries.map(q => q[0] + " AS (" + q[1] + " )").join(", ")}
+          SELECT COUNT("uuid") FROM ${query.referencedExtractor.referenceName}
+        `;
         log.info("applyExtractorTransformerSql count aggregateRawQuery", aggregateRawQuery);
     
         const rawResult = await this.persistenceStoreController.executeRawQuery(aggregateRawQuery);
@@ -128,7 +130,7 @@ export class SqlDbExtractRunner {
           return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
         }
     
-        const sqlResult = Number(rawResult.returnedDomainElement.elementValue[0].count);
+        const sqlResult = rawResult.returnedDomainElement.elementValue.map((e:Record<string,any>)=>({...e,count:Number(e.count)}));
         // log.info("applyExtractorTransformerSql count sqlResult", JSON.stringify(sqlResult));
         log.info("applyExtractorTransformerSql count sqlResult", sqlResult);
         return Promise.resolve({ elementType: "any", elementValue: sqlResult });
@@ -140,16 +142,6 @@ export class SqlDbExtractRunner {
       }
     }
 
-    // const result = new Set<string>();
-    // if (resolvedReference.elementType == "instanceUuidIndex") {
-    //   for (const entry of Object.entries(resolvedReference.elementValue)) {
-    //     result.add((entry[1] as any)[query.attribute]);
-    //   }
-    //   log.info("applyExtractorTransformerSql inMemory result", JSON.stringify(Array.from(result.values())));
-    //   return Promise.resolve({ elementType: "any", elementValue: [...result] });
-    // }
-    
-  
     return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
   }
   
@@ -205,21 +197,6 @@ export class SqlDbExtractRunner {
       break;
     }
   }
-  // const result: Promise<DomainElementInstanceUuidIndexOrFailed> =
-  //   (selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap).extractEntityInstanceUuidIndex(deploymentEntityState, selectorParams)
-  //   .then((selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed) => {
-  //     log.info(
-  //       "extractEntityInstanceUuidIndexWithObjectListExtractor found selectedInstances", selectedInstancesUuidIndex
-  //     );
-
-  //     return applyExtractorForSingleObjectListToSelectedInstancesUuidIndex(
-  //       selectedInstancesUuidIndex,
-  //       selectorParams.extractor,
-  //     );
-  //   });
-  // ;
-
-  // return result;
 };
 
   // ##############################################################################################

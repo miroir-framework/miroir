@@ -380,8 +380,25 @@ export const applyExtractorTransformer = (
       break;
     }
     case "count": {
-      if (resolvedReference.elementType == "instanceUuidIndex") {
-        return { elementType: "any" /* TODO: number? */, elementValue: Object.keys(resolvedReference.elementValue).length };
+      if (resolvedReference.elementType != "instanceUuidIndex") {
+        return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
+      }
+      if (query.groupBy) {
+        const result = new Map<string, number>();
+        for (const entry of Object.entries(resolvedReference.elementValue)) {
+          const key = (entry[1] as any)[query.groupBy];
+          if (result.has(key)) {
+            result.set(key, (result.get(key)??0) + 1);
+          } else {
+            result.set(key, 1);
+          }
+        }
+        return {
+          elementType: "any",
+          elementValue: [...result.entries()].map((e) => ({ [query.groupBy as any]: e[0], count: e[1] })),
+        };
+      } else {
+        return { elementType: "any" /* TODO: number? */, elementValue: [{count: Object.keys(resolvedReference.elementValue).length}] };
       }
       break;
     }
