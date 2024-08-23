@@ -191,7 +191,7 @@ export function getMiroirFundamentalJzodSchema(
   queryEndpointVersionV1: any,
   persistenceEndpointVersionV1: any,
   jzodSchemajzodMiroirBootstrapSchema: any,
-  templateJzodSchema: any,
+  transformerJzodSchema: any,
   entityDefinitionApplicationV1: any,
   entityDefinitionApplicationVersionV1: any,
   entityDefinitionDeployment: any,
@@ -202,7 +202,7 @@ export function getMiroirFundamentalJzodSchema(
   entityDefinitionQueryVersionV1: any,
   entityDefinitionReportV1: any
   // jzodSchemajzodMiroirBootstrapSchema: JzodSchema,
-  // templateJzodSchema: JzodSchema,
+  // transformerJzodSchema: JzodSchema,
   // entityDefinitionApplicationV1: EntityDefinition,
   // entityDefinitionApplicationVersionV1: EntityDefinition,
   // entityDefinitionDeployment: EntityDefinition,
@@ -1957,7 +1957,7 @@ export function getMiroirFundamentalJzodSchema(
           type: "union",
           definition: domainEndpointVersionV1.definition.actions.map((e: any) => e.actionParameters),
         },
-        ...(templateJzodSchema as any).definition.context, // gives "objectTemplateInnerReference", "objectTemplate", "actionHandler"
+        ...(transformerJzodSchema as any).definition.context, // gives "objectTemplateInnerReference", "objectTemplate", "actionHandler"
         modelActionReplayableAction: {
           type: "union",
           definition: [
@@ -2235,8 +2235,8 @@ export function getMiroirFundamentalJzodSchema(
         transformer: (miroirFundamentalJzodSchema as any).definition.context.transformer,
         recordOfTransformers: (miroirFundamentalJzodSchema as any).definition.context.recordOfTransformers,
         metaModel: (miroirFundamentalJzodSchema as any).definition.context.metaModel,
-        objectTemplateInnerReference: (templateJzodSchema as any).definition.context.objectTemplateInnerReference,
-        objectTemplate: (templateJzodSchema as any).definition.context.objectTemplate,
+        objectTemplateInnerReference: (transformerJzodSchema as any).definition.context.objectTemplateInnerReference,
+        objectTemplate: (transformerJzodSchema as any).definition.context.objectTemplate,
         indexedDbStoreSectionConfiguration: (miroirFundamentalJzodSchema as any).definition.context
           .indexedDbStoreSectionConfiguration,
         filesystemDbStoreSectionConfiguration: (miroirFundamentalJzodSchema as any).definition.context
@@ -2359,21 +2359,21 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             type: "array",
             definition: {
-              type: "tuple",
-              definition: [
-                {
+              type: "object",
+              definition: {
+                attributeKey: {
                   type: "schemaReference",
                   definition: {
                     relativePath: "objectTemplateInnerReference",
                   },
                 },
-                {
+                attributeValue:{
                   type: "schemaReference",
                   definition: {
                     relativePath: "objectTemplate",
                   },
                 },
-              ],
+              }
             },
           },
         },
@@ -2516,9 +2516,9 @@ export function getMiroirFundamentalJzodSchema(
                   {
                     type: "object",
                     definition: {
-                      compositeActionType: { type: "literal", definition: "query" },
+                      compositeActionType: { type: "literal", definition: "queryAction" },
                       nameGivenToResult: { type: "string" },
-                      query: {
+                      queryAction: {
                         type: "schemaReference",
                         definition: {
                           relativePath: forgeCarryOnReferenceName(

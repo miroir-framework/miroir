@@ -58,34 +58,11 @@ describe("templates.unit.test", () => {
         undefined
       );
 
-      // console.log("test result", newDeploymentStoreConfiguration)
-      // // test
-      // expect(newDeploymentStoreConfiguration).toEqual({
-      //   admin: {
-      //     emulatedServerType: 'sql',
-      //     connectionString: 'postgres://postgres:postgres@localhost:5432/postgres',
-      //     schema: 'miroirAdmin'
-      //   },
-      //   model: {
-      //     emulatedServerType: 'sql',
-      //     connectionString: 'postgres://postgres:postgres@localhost:5432/postgres',
-      //     schema: 'testModel'
-      //   },
-      //   data: {
-      //     emulatedServerType: 'sql',
-      //     connectionString: 'postgres://postgres:postgres@localhost:5432/postgres',
-      //     schema: 'testData'
-      //   }
-      // })
-
-      // ##########################################################################################
       const actionParams = {
         newApplicationName,
         newAdminAppApplicationUuid,
         newSelfApplicationUuid,
         newDeploymentUuid,
-        // newDeploymentStoreConfiguration,
-        // submitMiroirConfig,
       }
 
       const testAction /*: ObjectTemplate */ = {
@@ -95,17 +72,17 @@ describe("templates.unit.test", () => {
         configuration: {
           templateType: "fullObjectTemplate",
           definition: [
-            [
-              {
+            {
+              attributeKey:{
                 templateType: "parameterReference",
                 referenceName: "newDeploymentUuid"
               },
-              newDeploymentStoreConfigurationTemplate
+              attributeValue: newDeploymentStoreConfigurationTemplate
               // {
               //   templateType: "parameterReference",
               //   referenceName: "newDeploymentStoreConfiguration"
               // },
-            ]
+            }
           ]
         },
         deploymentUuid: {

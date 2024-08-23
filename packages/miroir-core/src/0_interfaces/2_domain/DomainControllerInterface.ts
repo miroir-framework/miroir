@@ -76,7 +76,7 @@ export type EntityInstancesUuidIndexEntityInstanceArraySelector = (entityInstanc
 export interface DomainControllerInterface {
   // handleAction(deploymentUuid: Uuid, action: DomainAction, currentModel?: MetaModel): Promise<void>;
   handleQuery(action: QueryAction, currentModel?: MetaModel): Promise<ActionReturnType>;
-  handleInstanceActionTemplate(action: CompositeInstanceActionTemplate, actionParamValues: any, currentModel?: MetaModel): Promise<ActionVoidReturnType>;
+  handleCompositeInstanceActionTemplate(action: CompositeInstanceActionTemplate, actionParamValues: any, currentModel?: MetaModel): Promise<ActionVoidReturnType>;
   handleAction(action: DomainAction, currentModel?: MetaModel): Promise<ActionVoidReturnType>;
   /**
    * data access must accomodate different styles of access

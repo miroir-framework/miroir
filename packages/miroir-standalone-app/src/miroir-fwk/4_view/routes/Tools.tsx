@@ -486,16 +486,16 @@ export const ToolsPage: React.FC<any> = (
           configuration: {
             templateType: "fullObjectTemplate",
             definition: [
-              [
-                {
+              {
+                attibuteKey: {
                   templateType: "parameterReference",
                   referenceName: "newDeploymentUuid",
                 },
-                {
+                attributeValue: {
                   templateType: "parameterReference",
                   referenceName: "newDeploymentStoreConfiguration",
-                },
-              ],
+                }
+              }
             ],
           },
           deploymentUuid: {

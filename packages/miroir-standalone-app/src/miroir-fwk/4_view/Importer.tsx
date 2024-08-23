@@ -615,6 +615,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           actionType: "queryAction",
           actionName: "runQuery",
           deploymentUuid:currentDeploymentUuid,
+          applicationSection: "model",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           query: miroirMenuInstancesQuery
         }
@@ -1150,13 +1151,15 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       actionType: "compositeInstanceAction",
       actionName: "instanceActionSequence",
       definition: [
+        // found unique municipalities from fountains
         {
-          compositeActionType: "query",
-          nameGivenToResult: splittedEntityName,
-          query: {
+          compositeActionType: "queryAction",
+          nameGivenToResult: newEntityName,
+          queryAction: {
             actionType: "queryAction",
             actionName: "runQuery",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+            applicationSection: "data",
             deploymentUuid: {
               templateType: "parameterReference",
               referenceName: "currentDeploymentUuid"
@@ -1187,39 +1190,54 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                   },
                 }
               },
+              queryTransformers: {
+                uniqueSplittedEntityInstances: {
+                  queryType: "extractorTransformer",
+                  queryName: "unique",
+                  referencedExtractor: {
+                    queryTemplateType: "queryContextReference",
+                    referenceName: splittedEntityName
+                  },
+                  attribute: splittedEntityAttribute
+                }
+              }
             }
           }
-        }
-        // {
-        //   compositeActionType: "action",
-        //   action: {
-        //     actionType: "instanceAction",
-        //     actionName: "createInstance",
-        //     applicationSection: "data",
-        //     deploymentUuid: {
-        //       templateType: "parameterReference",
-        //       referenceName: "currentDeploymentUuid",
-        //     },
-        //     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-        //     objects:[
-        //       {
-        //         parentName: {
-        //           templateType: "mustacheStringTemplate",
-        //           definition: "{{newEntity.name}}",
-        //         },
-        //         parentUuid:{
-        //           templateType: "mustacheStringTemplate",
-        //           definition: "{{newEntity.uuid}}",
-        //         },
-        //         applicationSection:'data',
-        //         instances:instances,
-        //       }
-        //     ]
-        //   },
-        // },
+        },
+        {
+          compositeActionType: "action",
+          action: {
+            actionType: "instanceAction",
+            actionName: "createInstance",
+            applicationSection: "data",
+            deploymentUuid: {
+              templateType: "parameterReference",
+              referenceName: "currentDeploymentUuid",
+            },
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            objects:[
+              {
+                parentName: {
+                  templateType: "mustacheStringTemplate",
+                  definition: "{{newEntity.name}}",
+                },
+                parentUuid:{
+                  templateType: "mustacheStringTemplate",
+                  definition: "{{newEntity.uuid}}",
+                },
+                applicationSection:'data',
+                instances: {
+                  queryTemplateType: "contextReference",
+                  referenceName: "uniqueSplittedEntityInstances"
+                },
+              }
+            ]
+          },
+        // },// as CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction, // TODO: why is type inferrence failing?
+        } as any,// as CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction, // TODO: why is type inferrence failing?
       ]
     };
-    const actionInsertMunicipalitiesResult = await domainController.handleInstanceActionTemplate(
+    const actionInsertMunicipalitiesResult = await domainController.handleCompositeInstanceActionTemplate(
       actionInsertMunicipalities,
       actionInsertMunicipalitiesParams,
       props.currentModel

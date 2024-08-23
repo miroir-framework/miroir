@@ -74,7 +74,7 @@ import applicationVersionInitialMiroirVersionCrossEntityDefinitionApplication fr
 import applicationVersionInitialMiroirVersionCrossEntityDefinitionReport from "../../assets/miroir_data/8bec933d-6287-4de7-8a88-5c24216de9f4/ede7e794-5ae7-48a8-81c9-d1f82df11829.json";
 import selfApplicationVersionInitialMiroirVersion from "../../assets/miroir_data/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json";
 import jzodSchemajzodMiroirBootstrapSchema from "../../assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json";
-import templateJzodSchema from "../../assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/a97756cf-dd93-42b9-a021-91a629b187b9.json";
+import transformerJzodSchema from "../../assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/a97756cf-dd93-42b9-a021-91a629b187b9.json";
 import instanceConfigurationReference from "../../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json";
 import menuDefaultMiroir from "../../assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/eaac459c-6c2b-475c-8ae4-c6c3032dae00.json";
 
@@ -174,7 +174,7 @@ const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
   queryEndpointVersionV1,
   persistenceEndpointVersionV1,
   jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
-  templateJzodSchema as JzodSchema,
+  transformerJzodSchema as JzodSchema,
   entityDefinitionSelfApplication as EntityDefinition,
   entityDefinitionSelfApplicationVersion as EntityDefinition,
   entityDefinitionDeployment as EntityDefinition,

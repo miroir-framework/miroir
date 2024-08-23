@@ -94,8 +94,8 @@ export class SqlDbExtractRunner {
         log.info("applyExtractorTransformerSql query.attribute", query.attribute);
         // TODO: resolve query.referencedExtractor.referenceName properly
         const aggregateRawQuery = `
-          WITH ${extractorRawQueries.map(q => q[0] + " AS (" + q[1] + " )").join(", ")}
-          SELECT DISTINCT ON (${query.attribute}) ${query.attribute} FROM ${query.referencedExtractor.referenceName}
+          WITH ${extractorRawQueries.map(q => "\"" + q[0] + "\" AS (" + q[1] + " )").join(", ")}
+          SELECT DISTINCT ON ("${query.attribute}") "${query.attribute}" FROM "${query.referencedExtractor.referenceName}"
           ${orderBy}
         `
         log.info("applyExtractorTransformerSql unique aggregateRawQuery", aggregateRawQuery);
@@ -116,13 +116,13 @@ export class SqlDbExtractRunner {
         log.info("applyExtractorTransformerSql count query.groupBy", query.groupBy);
         // TODO: resolve query.referencedExtractor.referenceName properly
         const aggregateRawQuery = query.groupBy ? 
-        `WITH ${extractorRawQueries.map(q => q[0] + " AS (" + q[1] + " )").join(", ")}
-          SELECT ${query.groupBy}, COUNT("uuid") FROM ${query.referencedExtractor.referenceName}
-          GROUP BY ${query.groupBy}
+        `WITH ${extractorRawQueries.map(q => "\"" + q[0] + "\" AS (" + q[1] + " )").join(", ")}
+          SELECT "${query.groupBy}", COUNT("uuid") FROM ${query.referencedExtractor.referenceName}
+          GROUP BY "${query.groupBy}"
           ${orderBy}
         ` :
-        `WITH ${extractorRawQueries.map(q => q[0] + " AS (" + q[1] + " )").join(", ")}
-          SELECT COUNT("uuid") FROM ${query.referencedExtractor.referenceName}
+        `WITH ${extractorRawQueries.map(q => "\"" + q[0] + "\" AS (" + q[1] + " )").join(", ")}
+          SELECT COUNT("uuid") FROM "${query.referencedExtractor.referenceName}"
           ${orderBy}
         `;
         log.info("applyExtractorTransformerSql count aggregateRawQuery", aggregateRawQuery);

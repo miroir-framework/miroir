@@ -645,6 +645,20 @@ export class DomainController implements DomainControllerInterface {
 
   
   // ##############################################################################################
+  /**
+   * translates @param query into PersistenceAction, with actionType="LocalPersistenceAction" and
+    actionName="create" | "read" | "update" | "delete"
+    aren't the "read" obsolete since the PersistenceStore can execute queries?
+    Plus the "read" means that query transformers are executed in memory on the server, and not
+    as an "sql / with" query
+
+   * @param deploymentUuid 
+   * @param queryParams 
+   * @param contextResults 
+   * @param queryName 
+   * @param query 
+   * @returns 
+   */
   async handleLocalPersistenceStoreQuery(
     // queryAction: QueryAction,
     deploymentUuid: Uuid,
@@ -739,53 +753,74 @@ export class DomainController implements DomainControllerInterface {
       /**
        * we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
        */
-      let extractors:[string, QuerySelectExtractorWrapper][] = [], fetchQueries:[string, QuerySelect][] = [];
 
-      switch (queryAction.query.queryType) {
-        case 'domainModelSingleExtractor': {
-          // extractors = queryAction.query.select;
-          // fetchQueries = {};
-          fetchQueries = [["default", queryAction.query.select]]
-          break;
-        }
-        case 'extractorForRecordOfExtractors': {
-          extractors = Object.entries(queryAction.query.extractors??{});
-          fetchQueries = Object.entries(queryAction.query.queryTransformers??{});
-          break;
-        }
-        // default: {
-        //   extractors = {};
-        //   fetchQueries = {};
-        //   // throw new Error("DomainController handleQuery queryAction not implemented for queryType " + queryAction.query);
-        //   break;
-        // }
-      }
+      const result: ActionReturnType = await this.persistenceStore.handlePersistenceAction(queryAction);
+      log.info("DomainController handleQuery queryAction callPersistenceAction Result=", result);
+      return result;
+      // const result = await this.callUtil.callPersistenceAction(
+      //   {}, // context
+      //   { // context update
+      //     addResultToContextAsName: "dataEntitiesFromModelSection",
+      //     expectedDomainElementType: "entityInstanceCollection",
+      //   },
+      //   queryAction
+      // );
+      // log.info("DomainController handleQuery queryAction callPersistenceAction Result=", result);
+      // return {
+      //   status: "ok",
+      //   returnedDomainElement: {
+      //     elementType: "entityInstanceCollection",
+      //     elementValue: result["dataEntitiesFromModelSection"],
+      //   },
+      // };
 
-      for (const a of [extractors, fetchQueries]) {
-        const queries:[string, QuerySelectExtractorWrapper | QuerySelect][] = a;
-        if (queries.length != 1) {
-          log.warn(
-            "DomainController handleQuery queryAction no query found in queryTransformers.select! " + JSON.stringify(queryAction)
-          );
-          // throw new Error(
-          //   "DomainController handleQuery queryAction no query found in queryTransformers.select! " + JSON.stringify(queryAction)
-          // );
-        } else {
-          const query = queries[0][1];
-          const queryName = queries[0][0];
+      // let extractors:[string, QuerySelectExtractorWrapper][] = [], fetchQueries:[string, QuerySelect][] = [];
+
+      // switch (queryAction.query.queryType) {
+      //   case 'domainModelSingleExtractor': {
+      //     // extractors = queryAction.query.select;
+      //     // fetchQueries = {};
+      //     fetchQueries = [["default", queryAction.query.select]]
+      //     break;
+      //   }
+      //   case 'extractorForRecordOfExtractors': {
+      //     extractors = Object.entries(queryAction.query.extractors??{});
+      //     fetchQueries = Object.entries(queryAction.query.queryTransformers??{});
+      //     break;
+      //   }
+      //   // default: {
+      //   //   extractors = {};
+      //   //   fetchQueries = {};
+      //   //   // throw new Error("DomainController handleQuery queryAction not implemented for queryType " + queryAction.query);
+      //   //   break;
+      //   // }
+      // }
+
+      // for (const a of [extractors, fetchQueries]) {
+      //   const queries:[string, QuerySelectExtractorWrapper | QuerySelect][] = a;
+      //   if (queries.length != 1) {
+      //     log.warn(
+      //       "DomainController handleQuery queryAction no query found in queryTransformers.select! " + JSON.stringify(queryAction)
+      //     );
+      //     // throw new Error(
+      //     //   "DomainController handleQuery queryAction no query found in queryTransformers.select! " + JSON.stringify(queryAction)
+      //     // );
+      //   } else {
+      //     const query = queries[0][1];
+      //     const queryName = queries[0][0];
     
-          log.info("DomainController handleQuery queryAction executing query", JSON.stringify(query));
-          // const a = queryAction.query.contextResults
-          return this.handleLocalPersistenceStoreQuery(
-            queryAction.deploymentUuid,
-            queryAction.query.queryParams,
-            queryAction.query.contextResults,
-            queryName,
-            query,
-          )
-        }
+      //     log.info("DomainController handleQuery queryAction executing query", JSON.stringify(query));
+      //     // const a = queryAction.query.contextResults
+      //     return this.handleLocalPersistenceStoreQuery(
+      //       queryAction.deploymentUuid,
+      //       queryAction.query.queryParams,
+      //       queryAction.query.contextResults,
+      //       queryName,
+      //       query,
+      //     )
+      //   }
 
-      }
+      // }
     } else {
       // we're on the client, the query is sent to the server for execution.
       // is it right? We're limiting querying for script execution to remote queries right there!
@@ -813,24 +848,24 @@ export class DomainController implements DomainControllerInterface {
   }
 
   // ##############################################################################################
-  async handleInstanceActionTemplate(
+  async handleCompositeInstanceActionTemplate(
     domainAction: CompositeInstanceActionTemplate,
     actionParamValues: any,
     currentModel: MetaModel
   ): Promise<ActionVoidReturnType> {
     const localActionParams = { ...actionParamValues };
     for (const currentAction of domainAction.definition) {
-      log.info("handleInstanceActionTemplate compositeInstanceAction action", currentAction);
-      if (currentAction.compositeActionType == "query") {
+      log.info("handleCompositeInstanceActionTemplate compositeInstanceAction action", currentAction);
+      if (currentAction.compositeActionType == "queryAction") {
         const resolvedQueryTemplate: QueryAction = renderObjectTemplate(
           "NO NAME",
-          currentAction.query as ObjectTemplate,
+          currentAction.queryAction as ObjectTemplate,
           localActionParams,
           undefined
         );
 
         log.info(
-          "handleInstanceActionTemplate resolved query",
+          "handleCompositeInstanceActionTemplate resolved query",
           resolvedQueryTemplate,
           "with actionParamValues",
           actionParamValues
@@ -840,7 +875,7 @@ export class DomainController implements DomainControllerInterface {
         if (actionResult?.status != "ok") {
           log.error("Error on query", JSON.stringify(actionResult, null, 2));
         } else {
-          log.info("handleInstanceActionTemplate query result", actionResult);
+          log.info("handleCompositeInstanceActionTemplate query result", actionResult);
           localActionParams[currentAction.nameGivenToResult] = actionResult.returnedDomainElement.elementValue;
         }
       } else {

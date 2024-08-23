@@ -728,9 +728,9 @@ describe("domainSelector", () => {
       
       expect((queryResult.elementValue as any)["publishers"].elementValue).toEqual(
         [
-          "516a7366-39e7-4998-82cb-80199a7fa667",
-          "c1c97d54-aba8-4599-883a-7fe8f3874095",
-          "1f550a2a-33f5-4a56-83ee-302701039494"
+          { publisher: "516a7366-39e7-4998-82cb-80199a7fa667" },
+          { publisher: "c1c97d54-aba8-4599-883a-7fe8f3874095" },
+          { publisher: "1f550a2a-33f5-4a56-83ee-302701039494" },
         ]
       )
     }

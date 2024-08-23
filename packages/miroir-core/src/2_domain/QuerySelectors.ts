@@ -562,44 +562,6 @@ export function innerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
       break;
     }
     case "extractorTransformer": {
-      // const resolvedReference = resolveContextReference(
-      //   (query as any).referencedExtractor,
-      //   queryParams,
-      //   newFetchedData
-      // );
-
-      // log.info("innerSelectElementFromQuery extractorTransformer resolvedReference", resolvedReference);
-      // switch (query.queryName) {
-      //   case "unique": {
-      //     const result = new Set<string>();
-      //     if (resolvedReference.elementType == "instanceUuidIndex") {
-      //       for (const entry of Object.entries(resolvedReference.elementValue)) {
-      //           result.add((entry[1] as any)[query.attribute]);
-      //       }
-      //       return { elementType: "any", elementValue: [...result] };
-      //     }
-      //     break;
-      //   }
-      //   case "count": {
-      //     if (resolvedReference.elementType == "instanceUuidIndex") {
-      //       return { elementType: "string" /* TODO: number? */, elementValue: Object.keys(resolvedReference.elementValue).length.toString() };
-      //     }
-      //     break;
-      //   }
-      //   default: {
-      //     return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } };
-      //     break;
-      //   }
-      // }
-
-      // // // Object.entries(resolvedReference.elementValue).map(
-      // // //   (entry: [string, DomainElement]) => {
-      // // //   }
-      // // // );
-      // // )
-      // log.info("innerSelectElementFromQuery extractorTransformer resolvedReference", resolvedReference);
-
-      // return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } };
       return applyExtractorTransformer(query, queryParams, newFetchedData);
       break;
     }

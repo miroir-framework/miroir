@@ -7923,6 +7923,14 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e"
           },
+          "applicationSection": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "applicationSection"
+            }
+          },
           "deploymentUuid": {
             "type": "uuid",
             "tag": {
@@ -8222,21 +8230,21 @@ export const miroirFundamentalJzodSchema = {
               "definition": {
                 "type": "array",
                 "definition": {
-                  "type": "tuple",
-                  "definition": [
-                    {
+                  "type": "object",
+                  "definition": {
+                    "attributeKey": {
                       "type": "schemaReference",
                       "definition": {
                         "relativePath": "objectTemplateInnerReference"
                       }
                     },
-                    {
+                    "attributeValue": {
                       "type": "schemaReference",
                       "definition": {
                         "relativePath": "objectTemplate"
                       }
                     }
-                  ]
+                  }
                 }
               }
             }
@@ -18720,9 +18728,15 @@ export const miroirFundamentalJzodSchema = {
                       "type": "union",
                       "definition": [
                         {
-                          "type": "tuple",
-                          "definition": [
-                            {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "carryOnObject"
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "attributeKey": {
                               "type": "union",
                               "definition": [
                                 {
@@ -18740,7 +18754,7 @@ export const miroirFundamentalJzodSchema = {
                                 }
                               ]
                             },
-                            {
+                            "attributeValue": {
                               "type": "union",
                               "definition": [
                                 {
@@ -18758,12 +18772,6 @@ export const miroirFundamentalJzodSchema = {
                                 }
                               ]
                             }
-                          ]
-                        },
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "relativePath": "carryOnObject"
                           }
                         }
                       ]
@@ -26062,6 +26070,26 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
+              "applicationSection": {
+                "optional": true,
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "optional": true,
+                    "definition": {
+                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    },
+                    "context": {}
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
               "deploymentUuid": {
                 "type": "union",
                 "tag": {
@@ -26181,12 +26209,12 @@ export const miroirFundamentalJzodSchema = {
                   "definition": {
                     "compositeActionType": {
                       "type": "literal",
-                      "definition": "query"
+                      "definition": "queryAction"
                     },
                     "nameGivenToResult": {
                       "type": "string"
                     },
-                    "query": {
+                    "queryAction": {
                       "type": "schemaReference",
                       "definition": {
                         "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryAction"
@@ -26235,21 +26263,21 @@ export const miroirFundamentalJzodSchema = {
               "definition": {
                 "type": "array",
                 "definition": {
-                  "type": "tuple",
-                  "definition": [
-                    {
+                  "type": "object",
+                  "definition": {
+                    "attributeKey": {
                       "type": "schemaReference",
                       "definition": {
                         "relativePath": "objectTemplateInnerReference"
                       }
                     },
-                    {
+                    "attributeValue": {
                       "type": "schemaReference",
                       "definition": {
                         "relativePath": "objectTemplate"
                       }
                     }
-                  ]
+                  }
                 }
               }
             }

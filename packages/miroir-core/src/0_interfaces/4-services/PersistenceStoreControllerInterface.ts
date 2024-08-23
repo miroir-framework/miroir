@@ -182,8 +182,8 @@ export interface PersistenceStoreControllerInterface
   getModelState(): Promise<{ [uuid: string]: EntityInstanceCollection }>; // used only for testing purposes!
   getDataState(): Promise<{ [uuid: string]: EntityInstanceCollection }>; // used only for testing purposes!
 
-  // // instance interface differs from the one in PersistenceStoreInstanceSectionAbstractInterface: it has an ApplicationSection as first parameter
-  handleQuery(section: ApplicationSection, query: QueryAction): Promise<ActionReturnType>;
+  // same interface as in PersistenceStoreInstanceSectionAbstractInterface; it implies that QueryAction includes applicationSection
+  handleQuery(query: QueryAction): Promise<ActionReturnType>;
   
   getInstance(section: ApplicationSection, parentUuid: string, uuid: Uuid): Promise<ActionEntityInstanceReturnType>;
   getInstances(section: ApplicationSection, parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType>;

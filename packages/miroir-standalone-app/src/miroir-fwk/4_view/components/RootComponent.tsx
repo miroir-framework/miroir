@@ -49,7 +49,7 @@ import {
   storeManagementEndpoint,
   StoreOrBundleAction,
   StoreUnitConfiguration,
-  templateJzodSchema,
+  transformerJzodSchema,
   undoRedoEndpointVersionV1
 } from "miroir-core";
 import { ReduxStateChanges } from "miroir-localcache-redux";
@@ -176,7 +176,7 @@ export const RootComponent = (props: RootComponentProps) => {
     queryEndpointVersionV1,
     persistenceEndpointVersionV1,
     jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
-    templateJzodSchema as JzodSchema,
+    transformerJzodSchema as JzodSchema,
     entityDefinitionSelfApplication as EntityDefinition,
     entityDefinitionSelfApplicationVersion as EntityDefinition,
     entityDefinitionDeployment as EntityDefinition,
@@ -289,6 +289,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                       });
 
+                      const subQueryName = "deployments";
                       const adminDeploymentsQuery: ExtractorForRecordOfExtractors = {
                         queryType: "extractorForRecordOfExtractors",
                         deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
@@ -296,7 +297,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         queryParams: emptyDomainElementObject,
                         contextResults: { elementType: "object", elementValue: {} },
                         extractors: {
-                          deployments: {
+                          [subQueryName]: {
                             queryType: "extractObjectListByEntity",
                             applicationSection: "data",
                             parentName: "Deployment",
@@ -314,6 +315,7 @@ export const RootComponent = (props: RootComponentProps) => {
                             actionName: "runQuery",
                             deploymentUuid:adminConfigurationDeploymentAdmin.uuid,
                             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                            applicationSection: "data",
                             query: adminDeploymentsQuery
                           }
                         )
@@ -323,13 +325,24 @@ export const RootComponent = (props: RootComponentProps) => {
                         throw new Error("found adminDeployments with error " + adminDeployments.error);
                       }
                   
-                      if (adminDeployments.returnedDomainElement.elementType != "entityInstanceCollection") {
-                        throw new Error("found adminDeployments not an instance collection " + adminDeployments.returnedDomainElement);
+                      if (adminDeployments.returnedDomainElement.elementType != "object" ) {
+                        throw new Error("found adminDeployments query result not an object as expected " + adminDeployments.returnedDomainElement);
                       }
+
+                      if ( !adminDeployments.returnedDomainElement.elementValue[subQueryName] ) {
+                        throw new Error("found adminDeployments query result object does not have attribute " + subQueryName + " as expected " + adminDeployments.returnedDomainElement);
+                      }
+                     
+                      if (adminDeployments.returnedDomainElement.elementValue[subQueryName].elementType != "instanceUuidIndex") {
+                        throw new Error("found adminDeployments query result object attribute " + subQueryName + " is not an instanceUuidIndex as expected " + adminDeployments.returnedDomainElement);
+                      }
+                     
+                      const foundDeployments = adminDeployments.returnedDomainElement.elementValue[subQueryName].elementValue;
+
                       log.info("found adminDeployments", JSON.stringify(adminDeployments));
                   
                       // open and refresh found deployments
-                      for (const c of Object.values(adminDeployments.returnedDomainElement.elementValue.instances)) {
+                      for (const c of Object.values(foundDeployments)) {
                         const openStoreAction: StoreOrBundleAction = {
                           actionType: "storeManagementAction",
                           actionName: "openStore",

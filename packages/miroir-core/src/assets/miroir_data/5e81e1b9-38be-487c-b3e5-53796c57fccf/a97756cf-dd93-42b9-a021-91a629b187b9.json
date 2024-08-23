@@ -2,7 +2,7 @@
   "uuid": "a97756cf-dd93-42b9-a021-91a629b187b9",
   "parentName": "JzodSchema",
   "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
-  "name": "templateJzodSchema",
+  "name": "transformerJzodSchema",
   "defaultLabel": "The Jzod Schema for Miroir Transformers: build objects & other values on the fly from a given set of parameters.",
   "definition": {
     "type": "schemaReference",
@@ -81,21 +81,21 @@
               "definition": {
                 "type": "array",
                 "definition": {
-                  "type": "tuple",
-                  "definition": [
-                    {
+                  "type": "object",
+                  "definition": {
+                    "attributeKey": {
                       "type": "schemaReference",
                       "definition": {
                         "relativePath": "objectTemplateInnerReference"
                       }
                     },
-                    {
+                    "attributeValue": {
                       "type": "schemaReference",
                       "definition": {
                         "relativePath": "objectTemplate"
                       }
                     }
-                  ]
+                  }
                 }
               }
             }

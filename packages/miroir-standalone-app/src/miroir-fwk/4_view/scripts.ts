@@ -134,6 +134,7 @@ export const deleteCascade = async (p: {
         {
           actionType: "queryAction",
           actionName: "runQuery",
+          applicationSection: p.applicationSection,
           deploymentUuid:p.deploymentUuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           query: foreignKeyObjectsFetchQuery

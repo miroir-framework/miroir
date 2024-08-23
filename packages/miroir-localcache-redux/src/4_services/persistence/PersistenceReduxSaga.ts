@@ -220,8 +220,22 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                 return yield localStoreResult;
                 break;
               }
-              case "queryAction":
+              case "queryAction": {
+                const localPersistenceStoreController =
+                  localParams.localPersistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
+
+                if (!localPersistenceStoreController) {
+                  throw new Error(
+                    "restMethodGetHandler could not find controller for deployment: " + action.deploymentUuid
+                  );
+                }
+                const localStoreResult = yield* call(() => localPersistenceStoreController.handleQuery(action));
+                return  yield localStoreResult;
+                break;
+
+              }
               case "RestPersistenceAction":
+              // case ""
               default: {
                 throw new Error(
                   "PersistenceActionReduxSaga handlePersistenceAction could not handle action " + JSON.stringify(action)

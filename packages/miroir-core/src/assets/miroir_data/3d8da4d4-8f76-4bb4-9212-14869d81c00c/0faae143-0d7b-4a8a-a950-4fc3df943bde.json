@@ -15,6 +15,14 @@
             "actionType": { "type": "literal", "definition": "queryAction" },
             "actionName": { "type": "literal", "definition": "runQuery" },
             "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
+            "applicationSection": {
+              "type": "schemaReference",
+              "optional": true,
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "applicationSection"
+              }
+            },
             "deploymentUuid": {
               "type": "uuid",
               "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
