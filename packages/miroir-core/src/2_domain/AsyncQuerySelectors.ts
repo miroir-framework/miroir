@@ -360,36 +360,7 @@ export const asyncExtractWithManyExtractors = async <StateType>(
   const localSelectorMap: AsyncExtractorRunnerMap<StateType> =
     selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
 
-  const extractorsPromises = Object.entries(selectorParams.extractor.extractors ?? {}).map((query: [string, QuerySelect]) => {
-    return asyncInnerSelectElementFromQuery(
-      state,
-      context,
-      selectorParams.extractor.pageParams,
-      {
-        elementType: "object",
-        elementValue: {
-          ...selectorParams.extractor.pageParams.elementValue,
-          ...selectorParams.extractor.queryParams.elementValue,
-        },
-      },
-      localSelectorMap as any,
-      selectorParams.extractor.deploymentUuid,
-      selectorParams.extractor.extractors??{} as any,
-      query[1]
-    ).then((result):[string, DomainElement] => {
-      return [query[0], result];
-    });
-  });
-
-  // TODO: remove await / side effect
-  await Promise.all(extractorsPromises).then((results) => {
-    results.forEach((result) => {
-      context.elementValue[result[0]] = result[1]; // does side effect!
-    });
-    return context;
-  });
-
-  const transformerPromises = Object.entries(selectorParams.extractor.queryTransformers ?? {}).map(
+  const extractorsPromises = Object.entries(selectorParams.extractor.extractors ?? {}).map(
     (query: [string, QuerySelect]) => {
       return asyncInnerSelectElementFromQuery(
         state,
@@ -404,14 +375,45 @@ export const asyncExtractWithManyExtractors = async <StateType>(
         },
         localSelectorMap as any,
         selectorParams.extractor.deploymentUuid,
-        selectorParams.extractor.extractors??{} as any,
+        selectorParams.extractor.extractors ?? ({} as any),
         query[1]
       ).then((result): [string, DomainElement] => {
         return [query[0], result];
       });
     }
   );
-  await Promise.all(transformerPromises).then((results) => {
+
+  // TODO: remove await / side effect
+  await Promise.all(extractorsPromises).then((results) => {
+    results.forEach((result) => {
+      context.elementValue[result[0]] = result[1]; // does side effect!
+    });
+    return context;
+  });
+
+  const combinerAndtransformerPromises = Object.entries(selectorParams.extractor.combiners ?? {})
+    .concat(Object.entries(selectorParams.extractor.runtimeTransformers ?? {}))
+    .map((query: [string, QuerySelect]) => {
+      return asyncInnerSelectElementFromQuery(
+        state,
+        context,
+        selectorParams.extractor.pageParams,
+        {
+          elementType: "object",
+          elementValue: {
+            ...selectorParams.extractor.pageParams.elementValue,
+            ...selectorParams.extractor.queryParams.elementValue,
+          },
+        },
+        localSelectorMap as any,
+        selectorParams.extractor.deploymentUuid,
+        selectorParams.extractor.extractors ?? ({} as any),
+        query[1]
+      ).then((result): [string, DomainElement] => {
+        return [query[0], result];
+      });
+    });
+  await Promise.all(combinerAndtransformerPromises).then((results) => {
     results.forEach((result) => {
       context.elementValue[result[0]] = result[1]; // does side effect!
     });

@@ -28,17 +28,14 @@ export class SqlDbExtractRunner {
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex.bind(this),
       extractEntityInstance: this.extractEntityInstance.bind(this),
       extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
-      // extractEntityInstanceUuidIndexWithObjectListExtractor: this.asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor,
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
-      // applyExtractorTransformer: this.applyExtractorTransformerSql.bind(this),
       applyExtractorTransformer: this.applyExtractorTransformerSql.bind(this),
     };
     const dbImplementationExtractorRunnerMap: AsyncExtractorRunnerMap<any> = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex.bind(this),
       extractEntityInstance: this.extractEntityInstance.bind(this),
-      // extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
       extractEntityInstanceUuidIndexWithObjectListExtractor: this.asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor.bind(this),
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
@@ -56,15 +53,21 @@ export class SqlDbExtractRunner {
     newFetchedData: DomainElementObject,
     extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>,
   ): Promise<DomainElement> {
+    // log.info("SqlDbExtractRunner applyExtractorTransformerSql extractors", extractors);
+    log.info("SqlDbExtractRunner applyExtractorTransformerSql query", JSON.stringify(query, null, 2));
+
+    // const referenceName = typeof query.referencedExtractor == "string"?query.referencedExtractor:(query.referencedExtractor as any).referenceName;
+    const referenceName = query.referencedExtractor;
+  
     const resolvedReference = resolveContextReference(
-      query.referencedExtractor,
+      { queryTemplateType: "queryContextReference", referenceName:query.referencedExtractor },
       queryParams,
       newFetchedData
     );
-  
+    
+    log.info("SqlDbExtractRunner applyExtractorTransformerSql resolvedReference", resolvedReference);
 
 
-    log.info("applyExtractorTransformerSql extractors", extractors);
     // for (const ex of Object.entries(extractors)) {
     //   log.info("applyExtractorTransformerSql getting sqlForExtractor", ex[0], ex[1]);
     //   const sqlQuery = this.persistenceStoreController.sqlForExtractor(ex[1])
@@ -95,7 +98,7 @@ export class SqlDbExtractRunner {
         // TODO: resolve query.referencedExtractor.referenceName properly
         const aggregateRawQuery = `
           WITH ${extractorRawQueries.map(q => "\"" + q[0] + "\" AS (" + q[1] + " )").join(", ")}
-          SELECT DISTINCT ON ("${query.attribute}") "${query.attribute}" FROM "${query.referencedExtractor.referenceName}"
+          SELECT DISTINCT ON ("${query.attribute}") "${query.attribute}" FROM "${referenceName}"
           ${orderBy}
         `
         log.info("applyExtractorTransformerSql unique aggregateRawQuery", aggregateRawQuery);
@@ -117,12 +120,12 @@ export class SqlDbExtractRunner {
         // TODO: resolve query.referencedExtractor.referenceName properly
         const aggregateRawQuery = query.groupBy ? 
         `WITH ${extractorRawQueries.map(q => "\"" + q[0] + "\" AS (" + q[1] + " )").join(", ")}
-          SELECT "${query.groupBy}", COUNT("uuid") FROM ${query.referencedExtractor.referenceName}
+          SELECT "${query.groupBy}", COUNT("uuid") FROM ${referenceName}
           GROUP BY "${query.groupBy}"
           ${orderBy}
         ` :
         `WITH ${extractorRawQueries.map(q => "\"" + q[0] + "\" AS (" + q[1] + " )").join(", ")}
-          SELECT COUNT("uuid") FROM "${query.referencedExtractor.referenceName}"
+          SELECT COUNT("uuid") FROM "${referenceName}"
           ${orderBy}
         `;
         log.info("applyExtractorTransformerSql count aggregateRawQuery", aggregateRawQuery);

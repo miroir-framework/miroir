@@ -21,7 +21,7 @@
         }
       }
     },
-    "queryTransformers": {
+    "combiners": {
       "publishersOfCountry": {
         "queryType": "selectObjectListByRelation",
         "parentName": "Publisher",

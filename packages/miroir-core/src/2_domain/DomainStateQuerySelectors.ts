@@ -58,7 +58,7 @@ export const dummyDomainManyQueriesWithDeploymentUuid: ExtractorForRecordOfExtra
   pageParams: emptyDomainObject,
   queryParams: emptyDomainObject,
   contextResults: emptyDomainObject,
-  queryTransformers: {},
+  runtimeTransformers: {},
 };
 
 export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: DomainModelGetFetchParamJzodSchemaExtractor = {
@@ -80,7 +80,7 @@ export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: DomainModelGetF
     pageParams: emptyDomainObject,
     queryParams: emptyDomainObject,
     contextResults: emptyDomainObject,
-    queryTransformers: {  },
+    runtimeTransformers: {  },
   },
 };
 
@@ -428,7 +428,7 @@ export const selectEntityJzodSchemaFromDomainStateNew = (
 
 // ################################################################################################
 /**
- * the queryTransformers and FetchQueryJzodSchema should depend only on the instance of Report at hand
+ * the runtimeTransformers and FetchQueryJzodSchema should depend only on the instance of Report at hand
  * then on the instance of the required entities (which can change over time, on refresh!! Problem: their number can vary!!)
  * @param domainState 
  * @param query 

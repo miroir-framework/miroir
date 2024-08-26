@@ -179,8 +179,8 @@ export {
   modelActionDropEntity,
   ObjectTemplateInnerReference,
   objectTemplateInnerReference,
-  objectTemplate,
-  ObjectTemplate,
+  objectBuildTemplate,
+  ObjectBuildTemplate,
   actionHandler,
   ActionHandler,
   PersistenceAction,
@@ -497,7 +497,7 @@ export {
   ExtractorRunnerInMemory
 } from './2_domain/ExtractorRunnerInMemory.js';
 export {
-  cleanupResultsFromQuery,
+  domainElementToPlainObject,
   resolveContextReference,
   extractEntityInstanceUuidIndexWithObjectListExtractor,
   extractFetchQueryJzodSchema,
@@ -523,12 +523,12 @@ export {
 } from './2_domain/ModelEntityActionTransformer.js';
 export {
   ActionTemplate,
-  // ObjectTemplate,
+  // ObjectBuildTemplate,
   // ObjectTemplateInnerReference,
   actionTemplateToAction,
   domainElementTemplateSchema,
   // objectTemplateSchema,
-  renderObjectTemplate,
+  renderObjectBuildTemplate,
   resolveActionTemplateContextReference,
   runActionTemplate,
 } from './2_domain/Templates.js';

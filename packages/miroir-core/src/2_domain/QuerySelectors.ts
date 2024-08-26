@@ -47,6 +47,7 @@ import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { applyTransformer } from "./Transformers.js";
 import { cleanLevel } from "./constants.js";
+import { renderObjectRuntimeTemplate } from "./Templates.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"SyncExtractorRunner");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -76,7 +77,7 @@ const emptyAsyncSelectorMap:AsyncExtractorRunnerMap<any> = {
 }
 
 // ################################################################################################
-export function cleanupResultsFromQuery(r:DomainElement): any {
+export function domainElementToPlainObject(r:DomainElement): any {
   switch (r.elementType) {
     case "string":
     case "instanceUuid":
@@ -85,10 +86,10 @@ export function cleanupResultsFromQuery(r:DomainElement): any {
       return r.elementValue
     }
     case "object": {
-      return Object.fromEntries(Object.entries(r.elementValue).map(e => [e[0], cleanupResultsFromQuery(e[1])]))
+      return Object.fromEntries(Object.entries(r.elementValue).map(e => [e[0], domainElementToPlainObject(e[1])]))
     }
     case "array": {
-      return r.elementValue.map(e => cleanupResultsFromQuery(e))
+      return r.elementValue.map(e => domainElementToPlainObject(e))
     }
     case "failure": {
       return undefined
@@ -361,31 +362,36 @@ export const applyExtractorTransformer = (
   queryParams: DomainElementObject,
   newFetchedData: DomainElementObject
 ): DomainElement => {
+  log.info("applyExtractorTransformer  query", JSON.stringify(query, null, 2));
+
   const resolvedReference = resolveContextReference(
-    query.referencedExtractor,
+    { queryTemplateType: "queryContextReference", referenceName:query.referencedExtractor },
     queryParams,
     newFetchedData
   );
+  
+  log.info("innerSelectElementFromQuery extractorTransformer referencedExtractor resolvedReference", resolvedReference);
 
-  log.info("innerSelectElementFromQuery extractorTransformer resolvedReference", resolvedReference);
+  if (resolvedReference.elementType != "instanceUuidIndex") {
+    return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
+  }
+
   const sortByAttribute = query.orderBy?(a: any[])=>a.sort((a, b) => a[query.orderBy??""].localeCompare(b[query.orderBy??""], "en", { sensitivity: "base" })):(a: any[])=>a;
   switch (query.queryName) {
+    case "actionRuntimeTransformer": {
+      // return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } };
+      return renderObjectRuntimeTemplate("ROOT"/**WHAT?? */, query.actionRuntimeTransformer, queryParams, newFetchedData);
+      break;
+    }
     case "unique": {
       const result = new Set<string>();
-      if (resolvedReference.elementType == "instanceUuidIndex") {
         for (const entry of Object.entries(resolvedReference.elementValue)) {
           result.add((entry[1] as any)[query.attribute]);
         }
         return { elementType: "any", elementValue: sortByAttribute([...result].map(e => ({[query.attribute]: e}))) };
-      } else {
-        return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } };
-      }
       break;
     }
     case "count": {
-      if (resolvedReference.elementType != "instanceUuidIndex") {
-        return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
-      }
       if (query.groupBy) {
         const result = new Map<string, number>();
         for (const entry of Object.entries(resolvedReference.elementValue)) {
@@ -677,8 +683,31 @@ export const extractWithManyExtractors = <StateType>(
     context.elementValue[query[0]] = result; // does side effect!
     log.info("extractWithManyExtractors done for extractors", query[0], "query", query[1], "result=", result);
   }
-  for (const query of Object.entries(
-    selectorParams.extractor.queryTransformers ?? {}
+  for (const combiner of Object.entries(
+    selectorParams.extractor.combiners ?? {}
+  )) {
+    let result = innerSelectElementFromQuery(
+      state,
+      context,
+      selectorParams.extractor.pageParams,
+      {
+        elementType: "object",
+        elementValue: {
+          ...selectorParams.extractor.pageParams.elementValue,
+          ...selectorParams.extractor.queryParams.elementValue,
+        },
+      },
+      localSelectorMap as any,
+      selectorParams.extractor.deploymentUuid,
+      combiner[1]
+    );
+    context.elementValue[combiner[0]] = result; // does side effect!
+    // log.info("extractWithManyExtractors done for entry", entry[0], "query", entry[1], "result=", result);
+  }
+
+  for (const query of 
+    Object.entries(
+    selectorParams.extractor.runtimeTransformers ?? {}
   )) {
     let result = innerSelectElementFromQuery(
       state,
@@ -802,7 +831,7 @@ export const extractJzodSchemaForDomainModelQuery = <StateType>(
 
 // ################################################################################################
 /**
- * the queryTransformers and FetchQueryJzodSchema should depend only on the instance of Report at hand
+ * the runtimeTransformers and FetchQueryJzodSchema should depend only on the instance of Report at hand
  * then on the instance of the required entities (which can change over time, on refresh!! Problem: their number can vary!!)
  * @param deploymentEntityState 
  * @param query 
@@ -816,7 +845,8 @@ export const extractFetchQueryJzodSchema = <StateType>(
   // log.info("selectFetchQueryJzodSchemaFromDomainState called", selectorParams.query);
   
   const fetchQueryJzodSchema = Object.fromEntries(
-    Object.entries(localFetchParams?.queryTransformers??{}).map((entry: [string, QuerySelect]) => [
+    Object.entries(localFetchParams?.combiners??{}).concat(
+    Object.entries(localFetchParams?.runtimeTransformers??{})).map((entry: [string, QuerySelect]) => [
       entry[0],
       selectorParams.extractorRunnerMap.extractzodSchemaForSingleSelectQuery(deploymentEntityState, {
         extractorRunnerMap:selectorParams.extractorRunnerMap,
@@ -837,16 +867,16 @@ export const extractFetchQueryJzodSchema = <StateType>(
     ])
   ) as RecordOfJzodObject;
 
-  // if (localFetchParams.queryTransformers?.crossJoin) {
+  // if (localFetchParams.runtimeTransformers?.crossJoin) {
   //   fetchQueryJzodSchema["crossJoin"] = {
   //     type: "object",
   //     definition: Object.fromEntries(
-  //     Object.entries(fetchQueryJzodSchema[localFetchParams.queryTransformers?.crossJoin?.a ?? ""]?.definition ?? {}).map((a) => [
+  //     Object.entries(fetchQueryJzodSchema[localFetchParams.runtimeTransformers?.crossJoin?.a ?? ""]?.definition ?? {}).map((a) => [
   //       "a-" + a[0],
   //       a[1]
   //     ]
   //     ).concat(
-  //       Object.entries(fetchQueryJzodSchema[localFetchParams.queryTransformers?.crossJoin?.b ?? ""]?.definition ?? {}).map((b) => [
+  //       Object.entries(fetchQueryJzodSchema[localFetchParams.runtimeTransformers?.crossJoin?.b ?? ""]?.definition ?? {}).map((b) => [
   //         "b-" + b[0], b[1]
   //       ])
   //     )

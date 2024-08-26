@@ -1125,7 +1125,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       //     splittedEntityName,
       //   } },
       //   contextResults: { elementType: "object", elementValue: {} },
-      //   queryTransformers: {
+      //   runtimeTransformers: {
       //     select: { // TODO: replace with fullObjectTemplate
       //       [splittedEntityName]: {
       //         queryType: "extractObjectListByEntity",
@@ -1190,13 +1190,14 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                   },
                 }
               },
-              queryTransformers: {
+              runtimeTransformers: {
                 uniqueSplittedEntityInstances: {
                   queryType: "extractorTransformer",
                   queryName: "unique",
+                  // referencedExtractor: splittedEntityName,
                   referencedExtractor: {
-                    queryTemplateType: "queryContextReference",
-                    referenceName: splittedEntityName
+                    queryTemplateType: "parameterReference",
+                    referenceName: "splittedEntityName",
                   },
                   attribute: splittedEntityAttribute
                 }
@@ -1262,7 +1263,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     //   pageParams,
     //   queryParams: { elementType: "object", elementValue: {} },
     //   contextResults: { elementType: "object", elementValue: {} },
-    //   queryTransformers: {
+    //   runtimeTransformers: {
     //     select: {
     //       [splittedEntityName]: {
     //         queryType: "extractObjectListByEntity",
@@ -1395,7 +1396,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     //   pageParams: miroirMenuPageParams,
     //   queryParams: { elementType: "object", elementValue: {} },
     //   contextResults: { elementType: "object", elementValue: {} },
-    //   queryTransformers: {
+    //   runtimeTransformers: {
     //     select: {
     //       menus: {
     //         queryType: "extractObjectListByEntity",

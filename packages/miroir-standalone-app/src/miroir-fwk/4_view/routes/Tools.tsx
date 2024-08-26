@@ -30,7 +30,7 @@ import {
   entityDeployment,
   entityMenu,
   getLoggerName,
-  renderObjectTemplate,
+  renderObjectBuildTemplate,
   resolveReferencesForJzodSchemaAndValueObject
 } from "miroir-core";
 
@@ -197,7 +197,7 @@ export const handleCompositeAction = async (
   // going imperatively to handle inner references
   if (actionHandler.implementation.templates) {
     for (const t of Object.entries(actionHandler.implementation.templates)) {
-      const resolvedTemplate = renderObjectTemplate(
+      const resolvedTemplate = renderObjectBuildTemplate(
         t[0],
         t[1],
         {...templateConversionEffectiveParams,...resolvedTemplates},
@@ -223,7 +223,7 @@ export const handleCompositeAction = async (
 
   for (const a of (actionHandler.implementation.compositeActionTemplate as any).definition) {
     log.info("handleCompositeAction resolving action", a)
-    const currentAction = renderObjectTemplate(
+    const currentAction = renderObjectBuildTemplate(
       "ROOT",
       a.action,
       compositeActionTemplateAvailableReferences,

@@ -72,7 +72,15 @@
                 "type": "literal",
                 "definition": "objectInstanceReportSection"
               },
-              "queryTransformers": {
+              "combiners": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "miroirSelectQueriesRecord"
+                }
+              },
+              "runtimeTransformers": {
                 "type": "schemaReference",
                 "optional": true,
                 "definition": {
@@ -169,7 +177,15 @@
                 "type": "literal",
                 "definition": "grid"
               },
-              "queryTransformers": {
+              "combiners": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "miroirSelectQueriesRecord"
+                }
+              },
+              "runtimeTransformers": {
                 "type": "schemaReference",
                 "optional": true,
                 "definition": {
@@ -207,7 +223,15 @@
                 "type": "literal",
                 "definition": "list"
               },
-              "queryTransformers": {
+              "combiners": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "miroirSelectQueriesRecord"
+                }
+              },
+              "runtimeTransformers": {
                 "type": "schemaReference",
                 "optional": true,
                 "definition": {
@@ -313,7 +337,15 @@
                   }
                 }
               },
-              "queryTransformers": {
+              "combiners": {
+                "type": "schemaReference",
+                "optional":true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "miroirSelectQueriesRecord"
+                }
+              },
+              "runtimeTransformers": {
                 "type": "schemaReference",
                 "optional":true,
                 "definition": {

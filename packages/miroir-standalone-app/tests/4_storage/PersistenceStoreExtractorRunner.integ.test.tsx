@@ -461,7 +461,7 @@ describe.sequential("PersistenceStoreExtractorRunner.integ.test", () => {
   });
   
   // ################################################################################################
-  it("get Unique Authors from Books in Library", async () => {
+  it("get Unique Authors from Books in Library with actionRuntimeTransformer", async () => {
     await chainVitestSteps(
       "PersistenceStoreExtractorRunner_selectUniqueEntityApplication",
       {},
@@ -491,17 +491,26 @@ describe.sequential("PersistenceStoreExtractorRunner.integ.test", () => {
                 },
               },
             },
-            queryTransformers: {
+            runtimeTransformers: {
               uniqueAuthors: {
                 queryType: "extractorTransformer",
-                queryName: "unique",
-                referencedExtractor: {
-                  queryTemplateType: "queryContextReference",
-                  referenceName: "books",
-                },
-                attribute: "author",
-                orderBy: "author",
+                queryName: "actionRuntimeTransformer",
+                referencedExtractor: "books", // TODO: REMOVE THIS
+                actionRuntimeTransformer: {
+                  templateType: "unique",
+                  interpolation: "runtime",
+                  referencedExtractor: "books",
+                  attribute: "author",
+                  orderBy: "author",
+                }
               },
+              // uniqueAuthors: {
+              //   queryType: "extractorTransformer",
+              //   queryName: "unique",
+              //   referencedExtractor: "books",
+              //   attribute: "author",
+              //   orderBy: "author",
+              // },
             },
           },
         });
@@ -521,7 +530,7 @@ describe.sequential("PersistenceStoreExtractorRunner.integ.test", () => {
   });
   
   // ################################################################################################
-  it("get count books", async () => {
+  it("get count books with actionRuntimeTransformer", async () => {
     await chainVitestSteps(
       "PersistenceStoreExtractorRunner_selectUniqueEntityApplication",
       {},
@@ -550,15 +559,22 @@ describe.sequential("PersistenceStoreExtractorRunner.integ.test", () => {
                 },
               },
             },
-            queryTransformers: {
+            runtimeTransformers: {
               uniqueAuthors: {
                 queryType: "extractorTransformer",
-                queryName: "count",
-                referencedExtractor: {
-                  queryTemplateType: "queryContextReference",
-                  referenceName: "books",
-                },
+                queryName: "actionRuntimeTransformer",
+                referencedExtractor: "books",
+                actionRuntimeTransformer: {
+                  referencedExtractor: "books",
+                  interpolation: "runtime",
+                  templateType: "count",
+                }
               },
+              // uniqueAuthors: {
+              //   queryType: "extractorTransformer",
+              //   queryName: "count",
+              //   referencedExtractor: "books",
+              // },
             },
           },
         });
@@ -576,7 +592,7 @@ describe.sequential("PersistenceStoreExtractorRunner.integ.test", () => {
   });
   
   // ################################################################################################
-  it("get count books by author uuid", async () => {
+  it("get count books by author uuid with actionRuntimeTransformer", async () => {
     await chainVitestSteps(
       "PersistenceStoreExtractorRunner_selectUniqueEntityApplication",
       {},
@@ -605,17 +621,26 @@ describe.sequential("PersistenceStoreExtractorRunner.integ.test", () => {
                 },
               },
             },
-            queryTransformers: {
+            runtimeTransformers: {
               countBooksByAuthors: {
                 queryType: "extractorTransformer",
-                queryName: "count",
-                referencedExtractor: {
-                  queryTemplateType: "queryContextReference",
-                  referenceName: "books",
-                },
-                groupBy: "author",
-                orderBy: "author",
+                queryName: "actionRuntimeTransformer",
+                referencedExtractor: "books",
+                actionRuntimeTransformer: {
+                  referencedExtractor: "books",
+                  templateType: "count",
+                  interpolation: "runtime",
+                  groupBy: "author",
+                  orderBy: "author",
+                }
               },
+              // countBooksByAuthors: {
+              //   queryType: "extractorTransformer",
+              //   queryName: "count",
+              //   referencedExtractor: "books",
+              //   groupBy: "author",
+              //   orderBy: "author",
+              // },
             },
           },
         });

@@ -21,7 +21,7 @@
         }
       }
     },
-    "queryTransformers": {
+    "combiners": {
       "booksOfAuthor": {
         "queryType": "selectObjectListByRelation",
         "parentName": "Book",
@@ -61,6 +61,8 @@
         },
         "AttributeOfRootListObjectToCompareToListReferenceUuid": "publisher"
       }
+    },
+    "runtimeTransformers": {
     },
     "section": {
       "type": "list",

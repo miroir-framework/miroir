@@ -26,7 +26,7 @@ describe("domainSelector", () => {
         contextResults: { elementType: "object", elementValue: {} },
         pageParams: { elementType: "object", elementValue: {} },
         queryParams: { elementType: "object", elementValue: {} },
-        queryTransformers: {
+        runtimeTransformers: {
           book: {
             queryType: "selectObjectByDirectReference",
             parentName: "Book",
@@ -70,7 +70,7 @@ describe("domainSelector", () => {
         contextResults: { elementType: "object", elementValue: {} },
         pageParams: { elementType: "object", elementValue: {} },
         queryParams: { elementType: "object", elementValue: {} },
-        queryTransformers: {
+        runtimeTransformers: {
           book: {
             queryType: "selectObjectByDirectReference",
             parentName: "Book",
@@ -115,7 +115,7 @@ describe("domainSelector", () => {
         "contextResults": { elementType: "object", elementValue: {} },
         pageParams: { elementType: "object", elementValue: {} },
         queryParams: { elementType: "object", elementValue: {} },
-        "queryTransformers": {
+        "runtimeTransformers": {
           "book": {
             queryType: "selectObjectByDirectReference",
             parentName: "Book",
@@ -209,7 +209,7 @@ describe("domainSelector", () => {
             },
           },
         },
-        queryTransformers: {
+        runtimeTransformers: {
           book2: {
             queryType: "queryContextReference",
             queryReference: "book",
@@ -247,7 +247,7 @@ describe("domainSelector", () => {
             },
           },
         },
-        queryTransformers: {
+        runtimeTransformers: {
         },
       };
 
@@ -282,7 +282,7 @@ describe("domainSelector", () => {
             },
           },
         },
-        queryTransformers: {
+        runtimeTransformers: {
           publisher: {
             queryType: "selectObjectByRelation",
             parentName: "Publisher",
@@ -340,7 +340,7 @@ describe("domainSelector", () => {
             },
           },
         },
-        queryTransformers: {
+        runtimeTransformers: {
         },
       };
 
@@ -471,7 +471,7 @@ describe("domainSelector", () => {
             },
           },
         },
-        queryTransformers: {
+        runtimeTransformers: {
           publisher: {
             queryType: "selectObjectByRelation",
             parentName: "Publisher",
@@ -545,7 +545,7 @@ describe("domainSelector", () => {
             },
           },
         },
-        queryTransformers: {
+        runtimeTransformers: {
           publisher: {
             queryType: "selectObjectByRelation",
             parentName: "Publisher",
@@ -635,7 +635,7 @@ describe("domainSelector", () => {
             },
           },
         },
-        queryTransformers: {
+        runtimeTransformers: {
           instancesOfEntities: {
             queryType: "queryCombiner", // heteronomous many-to-many join, not possible with SQL
             rootQuery: {
@@ -709,14 +709,15 @@ describe("domainSelector", () => {
             },
           },
         },
-        queryTransformers: {
+        runtimeTransformers: {
           publishers: {
             queryType: "extractorTransformer",
             queryName: "unique",
-            referencedExtractor: {
-              queryTemplateType: "queryContextReference",
-              referenceName: "books",
-            },
+            referencedExtractor: "books",
+            // referencedExtractor: {
+            //   queryTemplateType: "queryContextReference",
+            //   referenceName: "books",
+            // },
             attribute: "publisher",
           },
         },

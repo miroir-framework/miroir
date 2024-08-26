@@ -49,7 +49,60 @@
           }
         ]
       },
-      "objectTemplate": {
+      "objectRuntimeTemplate": {
+        "type": "union",
+        "discriminator": "templateType",
+        "definition": [
+          {
+            "type": "object",
+            "definition": {
+              "templateType": {
+                "type": "literal",
+                "definition": "count"
+              },
+              "interpolation": {
+                "type": "literal",
+                "definition": "runtime"
+              },
+              "referencedExtractor": {
+                "type": "string"
+              },
+              "orderBy": {
+                "type": "string",
+                "optional": true
+              },
+              "groupBy": {
+                "type": "string",
+                "optional": true
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "templateType": {
+                "type": "literal",
+                "definition": "unique"
+              },
+              "interpolation": {
+                "type": "literal",
+                "definition": "runtime"
+              },
+              "referencedExtractor": {
+                "type": "string"
+              },
+              "orderBy": {
+                "type": "string",
+                "optional": true
+              },
+              "attribute": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "objectBuildTemplate": {
         "type": "union",
         "discriminator": "templateType",
         "definition": [
@@ -92,7 +145,7 @@
                     "attributeValue": {
                       "type": "schemaReference",
                       "definition": {
-                        "relativePath": "objectTemplate"
+                        "relativePath": "objectBuildTemplate"
                       }
                     }
                   }
@@ -140,7 +193,7 @@
       }
     },
     "definition": {
-      "relativePath": "objectTemplate"
+      "relativePath": "objectBuildTemplate"
     }
   }
 }

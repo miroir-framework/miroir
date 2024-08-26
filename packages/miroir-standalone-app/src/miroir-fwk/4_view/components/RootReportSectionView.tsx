@@ -95,7 +95,10 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
               queryParams: { elementType: "object", elementValue: {} },
               contextResults: { elementType: "object", elementValue: {} },
               extractors: props.rootReportSection.extractors,
-              queryTransformers: props.rootReportSection.queryTransformers,
+              // combiners: props.rootReportSection.combiners,
+              // runtimeTransformers: {...props.rootReportSection.combiners,...props.rootReportSection.runtimeTransformers},
+              combiners: props.rootReportSection.combiners,
+              runtimeTransformers: props.rootReportSection.runtimeTransformers,
             },
             deploymentEntityStateSelectorMap
           )
@@ -207,8 +210,10 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
     props.rootReportSection?.extractors,
     "props.reportSection?.extractors",
     props.rootReportSection?.extractors,
-    "props.reportSection?.queryTransformers",
-    props.rootReportSection?.queryTransformers,
+    "props.reportSection?.combiners",
+    props.rootReportSection?.combiners,
+    "props.reportSection?.runtimeTransformers",
+    props.rootReportSection?.runtimeTransformers,
     "props.deploymentEntityStateQueryResults",
     deploymentEntityStateQueryResults,
   );
@@ -230,7 +235,9 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
       </div>
     </div> */}
     if (deploymentEntityStateQueryResults.elementType == "object") {
-      const queryFailures = Object.entries(deploymentEntityStateQueryResults.elementValue).filter((e) => e[1].elementType == "failure")
+      const queryFailures = Object.entries(deploymentEntityStateQueryResults.elementValue).filter(
+        (e) => e[1].elementType == "failure"
+      );
       if (queryFailures.length > 0) {
         return (
           <div>

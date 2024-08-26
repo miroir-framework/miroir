@@ -21,7 +21,7 @@
         }
       }
     },
-    "queryTransformers": {
+    "combiners": {
       "booksOfPublisher": {
         "queryType": "selectObjectListByRelation",
         "parentName": "Book",

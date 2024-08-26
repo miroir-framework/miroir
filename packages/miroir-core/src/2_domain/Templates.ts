@@ -7,7 +7,10 @@ import {
   JzodReference,
   ActionReturnType,
   ObjectTemplateInnerReference,
-  ObjectTemplate,
+  ObjectBuildTemplate,
+  ObjectRuntimeTemplate,
+  DomainElementObjectOrFailed,
+  DomainElementObject,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
@@ -15,6 +18,7 @@ import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
+import { domainElementToPlainObject } from "./QuerySelectors.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "Templates");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -31,20 +35,22 @@ export const domainElementTemplateSchema: JzodReference = {
 };
 
 // ################################################################################################
-// duplicate from QuerySelectors.ts
-export const resolveActionTemplateContextReference = (
+// almost duplicate from QuerySelectors.ts
+export function resolveActionTemplateContextReference  (
   queryTemplateConstantOrAnyReference: ObjectTemplateInnerReference,
-  queryParams: any,
-  contextResults: any
-): any => {
+  queryParams: DomainElementObject,
+  contextResults?: DomainElementObject,
+  // queryParams: any,
+  // contextResults: any
+): DomainElement {
   // TODO: copy / paste (almost?) from query parameter lookup!
   // log.info("resolveActionTemplateContextReference for queryTemplateConstantOrAnyReference=", queryTemplateConstantOrAnyReference, "queryParams=", queryParams,"contextResults=", contextResults)
   if (
     (queryTemplateConstantOrAnyReference.templateType == "contextReference" &&
-      (!contextResults || !contextResults[queryTemplateConstantOrAnyReference.referenceName])) ||
+      (!contextResults || !contextResults.elementValue[queryTemplateConstantOrAnyReference.referenceName])) ||
     (queryTemplateConstantOrAnyReference.templateType == "parameterReference" &&
-      (typeof queryParams != "object" ||
-        !Object.keys(queryParams).includes(queryTemplateConstantOrAnyReference.referenceName)))
+      (typeof queryParams != "object" || !queryParams.elementValue ||
+        !Object.keys(queryParams.elementValue).includes(queryTemplateConstantOrAnyReference.referenceName)))
   ) {
     // checking that given reference does exist
     log.warn(
@@ -67,16 +73,17 @@ export const resolveActionTemplateContextReference = (
             queryTemplateConstantOrAnyReference.templateType ==
           "contextReference"
             ? JSON.stringify(contextResults)
-            : Object.keys(queryParams),
+            : JSON.stringify(Object.keys(queryParams)),
       },
     };
   }
 
   if (
     (queryTemplateConstantOrAnyReference.templateType == "contextReference" &&
-      !contextResults[queryTemplateConstantOrAnyReference.referenceName].elementValue) ||
+      (!contextResults?.elementValue ||
+        !contextResults?.elementValue[queryTemplateConstantOrAnyReference.referenceName].elementValue)) ||
     (queryTemplateConstantOrAnyReference.templateType == "parameterReference" &&
-      !queryParams[queryTemplateConstantOrAnyReference.referenceName])
+      !queryParams.elementValue[queryTemplateConstantOrAnyReference.referenceName])
   ) {
     // checking that given reference does exist
     return {
@@ -87,12 +94,20 @@ export const resolveActionTemplateContextReference = (
 
   const reference: DomainElement =
     queryTemplateConstantOrAnyReference.templateType == "contextReference"
-      ? contextResults[queryTemplateConstantOrAnyReference.referenceName]
+      ? // ? {elementType: "any", elementValue: contextResults[queryTemplateConstantOrAnyReference.referenceName ]}
+        contextResults?.elementValue[queryTemplateConstantOrAnyReference.referenceName] ?? {
+          elementType: "failure",
+          elementValue: { queryFailure: "ReferenceFoundButUndefined", queryContext: JSON.stringify(contextResults) },
+        }
       : queryTemplateConstantOrAnyReference.templateType == "parameterReference"
-      ? queryParams[queryTemplateConstantOrAnyReference.referenceName]
+      ? // ? { elementType: "any", elementValue: queryParams[queryTemplateConstantOrAnyReference.referenceName] }
+        queryParams.elementValue[queryTemplateConstantOrAnyReference.referenceName]
       : queryTemplateConstantOrAnyReference.templateType == "constantUuid"
       ? { elementType: "instanceUuid", elementValue: queryTemplateConstantOrAnyReference.constantUuidValue } // new object
-      : undefined; /* this should not happen. Provide "error" value instead?*/
+      : {
+          elementType: "failure",
+          elementValue: { queryFailure: queryTemplateConstantOrAnyReference },
+        }; /* this should not happen. Provide "error" value instead?*/
 
   log.info(
     "resolveActionTemplateContextReference for queryTemplateConstantOrAnyReference=",
@@ -109,108 +124,388 @@ export const resolveActionTemplateContextReference = (
 export type ActionTemplate = any;
 
 // ################################################################################################
-export function renderObjectTemplate(
+export function renderObjectRuntimeTemplate(
   objectName: string,
-  objectTemplate: ObjectTemplate,
-  queryParams: any,
-  contextResults?: any
-): any {
-  // log.info("renderObjectTemplate called for object named", objectName,"template", objectTemplate, "queryParams", queryParams);
-  if (typeof objectTemplate == "object") {
-    // log.info("renderObjectTemplate for template object named", objectName, "templateType", objectTemplate.templateType);
-    if (Array.isArray(objectTemplate)) {
-      return objectTemplate.map((e, index) => renderObjectTemplate(index.toString(), e, queryParams, contextResults));
+  objectRuntimeTemplate: ObjectRuntimeTemplate,
+  queryParams: DomainElementObject,
+  contextResults?: DomainElementObject,
+): DomainElement {
+  // log.info("renderObjectBuildTemplate called for object named", objectName,"template", objectBuildTemplate, "queryParams", queryParams);
+  if (typeof objectRuntimeTemplate == "object") {
+    // log.info("renderObjectBuildTemplate for template object named", objectName, "templateType", objectBuildTemplate.templateType);
+    if (Array.isArray(objectRuntimeTemplate)) {
+      // return objectRuntimeTemplate.map((e, index) => renderObjectRuntimeTemplate(index.toString(), e, queryParams, contextResults));
+      const subObject = objectRuntimeTemplate.map((e, index) => renderObjectBuildTemplate(index.toString(), e, queryParams, contextResults));
+      const failureIndex = subObject.findIndex((e) => e.elementType == "failure");
+      if (failureIndex == -1) {
+        return {
+          elementType: "array",
+          elementValue: subObject.map((e) => e.elementValue),
+        }
+      } else {
+        return {
+          elementType: "failure",
+          elementValue: {
+            queryFailure: "ReferenceNotFound",
+            queryContext:
+              "no " +
+              objectName +
+              " in " +
+              objectRuntimeTemplate,
+          },
+        };
+      }
+
     } else {
-      if (objectTemplate.templateType) {
-        switch (objectTemplate.templateType) {
-          case "fullObjectTemplate": {
-            const result = Object.fromEntries(
-              objectTemplate.definition.map(
-                (innerEntry: { attributeKey: ObjectTemplateInnerReference; attributeValue: ObjectTemplate }) => {
-                  // log.info("renderObjectTemplate for object named",objectName,"innerEntry index", innerEntry[0], "innerEntry value", innerEntry[1]);
-
-                  const rawLeftValue = innerEntry.attributeKey.templateType
-                    ? resolveActionTemplateContextReference(innerEntry.attributeKey, queryParams, contextResults)
-                    : innerEntry.attributeKey;
-                  const leftValue =
-                    typeof innerEntry.attributeKey == "object" && (innerEntry.attributeKey as any).applyFunction
-                      ? (innerEntry.attributeKey as any).applyFunction(rawLeftValue)
-                      : rawLeftValue;
-
-                  const rawRightValue = renderObjectTemplate(
-                    leftValue,
-                    innerEntry.attributeValue,
-                    queryParams,
-                    contextResults
-                  );
-                  const rightValue =
-                    typeof innerEntry.attributeValue == "object" && (innerEntry.attributeValue as any).applyFunction
-                      ? (innerEntry.attributeValue as any).applyFunction(rawRightValue)
-                      : rawRightValue;
-                  // log.info(
-                  //   "renderObjectTemplate fullObjectTemplate for ",
-                  //   objectTemplate,
-                  //   "rawLeftvalue",
-                  //   rawLeftValue,
-                  //   "leftValue",
-                  //   leftValue,
-                  //   "rawRightvalue",
-                  //   rawRightValue,
-                  //   "rightValue",
-                  //   rightValue
-                  // );
-                  return [leftValue, rightValue];
-                }
-              )
+      if (objectRuntimeTemplate.templateType) {
+        switch (objectRuntimeTemplate.templateType) {
+          case "count": {
+            const resolvedReference = resolveActionTemplateContextReference(
+              { templateType: "contextReference", referenceName:objectRuntimeTemplate.referencedExtractor },
+              queryParams,
+              contextResults
             );
-            return result;
+
+            log.info(
+              "innerSelectElementFromQuery extractorTransformer count referencedExtractor resolvedReference",
+              resolvedReference
+            );
+          
+            if (resolvedReference.elementType != "instanceUuidIndex") {
+              log.error("innerSelectElementFromQuery extractorTransformer count referencedExtractor resolvedReference", resolvedReference);
+              return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
+            }
+            const sortByAttribute = objectRuntimeTemplate.orderBy
+              ? (a: any[]) =>
+                  a.sort((a, b) =>
+                    a[objectRuntimeTemplate.orderBy ?? ""].localeCompare(b[objectRuntimeTemplate.orderBy ?? ""], "en", {
+                      sensitivity: "base",
+                    })
+                  )
+              : (a: any[]) => a;
+
+            if (objectRuntimeTemplate.groupBy) {
+              const result = new Map<string, number>();
+              for (const entry of Object.entries(resolvedReference.elementValue)) {
+                const key = (entry[1] as any)[objectRuntimeTemplate.groupBy];
+                if (result.has(key)) {
+                  result.set(key, (result.get(key)??0) + 1);
+                } else {
+                  result.set(key, 1);
+                }
+              }
+              return {
+                elementType: "any",
+                elementValue: sortByAttribute([...result.entries()].map((e) => ({ [objectRuntimeTemplate.groupBy as any]: e[0], count: e[1] }))),
+              };
+            } else {
+              return { elementType: "any" /* TODO: number? */, elementValue: [{count: Object.keys(resolvedReference.elementValue).length}] };
+            }
+            break;
+          }
+          case "unique": {
+            const resolvedReference = resolveActionTemplateContextReference(
+              { templateType: "contextReference", referenceName:objectRuntimeTemplate.referencedExtractor },
+              queryParams,
+              contextResults
+            );
+
+            log.info(
+              "innerSelectElementFromQuery extractorTransformer unique referencedExtractor resolvedReference",
+              resolvedReference
+            );
+          
+            if (resolvedReference.elementType != "instanceUuidIndex") {
+              log.error("innerSelectElementFromQuery extractorTransformer unique referencedExtractor resolvedReference", resolvedReference);
+              return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
+            }
+          
+            const sortByAttribute = objectRuntimeTemplate.orderBy
+              ? (a: any[]) =>
+                  a.sort((a, b) =>
+                    a[objectRuntimeTemplate.orderBy ?? ""].localeCompare(b[objectRuntimeTemplate.orderBy ?? ""], "en", {
+                      sensitivity: "base",
+                    })
+                  )
+              : (a: any[]) => a;
+            const result = new Set<string>();
+            for (const entry of Object.entries(resolvedReference.elementValue)) {
+              result.add((entry[1] as any)[objectRuntimeTemplate.attribute]);
+            }
+            return {
+              elementType: "any",
+              elementValue: sortByAttribute([...result].map((e) => ({ [objectRuntimeTemplate.attribute]: e }))),
+            };
+            break;  
+          }
+            
+          // case "fullObjectTemplate": {
+          //   const result = Object.fromEntries(
+          //     objectRuntimeTemplate.definition.map(
+          //       (innerEntry: { attributeKey: ObjectTemplateInnerReference; attributeValue: ObjectBuildTemplate }) => {
+          //         // log.info("renderObjectBuildTemplate for object named",objectName,"innerEntry index", innerEntry[0], "innerEntry value", innerEntry[1]);
+
+          //         const rawLeftValue = innerEntry.attributeKey.templateType
+          //           ? resolveActionTemplateContextReference(innerEntry.attributeKey, queryParams, contextResults)
+          //           : innerEntry.attributeKey;
+          //         const leftValue =
+          //           typeof innerEntry.attributeKey == "object" && (innerEntry.attributeKey as any).applyFunction
+          //             ? (innerEntry.attributeKey as any).applyFunction(rawLeftValue)
+          //             : rawLeftValue;
+
+          //         const rawRightValue = renderObjectBuildTemplate(
+          //           leftValue,
+          //           innerEntry.attributeValue,
+          //           queryParams,
+          //           contextResults
+          //         );
+          //         const rightValue =
+          //           typeof innerEntry.attributeValue == "object" && (innerEntry.attributeValue as any).applyFunction
+          //             ? (innerEntry.attributeValue as any).applyFunction(rawRightValue)
+          //             : rawRightValue;
+          //         // log.info(
+          //         //   "renderObjectBuildTemplate fullObjectTemplate for ",
+          //         //   objectBuildTemplate,
+          //         //   "rawLeftvalue",
+          //         //   rawLeftValue,
+          //         //   "leftValue",
+          //         //   leftValue,
+          //         //   "rawRightvalue",
+          //         //   rawRightValue,
+          //         //   "rightValue",
+          //         //   rightValue
+          //         // );
+          //         return [leftValue, rightValue];
+          //       }
+          //     )
+          //   );
+          //   return result;
+          //   break;
+          // }
+          // case "mustacheStringTemplate": {
+          //   const result = Mustache.render(objectRuntimeTemplate.definition, queryParams);
+          //   log.info(
+          //     "renderObjectBuildTemplate mustacheStringTemplate for",
+          //     objectRuntimeTemplate,
+          //     "queryParams",
+          //     queryParams,
+          //     "result",
+          //     result
+          //   );
+          //   return result;
+          //   break;
+          // }
+          // case "constantUuid":
+          // case "contextReference":
+          // case "parameterReference":
+          default: {
+            throw new Error("could not render objectRuntimeTemplate" + JSON.stringify(objectRuntimeTemplate, null, 2));
+            // const rawValue = objectRuntimeTemplate.templateType
+            //   ? resolveActionTemplateContextReference(objectRuntimeTemplate, queryParams, contextResults)
+            //   : objectRuntimeTemplate;
+            // const value =
+            //   typeof objectRuntimeTemplate == "object" && (objectRuntimeTemplate as any).applyFunction
+            //     ? (objectRuntimeTemplate as any).applyFunction(rawValue)
+            //     : rawValue;
+            // // log.info("renderObjectBuildTemplate default case for", objectBuildTemplate, "rawvalue", rawValue, "value", value);
+            // return value;
+            break;
+          }
+        }
+      } else {
+        // log.info("renderObjectBuildTemplate converting plain object", objectBuildTemplate);
+        const result = Object.fromEntries(
+          Object.entries(objectRuntimeTemplate).map((objectTemplateEntry: [string, any]) => {
+            return [
+              objectTemplateEntry[0],
+              renderObjectBuildTemplate(objectTemplateEntry[0], objectTemplateEntry[1], queryParams, contextResults),
+            ];
+          })
+        );
+        return { elementType: "object", elementValue: result};
+      }
+    }
+  } else {
+    // plain value
+    return objectRuntimeTemplate;
+  }
+}
+
+// ################################################################################################
+export function renderObjectBuildTemplate(
+  objectName: string,
+  objectBuildTemplate: ObjectBuildTemplate,
+  queryParams: DomainElementObject,
+  contextResults?: DomainElementObject,
+  // queryParams: any,
+  // contextResults?: any
+// ): any {
+): DomainElement {
+  // log.info("renderObjectBuildTemplate called for object named", objectName,"template", objectBuildTemplate, "queryParams", queryParams);
+  if (typeof objectBuildTemplate == "object") {
+    // log.info("renderObjectBuildTemplate for template object named", objectName, "templateType", objectBuildTemplate.templateType);
+    if (Array.isArray(objectBuildTemplate)) {
+      const subObject = objectBuildTemplate.map((e, index) => renderObjectBuildTemplate(index.toString(), e, queryParams, contextResults));
+      const failureIndex = subObject.findIndex((e) => e.elementType == "failure");
+      if (failureIndex == -1) {
+        return {
+          elementType: "array",
+          elementValue: subObject.map((e) => e.elementValue),
+        }
+      } else {
+        return {
+          elementType: "failure",
+          elementValue: {
+            queryFailure: "ReferenceNotFound",
+            queryContext:
+              "no " +
+              objectName +
+              " in " +
+              objectBuildTemplate,
+          },
+        };
+      }
+    } else {
+      if (objectBuildTemplate.templateType) {
+        switch (objectBuildTemplate.templateType) {
+          case "fullObjectTemplate": {
+            const attributeEntries = objectBuildTemplate.definition.map(
+              (innerEntry: { attributeKey: ObjectTemplateInnerReference; attributeValue: ObjectBuildTemplate }): [
+                { rawLeftValue: DomainElement; finalLeftValue: DomainElement },
+                { renderedRightValue: DomainElement; finalRightValue: DomainElement }
+              ] => {
+                // log.info("renderObjectBuildTemplate for object named",objectName,"innerEntry index", innerEntry[0], "innerEntry value", innerEntry[1]);
+
+                const rawLeftValue: DomainElement = innerEntry.attributeKey.templateType
+                  ? resolveActionTemplateContextReference(innerEntry.attributeKey, queryParams, contextResults)
+                  : { elementType: "string", elementValue: innerEntry.attributeKey};
+                const leftValue:{ rawLeftValue: DomainElement; finalLeftValue: DomainElement } = {
+                  rawLeftValue,
+                  finalLeftValue:
+                    rawLeftValue.elementType != "failure" &&
+                    typeof innerEntry.attributeKey == "object" &&
+                    (innerEntry.attributeKey as any).applyFunction
+                      ? {
+                          elementType: "string",
+                          elementValue: (innerEntry.attributeKey as any).applyFunction(rawLeftValue.elementValue),
+                        }
+                      : rawLeftValue,
+                };
+                // log.info("renderObjectBuildTemplate fullObjectTemplate innerEntry.attributeKey", innerEntry.attributeKey, "leftValue", leftValue);
+
+                const renderedRightValue: DomainElement = renderObjectBuildTemplate(
+                  leftValue.finalLeftValue.elementValue as string,
+                  innerEntry.attributeValue,
+                  queryParams,
+                  contextResults
+                );
+                const rightValue: { renderedRightValue: DomainElement; finalRightValue: DomainElement } = {
+                  renderedRightValue,
+                  finalRightValue:
+                    renderedRightValue.elementType != "failure" && (innerEntry.attributeValue as any).applyFunction
+                      ? { elementType: "any", elementValue: (innerEntry.attributeValue as any).applyFunction(renderedRightValue.elementValue)}
+                      : renderedRightValue,
+                };
+                // log.info("renderObjectBuildTemplate fullObjectTemplate innerEntry.attributeKey", innerEntry.attributeKey, "rightValue", rightValue);
+                return [leftValue, rightValue];
+              }
+            )
+            const failureIndex = attributeEntries.findIndex((e) => e[0].finalLeftValue.elementType == "failure" || e[1].finalRightValue.elementType == "failure");
+            if (failureIndex == -1) { // no failure found
+              
+              log.info("renderObjectBuildTemplate fullObjectTemplate for", objectBuildTemplate, "attributeEntries", JSON.stringify(attributeEntries, null, 2));
+              const fullObjectResult = Object.fromEntries(
+                attributeEntries.map((e) => [e[0].finalLeftValue.elementValue, e[1].finalRightValue.elementValue])
+              );
+              log.info("renderObjectBuildTemplate fullObjectTemplate for", objectBuildTemplate, "fullObjectResult", fullObjectResult);
+              return {
+                elementType: "object",
+                elementValue: fullObjectResult,
+              };
+            } else {
+              return {
+                elementType: "failure",
+                elementValue: {
+                  queryFailure: "ReferenceNotFound",
+                  queryContext: "error in " + objectName + " in " + JSON.stringify(attributeEntries[failureIndex], null, 2),
+                },
+              };
+            }
+            // const result = Object.fromEntries(
+            // );
+            // return {};
             break;
           }
           case "mustacheStringTemplate": {
-            const result = Mustache.render(objectTemplate.definition, queryParams);
+            const cleanedQueryParams = domainElementToPlainObject(queryParams); // TODO: highly inefficient!!
+            const result = Mustache.render(objectBuildTemplate.definition, cleanedQueryParams);
             log.info(
-              "renderObjectTemplate mustacheStringTemplate for",
-              objectTemplate,
+              "renderObjectBuildTemplate mustacheStringTemplate for",
+              objectBuildTemplate,
               "queryParams",
               queryParams,
               "result",
               result
             );
-            return result;
+            return { elementType: "string", elementValue: result};
             break;
           }
           case "constantUuid":
           case "contextReference":
           case "parameterReference":
           default: {
-            const rawValue = objectTemplate.templateType
-              ? resolveActionTemplateContextReference(objectTemplate, queryParams, contextResults)
-              : objectTemplate;
-            const value =
-              typeof objectTemplate == "object" && (objectTemplate as any).applyFunction
-                ? (objectTemplate as any).applyFunction(rawValue)
+            const rawValue = resolveActionTemplateContextReference(objectBuildTemplate, queryParams, contextResults);
+            const returnedValue: DomainElement =
+              typeof objectBuildTemplate == "object" && (objectBuildTemplate as any).applyFunction
+                ? { elementType: "any", elementValue: (objectBuildTemplate as any).applyFunction(rawValue.elementValue)}
                 : rawValue;
-            // log.info("renderObjectTemplate default case for", objectTemplate, "rawvalue", rawValue, "value", value);
-            return value;
+            // log.info("renderObjectBuildTemplate default case for", objectBuildTemplate, "rawvalue", rawValue, "value", value);
+            // return { elementType: "any", elementValue: value};
+            return returnedValue;
             break;
           }
         }
       } else {
-        // log.info("renderObjectTemplate converting plain object", objectTemplate);
-        const result = Object.fromEntries(
-          Object.entries(objectTemplate).map((objectTemplateEntry: [string, any]) => {
-            return [
-              objectTemplateEntry[0],
-              renderObjectTemplate(objectTemplateEntry[0], objectTemplateEntry[1], queryParams, contextResults),
-            ];
-          })
-        );
-        return result;
+        //  this is a plain object!! The result of renderObjectBuildTemplate is an object
+        // rendering the attributes of the object if needed
+        const attributeEntries:[string, DomainElement][] = Object.entries(objectBuildTemplate).map((objectTemplateEntry: [string, any]) => {
+          return [
+            objectTemplateEntry[0],
+            renderObjectBuildTemplate(objectTemplateEntry[0], objectTemplateEntry[1], queryParams, contextResults),
+          ];
+        });
+        log.info("renderObjectBuildTemplate converting plain object", objectBuildTemplate, "attributeEntries", JSON.stringify(attributeEntries, null, 2));
+        const failureIndex = attributeEntries.findIndex((e) => e[1].elementType == "failure");
+        if (failureIndex == -1) {
+          return {
+            elementType: "object",
+            elementValue: Object.fromEntries(
+              attributeEntries.map((e) => [e[0], e[1].elementValue])
+            ),
+          };
+        } else {
+          return {
+            elementType: "failure",
+            elementValue: {
+              queryFailure: "ReferenceNotFound",
+              queryContext: "error in " + objectName + " in " + JSON.stringify(attributeEntries[failureIndex]),
+            },
+          };
+        }
+        // const result = Object.fromEntries(
+        //   Object.entries(objectBuildTemplate).map((objectTemplateEntry: [string, any]) => {
+        //     return [
+        //       objectTemplateEntry[0],
+        //       renderObjectBuildTemplate(objectTemplateEntry[0], objectTemplateEntry[1], queryParams, contextResults),
+        //     ];
+        //   })
+        // );
+        // return result;
       }
     }
   } else {
     // plain value
-    return objectTemplate;
+    return { elementType: "any", elementValue: objectBuildTemplate};
   }
 }
 
@@ -220,7 +515,8 @@ export function actionTemplateToAction(
   queryParams: any,
   contextResults?: any
 ): DomainAction {
-  return renderObjectTemplate(actionTemplate, queryParams, contextResults);
+  // TODO: deal with failure!
+  return renderObjectBuildTemplate(actionTemplate, queryParams, contextResults).elementValue as DomainAction;
 }
 
 // ################################################################################################

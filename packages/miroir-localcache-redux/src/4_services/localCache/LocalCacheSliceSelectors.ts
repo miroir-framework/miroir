@@ -21,7 +21,7 @@ import {
   SyncExtractorRunner,
   SyncExtractorRunnerParams,
   RecordOfJzodElement,
-  cleanupResultsFromQuery,
+  domainElementToPlainObject,
   getDeploymentEntityStateIndex,
   getLoggerName
 } from "miroir-core";
@@ -154,7 +154,7 @@ export function applyDeploymentEntityStateQuerySelectorForCleanedResult<QueryTyp
     params: SyncExtractorRunnerParams<QueryType, DeploymentEntityState>
   ): DomainElement => {
     const partial: DomainElement = deploymentEntityStateQuerySelector(deploymentEntityState, params);
-    const result: any = cleanupResultsFromQuery(partial);
+    const result: any = domainElementToPlainObject(partial);
     return result;
   };
 
@@ -226,7 +226,7 @@ export function applyDomainStateQuerySelectorForCleanedResult<QueryType extends 
 ) => any { 
   const cleanupFunction = (domainState: DomainState, params: SyncExtractorRunnerParams<QueryType, DomainState>):DomainElement => {
     const partial:DomainElement = domainStateSelector(domainState, params);
-    const result:any = cleanupResultsFromQuery(partial)
+    const result:any = domainElementToPlainObject(partial)
     return result;
   }
 
