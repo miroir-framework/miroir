@@ -27,7 +27,7 @@ import {
   QuerySelectObjectList,
   ExtractObjectListByEntity,
   DomainModelSingleExtractor,
-  QueryExtractorTransformer,
+  QueryExtractorRuntimeTransformer,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   SyncExtractorRunnerParams,
@@ -358,7 +358,7 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractor
 
 // ################################################################################################
 export const applyExtractorTransformer = (
-  query: QueryExtractorTransformer,
+  query: QueryExtractorRuntimeTransformer,
   queryParams: DomainElementObject,
   newFetchedData: DomainElementObject
 ): DomainElement => {
@@ -567,10 +567,10 @@ export function innerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
       }
       break;
     }
-    case "extractorTransformer": {
-      return applyExtractorTransformer(query, queryParams, newFetchedData);
-      break;
-    }
+    // case "extractorTransformer": {
+    //   return applyExtractorTransformer(query, queryParams, newFetchedData);
+    //   break;
+    // }
     case "queryContextReference": {
       return newFetchedData && newFetchedData.elementType == "object" && newFetchedData.elementValue[query.queryReference]
         ? newFetchedData.elementValue[query.queryReference]
@@ -709,21 +709,38 @@ export const extractWithManyExtractors = <StateType>(
     Object.entries(
     selectorParams.extractor.runtimeTransformers ?? {}
   )) {
-    let result = innerSelectElementFromQuery(
-      state,
-      context,
-      selectorParams.extractor.pageParams,
-      {
-        elementType: "object",
-        elementValue: {
-          ...selectorParams.extractor.pageParams.elementValue,
-          ...selectorParams.extractor.queryParams.elementValue,
-        },
+
+    // export function innerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
+    //   state: StateType,
+    //   newFetchedData: DomainElementObject,
+    //   pageParams: DomainElementObject,
+    //   queryParams: DomainElementObject,
+    //   extractorRunnerMap:SyncExtractorRunnerMap<StateType>,
+    //   deploymentUuid: Uuid,
+    //   query: QuerySelect
+    // ):
+    // let result = innerSelectElementFromQuery(
+    //   state,
+    //   context,
+    //   selectorParams.extractor.pageParams,
+    //   {
+    //     elementType: "object",
+    //     elementValue: {
+    //       ...selectorParams.extractor.pageParams.elementValue,
+    //       ...selectorParams.extractor.queryParams.elementValue,
+    //     },
+    //   },
+    //   localSelectorMap as any,
+    //   selectorParams.extractor.deploymentUuid,
+    //   query[1]
+    // );
+    let result = applyExtractorTransformer(query[1], {
+      elementType: "object",
+      elementValue: {
+        ...selectorParams.extractor.pageParams.elementValue,
+        ...selectorParams.extractor.queryParams.elementValue,
       },
-      localSelectorMap as any,
-      selectorParams.extractor.deploymentUuid,
-      query[1]
-    );
+    }, context)
     context.elementValue[query[0]] = result; // does side effect!
     // log.info("extractWithManyExtractors done for entry", entry[0], "query", entry[1], "result=", result);
   }
@@ -752,7 +769,7 @@ export const extractzodSchemaForSingleSelectQuery = <StateType>(
   if (
     selectorParams.query.select.queryType=="literal" ||
     selectorParams.query.select.queryType=="queryContextReference" ||
-    selectorParams.query.select.queryType=="extractorTransformer" ||
+    // selectorParams.query.select.queryType=="extractorTransformer" ||
     selectorParams.query.select.queryType=="extractorWrapperReturningObject" ||
     selectorParams.query.select.queryType=="wrapperReturningObject" ||
     selectorParams.query.select.queryType=="extractorWrapperReturningList" ||
@@ -845,8 +862,10 @@ export const extractFetchQueryJzodSchema = <StateType>(
   // log.info("selectFetchQueryJzodSchemaFromDomainState called", selectorParams.query);
   
   const fetchQueryJzodSchema = Object.fromEntries(
-    Object.entries(localFetchParams?.combiners??{}).concat(
-    Object.entries(localFetchParams?.runtimeTransformers??{})).map((entry: [string, QuerySelect]) => [
+    Object.entries(localFetchParams?.combiners??{})
+    // .concat(
+    // Object.entries(localFetchParams?.runtimeTransformers??{}))
+    .map((entry: [string, QuerySelect]) => [
       entry[0],
       selectorParams.extractorRunnerMap.extractzodSchemaForSingleSelectQuery(deploymentEntityState, {
         extractorRunnerMap:selectorParams.extractorRunnerMap,

@@ -255,7 +255,7 @@ export {
   extractorForSingleObjectList,
   DomainModelSingleExtractor,
   domainModelSingleExtractor,
-  QueryExtractorTransformer,
+  QueryExtractorRuntimeTransformer,
   queryExtractorTransformerUnique,
   QuerySelectExtractorWrapper,
   querySelectExtractorWrapper,

@@ -7,7 +7,7 @@ import {
   StoreUnitConfiguration,
   ObjectBuildTemplate,
   DomainElementObject,
-  ObjectRuntimeTemplate,
+  RuntimeTransformer,
   EntityInstance,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { book1, book2, book3, book4, book5, book6 } from '../../index.js';
@@ -170,7 +170,7 @@ describe("templates.unit.test", () => {
       console.log("convert mustache string START")
       const newApplicationName = "test";
 
-      const uniqueRuntimeTemplate:ObjectRuntimeTemplate = {
+      const uniqueRuntimeTemplate:RuntimeTransformer = {
         templateType: "unique",
         interpolation: "runtime",
         referencedExtractor: "books",
@@ -224,7 +224,7 @@ describe("templates.unit.test", () => {
       console.log("count books by author runtime template START")
       const newApplicationName = "test";
 
-      const uniqueRuntimeTemplate:ObjectRuntimeTemplate = {
+      const uniqueRuntimeTemplate:RuntimeTransformer = {
         templateType: "count",
         interpolation: "runtime",
         referencedExtractor: "books",

@@ -10,7 +10,7 @@ import {
   ExtractorForRecordOfExtractors,
   ExtractorForSingleObject,
   ExtractorForSingleObjectList,
-  QueryExtractorTransformer,
+  QueryExtractorRuntimeTransformer,
   QuerySelect
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
@@ -78,7 +78,7 @@ export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
 
 // ################################################################################################
 export async function asyncApplyExtractorTransformerInMemory(
-  query: QueryExtractorTransformer,
+  query: QueryExtractorRuntimeTransformer,
   queryParams: DomainElementObject,
   newFetchedData: DomainElementObject,
   extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>,
@@ -246,10 +246,10 @@ export function asyncInnerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
 
       break;
     }
-    case "extractorTransformer": {
-      // return processExtractorTransformerInMemory(query, queryParams, newFetchedData, extractors);
-      return extractorRunnerMap.applyExtractorTransformer(query, queryParams, newFetchedData, extractors);
-    }
+    // case "extractorTransformer": {
+    //   // return processExtractorTransformerInMemory(query, queryParams, newFetchedData, extractors);
+    //   return extractorRunnerMap.applyExtractorTransformer(query, queryParams, newFetchedData, extractors);
+    // }
     case "queryContextReference": {
       return newFetchedData && newFetchedData.elementType == "object" && newFetchedData.elementValue[query.queryReference]
         ? Promise.resolve(newFetchedData.elementValue[query.queryReference])
@@ -373,29 +373,77 @@ export const asyncExtractWithManyExtractors = async <StateType>(
     return context;
   });
 
-  const combinerAndtransformerPromises = Object.entries(selectorParams.extractor.combiners ?? {})
-    .concat(Object.entries(selectorParams.extractor.runtimeTransformers ?? {}))
-    .map((query: [string, QuerySelect]) => {
-      return asyncInnerSelectElementFromQuery(
-        state,
-        context,
-        selectorParams.extractor.pageParams,
-        {
-          elementType: "object",
-          elementValue: {
-            ...selectorParams.extractor.pageParams.elementValue,
-            ...selectorParams.extractor.queryParams.elementValue,
-          },
+  const combinerPromises = Object.entries(selectorParams.extractor.combiners ?? {})
+  .map((query: [string, QuerySelect]) => {
+    return asyncInnerSelectElementFromQuery(
+      state,
+      context,
+      selectorParams.extractor.pageParams,
+      {
+        elementType: "object",
+        elementValue: {
+          ...selectorParams.extractor.pageParams.elementValue,
+          ...selectorParams.extractor.queryParams.elementValue,
         },
-        localSelectorMap as any,
-        selectorParams.extractor.deploymentUuid,
-        selectorParams.extractor.extractors ?? ({} as any),
-        query[1]
-      ).then((result): [string, DomainElement] => {
-        return [query[0], result];
-      });
+      },
+      localSelectorMap as any,
+      selectorParams.extractor.deploymentUuid,
+      selectorParams.extractor.extractors ?? ({} as any),
+      query[1]
+    ).then((result): [string, DomainElement] => {
+      return [query[0], result];
     });
-  await Promise.all(combinerAndtransformerPromises).then((results) => {
+  });
+
+  await Promise.all(combinerPromises).then((results) => {
+    results.forEach((result) => {
+      context.elementValue[result[0]] = result[1]; // does side effect!
+    });
+    return context;
+  });
+
+  const transformerPromises = Object.entries(selectorParams.extractor.runtimeTransformers ?? {})
+    .map((query: [string, QueryExtractorRuntimeTransformer]) => {
+      // export function asyncInnerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
+      //   state: StateType,
+      //   newFetchedData: DomainElementObject,
+      //   pageParams: DomainElementObject,
+      //   queryParams: DomainElementObject,
+      //   extractorRunnerMap:AsyncExtractorRunnerMap<StateType>,
+      //   deploymentUuid: Uuid,
+      //   extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>,
+      //   query: QuerySelect
+      // ): Promise<DomainElement> {
+      // return asyncInnerSelectElementFromQuery(
+      //   state,
+      //   context,
+      //   selectorParams.extractor.pageParams,
+      //   {
+      //     elementType: "object",
+      //     elementValue: {
+      //       ...selectorParams.extractor.pageParams.elementValue,
+      //       ...selectorParams.extractor.queryParams.elementValue,
+      //     },
+      //   },
+      //   localSelectorMap as any,
+      //   selectorParams.extractor.deploymentUuid,
+      //   selectorParams.extractor.extractors ?? ({} as any),
+      //   query[1]
+      // ).then((result): [string, DomainElement] => {
+      //   return [query[0], result];
+      // });
+      return localSelectorMap.applyExtractorTransformer(query[1], {
+        elementType: "object",
+        elementValue: {
+          ...selectorParams.extractor.pageParams.elementValue,
+          ...selectorParams.extractor.queryParams.elementValue,
+        },
+      }, context, selectorParams.extractor.extractors ?? ({} as any)).then((result): [string, DomainElement] => {
+        return [query[0], result];
+      });;
+
+    });
+  await Promise.all(transformerPromises).then((results) => {
     results.forEach((result) => {
       context.elementValue[result[0]] = result[1]; // does side effect!
     });

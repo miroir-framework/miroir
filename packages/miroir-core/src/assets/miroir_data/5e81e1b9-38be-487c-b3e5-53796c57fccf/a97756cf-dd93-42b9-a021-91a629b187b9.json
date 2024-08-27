@@ -49,7 +49,7 @@
           }
         ]
       },
-      "objectRuntimeTemplate": {
+      "runtimeTransformer": {
         "type": "union",
         "discriminator": "templateType",
         "definition": [

@@ -638,7 +638,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       "actualTest_getInstancesAndCheckResult",
       {},
       async () => localAppPersistenceStoreController.getInstances("data",entityAuthor.uuid),
-      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances),
+      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances, ["birthDate", "deathDate", "conceptLevel", "icons", "language" ]),
       undefined, // name to give to result
       "entityInstanceCollection",
       [author1]
@@ -668,7 +668,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       "actualTest_getInstancesAndCheckResult",
       {},
       async () => localAppPersistenceStoreController.getInstances("data",entityAuthor.uuid),
-      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances),
+      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances, ["birthDate", "deathDate", "conceptLevel", "icons", "language" ]),
       undefined, // name to give to result
       "entityInstanceCollection",
       [{...author1, "name": author1.name + "ssss"}]

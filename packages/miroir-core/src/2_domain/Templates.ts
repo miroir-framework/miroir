@@ -8,7 +8,7 @@ import {
   ActionReturnType,
   ObjectTemplateInnerReference,
   ObjectBuildTemplate,
-  ObjectRuntimeTemplate,
+  RuntimeTransformer,
   DomainElementObjectOrFailed,
   DomainElementObject,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
@@ -126,16 +126,16 @@ export type ActionTemplate = any;
 // ################################################################################################
 export function renderObjectRuntimeTemplate(
   objectName: string,
-  objectRuntimeTemplate: ObjectRuntimeTemplate,
+  runtimeTransformer: RuntimeTransformer,
   queryParams: DomainElementObject,
   contextResults?: DomainElementObject,
 ): DomainElement {
   // log.info("renderObjectBuildTemplate called for object named", objectName,"template", objectBuildTemplate, "queryParams", queryParams);
-  if (typeof objectRuntimeTemplate == "object") {
+  if (typeof runtimeTransformer == "object") {
     // log.info("renderObjectBuildTemplate for template object named", objectName, "templateType", objectBuildTemplate.templateType);
-    if (Array.isArray(objectRuntimeTemplate)) {
-      // return objectRuntimeTemplate.map((e, index) => renderObjectRuntimeTemplate(index.toString(), e, queryParams, contextResults));
-      const subObject = objectRuntimeTemplate.map((e, index) => renderObjectBuildTemplate(index.toString(), e, queryParams, contextResults));
+    if (Array.isArray(runtimeTransformer)) {
+      // return runtimeTransformer.map((e, index) => renderObjectRuntimeTemplate(index.toString(), e, queryParams, contextResults));
+      const subObject = runtimeTransformer.map((e, index) => renderObjectBuildTemplate(index.toString(), e, queryParams, contextResults));
       const failureIndex = subObject.findIndex((e) => e.elementType == "failure");
       if (failureIndex == -1) {
         return {
@@ -151,17 +151,17 @@ export function renderObjectRuntimeTemplate(
               "no " +
               objectName +
               " in " +
-              objectRuntimeTemplate,
+              runtimeTransformer,
           },
         };
       }
 
     } else {
-      if (objectRuntimeTemplate.templateType) {
-        switch (objectRuntimeTemplate.templateType) {
+      if (runtimeTransformer.templateType) {
+        switch (runtimeTransformer.templateType) {
           case "count": {
             const resolvedReference = resolveActionTemplateContextReference(
-              { templateType: "contextReference", referenceName:objectRuntimeTemplate.referencedExtractor },
+              { templateType: "contextReference", referenceName:runtimeTransformer.referencedExtractor },
               queryParams,
               contextResults
             );
@@ -175,19 +175,19 @@ export function renderObjectRuntimeTemplate(
               log.error("innerSelectElementFromQuery extractorTransformer count referencedExtractor resolvedReference", resolvedReference);
               return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
             }
-            const sortByAttribute = objectRuntimeTemplate.orderBy
+            const sortByAttribute = runtimeTransformer.orderBy
               ? (a: any[]) =>
                   a.sort((a, b) =>
-                    a[objectRuntimeTemplate.orderBy ?? ""].localeCompare(b[objectRuntimeTemplate.orderBy ?? ""], "en", {
+                    a[runtimeTransformer.orderBy ?? ""].localeCompare(b[runtimeTransformer.orderBy ?? ""], "en", {
                       sensitivity: "base",
                     })
                   )
               : (a: any[]) => a;
 
-            if (objectRuntimeTemplate.groupBy) {
+            if (runtimeTransformer.groupBy) {
               const result = new Map<string, number>();
               for (const entry of Object.entries(resolvedReference.elementValue)) {
-                const key = (entry[1] as any)[objectRuntimeTemplate.groupBy];
+                const key = (entry[1] as any)[runtimeTransformer.groupBy];
                 if (result.has(key)) {
                   result.set(key, (result.get(key)??0) + 1);
                 } else {
@@ -196,7 +196,7 @@ export function renderObjectRuntimeTemplate(
               }
               return {
                 elementType: "any",
-                elementValue: sortByAttribute([...result.entries()].map((e) => ({ [objectRuntimeTemplate.groupBy as any]: e[0], count: e[1] }))),
+                elementValue: sortByAttribute([...result.entries()].map((e) => ({ [runtimeTransformer.groupBy as any]: e[0], count: e[1] }))),
               };
             } else {
               return { elementType: "any" /* TODO: number? */, elementValue: [{count: Object.keys(resolvedReference.elementValue).length}] };
@@ -205,7 +205,7 @@ export function renderObjectRuntimeTemplate(
           }
           case "unique": {
             const resolvedReference = resolveActionTemplateContextReference(
-              { templateType: "contextReference", referenceName:objectRuntimeTemplate.referencedExtractor },
+              { templateType: "contextReference", referenceName:runtimeTransformer.referencedExtractor },
               queryParams,
               contextResults
             );
@@ -220,28 +220,28 @@ export function renderObjectRuntimeTemplate(
               return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
             }
           
-            const sortByAttribute = objectRuntimeTemplate.orderBy
+            const sortByAttribute = runtimeTransformer.orderBy
               ? (a: any[]) =>
                   a.sort((a, b) =>
-                    a[objectRuntimeTemplate.orderBy ?? ""].localeCompare(b[objectRuntimeTemplate.orderBy ?? ""], "en", {
+                    a[runtimeTransformer.orderBy ?? ""].localeCompare(b[runtimeTransformer.orderBy ?? ""], "en", {
                       sensitivity: "base",
                     })
                   )
               : (a: any[]) => a;
             const result = new Set<string>();
             for (const entry of Object.entries(resolvedReference.elementValue)) {
-              result.add((entry[1] as any)[objectRuntimeTemplate.attribute]);
+              result.add((entry[1] as any)[runtimeTransformer.attribute]);
             }
             return {
               elementType: "any",
-              elementValue: sortByAttribute([...result].map((e) => ({ [objectRuntimeTemplate.attribute]: e }))),
+              elementValue: sortByAttribute([...result].map((e) => ({ [runtimeTransformer.attribute]: e }))),
             };
             break;  
           }
             
           // case "fullObjectTemplate": {
           //   const result = Object.fromEntries(
-          //     objectRuntimeTemplate.definition.map(
+          //     runtimeTransformer.definition.map(
           //       (innerEntry: { attributeKey: ObjectTemplateInnerReference; attributeValue: ObjectBuildTemplate }) => {
           //         // log.info("renderObjectBuildTemplate for object named",objectName,"innerEntry index", innerEntry[0], "innerEntry value", innerEntry[1]);
 
@@ -283,10 +283,10 @@ export function renderObjectRuntimeTemplate(
           //   break;
           // }
           // case "mustacheStringTemplate": {
-          //   const result = Mustache.render(objectRuntimeTemplate.definition, queryParams);
+          //   const result = Mustache.render(runtimeTransformer.definition, queryParams);
           //   log.info(
           //     "renderObjectBuildTemplate mustacheStringTemplate for",
-          //     objectRuntimeTemplate,
+          //     runtimeTransformer,
           //     "queryParams",
           //     queryParams,
           //     "result",
@@ -299,13 +299,13 @@ export function renderObjectRuntimeTemplate(
           // case "contextReference":
           // case "parameterReference":
           default: {
-            throw new Error("could not render objectRuntimeTemplate" + JSON.stringify(objectRuntimeTemplate, null, 2));
-            // const rawValue = objectRuntimeTemplate.templateType
-            //   ? resolveActionTemplateContextReference(objectRuntimeTemplate, queryParams, contextResults)
-            //   : objectRuntimeTemplate;
+            throw new Error("could not render runtimeTransformer" + JSON.stringify(runtimeTransformer, null, 2));
+            // const rawValue = runtimeTransformer.templateType
+            //   ? resolveActionTemplateContextReference(runtimeTransformer, queryParams, contextResults)
+            //   : runtimeTransformer;
             // const value =
-            //   typeof objectRuntimeTemplate == "object" && (objectRuntimeTemplate as any).applyFunction
-            //     ? (objectRuntimeTemplate as any).applyFunction(rawValue)
+            //   typeof runtimeTransformer == "object" && (runtimeTransformer as any).applyFunction
+            //     ? (runtimeTransformer as any).applyFunction(rawValue)
             //     : rawValue;
             // // log.info("renderObjectBuildTemplate default case for", objectBuildTemplate, "rawvalue", rawValue, "value", value);
             // return value;
@@ -315,7 +315,7 @@ export function renderObjectRuntimeTemplate(
       } else {
         // log.info("renderObjectBuildTemplate converting plain object", objectBuildTemplate);
         const result = Object.fromEntries(
-          Object.entries(objectRuntimeTemplate).map((objectTemplateEntry: [string, any]) => {
+          Object.entries(runtimeTransformer).map((objectTemplateEntry: [string, any]) => {
             return [
               objectTemplateEntry[0],
               renderObjectBuildTemplate(objectTemplateEntry[0], objectTemplateEntry[1], queryParams, contextResults),
@@ -327,7 +327,7 @@ export function renderObjectRuntimeTemplate(
     }
   } else {
     // plain value
-    return objectRuntimeTemplate;
+    return runtimeTransformer;
   }
 }
 

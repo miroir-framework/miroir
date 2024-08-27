@@ -615,15 +615,9 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "objectRuntimeTemplate"
+                  "relativePath": "runtimeTransformer"
                 }
               }
-            }
-          },
-          "queryExtractorTransformer": {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "queryExtractorRuntimeTransformer"
             }
           },
           "querySelect": {
@@ -634,12 +628,6 @@
                 "type": "schemaReference",
                 "definition": {
                   "relativePath": "querySelectExtractorWrapper"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "queryExtractorTransformer"
                 }
               },
               {

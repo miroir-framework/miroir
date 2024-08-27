@@ -73,13 +73,14 @@ export function ignorePostgresExtraAttributesOnRecord(instances: Record<string, 
 }
 
 // ################################################################################################
-export function ignorePostgresExtraAttributesOnList(instances: EntityInstance[]){
-  return instances.map(i => ignorePostgresExtraAttributesOnObject(i))
+export function ignorePostgresExtraAttributesOnList(instances: EntityInstance[], furtherIgnore: string[] = []){
+  return instances.map(i => ignorePostgresExtraAttributesOnObject(i, furtherIgnore))
 }
 
 // ################################################################################################
-export function ignorePostgresExtraAttributesOnObject(instance: EntityInstance){
-  return Object.fromEntries(Object.entries(instance).filter(e=>!["createdAt", "updatedAt", "author"].includes(e[0])))
+export function ignorePostgresExtraAttributesOnObject(instance: EntityInstance, furtherIgnore: string[] = []){
+  const ignore = ["createdAt", "updatedAt", "author", ...furtherIgnore]
+  return Object.fromEntries(Object.entries(instance).filter(e=>!ignore.includes(e[0])))
 }
 
 // ################################################################################################

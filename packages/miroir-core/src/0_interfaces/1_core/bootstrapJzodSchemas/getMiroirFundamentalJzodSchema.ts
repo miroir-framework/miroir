@@ -1549,7 +1549,7 @@ export function getMiroirFundamentalJzodSchema(
               //   type: "schemaReference",
               //   definition: {
               //     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              //     relativePath: "queryExtractorTransformer",
+              //     relativePath: "queryExtractorRuntimeTransformer",
               //   },
               // },
               type: "schemaReference",
@@ -1557,7 +1557,7 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                 relativePath: "miroirSelectQueriesRecord",
-                // relativePath: "queryExtractorTransformer",
+                // relativePath: "queryExtractorRuntimeTransformer",
               },
             },
             runtimeTransformers: {
@@ -1567,7 +1567,7 @@ export function getMiroirFundamentalJzodSchema(
                 type: "schemaReference",
                 definition: {
                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  relativePath: "queryExtractorTransformer",
+                  relativePath: "queryExtractorRuntimeTransformer",
                 },
               },
               // type: "schemaReference",
@@ -2264,7 +2264,7 @@ export function getMiroirFundamentalJzodSchema(
         metaModel: (miroirFundamentalJzodSchema as any).definition.context.metaModel,
         objectTemplateInnerReference: (transformerJzodSchema as any).definition.context.objectTemplateInnerReference,
         objectBuildTemplate: (transformerJzodSchema as any).definition.context.objectBuildTemplate,
-        objectRuntimeTemplate: (transformerJzodSchema as any).definition.context.objectRuntimeTemplate,
+        runtimeTransformer: (transformerJzodSchema as any).definition.context.runtimeTransformer,
         indexedDbStoreSectionConfiguration: (miroirFundamentalJzodSchema as any).definition.context
           .indexedDbStoreSectionConfiguration,
         filesystemDbStoreSectionConfiguration: (miroirFundamentalJzodSchema as any).definition.context
@@ -2320,9 +2320,8 @@ export function getMiroirFundamentalJzodSchema(
         querySelectExtractorWrapper: (miroirFundamentalJzodSchema as any).definition.context.querySelectExtractorWrapper,
         queryExtractorTransformerAbstract: (miroirFundamentalJzodSchema as any).definition.context.queryExtractorTransformerAbstract,
         queryExtractorTransformerUnique: (miroirFundamentalJzodSchema as any).definition.context.queryExtractorTransformerUnique,
-        queryExtractorRuntimeTransformer: (miroirFundamentalJzodSchema as any).definition.context.queryExtractorRuntimeTransformer,
         queryExtractorTransformerCount: (miroirFundamentalJzodSchema as any).definition.context.queryExtractorTransformerCount,
-        queryExtractorTransformer: (miroirFundamentalJzodSchema as any).definition.context.queryExtractorTransformer,
+        queryExtractorRuntimeTransformer: (miroirFundamentalJzodSchema as any).definition.context.queryExtractorRuntimeTransformer,
         querySelectObject: (miroirFundamentalJzodSchema as any).definition.context.querySelectObject,
         querySelectObjectList: (miroirFundamentalJzodSchema as any).definition.context.querySelectObjectList,
         querySelectByQueryCombiner: (miroirFundamentalJzodSchema as any).definition.context.querySelectByQueryCombiner,
