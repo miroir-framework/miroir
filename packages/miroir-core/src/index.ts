@@ -263,6 +263,8 @@ export {
   querySelectExtractorWrapperReturningList,
   QuerySelectExtractorWrapperReturningObject,
   querySelectExtractorWrapperReturningObject,
+  RuntimeTransformer,
+  runtimeTransformer,
 }
 from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js"
 

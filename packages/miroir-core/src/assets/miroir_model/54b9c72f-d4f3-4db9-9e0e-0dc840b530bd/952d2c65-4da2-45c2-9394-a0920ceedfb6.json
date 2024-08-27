@@ -81,11 +81,14 @@
                 }
               },
               "runtimeTransformers": {
-                "type": "schemaReference",
+                "type": "record",
                 "optional": true,
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "queryExtractorRuntimeTransformer"
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "runtimeTransformer"
+                  }
                 }
               },
               "definition": {
@@ -186,11 +189,14 @@
                 }
               },
               "runtimeTransformers": {
-                "type": "schemaReference",
+                "type": "record",
                 "optional": true,
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "queryExtractorRuntimeTransformer"
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "runtimeTransformer"
+                  }
                 }
               },
               "selectData": {
@@ -232,11 +238,14 @@
                 }
               },
               "runtimeTransformers": {
-                "type": "schemaReference",
+                "type": "record",
                 "optional": true,
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "queryExtractorRuntimeTransformer"
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "runtimeTransformer"
+                  }
                 }
               },
               "selectData": {
@@ -346,11 +355,14 @@
                 }
               },
               "runtimeTransformers": {
-                "type": "schemaReference",
-                "optional":true,
+                "type": "record",
+                "optional": true,
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "queryExtractorRuntimeTransformer"
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "runtimeTransformer"
+                  }
                 }
               },
               "section": {

@@ -715,19 +715,10 @@ describe("domainSelector", () => {
         },
         runtimeTransformers: {
           publishers: {
-            queryType: "extractorTransformer",
-            queryName: "actionRuntimeTransformer",
+            templateType: "unique",
+            interpolation: "runtime",
             referencedExtractor: "books",
-            actionRuntimeTransformer: {
-              templateType: "unique",
-              interpolation: "runtime",
-              referencedExtractor: "books",
-              attribute: "publisher",
-            }
-            // referencedExtractor: {
-            //   queryTemplateType: "queryContextReference",
-            //   referenceName: "books",
-            // },
+            attribute: "publisher",
           },
         },
       };

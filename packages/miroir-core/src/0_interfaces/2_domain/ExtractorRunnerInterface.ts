@@ -1,23 +1,22 @@
 import {
+  ActionReturnType,
+  DomainElement,
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
+  DomainElementObject,
   DomainElementObjectOrFailed,
   DomainModelExtractor,
   DomainModelGetEntityDefinitionExtractor,
   DomainModelGetFetchParamJzodSchemaExtractor,
   DomainModelGetSingleSelectQueryJzodSchemaExtractor,
-  ExtractorForRecordOfExtractors,
   DomainModelQueryJzodSchemaParams,
+  ExtractorForRecordOfExtractors,
   ExtractorForSingleObject,
   ExtractorForSingleObjectList,
   JzodElement,
   JzodObject,
-  DomainElement,
-  ApplicationSection,
   QueryAction,
-  ActionReturnType,
-  QueryExtractorRuntimeTransformer,
-  DomainElementObject
+  RuntimeTransformer
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
 // ################################################################################################
@@ -75,7 +74,7 @@ export type AsyncExtractorRunnerMap<StateType> = {
     DomainElementInstanceUuidIndexOrFailed
   >,
   applyExtractorTransformer(
-    query: QueryExtractorRuntimeTransformer,
+    query: RuntimeTransformer,
     queryParams: DomainElementObject,
     newFetchedData: DomainElementObject,
     extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>,

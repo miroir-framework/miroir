@@ -2,52 +2,43 @@
 
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import {
-  ExtractorForSingleObjectList,
-  DomainElement,
-  DomainModelExtractor,
-  DomainElementObject,
-  QuerySelectObjectListByRelation,
-  EntityInstance,
-  DomainElementInstanceUuidIndex,
-  QuerySelectObjectListByManyToManyRelation,
-  QuerySelect,
   ApplicationSection,
-  ExtractorForRecordOfExtractors,
-  DomainModelGetEntityDefinitionExtractor,
-  DomainModelGetSingleSelectQueryJzodSchemaExtractor,
-  JzodObject,
-  DomainModelGetFetchParamJzodSchemaExtractor,
-  DomainModelQueryJzodSchemaParams,
-  JzodElement,
-  QueryTemplateConstantOrAnyReference,
+  DomainElement,
+  DomainElementInstanceUuidIndex,
   DomainElementInstanceUuidIndexOrFailed,
-  DomainElementObjectOrFailed,
-  DomainElementEntityInstanceOrFailed,
-  ExtractorForSingleObject,
-  QuerySelectObjectList,
-  ExtractObjectListByEntity,
+  DomainElementObject,
+  DomainModelGetEntityDefinitionExtractor,
+  DomainModelGetFetchParamJzodSchemaExtractor,
+  DomainModelGetSingleSelectQueryJzodSchemaExtractor,
+  DomainModelQueryJzodSchemaParams,
   DomainModelSingleExtractor,
-  QueryExtractorRuntimeTransformer,
+  EntityInstance,
+  ExtractObjectListByEntity,
+  ExtractorForRecordOfExtractors,
+  ExtractorForSingleObjectList,
+  JzodElement,
+  JzodObject,
+  QuerySelect,
+  QuerySelectObjectListByManyToManyRelation,
+  QuerySelectObjectListByRelation,
+  QueryTemplateConstantOrAnyReference,
+  RuntimeTransformer
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
-  SyncExtractorRunnerParams,
-  SyncExtractorRunner,
-  SyncExtractorRunnerMap,
+  AsyncExtractorRunnerMap,
   ExtractorRunnerParamsForJzodSchema,
   RecordOfJzodElement,
   RecordOfJzodObject,
-  ExtractorRunnerMap,
-  AsyncExtractorRunnerMap,
-  AsyncExtractorRunnerParams,
+  SyncExtractorRunnerMap,
+  SyncExtractorRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
-import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
-import { applyTransformer } from "./Transformers.js";
 import { cleanLevel } from "./constants.js";
 import { renderObjectRuntimeTemplate } from "./Templates.js";
+import { applyTransformer } from "./Transformers.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"SyncExtractorRunner");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -358,14 +349,14 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractor
 
 // ################################################################################################
 export const applyExtractorTransformer = (
-  query: QueryExtractorRuntimeTransformer,
+  actionRuntimeTransformer: RuntimeTransformer,
   queryParams: DomainElementObject,
   newFetchedData: DomainElementObject
 ): DomainElement => {
-  log.info("applyExtractorTransformer  query", JSON.stringify(query, null, 2));
+  log.info("applyExtractorTransformer  query", JSON.stringify(actionRuntimeTransformer, null, 2));
 
   const resolvedReference = resolveContextReference(
-    { queryTemplateType: "queryContextReference", referenceName:query.referencedExtractor },
+    { queryTemplateType: "queryContextReference", referenceName:actionRuntimeTransformer.referencedExtractor },
     queryParams,
     newFetchedData
   );
@@ -376,46 +367,7 @@ export const applyExtractorTransformer = (
     return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
   }
 
-  // const sortByAttribute = query.orderBy?(a: any[])=>a.sort((a, b) => a[query.orderBy??""].localeCompare(b[query.orderBy??""], "en", { sensitivity: "base" })):(a: any[])=>a;
-  switch (query.queryName) {
-    case "actionRuntimeTransformer": {
-      // return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } };
-      return renderObjectRuntimeTemplate("ROOT"/**WHAT?? */, query.actionRuntimeTransformer, queryParams, newFetchedData);
-      break;
-    }
-    // case "unique": {
-    //   const result = new Set<string>();
-    //     for (const entry of Object.entries(resolvedReference.elementValue)) {
-    //       result.add((entry[1] as any)[query.attribute]);
-    //     }
-    //     return { elementType: "any", elementValue: sortByAttribute([...result].map(e => ({[query.attribute]: e}))) };
-    //   break;
-    // }
-    // case "count": {
-    //   if (query.groupBy) {
-    //     const result = new Map<string, number>();
-    //     for (const entry of Object.entries(resolvedReference.elementValue)) {
-    //       const key = (entry[1] as any)[query.groupBy];
-    //       if (result.has(key)) {
-    //         result.set(key, (result.get(key)??0) + 1);
-    //       } else {
-    //         result.set(key, 1);
-    //       }
-    //     }
-    //     return {
-    //       elementType: "any",
-    //       elementValue: sortByAttribute([...result.entries()].map((e) => ({ [query.groupBy as any]: e[0], count: e[1] }))),
-    //     };
-    //   } else {
-    //     return { elementType: "any" /* TODO: number? */, elementValue: [{count: Object.keys(resolvedReference.elementValue).length}] };
-    //   }
-    //   break;
-    // }
-    default: {
-      return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } };
-      break;
-    }
-  }
+  return renderObjectRuntimeTemplate("ROOT"/**WHAT?? */, actionRuntimeTransformer, queryParams, newFetchedData);
 
   log.info("innerSelectElementFromQuery extractorTransformer resolvedReference", resolvedReference);
 
@@ -710,30 +662,6 @@ export const extractWithManyExtractors = <StateType>(
     selectorParams.extractor.runtimeTransformers ?? {}
   )) {
 
-    // export function innerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
-    //   state: StateType,
-    //   newFetchedData: DomainElementObject,
-    //   pageParams: DomainElementObject,
-    //   queryParams: DomainElementObject,
-    //   extractorRunnerMap:SyncExtractorRunnerMap<StateType>,
-    //   deploymentUuid: Uuid,
-    //   query: QuerySelect
-    // ):
-    // let result = innerSelectElementFromQuery(
-    //   state,
-    //   context,
-    //   selectorParams.extractor.pageParams,
-    //   {
-    //     elementType: "object",
-    //     elementValue: {
-    //       ...selectorParams.extractor.pageParams.elementValue,
-    //       ...selectorParams.extractor.queryParams.elementValue,
-    //     },
-    //   },
-    //   localSelectorMap as any,
-    //   selectorParams.extractor.deploymentUuid,
-    //   query[1]
-    // );
     let result = applyExtractorTransformer(query[1], {
       elementType: "object",
       elementValue: {

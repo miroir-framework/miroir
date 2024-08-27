@@ -1504,7 +1504,7 @@ export function getMiroirFundamentalJzodSchema(
                 relativePath: "extractorForSingleObjectList",
               },
             },
-          ]
+          ],
         },
         extractorForRecordOfExtractors: {
           type: "object",
@@ -1521,16 +1521,6 @@ export function getMiroirFundamentalJzodSchema(
               type: "literal",
               definition: "extractorForRecordOfExtractors",
             },
-            // extractors: {
-            //   type: "record",
-            //   definition: {
-            //     type: "schemaReference",
-            //     definition: {
-            //       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            //       relativePath: "transformer",
-            //     },
-            //   },
-            // },
             extractors: {
               type: "record",
               optional: true,
@@ -1540,24 +1530,14 @@ export function getMiroirFundamentalJzodSchema(
                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   relativePath: "querySelectExtractorWrapper",
                 },
-              }
+              },
             },
             combiners: {
-              // type: "record",
-              // optional: true,
-              // definition: {
-              //   type: "schemaReference",
-              //   definition: {
-              //     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              //     relativePath: "queryExtractorRuntimeTransformer",
-              //   },
-              // },
               type: "schemaReference",
               optional: true,
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                 relativePath: "miroirSelectQueriesRecord",
-                // relativePath: "queryExtractorRuntimeTransformer",
               },
             },
             runtimeTransformers: {
@@ -1567,15 +1547,9 @@ export function getMiroirFundamentalJzodSchema(
                 type: "schemaReference",
                 definition: {
                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  relativePath: "queryExtractorRuntimeTransformer",
+                  relativePath: "runtimeTransformer",
                 },
               },
-              // type: "schemaReference",
-              // optional: true,
-              // definition: {
-              //   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              //   relativePath: "miroirSelectQueriesRecord",
-              // },
             },
           },
         },

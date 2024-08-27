@@ -10,8 +10,8 @@ import {
   ExtractorForRecordOfExtractors,
   ExtractorForSingleObject,
   ExtractorForSingleObjectList,
-  QueryExtractorRuntimeTransformer,
-  QuerySelect
+  QuerySelect,
+  RuntimeTransformer
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   AsyncExtractorRunnerMap,
@@ -22,7 +22,7 @@ import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
-import { applyExtractorForSingleObjectListToSelectedInstancesUuidIndex, applyExtractorTransformer, resolveContextReference } from "./QuerySelectors.js";
+import { applyExtractorForSingleObjectListToSelectedInstancesUuidIndex, applyExtractorTransformer } from "./QuerySelectors.js";
 import { applyTransformer } from "./Transformers.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"AsyncExtractorRunner");
@@ -78,12 +78,12 @@ export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
 
 // ################################################################################################
 export async function asyncApplyExtractorTransformerInMemory(
-  query: QueryExtractorRuntimeTransformer,
+  actionRuntimeTransformer: RuntimeTransformer,
   queryParams: DomainElementObject,
   newFetchedData: DomainElementObject,
   extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>,
 ): Promise<DomainElement> {
-  return Promise.resolve(applyExtractorTransformer(query, queryParams, newFetchedData));
+  return Promise.resolve(applyExtractorTransformer(actionRuntimeTransformer, queryParams, newFetchedData));
 }
 
 // ################################################################################################
@@ -403,35 +403,7 @@ export const asyncExtractWithManyExtractors = async <StateType>(
   });
 
   const transformerPromises = Object.entries(selectorParams.extractor.runtimeTransformers ?? {})
-    .map((query: [string, QueryExtractorRuntimeTransformer]) => {
-      // export function asyncInnerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
-      //   state: StateType,
-      //   newFetchedData: DomainElementObject,
-      //   pageParams: DomainElementObject,
-      //   queryParams: DomainElementObject,
-      //   extractorRunnerMap:AsyncExtractorRunnerMap<StateType>,
-      //   deploymentUuid: Uuid,
-      //   extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>,
-      //   query: QuerySelect
-      // ): Promise<DomainElement> {
-      // return asyncInnerSelectElementFromQuery(
-      //   state,
-      //   context,
-      //   selectorParams.extractor.pageParams,
-      //   {
-      //     elementType: "object",
-      //     elementValue: {
-      //       ...selectorParams.extractor.pageParams.elementValue,
-      //       ...selectorParams.extractor.queryParams.elementValue,
-      //     },
-      //   },
-      //   localSelectorMap as any,
-      //   selectorParams.extractor.deploymentUuid,
-      //   selectorParams.extractor.extractors ?? ({} as any),
-      //   query[1]
-      // ).then((result): [string, DomainElement] => {
-      //   return [query[0], result];
-      // });
+    .map((query: [string, RuntimeTransformer]) => {
       return localSelectorMap.applyExtractorTransformer(query[1], {
         elementType: "object",
         elementValue: {
