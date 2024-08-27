@@ -376,41 +376,41 @@ export const applyExtractorTransformer = (
     return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
   }
 
-  const sortByAttribute = query.orderBy?(a: any[])=>a.sort((a, b) => a[query.orderBy??""].localeCompare(b[query.orderBy??""], "en", { sensitivity: "base" })):(a: any[])=>a;
+  // const sortByAttribute = query.orderBy?(a: any[])=>a.sort((a, b) => a[query.orderBy??""].localeCompare(b[query.orderBy??""], "en", { sensitivity: "base" })):(a: any[])=>a;
   switch (query.queryName) {
     case "actionRuntimeTransformer": {
       // return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } };
       return renderObjectRuntimeTemplate("ROOT"/**WHAT?? */, query.actionRuntimeTransformer, queryParams, newFetchedData);
       break;
     }
-    case "unique": {
-      const result = new Set<string>();
-        for (const entry of Object.entries(resolvedReference.elementValue)) {
-          result.add((entry[1] as any)[query.attribute]);
-        }
-        return { elementType: "any", elementValue: sortByAttribute([...result].map(e => ({[query.attribute]: e}))) };
-      break;
-    }
-    case "count": {
-      if (query.groupBy) {
-        const result = new Map<string, number>();
-        for (const entry of Object.entries(resolvedReference.elementValue)) {
-          const key = (entry[1] as any)[query.groupBy];
-          if (result.has(key)) {
-            result.set(key, (result.get(key)??0) + 1);
-          } else {
-            result.set(key, 1);
-          }
-        }
-        return {
-          elementType: "any",
-          elementValue: sortByAttribute([...result.entries()].map((e) => ({ [query.groupBy as any]: e[0], count: e[1] }))),
-        };
-      } else {
-        return { elementType: "any" /* TODO: number? */, elementValue: [{count: Object.keys(resolvedReference.elementValue).length}] };
-      }
-      break;
-    }
+    // case "unique": {
+    //   const result = new Set<string>();
+    //     for (const entry of Object.entries(resolvedReference.elementValue)) {
+    //       result.add((entry[1] as any)[query.attribute]);
+    //     }
+    //     return { elementType: "any", elementValue: sortByAttribute([...result].map(e => ({[query.attribute]: e}))) };
+    //   break;
+    // }
+    // case "count": {
+    //   if (query.groupBy) {
+    //     const result = new Map<string, number>();
+    //     for (const entry of Object.entries(resolvedReference.elementValue)) {
+    //       const key = (entry[1] as any)[query.groupBy];
+    //       if (result.has(key)) {
+    //         result.set(key, (result.get(key)??0) + 1);
+    //       } else {
+    //         result.set(key, 1);
+    //       }
+    //     }
+    //     return {
+    //       elementType: "any",
+    //       elementValue: sortByAttribute([...result.entries()].map((e) => ({ [query.groupBy as any]: e[0], count: e[1] }))),
+    //     };
+    //   } else {
+    //     return { elementType: "any" /* TODO: number? */, elementValue: [{count: Object.keys(resolvedReference.elementValue).length}] };
+    //   }
+    //   break;
+    // }
     default: {
       return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } };
       break;

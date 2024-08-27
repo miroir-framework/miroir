@@ -84,24 +84,6 @@ export async function asyncApplyExtractorTransformerInMemory(
   extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>,
 ): Promise<DomainElement> {
   return Promise.resolve(applyExtractorTransformer(query, queryParams, newFetchedData));
-  // const resolvedReference = resolveContextReference(
-  //   query.referencedExtractor,
-  //   queryParams,
-  //   newFetchedData
-  // );
-
-  // log.info("asyncInnerSelectElementFromQuery extractorTransformer resolvedReference", resolvedReference);
-
-  // const result = new Set<string>();
-  // if (resolvedReference.elementType == "instanceUuidIndex") {
-  //   for (const entry of Object.entries(resolvedReference.elementValue)) {
-  //     result.add((entry[1] as any)[query.attribute]);
-  //   }
-  //   log.info("asyncInnerSelectElementFromQuery extractorTransformer result", JSON.stringify(Array.from(result.values())));
-  //   return Promise.resolve({ elementType: "any", elementValue: [...result] });
-  // }
-
-  // return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
 }
 
 // ################################################################################################

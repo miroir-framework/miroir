@@ -621,28 +621,10 @@
             }
           },
           "queryExtractorTransformer": {
-            "type": "union",
-            "discriminator": "queryName",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "queryExtractorRuntimeTransformer"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "queryExtractorTransformerUnique"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "queryExtractorTransformerCount"
-                }
-              }
-            ]
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "queryExtractorRuntimeTransformer"
+            }
           },
           "querySelect": {
             "type": "union",

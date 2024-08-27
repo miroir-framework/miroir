@@ -1193,13 +1193,17 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               runtimeTransformers: {
                 uniqueSplittedEntityInstances: {
                   queryType: "extractorTransformer",
-                  queryName: "unique",
+                  queryName: "actionRuntimeTransformer",
+                  actionRuntimeTransformer: {
+                    interpolation: "runtime",
+                    templateType: "unique",
+                    referencedExtractor: {
+                      queryTemplateType: "parameterReference",
+                      referenceName: "splittedEntityName",
+                    },
+                    attribute: splittedEntityAttribute
+                  }
                   // referencedExtractor: splittedEntityName,
-                  referencedExtractor: {
-                    queryTemplateType: "parameterReference",
-                    referenceName: "splittedEntityName",
-                  },
-                  attribute: splittedEntityAttribute
                 }
               }
             }

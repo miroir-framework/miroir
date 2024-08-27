@@ -85,7 +85,7 @@
                 "optional": true,
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "miroirSelectQueriesRecord"
+                  "relativePath": "queryExtractorTransformer"
                 }
               },
               "definition": {
@@ -190,7 +190,7 @@
                 "optional": true,
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "miroirSelectQueriesRecord"
+                  "relativePath": "queryExtractorTransformer"
                 }
               },
               "selectData": {
@@ -236,7 +236,7 @@
                 "optional": true,
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "miroirSelectQueriesRecord"
+                  "relativePath": "queryExtractorTransformer"
                 }
               },
               "selectData": {
@@ -350,7 +350,7 @@
                 "optional":true,
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "miroirSelectQueriesRecord"
+                  "relativePath": "queryExtractorTransformer"
                 }
               },
               "section": {

@@ -1561,22 +1561,21 @@ export function getMiroirFundamentalJzodSchema(
               },
             },
             runtimeTransformers: {
-              // type: "record",
-              // optional: true,
-              // definition: {
-              //   type: "schemaReference",
-              //   definition: {
-              //     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              //     relativePath: "queryExtractorTransformer",
-              //   },
-              // },
-              type: "schemaReference",
+              type: "record",
               optional: true,
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "miroirSelectQueriesRecord",
-                // relativePath: "queryExtractorTransformer",
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "queryExtractorTransformer",
+                },
               },
+              // type: "schemaReference",
+              // optional: true,
+              // definition: {
+              //   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              //   relativePath: "miroirSelectQueriesRecord",
+              // },
             },
           },
         },
