@@ -91,9 +91,67 @@ export class SqlDbExtractRunner {
       return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
     }
 
-    const orderBy = query.orderBy ? `ORDER BY ${query.orderBy}` : "";
     switch (query.queryName) {
+      case "actionRuntimeTransformer":{
+        const orderBy = query.actionRuntimeTransformer.orderBy ? `ORDER BY ${query.actionRuntimeTransformer.orderBy}` : "";
+        switch (query.actionRuntimeTransformer.templateType) {
+          case "unique": {
+            log.info("applyExtractorTransformerSql query.attribute", query.actionRuntimeTransformer.attribute);
+            // TODO: resolve query.referencedExtractor.referenceName properly
+            const aggregateRawQuery = `
+              WITH ${extractorRawQueries.map(q => "\"" + q[0] + "\" AS (" + q[1] + " )").join(", ")}
+              SELECT DISTINCT ON ("${query.actionRuntimeTransformer.attribute}") "${query.actionRuntimeTransformer.attribute}" FROM "${referenceName}"
+              ${orderBy}
+            `
+            log.info("applyExtractorTransformerSql unique aggregateRawQuery", aggregateRawQuery);
+        
+            const rawResult = await this.persistenceStoreController.executeRawQuery(aggregateRawQuery);
+            log.info("applyExtractorTransformerSql unique rawResult", JSON.stringify(rawResult));
+        
+            if (rawResult.status == "error") {
+              return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
+            }
+        
+            const sqlResult = rawResult.returnedDomainElement.elementValue;
+            log.info("applyExtractorTransformerSql unique sqlResult", JSON.stringify(sqlResult));
+            return Promise.resolve({ elementType: "any", elementValue: sqlResult });
+            break;
+          }
+          case "count": {
+            log.info("applyExtractorTransformerSql count query.groupBy", query.actionRuntimeTransformer.groupBy);
+            // TODO: resolve query.referencedExtractor.referenceName properly
+            const aggregateRawQuery = query.actionRuntimeTransformer.groupBy ? 
+            `WITH ${extractorRawQueries.map(q => "\"" + q[0] + "\" AS (" + q[1] + " )").join(", ")}
+              SELECT "${query.actionRuntimeTransformer.groupBy}", COUNT("uuid") FROM ${referenceName}
+              GROUP BY "${query.actionRuntimeTransformer.groupBy}"
+              ${orderBy}
+            ` :
+            `WITH ${extractorRawQueries.map(q => "\"" + q[0] + "\" AS (" + q[1] + " )").join(", ")}
+              SELECT COUNT("uuid") FROM "${referenceName}"
+              ${orderBy}
+            `;
+            log.info("applyExtractorTransformerSql count aggregateRawQuery", aggregateRawQuery);
+        
+            const rawResult = await this.persistenceStoreController.executeRawQuery(aggregateRawQuery);
+            log.info("applyExtractorTransformerSql count rawResult", JSON.stringify(rawResult));
+        
+            if (rawResult.status == "error") {
+              return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
+            }
+        
+            const sqlResult = rawResult.returnedDomainElement.elementValue.map((e:Record<string,any>)=>({...e,count:Number(e.count)}));
+            // log.info("applyExtractorTransformerSql count sqlResult", JSON.stringify(sqlResult));
+            log.info("applyExtractorTransformerSql count sqlResult", sqlResult);
+            return Promise.resolve({ elementType: "any", elementValue: sqlResult });
+            break;
+          }
+          default:
+            break;
+        }
+        break;
+      }
       case "unique": {
+        const orderBy = query.orderBy ? `ORDER BY ${query.orderBy}` : "";
         log.info("applyExtractorTransformerSql query.attribute", query.attribute);
         // TODO: resolve query.referencedExtractor.referenceName properly
         const aggregateRawQuery = `
@@ -118,6 +176,7 @@ export class SqlDbExtractRunner {
       case "count": {
         log.info("applyExtractorTransformerSql count query.groupBy", query.groupBy);
         // TODO: resolve query.referencedExtractor.referenceName properly
+        const orderBy = query.orderBy ? `ORDER BY ${query.orderBy}` : "";
         const aggregateRawQuery = query.groupBy ? 
         `WITH ${extractorRawQueries.map(q => "\"" + q[0] + "\" AS (" + q[1] + " )").join(", ")}
           SELECT "${query.groupBy}", COUNT("uuid") FROM ${referenceName}
