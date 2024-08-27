@@ -2,15 +2,14 @@
 import Mustache from "mustache";
 
 import {
-  DomainElement,
-  DomainAction,
-  JzodReference,
   ActionReturnType,
-  ObjectTemplateInnerReference,
-  ObjectBuildTemplate,
-  RuntimeTransformer,
-  DomainElementObjectOrFailed,
+  DomainAction,
+  DomainElement,
   DomainElementObject,
+  JzodReference,
+  ObjectBuildTemplate,
+  ObjectTemplateInnerReference,
+  RuntimeTransformer
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
@@ -134,8 +133,9 @@ export function renderObjectRuntimeTemplate(
   if (typeof runtimeTransformer == "object") {
     // log.info("renderObjectBuildTemplate for template object named", objectName, "templateType", objectBuildTemplate.templateType);
     if (Array.isArray(runtimeTransformer)) {
-      // return runtimeTransformer.map((e, index) => renderObjectRuntimeTemplate(index.toString(), e, queryParams, contextResults));
-      const subObject = runtimeTransformer.map((e, index) => renderObjectBuildTemplate(index.toString(), e, queryParams, contextResults));
+      const subObject = runtimeTransformer.map((e, index) =>
+        renderObjectBuildTemplate(index.toString(), e, queryParams, contextResults)
+      );
       const failureIndex = subObject.findIndex((e) => e.elementType == "failure");
       if (failureIndex == -1) {
         return {
@@ -337,15 +337,14 @@ export function renderObjectBuildTemplate(
   objectBuildTemplate: ObjectBuildTemplate,
   queryParams: DomainElementObject,
   contextResults?: DomainElementObject,
-  // queryParams: any,
-  // contextResults?: any
-// ): any {
 ): DomainElement {
   // log.info("renderObjectBuildTemplate called for object named", objectName,"template", objectBuildTemplate, "queryParams", queryParams);
   if (typeof objectBuildTemplate == "object") {
     // log.info("renderObjectBuildTemplate for template object named", objectName, "templateType", objectBuildTemplate.templateType);
     if (Array.isArray(objectBuildTemplate)) {
-      const subObject = objectBuildTemplate.map((e, index) => renderObjectBuildTemplate(index.toString(), e, queryParams, contextResults));
+      const subObject = objectBuildTemplate.map((e, index) =>
+        renderObjectBuildTemplate(index.toString(), e, queryParams, contextResults)
+      );
       const failureIndex = subObject.findIndex((e) => e.elementType == "failure");
       if (failureIndex == -1) {
         return {

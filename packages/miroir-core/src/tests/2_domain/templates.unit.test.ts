@@ -20,149 +20,149 @@ import { object } from 'zod';
 // describe.sequential("templatesDEFUNCT.unit.test", () => {
 describe("templates.unit.test", () => {
 
-  // // ################################################################################################
-  // it("convert basic template", async () => { // TODO: test failure cases!
-  //     // if (miroirConfig.client.emulateServer) {
-  //     console.log("convert basic template START")
-  //     const newApplicationName = "test";
-  //     const newAdminAppApplicationUuid = uuidv4();
-  //     const newSelfApplicationUuid = uuidv4();
-  //     const newDeploymentUuid = uuidv4();
+  // ################################################################################################
+  it("convert basic template", async () => { // TODO: test failure cases!
+      // if (miroirConfig.client.emulateServer) {
+      console.log("convert basic template START")
+      const newApplicationName = "test";
+      const newAdminAppApplicationUuid = uuidv4();
+      const newSelfApplicationUuid = uuidv4();
+      const newDeploymentUuid = uuidv4();
 
-  //     const newDeploymentStoreConfigurationTemplate = {
-  //       "admin": {
-  //         "emulatedServerType": "sql",
-  //         "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-  //         "schema": "miroirAdmin"
-  //       },
-  //       "model": {
-  //         "emulatedServerType": "sql",
-  //         "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-  //         "schema": {
-  //           templateType: "parameterReference",
-  //           referenceName: "newApplicationName",
-  //           applyFunction: (a:string) => (a + "Model")
-  //         }
-  //       },
-  //       "data": {
-  //         "emulatedServerType": "sql",
-  //         "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-  //         "schema": {
-  //           templateType: "parameterReference",
-  //           referenceName: "newApplicationName",
-  //           applyFunction: (a:string) => (a + "Data")
-  //         }
-  //         // "schema": newApplicationName + "Data"
-  //       }
-  //     }
+      const newDeploymentStoreConfigurationTemplate = {
+        "admin": {
+          "emulatedServerType": "sql",
+          "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+          "schema": "miroirAdmin"
+        },
+        "model": {
+          "emulatedServerType": "sql",
+          "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+          "schema": {
+            templateType: "parameterReference",
+            referenceName: "newApplicationName",
+            applyFunction: (a:string) => (a + "Model")
+          }
+        },
+        "data": {
+          "emulatedServerType": "sql",
+          "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+          "schema": {
+            templateType: "parameterReference",
+            referenceName: "newApplicationName",
+            applyFunction: (a:string) => (a + "Data")
+          }
+          // "schema": newApplicationName + "Data"
+        }
+      }
 
-  //     const newDeploymentStoreConfiguration: StoreUnitConfiguration = renderObjectBuildTemplate(
-  //       "ROOT",
-  //       newDeploymentStoreConfigurationTemplate as any,
-  //       {
-  //         elementType: "object",
-  //         elementValue: {
-  //           newApplicationName: { elementType: "string", elementValue: newApplicationName }
-  //         }
-  //       },
-  //       undefined
-  //     ).elementValue as StoreUnitConfiguration;
+      const newDeploymentStoreConfiguration: StoreUnitConfiguration = renderObjectBuildTemplate(
+        "ROOT",
+        newDeploymentStoreConfigurationTemplate as any,
+        {
+          elementType: "object",
+          elementValue: {
+            newApplicationName: { elementType: "string", elementValue: newApplicationName }
+          }
+        },
+        undefined
+      ).elementValue as StoreUnitConfiguration;
 
-  //     const actionParams: DomainElementObject = {
-  //       elementType: "object",
-  //       elementValue: {
-  //         newApplicationName: { elementType: "string", elementValue: newApplicationName },
-  //         newAdminAppApplicationUuid: { elementType: "string", elementValue: newAdminAppApplicationUuid },
-  //         newSelfApplicationUuid: { elementType: "string", elementValue: newSelfApplicationUuid },
-  //         newDeploymentUuid: { elementType: "string", elementValue: newDeploymentUuid },
-  //       }
-  //     }
+      const actionParams: DomainElementObject = {
+        elementType: "object",
+        elementValue: {
+          newApplicationName: { elementType: "string", elementValue: newApplicationName },
+          newAdminAppApplicationUuid: { elementType: "string", elementValue: newAdminAppApplicationUuid },
+          newSelfApplicationUuid: { elementType: "string", elementValue: newSelfApplicationUuid },
+          newDeploymentUuid: { elementType: "string", elementValue: newDeploymentUuid },
+        }
+      }
 
-  //     const testAction /*: ObjectBuildTemplate */ = {
-  //       actionType: "storeManagementAction",
-  //       actionName: "openStore",
-  //       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-  //       configuration: {
-  //         templateType: "fullObjectTemplate",
-  //         definition: [
-  //           {
-  //             attributeKey: {
-  //               templateType: "parameterReference",
-  //               referenceName: "newDeploymentUuid"
-  //             },
-  //             attributeValue: newDeploymentStoreConfigurationTemplate
-  //             // {
-  //             //   templateType: "parameterReference",
-  //             //   referenceName: "newDeploymentStoreConfiguration"
-  //             // },
-  //           }
-  //         ]
-  //       },
-  //       deploymentUuid: {
-  //         templateType: "parameterReference",
-  //         referenceName: "newDeploymentUuid"
-  //       }
-  //     }
-  //     const convertedAction: DomainAction = renderObjectBuildTemplate(
-  //       "ROOT",
-  //       testAction as any,
-  //       actionParams,
-  //       undefined
-  //     ).elementValue as DomainAction;
+      const testAction /*: ObjectBuildTemplate */ = {
+        actionType: "storeManagementAction",
+        actionName: "openStore",
+        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+        configuration: {
+          templateType: "fullObjectTemplate",
+          definition: [
+            {
+              attributeKey: {
+                templateType: "parameterReference",
+                referenceName: "newDeploymentUuid"
+              },
+              attributeValue: newDeploymentStoreConfigurationTemplate
+              // {
+              //   templateType: "parameterReference",
+              //   referenceName: "newDeploymentStoreConfiguration"
+              // },
+            }
+          ]
+        },
+        deploymentUuid: {
+          templateType: "parameterReference",
+          referenceName: "newDeploymentUuid"
+        }
+      }
+      const convertedAction: DomainAction = renderObjectBuildTemplate(
+        "ROOT",
+        testAction as any,
+        actionParams,
+        undefined
+      ).elementValue as DomainAction;
 
-  //     const expectedAction: DomainAction = {
-  //       "actionType": "storeManagementAction",
-  //       "actionName": "openStore",
-  //       "endpoint": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-  //       "configuration": {
-  //         [newDeploymentUuid]: newDeploymentStoreConfiguration
-  //       },
-  //       deploymentUuid: newDeploymentUuid
-  //     };
+      const expectedAction: DomainAction = {
+        "actionType": "storeManagementAction",
+        "actionName": "openStore",
+        "endpoint": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+        "configuration": {
+          [newDeploymentUuid]: newDeploymentStoreConfiguration
+        },
+        deploymentUuid: newDeploymentUuid
+      };
 
-  //     console.log("################################ expectedAction", JSON.stringify(expectedAction,null,2))
-  //     console.log("################################ convertedAction", JSON.stringify(convertedAction,null,2))
-  //     expect(convertedAction).toEqual(expectedAction
-  //       // {
-  //       //   "actionType": "storeManagementAction",
-  //       //   "actionName": "openStore",
-  //       //   "endpoint": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-  //       //   "configuration": {
-  //       //     [newDeploymentUuid]: newDeploymentStoreConfiguration
-  //       //   },
-  //       //   deploymentUuid: newDeploymentUuid
-  //       // }
-  //     )
-  //   ;
+      console.log("################################ expectedAction", JSON.stringify(expectedAction,null,2))
+      console.log("################################ convertedAction", JSON.stringify(convertedAction,null,2))
+      expect(convertedAction).toEqual(expectedAction
+        // {
+        //   "actionType": "storeManagementAction",
+        //   "actionName": "openStore",
+        //   "endpoint": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+        //   "configuration": {
+        //     [newDeploymentUuid]: newDeploymentStoreConfiguration
+        //   },
+        //   deploymentUuid: newDeploymentUuid
+        // }
+      )
+    ;
 
 
-  //     console.log("convert basic template END")
-  //   }
-  // );
+      console.log("convert basic template END")
+    }
+  );
 
-  // // ################################################################################################
-  // it("convert mustache string template", async () => { // TODO: test failure cases!
-  //     // if (miroirConfig.client.emulateServer) {
-  //     console.log("convert mustache string START")
-  //     const newApplicationName = "test";
+  // ################################################################################################
+  it("convert mustache string template", async () => { // TODO: test failure cases!
+      // if (miroirConfig.client.emulateServer) {
+      console.log("convert mustache string START")
+      const newApplicationName = "test";
 
-  //     const mustacheTemplate:ObjectBuildTemplate = {
-  //       templateType: "mustacheStringTemplate",
-  //       definition: "{{newApplicationName}}Application"
-  //     }
+      const mustacheTemplate:ObjectBuildTemplate = {
+        templateType: "mustacheStringTemplate",
+        definition: "{{newApplicationName}}Application"
+      }
 
-  //     const testResult: string = renderObjectBuildTemplate(
-  //       "ROOT",
-  //       mustacheTemplate,
-  //       { elementType: "object", elementValue: {newApplicationName: { elementType: "string", elementValue: newApplicationName }} },
-  //       undefined
-  //     ).elementValue as string;
+      const testResult: string = renderObjectBuildTemplate(
+        "ROOT",
+        mustacheTemplate,
+        { elementType: "object", elementValue: {newApplicationName: { elementType: "string", elementValue: newApplicationName }} },
+        undefined
+      ).elementValue as string;
 
-  //     console.log("################################ converted template", testResult)
-  //     expect(testResult).toEqual("testApplication");
-  //     console.log("convert mustache string END")
-  //   }
-  // );
+      console.log("################################ converted template", testResult)
+      expect(testResult).toEqual("testApplication");
+      console.log("convert mustache string END")
+    }
+  );
 
   // ################################################################################################
   it("unique authors from books runtime template", async () => { // TODO: test failure cases!

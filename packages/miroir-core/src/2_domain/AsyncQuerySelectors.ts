@@ -22,7 +22,10 @@ import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
-import { applyExtractorForSingleObjectListToSelectedInstancesUuidIndex, applyExtractorTransformer } from "./QuerySelectors.js";
+import {
+  applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory,
+  applyExtractorTransformerInMemory,
+} from "./QuerySelectors.js";
 import { applyTransformer } from "./Transformers.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"AsyncExtractorRunner");
@@ -33,14 +36,14 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   }
 );
 
-const emptyAsyncSelectorMap:AsyncExtractorRunnerMap<any> = {
+const emptyAsyncSelectorMap:AsyncExtractorRunnerMap = {
   extractorType: "async",
   extractWithExtractor: undefined as any, 
   extractWithManyExtractors: undefined as any, 
   extractEntityInstance: undefined as any,
-  extractEntityInstanceUuidIndexWithObjectListExtractor: undefined as any,
+  extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: undefined as any,
   extractEntityInstanceUuidIndex: undefined as any,
-  applyExtractorTransformer: undefined as any,
+  applyExtractorTransformerInMemory: undefined as any,
 }
 
 // ################################################################################################
@@ -55,18 +58,17 @@ const emptyAsyncSelectorMap:AsyncExtractorRunnerMap<any> = {
  * @returns 
  */
 export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
-= <StateType>(
-  deploymentEntityState: StateType,
-  selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList, StateType>
+= (
+  selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList>
 ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
   const result: Promise<DomainElementInstanceUuidIndexOrFailed> =
-    (selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap).extractEntityInstanceUuidIndex(deploymentEntityState, selectorParams)
+    (selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap).extractEntityInstanceUuidIndex(selectorParams)
     .then((selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed) => {
       log.info(
-        "extractEntityInstanceUuidIndexWithObjectListExtractor found selectedInstances", selectedInstancesUuidIndex
+        "extractEntityInstanceUuidIndexWithObjectListExtractorInMemory found selectedInstances", selectedInstancesUuidIndex
       );
 
-      return applyExtractorForSingleObjectListToSelectedInstancesUuidIndex(
+      return applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory(
         selectedInstancesUuidIndex,
         selectorParams.extractor,
       );
@@ -83,16 +85,15 @@ export async function asyncApplyExtractorTransformerInMemory(
   newFetchedData: DomainElementObject,
   extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>,
 ): Promise<DomainElement> {
-  return Promise.resolve(applyExtractorTransformer(actionRuntimeTransformer, queryParams, newFetchedData));
+  return Promise.resolve(applyExtractorTransformerInMemory(actionRuntimeTransformer, queryParams, newFetchedData));
 }
 
 // ################################################################################################
-export function asyncInnerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
-  state: StateType,
+export function asyncInnerSelectElementFromQuery/*ExtractorRunner*/(
   newFetchedData: DomainElementObject,
   pageParams: DomainElementObject,
   queryParams: DomainElementObject,
-  extractorRunnerMap:AsyncExtractorRunnerMap<StateType>,
+  extractorRunnerMap:AsyncExtractorRunnerMap,
   deploymentUuid: Uuid,
   extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>,
   query: QuerySelect
@@ -107,7 +108,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
     case "extractObjectListByEntity":
     case "selectObjectListByRelation": 
     case "selectObjectListByManyToManyRelation": {
-      return extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractor(state, {
+      return extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractorInMemory({
         extractorRunnerMap,
         extractor: {
           queryType: "domainModelSingleExtractor",
@@ -127,7 +128,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
     }
     case "selectObjectByRelation":
     case "selectObjectByDirectReference": {
-      return extractorRunnerMap.extractEntityInstance(state, {
+      return extractorRunnerMap.extractEntityInstance({
         extractorRunnerMap,
         extractor: {
           queryType: "domainModelSingleExtractor",
@@ -151,7 +152,6 @@ export function asyncInnerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
       const entries = Object.entries(query.definition);
       const promises = entries.map((e: [string, QuerySelect]) => {
         return asyncInnerSelectElementFromQuery(
-          state,
           newFetchedData,
           pageParams ?? {},
           queryParams ?? {},
@@ -175,7 +175,6 @@ export function asyncInnerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
     case "wrapperReturningList": { // List map
       const promises = query.definition.map((e) =>{
         return asyncInnerSelectElementFromQuery(
-          state,
           newFetchedData,
           pageParams ?? {},
           queryParams ?? {},
@@ -195,7 +194,6 @@ export function asyncInnerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
     }
     case "queryCombiner": { // join
       const rootQueryResults = asyncInnerSelectElementFromQuery(
-        state,
         newFetchedData,
         pageParams,
         queryParams,
@@ -209,7 +207,6 @@ export function asyncInnerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
           const entries = Object.entries(rootQueryResults.elementValue);
           const promises = entries.map((entry: [string, EntityInstance]) => {
             return asyncInnerSelectElementFromQuery(
-              state,
               newFetchedData,
               pageParams,
               {
@@ -246,10 +243,6 @@ export function asyncInnerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
 
       break;
     }
-    // case "extractorTransformer": {
-    //   // return processExtractorTransformerInMemory(query, queryParams, newFetchedData, extractors);
-    //   return extractorRunnerMap.applyExtractorTransformer(query, queryParams, newFetchedData, extractors);
-    // }
     case "queryContextReference": {
       return newFetchedData && newFetchedData.elementType == "object" && newFetchedData.elementValue[query.queryReference]
         ? Promise.resolve(newFetchedData.elementValue[query.queryReference])
@@ -264,28 +257,24 @@ export function asyncInnerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
 }
 
 // ################################################################################################
-export const asyncExtractWithExtractor /**: SyncExtractorRunner */= <StateType>(
-  state: StateType,
+export const asyncExtractWithExtractor /**: SyncExtractorRunner */= (
   // selectorParams: SyncExtractorRunnerParams<ExtractorForRecordOfExtractors, DeploymentEntityState>,
   selectorParams: AsyncExtractorRunnerParams<
-    ExtractorForSingleObject | ExtractorForSingleObjectList | ExtractorForRecordOfExtractors,
-    StateType
+    ExtractorForSingleObject | ExtractorForSingleObjectList | ExtractorForRecordOfExtractors
   >
 ): Promise<DomainElement> => {
   // log.info("########## extractExtractor begin, query", selectorParams);
-  const localSelectorMap: AsyncExtractorRunnerMap<StateType> = selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
+  const localSelectorMap: AsyncExtractorRunnerMap = selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
 
   switch (selectorParams.extractor.queryType) {
     case "extractorForRecordOfExtractors": {
       return asyncExtractWithManyExtractors(
-        state,
-        selectorParams as AsyncExtractorRunnerParams<ExtractorForRecordOfExtractors, StateType>
+        selectorParams as AsyncExtractorRunnerParams<ExtractorForRecordOfExtractors>
       );
       break;
     }
     case "domainModelSingleExtractor": {
       const result = asyncInnerSelectElementFromQuery(
-        state,
         selectorParams.extractor.contextResults,
         selectorParams.extractor.pageParams,
         selectorParams.extractor.queryParams,
@@ -326,9 +315,9 @@ export const asyncExtractWithExtractor /**: SyncExtractorRunner */= <StateType>(
  * @returns 
  */
 
-export const asyncExtractWithManyExtractors = async <StateType>(
-  state: StateType,
-  selectorParams: AsyncExtractorRunnerParams<ExtractorForRecordOfExtractors, StateType>,
+export const asyncExtractWithManyExtractors = async (
+  // state: StateType,
+  selectorParams: AsyncExtractorRunnerParams<ExtractorForRecordOfExtractors>,
 ): Promise<DomainElementObject> => {
 
   // log.info("########## extractWithManyExtractors begin, query", selectorParams);
@@ -339,13 +328,12 @@ export const asyncExtractWithManyExtractors = async <StateType>(
     elementValue: { ...selectorParams.extractor.contextResults.elementValue },
   };
   // log.info("########## DomainSelector extractWithManyExtractors will use context", context);
-  const localSelectorMap: AsyncExtractorRunnerMap<StateType> =
+  const localSelectorMap: AsyncExtractorRunnerMap =
     selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
 
   const extractorsPromises = Object.entries(selectorParams.extractor.extractors ?? {}).map(
     (query: [string, QuerySelect]) => {
       return asyncInnerSelectElementFromQuery(
-        state,
         context,
         selectorParams.extractor.pageParams,
         {
@@ -376,7 +364,6 @@ export const asyncExtractWithManyExtractors = async <StateType>(
   const combinerPromises = Object.entries(selectorParams.extractor.combiners ?? {})
   .map((query: [string, QuerySelect]) => {
     return asyncInnerSelectElementFromQuery(
-      state,
       context,
       selectorParams.extractor.pageParams,
       {
@@ -404,7 +391,7 @@ export const asyncExtractWithManyExtractors = async <StateType>(
 
   const transformerPromises = Object.entries(selectorParams.extractor.runtimeTransformers ?? {})
     .map((query: [string, RuntimeTransformer]) => {
-      return localSelectorMap.applyExtractorTransformer(query[1], {
+      return localSelectorMap.applyExtractorTransformerInMemory(query[1], {
         elementType: "object",
         elementValue: {
           ...selectorParams.extractor.pageParams.elementValue,

@@ -38,7 +38,16 @@ import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 import { setupServer } from "msw/node";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
-import { addEntitiesAndInstances, chainVitestSteps, ignorePostgresExtraAttributesOnObject, ignorePostgresExtraAttributesOnRecord, loadTestConfigFiles, miroirAfterEach, miroirBeforeAll, miroirBeforeEach } from "../utils/tests-utils.js";
+import {
+  addEntitiesAndInstances,
+  chainVitestSteps,
+  ignorePostgresExtraAttributesOnObject,
+  ignorePostgresExtraAttributesOnRecord,
+  loadTestConfigFiles,
+  miroirAfterEach,
+  miroirBeforeAll,
+  miroirBeforeEach,
+} from "../utils/tests-utils.js";
 import { LocalCache } from 'miroir-localcache-redux';
 
 let localCache: LocalCache;

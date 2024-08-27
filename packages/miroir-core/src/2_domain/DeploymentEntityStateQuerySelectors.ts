@@ -30,7 +30,7 @@ import { getDeploymentEntityStateIndex } from "./DeploymentEntityState.js";
 import {
   resolveContextReference,
   extractWithManyExtractors,
-  extractEntityInstanceUuidIndexWithObjectListExtractor,
+  extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractFetchQueryJzodSchema,
   extractJzodSchemaForDomainModelQuery,
   extractzodSchemaForSingleSelectQuery,
@@ -406,7 +406,7 @@ export function getDeploymentEntityStateSelectorMap(): SyncExtractorRunnerMap<
     extractorType: "sync",
     extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDeploymentEntityState,
     extractEntityInstance: selectEntityInstanceFromDeploymentEntityState,
-    extractEntityInstanceUuidIndexWithObjectListExtractor: extractEntityInstanceUuidIndexWithObjectListExtractor,
+    extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
     extractWithManyExtractors: extractWithManyExtractors,
     extractWithExtractor: extractWithExtractor,
   };

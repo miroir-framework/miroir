@@ -34,7 +34,10 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 export const MixedSqlDbInstanceStoreSection = SqlDbInstanceStoreSectionMixin(SqlDbStoreSection);
 
 export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSection>(Base: TBase) {
-  return class MixedIndexedDbInstanceStoreSection extends Base implements PersistenceStoreInstanceSectionAbstractInterface {
+  return class MixedIndexedDbInstanceStoreSection
+    extends Base
+    implements PersistenceStoreInstanceSectionAbstractInterface
+  {
     public extractorRunner: SqlDbExtractRunner;
 
     // ##############################################################################################
@@ -58,13 +61,18 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         status: "ok",
         // returnedDomainElement: { elementType: "any", elementValue: Number((rawResult[0] as any).count) },
         returnedDomainElement: { elementType: "any", elementValue: rawResult[0] },
-      }
+      };
       log.info(this.logHeader, "executeRawQuery", "query", query, "result", JSON.stringify(result));
       return Promise.resolve(result);
     }
     // ##############################################################################################
-  // sqlForExtractor(extractor: ExtractorForSingleObjectList | ExtractorForSingleObject | QuerySelectExtractorWrapper | ExtractorForRecordOfExtractors): string | Record<string, string> {
-    sqlForExtractor(extractor: ExtractorForSingleObjectList | ExtractorForSingleObject | QuerySelectExtractorWrapper | ExtractorForRecordOfExtractors): RecursiveStringRecords {
+    sqlForExtractor(
+      extractor:
+        | ExtractorForSingleObjectList
+        | ExtractorForSingleObject
+        | QuerySelectExtractorWrapper
+        | ExtractorForRecordOfExtractors
+    ): RecursiveStringRecords {
       // log.info(this.logHeader, "sqlForExtractor called with parameter", "extractor", extractor);
       // log.info(this.logHeader, "sqlForExtractor called with sequelize", this.sequelize);
       // log.info(this.logHeader, "sqlForExtractor called with dialect", (this.sequelize as any).dialect);
@@ -75,7 +83,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       // // log.info(this.logHeader, "sqlForExtractor called with queryGenerator", this.sequelize.getQueryInterface().queryGenerator);
       // log.info(this.logHeader, "sqlForExtractor called with selectQuery", (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery);
       switch (extractor.queryType) {
-        case "extractObjectListByEntity":{
+        case "extractObjectListByEntity": {
           // const result = (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery(extractor.parentUuid
           //   , {
           // // const result = (this.sequelize as any).dialect.queryGenerator.selectQuery(extractor.parentUuid, {
@@ -84,23 +92,31 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           // );
           // log.info(this.logHeader, "sqlForExtractor", "domainModelSingleExtractor", result);
           if (extractor.parentUuid.queryTemplateType != "constantUuid") {
-            throw new Error("sqlForExtractor can not handle queryTemplateType for extractor" + JSON.stringify(extractor));
+            throw new Error(
+              "sqlForExtractor can not handle queryTemplateType for extractor" + JSON.stringify(extractor)
+            );
           }
+          // TODO: use queryGenerator?
           return `SELECT * FROM "${this.schema}"."${extractor.parentName}"`;
           // return result;
           break;
         }
         case "domainModelSingleExtractor": {
-          const result = (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery(extractor.select.parentUuid, {
-            attributes: ["*"],
-          });
+          const result: string = (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery(
+            extractor.select.parentUuid,
+            {
+              attributes: ["*"],
+            }
+          );
           log.info(this.logHeader, "sqlForExtractor", "domainModelSingleExtractor", result);
           // return "SELECT * FROM domainModel WHERE uuid = " + extractor.deploymentUuid;
           return result;
           break;
         }
         case "extractorForRecordOfExtractors": {
-          return Object.fromEntries(Object.entries(extractor.extractors??{}).map((e) => [e[0], this.sqlForExtractor(e[1])]));
+          return Object.fromEntries(
+            Object.entries(extractor.extractors ?? {}).map((e) => [e[0], this.sqlForExtractor(e[1])])
+          );
           break;
         }
         case "selectObjectByDirectReference":
@@ -116,14 +132,14 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
 
     // #############################################################################################
     async handleQuery(query: QueryAction): Promise<ActionReturnType> {
-      log.info(this.logHeader,'handleQuery', 'query',query);
-      
+      log.info(this.logHeader, "handleQuery", "query", query);
+
       const result: ActionReturnType = await this.extractorRunner.handleQuery(query);
 
-      log.info(this.logHeader,'handleQuery','query',query, "result", result);
+      log.info(this.logHeader, "handleQuery", "query", query, "result", result);
       return result;
     }
-    
+
     // ##############################################################################################
     async getInstance(parentUuid: string, uuid: string): Promise<ActionEntityInstanceReturnType> {
       try {
@@ -141,14 +157,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         }
       } catch (error) {
         // TODO: indicate exact reason!
-        log.warn(
-          this.logHeader,
-          "getInstance",
-          "could not fetch instance from db: parentId",
-          parentUuid,
-          "uuid",
-          uuid
-        );
+        log.warn(this.logHeader, "getInstance", "could not fetch instance from db: parentId", parentUuid, "uuid", uuid);
         return Promise.resolve({ status: "error", error: { errorType: "FailedToGetInstance" } });
       }
     }
@@ -171,9 +180,9 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         log.info("getInstancesWithFilter calling this.sqlEntities findall", parentUuid);
         try {
           const sequelizeModel = this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel;
-          rawResult = (await sequelizeModel?.findAll(
-            { where: { [filter.attribute]: { [Op.like]: "%" + filter.value + "%"} } }
-          )) as unknown as EntityInstance[];
+          rawResult = (await sequelizeModel?.findAll({
+            where: { [filter.attribute]: { [Op.like]: "%" + filter.value + "%" } },
+          })) as unknown as EntityInstance[];
           cleanResult = rawResult.map((i) => i["dataValues"]);
           log.info("getInstancesWithFilter result", cleanResult);
         } catch (e) {
@@ -247,7 +256,9 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
 
     // ##############################################################################################
     async upsertInstance(parentUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
-      console.log("######################################################### upsertInstance #####################################################")
+      console.log(
+        "######################################################### upsertInstance #####################################################"
+      );
       try {
         const sequelizeModel = this.sqlSchemaTableAccess[instance.parentUuid].sequelizeModel;
         const tmp = await sequelizeModel.upsert(instance as any);
@@ -265,10 +276,13 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           instance,
           "error",
           error
-        //   "db upsert result (not returned)",
-        //   tmp
+          //   "db upsert result (not returned)",
+          //   tmp
         );
-        return Promise.resolve({status: "error", error: { errorType: "FailedToCreateInstance", errorMessage: error}});
+        return Promise.resolve({
+          status: "error",
+          error: { errorType: "FailedToCreateInstance", errorMessage: error },
+        });
       }
       return Promise.resolve(ACTION_OK);
     }

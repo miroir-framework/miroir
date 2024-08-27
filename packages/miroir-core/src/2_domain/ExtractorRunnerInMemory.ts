@@ -78,7 +78,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 export class ExtractorRunnerInMemory implements PersistenceStoreExtractorRunner {
   private logHeader: string;
-  private selectorMap: AsyncExtractorRunnerMap<any>;
+  private selectorMap: AsyncExtractorRunnerMap;
 
   // ################################################################################################
   constructor(private persistenceStoreController: PersistenceStoreInstanceSectionAbstractInterface) {
@@ -87,10 +87,10 @@ export class ExtractorRunnerInMemory implements PersistenceStoreExtractorRunner 
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex,
       extractEntityInstance: this.extractEntityInstance,
-      extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+      extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
-      applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
+      applyExtractorTransformerInMemory: asyncApplyExtractorTransformerInMemory,
     };
   }
 
@@ -102,7 +102,6 @@ export class ExtractorRunnerInMemory implements PersistenceStoreExtractorRunner 
     switch (queryAction.query.queryType) {
       case "domainModelSingleExtractor": {
         queryResult = await this.selectorMap.extractWithExtractor(
-          undefined /* domainState*/,
           {
             extractor: queryAction.query,
             extractorRunnerMap: this.selectorMap,
@@ -112,7 +111,6 @@ export class ExtractorRunnerInMemory implements PersistenceStoreExtractorRunner 
       }
       case "extractorForRecordOfExtractors": {
         queryResult = await this.selectorMap.extractWithManyExtractors(
-          undefined /* domainState*/,
           {
             extractor: queryAction.query,
             extractorRunnerMap: this.selectorMap,
@@ -146,11 +144,9 @@ export class ExtractorRunnerInMemory implements PersistenceStoreExtractorRunner 
   // ################################################################################################
   public extractEntityInstance: AsyncExtractorRunner<
     ExtractorForSingleObject,
-    any,
     DomainElementEntityInstanceOrFailed
   > = async (
-    deploymentEntityState: any,
-    selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObject, any>
+    selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObject>
   ): Promise<DomainElementEntityInstanceOrFailed> => {
     const querySelectorParams: QuerySelectObject = selectorParams.extractor.select as QuerySelectObject;
     const deploymentUuid = selectorParams.extractor.deploymentUuid;
@@ -333,8 +329,6 @@ export class ExtractorRunnerInMemory implements PersistenceStoreExtractorRunner 
           JSON.stringify(selectorParams.extractor.queryParams, undefined, 2),
           "######### contextResults",
           JSON.stringify(selectorParams.extractor.contextResults, undefined, 2),
-          "domainState",
-          deploymentEntityState
         );
         return {
           elementType: "instance",
@@ -356,11 +350,9 @@ export class ExtractorRunnerInMemory implements PersistenceStoreExtractorRunner 
   // ##############################################################################################
   public extractEntityInstanceUuidIndex: AsyncExtractorRunner<
     ExtractorForSingleObjectList,
-    any,
     DomainElementInstanceUuidIndexOrFailed
   > = async (
-    domainState: any,
-    extractorRunnerParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList, any>
+    extractorRunnerParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList>
   ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
     const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
@@ -437,7 +429,7 @@ export class ExtractorRunnerInMemory implements PersistenceStoreExtractorRunner 
   };
 
   // ##############################################################################################
-  public getSelectorMap(): AsyncExtractorRunnerMap<any> {
+  public getSelectorMap(): AsyncExtractorRunnerMap {
     return this.selectorMap;
   }
 } // end of class ExtractorRunnerInMemory

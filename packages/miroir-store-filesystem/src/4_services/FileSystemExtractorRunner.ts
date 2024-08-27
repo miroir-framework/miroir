@@ -44,6 +44,7 @@ import {
   PersistenceStoreInstanceSectionAbstractInterface,
   PersistenceStoreAbstractInterface,
   PersistenceStoreDataOrModelSectionInterface,
+  asyncApplyExtractorTransformerInMemory,
 } from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
@@ -56,7 +57,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 export class FileSystemExtractorRunner implements PersistenceStoreExtractorRunner {
   private logHeader: string;
-  private selectorMap: AsyncExtractorRunnerMap<any>;
+  private selectorMap: AsyncExtractorRunnerMap;
 
   // ################################################################################################
   // constructor(private persistenceStoreController: PersistenceStoreControllerInterface) {
@@ -67,9 +68,10 @@ export class FileSystemExtractorRunner implements PersistenceStoreExtractorRunne
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex,
       extractEntityInstance: this.extractEntityInstance,
-      extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+      extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
+      applyExtractorTransformerInMemory: asyncApplyExtractorTransformerInMemory
     };
   }
 
@@ -81,8 +83,6 @@ export class FileSystemExtractorRunner implements PersistenceStoreExtractorRunne
     switch (queryAction.query.queryType) {
       case "domainModelSingleExtractor": {
         queryResult = await this.selectorMap.extractWithExtractor(
-          undefined /* domainState*/,
-          // getSelectorParams(queryAction.query)
           {
             extractor: queryAction.query,
             extractorRunnerMap: this.selectorMap,
@@ -92,8 +92,6 @@ export class FileSystemExtractorRunner implements PersistenceStoreExtractorRunne
       }
       case "extractorForRecordOfExtractors": {
         queryResult = await this.selectorMap.extractWithManyExtractors(
-          undefined /* domainState*/,
-          // getSelectorParams(queryAction.query)
           {
             extractor: queryAction.query,
             extractorRunnerMap: this.selectorMap,
@@ -200,11 +198,9 @@ export class FileSystemExtractorRunner implements PersistenceStoreExtractorRunne
   // ################################################################################################
   public extractEntityInstance: AsyncExtractorRunner<
     ExtractorForSingleObject,
-    any,
     DomainElementEntityInstanceOrFailed
   > = async (
-    deploymentEntityState: any,
-    selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObject, any>
+    selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObject>
   ): Promise<DomainElementEntityInstanceOrFailed> => {
     const querySelectorParams: QuerySelectObject = selectorParams.extractor.select as QuerySelectObject;
     const deploymentUuid = selectorParams.extractor.deploymentUuid;
@@ -387,8 +383,6 @@ export class FileSystemExtractorRunner implements PersistenceStoreExtractorRunne
           JSON.stringify(selectorParams.extractor.queryParams, undefined, 2),
           "######### contextResults",
           JSON.stringify(selectorParams.extractor.contextResults, undefined, 2),
-          "domainState",
-          deploymentEntityState
         );
         return {
           elementType: "instance",
@@ -410,11 +404,9 @@ export class FileSystemExtractorRunner implements PersistenceStoreExtractorRunne
   // ##############################################################################################
   public extractEntityInstanceUuidIndex: AsyncExtractorRunner<
     ExtractorForSingleObjectList,
-    any,
     DomainElementInstanceUuidIndexOrFailed
   > = async (
-    domainState: any,
-    extractorRunnerParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList, any>
+    extractorRunnerParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList>
   ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
     const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
@@ -490,12 +482,12 @@ export class FileSystemExtractorRunner implements PersistenceStoreExtractorRunne
     }
   };
 
-  public getSelectorMap(): AsyncExtractorRunnerMap<any> {
+  public getSelectorMap(): AsyncExtractorRunnerMap {
     return this.selectorMap;
     // return {
     //   extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex,
     //   extractEntityInstance: this.extractEntityInstance,
-    //   extractEntityInstanceUuidIndexWithObjectListExtractor: async (...args) => exractEntityInstanceListFromListQueryAndDomainState(...args),
+    //   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: async (...args) => exractEntityInstanceListFromListQueryAndDomainState(...args),
     //   extractWithManyExtractors: async (...args) => extractWithManyExtractorsFromDomainState(...args),
     //   extractWithExtractor: async (...args) => extractWithExtractor(...args),
     // };

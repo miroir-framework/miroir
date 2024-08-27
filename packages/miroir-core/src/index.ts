@@ -501,7 +501,7 @@ export {
 export {
   domainElementToPlainObject,
   resolveContextReference,
-  extractEntityInstanceUuidIndexWithObjectListExtractor,
+  extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractFetchQueryJzodSchema,
   extractJzodSchemaForDomainModelQuery,
   extractzodSchemaForSingleSelectQuery,

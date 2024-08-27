@@ -44,7 +44,7 @@ export type RecursiveStringRecords = string | { [x: string]: RecursiveStringReco
 
 export class SqlDbExtractRunner {
   private logHeader: string;
-  private extractorRunnerMap: AsyncExtractorRunnerMap<any>;
+  private extractorRunnerMap: AsyncExtractorRunnerMap;
 
   constructor(
     private persistenceStoreController:
@@ -53,24 +53,24 @@ export class SqlDbExtractRunner {
   ) // private persistenceStoreController: typeof MixedSqlDbInstanceStoreSection // does not work
   {
     this.logHeader = "PersistenceStoreController " + persistenceStoreController.getStoreName();
-    const InMemoryImplementationExtractorRunnerMap: AsyncExtractorRunnerMap<any> = {
+    const InMemoryImplementationExtractorRunnerMap: AsyncExtractorRunnerMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex.bind(this),
       extractEntityInstance: this.extractEntityInstance.bind(this),
-      extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+      extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
-      applyExtractorTransformer: this.applyExtractorTransformerSql.bind(this),
+      applyExtractorTransformerInMemory: this.applyExtractorTransformerSql.bind(this),
     };
-    const dbImplementationExtractorRunnerMap: AsyncExtractorRunnerMap<any> = {
+    const dbImplementationExtractorRunnerMap: AsyncExtractorRunnerMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex.bind(this),
       extractEntityInstance: this.extractEntityInstance.bind(this),
-      extractEntityInstanceUuidIndexWithObjectListExtractor:
+      extractEntityInstanceUuidIndexWithObjectListExtractorInMemory:
         this.asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor.bind(this),
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
-      applyExtractorTransformer: this.applyExtractorTransformerSql.bind(this),
+      applyExtractorTransformerInMemory: this.applyExtractorTransformerSql.bind(this),
     };
 
     // this.extractorRunnerMap = InMemoryImplementationExtractorRunnerMap;
@@ -188,9 +188,8 @@ export class SqlDbExtractRunner {
    * @param selectorParams
    * @returns
    */
-  private asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor = <StateType>(
-    state: StateType,
-    selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList, StateType>
+  private asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor = (
+    selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList>
   ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
     // (
     //   state: any,
@@ -199,11 +198,11 @@ export class SqlDbExtractRunner {
     let result: Promise<DomainElementInstanceUuidIndexOrFailed>;
     switch (selectorParams.extractor.select.queryType) {
       case "extractObjectListByEntity": {
-        return this.extractEntityInstanceUuidIndexWithFilter(state, selectorParams);
+        return this.extractEntityInstanceUuidIndexWithFilter(selectorParams);
       }
       case "selectObjectListByRelation":
       case "selectObjectListByManyToManyRelation": {
-        return this.extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractor(state, {
+        return this.extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractorInMemory({
           extractorRunnerMap: this.extractorRunnerMap,
           extractor: {
             queryType: "domainModelSingleExtractor",
@@ -241,14 +240,14 @@ export class SqlDbExtractRunner {
     let queryResult: DomainElement;
     switch (queryAction.query.queryType) {
       case "domainModelSingleExtractor": {
-        queryResult = await this.extractorRunnerMap.extractWithExtractor(undefined /* domainState*/, {
+        queryResult = await this.extractorRunnerMap.extractWithExtractor({
           extractor: queryAction.query,
           extractorRunnerMap: this.extractorRunnerMap,
         });
         break;
       }
       case "extractorForRecordOfExtractors": {
-        queryResult = await this.extractorRunnerMap.extractWithManyExtractors(undefined /* domainState*/, {
+        queryResult = await this.extractorRunnerMap.extractWithManyExtractors({
           extractor: queryAction.query,
           extractorRunnerMap: this.extractorRunnerMap,
         });
@@ -277,11 +276,9 @@ export class SqlDbExtractRunner {
   // ##############################################################################################
   public extractEntityInstance: AsyncExtractorRunner<
     ExtractorForSingleObject,
-    any,
     DomainElementEntityInstanceOrFailed
   > = async (
-    deploymentEntityState: any,
-    selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObject, any>
+    selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObject>
   ): Promise<DomainElementEntityInstanceOrFailed> => {
     const querySelectorParams: QuerySelectObject = selectorParams.extractor.select as QuerySelectObject;
     const deploymentUuid = selectorParams.extractor.deploymentUuid;
@@ -440,8 +437,6 @@ export class SqlDbExtractRunner {
           JSON.stringify(selectorParams.extractor.queryParams, undefined, 2),
           "######### contextResults",
           JSON.stringify(selectorParams.extractor.contextResults, undefined, 2),
-          "domainState",
-          deploymentEntityState
         );
         return {
           elementType: "instance",
@@ -462,11 +457,9 @@ export class SqlDbExtractRunner {
   // ##############################################################################################
   public extractEntityInstanceUuidIndex: AsyncExtractorRunner<
     ExtractorForSingleObjectList,
-    any,
     DomainElementInstanceUuidIndexOrFailed
   > = async (
-    domainState: any,
-    extractorRunnerParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList, any>
+    extractorRunnerParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList>
   ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
     const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
@@ -546,11 +539,9 @@ export class SqlDbExtractRunner {
   // ##############################################################################################
   public extractEntityInstanceUuidIndexWithFilter: AsyncExtractorRunner<
     ExtractorForSingleObjectList,
-    any,
     DomainElementInstanceUuidIndexOrFailed
   > = async (
-    domainState: any,
-    extractorRunnerParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList, any>
+    extractorRunnerParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList>
   ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
     const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
@@ -680,7 +671,7 @@ export class SqlDbExtractRunner {
   };
 
   // ##############################################################################################
-  public getSelectorMap(): AsyncExtractorRunnerMap<any> {
+  public getSelectorMap(): AsyncExtractorRunnerMap {
     return this.extractorRunnerMap;
   }
 }

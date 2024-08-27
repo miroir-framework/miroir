@@ -5,7 +5,7 @@ import {
   SyncExtractorRunnerMap,
   extractWithManyExtractors,
   selectEntityInstanceFromDeploymentEntityState,
-  extractEntityInstanceUuidIndexWithObjectListExtractor,
+  extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   selectEntityInstanceUuidIndexFromDeploymentEntityState,
   extractEntityJzodSchemaFromDeploymentEntityState,
   extractFetchQueryJzodSchema,
@@ -28,9 +28,9 @@ export function getMemoizedDeploymentEntityStateSelectorMap(): SyncExtractorRunn
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
       selectEntityInstanceUuidIndexFromDeploymentEntityState
     ),
-    extractEntityInstanceUuidIndexWithObjectListExtractor: createSelector(
+    extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-      extractEntityInstanceUuidIndexWithObjectListExtractor
+      extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
     ),
     extractWithManyExtractors: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],

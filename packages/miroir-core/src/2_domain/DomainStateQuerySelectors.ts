@@ -34,7 +34,7 @@ import {
   innerSelectElementFromQuery,
   resolveContextReference,
   extractWithManyExtractors,
-  extractEntityInstanceUuidIndexWithObjectListExtractor,
+  extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractFetchQueryJzodSchema,
   extractJzodSchemaForDomainModelQuery,
   extractzodSchemaForSingleSelectQuery,
@@ -375,7 +375,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:SyncExtractorRunn
  */
 export const exractEntityInstanceListFromListQueryAndDomainState: SyncExtractorRunner<
   ExtractorForSingleObjectList, DomainState, DomainElementInstanceUuidIndexOrFailed
-> = extractEntityInstanceUuidIndexWithObjectListExtractor<DomainState>
+> = extractEntityInstanceUuidIndexWithObjectListExtractorInMemory<DomainState>
 
 // ################################################################################################
 export const innerSelectElementFromQueryAndDomainState = innerSelectElementFromQuery<DomainState>
@@ -455,7 +455,7 @@ export function getSelectorMap(): SyncExtractorRunnerMap<DomainState> {
     extractorType: "sync",
     extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDomainState,
     extractEntityInstance: selectEntityInstanceFromObjectQueryAndDomainState,
-    extractEntityInstanceUuidIndexWithObjectListExtractor: exractEntityInstanceListFromListQueryAndDomainState,
+    extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: exractEntityInstanceListFromListQueryAndDomainState,
     extractWithManyExtractors: extractWithManyExtractorsFromDomainState,
     extractWithExtractor: extractWithExtractor,
   };
