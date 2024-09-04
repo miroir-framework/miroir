@@ -11,7 +11,7 @@ import {
   ExtractorForSingleObject,
   ExtractorForSingleObjectList,
   QuerySelect,
-  RuntimeTransformer
+  TransformerForRuntime
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   AsyncExtractorRunnerMap,
@@ -43,7 +43,7 @@ const emptyAsyncSelectorMap:AsyncExtractorRunnerMap = {
   extractEntityInstance: undefined as any,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: undefined as any,
   extractEntityInstanceUuidIndex: undefined as any,
-  applyExtractorTransformerInMemory: undefined as any,
+  applyExtractorTransformer: undefined as any,
 }
 
 // ################################################################################################
@@ -80,7 +80,7 @@ export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
 
 // ################################################################################################
 export async function asyncApplyExtractorTransformerInMemory(
-  actionRuntimeTransformer: RuntimeTransformer,
+  actionRuntimeTransformer: TransformerForRuntime,
   queryParams: DomainElementObject,
   newFetchedData: DomainElementObject,
   extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>,
@@ -389,25 +389,26 @@ export const asyncExtractWithManyExtractors = async (
     return context;
   });
 
-  const transformerPromises = Object.entries(selectorParams.extractor.runtimeTransformers ?? {})
-    .map((query: [string, RuntimeTransformer]) => {
-      return localSelectorMap.applyExtractorTransformerInMemory(query[1], {
-        elementType: "object",
-        elementValue: {
-          ...selectorParams.extractor.pageParams.elementValue,
-          ...selectorParams.extractor.queryParams.elementValue,
-        },
-      }, context, selectorParams.extractor.extractors ?? ({} as any)).then((result): [string, DomainElement] => {
-        return [query[0], result];
-      });;
-
+  for (const transformer of Object.entries(selectorParams.extractor.runtimeTransformers ?? {})) {
+    // const result = await promise;
+    const result = await localSelectorMap.applyExtractorTransformer(transformer[1], {
+      elementType: "object",
+      elementValue: {
+        ...selectorParams.extractor.pageParams.elementValue,
+        ...selectorParams.extractor.queryParams.elementValue,
+      },
+    }, context, selectorParams.extractor.extractors ?? ({} as any)).then((result): [string, DomainElement] => {
+      return [transformer[0], result];
     });
-  await Promise.all(transformerPromises).then((results) => {
-    results.forEach((result) => {
-      context.elementValue[result[0]] = result[1]; // does side effect!
-    });
-    return context;
-  });
+    context.elementValue[result[0]] = result[1]; // does side effect!
+    log.info(
+      "asyncExtractWithManyExtractors for result[0]",
+      result[0],
+      "context",
+      JSON.stringify(Object.keys(context.elementValue))
+    );
+  }
+  return context;
   // log.info(
   //   "extractWithManyExtractors",
   //   "query",

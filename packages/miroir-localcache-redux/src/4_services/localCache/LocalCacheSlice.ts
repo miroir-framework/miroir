@@ -419,7 +419,7 @@ function handleInstanceAction(
 
           sliceEntityAdapter.removeMany(
             state.current[instanceCollectionEntityIndex],
-            instanceCollection.instances.map((i) => i.uuid)
+            instanceCollection.instances.map((i:EntityInstance) => i.uuid)
           );
           log.info(
             "localCacheSliceObject handleInstanceAction delete state after removeMany for instanceCollection",
@@ -453,7 +453,7 @@ function handleInstanceAction(
           state
         );
         // log.info("localCacheSliceObject handleInstanceAction for index", instanceCollectionEntityIndex, sliceEntityAdapter)
-        const updates = instanceCollection.instances.map((i) => ({ id: i.uuid, changes: i }));
+        const updates = instanceCollection.instances.map((i:EntityInstance) => ({ id: i.uuid, changes: i }));
         // log.info("localCacheSliceObject handleInstanceAction for entity", instanceCollection.parentUuid, instanceCollection.parentUuid, "updating", updates)
         sliceEntityAdapter.updateMany(
           state.current[instanceCollectionEntityIndex],

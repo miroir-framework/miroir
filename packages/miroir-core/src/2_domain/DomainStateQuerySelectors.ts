@@ -32,7 +32,7 @@ import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
 import {
   innerSelectElementFromQuery,
-  resolveContextReference,
+  resolveContextReferenceDEFUNCT,
   extractWithManyExtractors,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractFetchQueryJzodSchema,
@@ -105,7 +105,7 @@ export const selectEntityInstanceUuidIndexFromDomainState: SyncExtractorRunner<
   const deploymentUuid = selectorParams.extractor.deploymentUuid;
   const applicationSection = selectorParams.extractor.select.applicationSection??"data";
 
-  const entityUuid: DomainElement = resolveContextReference(
+  const entityUuid: DomainElement = resolveContextReferenceDEFUNCT(
     selectorParams.extractor.select.parentUuid,
     selectorParams.extractor.queryParams,
     selectorParams.extractor.contextResults
@@ -192,7 +192,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:SyncExtractorRunn
     selectorParams.extractor.select.applicationSection ??
     ((selectorParams.extractor.pageParams?.elementValue?.applicationSection?.elementValue ?? "data") as ApplicationSection);
 
-  const entityUuidReference: DomainElement = resolveContextReference(
+  const entityUuidReference: DomainElement = resolveContextReferenceDEFUNCT(
     querySelectorParams.parentUuid,
     selectorParams.extractor.queryParams,
     selectorParams.extractor.contextResults
@@ -211,7 +211,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:SyncExtractorRunn
 
   switch (querySelectorParams?.queryType) {
     case "selectObjectByRelation": {
-      const referenceObject = resolveContextReference(
+      const referenceObject = resolveContextReferenceDEFUNCT(
         querySelectorParams.objectReference,
         selectorParams.extractor.queryParams,
         selectorParams.extractor.contextResults
@@ -279,7 +279,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:SyncExtractorRunn
       break;
     }
     case "selectObjectByDirectReference": {
-      const instanceDomainElement = resolveContextReference(querySelectorParams.instanceUuid, selectorParams.extractor.queryParams, selectorParams.extractor.contextResults);
+      const instanceDomainElement = resolveContextReferenceDEFUNCT(querySelectorParams.instanceUuid, selectorParams.extractor.queryParams, selectorParams.extractor.contextResults);
 
       // log.info("selectEntityInstanceFromObjectQueryAndDomainState found instanceUuid", JSON.stringify(instanceUuid))
 

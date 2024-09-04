@@ -128,8 +128,9 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
 
       if (!adminStoreFactory) {
         log.info(
-          "addPersistenceStoreController no admin store factory found for",
+          "addPersistenceStoreController no admin store factory found for deployment",
           deploymentUuid,
+          " with adminStoreFactoryRegister=",
           JSON.stringify(this.adminStoreFactoryRegister, undefined, 2)
         );
         throw new Error(

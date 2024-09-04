@@ -27,14 +27,17 @@ import {
   JzodPlainAttribute,
   JzodAttributePlainStringWithValidations,
   ActionHandler,
-  CompositeInstanceActionTemplate
+  CompositeInstanceActionTemplate,
+  DomainElement,
+  compositeAction,
+  CompositeActionTemplate,
+  CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction
 } from "miroir-core";
 import * as XLSX from 'xlsx';
 import { useDomainControllerService } from "./MiroirContextReactProvider.js";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
 import { AddBox } from "@mui/icons-material";
-import { handleCompositeAction } from "./routes/Tools.js";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"importer");
@@ -176,10 +179,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     // const newEntityDetailsReportUuid: string = uuidv4();
     // const newEntityListReportUuid: string = uuidv4();
 
-    const actionEffectiveParamsCreateEntity:any /** parsed by actionHandlerCreateEntity.interface.actionJzodObjectSchema */ = {
+    const actionEffectiveParamsCreateEntity /** parsed by actionHandlerCreateEntity.interface.actionJzodObjectSchema */ = {
       newEntityName: "Fountain",
       newEntityDescription: "Drinking Fountains of Paris",
       newEntityUuid: uuidv4(),
+      currentApplicationName: "Paris",
       currentApplicationUuid: props.currentApplicationUuid,
       currentDeploymentUuid: props.currentDeploymentUuid,
       newEntityDefinitionUuid: uuidv4(),
@@ -192,189 +196,198 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       newEntity,
     }
     // const actionHandlerCreateEntity: ActionHandler = useMemo(()=>({
-    const actionHandlerCreateFountainEntity: ActionHandler = {
-      interface: {
-        actionJzodObjectSchema: {
-          type: "object",
-          definition: {
-            newEntityName: {
-              type: "string"
-            },
-            newEntityDescription: {
-              type: "string"
-            },
-            newEntityUuid: {
-              type: "uuid"
-            },
-            currentApplicationUuid: {
-              type: "uuid"
-            },
-            currentDeploymentUuid: {
-              type: "uuid"
-            },
-            newEntityDefinitionUuid: {
-              type: "uuid"
-            },
-            newEntityDetailsReportUuid: {
-              type: "uuid"
-            },
-            newEntityListReportUuid: {
-              type: "uuid"
-            }
-          }
-        }
-      },
-      implementation: {
-        templates: {
-          newEntityDefinition: {
-            name: {
-              templateType: "parameterReference",
-              referenceName: "newEntityName",
-            },
-            uuid: {
-              templateType: "parameterReference",
-              referenceName: "newEntityDefinitionUuid",
-            },
-            parentName: "EntityDefinition",
-            parentUuid: {
-              templateType: "mustacheStringTemplate",
-              definition: "{{entityEntityDefinition.uuid}}",
-            },
-            entityUuid: {
-              templateType: "mustacheStringTemplate",
-              definition: "{{newEntity.uuid}}",
-            },
-            conceptLevel: "Model",
-            defaultInstanceDetailsReportUuid: {
-              templateType: "parameterReference",
-              referenceName: "newEntityDetailsReportUuid",
-            },
-            jzodSchema: {
-              templateType: "parameterReference",
-              referenceName: "jzodSchema",
-            },
+    // const actionHandlerCreateFountainEntity: ActionHandler = {
+    const actionHandlerCreateFountainEntity: CompositeActionTemplate = {
+      actionType: "compositeAction",
+      actionName: "sequence",
+      // interface: {
+      //   actionJzodObjectSchema: {
+      //     type: "object",
+      //     definition: {
+      //       newEntityName: {
+      //         type: "string"
+      //       },
+      //       newEntityDescription: {
+      //         type: "string"
+      //       },
+      //       newEntityUuid: {
+      //         type: "uuid"
+      //       },
+      //       currentApplicationUuid: {
+      //         type: "uuid"
+      //       },
+      //       currentDeploymentUuid: {
+      //         type: "uuid"
+      //       },
+      //       newEntityDefinitionUuid: {
+      //         type: "uuid"
+      //       },
+      //       newEntityDetailsReportUuid: {
+      //         type: "uuid"
+      //       },
+      //       newEntityListReportUuid: {
+      //         type: "uuid"
+      //       }
+      //     }
+      //   }
+      // },
+      // implementation: {
+      templates: {
+        newEntityDefinition: {
+          name: {
+            templateType: "parameterReference",
+            referenceName: "newEntityName",
           },
-          // list of instances Report Definition
-          newEntityListReport: {
-            uuid: {
-              templateType: "parameterReference",
-              referenceName: "newEntityListReportUuid",
-            },
-            parentName: "Report",
-            parentUuid: {
-              templateType: "mustacheStringTemplate",
-              definition: "{{entityReport.uuid}}",
-            },
-            conceptLevel: "Model",
-            name: {
-              templateType: "mustacheStringTemplate",
-              definition: "{{newEntityName}}List",
-            },
-            defaultLabel: {
-              templateType: "mustacheStringTemplate",
-              definition: "List of {{newEntityName}}s",
-            },
-            type: "list",
-            definition: {
-              extractors: {
-                instanceList: {
-                  queryType: "extractObjectListByEntity",
-                  parentName: {
-                    templateType: "parameterReference",
-                    referenceName: "newEntityName",
-                  },
-                  parentUuid: {
-                    queryTemplateType: "constantUuid",
-                    constantUuidValue: {
-                      templateType: "mustacheStringTemplate",
-                      definition: "{{newEntity.uuid}}",
-                    },
-                  },
+          uuid: {
+            templateType: "parameterReference",
+            referenceName: "newEntityDefinitionUuid",
+          },
+          parentName: "EntityDefinition",
+          parentUuid: {
+            templateType: "mustacheStringTemplate",
+            definition: "{{entityEntityDefinition.uuid}}",
+          },
+          entityUuid: {
+            templateType: "mustacheStringTemplate",
+            definition: "{{newEntity.uuid}}",
+          },
+          conceptLevel: "Model",
+          defaultInstanceDetailsReportUuid: {
+            templateType: "parameterReference",
+            referenceName: "newEntityDetailsReportUuid",
+          },
+          jzodSchema: {
+            templateType: "parameterReference",
+            referenceName: "jzodSchema",
+          },
+        },
+        // list of instances Report Definition
+        newEntityListReport: {
+          uuid: {
+            templateType: "parameterReference",
+            referenceName: "newEntityListReportUuid",
+          },
+          parentName: "Report",
+          parentUuid: {
+            templateType: "mustacheStringTemplate",
+            definition: "{{entityReport.uuid}}",
+          },
+          conceptLevel: "Model",
+          name: {
+            templateType: "mustacheStringTemplate",
+            definition: "{{newEntityName}}List",
+          },
+          defaultLabel: {
+            templateType: "mustacheStringTemplate",
+            definition: "List of {{newEntityName}}s",
+          },
+          type: "list",
+          definition: {
+            extractors: {
+              instanceList: {
+                queryType: "extractObjectListByEntity",
+                parentName: {
+                  templateType: "parameterReference",
+                  referenceName: "newEntityName",
                 },
-              },
-              section: {
-                type: "objectListReportSection",
-                definition: {
-                  label: {
-                    templateType: "mustacheStringTemplate",
-                    definition: "{{newEntityName}}s",
-                  },
-                  // "parentName": "Fountain",
-                  parentUuid: {
+                parentUuid: {
+                  queryTemplateType: "constantUuid",
+                  constantUuidValue: {
                     templateType: "mustacheStringTemplate",
                     definition: "{{newEntity.uuid}}",
                   },
-                  fetchedDataReference: "instanceList",
                 },
               },
             },
+            section: {
+              type: "objectListReportSection",
+              definition: {
+                label: {
+                  templateType: "mustacheStringTemplate",
+                  definition: "{{newEntityName}}s",
+                },
+                // "parentName": "Fountain",
+                parentUuid: {
+                  templateType: "mustacheStringTemplate",
+                  definition: "{{newEntity.uuid}}",
+                },
+                fetchedDataReference: "instanceList",
+              },
+            },
           },
-          // // Details of an instance Report Definition
-          newEntityDetailsReport: {
-            uuid: {
-              templateType: "parameterReference",
-              referenceName: "newEntityDetailsReportUuid",
-            },
-            parentName: {
-              templateType: "mustacheStringTemplate",
-              definition: "{{entityReport.name}}",
-            },
-            parentUuid: {
-              templateType: "mustacheStringTemplate",
-              definition: "{{entityReport.uuid}}",
-            },
-            conceptLevel: "Model",
-            name: {
-              templateType: "mustacheStringTemplate",
-              definition: "{{newEntityName}}Details",
-            },
-            defaultLabel: {
-              templateType: "mustacheStringTemplate",
-              definition: "Details of {{newEntityName}}",
-            },
-            definition: {
-              extractors: {
-                elementToDisplay: {
-                  queryType: "selectObjectByDirectReference",
-                  parentName: {
-                    templateType: "parameterReference",
-                    referenceName: "newEntityName",
+        },
+        // // Details of an instance Report Definition
+        newEntityDetailsReport: {
+          uuid: {
+            templateType: "parameterReference",
+            referenceName: "newEntityDetailsReportUuid",
+          },
+          parentName: {
+            templateType: "mustacheStringTemplate",
+            definition: "{{entityReport.name}}",
+          },
+          parentUuid: {
+            templateType: "mustacheStringTemplate",
+            definition: "{{entityReport.uuid}}",
+          },
+          conceptLevel: "Model",
+          name: {
+            templateType: "mustacheStringTemplate",
+            definition: "{{newEntityName}}Details",
+          },
+          defaultLabel: {
+            templateType: "mustacheStringTemplate",
+            definition: "Details of {{newEntityName}}",
+          },
+          definition: {
+            extractors: {
+              elementToDisplay: {
+                queryType: "selectObjectByDirectReference",
+                parentName: {
+                  templateType: "parameterReference",
+                  referenceName: "newEntityName",
+                },
+                parentUuid: {
+                  queryTemplateType: "constantUuid",
+                  constantUuidValue: {
+                    templateType: "mustacheStringTemplate",
+                    definition: "{{newEntity.uuid}}",
                   },
-                  parentUuid: {
-                    queryTemplateType: "constantUuid",
-                    constantUuidValue: {
+                },
+                instanceUuid: {
+                  queryTemplateType: "queryParameterReference",
+                  referenceName: "instanceUuid",
+                },
+              },
+            },
+            section: {
+              type: "list",
+              definition: [
+                {
+                  "type":"objectInstanceReportSection",
+                  "definition": {
+                    "label": {
+                      templateType: "mustacheStringTemplate",
+                      definition: "My {{newEntityName}}",
+                    },
+                    "parentUuid": {
                       templateType: "mustacheStringTemplate",
                       definition: "{{newEntity.uuid}}",
                     },
-                  },
-                  instanceUuid: {
-                    queryTemplateType: "queryParameterReference",
-                    referenceName: "instanceUuid",
-                  },
-                },
-              },
-              section: {
-                type: "list",
-                definition: [
-                  {
-                    "type":"objectInstanceReportSection",
-                    "definition": {
-                      "label": {
-                        templateType: "mustacheStringTemplate",
-                        definition: "My {{newEntityName}}",
-                      },
-                      "parentUuid": {
-                        templateType: "mustacheStringTemplate",
-                        definition: "{{newEntity.uuid}}",
-                      },
-                      "fetchedDataReference": "elementToDisplay"
-                    }
+                    "fetchedDataReference": "elementToDisplay"
                   }
-                ]
-              },
-            }
-          },
-          createEntityAction: {
+                }
+              ]
+            },
+          }
+        },
+      },
+      definition: [
+        // createEntity
+        {
+          compositeActionType: "action",
+          compositeActionName: "createEntity",
+          action: {
             actionType: "modelAction",
             actionName: "createEntity",
             deploymentUuid:{
@@ -395,7 +408,16 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               },
             ],
           },
-          createReportsAction: {
+          // action: {
+          //   templateType: "parameterReference",
+          //   referenceName: "createEntityAction",
+          // },
+        } as any,
+        // createReports
+        {
+          compositeActionType: "action",
+          compositeActionName: "createReports",
+          action: {
             actionType: "transactionalInstanceAction",
             instanceAction: {
               actionType: "instanceAction",
@@ -431,8 +453,17 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               }
             ],
             }
-          },
-          commitAction: {
+          }
+          // action: {
+          //   templateType: "parameterReference",
+          //   referenceName: "createReportsAction",
+          // },
+        },
+        // commit
+        {
+          compositeActionType: "action",
+          compositeActionName: "commit",
+          action: {
             actionName: "commit",
             actionType: "modelAction",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -441,46 +472,27 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               referenceName: "currentDeploymentUuid",
             },
           },
-        },
-        compositeActionTemplate: {
-          actionType: "compositeAction",
-          actionName: "sequence",
-          definition: [
-            {
-              compositeActionType: "action",
-              action: {
-                templateType: "parameterReference",
-                referenceName: "createEntityAction",
-              },
-            },
-            {
-              compositeActionType: "action",
-              action: {
-                templateType: "parameterReference",
-                referenceName: "createReportsAction",
-              },
-            },
-            {
-              compositeActionType: "action",
-              action: {
-                templateType: "parameterReference",
-                referenceName: "commitAction",
-              },
-            }
-          ]
+          // action: {
+          //   templateType: "parameterReference",
+          //   referenceName: "commitAction",
+          // },
         }
-    
-      }
+      ]
+      // }
     };
     // }), [])
 
-    await handleCompositeAction(
-      domainController,
+    // await handleCompositeActionDEFUNCT(
+    //   domainController,
+    //   actionHandlerCreateFountainEntity,
+    //   actionEffectiveParamsCreateEntity,
+    //   props.currentModel
+    // )
+    const createFountainEntityResult = await domainController.handleCompositeActionTemplate(
       actionHandlerCreateFountainEntity,
       actionEffectiveParamsCreateEntity,
       props.currentModel
-    )
-
+    );
 
     // ############################################################################################
     //  add instances from Excel file (rows)
@@ -504,42 +516,97 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     ;
     log.info('createEntity adding instances',instances);
 
-    const actionHandlerImportFountains: ActionHandler = {
-      interface: {
-        actionJzodObjectSchema: {
-          type: "object",
-          definition: {
-            newEntityName: {
-              type: "string"
-            },
-            newEntityDescription: {
-              type: "string"
-            },
-            newEntityUuid: {
-              type: "uuid"
-            },
-            currentApplicationUuid: {
-              type: "uuid"
-            },
-            currentDeploymentUuid: {
-              type: "uuid"
-            },
-            newEntityDefinitionUuid: {
-              type: "uuid"
-            },
-            newEntityDetailsReportUuid: {
-              type: "uuid"
-            },
-            newEntityListReportUuid: {
-              type: "uuid"
-            }
-          }
-        }
-      },
-      implementation: {
-        templates: {
-          createRowsAction: {
-            actionType: 'instanceAction',
+    // const actionHandlerImportFountains: ActionHandler = {
+    //   interface: {
+    //     actionJzodObjectSchema: {
+    //       type: "object",
+    //       definition: {
+    //         newEntityName: {
+    //           type: "string"
+    //         },
+    //         newEntityDescription: {
+    //           type: "string"
+    //         },
+    //         newEntityUuid: {
+    //           type: "uuid"
+    //         },
+    //         currentApplicationUuid: {
+    //           type: "uuid"
+    //         },
+    //         currentDeploymentUuid: {
+    //           type: "uuid"
+    //         },
+    //         newEntityDefinitionUuid: {
+    //           type: "uuid"
+    //         },
+    //         newEntityDetailsReportUuid: {
+    //           type: "uuid"
+    //         },
+    //         newEntityListReportUuid: {
+    //           type: "uuid"
+    //         }
+    //       }
+    //     }
+    //   },
+    //   implementation: {
+    //     templates: {
+    //       createRowsAction: {
+    //         actionType: 'instanceAction',
+    //         actionName: "createInstance",
+    //         applicationSection: "data",
+    //         deploymentUuid: {
+    //           templateType: "parameterReference",
+    //           referenceName: "currentDeploymentUuid",
+    //         },
+    //         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    //         objects:[
+    //           {
+    //             parentName: {
+    //               templateType: "mustacheStringTemplate",
+    //               definition: "{{newEntity.name}}",
+    //             },
+    //             parentUuid:{
+    //               templateType: "mustacheStringTemplate",
+    //               definition: "{{newEntity.uuid}}",
+    //             },
+    //             applicationSection:'data',
+    //             instances:instances,
+    //           }
+    //         ]
+    //       },
+    //     },
+    //     compositeActionTemplate: {
+    //       actionType: "compositeAction",
+    //       actionName: "sequence",
+    //       definition: [
+    //         {
+    //           compositeActionType: "action",
+    //           action: {
+    //             templateType: "parameterReference",
+    //             referenceName: "createRowsAction",
+    //           },
+    //         }
+    //       ]
+    //     }
+    
+    //   }
+    // };
+
+    // await handleCompositeActionDEFUNCT(
+    //   domainController,
+    //   actionHandlerImportFountains,
+    //   actionEffectiveParamsCreateEntity,
+    //   props.currentModel
+    // )
+
+    const importFountains: CompositeActionTemplate = {
+      actionType: "compositeAction",
+      actionName: "sequence",
+      definition: [
+        {
+          compositeActionType: "action",
+          action: {
+            actionType: "instanceAction",
             actionName: "createInstance",
             applicationSection: "data",
             deploymentUuid: {
@@ -547,45 +614,37 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               referenceName: "currentDeploymentUuid",
             },
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-            objects:[
+            objects: [
               {
                 parentName: {
                   templateType: "mustacheStringTemplate",
                   definition: "{{newEntity.name}}",
                 },
-                parentUuid:{
+                parentUuid: {
                   templateType: "mustacheStringTemplate",
                   definition: "{{newEntity.uuid}}",
                 },
-                applicationSection:'data',
-                instances:instances,
-              }
-            ]
+                applicationSection: "data",
+                instances: instances,
+              },
+            ],
           },
         },
-        compositeActionTemplate: {
-          actionType: "compositeAction",
-          actionName: "sequence",
-          definition: [
-            {
-              compositeActionType: "action",
-              action: {
-                templateType: "parameterReference",
-                referenceName: "createRowsAction",
-              },
-            }
-          ]
-        }
-    
-      }
+      ],
     };
+    // }
+    // await handleCompositeActionDEFUNCT(
+    //   domainController,
+    //   actionHandlerImportFountains,
+    //   actionEffectiveParamsCreateEntity,
+    //   props.currentModel
+    // )
 
-    await handleCompositeAction(
-      domainController,
-      actionHandlerImportFountains,
-      actionEffectiveParamsCreateEntity,
+    const importFountainsResult = await domainController.handleCompositeActionTemplate(
+      importFountains,
+      actionEffectiveParamsCreateEntity, //same params as createEntity!
       props.currentModel
-    )
+    );
 
     log.info('createEntity DONE adding instances');
 
@@ -626,12 +685,18 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       throw new Error("createEntity found miroirMenuInstances with error " + miroirMenuInstances.error);
     }
 
-    if (miroirMenuInstances.returnedDomainElement.elementType != "entityInstanceCollection") {
+    if (!["entityInstanceCollection", "object"].includes(miroirMenuInstances.returnedDomainElement.elementType)) {
       throw new Error("createEntity found miroirMenuInstances not an instance collection " + miroirMenuInstances.returnedDomainElement);
     }
     log.info("createEntity found miroirMenuInstances", JSON.stringify(miroirMenuInstances));
 
-    const oldMenu: Menu = miroirMenuInstances.returnedDomainElement.elementValue.instances[0] as any;
+    const oldMenu: Menu | undefined = (Object.values(
+      miroirMenuInstances.returnedDomainElement.elementValue["menus"].elementValue
+    ) as Menu[]).find((e: Menu) => e.name == actionEffectiveParamsCreateEntity.currentApplicationName + "Menu");
+
+    if (!oldMenu) {
+      throw new Error("createEntity found no oldMenu " + JSON.stringify(miroirMenuInstances));
+    }
     const newMenu:Menu = {
       ...oldMenu,
       definition: {
@@ -702,7 +767,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     const splittedEntityAttribute = "Commune"
     const newEntityName = "Municipality";
     const newEntityDescription = "Municipalities";
-    const newEntityUuid = uuidv4();
+    // const newEntityUuid = uuidv4();
+    const newEntityUuid = "f6de3d66-37ee-42ac-bb81-72973222f006";
     const currentApplicationUuid = props.currentApplicationUuid;
     const currentDeploymentUuid = props.currentDeploymentUuid;
     const newEntityDetailsReportUuid: string = uuidv4();
@@ -729,7 +795,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       splittedEntityAttribute: "Commune",
       newEntityName:"Municipality",
       newEntityDescription: "Municipalities",
-      newEntityUuid: uuidv4(),
+      // newEntityUuid: uuidv4(),
+      newEntityUuid,
       newEntityDetailsReportUuid: uuidv4(),
       currentApplicationUuid: props.currentApplicationUuid,
       currentDeploymentUuid: props.currentDeploymentUuid,
@@ -1100,7 +1167,333 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       },
     };
 
-    // await handleCompositeAction(
+    const splitFountainEntity: CompositeActionTemplate = {
+      actionType: "compositeAction",
+      actionName: "sequence",
+      templates: {
+        newEntity: {
+          uuid: {
+            templateType: "parameterReference",
+            referenceName: "newEntityUuid",
+          },
+          name: {
+            templateType: "parameterReference",
+            referenceName: "newEntityName",
+          },
+          description: {
+            templateType: "parameterReference",
+            referenceName: "newEntityDescription",
+          },
+          parentUuid: {
+            templateType: "mustacheStringTemplate",
+            definition: "{{entityEntity.uuid}}",
+          },
+          application: {
+            templateType: "parameterReference",
+            referenceName: "currentApplicationUuid",
+          },
+        },
+        newEntityJzodSchema: {
+          type: "object",
+          definition: {
+            uuid: {
+              type: "uuid",
+              tag: { id: 1, defaultLabel: "Uuid", editable: false },
+            } as JzodPlainAttribute,
+            name: {
+              type: "string",
+              tag: { id: 2, defaultLabel: "name", editable: false },
+            } as JzodAttributePlainStringWithValidations,
+          },
+        },
+        newEntityDefinition: {
+          name: {
+            templateType: "parameterReference",
+            referenceName: "newEntityName",
+          },
+          uuid: uuidv4(),
+          parentName: "EntityDefinition",
+          parentUuid: {
+            templateType: "mustacheStringTemplate",
+            definition: "{{entityEntityDefinition.uuid}}",
+          },
+          entityUuid: {
+            templateType: "mustacheStringTemplate",
+            definition: "{{newEntity.uuid}}",
+          },
+          conceptLevel: "Model",
+          defaultInstanceDetailsReportUuid: {
+            templateType: "parameterReference",
+            referenceName: "newEntityDetailsReportUuid",
+          },
+          jzodSchema: {
+            templateType: "parameterReference",
+            referenceName: "newEntityJzodSchema",
+          },
+        },
+        // TODO: use template / concat for uuid, name, defaultLabel
+        newEntityListReport: {
+          uuid: uuidv4(),
+          parentName: "Report",
+          parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+          conceptLevel: "Model",
+          name: newEntityName + "List",
+          defaultLabel: "List of " + newEntityDescription,
+          application: {
+            templateType: "parameterReference",
+            referenceName: "currentApplicationUuid",
+          },
+          type: "list",
+          definition: {
+            extractors: {
+              listReportSectionElements: {
+                queryType: "extractObjectListByEntity",
+                parentName: {
+                  templateType: "parameterReference",
+                  referenceName: "newEntityName",
+                },
+                parentUuid: {
+                  queryTemplateType: "constantUuid",
+                  constantUuidValue: {
+                    templateType: "mustacheStringTemplate",
+                    definition: "{{newEntity.uuid}}",
+                  },
+                },
+              },
+            },
+            section: {
+              type: "objectListReportSection",
+              definition: {
+                label: {
+                  templateType: "parameterReference",
+                  referenceName: "newEntityDescription",
+                },
+                // "parentName": "Fountain",
+                parentUuid: {
+                  templateType: "mustacheStringTemplate",
+                  definition: "{{newEntity.uuid}}",
+                },
+                fetchedDataReference: "listReportSectionElements",
+              },
+            },
+          },
+        },
+        // TODO: use template / concat for uuid, name, defaultLabel
+        newEntityDetailsReport: {
+          uuid: newEntityDetailsReportUuid,
+          parentName: "Report",
+          parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+          conceptLevel: "Model",
+          name: newEntityName + "Details",
+          defaultLabel: "Details of " + newEntityDescription,
+          definition: {
+            extractors: {
+              elementToDisplay: {
+                queryType: "selectObjectByDirectReference",
+                parentName: newEntityName,
+                parentUuid: {
+                  queryTemplateType: "constantUuid",
+                  constantUuidValue: {
+                    templateType: "mustacheStringTemplate",
+                    definition: "{{newEntity.uuid}}",
+                  },
+                },
+                instanceUuid: {
+                  queryTemplateType: "queryParameterReference",
+                  referenceName: "instanceUuid",
+                },
+              },
+              fountainsOfMunicipality: {
+                queryType: "selectObjectListByRelation",
+                parentName: "Fountain",
+                parentUuid: {
+                  queryTemplateType: "constantUuid",
+                  constantUuidValue: splittedEntityDefinition.entityUuid,
+                },
+                objectReference: {
+                  referenceName: "elementToDisplay",
+                  queryTemplateType: "queryContextReference",
+                },
+                AttributeOfListObjectToCompareToReferenceUuid: newEntityName,
+              },
+            },
+            section: {
+              type: "list",
+              definition: [
+                {
+                  type: "objectInstanceReportSection",
+                  definition: {
+                    label: "My " + newEntityName,
+                    parentUuid: {
+                      templateType: "mustacheStringTemplate",
+                      definition: "{{newEntity.uuid}}",
+                    },
+                    fetchedDataReference: "elementToDisplay",
+                  },
+                },
+                {
+                  type: "objectListReportSection",
+                  definition: {
+                    label: newEntityName + "'s (${elementToDisplay.name}) " + splittedEntityName + "s",
+                    parentName: splittedEntityName,
+                    parentUuid: splittedEntityDefinition.entityUuid,
+                    fetchedDataReference: "fountainsOfMunicipality",
+                    sortByAttribute: "name",
+                  },
+                },
+              ],
+            },
+          },
+        },
+      },
+      definition: [
+        // createEntity
+        {
+          compositeActionType: "action",
+          action: {
+            actionType: "modelAction",
+            actionName: "createEntity",
+            deploymentUuid: {
+              templateType: "parameterReference",
+              referenceName: "currentDeploymentUuid",
+            },
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            entities: [
+              {
+                entity: {
+                  templateType: "parameterReference",
+                  referenceName: "newEntity",
+                },
+                entityDefinition: {
+                  templateType: "parameterReference",
+                  referenceName: "newEntityDefinition",
+                },
+              },
+            ],
+          },
+        },
+        // updateSplittedEntityAction
+        {
+          compositeActionType: "action",
+          action: {
+            actionType: "modelAction",
+            actionName: "alterEntityAttribute",
+            deploymentUuid: {
+              templateType: "parameterReference",
+              referenceName: "currentDeploymentUuid",
+            },
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            entityName: {
+              templateType: "parameterReference",
+              referenceName: "splittedEntityName",
+            },
+            entityUuid: {
+              templateType: "mustacheStringTemplate",
+              definition: "{{splittedEntityDefinition.entityUuid}}",
+            },
+            entityDefinitionUuid: {
+              templateType: "mustacheStringTemplate",
+              definition: "{{splittedEntityDefinition.uuid}}",
+            },
+            addColumns: [
+              {
+                name: {
+                  templateType: "parameterReference",
+                  referenceName: "newEntityName",
+                },
+                definition: {
+                  type: "string",
+                  validations: [{ type: "uuid" }],
+                  nullable: true, // TODO: make non-nullable and enforce FK after migration has been done!
+                  tag: {
+                    value: {
+                      defaultLabel: "Municipality",
+                      targetEntity: {
+                        templateType: "mustacheStringTemplate",
+                        definition: "{{newEntity.uuid}}",
+                      },
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        },
+        // commit
+        {
+          compositeActionType: "action",
+          action: {
+            actionName: "commit",
+            actionType: "modelAction",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            deploymentUuid: {
+              templateType: "parameterReference",
+              referenceName: "currentDeploymentUuid",
+            },
+          }
+        },
+        // create NewEntity "List" and "Details" Reports Action
+        {
+          compositeActionType: "action",
+          action: {
+            actionType: "transactionalInstanceAction",
+            instanceAction: {
+              actionType: "instanceAction",
+              actionName: "createInstance",
+              applicationSection: "model",
+              deploymentUuid: {
+                templateType: "parameterReference",
+                referenceName: "currentDeploymentUuid",
+              },
+              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+              objects: [
+                {
+                  parentName: {
+                    templateType: "mustacheStringTemplate",
+                    definition: "{{newEntityListReport.parentName}}",
+                  },
+                  parentUuid: {
+                    templateType: "mustacheStringTemplate",
+                    definition: "{{newEntityListReport.parentUuid}}",
+                  },
+                  applicationSection:'model',
+                  instances: [
+                    {
+                      templateType: "parameterReference",
+                      referenceName: "newEntityListReport",
+                    },
+                    {
+                      templateType: "parameterReference",
+                      referenceName: "newEntityDetailsReport",
+                    },
+                  ]
+                }
+              ],
+            }
+          }
+        },
+        // commit
+        {
+          compositeActionType: "action",
+          action: {
+            actionName: "commit",
+            actionType: "modelAction",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            deploymentUuid: {
+              templateType: "parameterReference",
+              referenceName: "currentDeploymentUuid",
+            },
+          }
+        },
+      ]
+    }
+
+    const createFountainEntityResult = await domainController.handleCompositeActionTemplate(
+      splitFountainEntity,
+      actionSplitFountainEntityParams,
+      props.currentModel
+    );
+    // await handleCompositeActionDEFUNCT(
     //   domainController,
     //   actionHandlerSplitFountainEntity,
     //   actionSplitFountainEntityParams,
@@ -1112,48 +1505,30 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       currentDeploymentUuid: props.currentDeploymentUuid,
       splittedEntityDefinition,
       splittedEntityName,
-      // splittedEntityInstancesQuery: /* ExtractorForRecordOfExtractors */ {
-      //   queryType: "extractorForRecordOfExtractors",
-      //   deploymentUuid: {
-      //     templateType: "parameterReference",
-      //     referenceName: "currentDeploymentUuid",
-      //   },
-      //   pageParams,
-      //   queryParams: { elementType: "object", elementValue: {
-      //     currentDeploymentUuid: props.currentDeploymentUuid,
-      //     splittedEntityDefinition,
-      //     splittedEntityName,
-      //   } },
-      //   contextResults: { elementType: "object", elementValue: {} },
-      //   runtimeTransformers: {
-      //     select: { // TODO: replace with fullObjectTemplate
-      //       [splittedEntityName]: {
-      //         queryType: "extractObjectListByEntity",
-      //         applicationSection: "data",
-      //         parentName: {
-      //           templateType: "parameterReference",
-      //           referenceName: "splittedEntityName",
-      //         },
-      //         parentUuid: {
-      //           queryTemplateType: "constantUuid",
-      //           constantUuidValue: {
-      //             templateType: "mustacheStringTemplate",
-      //             definition: "{{splittedEntityDefinition?.entityUuid}}",
-      //           },
-      //         },
-      //       },
-      //     }
-      //   },
-      // },
+      splittedEntityAttribute,
+      newEntityName,
+      newEntityUuid,
     };
+    // const actionInsertMunicipalitiesParams: DomainElement = {
+    //   elementType: "object",
+    //   elementValue: {
+    //     currentApplicationUuid: {elementType: "string", elementValue: props.currentApplicationUuid},
+    //     currentDeploymentUuid: {elementType: "string", elementValue: props.currentDeploymentUuid},
+    //     splittedEntityDefinition: {elementType: "instance", elementValue: splittedEntityDefinition},
+    //     splittedEntityName: {elementType: "string", elementValue: splittedEntityName},
+    //     splittedEntityAttribute: {elementType: "string", elementValue: splittedEntityAttribute},
+    //     newEntityName: {elementType: "string", elementValue: newEntityName},
+    //     newEntityUuid: {elementType: "string", elementValue: newEntityUuid},
+    //   }
+    // };
 
-    const actionInsertMunicipalities: CompositeInstanceActionTemplate = {
-      actionType: "compositeInstanceAction",
-      actionName: "instanceActionSequence",
+    const actionInsertMunicipalities: CompositeActionTemplate = {
+      actionType: "compositeAction",
+      actionName: "sequence",
       definition: [
         // found unique municipalities from fountains
         {
-          compositeActionType: "queryAction",
+          compositeActionType: "query",
           nameGivenToResult: newEntityName,
           queryAction: {
             actionType: "queryAction",
@@ -1192,23 +1567,73 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               },
               runtimeTransformers: {
                 uniqueSplittedEntityInstances: {
-                  queryType: "extractorTransformer",
-                  queryName: "actionRuntimeTransformer",
-                  actionRuntimeTransformer: {
+                  templateType: "unique",
+                  interpolation: "runtime",
+                  referencedExtractor:  {
+                    templateType: "parameterReference",
+                    referenceName: "splittedEntityName",
+                  },
+                  attribute: {
+                    templateType: "parameterReference",
+                    referenceName: "splittedEntityAttribute",
+                  },
+                },
+                // splittedEntityInstancesArray: {
+                //   templateType: "objectValues",
+                //   interpolation: "runtime",
+                //   referencedExtractor: "uniqueSplittedEntityInstances",
+                // },
+                municipalities: {
+                  templateType: "listMapper",
+                  interpolation: "runtime",
+                  referencedExtractor: "uniqueSplittedEntityInstances",
+                  elementTransformer: {
+                    templateType: "fullObjectTemplate",
                     interpolation: "runtime",
-                    templateType: "unique",
-                    referencedExtractor: {
-                      queryTemplateType: "parameterReference",
-                      referenceName: "splittedEntityName",
-                    },
-                    attribute: splittedEntityAttribute
+                    referencedExtractor: "municipality",
+                    definition: [
+                      {
+                        attributeKey: {
+                          interpolation: "runtime",
+                          templateType: "constantString",
+                          constantStringValue: "parentUuid"
+                        },
+                        attributeValue: {
+                          templateType: "parameterReference",
+                          referenceName: "newEntityUuid",
+                        }
+                      },
+                      {
+                        attributeKey: {
+                          interpolation: "runtime",
+                          templateType: "constantString",
+                          constantStringValue: "uuid"
+                        },
+                        attributeValue: {
+                          interpolation: "runtime",
+                          templateType: "newUuid",
+                        }
+                      },
+                      {
+                        attributeKey: {
+                          interpolation: "runtime",
+                          templateType: "constantUuid",
+                          constantUuidValue: "name"
+                        },
+                        attributeValue: {
+                          interpolation: "runtime",
+                          templateType: "mustacheStringTemplate",
+                          definition: "{{municipality.Commune}}"
+                        }
+                      }
+                    ]
                   }
-                  // referencedExtractor: splittedEntityName,
                 }
               }
             }
           }
         },
+        // insert municipalities with new uuid for each
         {
           compositeActionType: "action",
           action: {
@@ -1224,25 +1649,30 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               {
                 parentName: {
                   templateType: "mustacheStringTemplate",
-                  definition: "{{newEntity.name}}",
+                  definition: "{{newEntityName}}",
                 },
                 parentUuid:{
                   templateType: "mustacheStringTemplate",
-                  definition: "{{newEntity.uuid}}",
+                  definition: "{{newEntityUuid}}",
                 },
                 applicationSection:'data',
                 instances: {
-                  queryTemplateType: "contextReference",
-                  referenceName: "uniqueSplittedEntityInstances"
+                  templateType: "contextReference",
+                  interpolation: "runtime",
+                  // referenceName: "municipalities"
+                  referencePath: ["Municipality", "municipalities"]
+                  // referencePath: ["Municipality"]
                 },
               }
             ]
           },
-        // },// as CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction, // TODO: why is type inferrence failing?
+        // // },// as CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction, // TODO: why is type inferrence failing?
         } as any,// as CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction, // TODO: why is type inferrence failing?
       ]
     };
-    const actionInsertMunicipalitiesResult = await domainController.handleCompositeInstanceActionTemplate(
+
+
+    const actionInsertMunicipalitiesResult = await domainController.handleCompositeActionTemplate(
       actionInsertMunicipalities,
       actionInsertMunicipalitiesParams,
       props.currentModel
@@ -1251,6 +1681,9 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     if (actionInsertMunicipalitiesResult.status != "ok") {
       throw new Error("splitEntity found actionInsertMunicipalities with error " + actionInsertMunicipalitiesResult.error);
     }
+
+
+
     // // UPDATE MODEL ###############################################################################
 
     // log.info("splitEntity added new Entity", newEntityName, createEntityAction)

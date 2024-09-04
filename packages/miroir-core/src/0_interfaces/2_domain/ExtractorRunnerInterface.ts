@@ -16,7 +16,7 @@ import {
   JzodElement,
   JzodObject,
   QueryAction,
-  RuntimeTransformer
+  TransformerForRuntime
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
 // ################################################################################################
@@ -70,8 +70,8 @@ export type AsyncExtractorRunnerMap = {
     ExtractorForSingleObjectList,
     DomainElementInstanceUuidIndexOrFailed
   >,
-  applyExtractorTransformerInMemory(
-    query: RuntimeTransformer,
+  applyExtractorTransformer(
+    query: TransformerForRuntime,
     queryParams: DomainElementObject,
     newFetchedData: DomainElementObject,
     extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>,

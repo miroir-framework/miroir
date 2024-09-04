@@ -16,8 +16,8 @@ import ReactDOM from 'react-dom';
 
 import { LoggerInterface, MiroirLoggerFactory, getLoggerName } from 'miroir-core';
 
-import { packageName } from '../../../constants';
-import { cleanLevel } from '../constants';
+import { packageName } from '../../../constants.js';
+import { cleanLevel } from '../constants.js';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"GendeCellEditor");
 let log:LoggerInterface = console as any as LoggerInterface;

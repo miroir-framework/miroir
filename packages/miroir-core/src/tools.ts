@@ -25,3 +25,26 @@ export function getLoggerName(
   return `${cleanLevel}_${packageName}_${functionalityName}`
 }
 
+
+// ################################################################################################
+export function getValue(valueObject:any, path: string[]) {
+  // log.info("getValue called with", valueObject, "path", path)
+  return path.reduce((acc, curr, index) => {
+    if (index == path.length && (acc == undefined || acc[curr] == undefined)) {
+      throw new Error(
+        "getValue value object=" +
+          valueObject +
+          ", path=" +
+          path +
+          " either attribute " +
+          curr +
+          " not found in " +
+          acc +
+          " or not last in path but leading to undefined " +
+          curr[acc]
+      );
+    } else {
+      return acc[curr];
+    }
+  }, valueObject);
+}

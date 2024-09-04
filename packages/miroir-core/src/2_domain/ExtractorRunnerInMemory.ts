@@ -22,7 +22,7 @@
 //   PersistenceStoreInstanceSectionAbstractInterface,
 //   QueryAction,
 //   QuerySelectObject,
-//   resolveContextReference,
+//   resolveContextReferenceDEFUNCT,
 //   selectEntityJzodSchemaFromDomainStateNew,
 //   selectFetchQueryJzodSchemaFromDomainStateNew,
 //   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
@@ -61,7 +61,7 @@ import {
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
 } from "./DomainStateQuerySelectors.js";
 import {
-  resolveContextReference,
+  resolveContextReferenceDEFUNCT,
 } from "./QuerySelectors.js";
 import {
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
@@ -90,7 +90,7 @@ export class ExtractorRunnerInMemory implements PersistenceStoreExtractorRunner 
       extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
-      applyExtractorTransformerInMemory: asyncApplyExtractorTransformerInMemory,
+      applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
     };
   }
 
@@ -155,7 +155,7 @@ export class ExtractorRunnerInMemory implements PersistenceStoreExtractorRunner 
       ((selectorParams.extractor.pageParams?.elementValue?.applicationSection?.elementValue ??
         "data") as ApplicationSection);
 
-    const entityUuidReference: DomainElement = resolveContextReference(
+    const entityUuidReference: DomainElement = resolveContextReferenceDEFUNCT(
       querySelectorParams.parentUuid,
       selectorParams.extractor.queryParams,
       selectorParams.extractor.contextResults
@@ -188,7 +188,7 @@ export class ExtractorRunnerInMemory implements PersistenceStoreExtractorRunner 
 
     switch (querySelectorParams?.queryType) {
       case "selectObjectByRelation": {
-        const referenceObject = resolveContextReference(
+        const referenceObject = resolveContextReferenceDEFUNCT(
           querySelectorParams.objectReference,
           selectorParams.extractor.queryParams,
           selectorParams.extractor.contextResults
@@ -249,7 +249,7 @@ export class ExtractorRunnerInMemory implements PersistenceStoreExtractorRunner 
         break;
       }
       case "selectObjectByDirectReference": {
-        const instanceDomainElement = resolveContextReference(
+        const instanceDomainElement = resolveContextReferenceDEFUNCT(
           querySelectorParams.instanceUuid,
           selectorParams.extractor.queryParams,
           selectorParams.extractor.contextResults
@@ -357,7 +357,7 @@ export class ExtractorRunnerInMemory implements PersistenceStoreExtractorRunner 
     const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
 
-    const entityUuid: DomainElement = resolveContextReference(
+    const entityUuid: DomainElement = resolveContextReferenceDEFUNCT(
       extractorRunnerParams.extractor.select.parentUuid,
       extractorRunnerParams.extractor.queryParams,
       extractorRunnerParams.extractor.contextResults

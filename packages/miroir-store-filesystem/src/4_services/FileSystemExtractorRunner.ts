@@ -1,50 +1,33 @@
 import {
+  ActionEntityInstanceCollectionReturnType,
+  ActionReturnType,
+  ApplicationSection,
+  asyncApplyExtractorTransformerInMemory,
+  asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+  AsyncExtractorRunner,
+  AsyncExtractorRunnerMap,
+  AsyncExtractorRunnerParams,
+  asyncExtractWithExtractor,
+  asyncExtractWithManyExtractors,
+  DomainElement,
+  DomainElementEntityInstanceOrFailed,
+  DomainElementInstanceUuidIndexOrFailed,
+  DomainState,
+  ExtractorForSingleObject,
+  ExtractorForSingleObjectList,
+  ExtractorRunnerMapForJzodSchema,
   getLoggerName,
   LoggerInterface,
   MiroirLoggerFactory,
-  PersistenceStoreAdminSectionInterface,
-  PersistenceStoreModelSectionInterface,
-  PersistenceStoreDataSectionInterface,
-  ActionReturnType,
-  ApplicationSection,
+  PersistenceStoreExtractorRunner,
+  PersistenceStoreInstanceSectionAbstractInterface,
   QueryAction,
-  SyncExtractorRunner,
-  SyncExtractorRunnerParams,
-  DomainElement,
-  DomainElementInstanceUuidIndexOrFailed,
-  DomainState,
-  ExtractorForSingleObjectList,
-  SyncExtractorRunnerMap,
-  ExtractorRunnerMapForJzodSchema,
-  extractWithManyExtractorsFromDomainState,
-  selectEntityInstanceFromObjectQueryAndDomainState,
-  exractEntityInstanceListFromListQueryAndDomainState,
-  selectEntityInstanceUuidIndexFromDomainState,
+  QuerySelectObject,
+  resolveContextReferenceDEFUNCT,
   selectEntityJzodSchemaFromDomainStateNew,
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
-  selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
-  DomainModelExtractor,
-  AsyncExtractorRunner,
-  resolveContextReference,
-  ActionEntityInstanceCollectionReturnType,
-  PersistenceStoreControllerInterface,
-  DomainElementEntityInstanceOrFailed,
-  ExtractorForSingleObject,
-  QuerySelectObject,
-  AsyncExtractorRunnerMap,
-  extractWithExtractor,
-  PersistenceStoreExtractorRunner,
-  getSelectorParams,
-  AsyncExtractorRunnerParams,
-  ExtractorForRecordOfExtractors,
-  asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
-  asyncExtractWithManyExtractors,
-  asyncExtractWithExtractor,
-  PersistenceStoreInstanceSectionAbstractInterface,
-  PersistenceStoreAbstractInterface,
-  PersistenceStoreDataOrModelSectionInterface,
-  asyncApplyExtractorTransformerInMemory,
+  selectJzodSchemaBySingleSelectQueryFromDomainStateNew
 } from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
@@ -71,7 +54,7 @@ export class FileSystemExtractorRunner implements PersistenceStoreExtractorRunne
       extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
-      applyExtractorTransformerInMemory: asyncApplyExtractorTransformerInMemory
+      applyExtractorTransformer: asyncApplyExtractorTransformerInMemory
     };
   }
 
@@ -209,7 +192,7 @@ export class FileSystemExtractorRunner implements PersistenceStoreExtractorRunne
       ((selectorParams.extractor.pageParams?.elementValue?.applicationSection?.elementValue ??
         "data") as ApplicationSection);
 
-    const entityUuidReference: DomainElement = resolveContextReference(
+    const entityUuidReference: DomainElement = resolveContextReferenceDEFUNCT(
       querySelectorParams.parentUuid,
       selectorParams.extractor.queryParams,
       selectorParams.extractor.contextResults
@@ -242,7 +225,7 @@ export class FileSystemExtractorRunner implements PersistenceStoreExtractorRunne
 
     switch (querySelectorParams?.queryType) {
       case "selectObjectByRelation": {
-        const referenceObject = resolveContextReference(
+        const referenceObject = resolveContextReferenceDEFUNCT(
           querySelectorParams.objectReference,
           selectorParams.extractor.queryParams,
           selectorParams.extractor.contextResults
@@ -303,7 +286,7 @@ export class FileSystemExtractorRunner implements PersistenceStoreExtractorRunne
         break;
       }
       case "selectObjectByDirectReference": {
-        const instanceDomainElement = resolveContextReference(
+        const instanceDomainElement = resolveContextReferenceDEFUNCT(
           querySelectorParams.instanceUuid,
           selectorParams.extractor.queryParams,
           selectorParams.extractor.contextResults
@@ -411,7 +394,7 @@ export class FileSystemExtractorRunner implements PersistenceStoreExtractorRunne
     const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
 
-    const entityUuid: DomainElement = resolveContextReference(
+    const entityUuid: DomainElement = resolveContextReferenceDEFUNCT(
       extractorRunnerParams.extractor.select.parentUuid,
       extractorRunnerParams.extractor.queryParams,
       extractorRunnerParams.extractor.contextResults
@@ -484,13 +467,6 @@ export class FileSystemExtractorRunner implements PersistenceStoreExtractorRunne
 
   public getSelectorMap(): AsyncExtractorRunnerMap {
     return this.selectorMap;
-    // return {
-    //   extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex,
-    //   extractEntityInstance: this.extractEntityInstance,
-    //   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: async (...args) => exractEntityInstanceListFromListQueryAndDomainState(...args),
-    //   extractWithManyExtractors: async (...args) => extractWithManyExtractorsFromDomainState(...args),
-    //   extractWithExtractor: async (...args) => extractWithExtractor(...args),
-    // };
   }
 }
 

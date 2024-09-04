@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   ActionReturnType,
   ActionVoidReturnType,
+  CompositeActionTemplate,
   CompositeInstanceActionTemplate,
   DomainAction,
   EntityInstance,
@@ -76,7 +77,8 @@ export type EntityInstancesUuidIndexEntityInstanceArraySelector = (entityInstanc
 export interface DomainControllerInterface {
   // handleAction(deploymentUuid: Uuid, action: DomainAction, currentModel?: MetaModel): Promise<void>;
   handleQuery(action: QueryAction, currentModel?: MetaModel): Promise<ActionReturnType>;
-  handleCompositeInstanceActionTemplate(action: CompositeInstanceActionTemplate, actionParamValues: any, currentModel?: MetaModel): Promise<ActionVoidReturnType>;
+  // handleCompositeActionTemplate(action: CompositeInstanceActionTemplate, actionParamValues: any, currentModel?: MetaModel): Promise<ActionVoidReturnType>;
+  handleCompositeActionTemplate(action: CompositeActionTemplate, actionParamValues: any, currentModel?: MetaModel): Promise<ActionVoidReturnType>;
   handleAction(action: DomainAction, currentModel?: MetaModel): Promise<ActionVoidReturnType>;
   /**
    * data access must accomodate different styles of access

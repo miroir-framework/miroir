@@ -2,6 +2,7 @@ import {
   ActionEntityInstanceCollectionReturnType,
   ActionReturnType,
   ApplicationSection,
+  asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   AsyncExtractorRunner,
   AsyncExtractorRunnerMap,
@@ -22,8 +23,8 @@ import {
   MiroirLoggerFactory,
   QueryAction,
   QuerySelectObject,
-  resolveContextReference,
-  RuntimeTransformer,
+  resolveContextReferenceDEFUNCT,
+  TransformerForRuntime,
   selectEntityJzodSchemaFromDomainStateNew,
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
@@ -60,7 +61,7 @@ export class SqlDbExtractRunner {
       extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
-      applyExtractorTransformerInMemory: this.applyExtractorTransformerSql.bind(this),
+      applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
     };
     const dbImplementationExtractorRunnerMap: AsyncExtractorRunnerMap = {
       extractorType: "async",
@@ -70,16 +71,16 @@ export class SqlDbExtractRunner {
         this.asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor.bind(this),
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
-      applyExtractorTransformerInMemory: this.applyExtractorTransformerSql.bind(this),
+      applyExtractorTransformer: this.applyExtractorTransformerSql.bind(this),
     };
 
-    // this.extractorRunnerMap = InMemoryImplementationExtractorRunnerMap;
-    this.extractorRunnerMap = dbImplementationExtractorRunnerMap;
+    this.extractorRunnerMap = InMemoryImplementationExtractorRunnerMap;
+    // this.extractorRunnerMap = dbImplementationExtractorRunnerMap;
   }
 
   // ################################################################################################
   async applyExtractorTransformerSql(
-    actionRuntimeTransformer: RuntimeTransformer,
+    actionRuntimeTransformer: TransformerForRuntime,
     queryParams: DomainElementObject,
     newFetchedData: DomainElementObject,
     extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>
@@ -87,10 +88,14 @@ export class SqlDbExtractRunner {
     // log.info("SqlDbExtractRunner applyExtractorTransformerSql extractors", extractors);
     log.info("SqlDbExtractRunner applyExtractorTransformerSql query", JSON.stringify(actionRuntimeTransformer, null, 2));
 
-    const referenceName = actionRuntimeTransformer.referencedExtractor;
+    if (!(actionRuntimeTransformer as any).referencedExtractor) {
+      throw new Error("applyExtractorTransformerSql missing referencedExtractor");
+    }
+    
+    const referenceName = (actionRuntimeTransformer as any).referencedExtractor;
 
-    const resolvedReference = resolveContextReference(
-      { queryTemplateType: "queryContextReference", referenceName: actionRuntimeTransformer.referencedExtractor },
+    const resolvedReference = resolveContextReferenceDEFUNCT(
+      { queryTemplateType: "queryContextReference", referenceName: (actionRuntimeTransformer as any).referencedExtractor },
       queryParams,
       newFetchedData
     );
@@ -115,8 +120,8 @@ export class SqlDbExtractRunner {
       return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
     }
 
-    const orderBy = actionRuntimeTransformer.orderBy
-      ? `ORDER BY ${actionRuntimeTransformer.orderBy}`
+    const orderBy = (actionRuntimeTransformer as any).orderBy
+      ? `ORDER BY ${(actionRuntimeTransformer as any).orderBy}`
       : "";
     switch (actionRuntimeTransformer.templateType) {
       case "unique": {
@@ -287,7 +292,7 @@ export class SqlDbExtractRunner {
       ((selectorParams.extractor.pageParams?.elementValue?.applicationSection?.elementValue ??
         "data") as ApplicationSection);
 
-    const entityUuidReference: DomainElement = resolveContextReference(
+    const entityUuidReference: DomainElement = resolveContextReferenceDEFUNCT(
       querySelectorParams.parentUuid,
       selectorParams.extractor.queryParams,
       selectorParams.extractor.contextResults
@@ -320,7 +325,7 @@ export class SqlDbExtractRunner {
 
     switch (querySelectorParams?.queryType) {
       case "selectObjectByRelation": {
-        const referenceObject = resolveContextReference(
+        const referenceObject = resolveContextReferenceDEFUNCT(
           querySelectorParams.objectReference,
           selectorParams.extractor.queryParams,
           selectorParams.extractor.contextResults
@@ -381,7 +386,7 @@ export class SqlDbExtractRunner {
         break;
       }
       case "selectObjectByDirectReference": {
-        const instanceDomainElement = resolveContextReference(
+        const instanceDomainElement = resolveContextReferenceDEFUNCT(
           querySelectorParams.instanceUuid,
           selectorParams.extractor.queryParams,
           selectorParams.extractor.contextResults
@@ -464,7 +469,7 @@ export class SqlDbExtractRunner {
     const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
 
-    const entityUuid: DomainElement = resolveContextReference(
+    const entityUuid: DomainElement = resolveContextReferenceDEFUNCT(
       extractorRunnerParams.extractor.select.parentUuid,
       extractorRunnerParams.extractor.queryParams,
       extractorRunnerParams.extractor.contextResults
@@ -546,7 +551,7 @@ export class SqlDbExtractRunner {
     const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
 
-    const entityUuid: DomainElement = resolveContextReference(
+    const entityUuid: DomainElement = resolveContextReferenceDEFUNCT(
       extractorRunnerParams.extractor.select.parentUuid,
       extractorRunnerParams.extractor.queryParams,
       extractorRunnerParams.extractor.contextResults
@@ -576,7 +581,7 @@ export class SqlDbExtractRunner {
           extractorRunnerParams.extractor.select.filter
         ) {
           // TODO: resolve filter value
-          // const resolvedFilterValue: DomainElement = resolveContextReference(
+          // const resolvedFilterValue: DomainElement = resolveContextReferenceDEFUNCT(
           //   extractorRunnerParams.extractor.select.parentUuid,
           //   extractorRunnerParams.extractor.queryParams,
           //   extractorRunnerParams.extractor.contextResults

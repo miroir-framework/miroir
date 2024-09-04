@@ -177,10 +177,10 @@ export {
   modelActionCreateEntity,
   ModelActionDropEntity,
   modelActionDropEntity,
-  ObjectTemplateInnerReference,
-  objectTemplateInnerReference,
-  objectBuildTemplate,
-  ObjectBuildTemplate,
+  Transformer_InnerReference,
+  transformer_InnerReference,
+  transformerForBuild,
+  TransformerForBuild,
   actionHandler,
   ActionHandler,
   PersistenceAction,
@@ -255,16 +255,23 @@ export {
   extractorForSingleObjectList,
   DomainModelSingleExtractor,
   domainModelSingleExtractor,
-  QueryExtractorRuntimeTransformer,
-  queryExtractorTransformerUnique,
+  transformerForBuild_Unique,
   QuerySelectExtractorWrapper,
   querySelectExtractorWrapper,
   QuerySelectExtractorWrapperReturningList,
   querySelectExtractorWrapperReturningList,
   QuerySelectExtractorWrapperReturningObject,
   querySelectExtractorWrapperReturningObject,
-  RuntimeTransformer,
-  runtimeTransformer,
+  TransformerForRuntime,
+  transformerForRuntime,
+  CarryOnObject,
+  carryOnObject,
+  CompositeActionTemplate,
+  compositeActionTemplate,
+  CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration,
+  carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration,
+  CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction,
+  carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction,
 }
 from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js"
 
@@ -500,7 +507,8 @@ export {
 } from './2_domain/ExtractorRunnerInMemory.js';
 export {
   domainElementToPlainObject,
-  resolveContextReference,
+  plainObjectToDomainElement,
+  resolveContextReferenceDEFUNCT,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractFetchQueryJzodSchema,
   extractJzodSchemaForDomainModelQuery,
@@ -523,17 +531,11 @@ export{
 export {
   ModelEntityActionTransformer
 } from './2_domain/ModelEntityActionTransformer.js';
-export {
+export { 
   ActionTemplate,
-  // ObjectBuildTemplate,
-  // ObjectTemplateInnerReference,
-  actionTemplateToAction,
-  domainElementTemplateSchema,
-  // objectTemplateSchema,
-  renderObjectBuildTemplate,
-  resolveActionTemplateContextReference,
-  runActionTemplate,
-} from './2_domain/Templates.js';
+  transformer_apply,
+  transformer_InnerReference_resolve,
+} from "./2_domain/Transformers.js";
 export {
   cacheFetchPolicy,
   cacheInvalidationPolicy,
@@ -591,8 +593,13 @@ export {
 export {
   generateRestServiceResponse,
 } from './4_services/RestTools.js';
+export {
+  ignorePostgresExtraAttributesOnList,
+  ignorePostgresExtraAttributesOnObject,
+  ignorePostgresExtraAttributesOnRecord,
+} from './4_services/otherTools.js';
 export { miroirCoreStartup } from './startup.js';
-export { stringTuple, circularReplacer, getLoggerName } from './tools.js';
+export { stringTuple, circularReplacer, getLoggerName, getValue } from './tools.js';
 
 import entityEndpointVersion from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e4320b9e-ab45-4abe-85d8-359604b3c62f.json';
 import entityEntity from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';

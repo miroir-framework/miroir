@@ -88,12 +88,19 @@
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": { "type":"literal", "definition":"compositeAction"},
-            "actionName": { "type":"literal", "definition":"sequence"},
+            "actionType": { "type": "literal", "definition": "compositeAction" },
+            "actionName": { "type": "literal", "definition": "sequence" },
             "deploymentUuid": {
               "type": "uuid",
               "optional": true,
               "tag": { "value": { "defaultLabel": "Module Deployment Uuid", "editable": false } }
+            },
+            "templates": {
+              "type": "record",
+              "optional": true,
+              "definition": {
+                "type": "any"
+              }
             },
             "definition": {
               "type": "array",
@@ -104,7 +111,7 @@
                   {
                     "type": "object",
                     "definition": {
-                      "compositeActionType": {"type": "literal", "definition": "action"},
+                      "compositeActionType": { "type": "literal", "definition": "action" },
                       "action": {
                         "type": "schemaReference",
                         "definition": {
@@ -117,7 +124,7 @@
                   {
                     "type": "object",
                     "definition": {
-                      "compositeActionType": {"type": "literal", "definition": "query"},
+                      "compositeActionType": { "type": "literal", "definition": "query" },
                       "query": {
                         "type": "schemaReference",
                         "definition": {

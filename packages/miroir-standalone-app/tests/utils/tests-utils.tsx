@@ -67,21 +67,6 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   }
 );
 
-// ################################################################################################
-export function ignorePostgresExtraAttributesOnRecord(instances: Record<string, EntityInstance>){
-  return Object.fromEntries(Object.entries(instances).map(i => [i[0], ignorePostgresExtraAttributesOnObject(i[1])]))
-}
-
-// ################################################################################################
-export function ignorePostgresExtraAttributesOnList(instances: EntityInstance[], furtherIgnore: string[] = []){
-  return instances.map(i => ignorePostgresExtraAttributesOnObject(i, furtherIgnore))
-}
-
-// ################################################################################################
-export function ignorePostgresExtraAttributesOnObject(instance: EntityInstance, furtherIgnore: string[] = []){
-  const ignore = ["createdAt", "updatedAt", "author", ...furtherIgnore]
-  return Object.fromEntries(Object.entries(instance).filter(e=>!ignore.includes(e[0])))
-}
 
 // ################################################################################################
 export interface BeforeAllReturnType {
