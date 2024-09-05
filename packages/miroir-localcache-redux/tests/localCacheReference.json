@@ -513,7 +513,7 @@
               "definition": {
                 "type": "schemaReference",
                 "context": {
-                  "querySelectObject": {
+                  "querySelectObjectTemplate": {
                     "type": "object",
                     "definition": {
                       "type": { "type": "literal", "definition": "selectObjectByParameterValue" },
@@ -550,7 +550,7 @@
                       }
                     }
                   },
-                  "querySelectObjectList": {
+                  "querySelectObjectListTemplate": {
                     "type": "object",
                     "definition": {
                       "type": { "type": "literal", "definition": "selectObjectListByRelation" },
@@ -593,17 +593,17 @@
                       }
                     }
                   },
-                  "querySelect": {
+                  "querySelectTemplate": {
                     "type": "union",
                     "discriminator": "type",
                     "definition": [
-                      { "type": "schemaReference", "definition": { "relativePath": "querySelectObjectList" } },
-                      { "type": "schemaReference", "definition": { "relativePath": "querySelectObject" } }
+                      { "type": "schemaReference", "definition": { "relativePath": "querySelectObjectListTemplate" } },
+                      { "type": "schemaReference", "definition": { "relativePath": "querySelectObjectTemplate" } }
                     ]
                   },
                   "miroirSelectQueriesRecord": {
                     "type": "record",
-                    "definition": { "type": "schemaReference", "definition": { "relativePath": "querySelect" } }
+                    "definition": { "type": "schemaReference", "definition": { "relativePath": "querySelectTemplate" } }
                   },
                   "objectInstanceReportSection": {
                     "type": "object",
@@ -644,7 +644,7 @@
                       },
                       "definition": {
                         "type": "schemaReference",
-                        "definition": { "relativePath": "querySelectObjectList" }
+                        "definition": { "relativePath": "querySelectObjectListTemplate" }
                       }
                     }
                   },

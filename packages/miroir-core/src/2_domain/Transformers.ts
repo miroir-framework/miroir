@@ -60,50 +60,66 @@ function transformer_listMapper_apply(
   //   log.error("transformer_listMapper_apply extractorTransformer resolvedReference", resolvedReference);
   //   return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
   // }
-  if (!["object", "instanceUuidIndex"].includes(resolvedReference.elementType) || !(resolvedReference.elementValue instanceof Array)) {
-    log.error("transformer_listMapper_apply extractorTransformer can not work on resolvedReference", resolvedReference);
-    return {
-      elementType: "failure",
-      elementValue: {
-        queryFailure: "QueryNotExecutable",
-        queryContext:
-          "resolved reference is not instanceUuidIndex or object " + JSON.stringify(resolvedReference, null, 2),
-      },
-    }; // TODO: improve error message / queryFailure
-  }
+  // if (
+  //   // !["object", "instanceUuidIndex"].includes(resolvedReference.elementType) ||
+  //   !(resolvedReference.elementValue instanceof Array)
+  // ) {
+  //   log.error("transformer_listMapper_apply extractorTransformer can not work on resolvedReference", resolvedReference);
+  //   return {
+  //     elementType: "failure",
+  //     elementValue: {
+  //       queryFailure: "QueryNotExecutable",
+  //       queryContext:
+  //         "resolved reference is not instanceUuidIndex or object " + JSON.stringify(resolvedReference, null, 2),
+  //     },
+  //   }; // TODO: improve error message / queryFailure
+  // }
   // const resultObject:{[k:string]: any} = {};
   // const resultArray:{[k:string]: DomainElement}[] = [];
   const resultArray:DomainElement[] = [];
-  for (const element of resolvedReference.elementValue) {
-    resultArray.push(
-      transformer_apply(step, (element as any).name??"No name for element", transformer.elementTransformer as any, queryParams, {
-          ...contextResults,
-          [transformer.elementTransformer.referencedExtractor]: element,
-        }, // inefficient!
-      ).elementValue
-    ); // TODO: constrain type of transformer
-    // resultArray.push(
-    //   transformer_apply(step, (element as any).name??"No name for element", transformer.elementTransformer as any, queryParams, {
-    //     elementType: "object",
-    //     elementValue: {
-    //       ...contextResults?.elementValue,
-    //       [transformer.elementTransformer.referencedExtractor]: { elementType: "instance", elementValue: element },
-    //     }, // inefficient!
-    //   }).elementValue
-    // ); // TODO: constrain type of transformer
+  if (resolvedReference.elementValue instanceof Array) {
+    for (const element of resolvedReference.elementValue) {
+      resultArray.push(
+        transformer_apply(
+          step,
+          (element as any).name ?? "No name for element",
+          transformer.elementTransformer as any,
+          queryParams,
+          {
+            ...contextResults,
+            [transformer.elementTransformer.referencedExtractor]: element,
+          } // inefficient!
+        ).elementValue
+      ); // TODO: constrain type of transformer
+    }
+  } else {
+    if (typeof resolvedReference.elementValue == "object") {
+      for (const element of Object.entries(resolvedReference.elementValue)) {
+        // resultObject[element[0]] = transformer_apply(step, element[0], transformer.elementTransformer as any, queryParams, {
+        resultArray.push(
+          transformer_apply(step, element[0], transformer.elementTransformer as any, queryParams, {
+            // elementType: "object",
+            // elementValue: {
+              ...contextResults,
+              // [transformer.elementTransformer.referencedExtractor]: { elementType: "instance", elementValue: element[1] },
+              [transformer.elementTransformer.referencedExtractor]: element[1],
+            // }, // inefficient!
+          }).elementValue
+        ); // TODO: constrain type of transformer
+      }
+    } else {
+      log.error("transformer_listMapper_apply extractorTransformer can not work on resolvedReference", resolvedReference);
+      return {
+        elementType: "failure",
+        elementValue: {
+          queryFailure: "QueryNotExecutable",
+          failureOrigin: ["transformer_listMapper_apply"],
+          failureMessage:
+            "resolved reference is not instanceUuidIndex or object " + JSON.stringify(resolvedReference, null, 2),
+        },
+      }
+    }
   }
-  // for (const element of Object.entries(resolvedReference.elementValue)) {
-  //   // resultObject[element[0]] = transformer_apply(step, element[0], transformer.elementTransformer as any, queryParams, {
-  //   resultArray.push(
-  //     transformer_apply(step, element[0], transformer.elementTransformer as any, queryParams, {
-  //       elementType: "object",
-  //       elementValue: {
-  //         ...contextResults?.elementValue,
-  //         [transformer.elementTransformer.referencedExtractor]: { elementType: "instance", elementValue: element[1] },
-  //       }, // inefficient!
-  //     }).elementValue
-  //   ); // TODO: constrain type of transformer
-  // }
   const sortByAttribute = transformer.orderBy
   ? (a: any[]) =>
       a.sort((a, b) =>
@@ -176,7 +192,12 @@ function transformer_fullObjectTemplate(
               }
             : rawLeftValue,
       };
-      // log.info("transformer_apply fullObjectTemplate innerEntry.attributeKey", innerEntry.attributeKey, "leftValue", leftValue);
+      // log.info(
+      //   "transformer_apply fullObjectTemplate innerEntry.attributeKey",
+      //   innerEntry.attributeKey,
+      //   "leftValue",
+      //   leftValue
+      // );
 
       // const renderedRightValue: DomainElement = transformer_apply( // TODO: use actionRuntimeTransformer_apply or merge the two functions
       const renderedRightValue: DomainElement = transformer_apply(
@@ -186,7 +207,7 @@ function transformer_fullObjectTemplate(
         innerEntry.attributeValue as any, // TODO: wrong type in the case of runtime transformer
         queryParams,
         contextResults
-      );
+      ); // TODO: check for failure!
       const rightValue: { renderedRightValue: DomainElement; finalRightValue: DomainElement } = {
         renderedRightValue,
         finalRightValue:
@@ -197,7 +218,15 @@ function transformer_fullObjectTemplate(
               }
             : renderedRightValue,
       };
-      // log.info("transformer_apply fullObjectTemplate innerEntry.attributeKey", innerEntry.attributeKey, "rightValue", rightValue);
+      log.info(
+        "transformer_apply fullObjectTemplate innerEntry.attributeKey",
+        innerEntry.attributeValue,
+        "rightValue",
+        JSON.stringify(rightValue, null, 2),
+        "contextResults",
+        // Object.keys(contextResults??{}),
+        JSON.stringify(contextResults, null, 2)
+      );
       return [leftValue, rightValue];
     }
   );
@@ -225,6 +254,7 @@ function transformer_fullObjectTemplate(
       elementType: "failure",
       elementValue: {
         queryFailure: "ReferenceNotFound",
+        failureOrigin: ["transformer_fullObjectTemplate"],
         queryContext: "fullObjectTemplate error in " + objectName + " in " + JSON.stringify(attributeEntries[failureIndex], null, 2),
       },
     };
@@ -309,6 +339,7 @@ export function transformer_InnerReference_resolve  (
       elementType: "failure",
       elementValue: {
         queryFailure: "ReferenceNotFound",
+        failureOrigin: ["transformer_InnerReference_resolve"],
         queryContext:
           "no referenceName" +
             transformerInnerReference.referenceName +
@@ -487,195 +518,18 @@ function mustacheStringTemplate_apply(
   //   ? domainElementToPlainObject(contextResults)
   //   : domainElementToPlainObject(queryParams); // TODO: highly inefficient & buggy!!
   const result = Mustache.render(transformer.definition, {...queryParams, ...contextResults});
-  // log.info(
-  //   "mustacheStringTemplate_apply for",
-  //   transformer,
-  //   "queryParams",
-  //   JSON.stringify(queryParams, null, 2),
-  //   "contextResults",
-  //   JSON.stringify(contextResults, null, 2),
-  //   "result",
-  //   result
-  // );
+  log.info(
+    "mustacheStringTemplate_apply for",
+    transformer,
+    "queryParams",
+    JSON.stringify(queryParams, null, 2),
+    "contextResults",
+    JSON.stringify(contextResults, null, 2),
+    "result",
+    result
+  );
   return { elementType: "string", elementValue: result };
 }
-
-// // ################################################################################################
-// export function runtimeTransformer_apply(
-//   objectName: string,
-//   transformerForRuntime: TransformerForRuntime,
-//   queryParams: DomainElementObject,
-//   contextResults?: DomainElementObject,
-// ): DomainElement {
-//   // log.info("transformer_apply called for object named", objectName,"template", transformerForBuild, "queryParams", queryParams);
-//   if (typeof transformerForRuntime == "object") {
-//     // log.info("transformer_apply for template object named", objectName, "templateType", transformerForBuild.templateType);
-//     if (Array.isArray(transformerForRuntime)) {
-//       const subObject = transformerForRuntime.map((e, index) =>
-//         transformer_apply(index.toString(), e, queryParams, contextResults)
-//       );
-//       const failureIndex = subObject.findIndex((e) => e.elementType == "failure");
-//       if (failureIndex == -1) {
-//         return {
-//           elementType: "array",
-//           elementValue: subObject.map((e) => e.elementValue),
-//         }
-//       } else {
-//         return {
-//           elementType: "failure",
-//           elementValue: {
-//             queryFailure: "ReferenceNotFound",
-//             queryContext:
-//               "no " +
-//               objectName +
-//               " in " +
-//               transformerForRuntime,
-//           },
-//         };
-//       }
-
-//     } else {
-//       if (transformerForRuntime.templateType) {
-//         switch (transformerForRuntime.templateType) {
-//           case "listMapper": {
-//             return transformer_mapObject_apply(
-//               runtimeTransformer_apply,
-//               transformerForRuntime,
-//               queryParams,
-//               contextResults,
-//             );
-//             break;
-//           }
-//           case "fullObjectTemplate": {
-//             return transformer_fullObjectTemplate(
-//               runtimeTransformer_apply,
-//               objectName,
-//               transformerForRuntime,
-//               queryParams,
-//               contextResults
-//             );
-//             break;
-//           }
-//           // case "newUuid": {
-//           //   return { elementType: "string", elementValue: uuidv4() };
-//           // }
-//           case "count": {
-//             const resolvedReference = transformer_InnerReference_resolve(
-//               { templateType: "contextReference", referenceName:transformerForRuntime.referencedExtractor },
-//               queryParams,
-//               contextResults
-//             );
-
-//             log.info(
-//               "innerSelectElementFromQuery extractorTransformer count referencedExtractor resolvedReference",
-//               resolvedReference
-//             );
-          
-//             if (resolvedReference.elementType != "instanceUuidIndex") {
-//               log.error("innerSelectElementFromQuery extractorTransformer count referencedExtractor resolvedReference", resolvedReference);
-//               return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
-//             }
-//             const sortByAttribute = transformerForRuntime.orderBy
-//               ? (a: any[]) =>
-//                   a.sort((a, b) =>
-//                     a[transformerForRuntime.orderBy ?? ""].localeCompare(b[transformerForRuntime.orderBy ?? ""], "en", {
-//                       sensitivity: "base",
-//                     })
-//                   )
-//               : (a: any[]) => a;
-
-//             if (transformerForRuntime.groupBy) {
-//               const result = new Map<string, number>();
-//               for (const entry of Object.entries(resolvedReference.elementValue)) {
-//                 const key = (entry[1] as any)[transformerForRuntime.groupBy];
-//                 if (result.has(key)) {
-//                   result.set(key, (result.get(key)??0) + 1);
-//                 } else {
-//                   result.set(key, 1);
-//                 }
-//               }
-//               return {
-//                 elementType: "any",
-//                 elementValue: sortByAttribute([...result.entries()].map((e) => ({ [transformerForRuntime.groupBy as any]: e[0], count: e[1] }))),
-//               };
-//             } else {
-//               return { elementType: "any" /* TODO: number? */, elementValue: [{count: Object.keys(resolvedReference.elementValue).length}] };
-//             }
-//             break;
-//           }
-//           case "unique": {
-//             const resolvedReference = transformer_InnerReference_resolve(
-//               { templateType: "contextReference", referenceName:transformerForRuntime.referencedExtractor },
-//               queryParams,
-//               contextResults
-//             );
-
-//             log.info(
-//               "innerSelectElementFromQuery extractorTransformer unique referencedExtractor resolvedReference",
-//               resolvedReference
-//             );
-          
-//             if (resolvedReference.elementType != "instanceUuidIndex") {
-//               log.error("innerSelectElementFromQuery extractorTransformer unique referencedExtractor resolvedReference", resolvedReference);
-//               return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
-//             }
-          
-//             const sortByAttribute = transformerForRuntime.orderBy
-//               ? (a: any[]) =>
-//                   a.sort((a, b) =>
-//                     a[transformerForRuntime.orderBy ?? ""].localeCompare(b[transformerForRuntime.orderBy ?? ""], "en", {
-//                       sensitivity: "base",
-//                     })
-//                   )
-//               : (a: any[]) => a;
-//             const result = new Set<string>();
-//             for (const entry of Object.entries(resolvedReference.elementValue)) {
-//               result.add((entry[1] as any)[transformerForRuntime.attribute]);
-//             }
-//             return {
-//               elementType: "any",
-//               elementValue: sortByAttribute([...result].map((e) => ({ [transformerForRuntime.attribute]: e }))),
-//             };
-//             break;  
-//           }
-//           case "mustacheStringTemplate": {
-//             return mustacheStringTemplate_apply(transformerForRuntime, queryParams, contextResults);
-//             break;
-//           }
-//           case "newUuid":
-//           case "constantString":
-//           case "constantUuid":
-//           case "contextReference":
-//           case "parameterReference":
-//           default: {
-//             const rawValue = transformer_InnerReference_resolve(transformerForRuntime, queryParams, contextResults);
-//             const returnedValue: DomainElement =
-//               typeof transformerForRuntime == "object" && (transformerForRuntime as any).applyFunction
-//                 ? { elementType: "any", elementValue: (transformerForRuntime as any).applyFunction(rawValue.elementValue)}
-//                 : rawValue;
-//             return returnedValue;
-//             break;
-//           }
-//         }
-//       } else {
-//         // log.info("transformer_apply converting plain object", transformerForBuild);
-//         const result = Object.fromEntries(
-//           Object.entries(transformerForRuntime).map((objectTemplateEntry: [string, any]) => {
-//             return [
-//               objectTemplateEntry[0],
-//               transformer_apply(objectTemplateEntry[0], objectTemplateEntry[1], queryParams, contextResults),
-//             ];
-//           })
-//         );
-//         return { elementType: "object", elementValue: result};
-//       }
-//     }
-//   } else {
-//     // plain value
-//     return transformerForRuntime;
-//   }
-// }
-
 
 // ################################################################################################
 // <A>[] -> <A>[]
@@ -727,6 +581,7 @@ export function transformer_apply(
           elementType: "failure",
           elementValue: {
             queryFailure: "ReferenceNotFound",
+            failureOrigin: ["transformer_apply"],
             queryContext:
               "failed to transform object attribute for object " +
               objectName +
@@ -936,6 +791,7 @@ export function transformer_apply(
             elementType: "failure",
             elementValue: {
               queryFailure: "ReferenceNotFound",
+              failureOrigin: ["transformer_apply"],
               queryContext: "error in " + objectName + " in " + JSON.stringify(attributeEntries[failureIndex]),
             },
           };

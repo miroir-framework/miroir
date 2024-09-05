@@ -19,7 +19,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 //   if (
 //     reportDefinition &&
 //     reportDefinition.definition?.section?.type === "objectListReportSection" &&
-//     reportDefinition.definition.section.definition.queryType == "extractObjectListByEntity" &&
+//     reportDefinition.definition.section.definition.queryType == "extractObjectListByEntityTemplate" &&
 //     reportDefinition.definition.section?.definition?.parentUuid
 //   ) {
 //     log.info('getReportSectionTargetEntityUuid for entityUuid', reportDefinition.uuid, 'reportSectionIndex', reportSectionIndex)

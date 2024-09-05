@@ -35,7 +35,7 @@ import {
   ModelAction,
   TransformerForBuild,
   QueryAction,
-  QuerySelect,
+  QuerySelectTemplate,
   QuerySelectExtractorWrapper,
   RestPersistenceAction,
   TransactionalInstanceAction,
@@ -668,10 +668,10 @@ export class DomainController implements DomainControllerInterface {
     queryParams: DomainElementObject,
     contextResults: DomainElementObject,
     queryName: string,
-    query: QuerySelectExtractorWrapper | QuerySelect,
+    query: QuerySelectExtractorWrapper | QuerySelectTemplate,
   ): Promise<ActionReturnType> {
     switch (query.queryType) {
-      case "extractObjectListByEntity": {
+      case "extractObjectListByEntityTemplate": {
         const parentUuid = resolveContextReferenceDEFUNCT(
           query.parentUuid,
           queryParams,

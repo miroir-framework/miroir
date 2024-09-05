@@ -35,7 +35,8 @@ import {
   entityDefinitionAuthor,
   entityEntity,
   entityEntityDefinition,
-  entityReport
+  entityReport,
+  ignorePostgresExtraAttributesOnList
 } from "miroir-core";
 
 
@@ -44,7 +45,12 @@ import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 import { setupServer } from "msw/node";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
-import { ignorePostgresExtraAttributesOnList, loadTestConfigFiles, miroirAfterEach, miroirBeforeAll, miroirBeforeEach } from "../utils/tests-utils.js";
+import {
+  loadTestConfigFiles,
+  miroirAfterEach,
+  miroirBeforeAll,
+  miroirBeforeEach,
+} from "../utils/tests-utils.js";
 
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
@@ -738,7 +744,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
   //           extractors: {
   //               select: {
   //               entities: {
-  //                 queryType: "extractObjectListByEntity",
+  //                 queryType: "extractObjectListByEntityTemplate",
   //                 applicationSection: "model",
   //                 parentName: "Entity",
   //                 parentUuid: {

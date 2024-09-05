@@ -285,7 +285,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           definition: {
             extractors: {
               instanceList: {
-                queryType: "extractObjectListByEntity",
+                queryType: "extractObjectListByEntityTemplate",
                 parentName: {
                   templateType: "parameterReference",
                   referenceName: "newEntityName",
@@ -658,7 +658,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       contextResults: { elementType: "object", elementValue: {} },
       extractors: {
         menus: {
-          queryType: "extractObjectListByEntity",
+          queryType: "extractObjectListByEntityTemplate",
           applicationSection: "model",
           parentName: "Menu",
           parentUuid: {
@@ -904,7 +904,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             definition: {
               extractors: {
                 listReportSectionElements: {
-                  queryType: "extractObjectListByEntity",
+                  queryType: "extractObjectListByEntityTemplate",
                   parentName: {
                     templateType: "parameterReference",
                     referenceName: "newEntityName",
@@ -1247,7 +1247,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           definition: {
             extractors: {
               listReportSectionElements: {
-                queryType: "extractObjectListByEntity",
+                queryType: "extractObjectListByEntityTemplate",
                 parentName: {
                   templateType: "parameterReference",
                   referenceName: "newEntityName",
@@ -1550,7 +1550,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               contextResults: { elementType: "object", elementValue: {} },
               extractors: {
                 [splittedEntityName]: {
-                  queryType: "extractObjectListByEntity",
+                  queryType: "extractObjectListByEntityTemplate",
                   applicationSection: "data",
                   parentName: {
                     templateType: "parameterReference",
@@ -1703,7 +1703,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     //   runtimeTransformers: {
     //     select: {
     //       [splittedEntityName]: {
-    //         queryType: "extractObjectListByEntity",
+    //         queryType: "extractObjectListByEntityTemplate",
     //         applicationSection: "data",
     //         parentName: splittedEntityName,
     //         parentUuid: {
@@ -1836,7 +1836,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     //   runtimeTransformers: {
     //     select: {
     //       menus: {
-    //         queryType: "extractObjectListByEntity",
+    //         queryType: "extractObjectListByEntityTemplate",
     //         applicationSection: "model",
     //         parentName: "Menu",
     //         parentUuid: {

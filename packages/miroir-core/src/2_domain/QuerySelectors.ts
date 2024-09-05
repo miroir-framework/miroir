@@ -13,14 +13,14 @@ import {
   DomainModelQueryJzodSchemaParams,
   DomainModelSingleExtractor,
   EntityInstance,
-  ExtractObjectListByEntity,
+  ExtractObjectListByEntityTemplate,
   ExtractorForRecordOfExtractors,
   ExtractorForSingleObjectList,
   JzodElement,
   JzodObject,
-  QuerySelect,
-  QuerySelectObjectListByManyToManyRelation,
-  QuerySelectObjectListByRelation,
+  QuerySelectTemplate,
+  QuerySelectObjectListByManyToManyRelationTemplate,
+  QuerySelectObjectListByRelationTemplate,
   QueryTemplateConstantOrAnyReference,
   TransformerForRuntime
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
@@ -154,11 +154,14 @@ export const resolveContextReferenceDEFUNCT = (
       elementType: "failure",
       elementValue: {
         queryFailure: "ReferenceNotFound",
-        queryContext:
+        failureOrigin: ["QuerySelector", "resolveContextReferenceDEFUNCT"],
+        failureMessage:
           "resolvedContextReference failed to find " +
           queryTemplateConstantOrAnyReference.referenceName +
           " in " +
-          (queryTemplateConstantOrAnyReference.queryTemplateType == "queryContextReference"?JSON.stringify(Object.keys(contextResults.elementValue)):JSON.stringify(Object.keys(queryParams.elementValue))),
+          (queryTemplateConstantOrAnyReference.queryTemplateType == "queryContextReference"
+            ? JSON.stringify(Object.keys(contextResults.elementValue))
+            : JSON.stringify(Object.keys(queryParams.elementValue))),
       },
     };
   }
@@ -203,36 +206,34 @@ export const resolveContextReference = (
   // log.info("resolveContextReferenceDEFUNCT for queryTemplateConstantOrAnyReference=", queryTemplateConstantOrAnyReference, "queryParams=", queryParams,"contextResults=", contextResults)
   if (
     (queryTemplateConstantOrAnyReference.queryTemplateType == "queryContextReference" &&
-      (!contextResults ||
-        !(contextResults as any)[queryTemplateConstantOrAnyReference.referenceName])) ||
+      (!contextResults || !(contextResults as any)[queryTemplateConstantOrAnyReference.referenceName])) ||
     (queryTemplateConstantOrAnyReference.queryTemplateType == "queryParameterReference" &&
-      (!Object.keys(queryParams).includes(queryTemplateConstantOrAnyReference.referenceName)))
-
+      !Object.keys(queryParams).includes(queryTemplateConstantOrAnyReference.referenceName))
   ) {
     // checking that given reference does exist
     return {
       elementType: "failure",
       elementValue: {
         queryFailure: "ReferenceNotFound",
+        failureOrigin: ["QuerySelector", "resolveContextReference"],
         queryContext:
           "resolvedContextReference failed to find " +
           queryTemplateConstantOrAnyReference.referenceName +
           " in " +
-          (queryTemplateConstantOrAnyReference.queryTemplateType == "queryContextReference"?JSON.stringify(Object.keys(contextResults)):JSON.stringify(Object.keys(queryParams))),
+          (queryTemplateConstantOrAnyReference.queryTemplateType == "queryContextReference"
+            ? JSON.stringify(Object.keys(contextResults))
+            : JSON.stringify(Object.keys(queryParams))),
       },
     };
   }
 
   if (
-    (
-      queryTemplateConstantOrAnyReference.queryTemplateType == "queryContextReference" &&
-        !(contextResults as any)[queryTemplateConstantOrAnyReference.referenceName]
-    ) ||
-    (
-      (queryTemplateConstantOrAnyReference.queryTemplateType == "queryParameterReference" &&
-      (!queryParams[queryTemplateConstantOrAnyReference.referenceName]))
-    )
-  ) { // checking that given reference does exist
+    (queryTemplateConstantOrAnyReference.queryTemplateType == "queryContextReference" &&
+      !(contextResults as any)[queryTemplateConstantOrAnyReference.referenceName]) ||
+    (queryTemplateConstantOrAnyReference.queryTemplateType == "queryParameterReference" &&
+      !queryParams[queryTemplateConstantOrAnyReference.referenceName])
+  ) {
+    // checking that given reference does exist
     return {
       elementType: "failure",
       elementValue: { queryFailure: "ReferenceFoundButUndefined", queryContext: JSON.stringify(contextResults) },
@@ -240,15 +241,38 @@ export const resolveContextReference = (
   }
 
   const reference: DomainElement =
-  queryTemplateConstantOrAnyReference.queryTemplateType == "queryContextReference"
-    ? (contextResults as any)[queryTemplateConstantOrAnyReference.referenceName]
-    : queryTemplateConstantOrAnyReference.queryTemplateType == "queryParameterReference"
-    ? queryParams[queryTemplateConstantOrAnyReference.referenceName]
-    : queryTemplateConstantOrAnyReference.queryTemplateType == "constantUuid"
-    ? {elementType: "instanceUuid", elementValue: queryTemplateConstantOrAnyReference.constantUuidValue } // new object
-    : undefined /* this should not happen. Provide "error" value instead?*/;
+    queryTemplateConstantOrAnyReference.queryTemplateType == "queryContextReference"
+      ? {
+          elementType:
+            typeof (contextResults as any)[queryTemplateConstantOrAnyReference.referenceName] == "string"
+              ? "string"
+              : "any",
+          elementValue: (contextResults as any)[queryTemplateConstantOrAnyReference.referenceName],
+        }
+      : queryTemplateConstantOrAnyReference.queryTemplateType == "queryParameterReference"
+      ? {
+          elementType:
+            typeof queryParams[queryTemplateConstantOrAnyReference.referenceName] == "string" ? "string" : "any",
+          elementValue: queryParams[queryTemplateConstantOrAnyReference.referenceName],
+        }
+      : queryTemplateConstantOrAnyReference.queryTemplateType == "constantUuid"
+      ? { elementType: "instanceUuid", elementValue: queryTemplateConstantOrAnyReference.constantUuidValue } // new object
+      : {
+          elementType: "failure",
+          elementValue: {
+            queryFailure: "QueryNotExecutable",
+            failureOrigin: ["QuerySelector", "resolveContextReference"],
+            failureMessage: "could not resolve " +
+              queryTemplateConstantOrAnyReference +
+              " in parameters " +
+              JSON.stringify(queryParams) +
+              " and context results" +
+              JSON.stringify(contextResults),
+            // queryContext:,
+          }
+        }; /* this should not happen. Provide "error" value instead?*/
 
-  return reference
+  return reference;
 }
 
 
@@ -265,13 +289,13 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
   extractor: ExtractorForSingleObjectList,
 ) => {
   switch (extractor.select.queryType) {
-    case "extractObjectListByEntity": {
-      const localQuery: ExtractObjectListByEntity = extractor.select;
+    case "extractObjectListByEntityTemplate": {
+      const localQuery: ExtractObjectListByEntityTemplate = extractor.select;
       const filterTest = localQuery.filter
         ? new RegExp((localQuery.filter.value as any).definition, "i") // TODO: check for correct type
         : undefined;
       log.info(
-        "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory extractObjectListByEntity filter",
+        "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory extractObjectListByEntityTemplate filter",
         JSON.stringify(localQuery.filter)
       );
       const result:DomainElementInstanceUuidIndexOrFailed = localQuery.filter
@@ -283,7 +307,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
                   (i as any)[1][localQuery.filter?.attributeName??""]
                 )
                 log.info(
-                  "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory extractObjectListByEntity filter",
+                  "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory extractObjectListByEntityTemplate filter",
                   JSON.stringify(i[1]),
                   "matchResult",
                   matchResult
@@ -303,12 +327,15 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
         //   )
         : selectedInstancesUuidIndex;
       ;
-
+      log.info(
+        "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory extractObjectListByEntityTemplate result",
+        JSON.stringify(result, undefined, 2)
+      );
       return result;
       break;
     }
     case "selectObjectListByRelation": {
-      const relationQuery: QuerySelectObjectListByRelation = extractor.select;
+      const relationQuery: QuerySelectObjectListByRelationTemplate = extractor.select;
 
       // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation", JSON.stringify(selectedInstances))
       // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation", selectedInstances)
@@ -320,13 +347,14 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
             let otherIndex = undefined
             if (
               relationQuery.objectReference?.queryTemplateType == "queryContextReference" &&
-              extractor.contextResults?.elementType == "object" &&
-              extractor.contextResults.elementValue &&
-              extractor.contextResults.elementValue[relationQuery.objectReference.referenceName ?? ""]
+              // extractor.contextResults?.elementType == "object" &&
+              // extractor.contextResults.elementValue &&
+              // extractor.contextResults.elementValue[relationQuery.objectReference.referenceName ?? ""]
+              extractor.contextResults[relationQuery.objectReference.referenceName ?? ""]
             ) {
-              otherIndex = ((extractor.contextResults?.elementValue[
+              otherIndex = ((extractor.contextResults[
                 relationQuery.objectReference.referenceName
-              ].elementValue as any) ?? {})[relationQuery.objectReferenceAttribute ?? "uuid"];
+              ] as any) ?? {})[relationQuery.objectReferenceAttribute ?? "uuid"];
             } else if (relationQuery.objectReference?.queryTemplateType == "constantUuid") {
               otherIndex = relationQuery.objectReference?.constantUuidValue;
             }
@@ -338,21 +366,25 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
       )} as DomainElementInstanceUuidIndex;
     }
     case "selectObjectListByManyToManyRelation": {
-      // const relationQuery: QuerySelectObjectListByManyToManyRelation = query;
-      // const relationQuery: QuerySelectObjectListByManyToManyRelation = selectorParams.extractor.select;
-      const relationQuery: QuerySelectObjectListByManyToManyRelation = extractor.select;
+      // const relationQuery: QuerySelectObjectListByManyToManyRelationTemplate = query;
+      // const relationQuery: QuerySelectObjectListByManyToManyRelationTemplate = selectorParams.extractor.select;
+      const relationQuery: QuerySelectObjectListByManyToManyRelationTemplate = extractor.select;
 
       // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation", selectedInstances)
       let otherList: DomainElement | undefined = undefined
       if (
         relationQuery.objectListReference?.queryTemplateType == "queryContextReference" &&
-        extractor.contextResults?.elementType == "object" &&
-        extractor.contextResults.elementValue &&
-        extractor.contextResults.elementValue[relationQuery.objectListReference.referenceName ?? ""]
+        // extractor.contextResults?.elementType == "object" &&
+        // extractor.contextResults.elementValue &&
+        // extractor.contextResults.elementValue[relationQuery.objectListReference.referenceName ?? ""]
+        extractor.contextResults[relationQuery.objectListReference.referenceName ?? ""]
       ) {
-        otherList = ((extractor.contextResults?.elementValue[
+        otherList = ((extractor.contextResults[
           relationQuery.objectListReference.referenceName
         ]) ?? {elementType: "void", elementValue: undefined });
+        // otherList = ((extractor.contextResults?.elementValue[
+        //   relationQuery.objectListReference.referenceName
+        // ]) ?? {elementType: "void", elementValue: undefined });
         
         // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation found otherList", otherList);
         
@@ -458,8 +490,10 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
 // ################################################################################################
 export const applyExtractorTransformerInMemory = (
   actionRuntimeTransformer: TransformerForRuntime,
-  queryParams: DomainElementObject,
-  newFetchedData: DomainElementObject
+  queryParams: Record<string, any>,
+  newFetchedData: Record<string, any>
+  // queryParams: DomainElementObject,
+  // newFetchedData: DomainElementObject
 ): DomainElement => {
   log.info("applyExtractorTransformerInMemory  query", JSON.stringify(actionRuntimeTransformer, null, 2));
   return transformer_apply("runtime", "ROOT"/**WHAT?? */, actionRuntimeTransformer, queryParams, newFetchedData);
@@ -468,12 +502,15 @@ export const applyExtractorTransformerInMemory = (
 // ################################################################################################
 export function innerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
   state: StateType,
-  newFetchedData: DomainElementObject,
-  pageParams: DomainElementObject,
-  queryParams: DomainElementObject,
+  newFetchedData: Record<string, any>,
+  pageParams: Record<string, any>,
+  queryParams: Record<string, any>,
+  // newFetchedData: DomainElementObject,
+  // pageParams: DomainElementObject,
+  // queryParams: DomainElementObject,
   extractorRunnerMap:SyncExtractorRunnerMap<StateType>,
   deploymentUuid: Uuid,
-  query: QuerySelect
+  query: QuerySelectTemplate
 ): DomainElement {
   switch (query.queryType) {
     case "literal": {
@@ -482,7 +519,7 @@ export function innerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
     }
     // ############################################################################################
     // Impure Monads
-    case "extractObjectListByEntity":
+    case "extractObjectListByEntityTemplate":
     case "selectObjectListByRelation": 
     case "selectObjectListByManyToManyRelation": {
       return extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractorInMemory(state, {
@@ -497,7 +534,8 @@ export function innerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
           ? query
           : {
               ...query,
-              applicationSection: pageParams.elementValue.applicationSection.elementValue as ApplicationSection,
+              applicationSection: pageParams.applicationSection as ApplicationSection,
+              // applicationSection: pageParams.elementValue.applicationSection.elementValue as ApplicationSection,
             },
         },
       });
@@ -529,7 +567,7 @@ export function innerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
       return {
         elementType: "object",
         elementValue: Object.fromEntries(
-          Object.entries(query.definition).map((e: [string, QuerySelect]) => [
+          Object.entries(query.definition).map((e: [string, QuerySelectTemplate]) => [
             e[0],
             innerSelectElementFromQuery( // recursive call
               state,
@@ -539,7 +577,7 @@ export function innerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
               extractorRunnerMap,
               deploymentUuid,
               e[1]
-            ),
+            ).elementValue, // TODO: check for error!
           ])
         ),
       };
@@ -558,7 +596,7 @@ export function innerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
             extractorRunnerMap,
             deploymentUuid,
             e
-          )
+          ).elementValue // TODO: check for error!
         ),
       };
       break;
@@ -573,53 +611,63 @@ export function innerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
         deploymentUuid,
         query.rootQuery
       );
-      if (rootQueryResults.elementType == "instanceUuidIndex") {
+      if (["instanceUuidIndex", "object", "any"].includes(rootQueryResults.elementType)) {
         const result: DomainElementObject = {
           elementType: "object",
           elementValue: Object.fromEntries(
             Object.entries(rootQueryResults.elementValue).map((entry) => {
               return [
-                entry[1].uuid,
+                (entry[1] as any).uuid??"no uuid found for entry " + entry[0],
                 innerSelectElementFromQuery( // recursive call
                   state,
                   newFetchedData,
                   pageParams,
                   {
-                    elementType: "object",
-                    elementValue: {
+                    // elementType: "object",
+                    // elementValue: {
                       ...queryParams.elementValue,
                       ...Object.fromEntries(
-                        Object.entries(applyTransformer(query.subQuery.rootQueryObjectTransformer, entry[1])).map((e: [string, any]) => [
-                          e[0],
-                          { elementType: "instanceUuid", elementValue: e[1] },
-                        ])
+                        Object.entries(applyTransformer(query.subQuery.rootQueryObjectTransformer, entry[1]))
+                        // .map((e: [string, any]) => [
+                        //   e[0],
+                        //   { elementType: "instanceUuid", elementValue: e[1] },
+                        // ])
                       ),
-                    },
+                    // },
                   },
                   extractorRunnerMap,
                   deploymentUuid,
                   query.subQuery.query
-                ),
+                ).elementValue, // TODO: check for error!
               ];
             })
           ),
         };
         return result;
       } else {
-        return { elementType: "failure", elementValue: { queryFailure: "IncorrectParameters", query: JSON.stringify(query.rootQuery) } }
+        return {
+          elementType: "failure",
+          elementValue: {
+            queryFailure: "IncorrectParameters",
+            query: JSON.stringify(query.rootQuery),
+            queryContext: "innerSelectElementFromQuery for queryCombiner, rootQuery is not instanceUuidIndex, rootQuery=" + JSON.stringify(rootQueryResults,null,2),
+          },
+        };
       }
       break;
     }
     case "queryContextReference": {
+      log.info("innerSelectElementFromQuery queryContextReference", query, "newFetchedData", Object.keys(newFetchedData), "result", newFetchedData[query.queryReference]);
       return newFetchedData &&
-        newFetchedData.elementType == "object" &&
-        newFetchedData.elementValue[query.queryReference]
-        ? newFetchedData.elementValue[query.queryReference]
+        // newFetchedData.elementType == "object" &&
+        newFetchedData[query.queryReference]
+        ? { elementType: "any", elementValue:newFetchedData[query.queryReference]}
         : {
             elementType: "failure",
             elementValue: {
               queryFailure: "ReferenceNotFound",
-              queryContext: "innerSelectElementFromQuery could not find " + query.queryReference + " in " + JSON.stringify(newFetchedData.elementValue),
+              failureOrigin: ["QuerySelector", "innerSelectElementFromQuery"],
+              queryContext: "innerSelectElementFromQuery could not find " + query.queryReference + " in " + JSON.stringify(newFetchedData),
               query: JSON.stringify(query),
             },
           };
@@ -694,13 +742,16 @@ export const extractWithExtractor /**: SyncExtractorRunner */= <StateType>(
 export const extractWithManyExtractors = <StateType>(
   state: StateType,
   selectorParams: SyncExtractorRunnerParams<ExtractorForRecordOfExtractors, StateType>,
-): DomainElementObject => {
+): DomainElementObject => { 
 
   // log.info("########## extractWithManyExtractors begin, query", selectorParams);
-  const context: DomainElementObject = {
-    elementType: "object",
-    elementValue: { ...selectorParams.extractor.contextResults.elementValue },
+  const context: Record<string, any> = {
+    ...selectorParams.extractor.contextResults
   };
+  // const context: DomainElementObject = {
+  //   elementType: "object",
+  //   elementValue: { ...selectorParams.extractor.contextResults.elementValue },
+  // };
   // log.info("########## DomainSelector extractWithManyExtractors will use context", context);
   const localSelectorMap: SyncExtractorRunnerMap<StateType> =
     selectorParams?.extractorRunnerMap ?? emptySelectorMap;
@@ -713,18 +764,28 @@ export const extractWithManyExtractors = <StateType>(
       context,
       selectorParams.extractor.pageParams,
       {
-        elementType: "object",
-        elementValue: {
-          ...selectorParams.extractor.pageParams.elementValue,
-          ...selectorParams.extractor.queryParams.elementValue,
-        },
+        // elementType: "object",
+        // elementValue: {
+          ...selectorParams.extractor.pageParams,
+          ...selectorParams.extractor.queryParams,
+          // ...selectorParams.extractor.pageParams.elementValue,
+          // ...selectorParams.extractor.queryParams.elementValue,
+        // },
       },
       localSelectorMap as any,
       selectorParams.extractor.deploymentUuid,
       extractor[1]
     );
-    context.elementValue[extractor[0]] = result; // does side effect!
-    log.info("extractWithManyExtractors done for extractors", extractor[0], "query", extractor[1], "result=", result);
+    // TODO: test for error!
+    if (result.elementType == "failure") {
+      log.error("extractWithManyExtractors failed for extractor", extractor[0], "query", extractor[1], "result=", result);
+      context[extractor[0]] = result    
+      // return { elementType: "object", elementValue: {
+      // }}
+      // return result;
+    }
+    context[extractor[0]] = result.elementValue; // does side effect!
+    log.info("extractWithManyExtractors done for extractors", extractor[0], "query", extractor[1], "result=", result, "context keys=", Object.keys(context));
   }
   for (const combiner of Object.entries(
     selectorParams.extractor.combiners ?? {}
@@ -734,17 +795,18 @@ export const extractWithManyExtractors = <StateType>(
       context,
       selectorParams.extractor.pageParams,
       {
-        elementType: "object",
-        elementValue: {
-          ...selectorParams.extractor.pageParams.elementValue,
-          ...selectorParams.extractor.queryParams.elementValue,
-        },
+        // elementType: "object",
+        // elementValue: {
+          ...selectorParams.extractor.pageParams,
+          ...selectorParams.extractor.queryParams,
+        // },
       },
       localSelectorMap as any,
       selectorParams.extractor.deploymentUuid,
       combiner[1]
     );
-    context.elementValue[combiner[0]] = result; // does side effect!
+    // context[combiner[0]] = result; // does side effect!
+    context[combiner[0]] = result.elementValue; // does side effect!
     // log.info("extractWithManyExtractors done for entry", entry[0], "query", entry[1], "result=", result);
   }
 
@@ -753,13 +815,19 @@ export const extractWithManyExtractors = <StateType>(
     selectorParams.extractor.runtimeTransformers ?? {}
   )) {
     let result = applyExtractorTransformerInMemory(transformerForRuntime[1], {
-      elementType: "object",
-      elementValue: {
-        ...selectorParams.extractor.pageParams.elementValue,
-        ...selectorParams.extractor.queryParams.elementValue,
-      },
+      // elementType: "object",
+      // elementValue: {
+        ...selectorParams.extractor.pageParams,
+        ...selectorParams.extractor.queryParams,
+      // },
     }, context)
-    context.elementValue[transformerForRuntime[0]] = result; // does side effect!
+    if (result.elementType == "failure") {
+      log.error("extractWithManyExtractors failed for transformer", transformerForRuntime[0], "query", transformerForRuntime[1], "result=", result);
+      return { elementType: "object", elementValue: {}}
+      
+    }
+    context[transformerForRuntime[0]] = result.elementValue; // does side effect!
+    // context.elementValue[transformerForRuntime[0]] = result; // does side effect!
     // log.info("extractWithManyExtractors done for entry", entry[0], "query", entry[1], "result=", result);
   }
 
@@ -772,7 +840,8 @@ export const extractWithManyExtractors = <StateType>(
   //   "newFetchedData",
   //   context
   // );
-  return context;
+  // return { elementType: "object", elementValue: context};
+  return { elementType: "object", elementValue: context};
 };
 
 // ################################################################################################
@@ -799,7 +868,7 @@ export const extractzodSchemaForSingleSelectQuery = <StateType>(
     );
   }
 
-  const entityUuidDomainElement: DomainElement = resolveContextReferenceDEFUNCT(
+  const entityUuidDomainElement: DomainElement = resolveContextReference(
     selectorParams.query.select.parentUuid,
     selectorParams.query.queryParams,
     selectorParams.query.contextResults
@@ -880,14 +949,14 @@ export const extractFetchQueryJzodSchema = <StateType>(
   
   const fetchQueryJzodSchema = Object.fromEntries(
     Object.entries(localFetchParams?.combiners??{})
-    .map((entry: [string, QuerySelect]) => [
+    .map((entry: [string, QuerySelectTemplate]) => [
       entry[0],
       selectorParams.extractorRunnerMap.extractzodSchemaForSingleSelectQuery(deploymentEntityState, {
         extractorRunnerMap:selectorParams.extractorRunnerMap,
         query: {
           queryType: "getSingleSelectQueryJzodSchema",
           deploymentUuid: localFetchParams.deploymentUuid,
-          contextResults: { elementType: "object", elementValue: {} },
+          contextResults: { },
           pageParams: selectorParams.query.pageParams,
           queryParams: selectorParams.query.queryParams,
           select: entry[1],

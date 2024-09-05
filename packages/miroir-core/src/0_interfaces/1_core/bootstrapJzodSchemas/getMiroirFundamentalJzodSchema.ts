@@ -1416,25 +1416,37 @@ export function getMiroirFundamentalJzodSchema(
               tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
             },
             pageParams: {
-              type: "schemaReference",
+              type: "record",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "domainElementObject",
-              },
+                type: "any"
+              }
+              // type: "schemaReference",
+              // definition: {
+              //   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              //   relativePath: "domainElementObject",
+              // },
             },
             queryParams: {
-              type: "schemaReference",
+              type: "record",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "domainElementObject",
-              },
+                type: "any"
+              }
+              // type: "schemaReference",
+              // definition: {
+              //   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              //   relativePath: "domainElementObject",
+              // },
             },
             contextResults: {
-              type: "schemaReference",
+              type: "record",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "domainElementObject",
-              },
+                type: "any"
+              }
+              // type: "schemaReference",
+              // definition: {
+              //   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              //   relativePath: "domainElementObject",
+              // },
             },
           },
         },
@@ -1457,7 +1469,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "querySelectObject", // TODO: is this still an extractor, while it includes querySelectObjectByRelation?
+                relativePath: "querySelectObjectTemplate", // TODO: is this still an extractor, while it includes querySelectObjectByRelationTemplate?
               },
             },
           },
@@ -1481,7 +1493,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "querySelectObjectList",
+                relativePath: "querySelectObjectListTemplate",
               },
             },
           },
@@ -1622,7 +1634,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "querySelect",
+                relativePath: "querySelectTemplate",
               },
             },
           },
@@ -2276,16 +2288,16 @@ export function getMiroirFundamentalJzodSchema(
         queryTemplateConstantOrParameterReference: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateConstantOrParameterReference,
         queryTemplateConstantOrAnyReference: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateConstantOrAnyReference,
         queryFailed: (miroirFundamentalJzodSchema as any).definition.context.queryFailed,
-        querySelectObjectListByManyToManyRelation: (miroirFundamentalJzodSchema as any).definition.context
-          .querySelectObjectListByManyToManyRelation,
-        extractObjectListByEntity: (miroirFundamentalJzodSchema as any).definition.context
-          .extractObjectListByEntity,
-        querySelectObjectListByRelation: (miroirFundamentalJzodSchema as any).definition.context
-          .querySelectObjectListByRelation,
-        querySelectObjectByRelation: (miroirFundamentalJzodSchema as any).definition.context
-          .querySelectObjectByRelation,
-        extractObjectByDirectReference: (miroirFundamentalJzodSchema as any).definition.context
-          .extractObjectByDirectReference,
+        querySelectObjectListByManyToManyRelationTemplate: (miroirFundamentalJzodSchema as any).definition.context
+          .querySelectObjectListByManyToManyRelationTemplate,
+        extractObjectListByEntityTemplate: (miroirFundamentalJzodSchema as any).definition.context
+          .extractObjectListByEntityTemplate,
+        querySelectObjectListByRelationTemplate: (miroirFundamentalJzodSchema as any).definition.context
+          .querySelectObjectListByRelationTemplate,
+        querySelectObjectByRelationTemplate: (miroirFundamentalJzodSchema as any).definition.context
+          .querySelectObjectByRelationTemplate,
+        extractObjectByDirectReferenceTemplate: (miroirFundamentalJzodSchema as any).definition.context
+          .extractObjectByDirectReferenceTemplate,
         querySelectExtractorWrapperReturningObject: (miroirFundamentalJzodSchema as any).definition.context.querySelectExtractorWrapperReturningObject,
         querySelectExtractorWrapperReturningList: (miroirFundamentalJzodSchema as any).definition.context.querySelectExtractorWrapperReturningList,
         querySelectExtractorWrapper: (miroirFundamentalJzodSchema as any).definition.context.querySelectExtractorWrapper,
@@ -2309,10 +2321,10 @@ export function getMiroirFundamentalJzodSchema(
         transformerForRuntime_objectValues: (transformerJzodSchema as any).definition.context.transformerForRuntime_objectValues,
         transformerForRuntime_freeObjectTemplate: (transformerJzodSchema as any).definition.context.transformerForRuntime_freeObjectTemplate,
         transformerForRuntime: (transformerJzodSchema as any).definition.context.transformerForRuntime,
-        querySelectObject: (miroirFundamentalJzodSchema as any).definition.context.querySelectObject,
-        querySelectObjectList: (miroirFundamentalJzodSchema as any).definition.context.querySelectObjectList,
-        querySelectByQueryCombiner: (miroirFundamentalJzodSchema as any).definition.context.querySelectByQueryCombiner,
-        querySelect: (miroirFundamentalJzodSchema as any).definition.context.querySelect,
+        querySelectObjectTemplate: (miroirFundamentalJzodSchema as any).definition.context.querySelectObjectTemplate,
+        querySelectObjectListTemplate: (miroirFundamentalJzodSchema as any).definition.context.querySelectObjectListTemplate,
+        querySelectByQueryCombinerTemplate: (miroirFundamentalJzodSchema as any).definition.context.querySelectByQueryCombinerTemplate,
+        querySelectTemplate: (miroirFundamentalJzodSchema as any).definition.context.querySelectTemplate,
         miroirSelectQueriesRecord: (miroirFundamentalJzodSchema as any).definition.context.miroirSelectQueriesRecord,
         extractorForSingleObject: (miroirFundamentalJzodSchema as any).definition.context.extractorForSingleObject,
         extractorForSingleObjectList: (miroirFundamentalJzodSchema as any).definition.context.extractorForSingleObjectList,

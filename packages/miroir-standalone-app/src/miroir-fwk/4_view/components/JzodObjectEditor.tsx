@@ -469,7 +469,7 @@ export const JzodObjectEditor = (
             extractors: {
               [unfoldedRawSchema.tag?.value?.targetEntity]:
               {
-                queryType: "extractObjectListByEntity",
+                queryType: "extractObjectListByEntityTemplate",
                 applicationSection: getApplicationSection(props.currentDeploymentUuid,unfoldedRawSchema.tag?.value?.targetEntity),
                 parentName: "",
                 parentUuid: {

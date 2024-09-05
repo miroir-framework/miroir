@@ -22,13 +22,14 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   QueryAction,
-  QuerySelectObject,
+  QuerySelectObjectTemplate,
   resolveContextReferenceDEFUNCT,
   TransformerForRuntime,
   selectEntityJzodSchemaFromDomainStateNew,
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
-  selectJzodSchemaBySingleSelectQueryFromDomainStateNew
+  selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
+  resolveContextReference
 } from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
@@ -202,7 +203,7 @@ export class SqlDbExtractRunner {
     // ): Promise<DomainElementInstanceUuidIndexOrFailed> {
     let result: Promise<DomainElementInstanceUuidIndexOrFailed>;
     switch (selectorParams.extractor.select.queryType) {
-      case "extractObjectListByEntity": {
+      case "extractObjectListByEntityTemplate": {
         return this.extractEntityInstanceUuidIndexWithFilter(selectorParams);
       }
       case "selectObjectListByRelation":
@@ -219,7 +220,8 @@ export class SqlDbExtractRunner {
               ? selectorParams.extractor.select
               : {
                   ...selectorParams.extractor.select,
-                  applicationSection: selectorParams.extractor.pageParams.elementValue.applicationSection
+                  applicationSection: selectorParams.extractor.pageParams.applicationSection
+                  // applicationSection: selectorParams.extractor.pageParams.elementValue.applicationSection
                     .elementValue as ApplicationSection,
                 },
           },
@@ -285,14 +287,14 @@ export class SqlDbExtractRunner {
   > = async (
     selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObject>
   ): Promise<DomainElementEntityInstanceOrFailed> => {
-    const querySelectorParams: QuerySelectObject = selectorParams.extractor.select as QuerySelectObject;
+    const querySelectorParams: QuerySelectObjectTemplate = selectorParams.extractor.select as QuerySelectObjectTemplate;
     const deploymentUuid = selectorParams.extractor.deploymentUuid;
     const applicationSection: ApplicationSection =
       selectorParams.extractor.select.applicationSection ??
       ((selectorParams.extractor.pageParams?.elementValue?.applicationSection?.elementValue ??
         "data") as ApplicationSection);
 
-    const entityUuidReference: DomainElement = resolveContextReferenceDEFUNCT(
+    const entityUuidReference: DomainElement = resolveContextReference(
       querySelectorParams.parentUuid,
       selectorParams.extractor.queryParams,
       selectorParams.extractor.contextResults
@@ -325,7 +327,7 @@ export class SqlDbExtractRunner {
 
     switch (querySelectorParams?.queryType) {
       case "selectObjectByRelation": {
-        const referenceObject = resolveContextReferenceDEFUNCT(
+        const referenceObject = resolveContextReference(
           querySelectorParams.objectReference,
           selectorParams.extractor.queryParams,
           selectorParams.extractor.contextResults
@@ -386,7 +388,7 @@ export class SqlDbExtractRunner {
         break;
       }
       case "selectObjectByDirectReference": {
-        const instanceDomainElement = resolveContextReferenceDEFUNCT(
+        const instanceDomainElement = resolveContextReference(
           querySelectorParams.instanceUuid,
           selectorParams.extractor.queryParams,
           selectorParams.extractor.contextResults
@@ -451,7 +453,7 @@ export class SqlDbExtractRunner {
       }
       default: {
         throw new Error(
-          "selectEntityInstanceFromDeploymentEntityState can not handle QuerySelectObject query with queryType=" +
+          "selectEntityInstanceFromDeploymentEntityState can not handle QuerySelectObjectTemplate query with queryType=" +
             selectorParams.extractor.select.queryType
         );
         break;
@@ -469,7 +471,7 @@ export class SqlDbExtractRunner {
     const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
 
-    const entityUuid: DomainElement = resolveContextReferenceDEFUNCT(
+    const entityUuid: DomainElement = resolveContextReference(
       extractorRunnerParams.extractor.select.parentUuid,
       extractorRunnerParams.extractor.queryParams,
       extractorRunnerParams.extractor.contextResults
@@ -551,7 +553,7 @@ export class SqlDbExtractRunner {
     const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
 
-    const entityUuid: DomainElement = resolveContextReferenceDEFUNCT(
+    const entityUuid: DomainElement = resolveContextReference(
       extractorRunnerParams.extractor.select.parentUuid,
       extractorRunnerParams.extractor.queryParams,
       extractorRunnerParams.extractor.contextResults
@@ -577,7 +579,7 @@ export class SqlDbExtractRunner {
       case "instanceUuid": {
         let entityInstanceCollection: ActionEntityInstanceCollectionReturnType;
         if (
-          extractorRunnerParams.extractor.select.queryType == "extractObjectListByEntity" &&
+          extractorRunnerParams.extractor.select.queryType == "extractObjectListByEntityTemplate" &&
           extractorRunnerParams.extractor.select.filter
         ) {
           // TODO: resolve filter value

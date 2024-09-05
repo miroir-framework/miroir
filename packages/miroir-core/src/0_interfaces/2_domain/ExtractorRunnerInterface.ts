@@ -44,6 +44,10 @@ export type SyncExtractorRunner<QueryType extends DomainModelExtractor, StateTyp
 export type AsyncExtractorRunner<QueryType extends DomainModelExtractor, ResultType> = (
   extractorAndParams: AsyncExtractorRunnerParams<QueryType>
 ) => Promise<ResultType>;
+// // ################################################################################################
+// export type AsyncExtractorRunner<QueryType extends DomainModelExtractor, ResultType> = (
+//   extractorAndParams: AsyncExtractorRunnerParams<QueryType>
+// ) => Promise<ResultType>;
 
 // ################################################################################################
 export type ExtractorRunner<QueryType extends DomainModelExtractor, StateType, ResultType> =
@@ -72,8 +76,10 @@ export type AsyncExtractorRunnerMap = {
   >,
   applyExtractorTransformer(
     query: TransformerForRuntime,
-    queryParams: DomainElementObject,
-    newFetchedData: DomainElementObject,
+    queryParams: Record<string, any>,
+    newFetchedData: Record<string, any>,
+    // queryParams: DomainElementObject,
+    // newFetchedData: DomainElementObject,
     extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>,
   ): Promise<DomainElement>
 };

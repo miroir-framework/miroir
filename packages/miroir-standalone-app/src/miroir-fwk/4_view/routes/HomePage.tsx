@@ -224,7 +224,7 @@ export const HomePage = (props: RootComponentProps) => {
     setDisplayedReportUuid("");
   };
 
-    // // const bundleProducerQuery: QuerySelect = useMemo(()=>queryVersionBundleProducerV1.definition,[])
+    // // const bundleProducerQuery: QuerySelectTemplate = useMemo(()=>queryVersionBundleProducerV1.definition,[])
     // const bundleProducerQuery: ExtractorForRecordOfExtractors = useMemo(()=>({
     //   queryType: "extractorForRecordOfExtractors",
     //   deploymentUuid: adminConfigurationDeploymentMiroir.uuid,

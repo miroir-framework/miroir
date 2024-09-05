@@ -30,7 +30,7 @@
             }
           },
           "entities": {
-            "queryType": "extractObjectListByEntity",
+            "queryType": "extractObjectListByEntityTemplate",
             "applicationSection": "model",
             "parentName": "Entity",
             "parentUuid": {
@@ -39,7 +39,7 @@
             }
           },
           "entityDefinitions": {
-            "queryType": "extractObjectListByEntity",
+            "queryType": "extractObjectListByEntityTemplate",
             "applicationSection": "model",
             "parentName": "Entity",
             "parentUuid": {
@@ -48,7 +48,7 @@
             }
           },
           "reports": {
-            "queryType": "extractObjectListByEntity",
+            "queryType": "extractObjectListByEntityTemplate",
             "parentName": "Report",
             "parentUuid": {
               "queryTemplateType": "constantUuid",
@@ -56,7 +56,7 @@
             }
           },
           "queries": {
-            "queryType": "extractObjectListByEntity",
+            "queryType": "extractObjectListByEntityTemplate",
             "parentName": "Query",
             "parentUuid": {
               "queryTemplateType": "constantUuid",
@@ -64,7 +64,7 @@
             }
           },
           "endpoints": {
-            "queryType": "extractObjectListByEntity",
+            "queryType": "extractObjectListByEntityTemplate",
             "parentName": "Query",
             "parentUuid": {
               "queryTemplateType": "constantUuid",
@@ -74,7 +74,7 @@
           "instancesOfEntities": {
             "queryType": "queryCombiner",
             "rootQuery": {
-              "queryType": "extractObjectListByEntity",
+              "queryType": "extractObjectListByEntityTemplate",
               "applicationSection": "model",
               "parentName": "Entity",
               "parentUuid": {
@@ -84,7 +84,7 @@
             },
             "subQuery": {
               "query": {
-                "queryType":"extractObjectListByEntity",
+                "queryType":"extractObjectListByEntityTemplate",
                 "parentUuid": {
                   "queryTemplateType": "queryParameterReference",
                   "referenceName": "uuid"
