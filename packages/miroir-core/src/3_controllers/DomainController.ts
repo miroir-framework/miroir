@@ -35,8 +35,8 @@ import {
   ModelAction,
   TransformerForBuild,
   QueryAction,
-  QuerySelectTemplate,
-  QuerySelectExtractorWrapper,
+  QueryTemplate,
+  QueryTemplateSelectExtractorWrapper,
   RestPersistenceAction,
   TransactionalInstanceAction,
   UndoRedoAction,
@@ -647,96 +647,98 @@ export class DomainController implements DomainControllerInterface {
   }
 
   
-  // ##############################################################################################
-  /**
-   * translates @param query into PersistenceAction, with actionType="LocalPersistenceAction" and
-    actionName="create" | "read" | "update" | "delete"
-    aren't the "read" obsolete since the PersistenceStore can execute queries?
-    Plus the "read" means that query transformers are executed in memory on the server, and not
-    as an "sql / with" query
+  // // ##############################################################################################
+  // /**
+  //  * translates @param query into PersistenceAction, with actionType="LocalPersistenceAction" and
+  //   actionName="create" | "read" | "update" | "delete"
+  //   aren't the "read" obsolete since the PersistenceStore can execute queries?
+  //   Plus the "read" means that query transformers are executed in memory on the server, and not
+  //   as an "sql / with" query
 
-   * @param deploymentUuid 
-   * @param queryParams 
-   * @param contextResults 
-   * @param queryName 
-   * @param query 
-   * @returns 
-   */
-  async handleLocalPersistenceStoreQuery(
-    // queryAction: QueryAction,
-    deploymentUuid: Uuid,
-    queryParams: DomainElementObject,
-    contextResults: DomainElementObject,
-    queryName: string,
-    query: QuerySelectExtractorWrapper | QuerySelectTemplate,
-  ): Promise<ActionReturnType> {
-    switch (query.queryType) {
-      case "extractObjectListByEntityTemplate": {
-        const parentUuid = resolveContextReferenceDEFUNCT(
-          query.parentUuid,
-          queryParams,
-          contextResults
-        );
+  //  * @param deploymentUuid 
+  //  * @param queryParams 
+  //  * @param contextResults 
+  //  * @param queryName 
+  //  * @param query 
+  //  * @returns 
+  //  */
+  // async handleLocalPersistenceStoreQuery(
+  //   // queryAction: QueryAction,
+  //   deploymentUuid: Uuid,
+  //   queryParams: DomainElementObject,
+  //   contextResults: DomainElementObject,
+  //   queryName: string,
+  //   query: QueryTemplateSelectExtractorWrapper | QueryTemplate,
+  // ): Promise<ActionReturnType> {
+  //   switch (query.queryType) {
+  //     case "queryTemplateExtractObjectListByEntity": {
+  //       const parentUuid = resolveContextReferenceDEFUNCT(
+  //         query.parentUuid,
+  //         queryParams,
+  //         contextResults
+  //       );
 
-        log.info("DomainController handleQuery queryAction resolved parentUuid", JSON.stringify(parentUuid));
+  //       log.info("DomainController handleQuery queryAction resolved parentUuid", JSON.stringify(parentUuid));
 
-        if (parentUuid.elementType != "instanceUuid") {
-          throw new Error(
-            "DomainController handleQuery queryAction no parentUuid found for query " +
-              JSON.stringify(query) +
-              " parentUuid " +
-              JSON.stringify(parentUuid)
-          );
-        }
+  //       if (parentUuid.elementType != "instanceUuid") {
+  //         throw new Error(
+  //           "DomainController handleQuery queryAction no parentUuid found for query " +
+  //             JSON.stringify(query) +
+  //             " parentUuid " +
+  //             JSON.stringify(parentUuid)
+  //         );
+  //       }
 
-        if (!query.applicationSection) {
-          throw new Error(
-            "DomainController handleQuery queryAction no applicationSection found for query " + JSON.stringify(query)
-          );
-        }
+  //       if (!query.applicationSection) {
+  //         throw new Error(
+  //           "DomainController handleQuery queryAction no applicationSection found for query " + JSON.stringify(query)
+  //         );
+  //       }
 
-        const result = await this.callUtil.callPersistenceAction(
-          {}, // context
-          { // context update
-            addResultToContextAsName: "dataEntitiesFromModelSection",
-            expectedDomainElementType: "entityInstanceCollection",
-          },
-          { // persistence action
-            actionType: "LocalPersistenceAction",
-            actionName: "read",
-            endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
-            deploymentUuid: deploymentUuid,
-            parentName: query.parentName,
-            parentUuid: parentUuid.elementValue,
-            section: query.applicationSection,
-          }
-        );
+  //       const result = await this.callUtil.callPersistenceAction(
+  //         {}, // context
+  //         { // context update
+  //           addResultToContextAsName: "dataEntitiesFromModelSection",
+  //           expectedDomainElementType: "entityInstanceCollection",
+  //         },
+  //         { // persistence action
+  //           actionType: "LocalPersistenceAction",
+  //           actionName: "read",
+  //           endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
+  //           deploymentUuid: deploymentUuid,
+  //           parentName: query.parentName,
+  //           parentUuid: parentUuid.elementValue,
+  //           section: query.applicationSection,
+  //         }
+  //       );
 
-        log.info("DomainController handleQuery queryName=", queryName);
-        log.info("DomainController handleQuery result=", JSON.stringify(result));
+  //       log.info("DomainController handleQuery queryName=", queryName);
+  //       log.info("DomainController handleQuery result=", JSON.stringify(result));
 
-        return result["dataEntitiesFromModelSection"];
-        break;
-      }
-      case "literal":
-      case "selectObjectListByRelation":
-      case "selectObjectListByManyToManyRelation":
-      case "queryCombiner":
-      case "selectObjectByRelation":
-      case "selectObjectByDirectReference":
-      case "queryContextReference":
-      case "wrapperReturningObject":
-      case "wrapperReturningList":
-      default: {
-        throw new Error(
-          "DomainController handleQuery queryAction no query found in query! " +
-            JSON.stringify(query)
-        );
-        break;
-      }
-    }
+  //       return result["dataEntitiesFromModelSection"];
+  //       break;
+  //     }
+  //     case "literal":
+  //     case "selectObjectListByRelation":
+  //     case "selectObjectListByManyToManyRelation":
+  //     case "queryCombiner":
+  //     case "selectObjectByRelation":
+  //     case "selectObjectByDirectReference":
+  //     case "queryContextReference":
+  //     case "wrapperReturningObject":
+  //     case "wrapperReturningList":
+  //     default: {
+  //       throw new Error(
+  //         "DomainController handleQuery queryAction no query found in query! " +
+  //           JSON.stringify(query)
+  //       );
+  //       break;
+  //     }
+  //   }
 
-  }
+  // }
+
+
   // ##############################################################################################
   async handleQuery(queryAction: QueryAction): Promise<ActionReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;

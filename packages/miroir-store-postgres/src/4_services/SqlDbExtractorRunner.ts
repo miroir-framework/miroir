@@ -22,7 +22,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   QueryAction,
-  QuerySelectObjectTemplate,
+  QueryTemplateSelectObject,
   resolveContextReferenceDEFUNCT,
   TransformerForRuntime,
   selectEntityJzodSchemaFromDomainStateNew,
@@ -203,7 +203,7 @@ export class SqlDbExtractRunner {
     // ): Promise<DomainElementInstanceUuidIndexOrFailed> {
     let result: Promise<DomainElementInstanceUuidIndexOrFailed>;
     switch (selectorParams.extractor.select.queryType) {
-      case "extractObjectListByEntityTemplate": {
+      case "queryTemplateExtractObjectListByEntity": {
         return this.extractEntityInstanceUuidIndexWithFilter(selectorParams);
       }
       case "selectObjectListByRelation":
@@ -287,7 +287,7 @@ export class SqlDbExtractRunner {
   > = async (
     selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObject>
   ): Promise<DomainElementEntityInstanceOrFailed> => {
-    const querySelectorParams: QuerySelectObjectTemplate = selectorParams.extractor.select as QuerySelectObjectTemplate;
+    const querySelectorParams: QueryTemplateSelectObject = selectorParams.extractor.select as QueryTemplateSelectObject;
     const deploymentUuid = selectorParams.extractor.deploymentUuid;
     const applicationSection: ApplicationSection =
       selectorParams.extractor.select.applicationSection ??
@@ -453,7 +453,7 @@ export class SqlDbExtractRunner {
       }
       default: {
         throw new Error(
-          "selectEntityInstanceFromDeploymentEntityState can not handle QuerySelectObjectTemplate query with queryType=" +
+          "selectEntityInstanceFromDeploymentEntityState can not handle QueryTemplateSelectObject query with queryType=" +
             selectorParams.extractor.select.queryType
         );
         break;
@@ -579,7 +579,7 @@ export class SqlDbExtractRunner {
       case "instanceUuid": {
         let entityInstanceCollection: ActionEntityInstanceCollectionReturnType;
         if (
-          extractorRunnerParams.extractor.select.queryType == "extractObjectListByEntityTemplate" &&
+          extractorRunnerParams.extractor.select.queryType == "queryTemplateExtractObjectListByEntity" &&
           extractorRunnerParams.extractor.select.filter
         ) {
           // TODO: resolve filter value

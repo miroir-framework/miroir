@@ -342,7 +342,7 @@ describe("domainSelector", () => {
   //       queryParams: { },
   //       extractors: {
   //         authors: {
-  //           queryType: "extractObjectListByEntityTemplate",
+  //           queryType: "queryTemplateExtractObjectListByEntity",
   //           parentName: "Author",
   //           parentUuid: {
   //             queryTemplateType: "constantUuid",
@@ -409,7 +409,7 @@ describe("domainSelector", () => {
         queryParams: { },
         extractors: {
           authors: {
-            queryType: "extractObjectListByEntityTemplate",
+            queryType: "queryTemplateExtractObjectListByEntity",
             parentName: "Author",
             parentUuid: {
               queryTemplateType: "constantUuid",
@@ -640,7 +640,7 @@ describe("domainSelector", () => {
         queryParams: { },
         extractors: {
           entities: {
-            queryType: "extractObjectListByEntityTemplate",
+            queryType: "queryTemplateExtractObjectListByEntity",
             applicationSection: "model",
             parentName: "Entity",
             parentUuid: {
@@ -658,7 +658,7 @@ describe("domainSelector", () => {
             },
             subQuery: {
               query: {
-                queryType: "extractObjectListByEntityTemplate",
+                queryType: "queryTemplateExtractObjectListByEntity",
                 parentUuid: {
                   queryTemplateType: "queryParameterReference",
                   referenceName: "uuid",
@@ -718,7 +718,7 @@ describe("domainSelector", () => {
         queryParams: { },
         extractors: {
           books: {
-            queryType: "extractObjectListByEntityTemplate",
+            queryType: "queryTemplateExtractObjectListByEntity",
             parentName: "Book",
             parentUuid: {
               queryTemplateType: "constantUuid",

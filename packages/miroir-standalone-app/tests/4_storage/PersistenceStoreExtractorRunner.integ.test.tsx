@@ -184,7 +184,7 @@ describe.sequential("PersistenceStoreExtractorRunner.integ.test", () => {
               deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               extractors: {
                 entities: {
-                  queryType: "extractObjectListByEntityTemplate",
+                  queryType: "queryTemplateExtractObjectListByEntity",
                   applicationSection: applicationSection,
                   parentName: "Entity",
                   parentUuid: {
@@ -407,7 +407,7 @@ describe.sequential("PersistenceStoreExtractorRunner.integ.test", () => {
               deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               extractors: {
                 entities: {
-                  queryType: "extractObjectListByEntityTemplate",
+                  queryType: "queryTemplateExtractObjectListByEntity",
                   applicationSection: applicationSection,
                   parentName: "Entity",
                   parentUuid: {
@@ -478,7 +478,7 @@ describe.sequential("PersistenceStoreExtractorRunner.integ.test", () => {
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             extractors: {
               books: {
-                queryType: "extractObjectListByEntityTemplate",
+                queryType: "queryTemplateExtractObjectListByEntity",
                 applicationSection: applicationSection,
                 parentName: "Book",
                 parentUuid: {
@@ -535,7 +535,7 @@ describe.sequential("PersistenceStoreExtractorRunner.integ.test", () => {
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             extractors: {
               books: {
-                queryType: "extractObjectListByEntityTemplate",
+                queryType: "queryTemplateExtractObjectListByEntity",
                 applicationSection: applicationSection,
                 parentName: "Book",
                 parentUuid: {
@@ -587,7 +587,7 @@ describe.sequential("PersistenceStoreExtractorRunner.integ.test", () => {
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             extractors: {
               books: {
-                queryType: "extractObjectListByEntityTemplate",
+                queryType: "queryTemplateExtractObjectListByEntity",
                 applicationSection: applicationSection,
                 parentName: "Book",
                 parentUuid: {
@@ -646,7 +646,7 @@ describe.sequential("PersistenceStoreExtractorRunner.integ.test", () => {
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             extractors: {
               books: {
-                queryType: "extractObjectListByEntityTemplate",
+                queryType: "queryTemplateExtractObjectListByEntity",
                 applicationSection: applicationSection,
                 parentName: "Book",
                 parentUuid: {

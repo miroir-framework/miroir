@@ -21,7 +21,7 @@
 //   PersistenceStoreExtractorRunner,
 //   PersistenceStoreInstanceSectionAbstractInterface,
 //   QueryAction,
-//   QuerySelectObjectTemplate,
+//   QueryTemplateSelectObject,
 //   resolveContextReferenceDEFUNCT,
 //   selectEntityJzodSchemaFromDomainStateNew,
 //   selectFetchQueryJzodSchemaFromDomainStateNew,
@@ -34,7 +34,7 @@ import {
   DomainElement,
   ExtractorForSingleObject,
   DomainElementEntityInstanceOrFailed,
-  QuerySelectObjectTemplate,
+  QueryTemplateSelectObject,
   ApplicationSection,
   ExtractorForSingleObjectList,
   DomainElementInstanceUuidIndexOrFailed,
@@ -62,7 +62,6 @@ import {
 } from "./DomainStateQuerySelectors.js";
 import {
   resolveContextReference,
-  resolveContextReferenceDEFUNCT,
 } from "./QuerySelectors.js";
 import {
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
@@ -149,7 +148,7 @@ export class ExtractorRunnerInMemory implements PersistenceStoreExtractorRunner 
   > = async (
     selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObject>
   ): Promise<DomainElementEntityInstanceOrFailed> => {
-    const querySelectorParams: QuerySelectObjectTemplate = selectorParams.extractor.select as QuerySelectObjectTemplate;
+    const querySelectorParams: QueryTemplateSelectObject = selectorParams.extractor.select as QueryTemplateSelectObject;
     const deploymentUuid = selectorParams.extractor.deploymentUuid;
     const applicationSection: ApplicationSection =
       selectorParams.extractor.select.applicationSection ??
@@ -341,7 +340,7 @@ export class ExtractorRunnerInMemory implements PersistenceStoreExtractorRunner 
       }
       default: {
         throw new Error(
-          "selectEntityInstanceFromDeploymentEntityState can not handle QuerySelectObjectTemplate query with queryType=" +
+          "selectEntityInstanceFromDeploymentEntityState can not handle QueryTemplateSelectObject query with queryType=" +
             selectorParams.extractor.select.queryType
         );
         break;

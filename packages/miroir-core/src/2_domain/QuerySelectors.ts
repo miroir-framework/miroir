@@ -13,14 +13,14 @@ import {
   DomainModelQueryJzodSchemaParams,
   DomainModelSingleExtractor,
   EntityInstance,
-  ExtractObjectListByEntityTemplate,
+  QueryTemplateExtractObjectListByEntity,
   ExtractorForRecordOfExtractors,
   ExtractorForSingleObjectList,
   JzodElement,
   JzodObject,
-  QuerySelectTemplate,
-  QuerySelectObjectListByManyToManyRelationTemplate,
-  QuerySelectObjectListByRelationTemplate,
+  QueryTemplate,
+  QueryTemplateSelectObjectListByManyToManyRelation,
+  QueryTemplateSelectObjectListByRelation,
   QueryTemplateConstantOrAnyReference,
   TransformerForRuntime
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
@@ -200,8 +200,6 @@ export const resolveContextReference = (
   queryTemplateConstantOrAnyReference: QueryTemplateConstantOrAnyReference,
   queryParams: Record<string, any>,
   contextResults: Record<string, any>,
-  // queryParams: DomainElementObject,
-  // contextResults: DomainElement,
 ) : DomainElement => {
   // log.info("resolveContextReferenceDEFUNCT for queryTemplateConstantOrAnyReference=", queryTemplateConstantOrAnyReference, "queryParams=", queryParams,"contextResults=", contextResults)
   if (
@@ -289,13 +287,13 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
   extractor: ExtractorForSingleObjectList,
 ) => {
   switch (extractor.select.queryType) {
-    case "extractObjectListByEntityTemplate": {
-      const localQuery: ExtractObjectListByEntityTemplate = extractor.select;
+    case "queryTemplateExtractObjectListByEntity": {
+      const localQuery: QueryTemplateExtractObjectListByEntity = extractor.select;
       const filterTest = localQuery.filter
         ? new RegExp((localQuery.filter.value as any).definition, "i") // TODO: check for correct type
         : undefined;
       log.info(
-        "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory extractObjectListByEntityTemplate filter",
+        "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory queryTemplateExtractObjectListByEntity filter",
         JSON.stringify(localQuery.filter)
       );
       const result:DomainElementInstanceUuidIndexOrFailed = localQuery.filter
@@ -307,7 +305,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
                   (i as any)[1][localQuery.filter?.attributeName??""]
                 )
                 log.info(
-                  "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory extractObjectListByEntityTemplate filter",
+                  "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory queryTemplateExtractObjectListByEntity filter",
                   JSON.stringify(i[1]),
                   "matchResult",
                   matchResult
@@ -328,14 +326,14 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
         : selectedInstancesUuidIndex;
       ;
       log.info(
-        "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory extractObjectListByEntityTemplate result",
+        "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory queryTemplateExtractObjectListByEntity result",
         JSON.stringify(result, undefined, 2)
       );
       return result;
       break;
     }
     case "selectObjectListByRelation": {
-      const relationQuery: QuerySelectObjectListByRelationTemplate = extractor.select;
+      const relationQuery: QueryTemplateSelectObjectListByRelation = extractor.select;
 
       // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation", JSON.stringify(selectedInstances))
       // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation", selectedInstances)
@@ -366,9 +364,9 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
       )} as DomainElementInstanceUuidIndex;
     }
     case "selectObjectListByManyToManyRelation": {
-      // const relationQuery: QuerySelectObjectListByManyToManyRelationTemplate = query;
-      // const relationQuery: QuerySelectObjectListByManyToManyRelationTemplate = selectorParams.extractor.select;
-      const relationQuery: QuerySelectObjectListByManyToManyRelationTemplate = extractor.select;
+      // const relationQuery: QueryTemplateSelectObjectListByManyToManyRelation = query;
+      // const relationQuery: QueryTemplateSelectObjectListByManyToManyRelation = selectorParams.extractor.select;
+      const relationQuery: QueryTemplateSelectObjectListByManyToManyRelation = extractor.select;
 
       // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation", selectedInstances)
       let otherList: DomainElement | undefined = undefined
@@ -505,12 +503,9 @@ export function innerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
   newFetchedData: Record<string, any>,
   pageParams: Record<string, any>,
   queryParams: Record<string, any>,
-  // newFetchedData: DomainElementObject,
-  // pageParams: DomainElementObject,
-  // queryParams: DomainElementObject,
   extractorRunnerMap:SyncExtractorRunnerMap<StateType>,
   deploymentUuid: Uuid,
-  query: QuerySelectTemplate
+  query: QueryTemplate
 ): DomainElement {
   switch (query.queryType) {
     case "literal": {
@@ -519,7 +514,7 @@ export function innerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
     }
     // ############################################################################################
     // Impure Monads
-    case "extractObjectListByEntityTemplate":
+    case "queryTemplateExtractObjectListByEntity":
     case "selectObjectListByRelation": 
     case "selectObjectListByManyToManyRelation": {
       return extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractorInMemory(state, {
@@ -567,7 +562,7 @@ export function innerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
       return {
         elementType: "object",
         elementValue: Object.fromEntries(
-          Object.entries(query.definition).map((e: [string, QuerySelectTemplate]) => [
+          Object.entries(query.definition).map((e: [string, QueryTemplate]) => [
             e[0],
             innerSelectElementFromQuery( // recursive call
               state,
@@ -623,17 +618,10 @@ export function innerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
                   newFetchedData,
                   pageParams,
                   {
-                    // elementType: "object",
-                    // elementValue: {
-                      ...queryParams.elementValue,
-                      ...Object.fromEntries(
-                        Object.entries(applyTransformer(query.subQuery.rootQueryObjectTransformer, entry[1]))
-                        // .map((e: [string, any]) => [
-                        //   e[0],
-                        //   { elementType: "instanceUuid", elementValue: e[1] },
-                        // ])
-                      ),
-                    // },
+                    ...queryParams.elementValue,
+                    ...Object.fromEntries(
+                      Object.entries(applyTransformer(query.subQuery.rootQueryObjectTransformer, entry[1]))
+                    ),
                   },
                   extractorRunnerMap,
                   deploymentUuid,
@@ -764,13 +752,8 @@ export const extractWithManyExtractors = <StateType>(
       context,
       selectorParams.extractor.pageParams,
       {
-        // elementType: "object",
-        // elementValue: {
-          ...selectorParams.extractor.pageParams,
-          ...selectorParams.extractor.queryParams,
-          // ...selectorParams.extractor.pageParams.elementValue,
-          // ...selectorParams.extractor.queryParams.elementValue,
-        // },
+        ...selectorParams.extractor.pageParams,
+        ...selectorParams.extractor.queryParams,
       },
       localSelectorMap as any,
       selectorParams.extractor.deploymentUuid,
@@ -795,11 +778,8 @@ export const extractWithManyExtractors = <StateType>(
       context,
       selectorParams.extractor.pageParams,
       {
-        // elementType: "object",
-        // elementValue: {
-          ...selectorParams.extractor.pageParams,
-          ...selectorParams.extractor.queryParams,
-        // },
+        ...selectorParams.extractor.pageParams,
+        ...selectorParams.extractor.queryParams,
       },
       localSelectorMap as any,
       selectorParams.extractor.deploymentUuid,
@@ -815,14 +795,18 @@ export const extractWithManyExtractors = <StateType>(
     selectorParams.extractor.runtimeTransformers ?? {}
   )) {
     let result = applyExtractorTransformerInMemory(transformerForRuntime[1], {
-      // elementType: "object",
-      // elementValue: {
-        ...selectorParams.extractor.pageParams,
-        ...selectorParams.extractor.queryParams,
-      // },
+      ...selectorParams.extractor.pageParams,
+      ...selectorParams.extractor.queryParams,
     }, context)
     if (result.elementType == "failure") {
-      log.error("extractWithManyExtractors failed for transformer", transformerForRuntime[0], "query", transformerForRuntime[1], "result=", result);
+      log.error(
+        "extractWithManyExtractors failed for transformer",
+        transformerForRuntime[0],
+        "query",
+        transformerForRuntime[1],
+        "result=",
+        result
+      );
       return { elementType: "object", elementValue: {}}
       
     }
@@ -949,7 +933,7 @@ export const extractFetchQueryJzodSchema = <StateType>(
   
   const fetchQueryJzodSchema = Object.fromEntries(
     Object.entries(localFetchParams?.combiners??{})
-    .map((entry: [string, QuerySelectTemplate]) => [
+    .map((entry: [string, QueryTemplate]) => [
       entry[0],
       selectorParams.extractorRunnerMap.extractzodSchemaForSingleSelectQuery(deploymentEntityState, {
         extractorRunnerMap:selectorParams.extractorRunnerMap,

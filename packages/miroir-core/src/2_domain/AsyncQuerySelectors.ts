@@ -10,7 +10,7 @@ import {
   ExtractorForRecordOfExtractors,
   ExtractorForSingleObject,
   ExtractorForSingleObjectList,
-  QuerySelectTemplate,
+  QueryTemplate,
   TransformerForRuntime
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
@@ -101,7 +101,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorRunner*/(
   extractorRunnerMap:AsyncExtractorRunnerMap,
   deploymentUuid: Uuid,
   extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>,
-  query: QuerySelectTemplate
+  query: QueryTemplate
 ): Promise<DomainElement> {
   switch (query.queryType) {
     case "literal": {
@@ -110,7 +110,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorRunner*/(
     }
     // ############################################################################################
     // Impure Monads
-    case "extractObjectListByEntityTemplate":
+    case "queryTemplateExtractObjectListByEntity":
     case "selectObjectListByRelation": 
     case "selectObjectListByManyToManyRelation": {
       return extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractorInMemory({
@@ -156,7 +156,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorRunner*/(
     case "extractorWrapperReturningObject":
     case "wrapperReturningObject": { // build object
       const entries = Object.entries(query.definition);
-      const promises = entries.map((e: [string, QuerySelectTemplate]) => {
+      const promises = entries.map((e: [string, QueryTemplate]) => {
         return asyncInnerSelectElementFromQuery(
           newFetchedData,
           pageParams ?? {},
@@ -353,7 +353,7 @@ export const asyncExtractWithManyExtractors = async (
     selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
 
   const extractorsPromises = Object.entries(selectorParams.extractor.extractors ?? {}).map(
-    (query: [string, QuerySelectTemplate]) => {
+    (query: [string, QueryTemplate]) => {
       return asyncInnerSelectElementFromQuery(
         context,
         selectorParams.extractor.pageParams,
@@ -390,7 +390,7 @@ export const asyncExtractWithManyExtractors = async (
   // });
 
   const combinerPromises = Object.entries(selectorParams.extractor.combiners ?? {})
-  .map((query: [string, QuerySelectTemplate]) => {
+  .map((query: [string, QueryTemplate]) => {
     return asyncInnerSelectElementFromQuery(
       context,
       selectorParams.extractor.pageParams,

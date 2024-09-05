@@ -224,7 +224,7 @@ export const HomePage = (props: RootComponentProps) => {
     setDisplayedReportUuid("");
   };
 
-    // // const bundleProducerQuery: QuerySelectTemplate = useMemo(()=>queryVersionBundleProducerV1.definition,[])
+    // // const bundleProducerQuery: QueryTemplate = useMemo(()=>queryVersionBundleProducerV1.definition,[])
     // const bundleProducerQuery: ExtractorForRecordOfExtractors = useMemo(()=>({
     //   queryType: "extractorForRecordOfExtractors",
     //   deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
@@ -232,7 +232,7 @@ export const HomePage = (props: RootComponentProps) => {
     //   pageParams: { elementType: "object", elementValue: {} },
     //   contextResults: { elementType: "object", elementValue: {} },
     //   queryParams: { elementType: "object", elementValue: { "applicationVersion": { elementType: "instanceUuid", elementValue: "695826c2-aefa-4f5f-a131-dee46fe21c13" } } },
-    //   extractors: queryVersionBundleProducerV1.definition as MiroirSelectQueriesRecord
+    //   extractors: queryVersionBundleProducerV1.definition as QueryTemplateRecord
     // }),[miroirMetaModel])
   
     // const producedBundle : DomainElement = useDomainStateCleanSelector(extractWithManyExtractorsFromDomainState, bundleProducerQuery);

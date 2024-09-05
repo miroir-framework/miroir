@@ -15,7 +15,7 @@ import {
   ExtractorForSingleObjectList,
   ExtractorForRecordOfExtractors,
   ExtractorForSingleObject,
-  QuerySelectExtractorWrapper,
+  QueryTemplateSelectExtractorWrapper,
 } from "miroir-core";
 import { MixableSqlDbStoreSection, SqlDbStoreSection } from "./SqlDbStoreSection.js";
 
@@ -70,7 +70,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       extractor:
         | ExtractorForSingleObjectList
         | ExtractorForSingleObject
-        | QuerySelectExtractorWrapper
+        | QueryTemplateSelectExtractorWrapper
         | ExtractorForRecordOfExtractors
     ): RecursiveStringRecords {
       // log.info(this.logHeader, "sqlForExtractor called with parameter", "extractor", extractor);
@@ -83,7 +83,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       // // log.info(this.logHeader, "sqlForExtractor called with queryGenerator", this.sequelize.getQueryInterface().queryGenerator);
       // log.info(this.logHeader, "sqlForExtractor called with selectQuery", (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery);
       switch (extractor.queryType) {
-        case "extractObjectListByEntityTemplate": {
+        case "queryTemplateExtractObjectListByEntity": {
           // const result = (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery(extractor.parentUuid
           //   , {
           // // const result = (this.sequelize as any).dialect.queryGenerator.selectQuery(extractor.parentUuid, {

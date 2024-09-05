@@ -9,7 +9,7 @@
     "reportParameters": {},
     "extractors": {
       "queries": {
-        "queryType": "extractObjectListByEntityTemplate",
+        "queryType": "queryTemplateExtractObjectListByEntity",
         "parentName": "Query",
         "parentUuid": {
           "queryTemplateType": "constantUuid",

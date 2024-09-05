@@ -22,9 +22,8 @@ import {
   PersistenceStoreExtractorRunner,
   PersistenceStoreInstanceSectionAbstractInterface,
   QueryAction,
-  QuerySelectObjectTemplate,
+  QueryTemplateSelectObject,
   resolveContextReference,
-  resolveContextReferenceDEFUNCT,
   selectEntityJzodSchemaFromDomainStateNew,
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
@@ -118,7 +117,7 @@ export class FileSystemExtractorRunner implements PersistenceStoreExtractorRunne
   //   switch (extractor.queryType) {
   //     case "domainModelSingleExtractor": {
   //       switch (extractor.select.queryType) {
-  //         case "extractObjectListByEntityTemplate": {
+  //         case "queryTemplateExtractObjectListByEntity": {
   //           const entityUuid = extractor.select.parentUuid;
   //           const entityInstanceUuidIndex = await this.dataStoreSection.getInstances(entityUuid);
   //           return {
@@ -186,7 +185,7 @@ export class FileSystemExtractorRunner implements PersistenceStoreExtractorRunne
   > = async (
     selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObject>
   ): Promise<DomainElementEntityInstanceOrFailed> => {
-    const querySelectorParams: QuerySelectObjectTemplate = selectorParams.extractor.select as QuerySelectObjectTemplate;
+    const querySelectorParams: QueryTemplateSelectObject = selectorParams.extractor.select as QueryTemplateSelectObject;
     const deploymentUuid = selectorParams.extractor.deploymentUuid;
     const applicationSection: ApplicationSection =
       selectorParams.extractor.select.applicationSection ??
@@ -381,7 +380,7 @@ export class FileSystemExtractorRunner implements PersistenceStoreExtractorRunne
       }
       default: {
         throw new Error(
-          "selectEntityInstanceFromDeploymentEntityState can not handle QuerySelectObjectTemplate query with queryType=" +
+          "selectEntityInstanceFromDeploymentEntityState can not handle QueryTemplateSelectObject query with queryType=" +
             selectorParams.extractor.select.queryType
         );
         break;

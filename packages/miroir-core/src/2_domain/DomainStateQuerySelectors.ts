@@ -14,7 +14,7 @@ import {
   EntityDefinition,
   JzodObject,
   DomainModelExtractor,
-  QuerySelectObjectTemplate,
+  QueryTemplateSelectObject,
   DomainModelSingleExtractor,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
@@ -210,7 +210,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
   domainState: DomainState,
   selectorParams: SyncExtractorRunnerParams<ExtractorForSingleObject, DomainState>
 ): DomainElementEntityInstanceOrFailed => {
-  const querySelectorParams: QuerySelectObjectTemplate = selectorParams.extractor.select as QuerySelectObjectTemplate;
+  const querySelectorParams: QueryTemplateSelectObject = selectorParams.extractor.select as QueryTemplateSelectObject;
   const deploymentUuid = selectorParams.extractor.deploymentUuid;
   const applicationSection: ApplicationSection =
     selectorParams.extractor.select.applicationSection ??
@@ -409,7 +409,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
     }
     default: {
       throw new Error(
-        "selectEntityInstanceFromObjectQueryAndDomainState can not handle QuerySelectObjectTemplate query with queryType=" +
+        "selectEntityInstanceFromObjectQueryAndDomainState can not handle QueryTemplateSelectObject query with queryType=" +
           selectorParams.extractor.select.queryType
       );
       break;
