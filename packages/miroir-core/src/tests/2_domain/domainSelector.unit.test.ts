@@ -9,7 +9,7 @@ import {
 
 import {
   DomainElement,
-  ExtractorForRecordOfExtractors,
+  ExtractorTemplateForRecordOfExtractors,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { circularReplacer } from "../../tools.js";
 import domainStateImport from "./domainState.json";
@@ -20,8 +20,8 @@ describe("domainSelector", () => {
   // // ###########################################################################################
   // it('error on non-existing Entity: EntityNotFound',
   //   () => {
-  //     const queryParam: ExtractorForRecordOfExtractors = {
-  //       queryType: "extractorForRecordOfExtractors",
+  //     const queryParam: ExtractorTemplateForRecordOfExtractors = {
+  //       queryType: "extractorTemplateForRecordOfExtractors",
   //       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
   //       contextResults: { elementType: "object", elementValue: {} },
   //       pageParams: { },
@@ -66,8 +66,8 @@ describe("domainSelector", () => {
   // // ###########################################################################################
   // it('error on non-existing Entity: EntityNotFound',
   //   () => {
-  //     const queryParam: ExtractorForRecordOfExtractors = {
-  //       queryType: "extractorForRecordOfExtractors",
+  //     const queryParam: ExtractorTemplateForRecordOfExtractors = {
+  //       queryType: "extractorTemplateForRecordOfExtractors",
   //       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
   //       contextResults: { elementType: "object", elementValue: {} },
   //       pageParams: { },
@@ -111,8 +111,8 @@ describe("domainSelector", () => {
   // it('error on non-existing object uuid: InstanceNotFound',
   //   () => {
 
-  //     const queryParam: ExtractorForRecordOfExtractors = {
-  //       queryType: "extractorForRecordOfExtractors",
+  //     const queryParam: ExtractorTemplateForRecordOfExtractors = {
+  //       queryType: "extractorTemplateForRecordOfExtractors",
   //       "deploymentUuid": adminConfigurationDeploymentLibrary.uuid,
   //       "contextResults": { elementType: "object", elementValue: {} },
   //       pageParams: { },
@@ -158,8 +158,8 @@ describe("domainSelector", () => {
   // it('select 1 object from Domain State',
   //   () => {
 
-  //     const queryParam: ExtractorForRecordOfExtractors = {
-  //       queryType: "extractorForRecordOfExtractors",
+  //     const queryParam: ExtractorTemplateForRecordOfExtractors = {
+  //       queryType: "extractorTemplateForRecordOfExtractors",
   //       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
   //       contextResults: { elementType: "object", elementValue: {} },
   //       pageParams: { },
@@ -191,8 +191,8 @@ describe("domainSelector", () => {
   // it('select 1 object from Domain State using context reference',
   //   () => {
 
-  //     const queryParam: ExtractorForRecordOfExtractors = {
-  //       queryType: "extractorForRecordOfExtractors",
+  //     const queryParam: ExtractorTemplateForRecordOfExtractors = {
+  //       queryType: "extractorTemplateForRecordOfExtractors",
   //       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
   //       contextResults: { elementType: "object", elementValue: {} },
   //       pageParams: { },
@@ -229,8 +229,8 @@ describe("domainSelector", () => {
   // it('select 1 object from Domain State using direct query parameter reference',
   //   () => {
 
-  //     const queryParam: ExtractorForRecordOfExtractors = {
-  //       queryType: "extractorForRecordOfExtractors",
+  //     const queryParam: ExtractorTemplateForRecordOfExtractors = {
+  //       queryType: "extractorTemplateForRecordOfExtractors",
   //       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
   //       contextResults: { },
   //       pageParams: { },
@@ -269,8 +269,8 @@ describe("domainSelector", () => {
   // it('select 1 object from the uuid found in an attribute of another object from Domain State',
   //   () => {
 
-  //     const queryParam: ExtractorForRecordOfExtractors = {
-  //       queryType: "extractorForRecordOfExtractors",
+  //     const queryParam: ExtractorTemplateForRecordOfExtractors = {
+  //       queryType: "extractorTemplateForRecordOfExtractors",
   //       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
   //       contextResults: { },
   //       pageParams: { },
@@ -326,8 +326,8 @@ describe("domainSelector", () => {
   // it('select Authors',
   //   () => {
 
-  //     const queryParam: ExtractorForRecordOfExtractors = {
-  //       queryType: "extractorForRecordOfExtractors",
+  //     const queryParam: ExtractorTemplateForRecordOfExtractors = {
+  //       queryType: "extractorTemplateForRecordOfExtractors",
   //       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
   //       contextResults: {},
   //       pageParams: {
@@ -393,8 +393,8 @@ describe("domainSelector", () => {
   it('select Authors with filter',
     () => {
 
-      const queryParam: ExtractorForRecordOfExtractors = {
-        queryType: "extractorForRecordOfExtractors",
+      const queryParam: ExtractorTemplateForRecordOfExtractors = {
+        queryType: "extractorTemplateForRecordOfExtractors",
         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: {},
         pageParams: {
@@ -453,8 +453,8 @@ describe("domainSelector", () => {
   it('select Books of Publisher of given Book from Domain State',
     () => {
 
-      const queryParam: ExtractorForRecordOfExtractors = {
-        queryType: "extractorForRecordOfExtractors",
+      const queryParam: ExtractorTemplateForRecordOfExtractors = {
+        queryType: "extractorTemplateForRecordOfExtractors",
         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: {},
         pageParams: {
@@ -529,8 +529,8 @@ describe("domainSelector", () => {
   it('select custom-built result: Books of Publisher of given Book from Domain State',
     () => {
 
-      const queryParam: ExtractorForRecordOfExtractors = {
-        queryType: "extractorForRecordOfExtractors",
+      const queryParam: ExtractorTemplateForRecordOfExtractors = {
+        queryType: "extractorTemplateForRecordOfExtractors",
         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: {},
         pageParams: {
@@ -624,8 +624,8 @@ describe("domainSelector", () => {
   it('select custom-built result with queryCombiner: instances of all Entites from Domain State, indexed by Entity Uuid',
     () => {
 
-      const queryParam: ExtractorForRecordOfExtractors = {
-        queryType: "extractorForRecordOfExtractors",
+      const queryParam: ExtractorTemplateForRecordOfExtractors = {
+        queryType: "extractorTemplateForRecordOfExtractors",
         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: {},
         pageParams: {
@@ -702,8 +702,8 @@ describe("domainSelector", () => {
   it('select Unique Publisher Uuids of Books',
     () => {
 
-      const queryParam: ExtractorForRecordOfExtractors = {
-        queryType: "extractorForRecordOfExtractors",
+      const queryParam: ExtractorTemplateForRecordOfExtractors = {
+        queryType: "extractorTemplateForRecordOfExtractors",
         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: {},
         pageParams: {

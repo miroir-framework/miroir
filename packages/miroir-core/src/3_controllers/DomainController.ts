@@ -29,7 +29,7 @@ import {
   DomainElementObject,
   EntityInstance,
   EntityInstanceCollection,
-  ExtractorForRecordOfExtractors,
+  ExtractorTemplateForRecordOfExtractors,
   InstanceAction,
   MetaModel,
   ModelAction,

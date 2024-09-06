@@ -17,7 +17,7 @@ import {
   ExtractorRunnerParamsForJzodSchema,
   LoggerInterface,
   MiroirLoggerFactory,
-  DomainModelExtractor,
+  ExtractorTemplateForDomainModel,
   SyncExtractorRunner,
   SyncExtractorRunnerParams,
   RecordOfJzodElement,
@@ -46,7 +46,7 @@ declare type JzodSchemaSelectorParamsSelector<QueryType extends DomainModelQuery
 
 
 // ################################################################################################
-declare type SelectorParamsSelector<QueryType extends DomainModelExtractor, StateType> = (
+declare type SelectorParamsSelector<QueryType extends ExtractorTemplateForDomainModel, StateType> = (
   reduxState: ReduxStateWithUndoRedo,
   params: SyncExtractorRunnerParams<QueryType, StateType>
 ) => SyncExtractorRunnerParams<QueryType, StateType>;
@@ -60,7 +60,7 @@ export const selectCurrentDeploymentEntityStateFromReduxState = (
 };
 
 // ################################################################################################
-export const selectDeploymentEntityStateSelectorParams /*: DomainStateSelectorParamsSelector<Q> */ = <QueryType extends DomainModelExtractor>(
+export const selectDeploymentEntityStateSelectorParams /*: DomainStateSelectorParamsSelector<Q> */ = <QueryType extends ExtractorTemplateForDomainModel>(
   reduxState: ReduxStateWithUndoRedo,
   params: SyncExtractorRunnerParams<QueryType, DeploymentEntityState>
 ): SyncExtractorRunnerParams<QueryType, DeploymentEntityState> => {
@@ -70,8 +70,8 @@ export const selectDeploymentEntityStateSelectorParams /*: DomainStateSelectorPa
 // ################################################################################################
 export const selectMiroirSelectorQueryParams = (
   reduxState: ReduxStateWithUndoRedo,
-  params: DomainModelExtractor
-): DomainModelExtractor => {
+  params: ExtractorTemplateForDomainModel
+): ExtractorTemplateForDomainModel => {
   return params;
 };
 
@@ -89,7 +89,7 @@ export const selectDomainStateFromReduxState: (
 
 
 // ################################################################################################
-export const selectSelectorParams /*: SelectorParamsSelector*/ = <Q extends DomainModelExtractor>(
+export const selectSelectorParams /*: SelectorParamsSelector*/ = <Q extends ExtractorTemplateForDomainModel>(
   reduxState: ReduxStateWithUndoRedo,
   params: Q
 ) => {
@@ -98,7 +98,7 @@ export const selectSelectorParams /*: SelectorParamsSelector*/ = <Q extends Doma
 
 
 // ################################################################################################
-export const selectDomainStateSelectorParams/*:SelectorParamsSelector<Q, DomainState> */ = <QueryType extends DomainModelExtractor>(
+export const selectDomainStateSelectorParams/*:SelectorParamsSelector<Q, DomainState> */ = <QueryType extends ExtractorTemplateForDomainModel>(
   reduxState: ReduxStateWithUndoRedo,
   params: SyncExtractorRunnerParams<QueryType, DomainState>
 ): SyncExtractorRunnerParams<QueryType, DomainState> => {
@@ -130,7 +130,7 @@ export const selectJzodSchemaSelectorParams = <QueryType extends DomainModelQuer
 // DOMAIN STATE SELECTORS
 // ################################################################################################
 // ################################################################################################
-export function applyDeploymentEntityStateQuerySelector<ExtractorType extends DomainModelExtractor, ResultType>( // TODO: memoize?
+export function applyDeploymentEntityStateQuerySelector<ExtractorType extends ExtractorTemplateForDomainModel, ResultType>( // TODO: memoize?
   deploymentEntityStateQuerySelector: SyncExtractorRunner<ExtractorType, DeploymentEntityState, ResultType>
 ): (
   reduxState: ReduxStateWithUndoRedo,
@@ -143,7 +143,7 @@ export function applyDeploymentEntityStateQuerySelector<ExtractorType extends Do
 }
 
 // ################################################################################################
-export function applyDeploymentEntityStateQuerySelectorForCleanedResult<QueryType extends DomainModelExtractor>( // TODO: memoize?
+export function applyDeploymentEntityStateQuerySelectorForCleanedResult<QueryType extends ExtractorTemplateForDomainModel>( // TODO: memoize?
   deploymentEntityStateQuerySelector: SyncExtractorRunner<QueryType, DeploymentEntityState, DomainElement>
 ): (
   reduxState: ReduxStateWithUndoRedo,
@@ -172,7 +172,7 @@ export function applyDeploymentEntityStateQuerySelectorForCleanedResult<QueryTyp
 
 
 // ################################################################################################
-export function applyDomainStateQuerySelector<QueryType extends DomainModelExtractor, ResultType>( // TODO: memoize?
+export function applyDomainStateQuerySelector<QueryType extends ExtractorTemplateForDomainModel, ResultType>( // TODO: memoize?
   domainStateSelector: SyncExtractorRunner<QueryType, DomainState, ResultType>
 ): (
   reduxState: ReduxStateWithUndoRedo,
@@ -218,7 +218,7 @@ export function applyDeploymentEntityStateJzodSchemaSelector<QueryType extends D
 
 
 // ################################################################################################
-export function applyDomainStateQuerySelectorForCleanedResult<QueryType extends DomainModelExtractor>( // TODO: memoize?
+export function applyDomainStateQuerySelectorForCleanedResult<QueryType extends ExtractorTemplateForDomainModel>( // TODO: memoize?
   domainStateSelector: SyncExtractorRunner<QueryType, DomainState, DomainElement>
 ): (
   reduxState: ReduxStateWithUndoRedo,
@@ -270,7 +270,7 @@ const empty = {}
 // ################################################################################################
 export const selectEntityInstanceUuidIndexFromLocalCacheQueryAndDeploymentEntityState = (
   deploymentEntityState: DeploymentEntityState,
-  params: DomainModelExtractor
+  params: ExtractorTemplateForDomainModel
 ): EntityInstancesUuidIndex => {
   if (params.queryType != "localCacheEntityInstancesExtractor") {
     log.error(
@@ -320,7 +320,7 @@ export const selectEntityInstanceUuidIndexFromLocalCache = createSelector (
 //#########################################################################################
 export const selectInstanceArrayForDeploymentSectionEntity = createSelector(
   [selectEntityInstanceUuidIndexFromLocalCache, selectSelectorParams],
-  (state: EntityInstancesUuidIndex, params: DomainModelExtractor) => {
+  (state: EntityInstancesUuidIndex, params: ExtractorTemplateForDomainModel) => {
     // log.info("selectInstanceArrayForDeploymentSectionEntity called", params, state);
 
     return state ? Object.values(state) : [];

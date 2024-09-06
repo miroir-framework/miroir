@@ -2,7 +2,7 @@ import {
   DomainModelQueryJzodSchemaParams,
   JzodElement,
   JzodObject,
-  DomainModelExtractor
+  ExtractorTemplateForDomainModel
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainState } from "./DomainControllerInterface.js";
 
@@ -10,14 +10,14 @@ import { DomainState } from "./DomainControllerInterface.js";
 export type RecordOfJzodElement = Record<string, JzodElement | undefined>;
 export type RecordOfJzodObject = Record<string, JzodObject | undefined>;
 
-// export type DomainStateQuerySelectorMap<Q extends DomainModelExtractor> = {[k:string]: DomainStateQuerySelector<Q, any>};
+// export type DomainStateQuerySelectorMap<Q extends ExtractorTemplateForDomainModel> = {[k:string]: DomainStateQuerySelector<Q, any>};
 
-// export interface DomainStateQuerySelectorParams<Q extends DomainModelExtractor> {
+// export interface DomainStateQuerySelectorParams<Q extends ExtractorTemplateForDomainModel> {
 //   extractorRunnerMap?: DomainStateQuerySelectorMap<Q>
 //   query: Q
 // }
 
-// export type DomainStateQuerySelector<Q extends DomainModelExtractor, T> = (
+// export type DomainStateQuerySelector<Q extends ExtractorTemplateForDomainModel, T> = (
 //   domainState: DomainState,
 //   params: DomainStateQuerySelectorParams<Q>
 // ) => T;
@@ -37,7 +37,7 @@ export type RecordOfJzodObject = Record<string, JzodObject | undefined>;
 // }
 
 // // ################################################################################################
-// export type DomainStateSelector<P extends DomainModelExtractor, T> = (
+// export type DomainStateSelector<P extends ExtractorTemplateForDomainModel, T> = (
 //   domainState: DomainState,
 //   params: P
 // ) => T;

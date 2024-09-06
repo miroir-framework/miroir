@@ -1463,13 +1463,13 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             queryType: {
               type: "literal",
-              definition: "domainModelSingleExtractor",
+              definition: "extractorForDomainModelObjects",
             },
             select: {
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "queryTemplateSelectObject", // TODO: is this still an extractor, while it includes queryTemplateSelectObjectByRelation?
+                relativePath: "querySelectObject", // TODO: is this still an extractor, while it includes queryTemplateSelectObjectByRelation?
               },
             },
           },
@@ -1487,18 +1487,18 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             queryType: {
               type: "literal",
-              definition: "domainModelSingleExtractor",
+              definition: "extractorForDomainModelObjects",
             },
             select: {
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "queryTemplateSelectObjectList",
+                relativePath: "querySelectObjectList",
               },
             },
           },
         },
-        domainModelSingleExtractor: {
+        extractorForDomainModelObjects: {
           type: "union",
           discriminator: "queryType",
           definition: [
@@ -1532,6 +1532,121 @@ export function getMiroirFundamentalJzodSchema(
             queryType: {
               type: "literal",
               definition: "extractorForRecordOfExtractors",
+            },
+            extractors: {
+              type: "record",
+              optional: true,
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "querySelectExtractorWrapper",
+                },
+              },
+            },
+            combiners: {
+              type: "schemaReference",
+              optional: true,
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "queryRecord",
+              },
+            },
+            runtimeTransformers: {
+              type: "record",
+              optional: true,
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "transformerForRuntime",
+                },
+              },
+            },
+          },
+        },
+        extractorTemplateForSingleObject: {
+          type: "object",
+          extend: {
+            type: "schemaReference",
+            definition: {
+              eager: true,
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "domainModelRootExtractor",
+            },
+          },
+          definition: {
+            queryType: {
+              type: "literal",
+              definition: "extractorTemplateForDomainModelObjects",
+            },
+            select: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "queryTemplateSelectObject", // TODO: is this still an extractor, while it includes queryTemplateSelectObjectByRelation?
+              },
+            },
+          },
+        },
+        extractorTemplateForSingleObjectList: {
+          type: "object",
+          extend: {
+            type: "schemaReference",
+            definition: {
+              eager: true,
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "domainModelRootExtractor",
+            },
+          },
+          definition: {
+            queryType: {
+              type: "literal",
+              definition: "extractorTemplateForDomainModelObjects",
+            },
+            select: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "queryTemplateSelectObjectList",
+              },
+            },
+          },
+        },
+        extractorTemplateForDomainModelObjects: {
+          type: "union",
+          discriminator: "queryType",
+          definition: [
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "extractorTemplateForSingleObject",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "extractorTemplateForSingleObjectList",
+              },
+            },
+          ],
+        },
+        extractorTemplateForRecordOfExtractors: {
+          type: "object",
+          extend: {
+            type: "schemaReference",
+            definition: {
+              eager: true,
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "domainModelRootExtractor",
+            },
+          },
+          definition: {
+            queryType: {
+              type: "literal",
+              definition: "extractorTemplateForRecordOfExtractors",
             },
             extractors: {
               type: "record",
@@ -1610,7 +1725,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "extractorForRecordOfExtractors",
+                relativePath: "extractorTemplateForRecordOfExtractors",
               },
             },
           },
@@ -1667,7 +1782,7 @@ export function getMiroirFundamentalJzodSchema(
             },
           ],
         },
-        domainModelExtractor: {
+        extractorTemplateForDomainModel: {
           type: "union",
           discriminator: "queryType",
           definition: [
@@ -1675,23 +1790,70 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "domainModelSingleExtractor",
+                relativePath: "extractorTemplateForDomainModelObjects",
               },
             },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "extractorTemplateForRecordOfExtractors",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "localCacheExtractor",
+              },
+            },
+            // ##############################
+            // domainModelQueryJzodSchemaParams reference yields to issue when producing TS types
             // {
-            //   type: "schemaReference",
-            //   definition: {
-            //     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            //     relativePath: "extractorForSingleObject",
-            //   },
-            // },
-            // {
-            //   type: "schemaReference",
-            //   definition: {
-            //     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            //     relativePath: "extractorForSingleObjectList",
-            //   },
-            // },
+            //   "type": "schemaReference",
+            //   "definition": {
+            //     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            //     "relativePath": "domainModelQueryJzodSchemaParams"
+            //   }
+            // }
+            // DUPLICATED BELOW
+            //   |
+            //   |
+            //   v
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainModelGetEntityDefinitionExtractor",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainModelGetFetchParamJzodSchemaExtractor",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainModelGetSingleSelectQueryJzodSchemaExtractor",
+              },
+            },
+          ],
+        },
+        extractorForDomainModel: {
+          type: "union",
+          discriminator: "queryType",
+          definition: [
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "extractorForDomainModelObjects",
+              },
+            },
             {
               type: "schemaReference",
               definition: {
@@ -1706,14 +1868,6 @@ export function getMiroirFundamentalJzodSchema(
                 relativePath: "localCacheExtractor",
               },
             },
-            // useless
-            // {
-            //   type: "schemaReference",
-            //   definition: {
-            //     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            //     relativePath: "miroirCustomQueryParams",
-            //   },
-            // },
             // ##############################
             // domainModelQueryJzodSchemaParams reference yields to issue when producing TS types
             // {
@@ -2326,10 +2480,10 @@ export function getMiroirFundamentalJzodSchema(
         transformerForRuntime_objectValues: (transformerJzodSchema as any).definition.context.transformerForRuntime_objectValues,
         transformerForRuntime_freeObjectTemplate: (transformerJzodSchema as any).definition.context.transformerForRuntime_freeObjectTemplate,
         transformerForRuntime: (transformerJzodSchema as any).definition.context.transformerForRuntime,
-        extractorForSingleObject: (miroirFundamentalJzodSchema as any).definition.context.extractorForSingleObject,
-        extractorForSingleObjectList: (miroirFundamentalJzodSchema as any).definition.context.extractorForSingleObjectList,
-        domainModelSingleExtractor: (miroirFundamentalJzodSchema as any).definition.context.domainModelSingleExtractor,
-        extractorForRecordOfExtractors: (miroirFundamentalJzodSchema as any).definition.context.extractorForRecordOfExtractors,
+        extractorTemplateForSingleObject: (miroirFundamentalJzodSchema as any).definition.context.extractorTemplateForSingleObject,
+        extractorTemplateForSingleObjectList: (miroirFundamentalJzodSchema as any).definition.context.extractorTemplateForSingleObjectList,
+        extractorTemplateForDomainModelObjects: (miroirFundamentalJzodSchema as any).definition.context.extractorTemplateForDomainModelObjects,
+        extractorTemplateForRecordOfExtractors: (miroirFundamentalJzodSchema as any).definition.context.extractorTemplateForRecordOfExtractors,
         queryAction: queryEndpointVersionV1.definition.actions[0].actionParameters,
       },
       definition: {

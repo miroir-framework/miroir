@@ -5,7 +5,7 @@ import {
   ApplicationSection,
   DeploymentEntityState,
   DomainElementObject,
-  ExtractorForRecordOfExtractors,
+  ExtractorTemplateForRecordOfExtractors,
   DomainModelGetFetchParamJzodSchemaExtractor,
   ExtractorRunnerMapForJzodSchema,
   ExtractorRunnerParamsForJzodSchema,
@@ -83,12 +83,12 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
     []
   )
 
-  const deploymentEntityStateFetchQueryParams: SyncExtractorRunnerParams<ExtractorForRecordOfExtractors, DeploymentEntityState> = useMemo(
+  const deploymentEntityStateFetchQueryParams: SyncExtractorRunnerParams<ExtractorTemplateForRecordOfExtractors, DeploymentEntityState> = useMemo(
     () =>
       props.pageParams.deploymentUuid && props.pageParams.applicationSection && props.pageParams.reportUuid
-        ? getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>(
+        ? getDeploymentEntityStateSelectorParams<ExtractorTemplateForRecordOfExtractors>(
             {
-              queryType: "extractorForRecordOfExtractors",
+              queryType: "extractorTemplateForRecordOfExtractors",
               deploymentUuid: props.pageParams.deploymentUuid,
               // applicationSection: props.applicationSection,
               pageParams: paramsAsdomainElements,
@@ -103,9 +103,9 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
             deploymentEntityStateSelectorMap
           )
         : // dummy query
-          getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>(
+          getDeploymentEntityStateSelectorParams<ExtractorTemplateForRecordOfExtractors>(
             {
-              queryType: "extractorForRecordOfExtractors",
+              queryType: "extractorTemplateForRecordOfExtractors",
               deploymentUuid: "",
               pageParams: paramsAsdomainElements,
               queryParams: { elementType: "object", elementValue: {} },
@@ -182,7 +182,7 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
               queryParams: { elementType: "object", elementValue: {} },
               contextResults: { elementType: "object", elementValue: {} },
               fetchParams: {
-                queryType: "extractorForRecordOfExtractors",
+                queryType: "extractorTemplateForRecordOfExtractors",
                 deploymentUuid: "DUMMY",
                 pageParams: paramsAsdomainElements,
                 queryParams: { elementType: "object", elementValue: {} },

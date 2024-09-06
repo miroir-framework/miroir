@@ -177,7 +177,7 @@ describe.sequential("PersistenceStoreExtractorRunner.integ.test", () => {
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             applicationSection: applicationSection,
             query: {
-              queryType: "extractorForRecordOfExtractors",
+              queryType: "extractorTemplateForRecordOfExtractors",
               pageParams: {},
               queryParams: {},
               contextResults: {},
@@ -344,7 +344,7 @@ describe.sequential("PersistenceStoreExtractorRunner.integ.test", () => {
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             applicationSection: applicationSection,
             query: {
-              queryType: "domainModelSingleExtractor",
+              queryType: "extractorTemplateForDomainModelObjects",
               pageParams: {},
               queryParams: {},
               contextResults: {},
@@ -400,7 +400,7 @@ describe.sequential("PersistenceStoreExtractorRunner.integ.test", () => {
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             applicationSection: applicationSection,
             query: {
-              queryType: "extractorForRecordOfExtractors",
+              queryType: "extractorTemplateForRecordOfExtractors",
               pageParams: {},
               queryParams: {},
               contextResults: {},
@@ -471,7 +471,7 @@ describe.sequential("PersistenceStoreExtractorRunner.integ.test", () => {
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           applicationSection: applicationSection,
           query: {
-            queryType: "extractorForRecordOfExtractors",
+            queryType: "extractorTemplateForRecordOfExtractors",
             pageParams: {},
             queryParams: {},
             contextResults: {},
@@ -528,7 +528,7 @@ describe.sequential("PersistenceStoreExtractorRunner.integ.test", () => {
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           applicationSection: applicationSection,
           query: {
-            queryType: "extractorForRecordOfExtractors",
+            queryType: "extractorTemplateForRecordOfExtractors",
             pageParams: {},
             queryParams: {},
             contextResults: {},
@@ -580,7 +580,7 @@ describe.sequential("PersistenceStoreExtractorRunner.integ.test", () => {
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           applicationSection: applicationSection,
           query: {
-            queryType: "extractorForRecordOfExtractors",
+            queryType: "extractorTemplateForRecordOfExtractors",
             pageParams: {},
             queryParams: {},
             contextResults: {},
@@ -636,7 +636,7 @@ describe.sequential("PersistenceStoreExtractorRunner.integ.test", () => {
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           applicationSection: applicationSection,
           query: {
-            queryType: "extractorForRecordOfExtractors",
+            queryType: "extractorTemplateForRecordOfExtractors",
             pageParams: {},
             queryParams: {},
             contextResults: {},

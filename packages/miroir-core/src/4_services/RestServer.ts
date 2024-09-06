@@ -273,7 +273,7 @@ export async function queryHandler(
    * - execute on the persistent store (sql)
    * 
    */
-  // const query: ExtractorForRecordOfExtractors = body.query as ExtractorForRecordOfExtractors ;
+  // const query: ExtractorTemplateForRecordOfExtractors = body.query as ExtractorTemplateForRecordOfExtractors ;
   const queryAction: QueryAction = body as QueryAction ;
 
   const deploymentUuid = queryAction.deploymentUuid
@@ -299,14 +299,14 @@ export async function queryHandler(
     // const queryResult: DomainElement = extractWithManyExtractorsFromDomainState(domainState, getSelectorParams(query));
     let queryResult: DomainElement
     switch (queryAction.query.queryType) {
-      case "domainModelSingleExtractor": {
+      case "extractorTemplateForDomainModelObjects": {
         queryResult = extractWithExtractorFromDomainState(
           domainState,
           getSelectorParams(queryAction.query)
         );
         break;
       }
-      case "extractorForRecordOfExtractors": {
+      case "extractorTemplateForRecordOfExtractors": {
         queryResult = extractWithManyExtractorsFromDomainState(
           domainState,
           getSelectorParams(queryAction.query)

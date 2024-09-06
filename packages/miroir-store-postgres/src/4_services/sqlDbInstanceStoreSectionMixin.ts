@@ -12,9 +12,9 @@ import {
   ActionVoidReturnType,
   ACTION_OK,
   QueryAction,
-  ExtractorForSingleObjectList,
-  ExtractorForRecordOfExtractors,
-  ExtractorForSingleObject,
+  ExtractorTemplateForSingleObjectList,
+  ExtractorTemplateForRecordOfExtractors,
+  ExtractorTemplateForSingleObject,
   QueryTemplateSelectExtractorWrapper,
 } from "miroir-core";
 import { MixableSqlDbStoreSection, SqlDbStoreSection } from "./SqlDbStoreSection.js";
@@ -68,10 +68,10 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     // ##############################################################################################
     sqlForExtractor(
       extractor:
-        | ExtractorForSingleObjectList
-        | ExtractorForSingleObject
+        | ExtractorTemplateForSingleObjectList
+        | ExtractorTemplateForSingleObject
         | QueryTemplateSelectExtractorWrapper
-        | ExtractorForRecordOfExtractors
+        | ExtractorTemplateForRecordOfExtractors
     ): RecursiveStringRecords {
       // log.info(this.logHeader, "sqlForExtractor called with parameter", "extractor", extractor);
       // log.info(this.logHeader, "sqlForExtractor called with sequelize", this.sequelize);
@@ -90,7 +90,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           //   attributes: ["*"],
           // }
           // );
-          // log.info(this.logHeader, "sqlForExtractor", "domainModelSingleExtractor", result);
+          // log.info(this.logHeader, "sqlForExtractor", "extractorTemplateForDomainModelObjects", result);
           if (extractor.parentUuid.queryTemplateType != "constantUuid") {
             throw new Error(
               "sqlForExtractor can not handle queryTemplateType for extractor" + JSON.stringify(extractor)
@@ -101,19 +101,19 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           // return result;
           break;
         }
-        case "domainModelSingleExtractor": {
+        case "extractorTemplateForDomainModelObjects": {
           const result: string = (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery(
             extractor.select.parentUuid,
             {
               attributes: ["*"],
             }
           );
-          log.info(this.logHeader, "sqlForExtractor", "domainModelSingleExtractor", result);
+          log.info(this.logHeader, "sqlForExtractor", "extractorTemplateForDomainModelObjects", result);
           // return "SELECT * FROM domainModel WHERE uuid = " + extractor.deploymentUuid;
           return result;
           break;
         }
-        case "extractorForRecordOfExtractors": {
+        case "extractorTemplateForRecordOfExtractors": {
           return Object.fromEntries(
             Object.entries(extractor.extractors ?? {}).map((e) => [e[0], this.sqlForExtractor(e[1])])
           );

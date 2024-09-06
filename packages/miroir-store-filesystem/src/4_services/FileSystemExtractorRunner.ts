@@ -13,8 +13,8 @@ import {
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
   DomainState,
-  ExtractorForSingleObject,
-  ExtractorForSingleObjectList,
+  ExtractorTemplateForSingleObject,
+  ExtractorTemplateForSingleObjectList,
   ExtractorRunnerMapForJzodSchema,
   getLoggerName,
   LoggerInterface,
@@ -64,7 +64,7 @@ export class FileSystemExtractorRunner implements PersistenceStoreExtractorRunne
     log.info(this.logHeader, "handleQuery", "queryAction", JSON.stringify(queryAction, null, 2));
     let queryResult: DomainElement;
     switch (queryAction.query.queryType) {
-      case "domainModelSingleExtractor": {
+      case "extractorTemplateForDomainModelObjects": {
         queryResult = await this.selectorMap.extractWithExtractor(
           {
             extractor: queryAction.query,
@@ -73,7 +73,7 @@ export class FileSystemExtractorRunner implements PersistenceStoreExtractorRunne
         );
         break;
       }
-      case "extractorForRecordOfExtractors": {
+      case "extractorTemplateForRecordOfExtractors": {
         queryResult = await this.selectorMap.extractWithManyExtractors(
           {
             extractor: queryAction.query,
@@ -112,10 +112,10 @@ export class FileSystemExtractorRunner implements PersistenceStoreExtractorRunne
   //  * @returns
   //  */
   // private async extractDomainStateForExtractor(
-  //   extractor: DomainModelExtractor,
+  //   extractor: ExtractorTemplateForDomainModel,
   // ): Promise<DomainState> {
   //   switch (extractor.queryType) {
-  //     case "domainModelSingleExtractor": {
+  //     case "extractorTemplateForDomainModelObjects": {
   //       switch (extractor.select.queryType) {
   //         case "queryTemplateExtractObjectListByEntity": {
   //           const entityUuid = extractor.select.parentUuid;
@@ -153,7 +153,7 @@ export class FileSystemExtractorRunner implements PersistenceStoreExtractorRunne
   //       };
   //       break;
   //     }
-  //     case "extractorForRecordOfExtractors":
+  //     case "extractorTemplateForRecordOfExtractors":
   //     case "getEntityDefinition":
   //     case "getFetchParamsJzodSchema":
   //     case "getSingleSelectQueryJzodSchema": {
@@ -180,10 +180,10 @@ export class FileSystemExtractorRunner implements PersistenceStoreExtractorRunne
 
   // ################################################################################################
   public extractEntityInstance: AsyncExtractorRunner<
-    ExtractorForSingleObject,
+    ExtractorTemplateForSingleObject,
     DomainElementEntityInstanceOrFailed
   > = async (
-    selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObject>
+    selectorParams: AsyncExtractorRunnerParams<ExtractorTemplateForSingleObject>
   ): Promise<DomainElementEntityInstanceOrFailed> => {
     const querySelectorParams: QueryTemplateSelectObject = selectorParams.extractor.select as QueryTemplateSelectObject;
     const deploymentUuid = selectorParams.extractor.deploymentUuid;
@@ -390,10 +390,10 @@ export class FileSystemExtractorRunner implements PersistenceStoreExtractorRunne
 
   // ##############################################################################################
   public extractEntityInstanceUuidIndex: AsyncExtractorRunner<
-    ExtractorForSingleObjectList,
+    ExtractorTemplateForSingleObjectList,
     DomainElementInstanceUuidIndexOrFailed
   > = async (
-    extractorRunnerParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList>
+    extractorRunnerParams: AsyncExtractorRunnerParams<ExtractorTemplateForSingleObjectList>
   ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
     const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";

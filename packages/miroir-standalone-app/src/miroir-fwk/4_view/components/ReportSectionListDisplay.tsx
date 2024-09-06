@@ -13,7 +13,7 @@ import {
   DeploymentEntityState,
   DomainControllerInterface,
   DomainElement,
-  ExtractorForRecordOfExtractors,
+  ExtractorTemplateForRecordOfExtractors,
   Entity,
   EntityDefinition,
   EntityInstancesUuidIndex,
@@ -317,13 +317,13 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   );
 
   const foreignKeyObjectsFetchQueryParams: SyncExtractorRunnerParams<
-    ExtractorForRecordOfExtractors,
+    ExtractorTemplateForRecordOfExtractors,
     DeploymentEntityState
   > = useMemo(
     () =>
-      getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>(
+      getDeploymentEntityStateSelectorParams<ExtractorTemplateForRecordOfExtractors>(
         {
-          queryType: "extractorForRecordOfExtractors",
+          queryType: "extractorTemplateForRecordOfExtractors",
           deploymentUuid: props.deploymentUuid,
           // applicationSection: props.applicationSection,
           pageParams: props.paramsAsdomainElements,
@@ -366,7 +366,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
 
   // const foreignKeyObjects:  = useDeploymentEntityStateQuerySelectorForCleanedResult(
   const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = useDeploymentEntityStateQuerySelectorForCleanedResult(
-    deploymentEntityStateSelectorMap.extractWithManyExtractors as SyncExtractorRunner<ExtractorForRecordOfExtractors, DeploymentEntityState, DomainElement>,
+    deploymentEntityStateSelectorMap.extractWithManyExtractors as SyncExtractorRunner<ExtractorTemplateForRecordOfExtractors, DeploymentEntityState, DomainElement>,
     foreignKeyObjectsFetchQueryParams
   );
 

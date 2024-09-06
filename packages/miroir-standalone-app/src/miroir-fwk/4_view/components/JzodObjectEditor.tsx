@@ -13,7 +13,7 @@ import {
   ApplicationSection,
   DeploymentEntityState,
   DomainElement,
-  ExtractorForRecordOfExtractors,
+  ExtractorTemplateForRecordOfExtractors,
   EntityAttribute,
   EntityInstance,
   EntityInstanceWithName,
@@ -449,17 +449,17 @@ export const JzodObjectEditor = (
     // ############################################################################################
     // finding foreign objects for uuid schema with targetEntity estra
     const foreignKeyObjectsFetchQueryParams: SyncExtractorRunnerParams<
-      ExtractorForRecordOfExtractors,
+      ExtractorTemplateForRecordOfExtractors,
       DeploymentEntityState
     > = useMemo(
       () =>
-        getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>(
+        getDeploymentEntityStateSelectorParams<ExtractorTemplateForRecordOfExtractors>(
           props.currentDeploymentUuid &&
           unfoldedRawSchema.type == "uuid" &&
           unfoldedRawSchema.tag?.value?.targetEntity
           ?
           {
-            queryType: "extractorForRecordOfExtractors",
+            queryType: "extractorTemplateForRecordOfExtractors",
             deploymentUuid: props.currentDeploymentUuid,
             // applicationSection: props.applicationSection,
             // pageParams: props.paramsAsdomainElements,
@@ -504,7 +504,7 @@ export const JzodObjectEditor = (
     const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
       useDeploymentEntityStateQuerySelectorForCleanedResult(
         deploymentEntityStateSelectorMap.extractWithManyExtractors as SyncExtractorRunner<
-          ExtractorForRecordOfExtractors,
+          ExtractorTemplateForRecordOfExtractors,
           DeploymentEntityState,
           DomainElement
         >,

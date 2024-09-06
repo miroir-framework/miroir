@@ -133,10 +133,10 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
   //   []
   // )
 
-  // const FetchMiroirMenusQueryParams: SyncExtractorRunnerParams<ExtractorForRecordOfExtractors, DeploymentEntityState> = useMemo(
+  // const FetchMiroirMenusQueryParams: SyncExtractorRunnerParams<ExtractorTemplateForRecordOfExtractors, DeploymentEntityState> = useMemo(
   //   () => 
-  //   getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>({
-  //     queryType: "extractorForRecordOfExtractors",
+  //   getDeploymentEntityStateSelectorParams<ExtractorTemplateForRecordOfExtractors>({
+  //     queryType: "extractorTemplateForRecordOfExtractors",
   //     deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
   //     // applicationSection: "data",
   //     pageParams: { elementType: "object", elementValue: {} },

@@ -736,7 +736,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
   //         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
   //         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
   //         query: {
-  //           queryType: "extractorForRecordOfExtractors",
+  //           queryType: "extractorTemplateForRecordOfExtractors",
   //           pageParams: {elementType: "object", elementValue: {}},
   //           queryParams: {elementType: "object", elementValue: {}},
   //           contextResults: {elementType: "object", elementValue: {}},

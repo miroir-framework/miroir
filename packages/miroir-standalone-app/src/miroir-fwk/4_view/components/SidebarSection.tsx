@@ -18,7 +18,7 @@ import {
   adminConfigurationDeploymentMiroir,
   DeploymentEntityState,
   DomainElementObject,
-  ExtractorForRecordOfExtractors,
+  ExtractorTemplateForRecordOfExtractors,
   entityMenu,
   getApplicationSection,
   getDeploymentEntityStateSelectorParams,
@@ -26,7 +26,7 @@ import {
   LoggerInterface,
   menuDefaultMiroir,
   MiroirLoggerFactory,
-  DomainModelExtractor,
+  ExtractorTemplateForDomainModel,
   SyncExtractorRunnerMap,
   SyncExtractorRunnerParams,
   Uuid,
@@ -153,10 +153,10 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
     []
   )
 
-  const fetchDeploymentMenusQueryParams: SyncExtractorRunnerParams<ExtractorForRecordOfExtractors, DeploymentEntityState> = useMemo(
+  const fetchDeploymentMenusQueryParams: SyncExtractorRunnerParams<ExtractorTemplateForRecordOfExtractors, DeploymentEntityState> = useMemo(
     () => 
-    getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>({
-      queryType: "extractorForRecordOfExtractors",
+    getDeploymentEntityStateSelectorParams<ExtractorTemplateForRecordOfExtractors>({
+      queryType: "extractorTemplateForRecordOfExtractors",
       deploymentUuid: props.deploymentUuid,
       // applicationSection: "data",
       pageParams: { elementType: "object", elementValue: {} },

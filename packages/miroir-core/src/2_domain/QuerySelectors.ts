@@ -11,11 +11,11 @@ import {
   DomainModelGetFetchParamJzodSchemaExtractor,
   DomainModelGetSingleSelectQueryJzodSchemaExtractor,
   DomainModelQueryJzodSchemaParams,
-  DomainModelSingleExtractor,
+  ExtractorTemplateForDomainModelObjects,
   EntityInstance,
   QueryTemplateExtractObjectListByEntity,
-  ExtractorForRecordOfExtractors,
-  ExtractorForSingleObjectList,
+  ExtractorTemplateForRecordOfExtractors,
+  ExtractorTemplateForSingleObjectList,
   JzodElement,
   JzodObject,
   QueryTemplate,
@@ -284,7 +284,7 @@ export const resolveContextReference = (
 // ################################################################################################
 export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory = (
   selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed,
-  extractor: ExtractorForSingleObjectList,
+  extractor: ExtractorTemplateForSingleObjectList,
 ) => {
   switch (extractor.select.queryType) {
     case "queryTemplateExtractObjectListByEntity": {
@@ -469,7 +469,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
 export const extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
 = <StateType>(
   deploymentEntityState: StateType,
-  selectorParams: SyncExtractorRunnerParams<ExtractorForSingleObjectList, StateType>
+  selectorParams: SyncExtractorRunnerParams<ExtractorTemplateForSingleObjectList, StateType>
 ): DomainElementInstanceUuidIndexOrFailed => {
   const selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed =
     (selectorParams?.extractorRunnerMap ?? emptySelectorMap).extractEntityInstanceUuidIndex(deploymentEntityState, selectorParams);
@@ -520,7 +520,7 @@ export function innerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
       return extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractorInMemory(state, {
         extractorRunnerMap,
         extractor: {
-          queryType: "domainModelSingleExtractor",
+          queryType: "extractorTemplateForDomainModelObjects",
           deploymentUuid: deploymentUuid,
           contextResults: newFetchedData,
           pageParams: pageParams,
@@ -541,7 +541,7 @@ export function innerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
       return extractorRunnerMap.extractEntityInstance(state, {
         extractorRunnerMap,
         extractor: {
-          queryType: "domainModelSingleExtractor",
+          queryType: "extractorTemplateForDomainModelObjects",
           deploymentUuid: deploymentUuid,
           contextResults: newFetchedData,
           pageParams,
@@ -671,9 +671,9 @@ export function innerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
 // ################################################################################################
 export const extractWithExtractor /**: SyncExtractorRunner */= <StateType>(
   state: StateType,
-  // selectorParams: SyncExtractorRunnerParams<ExtractorForRecordOfExtractors, DeploymentEntityState>,
+  // selectorParams: SyncExtractorRunnerParams<ExtractorTemplateForRecordOfExtractors, DeploymentEntityState>,
   selectorParams: SyncExtractorRunnerParams<
-  DomainModelSingleExtractor | ExtractorForRecordOfExtractors,
+  ExtractorTemplateForDomainModelObjects | ExtractorTemplateForRecordOfExtractors,
     StateType
   >
 ): DomainElement => {
@@ -681,14 +681,14 @@ export const extractWithExtractor /**: SyncExtractorRunner */= <StateType>(
   const localSelectorMap: SyncExtractorRunnerMap<StateType> = selectorParams?.extractorRunnerMap ?? emptySelectorMap;
 
   switch (selectorParams.extractor.queryType) {
-    case "extractorForRecordOfExtractors": {
+    case "extractorTemplateForRecordOfExtractors": {
       return extractWithManyExtractors(
         state,
-        selectorParams as SyncExtractorRunnerParams<ExtractorForRecordOfExtractors, StateType>
+        selectorParams as SyncExtractorRunnerParams<ExtractorTemplateForRecordOfExtractors, StateType>
       );
       break;
     }
-    case "domainModelSingleExtractor": {
+    case "extractorTemplateForDomainModelObjects": {
       const result = innerSelectElementFromQuery(
         state,
         selectorParams.extractor.contextResults,
@@ -729,7 +729,7 @@ export const extractWithExtractor /**: SyncExtractorRunner */= <StateType>(
  */
 export const extractWithManyExtractors = <StateType>(
   state: StateType,
-  selectorParams: SyncExtractorRunnerParams<ExtractorForRecordOfExtractors, StateType>,
+  selectorParams: SyncExtractorRunnerParams<ExtractorTemplateForRecordOfExtractors, StateType>,
 ): DomainElementObject => { 
 
   // log.info("########## extractWithManyExtractors begin, query", selectorParams);
@@ -928,7 +928,7 @@ export const extractFetchQueryJzodSchema = <StateType>(
   deploymentEntityState: StateType,
   selectorParams: ExtractorRunnerParamsForJzodSchema<DomainModelGetFetchParamJzodSchemaExtractor, StateType>
 ):  RecordOfJzodObject | undefined => {
-  const localFetchParams: ExtractorForRecordOfExtractors = selectorParams.query.fetchParams
+  const localFetchParams: ExtractorTemplateForRecordOfExtractors = selectorParams.query.fetchParams
   // log.info("selectFetchQueryJzodSchemaFromDomainState called", selectorParams.query);
   
   const fetchQueryJzodSchema = Object.fromEntries(
