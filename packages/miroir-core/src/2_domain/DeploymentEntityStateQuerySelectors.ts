@@ -14,9 +14,9 @@ import {
 import {
   ExtractorRunnerMapForJzodSchema,
   ExtractorRunnerParamsForJzodSchema,
-  SyncExtractorRunner,
-  SyncExtractorRunnerMap,
-  SyncExtractorRunnerParams,
+  SyncExtractorTemplateRunner,
+  SyncExtractorTemplateRunnerMap,
+  SyncExtractorTemplateRunnerParams,
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
 import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
@@ -51,13 +51,13 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
  * @param selectorParams
  * @returns
  */
-export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorRunner<
+export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorTemplateRunner<
   ExtractorTemplateForSingleObject,
   DeploymentEntityState,
   DomainElementEntityInstanceOrFailed
 > = (
   deploymentEntityState: DeploymentEntityState,
-  selectorParams: SyncExtractorRunnerParams<ExtractorTemplateForSingleObject, DeploymentEntityState>
+  selectorParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObject, DeploymentEntityState>
 ): DomainElementEntityInstanceOrFailed => {
   const querySelectorParams: QueryTemplateSelectObject = selectorParams.extractor.select as QueryTemplateSelectObject;
   const deploymentUuid = selectorParams.extractor.deploymentUuid;
@@ -251,13 +251,13 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorRunner<
 
 // ################################################################################################
 // ACCESSES deploymentEntityState
-export const selectEntityInstanceUuidIndexFromDeploymentEntityState: SyncExtractorRunner<
+export const selectEntityInstanceUuidIndexFromDeploymentEntityState: SyncExtractorTemplateRunner<
   ExtractorTemplateForSingleObjectList,
   DeploymentEntityState,
   DomainElementInstanceUuidIndexOrFailed
 > = (
   deploymentEntityState: DeploymentEntityState,
-  selectorParams: SyncExtractorRunnerParams<ExtractorTemplateForSingleObjectList, DeploymentEntityState>
+  selectorParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObjectList, DeploymentEntityState>
 ): DomainElementInstanceUuidIndexOrFailed => {
   const deploymentUuid = selectorParams.extractor.deploymentUuid;
   const applicationSection = selectorParams.extractor.select.applicationSection ?? "data";
@@ -436,7 +436,7 @@ export const extractEntityJzodSchemaFromDeploymentEntityState = (
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-export function getDeploymentEntityStateSelectorMap(): SyncExtractorRunnerMap<DeploymentEntityState> {
+export function getDeploymentEntityStateSelectorMap(): SyncExtractorTemplateRunnerMap<DeploymentEntityState> {
   return {
     extractorType: "sync",
     extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDeploymentEntityState,
@@ -461,8 +461,8 @@ export function getDeploymentEntityStateJzodSchemaSelectorMap(): ExtractorRunner
 // ################################################################################################
 export function getDeploymentEntityStateSelectorParams<QueryType extends ExtractorTemplateForDomainModel>(
   query: QueryType,
-  extractorRunnerMap?: SyncExtractorRunnerMap<DeploymentEntityState>
-): SyncExtractorRunnerParams<QueryType, DeploymentEntityState> {
+  extractorRunnerMap?: SyncExtractorTemplateRunnerMap<DeploymentEntityState>
+): SyncExtractorTemplateRunnerParams<QueryType, DeploymentEntityState> {
   return {
     extractor: query,
     extractorRunnerMap: extractorRunnerMap ?? getDeploymentEntityStateSelectorMap(),

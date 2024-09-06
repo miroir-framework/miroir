@@ -25,12 +25,12 @@ import {
   TransformerForRuntime
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
-  AsyncExtractorRunnerMap,
+  AsyncExtractorTemplateRunnerMap,
   ExtractorRunnerParamsForJzodSchema,
   RecordOfJzodElement,
   RecordOfJzodObject,
-  SyncExtractorRunnerMap,
-  SyncExtractorRunnerParams
+  SyncExtractorTemplateRunnerMap,
+  SyncExtractorTemplateRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
@@ -39,7 +39,7 @@ import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
 import { applyTransformer, transformer_apply } from "./Transformers.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"SyncExtractorRunner");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"SyncExtractorTemplateRunner");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   (value: LoggerInterface) => {
@@ -47,7 +47,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   }
 );
 
-const emptySelectorMap:SyncExtractorRunnerMap<any> = {
+const emptySelectorMap:SyncExtractorTemplateRunnerMap<any> = {
   extractorType: "sync",
   extractWithExtractor: undefined as any, 
   extractWithManyExtractors: undefined as any, 
@@ -56,7 +56,7 @@ const emptySelectorMap:SyncExtractorRunnerMap<any> = {
   extractEntityInstanceUuidIndex: undefined as any,
 }
 
-const emptyAsyncSelectorMap:AsyncExtractorRunnerMap = {
+const emptyAsyncSelectorMap:AsyncExtractorTemplateRunnerMap = {
   extractorType: "async",
   extractWithExtractor: undefined as any, 
   extractWithManyExtractors: undefined as any, 
@@ -469,7 +469,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
 export const extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
 = <StateType>(
   deploymentEntityState: StateType,
-  selectorParams: SyncExtractorRunnerParams<ExtractorTemplateForSingleObjectList, StateType>
+  selectorParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObjectList, StateType>
 ): DomainElementInstanceUuidIndexOrFailed => {
   const selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed =
     (selectorParams?.extractorRunnerMap ?? emptySelectorMap).extractEntityInstanceUuidIndex(deploymentEntityState, selectorParams);
@@ -498,12 +498,12 @@ export const applyExtractorTransformerInMemory = (
 };
 
 // ################################################################################################
-export function innerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
+export function innerSelectElementFromQuery/*ExtractorTemplateRunner*/<StateType>(
   state: StateType,
   newFetchedData: Record<string, any>,
   pageParams: Record<string, any>,
   queryParams: Record<string, any>,
-  extractorRunnerMap:SyncExtractorRunnerMap<StateType>,
+  extractorRunnerMap:SyncExtractorTemplateRunnerMap<StateType>,
   deploymentUuid: Uuid,
   query: QueryTemplate
 ): DomainElement {
@@ -669,22 +669,22 @@ export function innerSelectElementFromQuery/*ExtractorRunner*/<StateType>(
 }
 
 // ################################################################################################
-export const extractWithExtractor /**: SyncExtractorRunner */= <StateType>(
+export const extractWithExtractor /**: SyncExtractorTemplateRunner */= <StateType>(
   state: StateType,
-  // selectorParams: SyncExtractorRunnerParams<ExtractorTemplateForRecordOfExtractors, DeploymentEntityState>,
-  selectorParams: SyncExtractorRunnerParams<
+  // selectorParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForRecordOfExtractors, DeploymentEntityState>,
+  selectorParams: SyncExtractorTemplateRunnerParams<
   ExtractorTemplateForDomainModelObjects | ExtractorTemplateForRecordOfExtractors,
     StateType
   >
 ): DomainElement => {
   // log.info("########## extractExtractor begin, query", selectorParams);
-  const localSelectorMap: SyncExtractorRunnerMap<StateType> = selectorParams?.extractorRunnerMap ?? emptySelectorMap;
+  const localSelectorMap: SyncExtractorTemplateRunnerMap<StateType> = selectorParams?.extractorRunnerMap ?? emptySelectorMap;
 
   switch (selectorParams.extractor.queryType) {
     case "extractorTemplateForRecordOfExtractors": {
       return extractWithManyExtractors(
         state,
-        selectorParams as SyncExtractorRunnerParams<ExtractorTemplateForRecordOfExtractors, StateType>
+        selectorParams as SyncExtractorTemplateRunnerParams<ExtractorTemplateForRecordOfExtractors, StateType>
       );
       break;
     }
@@ -729,7 +729,7 @@ export const extractWithExtractor /**: SyncExtractorRunner */= <StateType>(
  */
 export const extractWithManyExtractors = <StateType>(
   state: StateType,
-  selectorParams: SyncExtractorRunnerParams<ExtractorTemplateForRecordOfExtractors, StateType>,
+  selectorParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForRecordOfExtractors, StateType>,
 ): DomainElementObject => { 
 
   // log.info("########## extractWithManyExtractors begin, query", selectorParams);
@@ -741,7 +741,7 @@ export const extractWithManyExtractors = <StateType>(
   //   elementValue: { ...selectorParams.extractor.contextResults.elementValue },
   // };
   // log.info("########## DomainSelector extractWithManyExtractors will use context", context);
-  const localSelectorMap: SyncExtractorRunnerMap<StateType> =
+  const localSelectorMap: SyncExtractorTemplateRunnerMap<StateType> =
     selectorParams?.extractorRunnerMap ?? emptySelectorMap;
 
   for (const extractor of Object.entries(

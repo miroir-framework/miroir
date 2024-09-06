@@ -3,9 +3,9 @@
 //   ActionReturnType,
 //   ApplicationSection,
 //   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
-//   AsyncExtractorRunner,
-//   AsyncExtractorRunnerMap,
-//   AsyncExtractorRunnerParams,
+//   AsyncExtractorTemplateRunner,
+//   AsyncExtractorTemplateRunnerMap,
+//   AsyncExtractorTemplateRunnerParams,
 //   asyncExtractWithExtractor,
 //   asyncExtractWithManyExtractors,
 //   DomainElement,
@@ -18,7 +18,7 @@
 //   getLoggerName,
 //   LoggerInterface,
 //   MiroirLoggerFactory,
-//   PersistenceStoreExtractorRunner,
+//   ExtractorTemplatePersistenceStoreRunner,
 //   PersistenceStoreInstanceSectionAbstractInterface,
 //   QueryAction,
 //   QueryTemplateSelectObject,
@@ -42,10 +42,10 @@ import {
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import {
-  PersistenceStoreExtractorRunner,
-  AsyncExtractorRunnerMap,
-  AsyncExtractorRunner,
-  AsyncExtractorRunnerParams,
+  ExtractorTemplatePersistenceStoreRunner,
+  AsyncExtractorTemplateRunnerMap,
+  AsyncExtractorTemplateRunner,
+  AsyncExtractorTemplateRunnerParams,
   ExtractorRunnerMapForJzodSchema,
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
@@ -76,9 +76,9 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
-export class ExtractorRunnerInMemory implements PersistenceStoreExtractorRunner {
+export class ExtractorRunnerInMemory implements ExtractorTemplatePersistenceStoreRunner {
   private logHeader: string;
-  private selectorMap: AsyncExtractorRunnerMap;
+  private selectorMap: AsyncExtractorTemplateRunnerMap;
 
   // ################################################################################################
   constructor(private persistenceStoreController: PersistenceStoreInstanceSectionAbstractInterface) {
@@ -142,11 +142,11 @@ export class ExtractorRunnerInMemory implements PersistenceStoreExtractorRunner 
   }
 
   // ################################################################################################
-  public extractEntityInstance: AsyncExtractorRunner<
+  public extractEntityInstance: AsyncExtractorTemplateRunner<
     ExtractorTemplateForSingleObject,
     DomainElementEntityInstanceOrFailed
   > = async (
-    selectorParams: AsyncExtractorRunnerParams<ExtractorTemplateForSingleObject>
+    selectorParams: AsyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObject>
   ): Promise<DomainElementEntityInstanceOrFailed> => {
     const querySelectorParams: QueryTemplateSelectObject = selectorParams.extractor.select as QueryTemplateSelectObject;
     const deploymentUuid = selectorParams.extractor.deploymentUuid;
@@ -349,11 +349,11 @@ export class ExtractorRunnerInMemory implements PersistenceStoreExtractorRunner 
   };
 
   // ##############################################################################################
-  public extractEntityInstanceUuidIndex: AsyncExtractorRunner<
+  public extractEntityInstanceUuidIndex: AsyncExtractorTemplateRunner<
     ExtractorTemplateForSingleObjectList,
     DomainElementInstanceUuidIndexOrFailed
   > = async (
-    extractorRunnerParams: AsyncExtractorRunnerParams<ExtractorTemplateForSingleObjectList>
+    extractorRunnerParams: AsyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObjectList>
   ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
     const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
@@ -437,7 +437,7 @@ export class ExtractorRunnerInMemory implements PersistenceStoreExtractorRunner 
   };
 
   // ##############################################################################################
-  public getSelectorMap(): AsyncExtractorRunnerMap {
+  public getSelectorMap(): AsyncExtractorTemplateRunnerMap {
     return this.selectorMap;
   }
 } // end of class ExtractorRunnerInMemory

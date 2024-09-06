@@ -128,12 +128,12 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
   count++;
   const theme = useTheme();
 
-  // const deploymentEntityStateSelectorMap: SyncExtractorRunnerMap<DeploymentEntityState> = useMemo(
+  // const deploymentEntityStateSelectorMap: SyncExtractorTemplateRunnerMap<DeploymentEntityState> = useMemo(
   //   () => getMemoizedDeploymentEntityStateSelectorMap(),
   //   []
   // )
 
-  // const FetchMiroirMenusQueryParams: SyncExtractorRunnerParams<ExtractorTemplateForRecordOfExtractors, DeploymentEntityState> = useMemo(
+  // const FetchMiroirMenusQueryParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForRecordOfExtractors, DeploymentEntityState> = useMemo(
   //   () => 
   //   getDeploymentEntityStateSelectorParams<ExtractorTemplateForRecordOfExtractors>({
   //     queryType: "extractorTemplateForRecordOfExtractors",

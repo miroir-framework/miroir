@@ -23,9 +23,9 @@ import {
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
-  SyncExtractorRunner,
-  SyncExtractorRunnerMap,
-  SyncExtractorRunnerParams,
+  SyncExtractorTemplateRunner,
+  SyncExtractorTemplateRunnerMap,
+  SyncExtractorTemplateRunnerParams,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
@@ -211,7 +211,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
 
-  const deploymentEntityStateSelectorMap: SyncExtractorRunnerMap<DeploymentEntityState> = useMemo(
+  const deploymentEntityStateSelectorMap: SyncExtractorTemplateRunnerMap<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
   )
@@ -316,7 +316,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     ]
   );
 
-  const foreignKeyObjectsFetchQueryParams: SyncExtractorRunnerParams<
+  const foreignKeyObjectsFetchQueryParams: SyncExtractorTemplateRunnerParams<
     ExtractorTemplateForRecordOfExtractors,
     DeploymentEntityState
   > = useMemo(
@@ -366,7 +366,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
 
   // const foreignKeyObjects:  = useDeploymentEntityStateQuerySelectorForCleanedResult(
   const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = useDeploymentEntityStateQuerySelectorForCleanedResult(
-    deploymentEntityStateSelectorMap.extractWithManyExtractors as SyncExtractorRunner<ExtractorTemplateForRecordOfExtractors, DeploymentEntityState, DomainElement>,
+    deploymentEntityStateSelectorMap.extractWithManyExtractors as SyncExtractorTemplateRunner<ExtractorTemplateForRecordOfExtractors, DeploymentEntityState, DomainElement>,
     foreignKeyObjectsFetchQueryParams
   );
 

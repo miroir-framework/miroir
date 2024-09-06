@@ -18,8 +18,8 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   ExtractorTemplateForDomainModel,
-  SyncExtractorRunner,
-  SyncExtractorRunnerParams,
+  SyncExtractorTemplateRunner,
+  SyncExtractorTemplateRunnerParams,
   RecordOfJzodElement,
   domainElementToPlainObject,
   getDeploymentEntityStateIndex,
@@ -48,8 +48,8 @@ declare type JzodSchemaSelectorParamsSelector<QueryType extends DomainModelQuery
 // ################################################################################################
 declare type SelectorParamsSelector<QueryType extends ExtractorTemplateForDomainModel, StateType> = (
   reduxState: ReduxStateWithUndoRedo,
-  params: SyncExtractorRunnerParams<QueryType, StateType>
-) => SyncExtractorRunnerParams<QueryType, StateType>;
+  params: SyncExtractorTemplateRunnerParams<QueryType, StateType>
+) => SyncExtractorTemplateRunnerParams<QueryType, StateType>;
 
 
 // ################################################################################################
@@ -62,8 +62,8 @@ export const selectCurrentDeploymentEntityStateFromReduxState = (
 // ################################################################################################
 export const selectDeploymentEntityStateSelectorParams /*: DomainStateSelectorParamsSelector<Q> */ = <QueryType extends ExtractorTemplateForDomainModel>(
   reduxState: ReduxStateWithUndoRedo,
-  params: SyncExtractorRunnerParams<QueryType, DeploymentEntityState>
-): SyncExtractorRunnerParams<QueryType, DeploymentEntityState> => {
+  params: SyncExtractorTemplateRunnerParams<QueryType, DeploymentEntityState>
+): SyncExtractorTemplateRunnerParams<QueryType, DeploymentEntityState> => {
   return params;
 };
 
@@ -100,8 +100,8 @@ export const selectSelectorParams /*: SelectorParamsSelector*/ = <Q extends Extr
 // ################################################################################################
 export const selectDomainStateSelectorParams/*:SelectorParamsSelector<Q, DomainState> */ = <QueryType extends ExtractorTemplateForDomainModel>(
   reduxState: ReduxStateWithUndoRedo,
-  params: SyncExtractorRunnerParams<QueryType, DomainState>
-): SyncExtractorRunnerParams<QueryType, DomainState> => {
+  params: SyncExtractorTemplateRunnerParams<QueryType, DomainState>
+): SyncExtractorTemplateRunnerParams<QueryType, DomainState> => {
   return params;
 };
 
@@ -131,10 +131,10 @@ export const selectJzodSchemaSelectorParams = <QueryType extends DomainModelQuer
 // ################################################################################################
 // ################################################################################################
 export function applyDeploymentEntityStateQuerySelector<ExtractorType extends ExtractorTemplateForDomainModel, ResultType>( // TODO: memoize?
-  deploymentEntityStateQuerySelector: SyncExtractorRunner<ExtractorType, DeploymentEntityState, ResultType>
+  deploymentEntityStateQuerySelector: SyncExtractorTemplateRunner<ExtractorType, DeploymentEntityState, ResultType>
 ): (
   reduxState: ReduxStateWithUndoRedo,
-  params: SyncExtractorRunnerParams<ExtractorType, DeploymentEntityState>
+  params: SyncExtractorTemplateRunnerParams<ExtractorType, DeploymentEntityState>
 ) => ResultType { 
   return createSelector(
     [selectCurrentDeploymentEntityStateFromReduxState, selectDeploymentEntityStateSelectorParams as SelectorParamsSelector<ExtractorType, DeploymentEntityState>],
@@ -144,14 +144,14 @@ export function applyDeploymentEntityStateQuerySelector<ExtractorType extends Ex
 
 // ################################################################################################
 export function applyDeploymentEntityStateQuerySelectorForCleanedResult<QueryType extends ExtractorTemplateForDomainModel>( // TODO: memoize?
-  deploymentEntityStateQuerySelector: SyncExtractorRunner<QueryType, DeploymentEntityState, DomainElement>
+  deploymentEntityStateQuerySelector: SyncExtractorTemplateRunner<QueryType, DeploymentEntityState, DomainElement>
 ): (
   reduxState: ReduxStateWithUndoRedo,
-  params: SyncExtractorRunnerParams<QueryType, DeploymentEntityState>
+  params: SyncExtractorTemplateRunnerParams<QueryType, DeploymentEntityState>
 ) => any { 
   const cleanupFunction = (
     deploymentEntityState: DeploymentEntityState,
-    params: SyncExtractorRunnerParams<QueryType, DeploymentEntityState>
+    params: SyncExtractorTemplateRunnerParams<QueryType, DeploymentEntityState>
   ): DomainElement => {
     const partial: DomainElement = deploymentEntityStateQuerySelector(deploymentEntityState, params);
     const result: any = domainElementToPlainObject(partial);
@@ -173,10 +173,10 @@ export function applyDeploymentEntityStateQuerySelectorForCleanedResult<QueryTyp
 
 // ################################################################################################
 export function applyDomainStateQuerySelector<QueryType extends ExtractorTemplateForDomainModel, ResultType>( // TODO: memoize?
-  domainStateSelector: SyncExtractorRunner<QueryType, DomainState, ResultType>
+  domainStateSelector: SyncExtractorTemplateRunner<QueryType, DomainState, ResultType>
 ): (
   reduxState: ReduxStateWithUndoRedo,
-  params: SyncExtractorRunnerParams<QueryType, DomainState>
+  params: SyncExtractorTemplateRunnerParams<QueryType, DomainState>
 ) => ResultType { 
   return createSelector(
     // [selectDomainStateFromReduxState, selectDomainStateSelectorParams],
@@ -219,12 +219,12 @@ export function applyDeploymentEntityStateJzodSchemaSelector<QueryType extends D
 
 // ################################################################################################
 export function applyDomainStateQuerySelectorForCleanedResult<QueryType extends ExtractorTemplateForDomainModel>( // TODO: memoize?
-  domainStateSelector: SyncExtractorRunner<QueryType, DomainState, DomainElement>
+  domainStateSelector: SyncExtractorTemplateRunner<QueryType, DomainState, DomainElement>
 ): (
   reduxState: ReduxStateWithUndoRedo,
-  params: SyncExtractorRunnerParams<QueryType, DomainState>
+  params: SyncExtractorTemplateRunnerParams<QueryType, DomainState>
 ) => any { 
-  const cleanupFunction = (domainState: DomainState, params: SyncExtractorRunnerParams<QueryType, DomainState>):DomainElement => {
+  const cleanupFunction = (domainState: DomainState, params: SyncExtractorTemplateRunnerParams<QueryType, DomainState>):DomainElement => {
     const partial:DomainElement = domainStateSelector(domainState, params);
     const result:any = domainElementToPlainObject(partial)
     return result;

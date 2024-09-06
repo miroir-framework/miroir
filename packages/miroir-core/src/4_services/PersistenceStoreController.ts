@@ -39,7 +39,7 @@ import { cleanLevel } from "./constants.js";
 import { ACTION_OK } from "../1_core/constants.js";
 import entityEntity from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json";
 import entityEntityDefinition from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json";
-import { ExtractorRunner, PersistenceStoreExtractorRunner } from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
+import { ExtractorTemplateRunner, ExtractorTemplatePersistenceStoreRunner } from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"PersistenceStoreController");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -90,7 +90,7 @@ export async function storeSectionFactory (
 // #######################################################################################################################
 export class PersistenceStoreController implements PersistenceStoreControllerInterface {
   private logHeader: string;
-  // private adminExtractorRunner: PersistenceStoreExtractorRunner;
+  // private adminExtractorRunner: ExtractorTemplatePersistenceStoreRunner;
 
   constructor(
     private adminStore: PersistenceStoreAdminSectionInterface,

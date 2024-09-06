@@ -359,15 +359,15 @@ export {
 } from './0_interfaces/2_domain/DomainStateQuerySelectorInterface.js';
 export {
   JzodSchemaQuerySelector,
-  PersistenceStoreExtractorRunner,
+  ExtractorTemplatePersistenceStoreRunner,
   ExtractorRunnerMapForJzodSchema,
   ExtractorRunnerParamsForJzodSchema,
-  AsyncExtractorRunner,
-  AsyncExtractorRunnerMap,
-  AsyncExtractorRunnerParams,
-  SyncExtractorRunner,
-  SyncExtractorRunnerMap,
-  SyncExtractorRunnerParams,
+  AsyncExtractorTemplateRunner,
+  AsyncExtractorTemplateRunnerMap,
+  AsyncExtractorTemplateRunnerParams,
+  SyncExtractorTemplateRunner,
+  SyncExtractorTemplateRunnerMap,
+  SyncExtractorTemplateRunnerParams,
 } from './0_interfaces/2_domain/ExtractorRunnerInterface.js';
 export {
   ZEntityState,

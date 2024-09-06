@@ -4,9 +4,9 @@ import {
   ApplicationSection,
   asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
-  AsyncExtractorRunner,
-  AsyncExtractorRunnerMap,
-  AsyncExtractorRunnerParams,
+  AsyncExtractorTemplateRunner,
+  AsyncExtractorTemplateRunnerMap,
+  AsyncExtractorTemplateRunnerParams,
   asyncExtractWithExtractor,
   asyncExtractWithManyExtractors,
   DomainElement,
@@ -19,7 +19,7 @@ import {
   getLoggerName,
   LoggerInterface,
   MiroirLoggerFactory,
-  PersistenceStoreExtractorRunner,
+  ExtractorTemplatePersistenceStoreRunner,
   PersistenceStoreInstanceSectionAbstractInterface,
   QueryAction,
   QueryTemplateSelectObject,
@@ -38,9 +38,9 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
-export class FileSystemExtractorRunner implements PersistenceStoreExtractorRunner {
+export class FileSystemExtractorRunner implements ExtractorTemplatePersistenceStoreRunner {
   private logHeader: string;
-  private selectorMap: AsyncExtractorRunnerMap;
+  private selectorMap: AsyncExtractorTemplateRunnerMap;
 
   // ################################################################################################
   // constructor(private persistenceStoreController: PersistenceStoreControllerInterface) {
@@ -179,11 +179,11 @@ export class FileSystemExtractorRunner implements PersistenceStoreExtractorRunne
   // }
 
   // ################################################################################################
-  public extractEntityInstance: AsyncExtractorRunner<
+  public extractEntityInstance: AsyncExtractorTemplateRunner<
     ExtractorTemplateForSingleObject,
     DomainElementEntityInstanceOrFailed
   > = async (
-    selectorParams: AsyncExtractorRunnerParams<ExtractorTemplateForSingleObject>
+    selectorParams: AsyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObject>
   ): Promise<DomainElementEntityInstanceOrFailed> => {
     const querySelectorParams: QueryTemplateSelectObject = selectorParams.extractor.select as QueryTemplateSelectObject;
     const deploymentUuid = selectorParams.extractor.deploymentUuid;
@@ -389,11 +389,11 @@ export class FileSystemExtractorRunner implements PersistenceStoreExtractorRunne
   };
 
   // ##############################################################################################
-  public extractEntityInstanceUuidIndex: AsyncExtractorRunner<
+  public extractEntityInstanceUuidIndex: AsyncExtractorTemplateRunner<
     ExtractorTemplateForSingleObjectList,
     DomainElementInstanceUuidIndexOrFailed
   > = async (
-    extractorRunnerParams: AsyncExtractorRunnerParams<ExtractorTemplateForSingleObjectList>
+    extractorRunnerParams: AsyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObjectList>
   ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
     const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
@@ -469,7 +469,7 @@ export class FileSystemExtractorRunner implements PersistenceStoreExtractorRunne
     }
   };
 
-  public getSelectorMap(): AsyncExtractorRunnerMap {
+  public getSelectorMap(): AsyncExtractorTemplateRunnerMap {
     return this.selectorMap;
   }
 }

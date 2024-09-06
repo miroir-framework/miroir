@@ -139,10 +139,10 @@ Should result in something resembling:
 
 #### Persistence store Extractor runner intergration tests
 
-The extractor runners PersistenceStoreExtractorRunner (for indexedDb, Postgres/sql, filesystem peristent storage) can be tested:
+The extractor runners ExtractorTemplatePersistenceStoreRunner (for indexedDb, Postgres/sql, filesystem peristent storage) can be tested:
 
 ```sh
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run test -w miroir-standalone-app -- PersistenceStoreExtractorRunner
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run test -w miroir-standalone-app -- ExtractorTemplatePersistenceStoreRunner
 ```
 
 

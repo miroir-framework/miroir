@@ -60,7 +60,7 @@ import { getLoggerName } from '../tools.js';
 import { cleanLevel } from './constants.js';
 import { Endpoint } from './Endpoint.js';
 import { CallUtils } from './ErrorHandling/CallUtils.js';
-import { ExtractorRunner, PersistenceStoreExtractorRunner } from '../0_interfaces/2_domain/ExtractorRunnerInterface.js';
+import { ExtractorTemplateRunner, ExtractorTemplatePersistenceStoreRunner } from '../0_interfaces/2_domain/ExtractorRunnerInterface.js';
 import { transformer_apply } from '../2_domain/Transformers.js';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController");

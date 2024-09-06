@@ -9,7 +9,7 @@ import {
   EntityDefinition,
   LoggerInterface,
   MiroirLoggerFactory,
-  SyncExtractorRunnerMap,
+  SyncExtractorTemplateRunnerMap,
   RecordOfJzodObject,
   ReportSection,
   RootReportSection,
@@ -40,7 +40,7 @@ export interface ReportSectionEntityInstanceProps {
   paramsAsdomainElements: DomainElementObject,
   reportSection: ReportSection,
   rootReportSection: RootReportSection,
-  extractorRunnerMap: SyncExtractorRunnerMap<DeploymentEntityState>
+  extractorRunnerMap: SyncExtractorTemplateRunnerMap<DeploymentEntityState>
 }
 
 // ###############################################################################################################

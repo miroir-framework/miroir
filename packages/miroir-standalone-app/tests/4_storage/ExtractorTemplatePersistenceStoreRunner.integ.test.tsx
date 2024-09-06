@@ -160,12 +160,12 @@ afterAll(
 // ##############################################################################################
 // ##############################################################################################
 
-describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
+describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => {
 
   // ################################################################################################
   it("get Library Entities", async () => {
     await chainVitestSteps(
-      "ExtractorPersistenceStoreRunner_selectEntityInstanceUuidIndex",
+      "ExtractorTemplatePersistenceStoreRunner_selectEntityInstanceUuidIndex",
       {},
       async () => {
         const applicationSection:ApplicationSection = "model";
@@ -332,7 +332,7 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
   // ################################################################################################
   it("get Entity Entity from Library", async () => {
     await chainVitestSteps(
-      "ExtractorPersistenceStoreRunner_selectEntityInstance_selectObjectByDirectReference",
+      "ExtractorTemplatePersistenceStoreRunner_selectEntityInstance_selectObjectByDirectReference",
       {},
       async () => {
         const applicationSection:ApplicationSection = "model";
@@ -388,7 +388,7 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
   // ################################################################################################
   it("get Filtered Entity Entity from Library", async () => {
     await chainVitestSteps(
-      "ExtractorPersistenceStoreRunner_selectObjectListByEntity_filtered",
+      "ExtractorTemplatePersistenceStoreRunner_selectObjectListByEntity_filtered",
       {},
       async () => {
         const applicationSection:ApplicationSection = "model";
@@ -460,7 +460,7 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
   // ################################################################################################
   it("get Unique Authors from Books in Library with actionRuntimeTransformer", async () => {
     await chainVitestSteps(
-      "ExtractorPersistenceStoreRunner_selectUniqueEntityApplication",
+      "ExtractorTemplatePersistenceStoreRunner_selectUniqueEntityApplication",
       {},
       async () => {
         const applicationSection: ApplicationSection = "data";
@@ -517,7 +517,7 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
   // ################################################################################################
   it("get count books with actionRuntimeTransformer", async () => {
     await chainVitestSteps(
-      "ExtractorPersistenceStoreRunner_selectUniqueEntityApplication",
+      "ExtractorTemplatePersistenceStoreRunner_selectUniqueEntityApplication",
       {},
       async () => {
         const applicationSection: ApplicationSection = "data";
@@ -569,7 +569,7 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
   // ################################################################################################
   it("get count books by author uuid with actionRuntimeTransformer", async () => {
     await chainVitestSteps(
-      "ExtractorPersistenceStoreRunner_selectUniqueEntityApplication",
+      "ExtractorTemplatePersistenceStoreRunner_selectUniqueEntityApplication",
       {},
       async () => {
         const applicationSection: ApplicationSection = "data";
@@ -625,7 +625,7 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
   // ################################################################################################
   it("get country list with new uuids with actionRuntimeTransformer", async () => {
     await chainVitestSteps(
-      "ExtractorPersistenceStoreRunner_selectUniqueEntityApplication",
+      "ExtractorTemplatePersistenceStoreRunner_selectUniqueEntityApplication",
       {},
       async () => {
         const applicationSection: ApplicationSection = "data";
