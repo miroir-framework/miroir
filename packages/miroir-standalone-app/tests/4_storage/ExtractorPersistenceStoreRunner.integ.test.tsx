@@ -177,20 +177,21 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             applicationSection: applicationSection,
             query: {
-              queryType: "extractorTemplateForRecordOfExtractors",
+              queryType: "extractorForRecordOfExtractors",
               pageParams: {},
               queryParams: {},
               contextResults: {},
               deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               extractors: {
                 entities: {
-                  queryType: "queryTemplateExtractObjectListByEntity",
+                  queryType: "queryExtractObjectListByEntity",
                   applicationSection: applicationSection,
                   parentName: "Entity",
-                  parentUuid: {
-                    queryTemplateType: "constantUuid",
-                    constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  },
+                  parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+                  // parentUuid: {
+                  //   queryTemplateType: "constantUuid",
+                  //   constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  // },
                 }
               }
             }
@@ -344,7 +345,7 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             applicationSection: applicationSection,
             query: {
-              queryType: "extractorTemplateForDomainModelObjects",
+              queryType: "extractorForDomainModelObjects",
               pageParams: {},
               queryParams: {},
               contextResults: {},
@@ -353,14 +354,16 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
                 queryType: "selectObjectByDirectReference",
                 applicationSection: "model",
                 parentName: "Entity",
-                parentUuid: {
-                  queryTemplateType: "constantUuid",
-                  constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                },
-                instanceUuid: {
-                  queryTemplateType: "constantUuid",
-                  constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                },
+                parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                // parentUuid: {
+                //   queryTemplateType: "constantUuid",
+                //   constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                // },
+                instanceUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                // instanceUuid: {
+                //   queryTemplateType: "constantUuid",
+                //   constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                // },
               },
             },
           }
@@ -400,20 +403,21 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             applicationSection: applicationSection,
             query: {
-              queryType: "extractorTemplateForRecordOfExtractors",
+              queryType: "extractorForRecordOfExtractors",
               pageParams: {},
               queryParams: {},
               contextResults: {},
               deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               extractors: {
                 entities: {
-                  queryType: "queryTemplateExtractObjectListByEntity",
+                  queryType: "queryExtractObjectListByEntity",
                   applicationSection: applicationSection,
                   parentName: "Entity",
-                  parentUuid: {
-                    queryTemplateType: "constantUuid",
-                    constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  },
+                  parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  // parentUuid: {
+                  //   queryTemplateType: "constantUuid",
+                  //   constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  // },
                   filter: {
                     attributeName: "name",
                     value: {
@@ -471,21 +475,22 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           applicationSection: applicationSection,
           query: {
-            queryType: "extractorTemplateForRecordOfExtractors",
+            queryType: "extractorForRecordOfExtractors",
             pageParams: {},
             queryParams: {},
             contextResults: {},
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             extractors: {
               books: {
-                queryType: "queryTemplateExtractObjectListByEntity",
+                queryType: "queryExtractObjectListByEntity",
                 applicationSection: applicationSection,
                 parentName: "Book",
-                parentUuid: {
-                  queryTemplateType: "constantUuid",
-                  // constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  constantUuidValue: entityBook.uuid,
-                },
+                parentUuid: entityBook.uuid,
+                // parentUuid: {
+                //   queryTemplateType: "constantUuid",
+                //   // constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                //   constantUuidValue: entityBook.uuid,
+                // },
               },
             },
             runtimeTransformers: {
@@ -528,20 +533,21 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           applicationSection: applicationSection,
           query: {
-            queryType: "extractorTemplateForRecordOfExtractors",
+            queryType: "extractorForRecordOfExtractors",
             pageParams: {},
             queryParams: {},
             contextResults: {},
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             extractors: {
               books: {
-                queryType: "queryTemplateExtractObjectListByEntity",
+                queryType: "queryExtractObjectListByEntity",
                 applicationSection: applicationSection,
                 parentName: "Book",
-                parentUuid: {
-                  queryTemplateType: "constantUuid",
-                  constantUuidValue: entityBook.uuid,
-                },
+                parentUuid: entityBook.uuid,
+                // parentUuid: {
+                //   queryTemplateType: "constantUuid",
+                //   constantUuidValue: entityBook.uuid,
+                // },
               },
             },
             runtimeTransformers: {
@@ -580,20 +586,21 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           applicationSection: applicationSection,
           query: {
-            queryType: "extractorTemplateForRecordOfExtractors",
+            queryType: "extractorForRecordOfExtractors",
             pageParams: {},
             queryParams: {},
             contextResults: {},
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             extractors: {
               books: {
-                queryType: "queryTemplateExtractObjectListByEntity",
+                queryType: "queryExtractObjectListByEntity",
                 applicationSection: applicationSection,
                 parentName: "Book",
-                parentUuid: {
-                  queryTemplateType: "constantUuid",
-                  constantUuidValue: entityBook.uuid,
-                },
+                parentUuid: entityBook.uuid,
+                // parentUuid: {
+                //   queryTemplateType: "constantUuid",
+                //   constantUuidValue: entityBook.uuid,
+                // },
               },
             },
             runtimeTransformers: {
@@ -636,7 +643,7 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           applicationSection: applicationSection,
           query: {
-            queryType: "extractorTemplateForRecordOfExtractors",
+            queryType: "extractorForRecordOfExtractors",
             pageParams: {},
             queryParams: {},
             contextResults: {},
@@ -646,13 +653,14 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             extractors: {
               books: {
-                queryType: "queryTemplateExtractObjectListByEntity",
+                queryType: "queryExtractObjectListByEntity",
                 applicationSection: applicationSection,
                 parentName: "Book",
-                parentUuid: {
-                  queryTemplateType: "constantUuid",
-                  constantUuidValue: entityBook.uuid,
-                },
+                parentUuid: entityBook.uuid,
+                // parentUuid: {
+                //   queryTemplateType: "constantUuid",
+                //   constantUuidValue: entityBook.uuid,
+                // },
               },
             },
             runtimeTransformers: {

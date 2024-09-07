@@ -603,7 +603,7 @@ export function transformer_apply(
             );
 
             // log.info(
-            //   "innerSelectElementFromQuery extractorTransformer count referencedExtractor resolvedReference",
+            //   "innerSelectElementFromQueryTemplate extractorTransformer count referencedExtractor resolvedReference",
             //   resolvedReference
             // );
           

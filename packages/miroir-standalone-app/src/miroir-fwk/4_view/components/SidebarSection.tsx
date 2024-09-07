@@ -21,7 +21,7 @@ import {
   ExtractorTemplateForRecordOfExtractors,
   entityMenu,
   getApplicationSection,
-  getDeploymentEntityStateSelectorParams,
+  getDeploymentEntityStateSelectorTemplateParams,
   getLoggerName,
   LoggerInterface,
   menuDefaultMiroir,
@@ -32,7 +32,7 @@ import {
   Uuid,
   DomainElementObjectOrFailed
 } from "miroir-core";
-import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
+import { getMemoizedDeploymentEntityStateSelectorForTemplateMap } from 'miroir-localcache-redux';
 import { FC, useMemo } from 'react';
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
@@ -149,13 +149,13 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
   // const context = useMiroirContext();
 
   const deploymentEntityStateSelectorMap: SyncExtractorTemplateRunnerMap<DeploymentEntityState> = useMemo(
-    () => getMemoizedDeploymentEntityStateSelectorMap(),
+    () => getMemoizedDeploymentEntityStateSelectorForTemplateMap(),
     []
   )
 
   const fetchDeploymentMenusQueryParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForRecordOfExtractors, DeploymentEntityState> = useMemo(
     () => 
-    getDeploymentEntityStateSelectorParams<ExtractorTemplateForRecordOfExtractors>({
+    getDeploymentEntityStateSelectorTemplateParams<ExtractorTemplateForRecordOfExtractors>({
       queryType: "extractorTemplateForRecordOfExtractors",
       deploymentUuid: props.deploymentUuid,
       // applicationSection: "data",
@@ -184,7 +184,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
 
   log.info("fetchDeploymentMenusQueryParams",fetchDeploymentMenusQueryParams)
   const miroirMenusDomainElementObject: DomainElementObjectOrFailed = useDeploymentEntityStateQuerySelector(
-    deploymentEntityStateSelectorMap.extractWithManyExtractors,
+    deploymentEntityStateSelectorMap.extractWithManyExtractorTemplates,
     fetchDeploymentMenusQueryParams
   );
 

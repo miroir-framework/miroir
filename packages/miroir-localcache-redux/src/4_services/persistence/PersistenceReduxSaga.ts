@@ -221,7 +221,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                 return yield localStoreResult;
                 break;
               }
-              case "queryAction": {
+              case "queryTemplateAction": {
                 const localPersistenceStoreController =
                   localParams.localPersistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
 
@@ -230,7 +230,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                     "restMethodGetHandler could not find controller for deployment: " + action.deploymentUuid
                   );
                 }
-                const localStoreResult = yield* call(() => localPersistenceStoreController.handleQuery(action));
+                const localStoreResult = yield* call(() => localPersistenceStoreController.handleQueryTemplate(action));
                 return  yield localStoreResult;
                 break;
 
@@ -276,7 +276,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                 return yield result;
                 break;
               }
-              case "queryAction": {
+              case "queryTemplateAction": {
                 // log.info("handlePersistenceAction calling remoteStoreNetworkClient on action",JSON.stringify(action));
                 // const clientResult: RestClientCallReturnType = yield* call(() =>
                 //   (

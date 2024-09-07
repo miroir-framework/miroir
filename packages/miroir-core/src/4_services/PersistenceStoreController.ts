@@ -17,6 +17,7 @@ import {
   ModelActionInitModelParams,
   ModelActionRenameEntity,
   QueryAction,
+  QueryTemplateAction,
   StoreSectionConfiguration
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DataStoreApplicationType } from "../0_interfaces/3_controllers/ApplicationControllerInterface.js";
@@ -118,7 +119,24 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       query.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
     const result: ActionReturnType = await currentStore.handleQuery(query);
 
-    log.info(this.logHeader,'handleQuery','query',query, "result", JSON.stringify(result));
+    log.info(this.logHeader,'handleQueryTemplate','query',query, "result", JSON.stringify(result));
+    return Promise.resolve(result);
+  }
+
+  // #############################################################################################
+  async handleQueryTemplate(query: QueryTemplateAction): Promise<ActionReturnType> {
+    // TODO: fix applicationSection!!!
+    log.info(this.logHeader,'handleQueryTemplate','query',query);
+    // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
+    // log.info(this.logHeader,'this.modelStoreSection',this.modelStoreSection);
+    
+    // TODO: composite actions / queries could execute on different sections, how should this be dealt with? 
+    // RIGHT NOW RESTRICT ALL SUBQUERIES OF A QUERY TO THE SAME SECTION !!!!
+    const currentStore: PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface =
+      query.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
+    const result: ActionReturnType = await currentStore.handleQueryTemplate(query);
+
+    log.info(this.logHeader,'handleQueryTemplate','query',query, "result", JSON.stringify(result));
     return Promise.resolve(result);
   }
 

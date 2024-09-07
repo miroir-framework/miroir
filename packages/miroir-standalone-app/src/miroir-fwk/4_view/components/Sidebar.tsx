@@ -129,13 +129,13 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
   const theme = useTheme();
 
   // const deploymentEntityStateSelectorMap: SyncExtractorTemplateRunnerMap<DeploymentEntityState> = useMemo(
-  //   () => getMemoizedDeploymentEntityStateSelectorMap(),
+  //   () => getMemoizedDeploymentEntityStateSelectorForTemplateMap(),
   //   []
   // )
 
   // const FetchMiroirMenusQueryParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForRecordOfExtractors, DeploymentEntityState> = useMemo(
   //   () => 
-  //   getDeploymentEntityStateSelectorParams<ExtractorTemplateForRecordOfExtractors>({
+  //   getDeploymentEntityStateSelectorTemplateParams<ExtractorTemplateForRecordOfExtractors>({
   //     queryType: "extractorTemplateForRecordOfExtractors",
   //     deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
   //     // applicationSection: "data",
@@ -163,7 +163,7 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
   // );
 
   // const miroirMenusDomainElementObject: DomainElementObject = useDeploymentEntityStateQuerySelector(
-  //   deploymentEntityStateSelectorMap.extractWithManyExtractors,
+  //   deploymentEntityStateSelectorMap.extractWithManyExtractorTemplates,
   //   FetchMiroirMenusQueryParams
   // );
 

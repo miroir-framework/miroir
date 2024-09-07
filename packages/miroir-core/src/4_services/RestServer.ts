@@ -6,7 +6,7 @@ import {
   EntityInstance,
   InstanceAction,
   ModelAction,
-  QueryAction,
+  QueryTemplateAction,
   StoreOrBundleAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
@@ -27,7 +27,7 @@ import { generateRestServiceResponse } from "./RestTools.js";
 import { cleanLevel } from "./constants.js";
 
 import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface.js";
-import { getSelectorParams, extractWithManyExtractorsFromDomainState, extractWithExtractorFromDomainState } from "../2_domain/DomainStateQuerySelectors.js";
+import { getSelectorParams, extractWithManyExtractorsFromDomainStateForTemplate, extractWithExtractorFromDomainStateForTemplate } from "../2_domain/DomainStateQuerySelectors.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RestServer");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -274,9 +274,9 @@ export async function queryHandler(
    * 
    */
   // const query: ExtractorTemplateForRecordOfExtractors = body.query as ExtractorTemplateForRecordOfExtractors ;
-  const queryAction: QueryAction = body as QueryAction ;
+  const queryTemplateAction: QueryTemplateAction = body as QueryTemplateAction ;
 
-  const deploymentUuid = queryAction.deploymentUuid
+  const deploymentUuid = queryTemplateAction.deploymentUuid
   const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
     deploymentUuid
   );
@@ -286,37 +286,37 @@ export async function queryHandler(
   }
   if (useDomainControllerToHandleModelAndInstanceActions) {
     // we are on the server, the action has been received from remote client
-    // switch (queryAction.deploymentUuid) {
-    const result = await domainController.handleQuery(queryAction)
+    // switch (queryTemplateAction.deploymentUuid) {
+    const result = await domainController.handleQueryTemplate(queryTemplateAction)
     log.info("RestServer queryHandler used adminConfigurationDeploymentMiroir domainController result=", JSON.stringify(result, undefined,2))
     return continuationFunction(response)(result)
   } else {
     // we're on the client, called by RestServerStub
     // uses the local cache, needs to have done a Model "rollback" action on the client//, or a Model "remoteLocalCacheRollback" action on the server
     const domainState = localCache.getDomainState();
-    log.info("RestServer queryHandler query=", JSON.stringify(queryAction, undefined, 2))
+    log.info("RestServer queryHandler query=", JSON.stringify(queryTemplateAction, undefined, 2))
     log.info("RestServer queryHandler domainState=", JSON.stringify(domainState, undefined, 2))
-    // const queryResult: DomainElement = extractWithManyExtractorsFromDomainState(domainState, getSelectorParams(query));
+    // const queryResult: DomainElement = extractWithManyExtractorsFromDomainStateForTemplate(domainState, getSelectorParams(query));
     let queryResult: DomainElement
-    switch (queryAction.query.queryType) {
+    switch (queryTemplateAction.query.queryType) {
       case "extractorTemplateForDomainModelObjects": {
-        queryResult = extractWithExtractorFromDomainState(
+        queryResult = extractWithExtractorFromDomainStateForTemplate(
           domainState,
-          getSelectorParams(queryAction.query)
+          getSelectorParams(queryTemplateAction.query)
         );
         break;
       }
       case "extractorTemplateForRecordOfExtractors": {
-        queryResult = extractWithManyExtractorsFromDomainState(
+        queryResult = extractWithManyExtractorsFromDomainStateForTemplate(
           domainState,
-          getSelectorParams(queryAction.query)
+          getSelectorParams(queryTemplateAction.query)
         );
         break;
       }
       default: {
         return continuationFunction(response)({
           status: "error",
-          error: "RestServer queryHandler could not handle queryAction.query: " + queryAction.query,
+          error: "RestServer queryHandler could not handle queryTemplateAction.query: " + queryTemplateAction.query,
         })
         break;
       }

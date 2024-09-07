@@ -33,6 +33,8 @@ export {
   DomainAction,
   ExtractorTemplateForRecordOfExtractors,
   extractorTemplateForRecordOfExtractors,
+  ExtractorForRecordOfExtractors,
+  extractorForRecordOfExtractors,
   DomainModelGetEntityDefinitionExtractor,
   domainModelGetEntityDefinitionExtractor,
   DomainModelGetFetchParamJzodSchemaExtractor,
@@ -185,12 +187,18 @@ export {
   ActionHandler,
   PersistenceAction,
   RestPersistenceAction,
+  QuerySelectObject,
+  querySelectObject,
+  QuerySelectObjectList,
+  querySelectObjectList,
+  QueryAction,
+  queryAction,
   QueryTemplateSelectObject,
   queryTemplateSelectObject,
   QueryTemplateSelectObjectList,
   queryTemplateSelectObjectList,
-  QueryAction,
-  queryAction,
+  QueryTemplateAction,
+  queryTemplateAction,
   ServerConfigForClientConfig,
   serverConfigForClientConfig,
   SqlDbStoreSectionConfiguration,
@@ -272,6 +280,19 @@ export {
   carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration,
   CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction,
   carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction,
+  ExtractorForSingleObject,
+  extractorForSingleObject,
+  ExtractorForSingleObjectList,
+  extractorForSingleObjectList,
+  ExtractorForDomainModelObjects,
+  extractorForDomainModelObjects,
+  QuerySelectExtractorWrapper,
+  querySelectExtractorWrapper,
+  QuerySelectExtractorWrapperReturningList,
+  querySelectExtractorWrapperReturningList,
+  QuerySelectExtractorWrapperReturningObject,
+  querySelectExtractorWrapperReturningObject,
+
 }
 from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js"
 
@@ -368,6 +389,19 @@ export {
   SyncExtractorTemplateRunner,
   SyncExtractorTemplateRunnerMap,
   SyncExtractorTemplateRunnerParams,
+  ExtractorPersistenceStoreRunner,
+  // ExtractorRunnerMapForJzodSchema,
+  // ExtractorRunnerParamsForJzodSchema,
+  AsyncExtractorRunner,
+  AsyncExtractorRunnerMap,
+  AsyncExtractorRunnerParams,
+  SyncExtractorRunner,
+  SyncExtractorRunnerMap,
+  SyncExtractorRunnerParams,
+  ExtractorRunner,
+  ExtractorRunnerMap,
+  ExtractorTemplateRunner,
+  ExtractorTemplateRunnerMap,
 } from './0_interfaces/2_domain/ExtractorRunnerInterface.js';
 export {
   ZEntityState,
@@ -485,30 +519,45 @@ export {
   getJzodSchemaSelectorMap,
   getSelectorMap,
   getSelectorParams,
-  extractWithManyExtractorsFromDomainState,
+  extractWithManyExtractorsFromDomainStateForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectEntityJzodSchemaFromDomainStateNew,
-  selectEntityInstanceUuidIndexFromDomainState,
-  selectEntityInstanceFromObjectQueryAndDomainState,
+  selectEntityInstanceUuidIndexFromDomainStateForTemplate,
+  selectEntityInstanceFromObjectQueryAndDomainStateForTemplate,
   exractEntityInstanceListFromListQueryAndDomainState,
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
 } from './2_domain/DomainStateQuerySelectors.js';
 export {
-  getDeploymentEntityStateJzodSchemaSelectorMap,
-  getDeploymentEntityStateSelectorMap,
-  getDeploymentEntityStateSelectorParams,
-  selectEntityInstanceFromDeploymentEntityState,
-  selectEntityInstanceUuidIndexFromDeploymentEntityState,
+  getDeploymentEntityStateJzodSchemaSelectorTemplateMap,
+  getDeploymentEntityStateSelectorTemplateMap,
+  getDeploymentEntityStateSelectorTemplateParams,
+  selectEntityInstanceFromDeploymentEntityStateForTemplate,
+  selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate,
   extractEntityJzodSchemaFromDeploymentEntityState,
-} from './2_domain/DeploymentEntityStateQuerySelectors.js';
+} from './2_domain/DeploymentEntityStateQueryTemplateSelectors.js';
+export {
+  ExtractorTemplateRunnerInMemory
+} from './2_domain/ExtractorTemplateRunnerInMemory.js';
 export {
   ExtractorRunnerInMemory
 } from './2_domain/ExtractorRunnerInMemory.js';
 export {
+  // domainElementToPlainObject,
+  // plainObjectToDomainElement,
+  resolveContextReferenceDEFUNCT,
+  // resolveContextReference,
+  extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory,
+  // extractFetchQueryJzodSchema,
+  // extractJzodSchemaForDomainModelQuery,
+  // extractzodSchemaForSingleSelectQuery,
+  extractWithManyExtractorTemplates,
+  extractWithExtractorTemplate,
+} from './2_domain/QueryTemplateSelectors.js';
+export {
   domainElementToPlainObject,
   plainObjectToDomainElement,
-  resolveContextReferenceDEFUNCT,
+  // resolveContextReferenceDEFUNCT,
   resolveContextReference,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractFetchQueryJzodSchema,
@@ -518,10 +567,17 @@ export {
   extractWithExtractor,
 } from './2_domain/QuerySelectors.js';
 export {
+  asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate,
+  asyncExtractWithExtractorTemplate,
+  asyncExtractWithManyExtractorTemplates,
+  asyncApplyExtractorTemplateTransformerInMemory,
+} from './2_domain/AsyncQueryTemplateSelectors.js';
+export {
+  asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   asyncExtractWithExtractor,
   asyncExtractWithManyExtractors,
-  asyncApplyExtractorTransformerInMemory,
+  asyncInnerSelectElementFromQuery,
 } from './2_domain/AsyncQuerySelectors.js';
 export{
   getLocalCacheIndexDeploymentSection,

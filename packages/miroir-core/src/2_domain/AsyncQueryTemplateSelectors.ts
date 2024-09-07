@@ -7,9 +7,6 @@ import {
   DomainElementInstanceUuidIndexOrFailed,
   DomainElementObject,
   EntityInstance,
-  ExtractorForRecordOfExtractors,
-  ExtractorForSingleObject,
-  ExtractorForSingleObjectList,
   ExtractorTemplateForRecordOfExtractors,
   ExtractorTemplateForSingleObject,
   ExtractorTemplateForSingleObjectList,
@@ -22,8 +19,6 @@ import {
   TransformerForRuntime
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
-  AsyncExtractorRunnerMap,
-  AsyncExtractorRunnerParams,
   AsyncExtractorTemplateRunnerMap,
   AsyncExtractorTemplateRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
@@ -32,7 +27,6 @@ import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
-import { applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory, applyExtractorTransformerInMemory } from "./QuerySelectors.js";
 import {
   applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory,
   applyExtractorTemplateTransformerInMemory,
@@ -48,12 +42,12 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   }
 );
 
-const emptyAsyncSelectorMap:AsyncExtractorRunnerMap = {
+const emptyAsyncSelectorMap:AsyncExtractorTemplateRunnerMap = {
   extractorType: "async",
-  extractWithExtractor: undefined as any, 
-  extractWithManyExtractors: undefined as any, 
+  extractWithExtractorTemplate: undefined as any, 
+  extractWithManyExtractorTemplates: undefined as any, 
   extractEntityInstance: undefined as any,
-  extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: undefined as any,
+  extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: undefined as any,
   extractEntityInstanceUuidIndex: undefined as any,
   applyExtractorTransformer: undefined as any,
 }
@@ -69,9 +63,9 @@ const emptyAsyncSelectorMap:AsyncExtractorRunnerMap = {
  * @param selectorParams 
  * @returns 
  */
-export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
+export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate
 = (
-  selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList>
+  selectorParams: AsyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObjectList>
 ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
   const result: Promise<DomainElementInstanceUuidIndexOrFailed> =
     (selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap).extractEntityInstanceUuidIndex(selectorParams)
@@ -80,7 +74,7 @@ export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
         "extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory found selectedInstances", selectedInstancesUuidIndex
       );
 
-      return applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory(
+      return applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory(
         selectedInstancesUuidIndex,
         selectorParams.extractor,
       );
@@ -91,29 +85,29 @@ export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
 };
 
 // ################################################################################################
-export async function asyncApplyExtractorTransformerInMemory(
+export async function asyncApplyExtractorTemplateTransformerInMemory(
   actionRuntimeTransformer: TransformerForRuntime,
   queryParams: Record<string, any>,
   newFetchedData: Record<string, any>,
   // queryParams: DomainElementObject,
   // newFetchedData: DomainElementObject,
-  extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>,
+  extractors: Record<string, ExtractorTemplateForSingleObjectList | ExtractorTemplateForSingleObject | ExtractorTemplateForRecordOfExtractors>,
 ): Promise<DomainElement> {
-  return Promise.resolve(applyExtractorTransformerInMemory(actionRuntimeTransformer, queryParams, newFetchedData));
+  return Promise.resolve(applyExtractorTemplateTransformerInMemory(actionRuntimeTransformer, queryParams, newFetchedData));
 }
 
 // ################################################################################################
-export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
+export function asyncInnerSelectElementFromQueryTemplate/*ExtractorTemplateRunner*/(
   newFetchedData: Record<string, any>,
   pageParams: Record<string, any>,
   queryParams: Record<string, any>,
   // newFetchedData: DomainElementObject,
   // pageParams: DomainElementObject,
   // queryParams: DomainElementObject,
-  extractorRunnerMap:AsyncExtractorRunnerMap,
+  extractorRunnerMap:AsyncExtractorTemplateRunnerMap,
   deploymentUuid: Uuid,
-  extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>,
-  query: MiroirQuery
+  extractors: Record<string, ExtractorTemplateForSingleObjectList | ExtractorTemplateForSingleObject | ExtractorTemplateForRecordOfExtractors>,
+  query: QueryTemplate
 ): Promise<DomainElement> {
   switch (query.queryType) {
     case "literal": {
@@ -122,13 +116,13 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
     }
     // ############################################################################################
     // Impure Monads
-    case "queryExtractObjectListByEntity":
+    case "queryTemplateExtractObjectListByEntity":
     case "selectObjectListByRelation": 
     case "selectObjectListByManyToManyRelation": {
-      return extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractorInMemory({
+      return extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory({
         extractorRunnerMap,
         extractor: {
-          queryType: "extractorForDomainModelObjects",
+          queryType: "extractorTemplateForDomainModelObjects",
           deploymentUuid: deploymentUuid,
           contextResults: newFetchedData,
           pageParams: pageParams,
@@ -149,7 +143,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
       return extractorRunnerMap.extractEntityInstance({
         extractorRunnerMap,
         extractor: {
-          queryType: "extractorForDomainModelObjects",
+          queryType: "extractorTemplateForDomainModelObjects",
           deploymentUuid: deploymentUuid,
           contextResults: newFetchedData,
           pageParams,
@@ -168,8 +162,8 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
     case "extractorWrapperReturningObject":
     case "wrapperReturningObject": { // build object
       const entries = Object.entries(query.definition);
-      const promises = entries.map((e: [string, MiroirQuery]) => {
-        return asyncInnerSelectElementFromQuery(
+      const promises = entries.map((e: [string, QueryTemplate]) => {
+        return asyncInnerSelectElementFromQueryTemplate(
           newFetchedData,
           pageParams ?? {},
           queryParams ?? {},
@@ -192,7 +186,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
     case "extractorWrapperReturningList":
     case "wrapperReturningList": { // List map
       const promises = query.definition.map((e) =>{
-        return asyncInnerSelectElementFromQuery(
+        return asyncInnerSelectElementFromQueryTemplate(
           newFetchedData,
           pageParams ?? {},
           queryParams ?? {},
@@ -211,7 +205,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
       break;
     }
     case "queryCombiner": { // join
-      const rootQueryResults = asyncInnerSelectElementFromQuery(
+      const rootQueryResults = asyncInnerSelectElementFromQueryTemplate(
         newFetchedData,
         pageParams,
         queryParams,
@@ -224,7 +218,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
         if (rootQueryResults.elementType == "instanceUuidIndex") {
           const entries = Object.entries(rootQueryResults.elementValue);
           const promises = entries.map((entry: [string, EntityInstance]) => {
-            return asyncInnerSelectElementFromQuery(
+            return asyncInnerSelectElementFromQueryTemplate(
               newFetchedData,
               pageParams,
               {
@@ -271,7 +265,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
             elementType: "failure",
             elementValue: { 
               queryFailure: "ReferenceNotFound", 
-              failureOrigin: ["AsyncQuerySelectors", "asyncInnerSelectElementFromQuery"],
+              failureOrigin: ["AsyncQuerySelectors", "asyncInnerSelectElementFromQueryTemplate"],
               failureMessage: "could not find reference " + query.queryReference + " in context" + JSON.stringify(Object.keys(newFetchedData)),
               queryContext: JSON.stringify(newFetchedData),
               query: JSON.stringify(query) 
@@ -287,24 +281,24 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
 }
 
 // ################################################################################################
-export const asyncExtractWithExtractor /**: SyncExtractorTemplateRunner */= (
+export const asyncExtractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= (
   // selectorParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForRecordOfExtractors, DeploymentEntityState>,
-  selectorParams: AsyncExtractorRunnerParams<
-    ExtractorForSingleObject | ExtractorForSingleObjectList | ExtractorForRecordOfExtractors
+  selectorParams: AsyncExtractorTemplateRunnerParams<
+    ExtractorTemplateForSingleObject | ExtractorTemplateForSingleObjectList | ExtractorTemplateForRecordOfExtractors
   >
 ): Promise<DomainElement> => {
   // log.info("########## extractExtractor begin, query", selectorParams);
-  const localSelectorMap: AsyncExtractorRunnerMap = selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
+  const localSelectorMap: AsyncExtractorTemplateRunnerMap = selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
 
   switch (selectorParams.extractor.queryType) {
-    case "extractorForRecordOfExtractors": {
-      return asyncExtractWithManyExtractors(
-        selectorParams as AsyncExtractorRunnerParams<ExtractorForRecordOfExtractors>
+    case "extractorTemplateForRecordOfExtractors": {
+      return asyncExtractWithManyExtractorTemplates(
+        selectorParams as AsyncExtractorTemplateRunnerParams<ExtractorTemplateForRecordOfExtractors>
       );
       break;
     }
-    case "extractorForDomainModelObjects": {
-      const result = asyncInnerSelectElementFromQuery(
+    case "extractorTemplateForDomainModelObjects": {
+      const result = asyncInnerSelectElementFromQueryTemplate(
         selectorParams.extractor.contextResults,
         selectorParams.extractor.pageParams,
         selectorParams.extractor.queryParams,
@@ -474,9 +468,9 @@ function resolveQueryTemplate(
  * @returns 
  */
 
-export const asyncExtractWithManyExtractors = async (
+export const asyncExtractWithManyExtractorTemplates = async (
   // state: StateType,
-  selectorParams: AsyncExtractorRunnerParams<ExtractorForRecordOfExtractors>,
+  selectorParams: AsyncExtractorTemplateRunnerParams<ExtractorTemplateForRecordOfExtractors>,
 ): Promise<DomainElementObject> => {
 
   // log.info("########## extractWithManyExtractorTemplates begin, query", selectorParams);
@@ -490,12 +484,12 @@ export const asyncExtractWithManyExtractors = async (
     ...selectorParams.extractor.contextResults.elementValue ,
   };
   // log.info("########## DomainSelector extractWithManyExtractorTemplates will use context", context);
-  const localSelectorMap: AsyncExtractorRunnerMap =
+  const localSelectorMap: AsyncExtractorTemplateRunnerMap =
     selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
 
   const extractorsPromises = Object.entries(selectorParams.extractor.extractors ?? {}).map(
-    (query: [string, MiroirQuery]) => {
-      return asyncInnerSelectElementFromQuery(
+    (query: [string, QueryTemplate]) => {
+      return asyncInnerSelectElementFromQueryTemplate(
         context,
         selectorParams.extractor.pageParams,
         {
@@ -526,13 +520,18 @@ export const asyncExtractWithManyExtractors = async (
   // });
 
   const combinerPromises = Object.entries(selectorParams.extractor.combiners ?? {})
-  .map((query: [string, MiroirQuery]) => {
-    return asyncInnerSelectElementFromQuery(
+  .map((query: [string, QueryTemplate]) => {
+    return asyncInnerSelectElementFromQueryTemplate(
       context,
       selectorParams.extractor.pageParams,
       {
-        ...selectorParams.extractor.pageParams,
-        ...selectorParams.extractor.queryParams,
+        // elementType: "object",
+        // elementValue: {
+          ...selectorParams.extractor.pageParams,
+          ...selectorParams.extractor.queryParams,
+          // ...selectorParams.extractor.pageParams.elementValue,
+          // ...selectorParams.extractor.queryParams.elementValue,
+      //   },
       },
       localSelectorMap as any,
       selectorParams.extractor.deploymentUuid,

@@ -8,6 +8,7 @@ import {
   ActionEntityInstanceReturnType,
   ActionVoidReturnType,
   ApplicationSection,
+  QueryTemplateAction,
   QueryAction,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { PersistenceStoreDataSectionInterface } from "../../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
@@ -59,6 +60,9 @@ export class ErrorDataStore implements PersistenceStoreDataSectionInterface {
     throw new Error("Method not implemented.");
   }
   getInstances(parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType> {
+    throw new Error("Method not implemented.");
+  }
+  handleQueryTemplate(query: QueryTemplateAction): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
   handleQuery(query: QueryAction): Promise<ActionReturnType> {

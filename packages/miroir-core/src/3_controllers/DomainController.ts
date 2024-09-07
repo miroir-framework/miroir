@@ -24,30 +24,23 @@ import {
   ActionVoidReturnType,
   ApplicationSection,
   ApplicationVersion,
-  CompositeInstanceActionTemplate,
+  CompositeActionTemplate,
   DomainAction,
-  DomainElementObject,
   EntityInstance,
   EntityInstanceCollection,
-  ExtractorTemplateForRecordOfExtractors,
   InstanceAction,
   MetaModel,
   ModelAction,
-  TransformerForBuild,
-  QueryAction,
-  QueryTemplate,
-  QueryTemplateSelectExtractorWrapper,
+  QueryTemplateAction,
   RestPersistenceAction,
   TransactionalInstanceAction,
-  UndoRedoAction,
-  CompositeActionTemplate,
-  carryOnObject,
-  CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction
+  TransformerForBuild,
+  UndoRedoAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface.js';
 import { ACTION_OK } from '../1_core/constants.js';
 import { defaultMiroirMetaModel, metaModelEntities, miroirModelEntities } from '../1_core/Model.js';
-import { resolveContextReferenceDEFUNCT } from '../2_domain/QuerySelectors.js';
+import { transformer_apply } from '../2_domain/Transformers.js';
 import { MiroirLoggerFactory } from '../4_services/Logger.js';
 import { packageName } from '../constants.js';
 import {
@@ -60,8 +53,6 @@ import { getLoggerName } from '../tools.js';
 import { cleanLevel } from './constants.js';
 import { Endpoint } from './Endpoint.js';
 import { CallUtils } from './ErrorHandling/CallUtils.js';
-import { ExtractorTemplateRunner, ExtractorTemplatePersistenceStoreRunner } from '../0_interfaces/2_domain/ExtractorRunnerInterface.js';
-import { transformer_apply } from '../2_domain/Transformers.js';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -646,112 +637,19 @@ export class DomainController implements DomainControllerInterface {
     return Promise.resolve(ACTION_OK);
   }
 
-  
-  // // ##############################################################################################
-  // /**
-  //  * translates @param query into PersistenceAction, with actionType="LocalPersistenceAction" and
-  //   actionName="create" | "read" | "update" | "delete"
-  //   aren't the "read" obsolete since the PersistenceStore can execute queries?
-  //   Plus the "read" means that query transformers are executed in memory on the server, and not
-  //   as an "sql / with" query
-
-  //  * @param deploymentUuid 
-  //  * @param queryParams 
-  //  * @param contextResults 
-  //  * @param queryName 
-  //  * @param query 
-  //  * @returns 
-  //  */
-  // async handleLocalPersistenceStoreQuery(
-  //   // queryAction: QueryAction,
-  //   deploymentUuid: Uuid,
-  //   queryParams: DomainElementObject,
-  //   contextResults: DomainElementObject,
-  //   queryName: string,
-  //   query: QueryTemplateSelectExtractorWrapper | QueryTemplate,
-  // ): Promise<ActionReturnType> {
-  //   switch (query.queryType) {
-  //     case "queryTemplateExtractObjectListByEntity": {
-  //       const parentUuid = resolveContextReferenceDEFUNCT(
-  //         query.parentUuid,
-  //         queryParams,
-  //         contextResults
-  //       );
-
-  //       log.info("DomainController handleQuery queryAction resolved parentUuid", JSON.stringify(parentUuid));
-
-  //       if (parentUuid.elementType != "instanceUuid") {
-  //         throw new Error(
-  //           "DomainController handleQuery queryAction no parentUuid found for query " +
-  //             JSON.stringify(query) +
-  //             " parentUuid " +
-  //             JSON.stringify(parentUuid)
-  //         );
-  //       }
-
-  //       if (!query.applicationSection) {
-  //         throw new Error(
-  //           "DomainController handleQuery queryAction no applicationSection found for query " + JSON.stringify(query)
-  //         );
-  //       }
-
-  //       const result = await this.callUtil.callPersistenceAction(
-  //         {}, // context
-  //         { // context update
-  //           addResultToContextAsName: "dataEntitiesFromModelSection",
-  //           expectedDomainElementType: "entityInstanceCollection",
-  //         },
-  //         { // persistence action
-  //           actionType: "LocalPersistenceAction",
-  //           actionName: "read",
-  //           endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
-  //           deploymentUuid: deploymentUuid,
-  //           parentName: query.parentName,
-  //           parentUuid: parentUuid.elementValue,
-  //           section: query.applicationSection,
-  //         }
-  //       );
-
-  //       log.info("DomainController handleQuery queryName=", queryName);
-  //       log.info("DomainController handleQuery result=", JSON.stringify(result));
-
-  //       return result["dataEntitiesFromModelSection"];
-  //       break;
-  //     }
-  //     case "literal":
-  //     case "selectObjectListByRelation":
-  //     case "selectObjectListByManyToManyRelation":
-  //     case "queryCombiner":
-  //     case "selectObjectByRelation":
-  //     case "selectObjectByDirectReference":
-  //     case "queryContextReference":
-  //     case "wrapperReturningObject":
-  //     case "wrapperReturningList":
-  //     default: {
-  //       throw new Error(
-  //         "DomainController handleQuery queryAction no query found in query! " +
-  //           JSON.stringify(query)
-  //       );
-  //       break;
-  //     }
-  //   }
-
-  // }
-
-
   // ##############################################################################################
-  async handleQuery(queryAction: QueryAction): Promise<ActionReturnType> {
+  async handleQueryTemplate(queryTemplateAction: QueryTemplateAction): Promise<ActionReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     log.info(
-      "handleQuery",
+      "handleQueryTemplate",
       "deploymentUuid",
-      queryAction.deploymentUuid,
+      queryTemplateAction.deploymentUuid,
       "actionName",
-      (queryAction as any).actionName,
+      (queryTemplateAction as any).actionName,
       "actionType",
-      queryAction?.actionType,
+      queryTemplateAction?.actionType,
       "objects",
-      JSON.stringify((queryAction as any)["objects"], null, 2)
+      JSON.stringify((queryTemplateAction as any)["objects"], null, 2)
     );
 
     if (this.domainControllerIsDeployedOn == "server") {
@@ -759,8 +657,8 @@ export class DomainController implements DomainControllerInterface {
        * we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
        */
 
-      const result: ActionReturnType = await this.persistenceStore.handlePersistenceAction(queryAction);
-      log.info("DomainController handleQuery queryAction callPersistenceAction Result=", result);
+      const result: ActionReturnType = await this.persistenceStore.handlePersistenceAction(queryTemplateAction);
+      log.info("DomainController handleQueryTemplate queryTemplateAction callPersistenceAction Result=", result);
       return result;
     } else {
       // we're on the client, the query is sent to the server for execution.
@@ -769,8 +667,8 @@ export class DomainController implements DomainControllerInterface {
       // while non-transactional accesses are limited to persistence store access (does this make sense?)
       // in both cases this enforces only the most up-to-date data is accessed.
       log.info(
-        "DomainController handleQuery queryAction sending query to server for execution",
-        JSON.stringify(queryAction)
+        "DomainController handleQueryTemplate queryTemplateAction sending query to server for execution",
+        JSON.stringify(queryTemplateAction)
       );
       const result = await this.callUtil.callPersistenceAction(
         // what if it is a REAL persistence store?? exception?
@@ -779,9 +677,9 @@ export class DomainController implements DomainControllerInterface {
           addResultToContextAsName: "dataEntitiesFromModelSection",
           expectedDomainElementType: "entityInstanceCollection",
         }, // continuation
-        queryAction
+        queryTemplateAction
       );
-      log.info("handleQuery queryAction callPersistenceAction Result=", result);
+      log.info("handleQueryTemplate queryTemplateAction callPersistenceAction Result=", result);
       return result["dataEntitiesFromModelSection"];
     }
 
@@ -868,7 +766,7 @@ export class DomainController implements DomainControllerInterface {
           }
           break;
         }
-        // case 'queryAction': {
+        // case 'queryTemplateAction': {
         case 'query': {
           // log.info(
           //   "handleCompositeActionTemplate resolved query",
@@ -877,7 +775,7 @@ export class DomainController implements DomainControllerInterface {
           //   actionParamValues
           // );
   
-          const actionResult = await this.handleQuery(currentAction.queryAction);
+          const actionResult = await this.handleQueryTemplate(currentAction.queryTemplateAction);
           if (actionResult?.status != "ok") {
             log.error("Error on query", JSON.stringify(actionResult, null, 2));
           } else {
@@ -921,7 +819,7 @@ export class DomainController implements DomainControllerInterface {
         // for (const currentAction of domainAction.definition) {
         //   log.info("handleAction compositeAction resolved action", currentAction);
         //   if (currentAction.compositeActionType == "query") {
-        //     const actionResult = await this.handleQuery(currentAction.query);
+        //     const actionResult = await this.handleQueryTemplate(currentAction.query);
         //     if (actionResult?.status != "ok") {
         //       log.error("Error query", JSON.stringify(actionResult, null, 2));
         //     }

@@ -729,9 +729,9 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
   //   await chainVitestSteps(
   //     "actualTest_getInstancesAndCheckResult_runQuery",
   //     {},
-  //     async () => localAppPersistenceStoreController.handleQuery("model",
+  //     async () => localAppPersistenceStoreController.handleQueryTemplate("model",
   //       {
-  //         actionType: 'queryAction',
+  //         actionType: 'queryTemplateAction',
   //         actionName: "runQuery",
   //         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
   //         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",

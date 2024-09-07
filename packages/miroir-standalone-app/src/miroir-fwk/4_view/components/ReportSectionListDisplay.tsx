@@ -33,7 +33,7 @@ import {
   applicationSection,
   domainElementObject,
   getApplicationSection,
-  getDeploymentEntityStateSelectorParams,
+  getDeploymentEntityStateSelectorTemplateParams,
   getLoggerName,
   jzodObject,
   objectListReportSection
@@ -42,7 +42,7 @@ import {
 import { Button } from "@mui/material";
 
 
-import { getMemoizedDeploymentEntityStateSelectorMap } from "miroir-localcache-redux";
+import { getMemoizedDeploymentEntityStateSelectorForTemplateMap } from "miroir-localcache-redux";
 
 import { packageName } from "../../../constants.js";
 import {
@@ -212,7 +212,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
 
   const deploymentEntityStateSelectorMap: SyncExtractorTemplateRunnerMap<DeploymentEntityState> = useMemo(
-    () => getMemoizedDeploymentEntityStateSelectorMap(),
+    () => getMemoizedDeploymentEntityStateSelectorForTemplateMap(),
     []
   )
 
@@ -321,7 +321,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     DeploymentEntityState
   > = useMemo(
     () =>
-      getDeploymentEntityStateSelectorParams<ExtractorTemplateForRecordOfExtractors>(
+      getDeploymentEntityStateSelectorTemplateParams<ExtractorTemplateForRecordOfExtractors>(
         {
           queryType: "extractorTemplateForRecordOfExtractors",
           deploymentUuid: props.deploymentUuid,
@@ -366,7 +366,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
 
   // const foreignKeyObjects:  = useDeploymentEntityStateQuerySelectorForCleanedResult(
   const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = useDeploymentEntityStateQuerySelectorForCleanedResult(
-    deploymentEntityStateSelectorMap.extractWithManyExtractors as SyncExtractorTemplateRunner<ExtractorTemplateForRecordOfExtractors, DeploymentEntityState, DomainElement>,
+    deploymentEntityStateSelectorMap.extractWithManyExtractorTemplates as SyncExtractorTemplateRunner<ExtractorTemplateForRecordOfExtractors, DeploymentEntityState, DomainElement>,
     foreignKeyObjectsFetchQueryParams
   );
 

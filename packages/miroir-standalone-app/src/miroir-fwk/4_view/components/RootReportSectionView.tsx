@@ -16,7 +16,7 @@ import {
   RecordOfJzodObject,
   RootReportSection,
   Uuid,
-  getDeploymentEntityStateSelectorParams,
+  getDeploymentEntityStateSelectorTemplateParams,
   getLoggerName,
   DomainElementObjectOrFailed
 } from "miroir-core";
@@ -27,7 +27,7 @@ import { useDeploymentEntityStateJzodSchemaSelector, useDeploymentEntityStateQue
 import { ReportSectionView } from './ReportSectionView.js';
 import { ReportUrlParamKeys } from '../routes/ReportPage.js';
 
-import { getMemoizedDeploymentEntityStateJzodSchemaSelectorMap, getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
+import { getMemoizedDeploymentEntityStateJzodSchemaSelectorMap, getMemoizedDeploymentEntityStateSelectorForTemplateMap } from 'miroir-localcache-redux';
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 
@@ -79,14 +79,14 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
   // );
   
   const deploymentEntityStateSelectorMap: SyncExtractorTemplateRunnerMap<DeploymentEntityState> = useMemo(
-    () => getMemoizedDeploymentEntityStateSelectorMap(),
+    () => getMemoizedDeploymentEntityStateSelectorForTemplateMap(),
     []
   )
 
   const deploymentEntityStateFetchQueryParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForRecordOfExtractors, DeploymentEntityState> = useMemo(
     () =>
       props.pageParams.deploymentUuid && props.pageParams.applicationSection && props.pageParams.reportUuid
-        ? getDeploymentEntityStateSelectorParams<ExtractorTemplateForRecordOfExtractors>(
+        ? getDeploymentEntityStateSelectorTemplateParams<ExtractorTemplateForRecordOfExtractors>(
             {
               queryType: "extractorTemplateForRecordOfExtractors",
               deploymentUuid: props.pageParams.deploymentUuid,
@@ -103,7 +103,7 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
             deploymentEntityStateSelectorMap
           )
         : // dummy query
-          getDeploymentEntityStateSelectorParams<ExtractorTemplateForRecordOfExtractors>(
+          getDeploymentEntityStateSelectorTemplateParams<ExtractorTemplateForRecordOfExtractors>(
             {
               queryType: "extractorTemplateForRecordOfExtractors",
               deploymentUuid: "",
@@ -124,7 +124,7 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
   // // )
 
   const deploymentEntityStateQueryResults: DomainElementObjectOrFailed = useDeploymentEntityStateQuerySelector(
-    deploymentEntityStateSelectorMap.extractWithManyExtractors,
+    deploymentEntityStateSelectorMap.extractWithManyExtractorTemplates,
     deploymentEntityStateFetchQueryParams
   );
 

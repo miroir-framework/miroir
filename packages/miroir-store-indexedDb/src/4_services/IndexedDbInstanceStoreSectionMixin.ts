@@ -8,9 +8,11 @@ import {
   EntityInstance,
   LoggerInterface,
   MiroirLoggerFactory,
-  QueryAction,
+  QueryTemplateAction,
   getLoggerName,
+  ExtractorTemplateRunnerInMemory,
   ExtractorRunnerInMemory,
+  QueryAction,
 } from "miroir-core";
 import { IndexedDbStoreSection, MixableIndexedDbStoreSection } from "./IndexedDbStoreSection.js";
 
@@ -27,7 +29,9 @@ export const MixedIndexedDbInstanceStoreSection = IndexedDbInstanceStoreSectionM
 
 export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedDbStoreSection>(Base: TBase) {
   return class MixedIndexedDbInstanceStoreSection extends Base implements PersistenceStoreInstanceSectionAbstractInterface {
+    public extractorTemplateRunner: ExtractorTemplateRunnerInMemory;
     public extractorRunner: ExtractorRunnerInMemory;
+
     constructor(
       // public indexedDbStoreName: string;
       // public localUuidIndexedDb: IndexedDb;
@@ -35,6 +39,7 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
       ...args: any[]
     ) {
       super(...args);
+      this.extractorTemplateRunner = new ExtractorTemplateRunnerInMemory(this);
       this.extractorRunner = new ExtractorRunnerInMemory(this);
       // log.info(this.logHeader,'MixedIndexedDbInstanceStoreSection constructor','this.localUuidIndexedDb',this.localUuidIndexedDb)
     }
@@ -46,6 +51,16 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
       const result: ActionReturnType = await this.extractorRunner.handleQuery(query);
 
       log.info(this.logHeader,'handleQuery','query',query, "result", result);
+      return result;
+    }
+    
+    // #############################################################################################
+    async handleQueryTemplate(query: QueryTemplateAction): Promise<ActionReturnType> {
+      log.info(this.logHeader,'handleQueryTemplate', 'query',query);
+      
+      const result: ActionReturnType = await this.extractorTemplateRunner.handleQueryTemplate(query);
+
+      log.info(this.logHeader,'handleQueryTemplate','query',query, "result", result);
       return result;
     }
 

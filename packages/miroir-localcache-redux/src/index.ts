@@ -48,8 +48,11 @@ export {
   LocalCacheSliceStateZone,
 } from "./4_services/localCache/localCacheReduxSliceInterface.js";
 export {
+  getMemoizedDeploymentEntityStateSelectorForTemplateMap,
+} from "./4_services/localCache/DomainStateMemoizedSelectorsForTemplate.js";
+export {
   getMemoizedDeploymentEntityStateJzodSchemaSelectorMap,
-  getMemoizedDeploymentEntityStateSelectorMap,
+  getMemoizedDeploymentEntityStateSelectorMap
 } from "./4_services/localCache/DomainStateMemoizedSelectors.js";
 export {
   PersistenceReduxSaga,

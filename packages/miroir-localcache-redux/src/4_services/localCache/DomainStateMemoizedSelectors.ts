@@ -2,31 +2,31 @@ import { createSelector } from "@reduxjs/toolkit";
 import {
   DeploymentEntityState,
   ExtractorRunnerMapForJzodSchema,
-  SyncExtractorTemplateRunnerMap,
-  extractWithManyExtractors,
-  selectEntityInstanceFromDeploymentEntityState,
+  SyncExtractorRunnerMap,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
-  selectEntityInstanceUuidIndexFromDeploymentEntityState,
   extractEntityJzodSchemaFromDeploymentEntityState,
   extractFetchQueryJzodSchema,
   extractJzodSchemaForDomainModelQuery,
+  extractWithExtractor,
+  extractWithManyExtractors,
   extractzodSchemaForSingleSelectQuery,
-  extractWithExtractor
+  selectEntityInstanceFromDeploymentEntityStateForTemplate,
+  selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate
 } from "miroir-core";
 
 const deploymentEntityStateSelector = (domainState: DeploymentEntityState, params: any) => domainState;
 const deploymentEntityStateSelectorParams = (domainState: DeploymentEntityState, params: any) => params;
 
-export function getMemoizedDeploymentEntityStateSelectorMap(): SyncExtractorTemplateRunnerMap<DeploymentEntityState> {
+export function getMemoizedDeploymentEntityStateSelectorMap(): SyncExtractorRunnerMap<DeploymentEntityState> {
   return {
     extractorType: "sync",
     extractEntityInstance: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-      selectEntityInstanceFromDeploymentEntityState
+      selectEntityInstanceFromDeploymentEntityStateForTemplate
     ),
     extractEntityInstanceUuidIndex: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-      selectEntityInstanceUuidIndexFromDeploymentEntityState
+      selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate
     ),
     extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],

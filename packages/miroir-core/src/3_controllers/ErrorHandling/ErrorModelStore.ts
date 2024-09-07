@@ -1,5 +1,5 @@
 import { MetaEntity } from "../../0_interfaces/1_core/EntityDefinition.js";
-import { EntityInstanceCollection, EntityInstance, EntityDefinition, ActionReturnType, ActionEntityInstanceCollectionReturnType, ActionEntityInstanceReturnType, ActionVoidReturnType, ModelActionRenameEntity, ModelActionAlterEntityAttribute, QueryAction } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { EntityInstanceCollection, EntityInstance, EntityDefinition, ActionReturnType, ActionEntityInstanceCollectionReturnType, ActionEntityInstanceReturnType, ActionVoidReturnType, ModelActionRenameEntity, ModelActionAlterEntityAttribute, QueryTemplateAction, QueryAction } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { PersistenceStoreModelSectionInterface } from "../../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
 
 export class ErrorModelStore implements PersistenceStoreModelSectionInterface {
@@ -69,6 +69,9 @@ export class ErrorModelStore implements PersistenceStoreModelSectionInterface {
     throw new Error("Method not implemented.");
   }
   getInstances(parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType> {
+    throw new Error("Method not implemented.");
+  }
+  handleQueryTemplate(query: QueryTemplateAction): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
   handleQuery(query: QueryAction): Promise<ActionReturnType> {

@@ -3,8 +3,8 @@ import adminConfigurationDeploymentLibrary from "../../assets/admin_data/7959d81
 import { DomainState } from "../../0_interfaces/2_domain/DomainControllerInterface.js";
 import {
   getSelectorParams,
-  extractWithManyExtractorsFromDomainState,
-  extractWithExtractorFromDomainState
+  extractWithManyExtractorsFromDomainStateForTemplate,
+  extractWithExtractorFromDomainStateForTemplate
 } from "../../2_domain/DomainStateQuerySelectors.js";
 
 import {
@@ -43,8 +43,8 @@ describe("domainSelector", () => {
   //         },
   //       },
   //     };
-  //     // const result = extractWithManyExtractorsFromDomainState(domainState, getSelectorParams(queryParam));
-  //     const result = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
+  //     // const result = extractWithManyExtractorsFromDomainStateForTemplate(domainState, getSelectorParams(queryParam));
+  //     const result = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParams(queryParam));
   //     console.info("result", result);
   //     expect(result).toEqual({
   //       elementType: "object",
@@ -87,8 +87,8 @@ describe("domainSelector", () => {
   //         },
   //       },
   //     };
-  //     // const result = extractWithManyExtractorsFromDomainState(domainState, getSelectorParams(queryParam));
-  //     const result = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
+  //     // const result = extractWithManyExtractorsFromDomainStateForTemplate(domainState, getSelectorParams(queryParam));
+  //     const result = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParams(queryParam));
   //     console.info("result", result);
   //     expect(result).toEqual({
   //       elementType: "object",
@@ -134,8 +134,8 @@ describe("domainSelector", () => {
   //     };
 
   //     expect(
-  //       // extractWithManyExtractorsFromDomainState(domainState, getSelectorParams(queryParam)))
-  //       extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam)))
+  //       // extractWithManyExtractorsFromDomainStateForTemplate(domainState, getSelectorParams(queryParam)))
+  //       extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParams(queryParam)))
   //       .toEqual({
   //       elementType: "object",
   //       elementValue: {
@@ -180,7 +180,7 @@ describe("domainSelector", () => {
   //       },
   //     };
 
-  //     const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
+  //     const queryResult:any = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParams(queryParam));
 
   //     expect(queryResult.elementValue.book.elementValue).toBe(domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"])
   //   }
@@ -219,7 +219,7 @@ describe("domainSelector", () => {
   //       },
   //     };
 
-  //     const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
+  //     const queryResult:any = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParams(queryParam));
 
   //     expect(queryResult.elementValue.book2.elementValue).toBe(domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"])
   //   }
@@ -254,7 +254,7 @@ describe("domainSelector", () => {
   //       },
   //     };
 
-  //     const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
+  //     const queryResult:any = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParams(queryParam));
   //     console.log("queryResult", JSON.stringify(queryResult, circularReplacer(), 2));
 
   //     expect(queryResult.elementValue.book).toBe(
@@ -308,7 +308,7 @@ describe("domainSelector", () => {
   //       },
   //     };
 
-  //     const queryResult:DomainElement = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
+  //     const queryResult:DomainElement = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParams(queryParam));
 
   //     console.log("result XXXXXXXXXXXXXXXXXXXXXXXXXXXXX", JSON.stringify(queryResult, circularReplacer(), 2));
       
@@ -354,7 +354,7 @@ describe("domainSelector", () => {
   //       },
   //     };
 
-  //     const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
+  //     const queryResult:any = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParams(queryParam));
 
   //     console.log("result", queryResult);
       
@@ -426,7 +426,7 @@ describe("domainSelector", () => {
         },
       };
 
-      const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
+      const queryResult:any = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParams(queryParam));
 
       console.log("result", queryResult);
       
@@ -513,7 +513,7 @@ describe("domainSelector", () => {
         },
       };
 
-      const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
+      const queryResult:any = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParams(queryParam));
 
       console.log("result", queryResult);
       
@@ -603,7 +603,7 @@ describe("domainSelector", () => {
         },
       };
 
-      const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
+      const queryResult:any = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParams(queryParam));
 
       console.log("result", JSON.stringify(queryResult, undefined, 2));
 
@@ -678,7 +678,7 @@ describe("domainSelector", () => {
         },
       };
 
-      const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
+      const queryResult:any = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParams(queryParam));
 
       // console.log("result", JSON.stringify(queryResult, undefined, 2));
 
@@ -736,7 +736,7 @@ describe("domainSelector", () => {
         },
       };
 
-      const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
+      const queryResult:any = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParams(queryParam));
 
       console.log("result", JSON.stringify(queryResult, null, 2));
       

@@ -13,6 +13,8 @@ import {
   ActionEntityInstanceReturnType,
   ActionVoidReturnType,
   ACTION_OK,
+  QueryTemplateAction,
+  ExtractorTemplateRunnerInMemory,
   QueryAction,
   ExtractorRunnerInMemory,
 } from "miroir-core";
@@ -20,7 +22,7 @@ import {
 import { packageName } from "../constants.js";
 import { FileSystemStoreSection, MixableFileSystemDbStore } from "./FileSystemStoreSection.js";
 import { cleanLevel } from "./constants.js";
-// import { FileSystemExtractorRunner } from "./FileSystemExtractorRunner.js";
+// import { FileSystemExtractorTemplateRunner } from "./FileSystemExtractorTemplateRunner.js";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"FileSystemInstanceStoreSectionMixin");
@@ -41,6 +43,7 @@ export const MixedFileSystemInstanceStoreSection = FileSystemInstanceStoreSectio
 
 export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSystemDbStore>(Base: TBase) {
   return class MixedIndexedDbInstanceStoreSection extends Base implements PersistenceStoreInstanceSectionAbstractInterface {
+    public extractorTemplateRunner: ExtractorTemplateRunnerInMemory;
     public extractorRunner: ExtractorRunnerInMemory;
 
     // ##############################################################################################
@@ -53,6 +56,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
       ...args: any[]
     ) {
       super(...args);
+      this.extractorTemplateRunner = new ExtractorTemplateRunnerInMemory(this);
       this.extractorRunner = new ExtractorRunnerInMemory(this);
     }
 
@@ -63,6 +67,16 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
       const result: ActionReturnType = await this.extractorRunner.handleQuery(query);
 
       log.info(this.logHeader,'handleQuery','query',query, "result", result);
+      return result;
+    }
+    
+    // #############################################################################################
+    async handleQueryTemplate(query: QueryTemplateAction): Promise<ActionReturnType> {
+      log.info(this.logHeader,'handleQueryTemplate', 'query',query);
+      
+      const result: ActionReturnType = await this.extractorTemplateRunner.handleQueryTemplate(query);
+
+      log.info(this.logHeader,'handleQueryTemplate','query',query, "result", result);
       return result;
     }
     

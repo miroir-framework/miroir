@@ -15,12 +15,13 @@ import {
   ExtractorTemplateForSingleObjectList,
   JzodElement,
   JzodObject,
-  QueryAction,
+  QueryTemplateAction,
   TransformerForRuntime,
   ExtractorForDomainModel,
   ExtractorForSingleObject,
   ExtractorForSingleObjectList,
-  ExtractorForRecordOfExtractors
+  ExtractorForRecordOfExtractors,
+  QueryAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
 // ################################################################################################
@@ -59,11 +60,11 @@ export type ExtractorTemplateRunner<QueryType extends ExtractorTemplateForDomain
 // ################################################################################################
 export type AsyncExtractorTemplateRunnerMap = {
   extractorType: "async",
-  extractWithExtractor: AsyncExtractorTemplateRunner<
+  extractWithExtractorTemplate: AsyncExtractorTemplateRunner<
     ExtractorTemplateForSingleObject | ExtractorTemplateForSingleObjectList | ExtractorTemplateForRecordOfExtractors,
     DomainElement
   >,
-  extractWithManyExtractors: AsyncExtractorTemplateRunner<
+  extractWithManyExtractorTemplates: AsyncExtractorTemplateRunner<
     ExtractorTemplateForRecordOfExtractors,
     DomainElementObjectOrFailed
   >,
@@ -72,7 +73,7 @@ export type AsyncExtractorTemplateRunnerMap = {
     DomainElementInstanceUuidIndexOrFailed
   >,
   extractEntityInstance: AsyncExtractorTemplateRunner<ExtractorTemplateForSingleObject, DomainElementEntityInstanceOrFailed>;
-  extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: AsyncExtractorTemplateRunner<
+  extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: AsyncExtractorTemplateRunner<
     ExtractorTemplateForSingleObjectList,
     DomainElementInstanceUuidIndexOrFailed
   >,
@@ -89,11 +90,11 @@ export type AsyncExtractorTemplateRunnerMap = {
 // ################################################################################################
 export type SyncExtractorTemplateRunnerMap<StateType> = {
   extractorType: "sync",
-  extractWithExtractor: SyncExtractorTemplateRunner<ExtractorTemplateForSingleObject | ExtractorTemplateForSingleObjectList | ExtractorTemplateForRecordOfExtractors, StateType, DomainElement>
-  extractWithManyExtractors: SyncExtractorTemplateRunner<ExtractorTemplateForRecordOfExtractors, StateType, DomainElementObjectOrFailed>
+  extractWithExtractorTemplate: SyncExtractorTemplateRunner<ExtractorTemplateForSingleObject | ExtractorTemplateForSingleObjectList | ExtractorTemplateForRecordOfExtractors, StateType, DomainElement>
+  extractWithManyExtractorTemplates: SyncExtractorTemplateRunner<ExtractorTemplateForRecordOfExtractors, StateType, DomainElementObjectOrFailed>
   extractEntityInstanceUuidIndex: SyncExtractorTemplateRunner<ExtractorTemplateForSingleObjectList, StateType, DomainElementInstanceUuidIndexOrFailed>,
   extractEntityInstance: SyncExtractorTemplateRunner<ExtractorTemplateForSingleObject, StateType, DomainElementEntityInstanceOrFailed>,
-  extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: SyncExtractorTemplateRunner<ExtractorTemplateForSingleObjectList, StateType, DomainElementInstanceUuidIndexOrFailed>,
+  extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: SyncExtractorTemplateRunner<ExtractorTemplateForSingleObjectList, StateType, DomainElementInstanceUuidIndexOrFailed>,
 };
 
 // ################################################################################################
@@ -101,8 +102,8 @@ export type ExtractorTemplateRunnerMap<StateType> = AsyncExtractorTemplateRunner
 
 // ################################################################################################
 export interface ExtractorTemplatePersistenceStoreRunner {
-  // handleQuery(section: ApplicationSection, query: QueryAction): Promise<ActionReturnType>;
-  handleQuery(query: QueryAction): Promise<ActionReturnType>;
+  // handleQueryTemplate(section: ApplicationSection, query: QueryTemplateAction): Promise<ActionReturnType>;
+  handleQueryTemplate(query: QueryTemplateAction): Promise<ActionReturnType>;
   extractEntityInstance:AsyncExtractorTemplateRunner<
     ExtractorTemplateForSingleObject, DomainElementEntityInstanceOrFailed
   >;
@@ -193,7 +194,7 @@ export type ExtractorRunnerMap<StateType> = AsyncExtractorRunnerMap | SyncExtrac
 
 // ################################################################################################
 export interface ExtractorPersistenceStoreRunner {
-  // handleQuery(section: ApplicationSection, query: QueryAction): Promise<ActionReturnType>;
+  // handleQueryTemplate(query: QueryTemplateAction): Promise<ActionReturnType>;
   handleQuery(query: QueryAction): Promise<ActionReturnType>;
   extractEntityInstance:AsyncExtractorRunner<
     ExtractorForSingleObject, DomainElementEntityInstanceOrFailed

@@ -2116,7 +2116,8 @@ export function getMiroirFundamentalJzodSchema(
         },
         localPersistenceAction: persistenceEndpointVersionV1.definition.actions[0].actionParameters,
         restPersistenceAction: persistenceEndpointVersionV1.definition.actions[1].actionParameters,
-        queryAction: queryEndpointVersionV1.definition.actions[0].actionParameters,
+        queryTemplateAction: queryEndpointVersionV1.definition.actions[0].actionParameters,
+        queryAction: queryEndpointVersionV1.definition.actions[1].actionParameters,
         compositeAction: domainEndpointVersionV1.definition.actions.find(
           (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
         )?.actionParameters,
@@ -2484,7 +2485,7 @@ export function getMiroirFundamentalJzodSchema(
         extractorTemplateForSingleObjectList: (miroirFundamentalJzodSchema as any).definition.context.extractorTemplateForSingleObjectList,
         extractorTemplateForDomainModelObjects: (miroirFundamentalJzodSchema as any).definition.context.extractorTemplateForDomainModelObjects,
         extractorTemplateForRecordOfExtractors: (miroirFundamentalJzodSchema as any).definition.context.extractorTemplateForRecordOfExtractors,
-        queryAction: queryEndpointVersionV1.definition.actions[0].actionParameters,
+        queryTemplateAction: queryEndpointVersionV1.definition.actions[0].actionParameters,
       },
       definition: {
         relativePath: "jzodElement",
@@ -2664,15 +2665,15 @@ export function getMiroirFundamentalJzodSchema(
                   {
                     type: "object",
                     definition: {
-                      compositeActionType: { type: "literal", definition: "queryAction" },
+                      compositeActionType: { type: "literal", definition: "queryTemplateAction" },
                       compositeActionStepName: { type: "string", optional: true },
                       nameGivenToResult: { type: "string" },
-                      queryAction: {
+                      queryTemplateAction: {
                         type: "schemaReference",
                         definition: {
                           relativePath: forgeCarryOnReferenceName(
                             "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "queryAction"
+                            "queryTemplateAction"
                           ),
                         },
                       },

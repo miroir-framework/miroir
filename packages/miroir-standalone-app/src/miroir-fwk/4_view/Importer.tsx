@@ -669,9 +669,9 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       },
     };
     const miroirMenuInstances: ActionReturnType = 
-      await domainController.handleQuery(
+      await domainController.handleQueryTemplate(
         {
-          actionType: "queryAction",
+          actionType: "queryTemplateAction",
           actionName: "runQuery",
           deploymentUuid:currentDeploymentUuid,
           applicationSection: "model",
@@ -1149,7 +1149,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             // {
             //   compositeActionType: "query",
             //   query: {
-            //     actionType: "queryAction",
+            //     actionType: "queryTemplateAction",
             //     actionName: "runQuery",
             //     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             //     deploymentUuid: {
@@ -1530,8 +1530,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         {
           compositeActionType: "query",
           nameGivenToResult: newEntityName,
-          queryAction: {
-            actionType: "queryAction",
+          queryTemplateAction: {
+            actionType: "queryTemplateAction",
             actionName: "runQuery",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             applicationSection: "data",
@@ -1716,9 +1716,9 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     // };
 
     // const splittedEntityInstances: ActionReturnType = 
-    //   await domainController.handleQuery(
+    //   await domainController.handleQueryTemplate(
     //     {
-    //       actionType: "queryAction",
+    //       actionType: "queryTemplateAction",
     //       actionName: "runQuery",
     //       deploymentUuid:currentDeploymentUuid,
     //       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -1848,9 +1848,9 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     //   },
     // };
     // const miroirMenuInstances: ActionReturnType = 
-    //   await domainController.handleQuery(
+    //   await domainController.handleQueryTemplate(
     //     {
-    //       actionType: "queryAction",
+    //       actionType: "queryTemplateAction",
     //       actionName: "runQuery",
     //       deploymentUuid:currentDeploymentUuid,
     //       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",

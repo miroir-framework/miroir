@@ -39,14 +39,14 @@ import {
   dummyDomainManyQueriesWithDeploymentUuid,
   getApplicationSection,
   getDefaultValueForJzodSchemaWithResolution,
-  getDeploymentEntityStateSelectorParams,
+  getDeploymentEntityStateSelectorTemplateParams,
   getLoggerName,
   resolveReferencesForJzodSchemaAndValueObject,
   unfoldJzodSchemaOnce,
   getValue
 } from "miroir-core";
 
-import { getMemoizedDeploymentEntityStateSelectorMap } from "miroir-localcache-redux";
+import { getMemoizedDeploymentEntityStateSelectorForTemplateMap } from "miroir-localcache-redux";
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../constants.js";
 import { useMiroirContextService, useMiroirContextformHelperState } from "../MiroirContextReactProvider.js";
@@ -252,7 +252,7 @@ export const JzodObjectEditor = (
   count++;
   const context = useMiroirContextService();
   const deploymentEntityStateSelectorMap: SyncExtractorTemplateRunnerMap<DeploymentEntityState> = useMemo(
-    () => getMemoizedDeploymentEntityStateSelectorMap(),
+    () => getMemoizedDeploymentEntityStateSelectorForTemplateMap(),
     []
   );
 
@@ -453,7 +453,7 @@ export const JzodObjectEditor = (
       DeploymentEntityState
     > = useMemo(
       () =>
-        getDeploymentEntityStateSelectorParams<ExtractorTemplateForRecordOfExtractors>(
+        getDeploymentEntityStateSelectorTemplateParams<ExtractorTemplateForRecordOfExtractors>(
           props.currentDeploymentUuid &&
           unfoldedRawSchema.type == "uuid" &&
           unfoldedRawSchema.tag?.value?.targetEntity
@@ -503,7 +503,7 @@ export const JzodObjectEditor = (
     // const foreignKeyObjects:  = useDeploymentEntityStateQuerySelectorForCleanedResult(
     const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
       useDeploymentEntityStateQuerySelectorForCleanedResult(
-        deploymentEntityStateSelectorMap.extractWithManyExtractors as SyncExtractorTemplateRunner<
+        deploymentEntityStateSelectorMap.extractWithManyExtractorTemplates as SyncExtractorTemplateRunner<
           ExtractorTemplateForRecordOfExtractors,
           DeploymentEntityState,
           DomainElement
