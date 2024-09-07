@@ -293,9 +293,10 @@ export const RootComponent = (props: RootComponentProps) => {
                       const adminDeploymentsQuery: ExtractorTemplateForRecordOfExtractors = {
                         queryType: "extractorTemplateForRecordOfExtractors",
                         deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-                        pageParams: emptyDomainElementObject,
-                        queryParams: emptyDomainElementObject,
-                        contextResults: { elementType: "object", elementValue: {} },
+                        pageParams: {},
+                        queryParams: {},
+                        // contextResults: { elementType: "object", elementValue: {} },
+                        contextResults: {},
                         extractors: {
                           [subQueryName]: {
                             queryType: "queryTemplateExtractObjectListByEntity",
@@ -333,11 +334,11 @@ export const RootComponent = (props: RootComponentProps) => {
                         throw new Error("found adminDeployments query result object does not have attribute " + subQueryName + " as expected " + adminDeployments.returnedDomainElement);
                       }
                      
-                      if (adminDeployments.returnedDomainElement.elementValue[subQueryName].elementType != "instanceUuidIndex") {
-                        throw new Error("found adminDeployments query result object attribute " + subQueryName + " is not an instanceUuidIndex as expected " + adminDeployments.returnedDomainElement);
-                      }
+                      // if (adminDeployments.returnedDomainElement.elementValue[subQueryName].elementType != "instanceUuidIndex") {
+                      //   throw new Error("found adminDeployments query result object attribute " + subQueryName + " is not an instanceUuidIndex as expected " + adminDeployments.returnedDomainElement);
+                      // }
                      
-                      const foundDeployments = adminDeployments.returnedDomainElement.elementValue[subQueryName].elementValue;
+                      const foundDeployments = adminDeployments.returnedDomainElement.elementValue[subQueryName];
 
                       log.info("found adminDeployments", JSON.stringify(adminDeployments));
                   

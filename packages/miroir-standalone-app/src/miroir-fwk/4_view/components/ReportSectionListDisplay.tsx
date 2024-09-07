@@ -595,10 +595,11 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     props.domainElementObject &&
     props.domainElementObject.elementType == "object" &&
     props.section.definition.fetchedDataReference &&
-    props.domainElementObject.elementValue[props.section.definition.fetchedDataReference] &&
-    props.domainElementObject.elementValue[props.section.definition.fetchedDataReference].elementType == "instanceUuidIndex" &&
-    props.domainElementObject.elementValue[props.section.definition.fetchedDataReference].elementValue
-      ? props.domainElementObject.elementValue[props.section.definition.fetchedDataReference].elementValue as EntityInstancesUuidIndex
+    props.domainElementObject.elementValue[props.section.definition.fetchedDataReference]
+    // props.domainElementObject.elementValue[props.section.definition.fetchedDataReference].elementType == "instanceUuidIndex" &&
+    // props.domainElementObject.elementValue[props.section.definition.fetchedDataReference].elementValue
+      // ? props.domainElementObject.elementValue[props.section.definition.fetchedDataReference].elementValue as EntityInstancesUuidIndex
+      ? props.domainElementObject.elementValue[props.section.definition.fetchedDataReference] as any as EntityInstancesUuidIndex
       : {}
     ,[props.domainElementObject,]
   );
@@ -669,6 +670,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   // entityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
 
   log.info("currentApplicationSection",currentApplicationSection);
+  log.info("props.domainElementObject",props.domainElementObject);
   log.info("instancesToDisplay",instancesToDisplay);
   log.info("props.currentMiroirEntity",currentReportTargetEntity);
   log.info("tableColumnDefs",tableColumnDefs);

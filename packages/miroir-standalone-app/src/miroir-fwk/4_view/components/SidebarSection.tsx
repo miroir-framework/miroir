@@ -235,11 +235,11 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
         :
         <>
           {
-          !(miroirMenusDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.menuType ||
-          (miroirMenusDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.menuType == "simpleMenu"?
+          !(miroirMenusDomainElementObject?.elementValue?.menus as any)?.definition?.menuType ||
+          (miroirMenusDomainElementObject?.elementValue?.menus as any)?.definition?.menuType == "simpleMenu"?
           <MatList disablePadding dense>
             {(
-              (miroirMenusDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.definition ?? sideBarDefaultItems
+              (miroirMenusDomainElementObject?.elementValue?.menus as any)?.definition?.definition ?? sideBarDefaultItems
               ).map((i: any, index: number) => (
               <MatListItem key={i.label} disablePadding>
                 <MatListItemButton sx={{padding: 0}} component={Link} to={`/report/${i.application}/${i.section}/${i.reportUuid}/xxxxxx`}>
@@ -255,7 +255,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
           :
           <MatList disablePadding dense>
             {(
-              (miroirMenusDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.definition ?? []
+              (miroirMenusDomainElementObject?.elementValue?.menus as any)?.definition?.definition ?? []
               ).flatMap((menuSection: any, index: number) => (
                 menuSection.items.map(
                   (curr:any, index: number) => (

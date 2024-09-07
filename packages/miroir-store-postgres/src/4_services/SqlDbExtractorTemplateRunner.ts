@@ -301,14 +301,14 @@ export class SqlDbExtractTemplateRunner {
     );
 
     log.info(
-      "selectEntityInstanceFromDeploymentEntityStateForTemplate params",
+      "extractEntityInstanceForTemplate params",
       querySelectorParams,
       deploymentUuid,
       applicationSection,
       entityUuidReference
     );
 
-    // log.info("selectEntityInstanceFromDeploymentEntityStateForTemplate found entityUuidReference", JSON.stringify(entityUuidReference))
+    // log.info("extractEntityInstanceForTemplate found entityUuidReference", JSON.stringify(entityUuidReference))
     if (entityUuidReference.elementType != "string" && entityUuidReference.elementType != "instanceUuid") {
       return {
         elementType: "failure",
@@ -365,7 +365,7 @@ export class SqlDbExtractTemplateRunner {
           };
         }
         // log.info(
-        //   "selectEntityInstanceFromDeploymentEntityStateForTemplate selectObjectByRelation, ############# reference",
+        //   "extractEntityInstanceForTemplate selectObjectByRelation, ############# reference",
         //   querySelectorParams,
         //   "######### context entityUuid",
         //   entityUuidReference,
@@ -393,10 +393,10 @@ export class SqlDbExtractTemplateRunner {
           selectorParams.extractor.queryParams,
           selectorParams.extractor.contextResults
         );
-        // log.info("selectEntityInstanceFromDeploymentEntityStateForTemplate selectObjectByDirectReference found domainState", JSON.stringify(domainState))
+        // log.info("extractEntityInstanceForTemplate selectObjectByDirectReference found domainState", JSON.stringify(domainState))
 
         log.info(
-          "selectEntityInstanceFromDeploymentEntityStateForTemplate found instanceUuid",
+          "extractEntityInstanceForTemplate found instanceUuid",
           JSON.stringify(instanceDomainElement)
         );
 
@@ -415,7 +415,7 @@ export class SqlDbExtractTemplateRunner {
             },
           };
         }
-        log.info("selectEntityInstanceFromDeploymentEntityStateForTemplate resolved instanceUuid =", instanceDomainElement);
+        log.info("extractEntityInstanceForTemplate resolved instanceUuid =", instanceDomainElement);
         const result = await this.persistenceStoreController.getInstance(
           entityUuidReference.elementValue,
           instanceDomainElement.elementValue
@@ -434,7 +434,7 @@ export class SqlDbExtractTemplateRunner {
           };
         }
         log.info(
-          "selectEntityInstanceFromDeploymentEntityStateForTemplate selectObjectByDirectReference, ############# reference",
+          "extractEntityInstanceForTemplate selectObjectByDirectReference, ############# reference",
           querySelectorParams,
           "entityUuidReference",
           entityUuidReference,
@@ -453,7 +453,7 @@ export class SqlDbExtractTemplateRunner {
       }
       default: {
         throw new Error(
-          "selectEntityInstanceFromDeploymentEntityStateForTemplate can not handle QueryTemplateSelectObject query with queryType=" +
+          "extractEntityInstanceForTemplate can not handle QueryTemplateSelectObject query with queryType=" +
             selectorParams.extractor.select.queryType
         );
         break;

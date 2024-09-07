@@ -73,11 +73,9 @@ export const selectEntityInstanceFromDeploymentEntityStateForTemplate: SyncExtra
   const querySelectorParams: QueryTemplateSelectObject = selectorParams.extractor.select as QueryTemplateSelectObject;
   const deploymentUuid = selectorParams.extractor.deploymentUuid;
   const applicationSection: ApplicationSection =
-    selectorParams.extractor.select.applicationSection ??
-    ((selectorParams.extractor.pageParams?.elementValue?.applicationSection?.elementValue ??
-      "data") as ApplicationSection);
+    selectorParams.extractor.select.applicationSection ??"data";
 
-  const entityUuidReference: DomainElement = resolveContextReference(
+  const entityUuidDomainElement: DomainElement = resolveContextReference(
     querySelectorParams.parentUuid,
     selectorParams.extractor.queryParams,
     selectorParams.extractor.contextResults
@@ -88,24 +86,24 @@ export const selectEntityInstanceFromDeploymentEntityStateForTemplate: SyncExtra
     querySelectorParams,
     deploymentUuid,
     applicationSection,
-    entityUuidReference
+    entityUuidDomainElement
   );
 
   // log.info("selectEntityInstanceFromDeploymentEntityStateForTemplate found entityUuidReference", JSON.stringify(entityUuidReference))
-  if (entityUuidReference.elementType != "string" && entityUuidReference.elementType != "instanceUuid") {
+  if (entityUuidDomainElement.elementType != "string" && entityUuidDomainElement.elementType != "instanceUuid") {
     return {
       elementType: "failure",
       elementValue: {
         queryFailure: "IncorrectParameters",
         queryContext:
           "selectEntityInstanceFromDeploymentEntityStateForTemplate could not resolve entityUuidReference " +
-          JSON.stringify(entityUuidReference),
+          JSON.stringify(entityUuidDomainElement),
         queryReference: JSON.stringify(querySelectorParams.parentUuid),
       },
     };
   }
 
-  const index = getDeploymentEntityStateIndex(deploymentUuid, applicationSection, entityUuidReference.elementValue);
+  const index = getDeploymentEntityStateIndex(deploymentUuid, applicationSection, entityUuidDomainElement.elementValue);
 
   switch (querySelectorParams?.queryType) {
     case "selectObjectByRelation": {
@@ -124,7 +122,7 @@ export const selectEntityInstanceFromDeploymentEntityStateForTemplate: SyncExtra
           "selectEntityInstanceFromDeploymentEntityStateForTemplate selectObjectByRelation, querySelectorParams",
           querySelectorParams,
           "entityUuid",
-          entityUuidReference,
+          entityUuidDomainElement,
           "referenceObject",
           referenceObject,
           "queryParams",
@@ -151,7 +149,7 @@ export const selectEntityInstanceFromDeploymentEntityStateForTemplate: SyncExtra
             queryFailure: "EntityNotFound",
             deploymentUuid,
             applicationSection,
-            entityUuid: entityUuidReference.elementValue,
+            entityUuid: entityUuidDomainElement.elementValue,
           },
         };
       }
@@ -186,7 +184,7 @@ export const selectEntityInstanceFromDeploymentEntityStateForTemplate: SyncExtra
       // log.info("selectEntityInstanceFromDeploymentEntityStateForTemplate selectObjectByDirectReference found domainState", JSON.stringify(domainState))
 
       log.info(
-        "selectEntityInstanceFromDeploymentEntityStateForTemplate found instanceUuid",
+        "selectEntityInstanceFromDeploymentEntityStateForTemplate found instanceDomainElement",
         JSON.stringify(instanceDomainElement)
       );
 
@@ -195,17 +193,18 @@ export const selectEntityInstanceFromDeploymentEntityStateForTemplate: SyncExtra
         return instanceDomainElement; /* QueryResults, elementType == "failure" */
       }
       if (instanceDomainElement.elementType != "string" && instanceDomainElement.elementType != "instanceUuid") {
+        log.info("selectEntityInstanceFromDeploymentEntityStateForTemplate could not resolve instanceUuid", instanceDomainElement);
         return {
           elementType: "failure",
           elementValue: {
-            queryFailure: "EntityNotFound",
+            queryFailure: "IncorrectParameters",
             deploymentUuid,
             applicationSection,
-            entityUuid: entityUuidReference.elementValue,
+            entityUuid: entityUuidDomainElement.elementValue,
           },
         };
       }
-      log.info("selectEntityInstanceFromDeploymentEntityStateForTemplate resolved instanceUuid =", instanceDomainElement);
+      log.info("selectEntityInstanceFromDeploymentEntityStateForTemplate looking up index", index, "in deploymentEntityState", deploymentEntityState);
       if (!deploymentEntityState[index]) {
         return {
           elementType: "failure",
@@ -213,7 +212,7 @@ export const selectEntityInstanceFromDeploymentEntityStateForTemplate: SyncExtra
             queryFailure: "EntityNotFound",
             deploymentUuid,
             applicationSection,
-            entityUuid: entityUuidReference.elementValue,
+            entityUuid: entityUuidDomainElement.elementValue,
           },
         };
       }
@@ -224,29 +223,35 @@ export const selectEntityInstanceFromDeploymentEntityStateForTemplate: SyncExtra
             queryFailure: "InstanceNotFound",
             deploymentUuid,
             applicationSection,
-            entityUuid: entityUuidReference.elementValue,
+            entityUuid: entityUuidDomainElement.elementValue,
             instanceUuid: instanceDomainElement.elementValue,
           },
         };
       }
 
+      const result = deploymentEntityState[index].entities[instanceDomainElement.elementValue];
       log.info(
         "selectEntityInstanceFromDeploymentEntityStateForTemplate selectObjectByDirectReference, ############# reference",
         querySelectorParams,
         "entityUuidReference",
-        entityUuidReference,
+        entityUuidDomainElement,
         "######### context entityUuid",
-        entityUuidReference,
+        entityUuidDomainElement,
         "######### queryParams",
         JSON.stringify(selectorParams.extractor.queryParams, undefined, 2),
         "######### contextResults",
         JSON.stringify(selectorParams.extractor.contextResults, undefined, 2),
-        "domainState",
+        "index",
+        index,
+        "result",
+        result,
+        "deploymentEntityState",
         deploymentEntityState
       );
       return {
         elementType: "instance",
-        elementValue: deploymentEntityState[index].entities[instanceDomainElement.elementValue],
+        // elementValue: deploymentEntityState[index].entities[instanceDomainElement.elementValue],
+        elementValue: result,
       };
       break;
     }

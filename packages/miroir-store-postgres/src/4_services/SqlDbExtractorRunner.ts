@@ -302,7 +302,7 @@ export class SqlDbExtractRunner {
     // );
 
     log.info(
-      "selectEntityInstanceFromDeploymentEntityStateForTemplate params",
+      "extractEntityInstance params",
       querySelectorParams,
       deploymentUuid,
       applicationSection,
@@ -365,7 +365,7 @@ export class SqlDbExtractRunner {
           };
         }
         // log.info(
-        //   "selectEntityInstanceFromDeploymentEntityStateForTemplate selectObjectByRelation, ############# reference",
+        //   "extractEntityInstance selectObjectByRelation, ############# reference",
         //   querySelectorParams,
         //   "######### context entityUuid",
         //   entityUuidReference,
@@ -397,7 +397,7 @@ export class SqlDbExtractRunner {
         // log.info("selectEntityInstanceFromDeploymentEntityStateForTemplate selectObjectByDirectReference found domainState", JSON.stringify(domainState))
 
         log.info(
-          "selectEntityInstanceFromDeploymentEntityStateForTemplate found instanceUuid",
+          "extractEntityInstance found instanceUuid",
           JSON.stringify(instanceDomainElement)
         );
 
@@ -416,7 +416,7 @@ export class SqlDbExtractRunner {
         //     },
         //   };
         // }
-        log.info("selectEntityInstanceFromDeploymentEntityStateForTemplate resolved instanceUuid =", instanceDomainElement);
+        log.info("extractEntityInstance resolved instanceUuid =", instanceDomainElement);
         const result = await this.persistenceStoreController.getInstance(
           entityUuidReference,
           instanceDomainElement
@@ -435,7 +435,7 @@ export class SqlDbExtractRunner {
           };
         }
         log.info(
-          "selectEntityInstanceFromDeploymentEntityStateForTemplate selectObjectByDirectReference, ############# reference",
+          "extractEntityInstance selectObjectByDirectReference, ############# reference",
           querySelectorParams,
           "entityUuidReference",
           entityUuidReference,
@@ -454,7 +454,7 @@ export class SqlDbExtractRunner {
       }
       default: {
         throw new Error(
-          "selectEntityInstanceFromDeploymentEntityStateForTemplate can not handle QueryTemplateSelectObject query with queryType=" +
+          "extractEntityInstance can not handle QueryTemplateSelectObject query with queryType=" +
             selectorParams.extractor.select.queryType
         );
         break;

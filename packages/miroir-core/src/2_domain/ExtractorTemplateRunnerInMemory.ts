@@ -132,14 +132,14 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
     );
 
     log.info(
-      "selectEntityInstanceFromDeploymentEntityStateForTemplate params",
+      "extractEntityInstance params",
       querySelectorParams,
       deploymentUuid,
       applicationSection,
       entityUuidReference
     );
 
-    // log.info("selectEntityInstanceFromDeploymentEntityStateForTemplate found entityUuidReference", JSON.stringify(entityUuidReference))
+    // log.info("extractEntityInstance found entityUuidReference", JSON.stringify(entityUuidReference))
     if (entityUuidReference.elementType != "string" && entityUuidReference.elementType != "instanceUuid") {
       return {
         elementType: "failure",
@@ -197,7 +197,7 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
           };
         }
         // log.info(
-        //   "selectEntityInstanceFromDeploymentEntityStateForTemplate selectObjectByRelation, ############# reference",
+        //   "extractEntityInstance selectObjectByRelation, ############# reference",
         //   querySelectorParams,
         //   "######### context entityUuid",
         //   entityUuidReference,
@@ -225,10 +225,10 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
           selectorParams.extractor.queryParams,
           selectorParams.extractor.contextResults
         );
-        // log.info("selectEntityInstanceFromDeploymentEntityStateForTemplate selectObjectByDirectReference found domainState", JSON.stringify(domainState))
+        // log.info("extractEntityInstance selectObjectByDirectReference found domainState", JSON.stringify(domainState))
 
         log.info(
-          "selectEntityInstanceFromDeploymentEntityStateForTemplate found instanceUuid",
+          "extractEntityInstance found instanceUuid",
           JSON.stringify(instanceDomainElement)
         );
 
@@ -247,7 +247,7 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
             },
           };
         }
-        log.info("selectEntityInstanceFromDeploymentEntityStateForTemplate resolved instanceUuid =", instanceDomainElement);
+        log.info("extractEntityInstance resolved instanceUuid =", instanceDomainElement);
         // if (!deploymentEntityState[index]) {
         //   return {
         //     elementType: "failure",
@@ -290,7 +290,7 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
           };
         }
         log.info(
-          "selectEntityInstanceFromDeploymentEntityStateForTemplate selectObjectByDirectReference, ############# reference",
+          "extractEntityInstance selectObjectByDirectReference, ############# reference",
           querySelectorParams,
           "entityUuidReference",
           entityUuidReference,
@@ -310,7 +310,7 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
       }
       default: {
         throw new Error(
-          "selectEntityInstanceFromDeploymentEntityStateForTemplate can not handle QueryTemplateSelectObject query with queryType=" +
+          "extractEntityInstance can not handle QueryTemplateSelectObject query with queryType=" +
             selectorParams.extractor.select.queryType
         );
         break;

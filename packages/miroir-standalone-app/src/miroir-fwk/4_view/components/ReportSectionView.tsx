@@ -51,7 +51,8 @@ const evaluateExpression = (
   const parts = expression?.split(".");
   const object =
     Array.isArray(parts) && parts.length > 0 && domainElementObject.elementValue
-      ? (domainElementObject.elementValue as any)[parts[0]].elementValue
+      ? (domainElementObject.elementValue as any)[parts[0]]
+      // ? (domainElementObject.elementValue as any)[parts[0]].elementValue
       : undefined;
   const result = object && Array.isArray(parts) && parts.length > 1 ? (object as any)[parts[1]] : undefined;
   // log.info("evaluateExpression", expression, parts, props.domainElementObject, "object", object, "result", result);
@@ -70,6 +71,9 @@ const interpolateExpression = (
         (expression, ...args) => `${evaluateExpression(args[0], domainElementObject)}`
       )
     : "no " + label;
+  // log.info("interpolateExpression", "stringToInterpolate", stringToInterpolate, 
+  //   "domainElementObject", domainElementObject, "label", label,
+  //   "result", result);
   // log.info("interpolateExpression result",result);
   return result;
 };
@@ -118,7 +122,8 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
   const entityInstance = props.queryResults.elementValue && props.reportSection.type == "objectInstanceReportSection"
   ? (props.queryResults.elementValue as any)[
       props.reportSection.definition.fetchedDataReference ?? ""
-    ]?.elementValue
+    ]
+    // ]?.elementValue
   : undefined
 
   log.info(

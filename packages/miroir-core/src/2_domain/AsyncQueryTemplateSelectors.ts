@@ -473,7 +473,7 @@ export const asyncExtractWithManyExtractorTemplates = async (
   selectorParams: AsyncExtractorTemplateRunnerParams<ExtractorTemplateForRecordOfExtractors>,
 ): Promise<DomainElementObject> => {
 
-  // log.info("########## extractWithManyExtractorTemplates begin, query", selectorParams);
+  // log.info("########## asyncExtractWithManyExtractorTemplates begin, query", selectorParams);
 
 
   // const context: DomainElementObject = {
@@ -483,7 +483,7 @@ export const asyncExtractWithManyExtractorTemplates = async (
   const context: Record<string, any> = {
     ...selectorParams.extractor.contextResults.elementValue ,
   };
-  // log.info("########## DomainSelector extractWithManyExtractorTemplates will use context", context);
+  // log.info("########## DomainSelector asyncExtractWithManyExtractorTemplates will use context", context);
   const localSelectorMap: AsyncExtractorTemplateRunnerMap =
     selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
 

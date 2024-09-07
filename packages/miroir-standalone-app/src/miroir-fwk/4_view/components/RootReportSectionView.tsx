@@ -91,9 +91,10 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
               queryType: "extractorTemplateForRecordOfExtractors",
               deploymentUuid: props.pageParams.deploymentUuid,
               // applicationSection: props.applicationSection,
-              pageParams: paramsAsdomainElements,
-              queryParams: { elementType: "object", elementValue: {} },
-              contextResults: { elementType: "object", elementValue: {} },
+              // pageParams: paramsAsdomainElements,
+              pageParams: props.pageParams,
+              queryParams: {},
+              contextResults: {},
               extractors: props.rootReportSection.extractors,
               // combiners: props.rootReportSection.combiners,
               // runtimeTransformers: {...props.rootReportSection.combiners,...props.rootReportSection.runtimeTransformers},
@@ -108,8 +109,8 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
               queryType: "extractorTemplateForRecordOfExtractors",
               deploymentUuid: "",
               pageParams: paramsAsdomainElements,
-              queryParams: { elementType: "object", elementValue: {} },
-              contextResults: { elementType: "object", elementValue: {} },
+              queryParams: {},
+              contextResults: {},
               extractors: { },
             },
             deploymentEntityStateSelectorMap
@@ -155,15 +156,18 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
               queryType: "getFetchParamsJzodSchema",
               deploymentUuid: props.pageParams.deploymentUuid,
               pageParams: {
-                elementType: "object",
-                elementValue: {
-                  applicationSection: { elementType: "string", elementValue: props.pageParams.applicationSection },
-                  deploymentUuid: { elementType: "string", elementValue: props.pageParams.deploymentUuid },
-                  instanceUuid: { elementType: "string", elementValue: props.pageParams.instanceUuid ?? "" },
-                },
+                applicationSection: props.pageParams.applicationSection ,
+                deploymentUuid: props.pageParams.deploymentUuid,
+                instanceUuid: props.pageParams.instanceUuid ?? "",
+              // elementType: "object",
+                // elementValue: {
+                //   applicationSection: { elementType: "string", elementValue: props.pageParams.applicationSection },
+                //   deploymentUuid: { elementType: "string", elementValue: props.pageParams.deploymentUuid },
+                //   instanceUuid: { elementType: "string", elementValue: props.pageParams.instanceUuid ?? "" },
+                // },
               },
-              queryParams: { elementType: "object", elementValue: {} },
-              contextResults: { elementType: "object", elementValue: {} },
+              queryParams: {},
+              contextResults: {},
               // fetchParams: deploymentEntityStateFetchQueryParams.query,
               fetchParams: deploymentEntityStateFetchQueryParams.extractor,
             }
@@ -172,22 +176,25 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
               queryType: "getFetchParamsJzodSchema",
               deploymentUuid: "DUMMY",
               pageParams: {
-                elementType: "object",
-                elementValue: {
-                  applicationSection: { elementType: "string", elementValue: "data" },
-                  deploymentUuid: { elementType: "string", elementValue: "" },
-                  instanceUuid: { elementType: "string", elementValue: "" },
-                },
+                // elementType: "object",
+                // elementValue: {
+                applicationSection: "data" ,
+                deploymentUuid: "",
+                instanceUuid: "",
+                  // applicationSection: { elementType: "string", elementValue: "data" },
+                  // deploymentUuid: { elementType: "string", elementValue: "" },
+                  // instanceUuid: { elementType: "string", elementValue: "" },
+                // },
               },
-              queryParams: { elementType: "object", elementValue: {} },
-              contextResults: { elementType: "object", elementValue: {} },
+              queryParams: {},
+              contextResults: {},
               fetchParams: {
                 queryType: "extractorTemplateForRecordOfExtractors",
                 deploymentUuid: "DUMMY",
                 pageParams: paramsAsdomainElements,
-                queryParams: { elementType: "object", elementValue: {} },
-                contextResults: { elementType: "object", elementValue: {} },
-                extractors: { },
+                queryParams: {},
+                contextResults: {},
+                extractors: {},
               },
             },
     }),
@@ -234,18 +241,18 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
         {props.applicationSection}
       </div>
     </div> */}
-    if (deploymentEntityStateQueryResults.elementType == "object") {
-      const queryFailures = Object.entries(deploymentEntityStateQueryResults.elementValue).filter(
-        (e) => e[1].elementType == "failure"
-      );
-      if (queryFailures.length > 0) {
-        return (
-          <div>
-            found query failures! {JSON.stringify(queryFailures, null, 2)}
-          </div>
-        )        
-      }
-    }
+    // if (deploymentEntityStateQueryResults.elementType == "object") {
+    //   const queryFailures = Object.entries(deploymentEntityStateQueryResults.elementValue).filter(
+    //     (e) => e[1].elementType == "failure"
+    //   );
+    //   if (queryFailures.length > 0) {
+    //     return (
+    //       <div>
+    //         found query failures! {JSON.stringify(queryFailures, null, 2)}
+    //       </div>
+    //     )        
+    //   }
+    // }
     return (
       <>
       {

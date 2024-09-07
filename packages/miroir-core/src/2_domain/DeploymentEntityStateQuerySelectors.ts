@@ -95,7 +95,7 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorRunner<
   // );
 
   log.info(
-    "selectEntityInstanceFromDeploymentEntityStateForTemplate params",
+    "selectEntityInstanceFromDeploymentEntityState params",
     querySelectorParams,
     deploymentUuid,
     applicationSection,
@@ -108,7 +108,7 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorRunner<
   //     elementValue: {
   //       queryFailure: "IncorrectParameters",
   //       queryContext:
-  //         "selectEntityInstanceFromDeploymentEntityStateForTemplate could not resolve entityUuidReference " +
+  //         "selectEntityInstanceFromDeploymentEntityState could not resolve entityUuidReference " +
   //         JSON.stringify(entityUuidReference),
   //       queryReference: JSON.stringify(querySelectorParams.parentUuid),
   //     },
@@ -168,7 +168,7 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorRunner<
       }
 
       // log.info(
-      //   "selectEntityInstanceFromDeploymentEntityStateForTemplate selectObjectByRelation, ############# reference",
+      //   "selectEntityInstanceFromDeploymentEntityState selectObjectByRelation, ############# reference",
       //   querySelectorParams,
       //   "######### context entityUuid",
       //   entityUuidReference,
@@ -196,10 +196,10 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorRunner<
       //   selectorParams.extractor.queryParams,
       //   selectorParams.extractor.contextResults
       // );
-      // log.info("selectEntityInstanceFromDeploymentEntityStateForTemplate selectObjectByDirectReference found domainState", JSON.stringify(domainState))
+      // log.info("selectEntityInstanceFromDeploymentEntityState selectObjectByDirectReference found domainState", JSON.stringify(domainState))
 
       log.info(
-        "selectEntityInstanceFromDeploymentEntityStateForTemplate found instanceUuid",
+        "selectEntityInstanceFromDeploymentEntityState found instanceUuid",
         JSON.stringify(instanceDomainElement)
       );
 
@@ -264,7 +264,7 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorRunner<
     }
     default: {
       throw new Error(
-        "selectEntityInstanceFromDeploymentEntityStateForTemplate can not handle QueryTemplateSelectObject query with queryType=" +
+        "selectEntityInstanceFromDeploymentEntityState can not handle QueryTemplateSelectObject query with queryType=" +
           selectorParams.extractor.select.queryType
       );
       break;

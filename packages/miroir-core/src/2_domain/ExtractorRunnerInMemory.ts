@@ -142,7 +142,7 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
     // );
 
     log.info(
-      "selectEntityInstanceFromDeploymentEntityStateForTemplate params",
+      "extractEntityInstance params",
       querySelectorParams,
       deploymentUuid,
       applicationSection,
@@ -207,7 +207,7 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
           };
         }
         // log.info(
-        //   "selectEntityInstanceFromDeploymentEntityStateForTemplate selectObjectByRelation, ############# reference",
+        //   "extractEntityInstance selectObjectByRelation, ############# reference",
         //   querySelectorParams,
         //   "######### context entityUuid",
         //   entityUuidReference,
@@ -236,10 +236,10 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
         //   selectorParams.extractor.queryParams,
         //   selectorParams.extractor.contextResults
         // );
-        // log.info("selectEntityInstanceFromDeploymentEntityStateForTemplate selectObjectByDirectReference found domainState", JSON.stringify(domainState))
+        // log.info("extractEntityInstance selectObjectByDirectReference found domainState", JSON.stringify(domainState))
 
         log.info(
-          "selectEntityInstanceFromDeploymentEntityStateForTemplate found instanceUuid",
+          "extractEntityInstance found instanceUuid",
           JSON.stringify(instanceUuid)
         );
 
@@ -257,7 +257,7 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
         //     },
         //   };
         // }
-        // log.info("selectEntityInstanceFromDeploymentEntityStateForTemplate resolved instanceUuid =", instanceUuid);
+        // log.info("extractEntityInstance resolved instanceUuid =", instanceUuid);
         // if (!deploymentEntityState[index]) {
         //   return {
         //     elementType: "failure",
@@ -300,7 +300,7 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
           };
         }
         log.info(
-          "selectEntityInstanceFromDeploymentEntityStateForTemplate selectObjectByDirectReference, ############# reference",
+          "extractEntityInstance selectObjectByDirectReference, ############# reference",
           querySelectorParams,
           "entityUuidReference",
           entityUuidReference,
@@ -320,7 +320,7 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
       }
       default: {
         throw new Error(
-          "selectEntityInstanceFromDeploymentEntityStateForTemplate can not handle QueryTemplateSelectObject query with queryType=" +
+          "extractEntityInstance can not handle QueryTemplateSelectObject query with queryType=" +
             selectorParams.extractor.select.queryType
         );
         break;
