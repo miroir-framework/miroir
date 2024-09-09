@@ -523,6 +523,8 @@ export {
   getJzodSchemaSelectorMap,
   getSelectorMap,
   getSelectorParams,
+  extractWithExtractorFromDomainStateForTemplate,
+  innerSelectElementFromQueryAndDomainState,
   extractWithManyExtractorsFromDomainStateForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectEntityJzodSchemaFromDomainStateNew,
@@ -533,12 +535,20 @@ export {
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
 } from './2_domain/DomainStateQuerySelectors.js';
 export {
+  extractEntityJzodSchemaFromDeploymentEntityState,
+  selectEntityInstanceFromDeploymentEntityState,
+  selectEntityInstanceUuidIndexFromDeploymentEntityState,
+  getDeploymentEntityStateJzodSchemaSelectorMap,
+  getDeploymentEntityStateSelectorMap,
+  getDeploymentEntityStateSelectorParams,
+} from './2_domain/DeploymentEntityStateQuerySelectors.js';
+export {
   getDeploymentEntityStateJzodSchemaSelectorTemplateMap,
   getDeploymentEntityStateSelectorTemplateMap,
   getDeploymentEntityStateSelectorTemplateParams,
   selectEntityInstanceFromDeploymentEntityStateForTemplate,
   selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate,
-  extractEntityJzodSchemaFromDeploymentEntityState,
+  // extractEntityJzodSchemaFromDeploymentEntityState,
 } from './2_domain/DeploymentEntityStateQueryTemplateSelectors.js';
 export {
   ExtractorTemplateRunnerInMemory

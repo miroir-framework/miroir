@@ -10,7 +10,7 @@ import {
   extractWithExtractor,
   extractWithManyExtractors,
   extractzodSchemaForSingleSelectQuery,
-  selectEntityInstanceFromDeploymentEntityStateForTemplate,
+  selectEntityInstanceFromDeploymentEntityState,
   selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate
 } from "miroir-core";
 
@@ -22,7 +22,7 @@ export function getMemoizedDeploymentEntityStateSelectorMap(): SyncExtractorRunn
     extractorType: "sync",
     extractEntityInstance: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-      selectEntityInstanceFromDeploymentEntityStateForTemplate
+      selectEntityInstanceFromDeploymentEntityState
     ),
     extractEntityInstanceUuidIndex: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],

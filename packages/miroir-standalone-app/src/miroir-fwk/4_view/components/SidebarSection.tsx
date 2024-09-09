@@ -30,13 +30,17 @@ import {
   SyncExtractorTemplateRunnerMap,
   SyncExtractorTemplateRunnerParams,
   Uuid,
-  DomainElementObjectOrFailed
+  DomainElementObjectOrFailed,
+  ExtractorForRecordOfExtractors,
+  SyncExtractorRunnerParams,
+  getDeploymentEntityStateSelectorParams,
+  SyncExtractorRunnerMap
 } from "miroir-core";
-import { getMemoizedDeploymentEntityStateSelectorForTemplateMap } from 'miroir-localcache-redux';
+import { getMemoizedDeploymentEntityStateSelectorForTemplateMap, getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
 import { FC, useMemo } from 'react';
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
-import { useDeploymentEntityStateQueryTemplateSelector } from '../ReduxHooks.js';
+import { useDeploymentEntityStateQuerySelector, useDeploymentEntityStateQueryTemplateSelector } from '../ReduxHooks.js';
 
 const MatDivider: any = Divider;
 const MatList: any = List;
@@ -148,34 +152,40 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
   // const miroirConfig = context.getMiroirConfig();
   // const context = useMiroirContext();
 
-  const deploymentEntityStateSelectorMap: SyncExtractorTemplateRunnerMap<DeploymentEntityState> = useMemo(
-    () => getMemoizedDeploymentEntityStateSelectorForTemplateMap(),
+  // const deploymentEntityStateSelectorTemplateMap: SyncExtractorTemplateRunnerMap<DeploymentEntityState> = useMemo(
+  //   () => getMemoizedDeploymentEntityStateSelectorForTemplateMap(),
+  //   []
+  // )
+  const deploymentEntityStateSelectorMap: SyncExtractorRunnerMap<DeploymentEntityState> = useMemo(
+    () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
   )
 
-  const fetchDeploymentMenusQueryParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForRecordOfExtractors, DeploymentEntityState> = useMemo(
+  const fetchDeploymentMenusQueryParams: SyncExtractorRunnerParams<ExtractorForRecordOfExtractors, DeploymentEntityState> = useMemo(
     () => 
-    getDeploymentEntityStateSelectorTemplateParams<ExtractorTemplateForRecordOfExtractors>({
-      queryType: "extractorTemplateForRecordOfExtractors",
+    getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>({
+      queryType: "extractorForRecordOfExtractors",
       deploymentUuid: props.deploymentUuid,
       // applicationSection: "data",
       pageParams: { elementType: "object", elementValue: {} },
       queryParams: { elementType: "object", elementValue: {} },
       contextResults: { elementType: "object", elementValue: {} },
-      extractorTemplates: {
+      extractors: {
         menus: {
           queryType: "selectObjectByDirectReference",
           parentName: "Menu",
           applicationSection: getApplicationSection(props.deploymentUuid,entityMenu.uuid),
           // applicationSection: "model",
-          parentUuid: {
-            queryTemplateType: "constantUuid",
-            constantUuidValue: entityMenu.uuid,
-          },
-          instanceUuid: {
-            queryTemplateType: "constantUuid",
-            constantUuidValue: props.menuUuid,
-          }
+          parentUuid: entityMenu.uuid,
+          // parentUuid: {
+          //   queryTemplateType: "constantUuid",
+          //   constantUuidValue: entityMenu.uuid,
+          // },
+          instanceUuid: props.menuUuid,
+          // instanceUuid: {
+          //   queryTemplateType: "constantUuid",
+          //   constantUuidValue: props.menuUuid,
+          // }
         },
       },
     }, deploymentEntityStateSelectorMap),
@@ -183,8 +193,8 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
   );
 
   log.info("fetchDeploymentMenusQueryParams",fetchDeploymentMenusQueryParams)
-  const miroirMenusDomainElementObject: DomainElementObjectOrFailed = useDeploymentEntityStateQueryTemplateSelector(
-    deploymentEntityStateSelectorMap.extractWithManyExtractorTemplates,
+  const miroirMenusDomainElementObject: DomainElementObjectOrFailed = useDeploymentEntityStateQuerySelector(
+    deploymentEntityStateSelectorMap.extractWithManyExtractors,
     fetchDeploymentMenusQueryParams
   );
 
