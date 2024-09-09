@@ -189,7 +189,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         }
         case "extractorTemplateForRecordOfExtractors": {
           return Object.fromEntries(
-            Object.entries(extractor.extractors ?? {}).map((e) => [e[0], this.sqlForExtractorTemplate(e[1])])
+            Object.entries(extractor.extractorTemplates ?? {}).map((e) => [e[0], this.sqlForExtractorTemplate(e[1])])
           );
           break;
         }

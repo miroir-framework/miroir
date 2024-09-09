@@ -84,9 +84,9 @@ export class SqlDbExtractTemplateRunner {
     actionRuntimeTransformer: TransformerForRuntime,
     queryParams: DomainElementObject,
     newFetchedData: DomainElementObject,
-    extractors: Record<string, ExtractorTemplateForSingleObjectList | ExtractorTemplateForSingleObject | ExtractorTemplateForRecordOfExtractors>
+    extractorTemplates: Record<string, ExtractorTemplateForSingleObjectList | ExtractorTemplateForSingleObject | ExtractorTemplateForRecordOfExtractors>
   ): Promise<DomainElement> {
-    // log.info("SqlDbExtractRunner applyExtractorTransformerSql extractors", extractors);
+    // log.info("SqlDbExtractRunner applyExtractorTransformerSql extractorTemplates", extractorTemplates);
     log.info("SqlDbExtractRunner applyExtractorTransformerSql query", JSON.stringify(actionRuntimeTransformer, null, 2));
 
     if (!(actionRuntimeTransformer as any).referencedExtractor) {
@@ -103,15 +103,7 @@ export class SqlDbExtractTemplateRunner {
 
     log.info("SqlDbExtractRunner applyExtractorTransformerSql resolvedReference", resolvedReference);
 
-    // for (const ex of Object.entries(extractors)) {
-    //   log.info("applyExtractorTransformerSql getting sqlForExtractor", ex[0], ex[1]);
-    //   const sqlQuery = this.persistenceStoreController.sqlForExtractor(ex[1])
-    //   log.info("applyExtractorTransformerSql sqlForExtractor", ex[0], sqlQuery);
-    //   // const rawResult = await this.persistenceStoreController.executeRawQuery(sqlQuery as any);
-    //   // log.info("applyExtractorTransformerSql rawResult", rawResult);
-    // }
-
-    const extractorRawQueries = Object.entries(extractors).map(([key, value]) => {
+    const extractorRawQueries = Object.entries(extractorTemplates).map(([key, value]) => {
       return [key, this.persistenceStoreController.sqlForExtractorTemplate(value)];
     });
 
@@ -202,7 +194,7 @@ export class SqlDbExtractTemplateRunner {
     //   selectorParams: AsyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObjectList, any>
     // ): Promise<DomainElementInstanceUuidIndexOrFailed> {
     let result: Promise<DomainElementInstanceUuidIndexOrFailed>;
-    switch (selectorParams.extractor.select.queryType) {
+    switch (selectorParams.extractorTemplate.select.queryType) {
       case "queryTemplateExtractObjectListByEntity": {
         return this.extractEntityInstanceUuidIndexWithFilter(selectorParams);
       }
@@ -210,18 +202,18 @@ export class SqlDbExtractTemplateRunner {
       case "selectObjectListByManyToManyRelation": {
         return this.extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory({
           extractorRunnerMap: this.extractorRunnerMap,
-          extractor: {
+          extractorTemplate: {
             queryType: "extractorTemplateForDomainModelObjects",
-            deploymentUuid: selectorParams.extractor.deploymentUuid,
-            contextResults: selectorParams.extractor.contextResults,
-            pageParams: selectorParams.extractor.pageParams,
-            queryParams: selectorParams.extractor.queryParams,
-            select: selectorParams.extractor.select.applicationSection
-              ? selectorParams.extractor.select
+            deploymentUuid: selectorParams.extractorTemplate.deploymentUuid,
+            contextResults: selectorParams.extractorTemplate.contextResults,
+            pageParams: selectorParams.extractorTemplate.pageParams,
+            queryParams: selectorParams.extractorTemplate.queryParams,
+            select: selectorParams.extractorTemplate.select.applicationSection
+              ? selectorParams.extractorTemplate.select
               : {
-                  ...selectorParams.extractor.select,
-                  applicationSection: selectorParams.extractor.pageParams.applicationSection
-                  // applicationSection: selectorParams.extractor.pageParams.elementValue.applicationSection
+                  ...selectorParams.extractorTemplate.select,
+                  applicationSection: selectorParams.extractorTemplate.pageParams.applicationSection
+                  // applicationSection: selectorParams.extractorTemplate.pageParams.elementValue.applicationSection
                     .elementValue as ApplicationSection,
                 },
           },
@@ -248,14 +240,14 @@ export class SqlDbExtractTemplateRunner {
     switch (queryTemplateAction.query.queryType) {
       case "extractorTemplateForDomainModelObjects": {
         queryResult = await this.extractorRunnerMap.extractWithExtractorTemplate({
-          extractor: queryTemplateAction.query,
+          extractorTemplate: queryTemplateAction.query,
           extractorRunnerMap: this.extractorRunnerMap,
         });
         break;
       }
       case "extractorTemplateForRecordOfExtractors": {
         queryResult = await this.extractorRunnerMap.extractWithManyExtractorTemplates({
-          extractor: queryTemplateAction.query,
+          extractorTemplate: queryTemplateAction.query,
           extractorRunnerMap: this.extractorRunnerMap,
         });
         break;
@@ -287,17 +279,17 @@ export class SqlDbExtractTemplateRunner {
   > = async (
     selectorParams: AsyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObject>
   ): Promise<DomainElementEntityInstanceOrFailed> => {
-    const querySelectorParams: QueryTemplateSelectObject = selectorParams.extractor.select as QueryTemplateSelectObject;
-    const deploymentUuid = selectorParams.extractor.deploymentUuid;
+    const querySelectorParams: QueryTemplateSelectObject = selectorParams.extractorTemplate.select as QueryTemplateSelectObject;
+    const deploymentUuid = selectorParams.extractorTemplate.deploymentUuid;
     const applicationSection: ApplicationSection =
-      selectorParams.extractor.select.applicationSection ??
-      ((selectorParams.extractor.pageParams?.elementValue?.applicationSection?.elementValue ??
+      selectorParams.extractorTemplate.select.applicationSection ??
+      ((selectorParams.extractorTemplate.pageParams?.elementValue?.applicationSection?.elementValue ??
         "data") as ApplicationSection);
 
     const entityUuidReference: DomainElement = resolveContextReference(
       querySelectorParams.parentUuid,
-      selectorParams.extractor.queryParams,
-      selectorParams.extractor.contextResults
+      selectorParams.extractorTemplate.queryParams,
+      selectorParams.extractorTemplate.contextResults
     );
 
     log.info(
@@ -329,8 +321,8 @@ export class SqlDbExtractTemplateRunner {
       case "selectObjectByRelation": {
         const referenceObject = resolveContextReference(
           querySelectorParams.objectReference,
-          selectorParams.extractor.queryParams,
-          selectorParams.extractor.contextResults
+          selectorParams.extractorTemplate.queryParams,
+          selectorParams.extractorTemplate.contextResults
         );
 
         if (
@@ -343,8 +335,8 @@ export class SqlDbExtractTemplateRunner {
             elementValue: {
               queryFailure: "IncorrectParameters",
               failureMessage: "AttributeOfObjectToCompareToReferenceUuid attribute not found on query: " + JSON.stringify(querySelectorParams, null, 2),
-              queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
-              queryContext: JSON.stringify(selectorParams.extractor.contextResults),
+              queryParameters: JSON.stringify(selectorParams.extractorTemplate.pageParams),
+              queryContext: JSON.stringify(selectorParams.extractorTemplate.contextResults),
             },
           };
         }
@@ -392,8 +384,8 @@ export class SqlDbExtractTemplateRunner {
       case "selectObjectByDirectReference": {
         const instanceDomainElement = resolveContextReference(
           querySelectorParams.instanceUuid,
-          selectorParams.extractor.queryParams,
-          selectorParams.extractor.contextResults
+          selectorParams.extractorTemplate.queryParams,
+          selectorParams.extractorTemplate.contextResults
         );
         // log.info("extractEntityInstanceForTemplate selectObjectByDirectReference found domainState", JSON.stringify(domainState))
 
@@ -443,9 +435,9 @@ export class SqlDbExtractTemplateRunner {
           "######### context entityUuid",
           entityUuidReference,
           "######### queryParams",
-          JSON.stringify(selectorParams.extractor.queryParams, undefined, 2),
+          JSON.stringify(selectorParams.extractorTemplate.queryParams, undefined, 2),
           "######### contextResults",
-          JSON.stringify(selectorParams.extractor.contextResults, undefined, 2),
+          JSON.stringify(selectorParams.extractorTemplate.contextResults, undefined, 2),
         );
         return {
           elementType: "instance",
@@ -456,7 +448,7 @@ export class SqlDbExtractTemplateRunner {
       default: {
         throw new Error(
           "extractEntityInstanceForTemplate can not handle QueryTemplateSelectObject query with queryType=" +
-            selectorParams.extractor.select.queryType
+            selectorParams.extractorTemplate.select.queryType
         );
         break;
       }
@@ -470,13 +462,13 @@ export class SqlDbExtractTemplateRunner {
   > = async (
     extractorRunnerParams: AsyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObjectList>
   ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
-    const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
-    const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
+    const deploymentUuid = extractorRunnerParams.extractorTemplate.deploymentUuid;
+    const applicationSection = extractorRunnerParams.extractorTemplate.select.applicationSection ?? "data";
 
     const entityUuid: DomainElement = resolveContextReference(
-      extractorRunnerParams.extractor.select.parentUuid,
-      extractorRunnerParams.extractor.queryParams,
-      extractorRunnerParams.extractor.contextResults
+      extractorRunnerParams.extractorTemplate.select.parentUuid,
+      extractorRunnerParams.extractorTemplate.queryParams,
+      extractorRunnerParams.extractorTemplate.contextResults
     );
 
     // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate params", selectorParams, deploymentUuid, applicationSection, entityUuid);
@@ -528,7 +520,7 @@ export class SqlDbExtractTemplateRunner {
           elementType: "failure",
           elementValue: {
             queryFailure: "IncorrectParameters",
-            queryReference: JSON.stringify(extractorRunnerParams.extractor.select.parentUuid),
+            queryReference: JSON.stringify(extractorRunnerParams.extractorTemplate.select.parentUuid),
           },
         };
       }
@@ -552,13 +544,13 @@ export class SqlDbExtractTemplateRunner {
   > = async (
     extractorRunnerParams: AsyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObjectList>
   ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
-    const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
-    const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
+    const deploymentUuid = extractorRunnerParams.extractorTemplate.deploymentUuid;
+    const applicationSection = extractorRunnerParams.extractorTemplate.select.applicationSection ?? "data";
 
     const entityUuid: DomainElement = resolveContextReference(
-      extractorRunnerParams.extractor.select.parentUuid,
-      extractorRunnerParams.extractor.queryParams,
-      extractorRunnerParams.extractor.contextResults
+      extractorRunnerParams.extractorTemplate.select.parentUuid,
+      extractorRunnerParams.extractorTemplate.queryParams,
+      extractorRunnerParams.extractorTemplate.contextResults
     );
 
     // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate params", selectorParams, deploymentUuid, applicationSection, entityUuid);
@@ -581,14 +573,14 @@ export class SqlDbExtractTemplateRunner {
       case "instanceUuid": {
         let entityInstanceCollection: ActionEntityInstanceCollectionReturnType;
         if (
-          extractorRunnerParams.extractor.select.queryType == "queryTemplateExtractObjectListByEntity" &&
-          extractorRunnerParams.extractor.select.filter
+          extractorRunnerParams.extractorTemplate.select.queryType == "queryTemplateExtractObjectListByEntity" &&
+          extractorRunnerParams.extractorTemplate.select.filter
         ) {
           // TODO: resolve filter value
           // const resolvedFilterValue: DomainElement = resolveContextReferenceDEFUNCT(
-          //   extractorRunnerParams.extractor.select.parentUuid,
-          //   extractorRunnerParams.extractor.queryParams,
-          //   extractorRunnerParams.extractor.contextResults
+          //   extractorRunnerParams.extractorTemplate.select.parentUuid,
+          //   extractorRunnerParams.extractorTemplate.queryParams,
+          //   extractorRunnerParams.extractorTemplate.contextResults
           // );
           // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate resolvedFilterValue", resolvedFilterValue);
           // if (resolvedFilterValue.elementType != "string") {
@@ -600,7 +592,7 @@ export class SqlDbExtractTemplateRunner {
           //     },
           //   };
           // }
-          if (extractorRunnerParams.extractor.select.filter.value.queryTemplateType != "constantString") {
+          if (extractorRunnerParams.extractorTemplate.select.filter.value.queryTemplateType != "constantString") {
             return {
               elementType: "failure",
               elementValue: {
@@ -612,8 +604,8 @@ export class SqlDbExtractTemplateRunner {
           entityInstanceCollection = await this.persistenceStoreController.getInstancesWithFilter(
             entityUuid.elementValue,
             {
-              attribute: extractorRunnerParams.extractor.select.filter.attributeName,
-              value: extractorRunnerParams.extractor.select.filter.value.definition,
+              attribute: extractorRunnerParams.extractorTemplate.select.filter.attributeName,
+              value: extractorRunnerParams.extractorTemplate.select.filter.value.definition,
             }
           );
           // if (entityInstanceCollection.status == "error") {
@@ -662,7 +654,7 @@ export class SqlDbExtractTemplateRunner {
           elementType: "failure",
           elementValue: {
             queryFailure: "IncorrectParameters",
-            queryReference: JSON.stringify(extractorRunnerParams.extractor.select.parentUuid),
+            queryReference: JSON.stringify(extractorRunnerParams.extractorTemplate.select.parentUuid),
           },
         };
       }

@@ -109,13 +109,13 @@ export const selectEntityInstanceUuidIndexFromDomainStateForTemplate: SyncExtrac
   domainState: DomainState,
   selectorParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObjectList, DomainState>
 ): DomainElementInstanceUuidIndexOrFailed => {
-  const deploymentUuid = selectorParams.extractor.deploymentUuid;
-  const applicationSection = selectorParams.extractor.select.applicationSection ?? "data";
+  const deploymentUuid = selectorParams.extractorTemplate.deploymentUuid;
+  const applicationSection = selectorParams.extractorTemplate.select.applicationSection ?? "data";
 
   const entityUuid: DomainElement = resolveContextReference(
-    selectorParams.extractor.select.parentUuid,
-    selectorParams.extractor.queryParams,
-    selectorParams.extractor.contextResults
+    selectorParams.extractorTemplate.select.parentUuid,
+    selectorParams.extractorTemplate.queryParams,
+    selectorParams.extractorTemplate.contextResults
   );
 
   // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate params", selectorParams, deploymentUuid, applicationSection, entityUuid);
@@ -183,7 +183,7 @@ export const selectEntityInstanceUuidIndexFromDomainStateForTemplate: SyncExtrac
           queryFailure: "IncorrectParameters",
           queryContext:
             "selectEntityInstanceUuidIndexFromDomainStateForTemplate could not handle reference" + JSON.stringify(entityUuid),
-          queryReference: JSON.stringify(selectorParams.extractor.select.parentUuid),
+          queryReference: JSON.stringify(selectorParams.extractorTemplate.select.parentUuid),
         },
       };
     }
@@ -216,11 +216,11 @@ export const selectEntityInstanceFromObjectQueryAndDomainStateForTemplate: SyncE
   domainState: DomainState,
   selectorParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObject, DomainState>
 ): DomainElementEntityInstanceOrFailed => {
-  const querySelectorParams: QueryTemplateSelectObject = selectorParams.extractor.select as QueryTemplateSelectObject;
-  const deploymentUuid = selectorParams.extractor.deploymentUuid;
+  const querySelectorParams: QueryTemplateSelectObject = selectorParams.extractorTemplate.select as QueryTemplateSelectObject;
+  const deploymentUuid = selectorParams.extractorTemplate.deploymentUuid;
   const applicationSection: ApplicationSection =
-    selectorParams.extractor.select.applicationSection ??
-    ((selectorParams.extractor.pageParams?.applicationSection ?? "data") as ApplicationSection);
+    selectorParams.extractorTemplate.select.applicationSection ??
+    ((selectorParams.extractorTemplate.pageParams?.applicationSection ?? "data") as ApplicationSection);
 
   log.info(
     "selectEntityInstanceFromObjectQueryAndDomainStateForTemplate params",
@@ -232,8 +232,8 @@ export const selectEntityInstanceFromObjectQueryAndDomainStateForTemplate: SyncE
   );
   const entityUuidReference: DomainElement = resolveContextReference(
     querySelectorParams.parentUuid,
-    selectorParams.extractor.queryParams,
-    selectorParams.extractor.contextResults
+    selectorParams.extractorTemplate.queryParams,
+    selectorParams.extractorTemplate.contextResults
   );
   log.info("selectEntityInstanceFromObjectQueryAndDomainStateForTemplate entityUuidReference", entityUuidReference);
 
@@ -254,8 +254,8 @@ export const selectEntityInstanceFromObjectQueryAndDomainStateForTemplate: SyncE
     case "selectObjectByRelation": {
       const referenceObject = resolveContextReference(
         querySelectorParams.objectReference,
-        selectorParams.extractor.queryParams,
-        selectorParams.extractor.contextResults
+        selectorParams.extractorTemplate.queryParams,
+        selectorParams.extractorTemplate.contextResults
       );
 
       if (
@@ -267,7 +267,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainStateForTemplate: SyncE
           elementType: "failure",
           elementValue: {
             queryFailure: "IncorrectParameters",
-            queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
+            queryParameters: JSON.stringify(selectorParams.extractorTemplate.pageParams),
             queryContext:
               "DomainStateQuerySelectors selectObjectByRelation did not find AttributeOfObjectToCompareToReferenceUuid in " +
               JSON.stringify(querySelectorParams),
@@ -323,8 +323,8 @@ export const selectEntityInstanceFromObjectQueryAndDomainStateForTemplate: SyncE
     case "selectObjectByDirectReference": {
       const instanceUuidDomainElement = resolveContextReference(
         querySelectorParams.instanceUuid,
-        selectorParams.extractor.queryParams,
-        selectorParams.extractor.contextResults
+        selectorParams.extractorTemplate.queryParams,
+        selectorParams.extractorTemplate.contextResults
       );
 
       log.info(
@@ -416,7 +416,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainStateForTemplate: SyncE
     default: {
       throw new Error(
         "selectEntityInstanceFromObjectQueryAndDomainStateForTemplate can not handle QueryTemplateSelectObject query with queryType=" +
-          selectorParams.extractor.select.queryType
+          selectorParams.extractorTemplate.select.queryType
       );
       break;
     }
@@ -537,7 +537,7 @@ export function getSelectorParams<QueryType extends ExtractorTemplateForDomainMo
   extractorRunnerMap?: SyncExtractorTemplateRunnerMap<DomainState>
 ): SyncExtractorTemplateRunnerParams<QueryType, DomainState> {
   return {
-    extractor: query,
+    extractorTemplate: query,
     extractorRunnerMap: extractorRunnerMap ?? getSelectorMap(),
   };
 }

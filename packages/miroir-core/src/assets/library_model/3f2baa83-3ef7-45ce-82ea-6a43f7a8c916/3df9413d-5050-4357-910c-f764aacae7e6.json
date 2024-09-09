@@ -8,7 +8,7 @@
   "defaultLabel": "List of Users",
   "definition": {
     "reportParameters": {},
-    "extractors": {
+    "extractorTemplates": {
       "users": {
         "queryType": "queryTemplateExtractObjectListByEntity",
         "parentName": "User",

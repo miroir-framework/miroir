@@ -7,7 +7,7 @@
   "name":"DeploymentDetails",
   "defaultLabel": "Detailed information about a Deployment",
   "definition": {
-    "extractors": {
+    "extractorTemplates": {
       "deployment": {
         "queryType": "selectObjectByDirectReference",
         "parentName": "Deployment",

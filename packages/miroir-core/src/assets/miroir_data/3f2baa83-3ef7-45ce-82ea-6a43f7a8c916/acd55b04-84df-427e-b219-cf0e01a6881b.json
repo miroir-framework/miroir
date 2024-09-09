@@ -7,7 +7,7 @@
   "name":"EntityDefinitionDetails",
   "defaultLabel": "Detailed information about an Entity Definition",
   "definition": {
-    "extractors": {
+    "extractorTemplates": {
       "entityDefinition": {
         "queryType": "selectObjectByDirectReference",
         "parentName": "EntityDefinition",

@@ -179,7 +179,7 @@ export const ReportPage = () => {
         defaultLabel: "No report to display!",
         type: "list",
         definition: {
-          extractors: {},
+          extractorTemplates: {},
           section: {
             type: "objectListReportSection",
             definition: {

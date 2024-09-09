@@ -283,7 +283,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           },
           type: "list",
           definition: {
-            extractors: {
+            extractorTemplatess: {
               instanceList: {
                 queryType: "queryTemplateExtractObjectListByEntity",
                 parentName: {
@@ -340,7 +340,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             definition: "Details of {{newEntityName}}",
           },
           definition: {
-            extractors: {
+            extractorTemplates: {
               elementToDisplay: {
                 queryType: "selectObjectByDirectReference",
                 parentName: {
@@ -656,7 +656,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       pageParams: { elementType: "object", elementValue: {} },
       queryParams: { elementType: "object", elementValue: {} },
       contextResults: { elementType: "object", elementValue: {} },
-      extractors: {
+      extractorTemplates: {
         menus: {
           queryType: "queryTemplateExtractObjectListByEntity",
           applicationSection: "model",
@@ -902,7 +902,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             },
             type: "list",
             definition: {
-              extractors: {
+              extractorTemplates: {
                 listReportSectionElements: {
                   queryType: "queryTemplateExtractObjectListByEntity",
                   parentName: {
@@ -944,7 +944,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             name: newEntityName + "Details",
             defaultLabel: "Details of " + newEntityDescription,
             definition: {
-              extractors: {
+              extractorTemplates: {
                 elementToDisplay: {
                   queryType: "selectObjectByDirectReference",
                   parentName: newEntityName,
@@ -1245,7 +1245,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           },
           type: "list",
           definition: {
-            extractors: {
+            extractorTemplates: {
               listReportSectionElements: {
                 queryType: "queryTemplateExtractObjectListByEntity",
                 parentName: {
@@ -1548,7 +1548,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               pageParams,
               queryParams: { elementType: "object", elementValue: {} },
               contextResults: { elementType: "object", elementValue: {} },
-              extractors: {
+              extractorTemplates: {
                 [splittedEntityName]: {
                   queryType: "queryTemplateExtractObjectListByEntity",
                   applicationSection: "data",

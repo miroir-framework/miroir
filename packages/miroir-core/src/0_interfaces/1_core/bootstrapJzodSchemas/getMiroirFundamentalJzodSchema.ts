@@ -1648,7 +1648,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "literal",
               definition: "extractorTemplateForRecordOfExtractors",
             },
-            extractors: {
+            extractorTemplates: {
               type: "record",
               optional: true,
               definition: {

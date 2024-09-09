@@ -205,7 +205,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
               queryParams: {},
               contextResults: {},
               deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-              extractors: {
+              extractorTemplates: {
                 entities: {
                   queryType: "queryTemplateExtractObjectListByEntity",
                   applicationSection: applicationSection,
@@ -428,7 +428,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
               queryParams: {},
               contextResults: {},
               deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-              extractors: {
+              extractorTemplates: {
                 entities: {
                   queryType: "queryTemplateExtractObjectListByEntity",
                   applicationSection: applicationSection,
@@ -499,7 +499,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
             queryParams: {},
             contextResults: {},
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            extractors: {
+            extractorTemplates: {
               books: {
                 queryType: "queryTemplateExtractObjectListByEntity",
                 applicationSection: applicationSection,
@@ -556,7 +556,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
             queryParams: {},
             contextResults: {},
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            extractors: {
+            extractorTemplates: {
               books: {
                 queryType: "queryTemplateExtractObjectListByEntity",
                 applicationSection: applicationSection,
@@ -608,7 +608,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
             queryParams: {},
             contextResults: {},
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            extractors: {
+            extractorTemplates: {
               books: {
                 queryType: "queryTemplateExtractObjectListByEntity",
                 applicationSection: applicationSection,
@@ -667,7 +667,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
             // queryParams: { elementType: "object", elementValue: {} },
             // contextResults: { elementType: "object", elementValue: {} },
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            extractors: {
+            extractorTemplates: {
               books: {
                 queryType: "queryTemplateExtractObjectListByEntity",
                 applicationSection: applicationSection,
@@ -779,11 +779,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
               instanceUuid: "c6852e89-3c3c-447f-b827-4b5b9d830975",
             },
             contextResults: {},
-            // pageParams: { elementType: "object", elementValue: {} },
-            // queryParams: { elementType: "object", elementValue: {} },
-            // contextResults: { elementType: "object", elementValue: {} },
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            extractors: {
+            extractorTemplates: {
               book: {
                 queryType: "selectObjectByDirectReference",
                 parentName: "Book",
@@ -796,30 +793,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   referenceName: "instanceUuid",
                 },
               },
-              // books: {
-              //   queryType: "queryTemplateExtractObjectListByEntity",
-              //   applicationSection: applicationSection,
-              //   parentName: "Book",
-              //   parentUuid: {
-              //     queryTemplateType: "constantUuid",
-              //     constantUuidValue: entityBook.uuid,
-              //   },
-              // },
             },
             combiners: {
-              // publisher: {
-              //   queryType: "selectObjectByRelation",
-              //   parentName: "Publisher",
-              //   parentUuid: {
-              //     queryTemplateType: "constantUuid",
-              //     constantUuidValue: "a027c379-8468-43a5-ba4d-bf618be25cab",
-              //   },
-              //   objectReference: {
-              //     queryTemplateType: "queryContextReference",
-              //     referenceName: "book",
-              //   },
-              //   AttributeOfObjectToCompareToReferenceUuid: "publisher",
-              // },
               author: {
                 queryType: "selectObjectByRelation",
                 parentName: "Author",
@@ -833,19 +808,6 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                 },
                 AttributeOfObjectToCompareToReferenceUuid: "author",
               },
-              // booksOfPublisher: {
-              //   queryType: "selectObjectListByRelation",
-              //   parentName: "Book",
-              //   parentUuid: {
-              //     queryTemplateType: "constantUuid",
-              //     constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-              //   },
-              //   objectReference: {
-              //     queryTemplateType: "queryContextReference",
-              //     referenceName: "publisher",
-              //   },
-              //   AttributeOfListObjectToCompareToReferenceUuid: "publisher",
-              // },
               booksOfAuthor: {
                 queryType: "selectObjectListByRelation",
                 parentName: "Book",
@@ -860,44 +822,6 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                 AttributeOfListObjectToCompareToReferenceUuid: "author",
               },
             },
-            // runtimeTransformers: {
-            //   countries: {
-            //     templateType: "listMapper",
-            //     interpolation: "runtime",
-            //     referencedExtractor: "books",
-            //     orderBy: "name",
-            //     elementTransformer: {
-            //       templateType: "fullObjectTemplate",
-            //       interpolation: "runtime",
-            //       referencedExtractor: "book",
-            //       definition: [
-            //         {
-            //           attributeKey: {
-            //             interpolation: "runtime",
-            //             templateType: "constantUuid",
-            //             constantUuidValue: "uuid",
-            //           },
-            //           attributeValue: {
-            //             interpolation: "runtime",
-            //             templateType: "newUuid",
-            //           },
-            //         },
-            //         {
-            //           attributeKey: {
-            //             interpolation: "runtime",
-            //             templateType: "constantUuid",
-            //             constantUuidValue: "name",
-            //           },
-            //           attributeValue: {
-            //             templateType: "mustacheStringTemplate",
-            //             interpolation: "runtime",
-            //             definition: "{{book.name}}",
-            //           },
-            //         },
-            //       ],
-            //     },
-            //   },
-            // },
           },
         });
         console.log("queryResult", JSON.stringify(queryResult, null, 2));

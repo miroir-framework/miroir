@@ -7,7 +7,7 @@
   "defaultLabel": "Entity Definitions",
   "definition": {
     "reportParameters": {},
-    "extractors": {
+    "extractorTemplates": {
       "entityDefinitions": {
         "queryType": "queryTemplateExtractObjectListByEntity",
         "applicationSection": "model",

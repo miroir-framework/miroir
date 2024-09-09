@@ -50,7 +50,7 @@ import { getMemoizedDeploymentEntityStateSelectorForTemplateMap } from "miroir-l
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../constants.js";
 import { useMiroirContextService, useMiroirContextformHelperState } from "../MiroirContextReactProvider.js";
-import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from '../ReduxHooks.js';
+import { useCurrentModel, useDeploymentEntityStateQueryTemplateSelectorForCleanedResult } from '../ReduxHooks.js';
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"JzodObjectEditor");
@@ -466,7 +466,7 @@ export const JzodObjectEditor = (
             pageParams: { elementType: "object", elementValue: {} },
             queryParams: { elementType: "object", elementValue: {} },
             contextResults: { elementType: "object", elementValue: {} },
-            extractors: {
+            extractorTemplates: {
               [unfoldedRawSchema.tag?.value?.targetEntity]:
               {
                 queryType: "queryTemplateExtractObjectListByEntity",
@@ -500,9 +500,9 @@ export const JzodObjectEditor = (
     //   unfoldedRawSchema
     // )
 
-    // const foreignKeyObjects:  = useDeploymentEntityStateQuerySelectorForCleanedResult(
+    // const foreignKeyObjects:  = useDeploymentEntityStateQueryTemplateSelectorForCleanedResult(
     const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
-      useDeploymentEntityStateQuerySelectorForCleanedResult(
+      useDeploymentEntityStateQueryTemplateSelectorForCleanedResult(
         deploymentEntityStateSelectorMap.extractWithManyExtractorTemplates as SyncExtractorTemplateRunner<
           ExtractorTemplateForRecordOfExtractors,
           DeploymentEntityState,

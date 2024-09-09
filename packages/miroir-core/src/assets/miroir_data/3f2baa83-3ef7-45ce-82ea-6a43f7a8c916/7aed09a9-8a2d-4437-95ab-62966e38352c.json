@@ -7,7 +7,7 @@
   "defaultLabel": "Queries",
   "definition": {
     "reportParameters": {},
-    "extractors": {
+    "extractorTemplates": {
       "queries": {
         "queryType": "queryTemplateExtractObjectListByEntity",
         "parentName": "Query",

@@ -7,7 +7,7 @@
   "defaultLabel": "Endpoints",
   "definition": {
     "reportParameters": {},
-    "extractors": {
+    "extractorTemplates": {
       "endpoints": {
         "queryType": "queryTemplateExtractObjectListByEntity",
         "parentName": "Endpoint",

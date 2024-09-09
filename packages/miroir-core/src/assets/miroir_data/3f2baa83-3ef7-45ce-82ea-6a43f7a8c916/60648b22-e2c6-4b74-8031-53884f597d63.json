@@ -7,7 +7,7 @@
   "defaultLabel": "Application Model Branches",
   "definition": {
     "reportParameters": {},
-    "extractors": {
+    "extractorTemplates": {
       "applicationModelBranches": {
         "queryType": "queryTemplateExtractObjectListByEntity",
         "parentName": "ApplicationModelBranch",

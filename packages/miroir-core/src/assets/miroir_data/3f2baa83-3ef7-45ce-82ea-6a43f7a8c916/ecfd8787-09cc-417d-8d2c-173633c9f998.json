@@ -7,7 +7,7 @@
   "defaultLabel": "Menus",
   "definition": {
     "reportParameters": {},
-    "extractors": {
+    "extractorTemplates": {
       "menus": {
         "queryType": "queryTemplateExtractObjectListByEntity",
         "parentName": "Menu",

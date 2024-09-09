@@ -8,7 +8,7 @@
   "defaultLabel": "List of Authors",
   "definition": {
     "reportParameters": {},
-    "extractors": {
+    "extractorTemplates": {
       "authors": {
         "queryType": "queryTemplateExtractObjectListByEntity",
         "parentName": "Author",

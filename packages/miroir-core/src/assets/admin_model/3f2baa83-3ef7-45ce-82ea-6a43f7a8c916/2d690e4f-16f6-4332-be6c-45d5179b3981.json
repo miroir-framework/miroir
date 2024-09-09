@@ -7,7 +7,7 @@
   "defaultLabel": "Bundles",
   "definition": {
     "reportParameters": {},
-    "extractors": {
+    "extractorTemplates": {
       "bundles": {
         "queryType": "queryTemplateExtractObjectListByEntity",
         "parentName": "Bundle",

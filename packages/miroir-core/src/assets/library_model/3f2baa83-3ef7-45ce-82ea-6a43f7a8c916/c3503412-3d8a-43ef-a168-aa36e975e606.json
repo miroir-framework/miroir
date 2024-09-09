@@ -7,7 +7,7 @@
   "name":"BookDetails",
   "defaultLabel": "Detailed information about a Book",
   "definition": {
-    "extractors": {
+    "extractorTemplates": {
       "book": {
         "queryType": "selectObjectByDirectReference",
         "parentName": "Book",

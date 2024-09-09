@@ -9,7 +9,7 @@
   "type": "list",
   "definition": {
     "reportParameters": {},
-    "extractors": {
+    "extractorTemplates": {
       "tests": {
         "queryType": "queryTemplateExtractObjectListByEntity",
         "parentName": "Test",

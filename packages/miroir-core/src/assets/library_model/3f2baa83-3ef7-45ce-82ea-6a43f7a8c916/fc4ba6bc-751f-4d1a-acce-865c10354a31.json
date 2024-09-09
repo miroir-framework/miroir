@@ -7,7 +7,7 @@
   "name":"CountryDetails",
   "defaultLabel": "Detailed information about a Country",
   "definition": {
-    "extractors": {
+    "extractorTemplates": {
       "country": {
         "queryType": "selectObjectByDirectReference",
         "parentName": "Country",

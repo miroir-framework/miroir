@@ -2821,7 +2821,7 @@ export const miroirFundamentalJzodSchema = {
               "type": "string"
             }
           },
-          "extractors": {
+          "extractorTemplates": {
             "type": "record",
             "optional": true,
             "definition": {
@@ -3429,7 +3429,7 @@ export const miroirFundamentalJzodSchema = {
                       "type": "string"
                     }
                   },
-                  "extractors": {
+                  "extractorTemplates": {
                     "type": "record",
                     "optional": true,
                     "definition": {
@@ -5916,7 +5916,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "extractorTemplateForRecordOfExtractors"
           },
-          "extractors": {
+          "extractorTemplates": {
             "type": "record",
             "optional": true,
             "definition": {
@@ -16798,7 +16798,7 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "extractors": {
+              "extractorTemplates": {
                 "type": "union",
                 "optional": true,
                 "definition": [
@@ -17867,7 +17867,7 @@ export const miroirFundamentalJzodSchema = {
                               }
                             ]
                           },
-                          "extractors": {
+                          "extractorTemplates": {
                             "type": "union",
                             "optional": true,
                             "definition": [
@@ -25971,7 +25971,7 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "extractors": {
+              "extractorTemplates": {
                 "type": "union",
                 "optional": true,
                 "definition": [

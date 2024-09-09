@@ -7,7 +7,7 @@
   "name":"UserDetails",
   "defaultLabel": "Detailed information about a User",
   "definition": {
-    "extractors": {
+    "extractorTemplates": {
       "user": {
         "queryType": "selectObjectByDirectReference",
         "parentName": "User",

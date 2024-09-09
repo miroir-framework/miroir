@@ -15,16 +15,18 @@ export {
 } from "./4_services/localCache/LocalCacheSliceModelSelector.js";
 export {
   applyDeploymentEntityStateQuerySelector,
-  applyDeploymentEntityStateQuerySelectorForCleanedResult,
-  selectCurrentDeploymentEntityStateFromReduxState,
   selectDeploymentEntityStateSelectorParams,
+  applyDeploymentEntityStateQueryTemplateSelector,
+  applyDeploymentEntityStateQueryTemplateSelectorForCleanedResult,
+  selectCurrentDeploymentEntityStateFromReduxState,
+  selectDeploymentEntityStateSelectorForQueryTemplateParams,
   selectDomainStateFromReduxState,
   selectMiroirSelectorQueryParams,
   selectJzodSchemaSelectorParams,
 
   applyDomainStateJzodSchemaSelector,
   applyDeploymentEntityStateJzodSchemaSelector,
-  applyDomainStateQuerySelector,
+  applyDomainStateQueryTemplateSelector,
   applyDomainStateQuerySelectorForCleanedResult,
   selectDomainStateJzodSchemaSelectorParams,
   selectDomainStateSelectorParams,

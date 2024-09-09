@@ -8,7 +8,7 @@
   "name":"DeploymentList",
   "defaultLabel": "List of Deployments",
   "definition": {
-    "extractors": {
+    "extractorTemplates": {
       "deployments": {
         "queryType": "selectObjectByDirectReference",
         "parentName": "Deployment",

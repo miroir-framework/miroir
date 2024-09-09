@@ -36,7 +36,7 @@ import { getMemoizedDeploymentEntityStateSelectorForTemplateMap } from 'miroir-l
 import { FC, useMemo } from 'react';
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
-import { useDeploymentEntityStateQuerySelector } from '../ReduxHooks.js';
+import { useDeploymentEntityStateQueryTemplateSelector } from '../ReduxHooks.js';
 
 const MatDivider: any = Divider;
 const MatList: any = List;
@@ -162,7 +162,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
       pageParams: { elementType: "object", elementValue: {} },
       queryParams: { elementType: "object", elementValue: {} },
       contextResults: { elementType: "object", elementValue: {} },
-      extractors: {
+      extractorTemplates: {
         menus: {
           queryType: "selectObjectByDirectReference",
           parentName: "Menu",
@@ -183,7 +183,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
   );
 
   log.info("fetchDeploymentMenusQueryParams",fetchDeploymentMenusQueryParams)
-  const miroirMenusDomainElementObject: DomainElementObjectOrFailed = useDeploymentEntityStateQuerySelector(
+  const miroirMenusDomainElementObject: DomainElementObjectOrFailed = useDeploymentEntityStateQueryTemplateSelector(
     deploymentEntityStateSelectorMap.extractWithManyExtractorTemplates,
     fetchDeploymentMenusQueryParams
   );

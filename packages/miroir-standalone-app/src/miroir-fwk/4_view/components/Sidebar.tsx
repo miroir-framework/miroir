@@ -142,7 +142,7 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
   //     pageParams: { elementType: "object", elementValue: {} },
   //     queryParams: { elementType: "object", elementValue: {} },
   //     contextResults: { elementType: "object", elementValue: {} },
-  //     extractors: {
+  //     extractorTemplates: {
   //       select: {
   //         menus: {
   //           queryType: "selectObjectByDirectReference",
@@ -162,7 +162,7 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
   //   [deploymentEntityStateSelectorMap]
   // );
 
-  // const miroirMenusDomainElementObject: DomainElementObject = useDeploymentEntityStateQuerySelector(
+  // const miroirMenusDomainElementObject: DomainElementObject = useDeploymentEntityStateQueryTemplateSelector(
   //   deploymentEntityStateSelectorMap.extractWithManyExtractorTemplates,
   //   FetchMiroirMenusQueryParams
   // );

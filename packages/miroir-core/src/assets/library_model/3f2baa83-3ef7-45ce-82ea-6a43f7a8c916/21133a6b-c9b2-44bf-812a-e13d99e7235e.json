@@ -7,7 +7,7 @@
   "name":"PublisherDetails",
   "defaultLabel": "Detailed information about a Publisher",
   "definition": {
-    "extractors": {
+    "extractorTemplates": {
       "publisher": {
         "queryType": "selectObjectByDirectReference",
         "parentName": "Author",

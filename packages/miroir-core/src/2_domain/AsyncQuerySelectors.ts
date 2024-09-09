@@ -573,7 +573,7 @@ export const asyncExtractWithManyExtractors = async (
     });
     context[result[0]] = result[1]; // does side effect!
     log.info(
-      "asyncExtractWithManyExtractorTemplates for result[0]",
+      "asyncExtractWithManyExtractor for result[0]",
       result[0],
       "context",
       JSON.stringify(Object.keys(context))

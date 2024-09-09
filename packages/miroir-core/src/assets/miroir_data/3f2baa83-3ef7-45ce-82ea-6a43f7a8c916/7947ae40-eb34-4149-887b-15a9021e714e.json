@@ -8,7 +8,7 @@
   "type": "list",
   "definition": {
     "reportParameters": {},
-    "extractors": {
+    "extractorTemplates": {
       "commits": {
         "queryType": "queryTemplateExtractObjectListByEntity",
         "parentName": "Commit",

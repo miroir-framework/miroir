@@ -50,7 +50,7 @@ import {
   useMiroirContextInnerFormOutput,
   useMiroirContextService,
 } from "../MiroirContextReactProvider.js";
-import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from "../ReduxHooks.js";
+import { useCurrentModel, useDeploymentEntityStateQueryTemplateSelectorForCleanedResult } from "../ReduxHooks.js";
 import { cleanLevel } from "../constants.js";
 import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "../getColumnDefinitionsFromEntityAttributes.js";
 import { deleteCascade } from "../scripts.js";
@@ -329,7 +329,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           pageParams: props.paramsAsdomainElements,
           queryParams: { elementType: "object", elementValue: {} },
           contextResults: { elementType: "object", elementValue: {} },
-          extractors: Object.fromEntries(
+          extractorTemplates: Object.fromEntries(
             foreignKeyObjectsAttributeDefinition.map((e) => [
               e[1].tag?.value?.targetEntity,
               {
@@ -364,8 +364,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     
   )
 
-  // const foreignKeyObjects:  = useDeploymentEntityStateQuerySelectorForCleanedResult(
-  const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = useDeploymentEntityStateQuerySelectorForCleanedResult(
+  // const foreignKeyObjects:  = useDeploymentEntityStateQueryTemplateSelectorForCleanedResult(
+  const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = useDeploymentEntityStateQueryTemplateSelectorForCleanedResult(
     deploymentEntityStateSelectorMap.extractWithManyExtractorTemplates as SyncExtractorTemplateRunner<ExtractorTemplateForRecordOfExtractors, DeploymentEntityState, DomainElement>,
     foreignKeyObjectsFetchQueryParams
   );

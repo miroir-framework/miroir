@@ -33,13 +33,13 @@ export type RecordOfJzodObject = Record<string, JzodObject | undefined>;
 // ################################################################################################
 export interface SyncExtractorTemplateRunnerParams<ExtractorTemplateDomainModelType extends ExtractorTemplateForDomainModel, StateType> {
   extractorRunnerMap?: SyncExtractorTemplateRunnerMap<StateType>
-  extractor: ExtractorTemplateDomainModelType
+  extractorTemplate: ExtractorTemplateDomainModelType
 }
 
 // ################################################################################################
 export interface AsyncExtractorTemplateRunnerParams<ExtractorTemplateDomainModelType extends ExtractorTemplateForDomainModel> {
   extractorRunnerMap?: AsyncExtractorTemplateRunnerMap
-  extractor: ExtractorTemplateDomainModelType
+  extractorTemplate: ExtractorTemplateDomainModelType
 }
 // ################################################################################################
 export type SyncExtractorTemplateRunner<QueryType extends ExtractorTemplateForDomainModel, StateType, ResultType> = (
@@ -83,7 +83,7 @@ export type AsyncExtractorTemplateRunnerMap = {
     newFetchedData: Record<string, any>,
     // queryParams: DomainElementObject,
     // newFetchedData: DomainElementObject,
-    extractors: Record<string, ExtractorTemplateForSingleObjectList | ExtractorTemplateForSingleObject | ExtractorTemplateForRecordOfExtractors>,
+    extractorTemplates: Record<string, ExtractorTemplateForSingleObjectList | ExtractorTemplateForSingleObject | ExtractorTemplateForRecordOfExtractors>,
   ): Promise<DomainElement>
 };
 

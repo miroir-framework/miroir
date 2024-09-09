@@ -7,7 +7,7 @@
   "defaultLabel": "Applications",
   "definition": {
     "reportParameters": {},
-    "extractors": {
+    "extractorTemplates": {
       "applications": {
         "queryType": "queryTemplateExtractObjectListByEntity",
         "parentUuid": {

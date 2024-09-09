@@ -10,7 +10,7 @@
     "reportParameters": {
 
     },
-    "extractors": {
+    "extractorTemplates": {
       "books": {
         "queryType": "queryTemplateExtractObjectListByEntity",
         "parentUuid": {

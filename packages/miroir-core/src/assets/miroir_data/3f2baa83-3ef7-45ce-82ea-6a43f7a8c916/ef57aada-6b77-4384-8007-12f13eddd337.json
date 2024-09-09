@@ -7,7 +7,7 @@
   "name":"ReportDetails",
   "defaultLabel": "Detailed information about a Report",
   "definition": {
-    "extractors": {
+    "extractorTemplates": {
       "report": {
         "queryType": "selectObjectByDirectReference",
         "parentName": "Report",

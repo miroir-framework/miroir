@@ -497,7 +497,7 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemo
 
   return applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory(
     selectedInstancesUuidIndex,
-    selectorParams.extractor,
+    selectorParams.extractorTemplate,
   );
 
 };
@@ -536,7 +536,7 @@ export function innerSelectElementFromQueryTemplate/*ExtractorTemplateRunner*/<S
     case "selectObjectListByManyToManyRelation": {
       return extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory(state, {
         extractorRunnerMap,
-        extractor: {
+        extractorTemplate: {
           queryType: "extractorTemplateForDomainModelObjects",
           deploymentUuid: deploymentUuid,
           contextResults: newFetchedData,
@@ -557,7 +557,7 @@ export function innerSelectElementFromQueryTemplate/*ExtractorTemplateRunner*/<S
     case "selectObjectByDirectReference": {
       return extractorRunnerMap.extractEntityInstance(state, {
         extractorRunnerMap,
-        extractor: {
+        extractorTemplate: {
           queryType: "extractorTemplateForDomainModelObjects",
           deploymentUuid: deploymentUuid,
           contextResults: newFetchedData,
@@ -697,7 +697,7 @@ export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <
   // log.info("########## extractExtractor begin, query", selectorParams);
   const localSelectorMap: SyncExtractorTemplateRunnerMap<StateType> = selectorParams?.extractorRunnerMap ?? emptySelectorMap;
 
-  switch (selectorParams.extractor.queryType) {
+  switch (selectorParams.extractorTemplate.queryType) {
     case "extractorTemplateForRecordOfExtractors": {
       return extractWithManyExtractorTemplates(
         state,
@@ -708,12 +708,12 @@ export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <
     case "extractorTemplateForDomainModelObjects": {
       const result = innerSelectElementFromQueryTemplate(
         state,
-        selectorParams.extractor.contextResults,
-        selectorParams.extractor.pageParams,
-        selectorParams.extractor.queryParams,
+        selectorParams.extractorTemplate.contextResults,
+        selectorParams.extractorTemplate.pageParams,
+        selectorParams.extractorTemplate.queryParams,
         localSelectorMap as any,
-        selectorParams.extractor.deploymentUuid,
-        selectorParams.extractor.select
+        selectorParams.extractorTemplate.deploymentUuid,
+        selectorParams.extractorTemplate.select
       );
       return result;
         break;
@@ -751,7 +751,7 @@ export const extractWithManyExtractorTemplates = <StateType>(
 
   // log.info("########## extractWithManyExtractorTemplates begin, query", selectorParams);
   const context: Record<string, any> = {
-    ...selectorParams.extractor.contextResults
+    ...selectorParams.extractorTemplate.contextResults
   };
   // const context: DomainElementObject = {
   //   elementType: "object",
@@ -761,45 +761,45 @@ export const extractWithManyExtractorTemplates = <StateType>(
   const localSelectorMap: SyncExtractorTemplateRunnerMap<StateType> =
     selectorParams?.extractorRunnerMap ?? emptySelectorMap;
 
-  for (const extractor of Object.entries(
-    selectorParams.extractor.extractors ?? {}
+  for (const extractorTemplate of Object.entries(
+    selectorParams.extractorTemplate.extractorTemplates ?? {}
   )) {
     let result = innerSelectElementFromQueryTemplate(
       state,
       context,
-      selectorParams.extractor.pageParams,
+      selectorParams.extractorTemplate.pageParams,
       {
-        ...selectorParams.extractor.pageParams,
-        ...selectorParams.extractor.queryParams,
+        ...selectorParams.extractorTemplate.pageParams,
+        ...selectorParams.extractorTemplate.queryParams,
       },
       localSelectorMap as any,
-      selectorParams.extractor.deploymentUuid,
-      extractor[1]
+      selectorParams.extractorTemplate.deploymentUuid,
+      extractorTemplate[1]
     );
     // TODO: test for error!
     if (result.elementType == "failure") {
-      log.error("extractWithManyExtractorTemplates failed for extractor", extractor[0], "query", extractor[1], "result=", result);
-      context[extractor[0]] = result    
+      log.error("extractWithManyExtractorTemplates failed for extractor", extractorTemplate[0], "query", extractorTemplate[1], "result=", result);
+      context[extractorTemplate[0]] = result    
       // return { elementType: "object", elementValue: {
       // }}
       // return result;
     }
-    context[extractor[0]] = result.elementValue; // does side effect!
-    log.info("extractWithManyExtractorTemplates done for extractors", extractor[0], "query", extractor[1], "result=", result, "context keys=", Object.keys(context));
+    context[extractorTemplate[0]] = result.elementValue; // does side effect!
+    log.info("extractWithManyExtractorTemplates done for extractors", extractorTemplate[0], "query", extractorTemplate[1], "result=", result, "context keys=", Object.keys(context));
   }
   for (const combiner of Object.entries(
-    selectorParams.extractor.combiners ?? {}
+    selectorParams.extractorTemplate.combiners ?? {}
   )) {
     let result = innerSelectElementFromQueryTemplate(
       state,
       context,
-      selectorParams.extractor.pageParams,
+      selectorParams.extractorTemplate.pageParams,
       {
-        ...selectorParams.extractor.pageParams,
-        ...selectorParams.extractor.queryParams,
+        ...selectorParams.extractorTemplate.pageParams,
+        ...selectorParams.extractorTemplate.queryParams,
       },
       localSelectorMap as any,
-      selectorParams.extractor.deploymentUuid,
+      selectorParams.extractorTemplate.deploymentUuid,
       combiner[1]
     );
     // context[combiner[0]] = result; // does side effect!
@@ -809,11 +809,11 @@ export const extractWithManyExtractorTemplates = <StateType>(
 
   for (const transformerForRuntime of 
     Object.entries(
-    selectorParams.extractor.runtimeTransformers ?? {}
+    selectorParams.extractorTemplate.runtimeTransformers ?? {}
   )) {
     let result = applyExtractorTemplateTransformerInMemory(transformerForRuntime[1], {
-      ...selectorParams.extractor.pageParams,
-      ...selectorParams.extractor.queryParams,
+      ...selectorParams.extractorTemplate.pageParams,
+      ...selectorParams.extractorTemplate.queryParams,
     }, context)
     if (result.elementType == "failure") {
       log.error(

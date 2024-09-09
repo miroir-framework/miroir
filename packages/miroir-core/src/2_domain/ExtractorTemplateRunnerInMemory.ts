@@ -73,7 +73,7 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
       case "extractorTemplateForDomainModelObjects": {
         queryResult = await this.selectorMap.extractWithExtractorTemplate(
           {
-            extractor: queryTemplateAction.query,
+            extractorTemplate: queryTemplateAction.query,
             extractorRunnerMap: this.selectorMap,
           }
         );
@@ -82,7 +82,7 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
       case "extractorTemplateForRecordOfExtractors": {
         queryResult = await this.selectorMap.extractWithManyExtractorTemplates(
           {
-            extractor: queryTemplateAction.query,
+            extractorTemplate: queryTemplateAction.query,
             extractorRunnerMap: this.selectorMap,
           }
         );
@@ -118,17 +118,17 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
   > = async (
     selectorParams: AsyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObject>
   ): Promise<DomainElementEntityInstanceOrFailed> => {
-    const querySelectorParams: QueryTemplateSelectObject = selectorParams.extractor.select as QueryTemplateSelectObject;
-    const deploymentUuid = selectorParams.extractor.deploymentUuid;
+    const querySelectorParams: QueryTemplateSelectObject = selectorParams.extractorTemplate.select as QueryTemplateSelectObject;
+    const deploymentUuid = selectorParams.extractorTemplate.deploymentUuid;
     const applicationSection: ApplicationSection =
-      selectorParams.extractor.select.applicationSection ??
-      ((selectorParams.extractor.pageParams?.elementValue?.applicationSection?.elementValue ??
+      selectorParams.extractorTemplate.select.applicationSection ??
+      ((selectorParams.extractorTemplate.pageParams?.elementValue?.applicationSection?.elementValue ??
         "data") as ApplicationSection);
 
     const entityUuidReference: DomainElement = resolveContextReference(
       querySelectorParams.parentUuid,
-      selectorParams.extractor.queryParams,
-      selectorParams.extractor.contextResults
+      selectorParams.extractorTemplate.queryParams,
+      selectorParams.extractorTemplate.contextResults
     );
 
     log.info(
@@ -160,8 +160,8 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
       case "selectObjectByRelation": {
         const referenceObject = resolveContextReference(
           querySelectorParams.objectReference,
-          selectorParams.extractor.queryParams,
-          selectorParams.extractor.contextResults
+          selectorParams.extractorTemplate.queryParams,
+          selectorParams.extractorTemplate.contextResults
         );
 
         if (
@@ -173,7 +173,7 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
             elementType: "failure",
             elementValue: {
               queryFailure: "IncorrectParameters",
-              queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
+              queryParameters: JSON.stringify(selectorParams.extractorTemplate.pageParams),
               queryContext: "extractRunnerInMemory extractEntityInstance query has no AttributeOfObjectToCompareToReferenceUuid, query=" + JSON.stringify(querySelectorParams),
             },
           };
@@ -222,8 +222,8 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
       case "selectObjectByDirectReference": {
         const instanceDomainElement = resolveContextReference(
           querySelectorParams.instanceUuid,
-          selectorParams.extractor.queryParams,
-          selectorParams.extractor.contextResults
+          selectorParams.extractorTemplate.queryParams,
+          selectorParams.extractorTemplate.contextResults
         );
         // log.info("extractEntityInstance selectObjectByDirectReference found domainState", JSON.stringify(domainState))
 
@@ -297,9 +297,9 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
           "######### context entityUuid",
           entityUuidReference,
           "######### queryParams",
-          JSON.stringify(selectorParams.extractor.queryParams, undefined, 2),
+          JSON.stringify(selectorParams.extractorTemplate.queryParams, undefined, 2),
           "######### contextResults",
-          JSON.stringify(selectorParams.extractor.contextResults, undefined, 2),
+          JSON.stringify(selectorParams.extractorTemplate.contextResults, undefined, 2),
         );
         return {
           elementType: "instance",
@@ -311,7 +311,7 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
       default: {
         throw new Error(
           "extractEntityInstance can not handle QueryTemplateSelectObject query with queryType=" +
-            selectorParams.extractor.select.queryType
+            selectorParams.extractorTemplate.select.queryType
         );
         break;
       }
@@ -325,13 +325,13 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
   > = async (
     extractorRunnerParams: AsyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObjectList>
   ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
-    const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
-    const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
+    const deploymentUuid = extractorRunnerParams.extractorTemplate.deploymentUuid;
+    const applicationSection = extractorRunnerParams.extractorTemplate.select.applicationSection ?? "data";
 
     const entityUuid: DomainElement = resolveContextReference(
-      extractorRunnerParams.extractor.select.parentUuid,
-      extractorRunnerParams.extractor.queryParams,
-      extractorRunnerParams.extractor.contextResults
+      extractorRunnerParams.extractorTemplate.select.parentUuid,
+      extractorRunnerParams.extractorTemplate.queryParams,
+      extractorRunnerParams.extractorTemplate.contextResults
     );
 
     // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate params", selectorParams, deploymentUuid, applicationSection, entityUuid);
@@ -389,7 +389,7 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
           elementType: "failure",
           elementValue: {
             queryFailure: "IncorrectParameters",
-            queryReference: JSON.stringify(extractorRunnerParams.extractor.select.parentUuid),
+            queryReference: JSON.stringify(extractorRunnerParams.extractorTemplate.select.parentUuid),
           },
         };
       }

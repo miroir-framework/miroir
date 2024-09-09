@@ -7,7 +7,7 @@
   "name":"BundleDetails",
   "defaultLabel": "Detailed information about a Bundle",
   "definition": {
-    "extractors": {
+    "extractorTemplates": {
       "bundle": {
         "queryType": "selectObjectByDirectReference",
         "parentName": "Deployment",

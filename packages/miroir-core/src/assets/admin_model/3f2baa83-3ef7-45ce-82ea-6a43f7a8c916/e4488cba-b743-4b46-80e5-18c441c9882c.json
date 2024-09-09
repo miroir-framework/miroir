@@ -7,7 +7,7 @@
   "defaultLabel": "Deployments",
   "definition": {
     "reportParameters": {},
-    "extractors":{
+    "extractorTemplates":{
       "ApplicationDeployments": {
         "queryType": "queryTemplateExtractObjectListByEntity",
         "parentName": "Deployment",

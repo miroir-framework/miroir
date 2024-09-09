@@ -335,7 +335,7 @@
                   "type": "string"
                 }
               },
-              "extractors": {
+              "extractorTemplates": {
                 "type": "record",
                 "optional": true,
                 "definition": {

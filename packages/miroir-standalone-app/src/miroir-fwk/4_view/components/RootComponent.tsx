@@ -297,7 +297,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         queryParams: {},
                         // contextResults: { elementType: "object", elementValue: {} },
                         contextResults: {},
-                        extractors: {
+                        extractorTemplates: {
                           [subQueryName]: {
                             queryType: "queryTemplateExtractObjectListByEntity",
                             applicationSection: "data",
@@ -552,7 +552,7 @@ export const RootComponent = (props: RootComponentProps) => {
                           elementType: "object",
                           elementValue: {}
                         },
-                        extractors: {
+                        extractorTemplates: {
                           "select": {
                             "authors": {
                               "queryType": "queryTemplateExtractObjectListByEntity",

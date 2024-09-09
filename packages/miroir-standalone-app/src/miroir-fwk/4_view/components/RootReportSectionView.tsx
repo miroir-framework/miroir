@@ -23,7 +23,7 @@ import {
 
 
 
-import { useDeploymentEntityStateJzodSchemaSelector, useDeploymentEntityStateQuerySelector } from '../ReduxHooks.js';
+import { useDeploymentEntityStateJzodSchemaSelector, useDeploymentEntityStateQueryTemplateSelector } from '../ReduxHooks.js';
 import { ReportSectionView } from './ReportSectionView.js';
 import { ReportUrlParamKeys } from '../routes/ReportPage.js';
 
@@ -90,14 +90,10 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
             {
               queryType: "extractorTemplateForRecordOfExtractors",
               deploymentUuid: props.pageParams.deploymentUuid,
-              // applicationSection: props.applicationSection,
-              // pageParams: paramsAsdomainElements,
               pageParams: props.pageParams,
               queryParams: {},
               contextResults: {},
-              extractors: props.rootReportSection.extractors,
-              // combiners: props.rootReportSection.combiners,
-              // runtimeTransformers: {...props.rootReportSection.combiners,...props.rootReportSection.runtimeTransformers},
+              extractorTemplates: props.rootReportSection.extractorTemplates,
               combiners: props.rootReportSection.combiners,
               runtimeTransformers: props.rootReportSection.runtimeTransformers,
             },
@@ -111,7 +107,7 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
               pageParams: paramsAsdomainElements,
               queryParams: {},
               contextResults: {},
-              extractors: { },
+              extractorTemplates: { },
             },
             deploymentEntityStateSelectorMap
           ),
@@ -124,7 +120,7 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
   // //   props.reportSection?.extractors,
   // // )
 
-  const deploymentEntityStateQueryResults: DomainElementObjectOrFailed = useDeploymentEntityStateQuerySelector(
+  const deploymentEntityStateQueryResults: DomainElementObjectOrFailed = useDeploymentEntityStateQueryTemplateSelector(
     deploymentEntityStateSelectorMap.extractWithManyExtractorTemplates,
     deploymentEntityStateFetchQueryParams
   );
@@ -169,7 +165,7 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
               queryParams: {},
               contextResults: {},
               // fetchParams: deploymentEntityStateFetchQueryParams.query,
-              fetchParams: deploymentEntityStateFetchQueryParams.extractor,
+              fetchParams: deploymentEntityStateFetchQueryParams.extractorTemplate,
             }
           : // dummy query
             {
@@ -194,7 +190,7 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
                 pageParams: paramsAsdomainElements,
                 queryParams: {},
                 contextResults: {},
-                extractors: {},
+                extractorTemplates: {},
               },
             },
     }),
@@ -213,10 +209,8 @@ export const RootReportSectionView = (props: RootReportSectionEntityInstanceProp
     fetchedDataJzodSchema,
     "fetchedDataJzodSchemaParams",
     fetchedDataJzodSchemaParams,
-    "props.reportSection?.extractors",
-    props.rootReportSection?.extractors,
-    "props.reportSection?.extractors",
-    props.rootReportSection?.extractors,
+    "props.reportSection?.extractorTemplates",
+    props.rootReportSection?.extractorTemplates,
     "props.reportSection?.combiners",
     props.rootReportSection?.combiners,
     "props.reportSection?.runtimeTransformers",

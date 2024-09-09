@@ -9,7 +9,7 @@
   "type": "list",
   "definition": {
     "reportParameters": {},
-    "extractors": {
+    "extractorTemplates": {
       "publishers": {
         "queryType": "queryTemplateExtractObjectListByEntity",
         "parentName": "Publisher",

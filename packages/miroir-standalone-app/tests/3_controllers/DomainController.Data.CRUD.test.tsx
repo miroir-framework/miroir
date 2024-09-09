@@ -202,17 +202,6 @@ describe.sequential('DomainController.Data.CRUD',
               }
             ],
             reportBookList as Report,
-            // [
-            //   author1,
-            //   author2,
-            //   author3 as EntityInstance,
-            // ],
-            // [
-            //   book1 as EntityInstance,
-            //   book2 as EntityInstance,
-            //   // book3 as EntityInstance,
-            //   book4 as EntityInstance,
-            // ],
             act,
           );
 

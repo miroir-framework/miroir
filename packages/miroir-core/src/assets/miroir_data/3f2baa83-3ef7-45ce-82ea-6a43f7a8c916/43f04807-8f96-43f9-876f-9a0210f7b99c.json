@@ -7,7 +7,7 @@
   "defaultLabel": "Store-based Configurations",
   "definition": {
     "reportParameters": {},
-    "extractors": {
+    "extractorTemplates": {
       "storeBasedConfigurations": {
         "queryType": "queryTemplateExtractObjectListByEntity",
         "parentName": "StoreBasedConfiguration",
