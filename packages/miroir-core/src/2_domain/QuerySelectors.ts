@@ -350,14 +350,6 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
               )
             )
           }
-        // }
-        // Object.fromEntries(
-        //     Object.entries(selectedInstancesUuidIndex.elementValue).filter((i: [string, EntityInstance]) =>
-        //       (selectorParams as any).extractor.select.filter.value.match(
-        //         (i as any)[1][(selectorParams as any).extractor.select.filter.attributeName]
-        //       )
-        //     )
-        //   )
         : selectedInstancesUuidIndex;
       ;
       log.info(
@@ -370,6 +362,21 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
     case "selectObjectListByRelation": {
       const relationQuery: QuerySelectObjectListByRelation = extractor.select;
 
+      let otherIndex:string | undefined = undefined
+      if (
+        extractor.contextResults[relationQuery.objectReference]
+      ) {
+        otherIndex = ((extractor.contextResults[
+          relationQuery.objectReference
+        ] as any) ?? {})[relationQuery.objectReferenceAttribute ?? "uuid"];
+      // } else if (relationQuery.objectReference?.queryTemplateType == "constantUuid") {
+      } else {
+        log.error(
+          "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation could not find objectReference, selectedInstances elementType=" +
+            selectedInstancesUuidIndex.elementType
+        );
+      }
+
       // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation", JSON.stringify(selectedInstances))
       // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation", selectedInstances)
       return { "elementType": "instanceUuidIndex", "elementValue": Object.fromEntries(
@@ -377,23 +384,9 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
           (i: [string, EntityInstance]) => {
             const localIndex = relationQuery.AttributeOfListObjectToCompareToReferenceUuid ?? "dummy";
 
-            // let otherIndex = undefined
-            // if (
-            //   relationQuery.objectReference?.queryTemplateType == "queryContextReference" &&
-            //   // extractor.contextResults?.elementType == "object" &&
-            //   // extractor.contextResults.elementValue &&
-            //   // extractor.contextResults.elementValue[relationQuery.objectReference.referenceName ?? ""]
-            //   extractor.contextResults[relationQuery.objectReference.referenceName ?? ""]
-            // ) {
-            //   otherIndex = ((extractor.contextResults[
-            //     relationQuery.objectReference.referenceName
-            //   ] as any) ?? {})[relationQuery.objectReferenceAttribute ?? "uuid"];
-            // } else if (relationQuery.objectReference?.queryTemplateType == "constantUuid") {
-            //   otherIndex = relationQuery.objectReference?.constantUuidValue;
-            // }
 
             // TODO: allow for runtime reference, with runtime trnasformer reference
-            return (i[1] as any)[localIndex] === relationQuery.objectReference
+            return (i[1] as any)[localIndex] === otherIndex
           }
         )
       )} as DomainElementInstanceUuidIndex;

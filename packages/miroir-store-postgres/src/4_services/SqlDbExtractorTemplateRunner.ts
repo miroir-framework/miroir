@@ -334,13 +334,15 @@ export class SqlDbExtractTemplateRunner {
         );
 
         if (
-          !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid ||
-          referenceObject.elementType != "instance"
+          !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
+          // ||
+          // referenceObject.elementType != "instance"
         ) {
           return {
             elementType: "failure",
             elementValue: {
               queryFailure: "IncorrectParameters",
+              failureMessage: "AttributeOfObjectToCompareToReferenceUuid attribute not found on query: " + JSON.stringify(querySelectorParams, null, 2),
               queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
               queryContext: JSON.stringify(selectorParams.extractor.contextResults),
             },

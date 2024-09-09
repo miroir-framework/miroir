@@ -12,6 +12,6 @@ export function ignorePostgresExtraAttributesOnList(instances: EntityInstance[],
 
 // ################################################################################################
 export function ignorePostgresExtraAttributesOnObject(instance: EntityInstance, furtherIgnore: string[] = []){
-  const ignore = ["createdAt", "updatedAt", "author", ...furtherIgnore]
+  const ignore = ["createdAt", "updatedAt", ...furtherIgnore]
   return Object.fromEntries(Object.entries(instance).filter(e=>!ignore.includes(e[0])))
 }

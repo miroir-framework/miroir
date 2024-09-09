@@ -473,7 +473,7 @@ export const asyncExtractWithManyExtractorTemplates = async (
   selectorParams: AsyncExtractorTemplateRunnerParams<ExtractorTemplateForRecordOfExtractors>,
 ): Promise<DomainElementObject> => {
 
-  // log.info("########## asyncExtractWithManyExtractorTemplates begin, query", selectorParams);
+  log.info("########## asyncExtractWithManyExtractorTemplates begin, query", JSON.stringify(selectorParams, null, 2));
 
 
   // const context: DomainElementObject = {
@@ -518,20 +518,15 @@ export const asyncExtractWithManyExtractorTemplates = async (
   //   });
   //   return context;
   // });
-
+  log.info("########## asyncExtractWithManyExtractorTemplates combiners", JSON.stringify(selectorParams.extractor.combiners));
   const combinerPromises = Object.entries(selectorParams.extractor.combiners ?? {})
   .map((query: [string, QueryTemplate]) => {
     return asyncInnerSelectElementFromQueryTemplate(
       context,
       selectorParams.extractor.pageParams,
       {
-        // elementType: "object",
-        // elementValue: {
-          ...selectorParams.extractor.pageParams,
-          ...selectorParams.extractor.queryParams,
-          // ...selectorParams.extractor.pageParams.elementValue,
-          // ...selectorParams.extractor.queryParams.elementValue,
-      //   },
+        ...selectorParams.extractor.pageParams,
+        ...selectorParams.extractor.queryParams,
       },
       localSelectorMap as any,
       selectorParams.extractor.deploymentUuid,
@@ -557,7 +552,7 @@ export const asyncExtractWithManyExtractorTemplates = async (
   //   return context;
   // });
 
-
+  log.info("########## asyncExtractWithManyExtractorTemplates runtimeTransformers", JSON.stringify(selectorParams.extractor.runtimeTransformers));
   for (const transformer of Object.entries(selectorParams.extractor.runtimeTransformers ?? {})) {
     // const result = await promise;
     const result = await localSelectorMap.applyExtractorTransformer(transformer[1], {

@@ -112,24 +112,30 @@ beforeEach(
       localCache,
       miroirConfig,
       adminConfigurationDeploymentLibrary,
-      entityAuthor as MetaEntity,
-      entityBook as MetaEntity,
-      entityDefinitionAuthor as EntityDefinition,
-      entityDefinitionBook as EntityDefinition,
-      reportBookList as Report,
       [
-        author1,
-        author2,
-        author3 as EntityInstance,
+        {
+          entity: entityAuthor as MetaEntity,
+          entityDefinition: entityDefinitionAuthor as EntityDefinition,
+          instances: [
+            author1,
+            author2,
+            author3 as EntityInstance,
+          ]
+        },
+        {
+          entity: entityBook as MetaEntity,
+          entityDefinition: entityDefinitionBook as EntityDefinition,
+          instances: [
+            book1 as EntityInstance,
+            book2 as EntityInstance,
+            book3 as EntityInstance,
+            book4 as EntityInstance,
+            book5 as EntityInstance,
+            book6 as EntityInstance,
+          ]
+        }
       ],
-      [
-        book1 as EntityInstance,
-        book2 as EntityInstance,
-        book3 as EntityInstance,
-        book4 as EntityInstance,
-        book5 as EntityInstance,
-        book6 as EntityInstance,
-      ]
+      reportBookList as Report,
     )
   }
 )
@@ -200,7 +206,7 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;// == "ok" ? queryResult : {status: "error", error: queryResult.error};
       },
-      (a) => ignorePostgresExtraAttributesOnRecord((a as any).returnedDomainElement.elementValue.entities),
+      (a) => ignorePostgresExtraAttributesOnRecord((a as any).returnedDomainElement.elementValue.entities, ["author"]),
       // (a) => (a as any).returnedDomainElement.elementValue.entities.elementValue,
       // undefined, // expected result transformation
       undefined, // name to give to result
@@ -371,7 +377,7 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      (a) => ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement.elementValue),
+      (a) => ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement.elementValue, ["author"]),
       // undefined, // expected result transformation
       undefined, // name to give to result
       "instance",
@@ -433,7 +439,7 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      (a) => ignorePostgresExtraAttributesOnRecord((a as any).returnedDomainElement.elementValue.entities),
+      (a) => ignorePostgresExtraAttributesOnRecord((a as any).returnedDomainElement.elementValue.entities, ["author"]),
       undefined, // name to give to result
       "object",
       {
@@ -692,8 +698,8 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
                         constantUuidValue: "name",
                       },
                       attributeValue: {
-                        templateType: "mustacheStringTemplate",
                         interpolation: "runtime",
+                        templateType: "mustacheStringTemplate",
                         definition: "{{book.name}}",
                       },
                     },
@@ -741,6 +747,90 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
           name: "The Design of Everyday Things",
         },
       ]
+    );
+  });
+
+  // ################################################################################################
+  it("get books of an author with combiner", async () => {
+    await chainVitestSteps(
+      "ExtractorTemplatePersistenceStoreRunner_getBooksOfAuthorWithCombiner",
+      {},
+      async () => {
+        const applicationSection: ApplicationSection = "data";
+        const queryResult = await localAppPersistenceStoreController.handleQuery({
+          actionType: "queryAction",
+          actionName: "runQuery",
+          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+          applicationSection: applicationSection,
+          query: {
+            queryType: "extractorForRecordOfExtractors",
+            pageParams: {},
+            queryParams: {
+              // instanceUuid: "c6852e89-3c3c-447f-b827-4b5b9d830975",
+            },
+            contextResults: {},
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+            extractors: {
+              book: {
+                queryType: "selectObjectByDirectReference",
+                parentName: "Book",
+                parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                instanceUuid: "c6852e89-3c3c-447f-b827-4b5b9d830975",
+              },
+            },
+            combiners: {
+              author: {
+                queryType: "selectObjectByRelation",
+                parentName: "Author",
+                parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                objectReference: "book",
+                AttributeOfObjectToCompareToReferenceUuid: "author",
+              },
+              booksOfAuthor: {
+                queryType: "selectObjectListByRelation",
+                parentName: "Book",
+                parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                objectReference: "author",
+                AttributeOfListObjectToCompareToReferenceUuid: "author",
+              },
+            },
+          },
+        });
+        console.log("queryResult", JSON.stringify(queryResult, null, 2));
+        return queryResult;
+      },
+      // (a) => (a as any).returnedDomainElement.elementValue.booksOfAuthor,
+      (a) => {
+        console.log("ICI!!!");
+        const result = ignorePostgresExtraAttributesOnRecord(
+          (a as any).returnedDomainElement.elementValue.booksOfAuthor
+        );
+        console.log("CORRECTED result", JSON.stringify(result, null, 2));
+        return result;
+      },
+      undefined, // name to give to result
+      "object", // must equal a.returnedDomainElement.elementType
+      {
+        "c6852e89-3c3c-447f-b827-4b5b9d830975": {
+          author: "ce7b601d-be5f-4bc6-a5af-14091594046a",
+          conceptLevel: "Data",
+          name: "Le Pain et le Cirque",
+          parentName: "Book",
+          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          publisher: "516a7366-39e7-4998-82cb-80199a7fa667",
+          uuid: "c6852e89-3c3c-447f-b827-4b5b9d830975",
+        },
+        "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": {
+          author: "ce7b601d-be5f-4bc6-a5af-14091594046a",
+          conceptLevel: "Data",
+          name: "Et dans l'éternité je ne m'ennuierai pas",
+          parentName: "Book",
+          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          publisher: "516a7366-39e7-4998-82cb-80199a7fa667",
+          uuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+        },
+      }
     );
   });
   

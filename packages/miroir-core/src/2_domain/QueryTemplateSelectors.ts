@@ -286,6 +286,11 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
   selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed,
   extractor: ExtractorTemplateForSingleObjectList,
 ) => {
+  log.info(
+    "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectedInstancesUuidIndex",
+    selectedInstancesUuidIndex,
+    JSON.stringify(extractor, undefined, 2)
+  );
   switch (extractor.select.queryType) {
     case "queryTemplateExtractObjectListByEntity": {
       const localQuery: QueryTemplateExtractObjectListByEntity = extractor.select;
@@ -337,8 +342,9 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
 
       // log.info("applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation", JSON.stringify(selectedInstances))
       // log.info("applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation", selectedInstances)
-      return { "elementType": "instanceUuidIndex", "elementValue": Object.fromEntries(
+      const result = { "elementType": "instanceUuidIndex", "elementValue": Object.fromEntries(
         Object.entries(selectedInstancesUuidIndex.elementValue ?? {}).filter(
+        // Object.entries(selectedInstancesUuidIndex.elementValue ?? {}).filter(
           (i: [string, EntityInstance]) => {
             const localIndex = relationQuery.AttributeOfListObjectToCompareToReferenceUuid ?? "dummy";
 
@@ -357,11 +363,22 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
               otherIndex = relationQuery.objectReference?.constantUuidValue;
             }
 
-
+            log.info(
+              "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation",
+              (i[1] as any).name,
+              (i[1] as any)[localIndex] === otherIndex,
+              "localIndex",
+              (i[1] as any)[localIndex],
+              "otherIndex",
+              otherIndex
+            );
             return (i[1] as any)[localIndex] === otherIndex
           }
         )
       )} as DomainElementInstanceUuidIndex;
+      log.info("applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation query", relationQuery)
+      log.info("applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation result", result)
+      return result;
     }
     case "selectObjectListByManyToManyRelation": {
       // const relationQuery: QueryTemplateSelectObjectListByManyToManyRelation = query;

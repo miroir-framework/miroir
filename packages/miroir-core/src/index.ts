@@ -879,6 +879,10 @@ import Country2 from "./assets/library_data/d3139a6d-0486-4ec8-bded-2a83a3c3cee4
 import Country3 from "./assets/library_data/d3139a6d-0486-4ec8-bded-2a83a3c3cee4/b62fc20b-dcf5-4e3b-a247-62d0475cf60f.json";
 import Country4 from "./assets/library_data/d3139a6d-0486-4ec8-bded-2a83a3c3cee4/b6ddfb89-4301-48bf-9ed9-4ed6ee9261fe.json";
 
+import publisher1 from "./assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/1f550a2a-33f5-4a56-83ee-302701039494.json";
+import publisher2 from "./assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/516a7366-39e7-4998-82cb-80199a7fa667.json";
+import publisher3 from "./assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/c1c97d54-aba8-4599-883a-7fe8f3874095.json";
+
 export {
   entityPublisher,
   entityAuthor,
@@ -925,6 +929,9 @@ export {
   Country2,
   Country3,
   Country4,
+  publisher1,
+  publisher2,
+  publisher3,
 };
 
 

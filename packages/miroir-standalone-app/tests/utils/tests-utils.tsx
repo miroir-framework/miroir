@@ -49,7 +49,9 @@ import {
   EntityDefinition,
   MetaEntity,
   DomainAction,
-  InstanceAction
+  InstanceAction,
+  entityAuthor,
+  entityBook
 } from "miroir-core";
 import { LocalCache, PersistenceReduxSaga, ReduxStoreWithUndoRedo, RestPersistenceClientAndRestClient } from 'miroir-localcache-redux';
 import { createMswRestServer } from 'miroir-server-msw-stub';
@@ -197,35 +199,35 @@ export async function miroirIntegrationTestEnvironmentFactory(miroirConfig: Miro
 // ################################################################################################
 export async function addEntitiesAndInstancesForEmulatedServer(
   localAppPersistenceStoreController: PersistenceStoreControllerInterface,
-  entityAuthor: MetaEntity,
-  entityDefinitionAuthor: EntityDefinition,
-  entityBook: MetaEntity,
-  entityDefinitionBook: EntityDefinition,
+  entities: { entity: MetaEntity, entityDefinition: EntityDefinition, instances: EntityInstance[] }[],
   reportBookList: EntityInstance,
-  authorList: EntityInstance[],
-  bookList: EntityInstance[],
+  // authorList: EntityInstance[],
+  // bookList: EntityInstance[],
 ) {
-  await localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
-  await localAppPersistenceStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
+  for (const entity of entities) {
+    await localAppPersistenceStoreController.createEntity(entity.entity as MetaEntity, entity.entityDefinition as EntityDefinition);
+  }
   await localAppPersistenceStoreController?.upsertInstance('model', reportBookList as EntityInstance);
-  for (const author of authorList) {
-    await localAppPersistenceStoreController?.upsertInstance('data', author as EntityInstance);
+  for (const entityInstances of entities) {
+    for (const instance of entityInstances.instances) {
+      await localAppPersistenceStoreController?.upsertInstance('data', instance as EntityInstance);
+    }
   }
-  for (const book of bookList) {
-    await localAppPersistenceStoreController?.upsertInstance('data', book as EntityInstance);
-  }
+  // for (const author of authorList) {
+  //   await localAppPersistenceStoreController?.upsertInstance('data', author as EntityInstance);
+  // }
+  // for (const book of bookList) {
+  //   await localAppPersistenceStoreController?.upsertInstance('data', book as EntityInstance);
+  // }
 }
 
 export async function addEntitiesAndInstancesForRealServer(
   domainController: DomainControllerInterface,
   localCache: LocalCache,
   adminConfigurationDeploymentLibrary: EntityInstance,
-  entityAuthor: MetaEntity,
-  entityBook: MetaEntity,
-  entityDefinitionAuthor: EntityDefinition,
-  entityDefinitionBook: EntityDefinition,
-  authorList: EntityInstance[],
-  bookList: EntityInstance[],
+  entities: { entity: MetaEntity, entityDefinition: EntityDefinition, instances: EntityInstance[] }[],
+  // authorList: EntityInstance[],
+  // bookList: EntityInstance[],
   act?: unknown,
 ) {
   const createAction: DomainAction = {
@@ -233,10 +235,7 @@ export async function addEntitiesAndInstancesForRealServer(
     actionName: "createEntity",
     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-    entities: [
-      { entity: entityAuthor as MetaEntity, entityDefinition: entityDefinitionAuthor as EntityDefinition },
-      { entity: entityBook as MetaEntity, entityDefinition: entityDefinitionBook as EntityDefinition },
-    ],
+    entities: entities
   };
 
   if (act) {
@@ -271,20 +270,14 @@ export async function addEntitiesAndInstancesForRealServer(
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
     applicationSection: "data",
     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-    objects: [
-      {
-        parentName: entityAuthor.name,
-        parentUuid: entityAuthor.uuid,
+    objects: entities.map((e) => {
+      return {
+        parentName: e.entity.name,
+        parentUuid: e.entity.uuid,
         applicationSection: "data",
-        instances: authorList,
-      },
-      {
-        parentName: entityBook.name,
-        parentUuid: entityBook.uuid,
-        applicationSection: "data",
-        instances: bookList,
-      },
-    ],
+        instances: e.instances,
+      };
+    })
   };
 
   if (act) {
@@ -303,37 +296,32 @@ export async function addEntitiesAndInstances(
   localCache: LocalCache,
   miroirConfig: MiroirConfigClient,
   adminConfigurationDeploymentLibrary: EntityInstance,
-  entityAuthor: MetaEntity,
-  entityBook: MetaEntity,
-  entityDefinitionAuthor: EntityDefinition,
-  entityDefinitionBook: EntityDefinition,
+  entities: { entity: MetaEntity, entityDefinition: EntityDefinition, instances: EntityInstance[] }[],
+  // entityAuthor: MetaEntity,
+  // entityBook: MetaEntity,
+  // entityDefinitionAuthor: EntityDefinition,
+  // entityDefinitionBook: EntityDefinition,
   reportBookList: EntityInstance,
-  authorList: EntityInstance[],
-  bookList: EntityInstance[],
+  // authorList: EntityInstance[],
+  // bookList: EntityInstance[],
   act?: unknown,
 ) {
   if (miroirConfig.client.emulateServer) {
     await addEntitiesAndInstancesForEmulatedServer(
       localAppPersistenceStoreController,
-      entityAuthor,
-      entityDefinitionAuthor,
-      entityBook,
-      entityDefinitionBook,
+      entities,
       reportBookList,
-      authorList,
-      bookList,
+      // authorList,
+      // bookList,
     );
   } else {
     await addEntitiesAndInstancesForRealServer(
       domainController,
       localCache,
       adminConfigurationDeploymentLibrary,
-      entityAuthor,
-      entityBook,
-      entityDefinitionAuthor,
-      entityDefinitionBook,
-      authorList,
-      bookList,
+      entities,
+      // authorList,
+      // bookList,
       act,
     );
   }

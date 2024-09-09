@@ -180,22 +180,39 @@ describe.sequential('DomainController.Data.CRUD',
             localCache,
             miroirConfig,
             adminConfigurationDeploymentLibrary,
-            entityAuthor as MetaEntity,
-            entityBook as MetaEntity,
-            entityDefinitionAuthor as EntityDefinition,
-            entityDefinitionBook as EntityDefinition,
+            [
+              {
+                entity: entityAuthor as MetaEntity,
+                entityDefinition: entityDefinitionAuthor as EntityDefinition,
+                instances: [
+                  author1,
+                  author2,
+                  author3 as EntityInstance,
+                ],
+              },
+              {
+                entity: entityBook as MetaEntity,
+                entityDefinition: entityDefinitionBook as EntityDefinition,
+                instances: [
+                  book1 as EntityInstance,
+                  book2 as EntityInstance,
+                  // book3 as EntityInstance,
+                  book4 as EntityInstance,
+                ]
+              }
+            ],
             reportBookList as Report,
-            [
-              author1,
-              author2,
-              author3 as EntityInstance,
-            ],
-            [
-              book1 as EntityInstance,
-              book2 as EntityInstance,
-              // book3 as EntityInstance,
-              book4 as EntityInstance,
-            ],
+            // [
+            //   author1,
+            //   author2,
+            //   author3 as EntityInstance,
+            // ],
+            // [
+            //   book1 as EntityInstance,
+            //   book2 as EntityInstance,
+            //   // book3 as EntityInstance,
+            //   book4 as EntityInstance,
+            // ],
             act,
           );
 
@@ -340,22 +357,28 @@ describe.sequential('DomainController.Data.CRUD',
             localCache,
             miroirConfig,
             adminConfigurationDeploymentLibrary,
-            entityAuthor as MetaEntity,
-            entityBook as MetaEntity,
-            entityDefinitionAuthor as EntityDefinition,
-            entityDefinitionBook as EntityDefinition,
+            [
+              {
+                entity: entityAuthor as MetaEntity,
+                entityDefinition: entityDefinitionAuthor as EntityDefinition,
+                instances: [
+                  author1,
+                  author2,
+                  author3 as EntityInstance,
+                ],
+              },
+              {
+                entity: entityBook as MetaEntity,
+                entityDefinition: entityDefinitionBook as EntityDefinition,
+                instances: [
+                  book1 as EntityInstance,
+                  book2 as EntityInstance,
+                  book3 as EntityInstance,
+                  book4 as EntityInstance,
+                ]
+              }
+            ],
             reportBookList as Report,
-            [
-              author1,
-              author2,
-              author3 as EntityInstance,
-            ],
-            [
-              book1 as EntityInstance,
-              book2 as EntityInstance,
-              book3 as EntityInstance,
-              book4 as EntityInstance,
-            ],
             act,
           );
 

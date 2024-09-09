@@ -334,13 +334,18 @@ export class SqlDbExtractRunner {
         );
 
         if (
-          !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid ||
-          referenceObject.elementType != "instance"
+          !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
+          ||
+          referenceObject.elementType == "failure"
         ) {
           return {
             elementType: "failure",
             elementValue: {
               queryFailure: "IncorrectParameters",
+              failureMessage:
+                "sqlDbExtractorRunner selectObjectByRelation objectReference not found:" +
+                JSON.stringify(querySelectorParams.objectReference),
+              query: JSON.stringify(querySelectorParams),
               queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
               queryContext: JSON.stringify(selectorParams.extractor.contextResults),
             },
@@ -348,7 +353,6 @@ export class SqlDbExtractRunner {
         }
 
         const result = await this.persistenceStoreController.getInstance(
-          // applicationSection,
           entityUuidReference,
           (referenceObject.elementValue as any)[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
         );
@@ -372,9 +376,9 @@ export class SqlDbExtractRunner {
         //   "######### referenceObject",
         //   referenceObject,
         //   "######### queryParams",
-        //   JSON.stringify(selectorParams.query.queryParams, undefined, 2),
+        //   JSON.stringify(selectorParams.extractor.queryParams, undefined, 2),
         //   "######### contextResults",
-        //   JSON.stringify(selectorParams.query.contextResults, undefined, 2)
+        //   JSON.stringify(selectorParams.extractor.contextResults, undefined, 2)
         // );
         return {
           elementType: "instance",
