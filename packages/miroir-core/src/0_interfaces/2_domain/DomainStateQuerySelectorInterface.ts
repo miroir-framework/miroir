@@ -1,5 +1,5 @@
 import {
-  DomainModelQueryJzodSchemaParams,
+  DomainModelQueryTemplateJzodSchemaParams,
   JzodElement,
   JzodObject,
   ExtractorTemplateForDomainModel
@@ -24,14 +24,14 @@ export type RecordOfJzodObject = Record<string, JzodObject | undefined>;
 
 
 // ################################################################################################
-// export type DomainStateJzodSchemaSelector<Q extends DomainModelQueryJzodSchemaParams> = (
+// export type DomainStateJzodSchemaSelector<Q extends DomainModelQueryTemplateJzodSchemaParams> = (
 //   domainState: DomainState,
 //   params: DomainStateJzodSchemaSelectorParams<Q>
 // ) => RecordOfJzodElement | JzodElement | undefined;
 
-// export type DomainStateJzodSchemaSelectorMap = {[k:string]: DomainStateJzodSchemaSelector<DomainModelQueryJzodSchemaParams>};
+// export type DomainStateJzodSchemaSelectorMap = {[k:string]: DomainStateJzodSchemaSelector<DomainModelQueryTemplateJzodSchemaParams>};
 
-// export interface DomainStateJzodSchemaSelectorParams<Q extends DomainModelQueryJzodSchemaParams> {
+// export interface DomainStateJzodSchemaSelectorParams<Q extends DomainModelQueryTemplateJzodSchemaParams> {
 //   extractorRunnerMap: DomainStateJzodSchemaSelectorMap
 //   query: Q
 // }

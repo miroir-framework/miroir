@@ -1,31 +1,23 @@
 import {
   ApplicationSection,
-  DomainElement,
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
   DomainModelGetEntityDefinitionExtractor,
-  ExtractorTemplateForSingleObjectList,
-  ExtractorTemplateForSingleObject,
   EntityDefinition,
-  JzodObject,
-  ExtractorTemplateForDomainModel,
-  QueryTemplateSelectObject,
-  ExtractorForSingleObject,
-  QuerySelectObject,
-  ExtractorForSingleObjectList,
   ExtractorForDomainModel,
+  ExtractorForSingleObject,
+  ExtractorForSingleObjectList,
+  JzodObject,
+  QuerySelectObject
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface.js";
 import {
   ExtractorRunnerMapForJzodSchema,
   ExtractorRunnerParamsForJzodSchema,
   SyncExtractorRunner,
   SyncExtractorRunnerMap,
-  SyncExtractorRunnerParams,
-  SyncExtractorTemplateRunner,
-  SyncExtractorTemplateRunnerMap,
-  SyncExtractorTemplateRunnerParams,
+  SyncExtractorRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
-import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import entityEntityDefinition from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json";
@@ -33,16 +25,6 @@ import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
 import { getDeploymentEntityStateIndex } from "./DeploymentEntityState.js";
-import {
-  resolveContextReferenceDEFUNCT,
-  extractWithManyExtractorTemplates,
-  extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory,
-  // extractFetchQueryJzodSchema,
-  // extractJzodSchemaForDomainModelQuery,
-  // extractzodSchemaForSingleSelectQuery,
-  extractWithExtractorTemplate,
-  // resolveContextReference,
-} from "./QueryTemplateSelectors.js";
 import {
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractFetchQueryJzodSchema,

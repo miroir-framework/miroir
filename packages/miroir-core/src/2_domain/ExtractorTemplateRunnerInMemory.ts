@@ -1,44 +1,40 @@
 import {
-  QueryTemplateAction,
-  ActionReturnType,
-  DomainElement,
-  ExtractorTemplateForSingleObject,
-  DomainElementEntityInstanceOrFailed,
-  QueryTemplateSelectObject,
-  ApplicationSection,
-  ExtractorTemplateForSingleObjectList,
-  DomainElementInstanceUuidIndexOrFailed,
   ActionEntityInstanceCollectionReturnType,
+  ActionReturnType,
+  ApplicationSection,
+  DomainElement,
+  DomainElementEntityInstanceOrFailed,
+  DomainElementInstanceUuidIndexOrFailed,
+  ExtractorTemplateForSingleObject,
+  ExtractorTemplateForSingleObjectList,
+  QueryTemplateAction,
+  QueryTemplateSelectObject,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import {
-  ExtractorTemplatePersistenceStoreRunner,
-  AsyncExtractorTemplateRunnerMap,
   AsyncExtractorTemplateRunner,
+  AsyncExtractorTemplateRunnerMap,
   AsyncExtractorTemplateRunnerParams,
-  ExtractorRunnerMapForJzodSchema,
+  ExtractorTemplatePersistenceStoreRunner,
+  ExtractorTemplateRunnerMapForJzodSchema,
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { PersistenceStoreInstanceSectionAbstractInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
-import { cleanLevel } from "./constants.js";
 import {
-  selectJzodSchemaByDomainModelQueryFromDomainStateNew,
-  selectEntityJzodSchemaFromDomainStateNew,
-  selectFetchQueryJzodSchemaFromDomainStateNew,
-  selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
-} from "./DomainStateQuerySelectors.js";
-import {
-  resolveContextReference,
-} from "./QueryTemplateSelectors.js";
-import {
-  asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate,
-  asyncExtractWithManyExtractorTemplates,
-  asyncExtractWithExtractorTemplate,
   asyncApplyExtractorTemplateTransformerInMemory,
+  asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate,
+  asyncExtractWithExtractorTemplate,
+  asyncExtractWithManyExtractorTemplates,
 } from "./AsyncQueryTemplateSelectors.js";
+import { cleanLevel } from "./constants.js";
+import { selectEntityJzodSchemaFromDomainStateNewForTemplate, selectFetchQueryJzodSchemaFromDomainStateNewForTemplate, selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate, selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate } from "./DomainStateQueryTemplateSelector.js";
+import {
+  extractzodSchemaForSingleSelectQueryTemplate,
+  resolveContextReference
+} from "./QueryTemplateSelectors.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "ExtractorTemplateRunnerInMemory");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -415,11 +411,11 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
 // ##############################################################################################
 // ##############################################################################################
 // ##############################################################################################
-export function getJzodSchemaSelectorMap(): ExtractorRunnerMapForJzodSchema<DomainState> {
+export function getJzodSchemaSelectorMap(): ExtractorTemplateRunnerMapForJzodSchema<DomainState> {
   return {
-    extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNew,
-    extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNew,
-    extractFetchQueryJzodSchema: selectFetchQueryJzodSchemaFromDomainStateNew,
-    extractzodSchemaForSingleSelectQuery: selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
+    extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
+    extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNewForTemplate,
+    extractFetchQueryJzodSchema: selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
+    extractzodSchemaForSingleSelectQuery: selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
   };
 }

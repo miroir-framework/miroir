@@ -8,39 +8,29 @@ import {
   DomainElementInstanceUuidIndexOrFailed,
   DomainElementObject,
   DomainModelGetEntityDefinitionExtractor,
-  DomainModelGetFetchParamJzodSchemaExtractor,
-  DomainModelGetSingleSelectQueryJzodSchemaExtractor,
+  DomainModelGetFetchParamJzodSchemaForExtractor,
+  DomainModelGetSingleSelectQueryJzodSchemaForExtractor,
   DomainModelQueryJzodSchemaParams,
   EntityInstance,
   ExtractorForDomainModelObjects,
   ExtractorForRecordOfExtractors,
   ExtractorForSingleObjectList,
-  ExtractorTemplateForDomainModelObjects,
-  ExtractorTemplateForRecordOfExtractors,
-  ExtractorTemplateForSingleObjectList,
   JzodElement,
   JzodObject,
   MiroirQuery,
   QueryExtractObjectListByEntity,
   QuerySelectObjectListByManyToManyRelation,
   QuerySelectObjectListByRelation,
-  QueryTemplate,
   QueryTemplateConstantOrAnyReference,
-  QueryTemplateExtractObjectListByEntity,
-  QueryTemplateSelectObjectListByManyToManyRelation,
-  QueryTemplateSelectObjectListByRelation,
   TransformerForRuntime
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   AsyncExtractorRunnerMap,
-  AsyncExtractorTemplateRunnerMap,
   ExtractorRunnerParamsForJzodSchema,
   RecordOfJzodElement,
   RecordOfJzodObject,
   SyncExtractorRunnerMap,
-  SyncExtractorRunnerParams,
-  SyncExtractorTemplateRunnerMap,
-  SyncExtractorTemplateRunnerParams
+  SyncExtractorRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
@@ -892,7 +882,7 @@ export const extractWithManyExtractors = <StateType>(
 // ################################################################################################
 export const extractzodSchemaForSingleSelectQuery = <StateType>(
   deploymentEntityState: StateType,
-  selectorParams: ExtractorRunnerParamsForJzodSchema<DomainModelGetSingleSelectQueryJzodSchemaExtractor, StateType>
+  selectorParams: ExtractorRunnerParamsForJzodSchema<DomainModelGetSingleSelectQueryJzodSchemaForExtractor, StateType>
 ): JzodObject | undefined => {
   if (
     selectorParams.query.select.queryType=="literal" ||
@@ -909,21 +899,22 @@ export const extractzodSchemaForSingleSelectQuery = <StateType>(
     );
   }
 
-  const entityUuidDomainElement: DomainElement = resolveContextReference(
-    selectorParams.query.select.parentUuid,
-    selectorParams.query.queryParams,
-    selectorParams.query.contextResults
-  );
+  const entityUuid = selectorParams.query.select.parentUuid
+  // const entityUuidDomainElement: DomainElement = resolveContextReference(
+  //   selectorParams.query.select.parentUuid,
+  //   selectorParams.query.queryParams,
+  //   selectorParams.query.contextResults
+  // );
   log.info(
     "extractzodSchemaForSingleSelectQuery called",
     selectorParams.query,
-    "found",
-    entityUuidDomainElement
+    "found entityUuid",
+    entityUuid
   );
 
-  if (typeof entityUuidDomainElement != "object" || entityUuidDomainElement.elementType != "instanceUuid") {
-    return undefined
-  }
+  // if (typeof entityUuidDomainElement != "object" || entityUuidDomainElement.elementType != "instanceUuid") {
+  //   return undefined
+  // }
 
   const result = selectorParams.extractorRunnerMap.extractEntityJzodSchema(deploymentEntityState, {
     extractorRunnerMap: selectorParams.extractorRunnerMap,
@@ -933,7 +924,7 @@ export const extractzodSchemaForSingleSelectQuery = <StateType>(
       pageParams: selectorParams.query.pageParams,
       queryParams: selectorParams.query.queryParams,
       deploymentUuid: selectorParams.query.deploymentUuid ?? "",
-      entityUuid: entityUuidDomainElement.elementValue,
+      entityUuid: entityUuid,
     },
   } as ExtractorRunnerParamsForJzodSchema<DomainModelGetEntityDefinitionExtractor,StateType>) as JzodObject | undefined
 
@@ -956,14 +947,14 @@ export const extractJzodSchemaForDomainModelQuery = <StateType>(
     case "getFetchParamsJzodSchema": {
       return selectorParams.extractorRunnerMap.extractFetchQueryJzodSchema(
         deploymentEntityState,
-        selectorParams as ExtractorRunnerParamsForJzodSchema<DomainModelGetFetchParamJzodSchemaExtractor, StateType>
+        selectorParams as ExtractorRunnerParamsForJzodSchema<DomainModelGetFetchParamJzodSchemaForExtractor, StateType>
       );
       break;
     }
     case "getSingleSelectQueryJzodSchema": {
       return selectorParams.extractorRunnerMap.extractzodSchemaForSingleSelectQuery(
         deploymentEntityState,
-        selectorParams as ExtractorRunnerParamsForJzodSchema<DomainModelGetSingleSelectQueryJzodSchemaExtractor, StateType>
+        selectorParams as ExtractorRunnerParamsForJzodSchema<DomainModelGetSingleSelectQueryJzodSchemaForExtractor, StateType>
       );
       break;
     }
@@ -983,14 +974,14 @@ export const extractJzodSchemaForDomainModelQuery = <StateType>(
  */
 export const extractFetchQueryJzodSchema = <StateType>(
   deploymentEntityState: StateType,
-  selectorParams: ExtractorRunnerParamsForJzodSchema<DomainModelGetFetchParamJzodSchemaExtractor, StateType>
+  selectorParams: ExtractorRunnerParamsForJzodSchema<DomainModelGetFetchParamJzodSchemaForExtractor, StateType>
 ):  RecordOfJzodObject | undefined => {
-  const localFetchParams: ExtractorTemplateForRecordOfExtractors = selectorParams.query.fetchParams
+  const localFetchParams: ExtractorForRecordOfExtractors = selectorParams.query.fetchParams
   // log.info("selectFetchQueryJzodSchemaFromDomainState called", selectorParams.query);
   
   const fetchQueryJzodSchema = Object.fromEntries(
     Object.entries(localFetchParams?.combiners??{})
-    .map((entry: [string, QueryTemplate]) => [
+    .map((entry: [string, MiroirQuery]) => [
       entry[0],
       selectorParams.extractorRunnerMap.extractzodSchemaForSingleSelectQuery(deploymentEntityState, {
         extractorRunnerMap:selectorParams.extractorRunnerMap,
@@ -1002,7 +993,7 @@ export const extractFetchQueryJzodSchema = <StateType>(
           queryParams: selectorParams.query.queryParams,
           select: entry[1],
         },
-      } as ExtractorRunnerParamsForJzodSchema<DomainModelGetSingleSelectQueryJzodSchemaExtractor, StateType>),
+      } as ExtractorRunnerParamsForJzodSchema<DomainModelGetSingleSelectQueryJzodSchemaForExtractor, StateType>),
     ])
   ) as RecordOfJzodObject;
 

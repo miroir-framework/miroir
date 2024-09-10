@@ -22,10 +22,12 @@ export {
   selectDeploymentEntityStateSelectorForQueryTemplateParams,
   selectDomainStateFromReduxState,
   selectMiroirSelectorQueryParams,
-  selectJzodSchemaSelectorParams,
+  selectJzodSchemaSelectorParamsForTemplate,
 
   applyDomainStateJzodSchemaSelector,
+  applyDeploymentEntityStateJzodSchemaSelectorTemplate,
   applyDeploymentEntityStateJzodSchemaSelector,
+  applyDeploymentEntityStateQuerySelectorForCleanedResult,
   applyDomainStateQueryTemplateSelector,
   applyDomainStateQuerySelectorForCleanedResult,
   selectDomainStateJzodSchemaSelectorParams,
@@ -51,6 +53,7 @@ export {
 } from "./4_services/localCache/localCacheReduxSliceInterface.js";
 export {
   getMemoizedDeploymentEntityStateSelectorForTemplateMap,
+  getMemoizedDeploymentEntityStateJzodSchemaSelectorTemplateMap,
 } from "./4_services/localCache/DomainStateMemoizedSelectorsForTemplate.js";
 export {
   getMemoizedDeploymentEntityStateJzodSchemaSelectorMap,

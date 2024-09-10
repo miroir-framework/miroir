@@ -7,9 +7,9 @@ import {
   DomainElementObjectOrFailed,
   ExtractorTemplateForDomainModel,
   DomainModelGetEntityDefinitionExtractor,
-  DomainModelGetFetchParamJzodSchemaExtractor,
-  DomainModelGetSingleSelectQueryJzodSchemaExtractor,
-  DomainModelQueryJzodSchemaParams,
+  DomainModelGetFetchParamJzodSchemaForExtractorTemplate,
+  DomainModelGetSingleSelectQueryJzodSchemaForExtractorTemplate,
+  DomainModelQueryTemplateJzodSchemaParams,
   ExtractorTemplateForRecordOfExtractors,
   ExtractorTemplateForSingleObject,
   ExtractorTemplateForSingleObjectList,
@@ -21,7 +21,10 @@ import {
   ExtractorForSingleObject,
   ExtractorForSingleObjectList,
   ExtractorForRecordOfExtractors,
-  QueryAction
+  QueryAction,
+  DomainModelGetFetchParamJzodSchemaForExtractor,
+  DomainModelGetSingleSelectQueryJzodSchemaForExtractor,
+  DomainModelQueryJzodSchemaParams
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
 // ################################################################################################
@@ -208,18 +211,39 @@ export interface ExtractorPersistenceStoreRunner {
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
+export type ExtractorTemplateRunnerMapForJzodSchema<StateType> = {
+  extractJzodSchemaForDomainModelQuery: JzodSchemaQueryTemplateSelector<DomainModelQueryTemplateJzodSchemaParams, StateType>,
+  extractEntityJzodSchema: JzodSchemaQueryTemplateSelector<DomainModelGetEntityDefinitionExtractor, StateType>,
+  extractFetchQueryJzodSchema: JzodSchemaQueryTemplateSelector<DomainModelGetFetchParamJzodSchemaForExtractorTemplate, StateType>,
+  extractzodSchemaForSingleSelectQuery: JzodSchemaQueryTemplateSelector<DomainModelGetSingleSelectQueryJzodSchemaForExtractorTemplate, StateType>,
+};
+
+
+// ################################################################################################
 export type ExtractorRunnerMapForJzodSchema<StateType> = {
   extractJzodSchemaForDomainModelQuery: JzodSchemaQuerySelector<DomainModelQueryJzodSchemaParams, StateType>,
   extractEntityJzodSchema: JzodSchemaQuerySelector<DomainModelGetEntityDefinitionExtractor, StateType>,
-  extractFetchQueryJzodSchema: JzodSchemaQuerySelector<DomainModelGetFetchParamJzodSchemaExtractor, StateType>,
-  extractzodSchemaForSingleSelectQuery: JzodSchemaQuerySelector<DomainModelGetSingleSelectQueryJzodSchemaExtractor, StateType>,
+  extractFetchQueryJzodSchema: JzodSchemaQuerySelector<DomainModelGetFetchParamJzodSchemaForExtractor, StateType>,
+  extractzodSchemaForSingleSelectQuery: JzodSchemaQuerySelector<DomainModelGetSingleSelectQueryJzodSchemaForExtractor, StateType>,
 };
+
+// ################################################################################################
+export interface ExtractorTemplateRunnerParamsForJzodSchema<QueryTemplateType extends DomainModelQueryTemplateJzodSchemaParams, StateType> {
+  extractorRunnerMap: ExtractorTemplateRunnerMapForJzodSchema<StateType>
+  query: QueryTemplateType
+}
 
 // ################################################################################################
 export interface ExtractorRunnerParamsForJzodSchema<QueryType extends DomainModelQueryJzodSchemaParams, StateType> {
   extractorRunnerMap: ExtractorRunnerMapForJzodSchema<StateType>
   query: QueryType
 }
+
+// ################################################################################################
+export type JzodSchemaQueryTemplateSelector<QueryTemplateType extends DomainModelQueryTemplateJzodSchemaParams, StateType> = (
+  domainState: StateType,
+  params: ExtractorTemplateRunnerParamsForJzodSchema<QueryTemplateType, StateType>
+) => RecordOfJzodElement | JzodElement | undefined;
 
 // ################################################################################################
 export type JzodSchemaQuerySelector<QueryType extends DomainModelQueryJzodSchemaParams, StateType> = (

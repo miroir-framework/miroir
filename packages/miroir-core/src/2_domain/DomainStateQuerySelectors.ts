@@ -6,23 +6,23 @@ import {
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
   DomainElementObject,
-  ExtractorTemplateForRecordOfExtractors,
   DomainModelGetEntityDefinitionExtractor,
-  DomainModelGetFetchParamJzodSchemaExtractor,
-  ExtractorTemplateForSingleObjectList,
-  ExtractorTemplateForSingleObject,
+  DomainModelGetFetchParamJzodSchemaForExtractorTemplate,
   EntityDefinition,
-  JzodObject,
   ExtractorTemplateForDomainModel,
-  QueryTemplateSelectObject,
   ExtractorTemplateForDomainModelObjects,
+  ExtractorTemplateForRecordOfExtractors,
+  ExtractorTemplateForSingleObject,
+  ExtractorTemplateForSingleObjectList,
+  JzodObject,
+  QueryTemplateSelectObject,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   ExtractorRunnerMapForJzodSchema,
   ExtractorRunnerParamsForJzodSchema,
   SyncExtractorTemplateRunner,
   SyncExtractorTemplateRunnerMap,
-  SyncExtractorTemplateRunnerParams,
+  SyncExtractorTemplateRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
@@ -31,23 +31,21 @@ import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
 import {
-  innerSelectElementFromQueryTemplate,
-  resolveContextReferenceDEFUNCT,
-  extractWithManyExtractorTemplates,
+  extractFetchQueryJzodSchema,
+  extractJzodSchemaForDomainModelQuery,
+  extractzodSchemaForSingleSelectQuery,
+} from "./QuerySelectors.js";
+import {
   extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory,
   // extractFetchQueryJzodSchema,
   // extractJzodSchemaForDomainModelQuery,
   // extractzodSchemaForSingleSelectQuery,
   // extractWithExtractorTemplate,
   extractWithExtractorTemplate,
-  resolveContextReference,
+  extractWithManyExtractorTemplates,
+  innerSelectElementFromQueryTemplate,
+  resolveContextReference
 } from "./QueryTemplateSelectors.js";
-import {
-  extractFetchQueryJzodSchema,
-  extractJzodSchemaForDomainModelQuery,
-  extractzodSchemaForSingleSelectQuery,
-} from "./QuerySelectors.js";
-import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "DomainSelector");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -66,7 +64,7 @@ export const dummyDomainManyQueriesWithDeploymentUuid: ExtractorTemplateForRecor
   runtimeTransformers: {},
 };
 
-export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: DomainModelGetFetchParamJzodSchemaExtractor = {
+export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: DomainModelGetFetchParamJzodSchemaForExtractorTemplate = {
   queryType: "getFetchParamsJzodSchema",
   deploymentUuid: "",
   pageParams: {

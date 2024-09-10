@@ -17,7 +17,7 @@ import {
   ExtractorTemplateForRecordOfExtractors,
   ExtractorTemplateForSingleObject,
   ExtractorTemplateForSingleObjectList,
-  ExtractorRunnerMapForJzodSchema,
+  ExtractorTemplateRunnerMapForJzodSchema,
   getLoggerName,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -29,7 +29,11 @@ import {
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
-  resolveContextReference
+  resolveContextReference,
+  selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
+  selectEntityJzodSchemaFromDomainStateNewForTemplate,
+  selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
+  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate
 } from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
@@ -677,11 +681,11 @@ export class SqlDbExtractTemplateRunner {
   }
 }
 
-export function getJzodSchemaSelectorMap(): ExtractorRunnerMapForJzodSchema<DomainState> {
+export function getJzodSchemaSelectorMap(): ExtractorTemplateRunnerMapForJzodSchema<DomainState> {
   return {
-    extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNew,
-    extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNew,
-    extractFetchQueryJzodSchema: selectFetchQueryJzodSchemaFromDomainStateNew,
-    extractzodSchemaForSingleSelectQuery: selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
+    extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
+    extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNewForTemplate,
+    extractFetchQueryJzodSchema: selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
+    extractzodSchemaForSingleSelectQuery: selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
   };
 }

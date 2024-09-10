@@ -1,10 +1,15 @@
 import { createSelector } from "@reduxjs/toolkit";
 import {
   DeploymentEntityState,
+  ExtractorTemplateRunnerMapForJzodSchema,
   SyncExtractorTemplateRunnerMap,
   extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory,
+  extractEntityJzodSchemaFromDeploymentEntityState,
+  extractFetchQueryJzodSchema,
+  extractJzodSchemaForDomainModelQuery,
   extractWithExtractorTemplate,
   extractWithManyExtractorTemplates,
+  extractzodSchemaForSingleSelectQuery,
   selectEntityInstanceFromDeploymentEntityStateForTemplate,
   selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate
 } from "miroir-core";
@@ -38,23 +43,23 @@ export function getMemoizedDeploymentEntityStateSelectorForTemplateMap(): SyncEx
   };
 }
 
-// export function getMemoizedDeploymentEntityStateJzodSchemaSelectorMap(): ExtractorRunnerMapForJzodSchema<DeploymentEntityState> {
-//   return {
-//     extractJzodSchemaForDomainModelQuery: createSelector(
-//       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-//       extractJzodSchemaForDomainModelQuery
-//     ),
-//     extractEntityJzodSchema: createSelector(
-//       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-//       extractEntityJzodSchemaFromDeploymentEntityState
-//     ),
-//     extractFetchQueryJzodSchema: createSelector(
-//       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-//       extractFetchQueryJzodSchema
-//     ),
-//     extractzodSchemaForSingleSelectQuery: createSelector(
-//       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-//       extractzodSchemaForSingleSelectQuery
-//     ),
-//   };
-// }
+export function getMemoizedDeploymentEntityStateJzodSchemaSelectorTemplateMap(): ExtractorTemplateRunnerMapForJzodSchema<DeploymentEntityState> {
+  return {
+    extractJzodSchemaForDomainModelQuery: createSelector(
+      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
+      extractJzodSchemaForDomainModelQuery
+    ),
+    extractEntityJzodSchema: createSelector(
+      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
+      extractEntityJzodSchemaFromDeploymentEntityState
+    ),
+    extractFetchQueryJzodSchema: createSelector(
+      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
+      extractFetchQueryJzodSchema
+    ),
+    extractzodSchemaForSingleSelectQuery: createSelector(
+      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
+      extractzodSchemaForSingleSelectQuery
+    ),
+  };
+}

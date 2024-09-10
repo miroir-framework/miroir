@@ -518,8 +518,8 @@ export const asyncExtractWithManyExtractorTemplates = async (
   //   });
   //   return context;
   // });
-  log.info("########## asyncExtractWithManyExtractorTemplates combiners", JSON.stringify(selectorParams.extractorTemplate.combiners));
-  const combinerPromises = Object.entries(selectorParams.extractorTemplate.combiners ?? {})
+  log.info("########## asyncExtractWithManyExtractorTemplates combinerTemplates", JSON.stringify(selectorParams.extractorTemplate.combinerTemplates));
+  const combinerPromises = Object.entries(selectorParams.extractorTemplate.combinerTemplates ?? {})
   .map((query: [string, QueryTemplate]) => {
     return asyncInnerSelectElementFromQueryTemplate(
       context,

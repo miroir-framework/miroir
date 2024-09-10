@@ -794,7 +794,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                 },
               },
             },
-            combiners: {
+            combinerTemplates: {
               author: {
                 queryType: "selectObjectByRelation",
                 parentName: "Author",

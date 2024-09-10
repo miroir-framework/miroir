@@ -6,13 +6,13 @@ import {
   ApplicationSection,
   DeploymentEntityState,
   DomainElement,
-  DomainModelQueryJzodSchemaParams,
+  DomainModelQueryTemplateJzodSchemaParams,
   DomainState,
   EntityInstance,
   EntityInstancesUuidIndex,
   JzodElement,
-  JzodSchemaQuerySelector,
-  ExtractorRunnerParamsForJzodSchema,
+  JzodSchemaQueryTemplateSelector,
+  ExtractorTemplateRunnerParamsForJzodSchema,
   LocalCacheExtractor,
   LoggerInterface,
   MetaModel,
@@ -27,11 +27,14 @@ import {
   JzodPlainAttribute,
   ExtractorForDomainModel,
   SyncExtractorRunner,
-  SyncExtractorRunnerParams
+  SyncExtractorRunnerParams,
+  DomainModelQueryJzodSchemaParams,
+  JzodSchemaQuerySelector,
+  ExtractorRunnerParamsForJzodSchema
 } from "miroir-core";
 import {
   ReduxStateWithUndoRedo,
-  applyDeploymentEntityStateJzodSchemaSelector,
+  applyDeploymentEntityStateJzodSchemaSelectorTemplate,
   applyDeploymentEntityStateQueryTemplateSelector,
   applyDeploymentEntityStateQueryTemplateSelectorForCleanedResult,
   applyDomainStateJzodSchemaSelector,
@@ -40,7 +43,8 @@ import {
   selectEntityInstanceUuidIndexFromLocalCache,
   selectInstanceArrayForDeploymentSectionEntity,
   selectModelForDeploymentFromReduxState,
-  applyDeploymentEntityStateQuerySelector
+  applyDeploymentEntityStateQuerySelector,
+  applyDeploymentEntityStateJzodSchemaSelector
 } from "miroir-localcache-redux";
 
 import { packageName } from "../../constants.js";
@@ -145,14 +149,30 @@ export function useDomainStateQueryTemplateSelectorForCleanedResult<QueryType ex
 }
 
 // ################################################################################################
-export function useDomainStateJzodSchemaSelector<QueryType extends DomainModelQueryJzodSchemaParams>(
-  domainStateSelector:JzodSchemaQuerySelector<QueryType, DomainState>,
-  selectorParams:ExtractorRunnerParamsForJzodSchema<QueryType, DomainState>,
-  customQueryInterpreter?: { [k: string]: (query:DomainModelQueryJzodSchemaParams) => RecordOfJzodElement | JzodElement | undefined }
+export function useDomainStateJzodSchemaSelector<QueryType extends DomainModelQueryTemplateJzodSchemaParams>(
+  domainStateSelector:JzodSchemaQueryTemplateSelector<QueryType, DomainState>,
+  selectorParams:ExtractorTemplateRunnerParamsForJzodSchema<QueryType, DomainState>,
+  customQueryInterpreter?: { [k: string]: (query:DomainModelQueryTemplateJzodSchemaParams) => RecordOfJzodElement | JzodElement | undefined }
 ): RecordOfJzodElement | JzodElement | undefined {
   const innerSelector = useMemo(
     () => {
       return applyDomainStateJzodSchemaSelector(domainStateSelector);
+    }, [domainStateSelector]);
+  const result: RecordOfJzodElement | JzodElement | undefined = useSelector((state: ReduxStateWithUndoRedo) =>
+    innerSelector(state, selectorParams)
+  );
+  return result
+}
+
+// ################################################################################################
+export function useDeploymentEntityStateJzodSchemaSelectorForTemplate<QueryTemplateType extends DomainModelQueryTemplateJzodSchemaParams>(
+  domainStateSelector:JzodSchemaQueryTemplateSelector<QueryTemplateType, DeploymentEntityState>,
+  selectorParams:ExtractorTemplateRunnerParamsForJzodSchema<QueryTemplateType, DeploymentEntityState>,
+  customQueryInterpreter?: { [k: string]: (query:DomainModelQueryTemplateJzodSchemaParams) => RecordOfJzodElement | JzodElement | undefined }
+): RecordOfJzodElement | JzodElement | undefined {
+  const innerSelector = useMemo(
+    () => {
+      return applyDeploymentEntityStateJzodSchemaSelectorTemplate(domainStateSelector);
     }, [domainStateSelector]);
   const result: RecordOfJzodElement | JzodElement | undefined = useSelector((state: ReduxStateWithUndoRedo) =>
     innerSelector(state, selectorParams)

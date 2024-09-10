@@ -18,6 +18,7 @@ import {
   ExtractorForSingleObject,
   ExtractorForSingleObjectList,
   ExtractorRunnerMapForJzodSchema,
+  ExtractorTemplateRunnerMapForJzodSchema,
   getLoggerName,
   LoggerInterface,
   MiroirLoggerFactory,

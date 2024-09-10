@@ -24,7 +24,7 @@ import {
 
 import { packageName } from '../../../constants.js';
 import { useCurrentModel } from '../ReduxHooks.js';
-import { RootReportSectionView } from '../components/RootReportSectionView.js';
+import { ReportView } from '../components/ReportView.js';
 import { cleanLevel } from '../constants.js';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportPage");
@@ -180,6 +180,7 @@ export const ReportPage = () => {
         type: "list",
         definition: {
           extractorTemplates: {},
+          // extractorTemplates: {},
           section: {
             type: "objectListReportSection",
             definition: {
@@ -285,12 +286,12 @@ export const ReportPage = () => {
                 deploymentUuid={pageParams.deploymentUuid}, applicationSection={pageParams.applicationSection},
                 reportUuid={pageParams.reportUuid}, instanceUuid={pageParams.instanceUuid}
               </div>
-              <RootReportSectionView
+              <ReportView
                 applicationSection={pageParams.applicationSection as ApplicationSection}
                 deploymentUuid={pageParams.deploymentUuid}
                 instanceUuid={pageParams.instanceUuid}
                 pageParams={pageParams}
-                rootReportSection={currentMiroirReport?.definition}
+                reportDefinition={currentMiroirReport?.definition}
               />
             </>
           ) : (

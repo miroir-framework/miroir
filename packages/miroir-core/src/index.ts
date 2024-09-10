@@ -37,12 +37,18 @@ export {
   extractorForRecordOfExtractors,
   DomainModelGetEntityDefinitionExtractor,
   domainModelGetEntityDefinitionExtractor,
-  DomainModelGetFetchParamJzodSchemaExtractor,
-  domainModelGetFetchParamJzodSchemaExtractor,
-  DomainModelGetSingleSelectQueryJzodSchemaExtractor,
-  domainModelGetSingleSelectQueryJzodSchemaExtractor,
+  DomainModelGetFetchParamJzodSchemaForExtractor,
+  domainModelGetFetchParamJzodSchemaForExtractor,
+  DomainModelGetFetchParamJzodSchemaForExtractorTemplate,
+  domainModelGetFetchParamJzodSchemaForExtractorTemplate,
+  DomainModelGetSingleSelectQueryJzodSchemaForExtractor,
+  domainModelGetSingleSelectQueryJzodSchemaForExtractor,
+  DomainModelGetSingleSelectQueryJzodSchemaForExtractorTemplate,
+  domainModelGetSingleSelectQueryJzodSchemaForExtractorTemplate,
   DomainModelQueryJzodSchemaParams,
   domainModelQueryJzodSchemaParams,
+  DomainModelQueryTemplateJzodSchemaParams,
+  domainModelQueryTemplateJzodSchemaParams,
   ExtractorTemplateForDomainModel,
   extractorTemplateForDomainModel,
   // ===
@@ -271,8 +277,8 @@ export {
   domainElementVoid,
   DomainElement,
   domainElement,
-  RootReportSection,
-  rootReportSection,
+  RootReport,
+  rootReport,
   ExtractorTemplateForSingleObject,
   extractorTemplateForSingleObject,
   ExtractorTemplateForSingleObjectList,
@@ -383,10 +389,10 @@ export {
   RecordOfJzodObject,
 } from './0_interfaces/2_domain/DomainStateQuerySelectorInterface.js';
 export {
-  JzodSchemaQuerySelector,
+  JzodSchemaQueryTemplateSelector,
   ExtractorTemplatePersistenceStoreRunner,
-  ExtractorRunnerMapForJzodSchema,
-  ExtractorRunnerParamsForJzodSchema,
+  ExtractorTemplateRunnerMapForJzodSchema,
+  ExtractorTemplateRunnerParamsForJzodSchema,
   AsyncExtractorTemplateRunner,
   AsyncExtractorTemplateRunnerMap,
   AsyncExtractorTemplateRunnerParams,
@@ -394,8 +400,11 @@ export {
   SyncExtractorTemplateRunnerMap,
   SyncExtractorTemplateRunnerParams,
   ExtractorPersistenceStoreRunner,
-  // ExtractorRunnerMapForJzodSchema,
-  // ExtractorRunnerParamsForJzodSchema,
+  // ExtractorTemplateRunnerMapForJzodSchema,
+  // ExtractorTemplateRunnerParamsForJzodSchema,
+  JzodSchemaQuerySelector,
+  ExtractorRunnerMapForJzodSchema,
+  ExtractorRunnerParamsForJzodSchema,
   AsyncExtractorRunner,
   AsyncExtractorRunnerMap,
   AsyncExtractorRunnerParams,
@@ -535,6 +544,12 @@ export {
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
 } from './2_domain/DomainStateQuerySelectors.js';
 export {
+  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
+  selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
+  selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
+  selectEntityJzodSchemaFromDomainStateNewForTemplate
+} from './2_domain/DomainStateQueryTemplateSelector.js';
+export {
   extractEntityJzodSchemaFromDeploymentEntityState,
   selectEntityInstanceFromDeploymentEntityState,
   selectEntityInstanceUuidIndexFromDeploymentEntityState,
@@ -567,6 +582,11 @@ export {
   // extractzodSchemaForSingleSelectQuery,
   extractWithManyExtractorTemplates,
   extractWithExtractorTemplate,
+  applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory,
+  applyExtractorTemplateTransformerInMemory,
+  innerSelectElementFromQueryTemplate,
+  extractFetchQueryTemplateJzodSchema,
+  extractJzodSchemaForDomainModelQueryTemplate,
 } from './2_domain/QueryTemplateSelectors.js';
 export {
   domainElementToPlainObject,
@@ -585,6 +605,7 @@ export {
   asyncExtractWithExtractorTemplate,
   asyncExtractWithManyExtractorTemplates,
   asyncApplyExtractorTemplateTransformerInMemory,
+  asyncInnerSelectElementFromQueryTemplate
 } from './2_domain/AsyncQueryTemplateSelectors.js';
 export {
   asyncApplyExtractorTransformerInMemory,

@@ -15,19 +15,19 @@ import {
   DomainState,
   ExtractorTemplateForSingleObject,
   ExtractorTemplateForSingleObjectList,
-  ExtractorRunnerMapForJzodSchema,
+  ExtractorTemplatePersistenceStoreRunner,
+  ExtractorTemplateRunnerMapForJzodSchema,
   getLoggerName,
   LoggerInterface,
   MiroirLoggerFactory,
-  ExtractorTemplatePersistenceStoreRunner,
   PersistenceStoreInstanceSectionAbstractInterface,
   QueryTemplateAction,
   QueryTemplateSelectObject,
   resolveContextReference,
-  selectEntityJzodSchemaFromDomainStateNew,
-  selectFetchQueryJzodSchemaFromDomainStateNew,
-  selectJzodSchemaByDomainModelQueryFromDomainStateNew,
-  selectJzodSchemaBySingleSelectQueryFromDomainStateNew
+  selectEntityJzodSchemaFromDomainStateNewForTemplate,
+  selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
+  selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
+  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate
 } from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
@@ -67,7 +67,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
       case "extractorTemplateForDomainModelObjects": {
         queryResult = await this.selectorMap.extractWithExtractorTemplate(
           {
-            extractor: queryTemplateAction.query,
+            extractorTemplate: queryTemplateAction.query,
             extractorRunnerMap: this.selectorMap,
           }
         );
@@ -76,7 +76,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
       case "extractorTemplateForRecordOfExtractors": {
         queryResult = await this.selectorMap.extractWithManyExtractorTemplates(
           {
-            extractor: queryTemplateAction.query,
+            extractorTemplate: queryTemplateAction.query,
             extractorRunnerMap: this.selectorMap,
           }
         );
@@ -112,18 +112,18 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
   > = async (
     selectorParams: AsyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObject>
   ): Promise<DomainElementEntityInstanceOrFailed> => {
-    const querySelectorParams: QueryTemplateSelectObject = selectorParams.extractor.select as QueryTemplateSelectObject;
-    const deploymentUuid = selectorParams.extractor.deploymentUuid;
+    const querySelectorParams: QueryTemplateSelectObject = selectorParams.extractorTemplate.select as QueryTemplateSelectObject;
+    const deploymentUuid = selectorParams.extractorTemplate.deploymentUuid;
     const applicationSection: ApplicationSection =
-      selectorParams.extractor.select.applicationSection ??
+      selectorParams.extractorTemplate.select.applicationSection ??
       // ((selectorParams.extractor.pageParams?.elementValue?.applicationSection?.elementValue ??
-      ((selectorParams.extractor.pageParams?.applicationSection ??
+      ((selectorParams.extractorTemplate.pageParams?.applicationSection ??
         "data") as ApplicationSection);
 
     const entityUuidReference: DomainElement = resolveContextReference(
       querySelectorParams.parentUuid,
-      selectorParams.extractor.queryParams,
-      selectorParams.extractor.contextResults
+      selectorParams.extractorTemplate.queryParams,
+      selectorParams.extractorTemplate.contextResults
     );
 
     log.info(
@@ -142,7 +142,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
         elementValue: {
           queryFailure: "IncorrectParameters",
           failureMessage: "FileSystementityUuidReference is not a string or instanceUuid:" + JSON.stringify(entityUuidReference),
-          queryContext: JSON.stringify(selectorParams.extractor.contextResults),
+          queryContext: JSON.stringify(selectorParams.extractorTemplate.contextResults),
           queryReference: JSON.stringify(querySelectorParams.parentUuid),
         },
       };
@@ -158,8 +158,8 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
       case "selectObjectByRelation": {
         const referenceObject = resolveContextReference(
           querySelectorParams.objectReference,
-          selectorParams.extractor.queryParams,
-          selectorParams.extractor.contextResults
+          selectorParams.extractorTemplate.queryParams,
+          selectorParams.extractorTemplate.contextResults
         );
 
         if (
@@ -170,8 +170,8 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
             elementType: "failure",
             elementValue: {
               queryFailure: "IncorrectParameters",
-              queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
-              queryContext: JSON.stringify(selectorParams.extractor.contextResults),
+              queryParameters: JSON.stringify(selectorParams.extractorTemplate.pageParams),
+              queryContext: JSON.stringify(selectorParams.extractorTemplate.contextResults),
             },
           };
         }
@@ -219,8 +219,8 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
       case "selectObjectByDirectReference": {
         const instanceDomainElement = resolveContextReference(
           querySelectorParams.instanceUuid,
-          selectorParams.extractor.queryParams,
-          selectorParams.extractor.contextResults
+          selectorParams.extractorTemplate.queryParams,
+          selectorParams.extractorTemplate.contextResults
         );
         // log.info("extractEntityInstance selectObjectByDirectReference found domainState", JSON.stringify(domainState))
 
@@ -294,9 +294,9 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
           "######### context entityUuid",
           entityUuidReference,
           "######### queryParams",
-          JSON.stringify(selectorParams.extractor.queryParams, undefined, 2),
+          JSON.stringify(selectorParams.extractorTemplate.queryParams, undefined, 2),
           "######### contextResults",
-          JSON.stringify(selectorParams.extractor.contextResults, undefined, 2),
+          JSON.stringify(selectorParams.extractorTemplate.contextResults, undefined, 2),
         );
         return {
           elementType: "instance",
@@ -308,7 +308,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
       default: {
         throw new Error(
           "extractEntityInstance can not handle QueryTemplateSelectObject query with queryType=" +
-            selectorParams.extractor.select.queryType
+            selectorParams.extractorTemplate.select.queryType
         );
         break;
       }
@@ -322,13 +322,13 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
   > = async (
     extractorRunnerParams: AsyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObjectList>
   ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
-    const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
-    const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
+    const deploymentUuid = extractorRunnerParams.extractorTemplate.deploymentUuid;
+    const applicationSection = extractorRunnerParams.extractorTemplate.select.applicationSection ?? "data";
 
     const entityUuid: DomainElement = resolveContextReference(
-      extractorRunnerParams.extractor.select.parentUuid,
-      extractorRunnerParams.extractor.queryParams,
-      extractorRunnerParams.extractor.contextResults
+      extractorRunnerParams.extractorTemplate.select.parentUuid,
+      extractorRunnerParams.extractorTemplate.queryParams,
+      extractorRunnerParams.extractorTemplate.contextResults
     );
 
     // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate params", selectorParams, deploymentUuid, applicationSection, entityUuid);
@@ -379,7 +379,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
           elementType: "failure",
           elementValue: {
             queryFailure: "IncorrectParameters",
-            queryReference: JSON.stringify(extractorRunnerParams.extractor.select.parentUuid),
+            queryReference: JSON.stringify(extractorRunnerParams.extractorTemplate.select.parentUuid),
           },
         };
       }
@@ -401,11 +401,11 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
   }
 }
 
-export function getJzodSchemaSelectorMap(): ExtractorRunnerMapForJzodSchema<DomainState> {
+export function getJzodSchemaSelectorMap(): ExtractorTemplateRunnerMapForJzodSchema<DomainState> {
   return {
-    extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNew,
-    extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNew,
-    extractFetchQueryJzodSchema: selectFetchQueryJzodSchemaFromDomainStateNew,
-    extractzodSchemaForSingleSelectQuery: selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
+    extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
+    extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNewForTemplate,
+    extractFetchQueryJzodSchema: selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
+    extractzodSchemaForSingleSelectQuery: selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
   };
 }

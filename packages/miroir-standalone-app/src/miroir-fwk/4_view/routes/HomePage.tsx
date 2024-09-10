@@ -50,7 +50,7 @@ import { useCurrentModel } from "../ReduxHooks.js";
 
 // import entityPublisher from "../../assets/library_model/";
 import { packageName } from "../../../constants.js";
-import { RootReportSectionView } from "../components/RootReportSectionView.js";
+import { ReportView } from "../components/ReportView.js";
 import { cleanLevel } from "../constants.js";
 import {
   ReportUrlParamKeys,
@@ -570,8 +570,8 @@ export const HomePage = (props: RootComponentProps) => {
           {/* <div>
               reportUuid: {displayedReportUuid}
             </div> */}
-          <RootReportSectionView
-            rootReportSection={currentMiroirReport?.definition}
+          <ReportView
+            reportDefinition={currentMiroirReport?.definition}
             applicationSection={displayedApplicationSection}
             deploymentUuid={displayedDeploymentUuid}
             pageParams={pageParams}

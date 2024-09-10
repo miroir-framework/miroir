@@ -12,7 +12,7 @@ import {
   SyncExtractorTemplateRunnerMap,
   RecordOfJzodObject,
   ReportSection,
-  RootReportSection,
+  RootReport,
   Uuid,
   getLoggerName
 } from "miroir-core";
@@ -32,14 +32,14 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
-export interface ReportSectionEntityInstanceProps {
+export interface ReportSectionViewProps {
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
   queryResults: DomainElementObject,
   fetchedDataJzodSchema: RecordOfJzodObject | undefined,
   paramsAsdomainElements: DomainElementObject,
   reportSection: ReportSection,
-  rootReportSection: RootReportSection,
+  rootReport: RootReport,
   extractorRunnerMap: SyncExtractorTemplateRunnerMap<DeploymentEntityState>
 }
 
@@ -80,7 +80,7 @@ const interpolateExpression = (
 
 
 // ###############################################################################################################
-export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
+export const ReportSectionView = (props: ReportSectionViewProps) => {
   const context = useMiroirContextService();
   // const errorLog = useErrorLogService();
 
@@ -226,7 +226,7 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
                               fetchedDataJzodSchema={props.fetchedDataJzodSchema}
                               paramsAsdomainElements={props.paramsAsdomainElements}
                               reportSection={innerReportSection}
-                              rootReportSection={props.rootReportSection}
+                              rootReport={props.rootReport}
                               extractorRunnerMap={props.extractorRunnerMap}
                               // instanceUuid={props.instanceUuid}
                             />

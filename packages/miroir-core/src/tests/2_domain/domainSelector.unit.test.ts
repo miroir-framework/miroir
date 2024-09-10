@@ -28,7 +28,7 @@ describe("domainSelector", () => {
   //       queryParams: { },
   //       // pageParams: { },
   //       // queryParams: { },
-  //       extractors: {
+  //       extractorTemplates: {
   //         book: {
   //           queryType: "selectObjectByDirectReference",
   //           parentName: "Book",
@@ -72,7 +72,7 @@ describe("domainSelector", () => {
   //       contextResults: { elementType: "object", elementValue: {} },
   //       pageParams: { },
   //       queryParams: { },
-  //       extractors: {
+  //       extractorTemplates: {
   //         book: {
   //           queryType: "selectObjectByDirectReference",
   //           parentName: "Book",
@@ -117,7 +117,7 @@ describe("domainSelector", () => {
   //       "contextResults": { elementType: "object", elementValue: {} },
   //       pageParams: { },
   //       queryParams: { },
-  //       "extractors": {
+  //       "extractorTemplates": {
   //         "book": {
   //           queryType: "selectObjectByDirectReference",
   //           parentName: "Book",
@@ -164,7 +164,7 @@ describe("domainSelector", () => {
   //       contextResults: { elementType: "object", elementValue: {} },
   //       pageParams: { },
   //       queryParams: { },
-  //       extractors: {
+  //       extractorTemplates: {
   //         book: {
   //           queryType: "selectObjectByDirectReference",
   //           parentName: "Book",
@@ -197,7 +197,7 @@ describe("domainSelector", () => {
   //       contextResults: { elementType: "object", elementValue: {} },
   //       pageParams: { },
   //       queryParams: { },
-  //       extractors: {
+  //       extractorTemplates: {
   //         book: {
   //           queryType: "selectObjectByDirectReference",
   //           parentName: "Book",
@@ -211,7 +211,7 @@ describe("domainSelector", () => {
   //           },
   //         },
   //       },
-  //       combiners: {
+  //       combinerTemplates: {
   //         book2: {
   //           queryType: "queryContextReference",
   //           queryReference: "book",
@@ -236,7 +236,7 @@ describe("domainSelector", () => {
   //       pageParams: { },
   //       queryParams: { wantedBookUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f" },
   //       // queryParams: { elementType: "object", elementValue: { wantedBookUuid: { elementType: "instanceUuid", elementValue:"caef8a59-39eb-48b5-ad59-a7642d3a1e8f" } } },
-  //       extractors: {
+  //       extractorTemplates: {
   //         book: {
   //           queryType: "selectObjectByDirectReference",
   //           parentName: "Book",
@@ -275,7 +275,7 @@ describe("domainSelector", () => {
   //       contextResults: { },
   //       pageParams: { },
   //       queryParams: { },
-  //       extractors: {
+  //       extractorTemplates: {
   //         book: {
   //           queryType: "selectObjectByDirectReference",
   //           parentName: "Book",
@@ -289,7 +289,7 @@ describe("domainSelector", () => {
   //           },
   //         },
   //       },
-  //       combiners: {
+  //       combinerTemplates: {
   //         publisher: {
   //           queryType: "selectObjectByRelation",
   //           parentName: "Publisher",
@@ -340,7 +340,7 @@ describe("domainSelector", () => {
   //         },
   //       },
   //       queryParams: { },
-  //       extractors: {
+  //       extractorTemplates: {
   //         authors: {
   //           queryType: "queryTemplateExtractObjectListByEntity",
   //           parentName: "Author",
@@ -407,7 +407,7 @@ describe("domainSelector", () => {
           },
         },
         queryParams: { },
-        extractors: {
+        extractorTemplates: {
           authors: {
             queryType: "queryTemplateExtractObjectListByEntity",
             parentName: "Author",
@@ -467,7 +467,7 @@ describe("domainSelector", () => {
           },
         },
         queryParams: { },
-        extractors: {
+        extractorTemplates: {
           book: {
             queryType: "selectObjectByDirectReference",
             parentName: "Book",
@@ -481,7 +481,7 @@ describe("domainSelector", () => {
             },
           },
         },
-        combiners: {
+        combinerTemplates: {
           publisher: {
             queryType: "selectObjectByRelation",
             parentName: "Publisher",
@@ -543,7 +543,7 @@ describe("domainSelector", () => {
           },
         },
         queryParams: { },
-        extractors: {
+        extractorTemplates: {
           book: {
             queryType: "selectObjectByDirectReference",
             parentName: "Book",
@@ -557,7 +557,7 @@ describe("domainSelector", () => {
             },
           },
         },
-        combiners: {
+        combinerTemplates: {
           publisher: {
             queryType: "selectObjectByRelation",
             parentName: "Publisher",
@@ -638,7 +638,7 @@ describe("domainSelector", () => {
           },
         },
         queryParams: { },
-        extractors: {
+        extractorTemplates: {
           entities: {
             queryType: "queryTemplateExtractObjectListByEntity",
             applicationSection: "model",
@@ -649,7 +649,7 @@ describe("domainSelector", () => {
             },
           },
         },
-        combiners: {
+        combinerTemplates: {
           instancesOfEntities: {
             queryType: "queryCombiner", // heteronomous many-to-many join, not possible with SQL
             rootQuery: {
@@ -716,7 +716,7 @@ describe("domainSelector", () => {
           },
         },
         queryParams: { },
-        extractors: {
+        extractorTemplates: {
           books: {
             queryType: "queryTemplateExtractObjectListByEntity",
             parentName: "Book",
@@ -754,7 +754,7 @@ describe("domainSelector", () => {
 
   // // ###########################################################################################
   // it("getEntityDefinition query: get entity definition from entity Uuid", () => {
-  //   const queryParam: DomainModelQueryJzodSchemaParams = {
+  //   const queryParam: DomainModelQueryTemplateJzodSchemaParams = {
   //     queryType: "getEntityDefinition",
   //     "contextResults": { elementType: "object", elementValue: {} },
   //     pageParams: { },
