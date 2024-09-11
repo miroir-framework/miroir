@@ -33,7 +33,8 @@ import {
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
   selectEntityJzodSchemaFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
-  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate
+  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
+  transformer_InnerReference_resolve
 } from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
@@ -386,11 +387,18 @@ export class SqlDbExtractTemplateRunner {
         break;
       }
       case "selectObjectByDirectReference": {
-        const instanceDomainElement = resolveContextReference(
+        const instanceDomainElement = transformer_InnerReference_resolve(
+          "build",
           querySelectorParams.instanceUuid,
           selectorParams.extractorTemplate.queryParams,
           selectorParams.extractorTemplate.contextResults
         );
+
+        // const instanceDomainElement = resolveContextReference(
+        //   querySelectorParams.instanceUuid,
+        //   selectorParams.extractorTemplate.queryParams,
+        //   selectorParams.extractorTemplate.contextResults
+        // );
         // log.info("extractEntityInstanceForTemplate selectObjectByDirectReference found domainState", JSON.stringify(domainState))
 
         log.info(

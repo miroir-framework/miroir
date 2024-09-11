@@ -25,7 +25,7 @@
               "constantUuidValue": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24"
             },
             "instanceUuid": {
-              "queryTemplateType": "queryParameterReference",
+              "templateType": "parameterReference",
               "referenceName": "applicationVersion"
             }
           },

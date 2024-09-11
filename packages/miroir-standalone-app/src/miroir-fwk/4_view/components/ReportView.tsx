@@ -96,7 +96,7 @@ export const ReportView = (props: ReportViewProps) => {
 
   const deploymentEntityStateFetchQueryTemplateParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForRecordOfExtractors, DeploymentEntityState> = useMemo(
     () =>
-      props.pageParams.deploymentUuid && props.pageParams.applicationSection && props.pageParams.reportUuid
+      props.reportDefinition.extractorTemplates && props.pageParams.deploymentUuid && props.pageParams.applicationSection && props.pageParams.reportUuid
         ? getDeploymentEntityStateSelectorTemplateParams<ExtractorTemplateForRecordOfExtractors>(
             {
               queryType: "extractorTemplateForRecordOfExtractors",
@@ -126,7 +126,7 @@ export const ReportView = (props: ReportViewProps) => {
   );
   const deploymentEntityStateFetchQueryParams: SyncExtractorRunnerParams<ExtractorForRecordOfExtractors, DeploymentEntityState> = useMemo(
     () =>
-      props.pageParams.deploymentUuid && props.pageParams.applicationSection && props.pageParams.reportUuid
+      props.reportDefinition.extractors && props.pageParams.deploymentUuid && props.pageParams.applicationSection && props.pageParams.reportUuid
         ? getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>(
             {
               queryType: "extractorForRecordOfExtractors",

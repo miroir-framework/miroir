@@ -10,13 +10,10 @@
     "reportParameters": {
 
     },
-    "extractorTemplates": {
+    "extractors": {
       "books": {
-        "queryType": "queryTemplateExtractObjectListByEntity",
-        "parentUuid": {
-          "queryTemplateType": "constantUuid",
-          "constantUuidValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-        }
+        "queryType": "queryExtractObjectListByEntity",
+        "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
       }
     },
     "section": {

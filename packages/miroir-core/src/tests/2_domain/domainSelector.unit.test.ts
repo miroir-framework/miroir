@@ -4,7 +4,7 @@ import { DomainState } from "../../0_interfaces/2_domain/DomainControllerInterfa
 import {
   getSelectorParams,
   extractWithManyExtractorsFromDomainStateForTemplate,
-  extractWithExtractorFromDomainStateForTemplate
+  extractWithExtractorFromDomainState
 } from "../../2_domain/DomainStateQuerySelectors.js";
 
 import {
@@ -426,7 +426,7 @@ describe("domainSelector", () => {
         },
       };
 
-      const queryResult:any = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParams(queryParam));
+      const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
 
       console.log("result", queryResult);
       
@@ -513,7 +513,7 @@ describe("domainSelector", () => {
         },
       };
 
-      const queryResult:any = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParams(queryParam));
+      const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
 
       console.log("result", queryResult);
       
@@ -603,7 +603,7 @@ describe("domainSelector", () => {
         },
       };
 
-      const queryResult:any = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParams(queryParam));
+      const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
 
       console.log("result", JSON.stringify(queryResult, undefined, 2));
 
@@ -678,7 +678,7 @@ describe("domainSelector", () => {
         },
       };
 
-      const queryResult:any = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParams(queryParam));
+      const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
 
       // console.log("result", JSON.stringify(queryResult, undefined, 2));
 
@@ -736,7 +736,7 @@ describe("domainSelector", () => {
         },
       };
 
-      const queryResult:any = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParams(queryParam));
+      const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
 
       console.log("result", JSON.stringify(queryResult, null, 2));
       

@@ -10,12 +10,11 @@
   "definition": {
     "extractorTemplates": {
       "deployments": {
-        "queryType": "selectObjectByDirectReference",
+        "queryType": "queryTemplateExtractObjectListByEntity",
         "parentName": "Deployment",
-        "parentUuid": "84bda435-3b9c-46ca-aa74-19d3a2511b24",
-        "objectReference": {
-          "queryTemplateType": "queryParameterReference",
-          "referenceName": "instanceUuid"
+        "parentUuid": {
+          "queryTemplateType": "constantUuid",
+          "constantUuidValue": "84bda435-3b9c-46ca-aa74-19d3a2511b24"
         }
       }
     },

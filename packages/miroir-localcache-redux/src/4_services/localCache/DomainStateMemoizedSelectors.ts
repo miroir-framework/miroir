@@ -2,7 +2,6 @@ import { createSelector } from "@reduxjs/toolkit";
 import {
   DeploymentEntityState,
   ExtractorRunnerMapForJzodSchema,
-  ExtractorTemplateRunnerMapForJzodSchema,
   SyncExtractorRunnerMap,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractEntityJzodSchemaFromDeploymentEntityState,
@@ -12,7 +11,7 @@ import {
   extractWithManyExtractors,
   extractzodSchemaForSingleSelectQuery,
   selectEntityInstanceFromDeploymentEntityState,
-  selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate
+  selectEntityInstanceUuidIndexFromDeploymentEntityState
 } from "miroir-core";
 
 const deploymentEntityStateSelector = (domainState: DeploymentEntityState, params: any) => domainState;
@@ -27,7 +26,7 @@ export function getMemoizedDeploymentEntityStateSelectorMap(): SyncExtractorRunn
     ),
     extractEntityInstanceUuidIndex: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-      selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate
+      selectEntityInstanceUuidIndexFromDeploymentEntityState
     ),
     extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],

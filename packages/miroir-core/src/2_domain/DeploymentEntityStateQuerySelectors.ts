@@ -275,13 +275,13 @@ export const selectEntityInstanceUuidIndexFromDeploymentEntityState: SyncExtract
   // );
 
   log.info(
-    "selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate params",
+    "selectEntityInstanceUuidIndexFromDeploymentEntityState params",
     selectorParams,
     deploymentUuid,
     applicationSection,
     entityUuid
   );
-  log.info("selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate deploymentEntityState", deploymentEntityState);
+  log.info("selectEntityInstanceUuidIndexFromDeploymentEntityState deploymentEntityState", deploymentEntityState);
 
   // if (
   //   !deploymentUuid ||
@@ -295,7 +295,7 @@ export const selectEntityInstanceUuidIndexFromDeploymentEntityState: SyncExtract
   //     elementValue: {
   //       queryFailure: "IncorrectParameters",
   //       queryContext:
-  //         "selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate wrong parameters " +
+  //         "selectEntityInstanceUuidIndexFromDeploymentEntityState wrong parameters " +
   //         "deploymentUuid=" +
   //         deploymentUuid +
   //         " applicationSection=" +
@@ -317,7 +317,7 @@ export const selectEntityInstanceUuidIndexFromDeploymentEntityState: SyncExtract
   //   case "instanceUuid": {
   if (!deploymentEntityState[deploymentEntityStateIndex]) {
     log.warn(
-      "selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate could not find index",
+      "selectEntityInstanceUuidIndexFromDeploymentEntityState could not find index",
       deploymentEntityStateIndex,
       "in deploymentEntityState",
       deploymentEntityState
@@ -335,7 +335,7 @@ export const selectEntityInstanceUuidIndexFromDeploymentEntityState: SyncExtract
 
       // return { elementType: "instanceUuidIndex", elementValue: Object.fromEntries(deploymentEntityState[index].map(e=>[e.uuid,e])) };
   log.info(
-    "selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate for",
+    "selectEntityInstanceUuidIndexFromDeploymentEntityState for",
     deploymentEntityStateIndex,
     "result",
     deploymentEntityState[deploymentEntityStateIndex].entities
@@ -348,7 +348,7 @@ export const selectEntityInstanceUuidIndexFromDeploymentEntityState: SyncExtract
     // }
     // default: {
     //   throw new Error(
-    //     "selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate could not handle reference entityUuid=" + entityUuid
+    //     "selectEntityInstanceUuidIndexFromDeploymentEntityState could not handle reference entityUuid=" + entityUuid
     //   );
     //   break;
     // }

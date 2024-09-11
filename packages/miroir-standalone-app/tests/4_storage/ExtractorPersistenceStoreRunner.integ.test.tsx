@@ -168,6 +168,120 @@ afterAll(
 
 describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
 
+  // // ################################################################################################
+  // it("get Entity Entity", async () => {
+  //   await chainVitestSteps(
+  //     "ExtractorPersistenceStoreRunner_selectEntityInstanceUuidIndex",
+  //     {},
+  //     async () => {
+  //       const applicationSection:ApplicationSection = "model";
+  //       const queryResult:ActionReturnType = await localMiroirPersistenceStoreController.handleQuery(
+  //         {
+  //           actionType: "queryAction",
+  //           actionName: "runQuery",
+  //           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+  //           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+  //           applicationSection: applicationSection,
+  //           query: {
+  //             queryType: "extractorForRecordOfExtractors",
+  //             pageParams: {},
+  //             queryParams: {},
+  //             contextResults: {},
+  //             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+  //             extractors: {
+  //               entities: {
+  //                 queryType: "selectObjectByDirectReference",
+  //                 applicationSection: applicationSection,
+  //                 parentName: "Entity",
+  //                 parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  //                 instanceUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  //                 // parentUuid: {
+  //                 //   queryTemplateType: "constantUuid",
+  //                 //   constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  //                 // },
+  //               }
+  //             }
+  //           }
+  //         }
+  //       );
+  //       console.log("queryResult", JSON.stringify(queryResult, null, 2));
+  //       return queryResult;// == "ok" ? queryResult : {status: "error", error: queryResult.error};
+  //     },
+  //     (a) => ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement.elementValue.entities, ["author"]),
+  //     // (a) => (a as any).returnedDomainElement.elementValue.entities.elementValue,
+  //     // undefined, // expected result transformation
+  //     undefined, // name to give to result
+  //     "object",//"instanceUuidIndex",
+  //     {
+  //       "uuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  //       "parentName": "Entity",
+  //       "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  //       "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  //       "name": "Entity",
+  //       "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  //       "conceptLevel": "MetaModel",
+  //       "description": "The Metaclass for entities."
+  //     }
+  //   )
+  // });
+  // ################################################################################################
+  it("get Entity Entity from Library", async () => {
+    await chainVitestSteps(
+      "ExtractorPersistenceStoreRunner_selectEntityInstance_selectObjectByDirectReference",
+      {},
+      async () => {
+        const applicationSection:ApplicationSection = "model";
+        const queryResult:ActionReturnType = await localMiroirPersistenceStoreController.handleQuery(
+          {
+            actionType: "queryAction",
+            actionName: "runQuery",
+            deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+            applicationSection: applicationSection,
+            query: {
+              queryType: "extractorForDomainModelObjects",
+              pageParams: {},
+              queryParams: {},
+              contextResults: {},
+              deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+              select: {
+                queryType: "selectObjectByDirectReference",
+                applicationSection: "model",
+                parentName: "Entity",
+                parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                // parentUuid: {
+                //   queryTemplateType: "constantUuid",
+                //   constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                // },
+                instanceUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                // instanceUuid: {
+                //   queryTemplateType: "constantUuid",
+                //   constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                // },
+              },
+            },
+          }
+        );
+        console.log("queryResult", JSON.stringify(queryResult, null, 2));
+        return queryResult;
+      },
+      (a) => ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement.elementValue, ["author"]),
+      // undefined, // expected result transformation
+      undefined, // name to give to result
+      "instance",
+      {
+        uuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+        parentName: "Entity",
+        parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+        parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+        name: "Entity",
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        conceptLevel: "MetaModel",
+        description: "The Metaclass for entities.",
+      }
+    );
+  });
+  
   // ################################################################################################
   it("get Library Entities", async () => {
     await chainVitestSteps(
@@ -334,64 +448,6 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
         }
       }
     )
-  });
-  
-  // ################################################################################################
-  it("get Entity Entity from Library", async () => {
-    await chainVitestSteps(
-      "ExtractorPersistenceStoreRunner_selectEntityInstance_selectObjectByDirectReference",
-      {},
-      async () => {
-        const applicationSection:ApplicationSection = "model";
-        const queryResult:ActionReturnType = await localMiroirPersistenceStoreController.handleQuery(
-          {
-            actionType: "queryAction",
-            actionName: "runQuery",
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-            applicationSection: applicationSection,
-            query: {
-              queryType: "extractorForDomainModelObjects",
-              pageParams: {},
-              queryParams: {},
-              contextResults: {},
-              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-              select: {
-                queryType: "selectObjectByDirectReference",
-                applicationSection: "model",
-                parentName: "Entity",
-                parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                // parentUuid: {
-                //   queryTemplateType: "constantUuid",
-                //   constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                // },
-                instanceUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                // instanceUuid: {
-                //   queryTemplateType: "constantUuid",
-                //   constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                // },
-              },
-            },
-          }
-        );
-        console.log("queryResult", JSON.stringify(queryResult, null, 2));
-        return queryResult;
-      },
-      (a) => ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement.elementValue, ["author"]),
-      // undefined, // expected result transformation
-      undefined, // name to give to result
-      "instance",
-      {
-        uuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-        parentName: "Entity",
-        parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-        parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
-        name: "Entity",
-        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        conceptLevel: "MetaModel",
-        description: "The Metaclass for entities.",
-      }
-    );
   });
   
   // ################################################################################################
@@ -800,13 +856,10 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      // (a) => (a as any).returnedDomainElement.elementValue.booksOfAuthor,
       (a) => {
-        console.log("ICI!!!");
         const result = ignorePostgresExtraAttributesOnRecord(
           (a as any).returnedDomainElement.elementValue.booksOfAuthor
         );
-        console.log("CORRECTED result", JSON.stringify(result, null, 2));
         return result;
       },
       undefined, // name to give to result

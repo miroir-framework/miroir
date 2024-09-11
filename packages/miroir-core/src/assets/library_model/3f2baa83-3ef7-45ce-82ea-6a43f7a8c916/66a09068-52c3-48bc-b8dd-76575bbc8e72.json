@@ -8,14 +8,11 @@
   "defaultLabel": "List of Authors",
   "definition": {
     "reportParameters": {},
-    "extractorTemplates": {
+    "extractors": {
       "authors": {
-        "queryType": "queryTemplateExtractObjectListByEntity",
+        "queryType": "queryExtractObjectListByEntity",
         "parentName": "Author",
-        "parentUuid": {
-          "queryTemplateType": "constantUuid",
-          "constantUuidValue": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
-        }
+        "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
       }
     },
     "section": {

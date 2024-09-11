@@ -27,7 +27,7 @@ import { generateRestServiceResponse } from "./RestTools.js";
 import { cleanLevel } from "./constants.js";
 
 import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface.js";
-import { getSelectorParams, extractWithManyExtractorsFromDomainStateForTemplate, extractWithExtractorFromDomainStateForTemplate } from "../2_domain/DomainStateQuerySelectors.js";
+import { extractWithExtractorFromDomainStateForTemplate, extractWithManyExtractorsFromDomainStateForTemplate, getSelectorParamsForTemplate } from "../2_domain/DomainStateQueryTemplateSelector.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RestServer");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -302,14 +302,14 @@ export async function queryHandler(
       case "extractorTemplateForDomainModelObjects": {
         queryResult = extractWithExtractorFromDomainStateForTemplate(
           domainState,
-          getSelectorParams(queryTemplateAction.query)
+          getSelectorParamsForTemplate(queryTemplateAction.query)
         );
         break;
       }
       case "extractorTemplateForRecordOfExtractors": {
         queryResult = extractWithManyExtractorsFromDomainStateForTemplate(
           domainState,
-          getSelectorParams(queryTemplateAction.query)
+          getSelectorParamsForTemplate(queryTemplateAction.query)
         );
         break;
       }

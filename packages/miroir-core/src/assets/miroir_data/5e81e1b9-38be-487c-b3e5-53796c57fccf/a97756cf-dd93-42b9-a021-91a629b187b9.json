@@ -50,81 +50,123 @@
           }
         ]
       },
+      "transformer_constantUuid": {
+        "type": "object",
+        "definition": {
+          "templateType": {
+            "type": "literal",
+            "definition": "constantUuid"
+          },
+          "constantUuidValue": {
+            "type": "string"
+          }
+        }
+      },
+      "transformer_constantString":{
+        "type": "object",
+        "definition": {
+          "templateType": {
+            "type": "literal",
+            "definition": "constantString"
+          },
+          "constantStringValue": {
+            "type": "string"
+          }
+        }
+      },
+      "transformer_newUuid": {
+        "type": "object",
+        "definition": {
+          "templateType": {
+            "type": "literal",
+            "definition": "newUuid"
+          }
+        }
+      },
+      "transformer_contextReference":{
+        "type": "object",
+        "definition": {
+          "templateType": {
+            "type": "literal",
+            "definition": "contextReference"
+          },
+          "referenceName": {
+            "optional": true,
+            "type": "string"
+          },
+          "referencePath": {
+            "optional": true,
+            "type": "array",
+            "definition": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "transformer_parameterReference":{
+        "type": "object",
+        "definition": {
+          "templateType": {
+            "type": "literal",
+            "definition": "parameterReference"
+          },
+          "referenceName": {
+            "optional": true,
+            "type": "string"
+          },
+          "referencePath": {
+            "optional": true,
+            "type": "array",
+            "definition": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "transformer_contextOrParameterReference": {
+        "type": "union",
+        "discriminator": "templateType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformer_contextReference"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformer_parameterReference"
+            }
+          }
+        ]
+      },
       "transformer_InnerReference": {
         "type": "union",
         "discriminator": "templateType",
         "definition": [
           {
-            "type": "object",
+            "type": "schemaReference",
             "definition": {
-              "templateType": {
-                "type": "literal",
-                "definition": "constantUuid"
-              },
-              "constantUuidValue": {
-                "type": "string"
-              }
+              "relativePath": "transformer_constantUuid"
             }
           },
           {
-            "type": "object",
+            "type": "schemaReference",
             "definition": {
-              "templateType": {
-                "type": "literal",
-                "definition": "constantString"
-              },
-              "constantStringValue": {
-                "type": "string"
-              }
+              "relativePath": "transformer_constantString"
             }
           },
           {
-            "type": "object",
+            "type": "schemaReference",
             "definition": {
-              "templateType": {
-                "type": "literal",
-                "definition": "newUuid"
-              }
+              "relativePath": "transformer_newUuid"
             }
           },
           {
-            "type": "object",
+            "type": "schemaReference",
             "definition": {
-              "templateType": {
-                "type": "literal",
-                "definition": "contextReference"
-              },
-              "referenceName": {
-                "optional": true,
-                "type": "string"
-              },
-              "referencePath": {
-                "optional": true,
-                "type": "array",
-                "definition": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "templateType": {
-                "type": "literal",
-                "definition": "parameterReference"
-              },
-              "referenceName": {
-                "optional": true,
-                "type": "string"
-              },
-              "referencePath": {
-                "optional": true,
-                "type": "array",
-                "definition": {
-                  "type": "string"
-                }
-              }
+              "relativePath": "transformer_contextOrParameterReference"
             }
           }
         ]

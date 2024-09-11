@@ -35,6 +35,7 @@ import {
   extractzodSchemaForSingleSelectQueryTemplate,
   resolveContextReference
 } from "./QueryTemplateSelectors.js";
+import { transformer_InnerReference_resolve } from "./Transformers.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "ExtractorTemplateRunnerInMemory");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -216,11 +217,18 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
         break;
       }
       case "selectObjectByDirectReference": {
-        const instanceDomainElement = resolveContextReference(
+        const instanceDomainElement = transformer_InnerReference_resolve(
+          "build",
           querySelectorParams.instanceUuid,
           selectorParams.extractorTemplate.queryParams,
           selectorParams.extractorTemplate.contextResults
         );
+  
+        // const instanceDomainElement = resolveContextReference(
+        //   querySelectorParams.instanceUuid,
+        //   selectorParams.extractorTemplate.queryParams,
+        //   selectorParams.extractorTemplate.contextResults
+        // );
         // log.info("extractEntityInstance selectObjectByDirectReference found domainState", JSON.stringify(domainState))
 
         log.info(

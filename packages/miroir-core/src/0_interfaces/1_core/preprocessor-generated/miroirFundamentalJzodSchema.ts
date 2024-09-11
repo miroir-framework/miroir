@@ -4382,8 +4382,8 @@ export const miroirFundamentalJzodSchema = {
           "instanceUuid": {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "queryTemplateConstantOrAnyReference",
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformer_InnerReference"
             },
             "context": {}
           }
@@ -9017,81 +9017,123 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
+      "transformer_constantUuid": {
+        "type": "object",
+        "definition": {
+          "templateType": {
+            "type": "literal",
+            "definition": "constantUuid"
+          },
+          "constantUuidValue": {
+            "type": "string"
+          }
+        }
+      },
+      "transformer_constantString": {
+        "type": "object",
+        "definition": {
+          "templateType": {
+            "type": "literal",
+            "definition": "constantString"
+          },
+          "constantStringValue": {
+            "type": "string"
+          }
+        }
+      },
+      "transformer_newUuid": {
+        "type": "object",
+        "definition": {
+          "templateType": {
+            "type": "literal",
+            "definition": "newUuid"
+          }
+        }
+      },
+      "transformer_contextReference": {
+        "type": "object",
+        "definition": {
+          "templateType": {
+            "type": "literal",
+            "definition": "contextReference"
+          },
+          "referenceName": {
+            "optional": true,
+            "type": "string"
+          },
+          "referencePath": {
+            "optional": true,
+            "type": "array",
+            "definition": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "transformer_parameterReference": {
+        "type": "object",
+        "definition": {
+          "templateType": {
+            "type": "literal",
+            "definition": "parameterReference"
+          },
+          "referenceName": {
+            "optional": true,
+            "type": "string"
+          },
+          "referencePath": {
+            "optional": true,
+            "type": "array",
+            "definition": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "transformer_contextOrParameterReference": {
+        "type": "union",
+        "discriminator": "templateType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformer_contextReference"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformer_parameterReference"
+            }
+          }
+        ]
+      },
       "transformer_InnerReference": {
         "type": "union",
         "discriminator": "templateType",
         "definition": [
           {
-            "type": "object",
+            "type": "schemaReference",
             "definition": {
-              "templateType": {
-                "type": "literal",
-                "definition": "constantUuid"
-              },
-              "constantUuidValue": {
-                "type": "string"
-              }
+              "relativePath": "transformer_constantUuid"
             }
           },
           {
-            "type": "object",
+            "type": "schemaReference",
             "definition": {
-              "templateType": {
-                "type": "literal",
-                "definition": "constantString"
-              },
-              "constantStringValue": {
-                "type": "string"
-              }
+              "relativePath": "transformer_constantString"
             }
           },
           {
-            "type": "object",
+            "type": "schemaReference",
             "definition": {
-              "templateType": {
-                "type": "literal",
-                "definition": "newUuid"
-              }
+              "relativePath": "transformer_newUuid"
             }
           },
           {
-            "type": "object",
+            "type": "schemaReference",
             "definition": {
-              "templateType": {
-                "type": "literal",
-                "definition": "contextReference"
-              },
-              "referenceName": {
-                "optional": true,
-                "type": "string"
-              },
-              "referencePath": {
-                "optional": true,
-                "type": "array",
-                "definition": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "templateType": {
-                "type": "literal",
-                "definition": "parameterReference"
-              },
-              "referenceName": {
-                "optional": true,
-                "type": "string"
-              },
-              "referencePath": {
-                "optional": true,
-                "type": "array",
-                "definition": {
-                  "type": "string"
-                }
-              }
+              "relativePath": "transformer_contextOrParameterReference"
             }
           }
         ]
@@ -25022,7 +25064,7 @@ export const miroirFundamentalJzodSchema = {
               "instanceUuid": {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryTemplateConstantOrAnyReference"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_InnerReference"
                 },
                 "context": {}
               }
@@ -25537,10 +25579,15 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_InnerReference": {
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantUuid": {
         "type": "union",
-        "discriminator": "templateType",
         "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "carryOnObject"
+            }
+          },
           {
             "type": "object",
             "definition": {
@@ -25573,6 +25620,17 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               }
+            }
+          }
+        ]
+      },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantString": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "carryOnObject"
             }
           },
           {
@@ -25608,6 +25666,17 @@ export const miroirFundamentalJzodSchema = {
                 ]
               }
             }
+          }
+        ]
+      },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_newUuid": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "carryOnObject"
+            }
           },
           {
             "type": "object",
@@ -25628,71 +25697,16 @@ export const miroirFundamentalJzodSchema = {
                 ]
               }
             }
-          },
+          }
+        ]
+      },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_parameterReference": {
+        "type": "union",
+        "definition": [
           {
-            "type": "object",
+            "type": "schemaReference",
             "definition": {
-              "templateType": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "literal",
-                    "definition": "contextReference"
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "carryOnObject"
-                    }
-                  }
-                ]
-              },
-              "referenceName": {
-                "optional": true,
-                "type": "union",
-                "definition": [
-                  {
-                    "optional": true,
-                    "type": "string"
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "carryOnObject"
-                    }
-                  }
-                ]
-              },
-              "referencePath": {
-                "optional": true,
-                "type": "union",
-                "definition": [
-                  {
-                    "optional": true,
-                    "type": "array",
-                    "definition": {
-                      "type": "union",
-                      "definition": [
-                        {
-                          "type": "string"
-                        },
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "relativePath": "carryOnObject"
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "carryOnObject"
-                    }
-                  }
-                ]
-              }
+              "relativePath": "carryOnObject"
             }
           },
           {
@@ -25760,6 +25774,143 @@ export const miroirFundamentalJzodSchema = {
                 ]
               }
             }
+          }
+        ]
+      },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_contextReference": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "carryOnObject"
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "templateType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "contextReference"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "referenceName": {
+                "optional": true,
+                "type": "union",
+                "definition": [
+                  {
+                    "optional": true,
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "referencePath": {
+                "optional": true,
+                "type": "union",
+                "definition": [
+                  {
+                    "optional": true,
+                    "type": "array",
+                    "definition": {
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "carryOnObject"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_contextOrParameterReference": {
+        "type": "union",
+        "discriminator": "templateType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_contextReference"
+            },
+            "context": {}
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_parameterReference"
+            },
+            "context": {}
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "carryOnObject"
+            }
+          }
+        ]
+      },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_InnerReference": {
+        "type": "union",
+        "discriminator": "templateType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantUuid"
+            },
+            "context": {}
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantString"
+            },
+            "context": {}
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_newUuid"
+            },
+            "context": {}
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_contextOrParameterReference"
+            },
+            "context": {}
           },
           {
             "type": "schemaReference",
