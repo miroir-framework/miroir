@@ -30,9 +30,13 @@ import {
   asyncExtractWithManyExtractorTemplates,
 } from "./AsyncQueryTemplateSelectors.js";
 import { cleanLevel } from "./constants.js";
-import { selectEntityJzodSchemaFromDomainStateNewForTemplate, selectFetchQueryJzodSchemaFromDomainStateNewForTemplate, selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate, selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate } from "./DomainStateQueryTemplateSelector.js";
 import {
-  extractzodSchemaForSingleSelectQueryTemplate,
+  selectEntityJzodSchemaFromDomainStateNewForTemplate,
+  selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
+  selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
+  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
+} from "./DomainStateQueryTemplateSelector.js";
+import {
   resolveContextReference
 } from "./QueryTemplateSelectors.js";
 import { transformer_InnerReference_resolve } from "./Transformers.js";
@@ -62,9 +66,9 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
   }
 
   // ################################################################################################
-  async handleQueryTemplate(queryTemplateAction: QueryTemplateAction): Promise<ActionReturnType> {
+  async handleQueryTemplateForServerONLY(queryTemplateAction: QueryTemplateAction): Promise<ActionReturnType> {
     // TODO: fix applicationSection!!!
-    log.info(this.logHeader, "handleQueryTemplate", "queryTemplateAction", JSON.stringify(queryTemplateAction, null, 2));
+    log.info(this.logHeader, "handleQueryTemplateForServerONLY", "queryTemplateAction", JSON.stringify(queryTemplateAction, null, 2));
     let queryResult: DomainElement;
     switch (queryTemplateAction.query.queryType) {
       case "extractorTemplateForDomainModelObjects": {
@@ -100,7 +104,7 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
       } as ActionReturnType;
     } else {
       const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
-      log.info(this.logHeader, "handleQueryTemplate", "queryTemplateAction", queryTemplateAction, "result", JSON.stringify(result, null, 2));
+      log.info(this.logHeader, "handleQueryTemplateForServerONLY", "queryTemplateAction", queryTemplateAction, "result", JSON.stringify(result, null, 2));
       return result;
     }
     // const result = { status: "ok", returnedDomainElement: { elementType: "object", elementValue: {}}} as ActionReturnType;

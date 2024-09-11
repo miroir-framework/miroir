@@ -729,7 +729,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
   //   await chainVitestSteps(
   //     "actualTest_getInstancesAndCheckResult_runQuery",
   //     {},
-  //     async () => localAppPersistenceStoreController.handleQueryTemplate("model",
+  //     async () => localAppPersistenceStoreController.handleQueryTemplateForServerONLY("model",
   //       {
   //         actionType: 'queryTemplateAction',
   //         actionName: "runQuery",

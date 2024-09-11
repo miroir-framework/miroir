@@ -22,13 +22,16 @@ import {
   QueryTemplateSelectObjectListByManyToManyRelation,
   QueryTemplateSelectObjectListByRelation,
   QueryTemplateConstantOrAnyReference,
-  TransformerForRuntime
+  TransformerForRuntime,
+  QueryFailed,
+  MiroirQuery,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   AsyncExtractorTemplateRunnerMap,
   ExtractorTemplateRunnerParamsForJzodSchema,
   RecordOfJzodElement,
   RecordOfJzodObject,
+  SyncExtractorRunnerMap,
   SyncExtractorTemplateRunnerMap,
   SyncExtractorTemplateRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
@@ -37,6 +40,8 @@ import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
+import { innerSelectElementFromQuery } from "./QuerySelectors.js";
+import { resolveQueryTemplate } from "./Templates.js";
 import { applyTransformer, transformer_apply } from "./Transformers.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"SyncExtractorTemplateRunner");
@@ -520,13 +525,14 @@ export function innerSelectElementFromQueryTemplate/*ExtractorTemplateRunner*/<S
   newFetchedData: Record<string, any>,
   pageParams: Record<string, any>,
   queryParams: Record<string, any>,
-  extractorRunnerMap:SyncExtractorTemplateRunnerMap<StateType>,
+  extractorTemplateRunnerMap:SyncExtractorTemplateRunnerMap<StateType>,
+  // extractorRunnerMap:SyncExtractorRunnerMap<StateType>,
   deploymentUuid: Uuid,
-  query: QueryTemplate
+  queryTemplate: QueryTemplate
 ): DomainElement {
-  switch (query.queryType) {
+  switch (queryTemplate.queryType) {
     case "literal": {
-      return { elementType: "string", elementValue: query.definition };
+      return { elementType: "string", elementValue: queryTemplate.definition };
       break;
     }
     // ############################################################################################
@@ -534,18 +540,18 @@ export function innerSelectElementFromQueryTemplate/*ExtractorTemplateRunner*/<S
     case "queryTemplateExtractObjectListByEntity":
     case "selectObjectListByRelation": 
     case "selectObjectListByManyToManyRelation": {
-      return extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory(state, {
-        extractorRunnerMap,
+      return extractorTemplateRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory(state, {
+        extractorRunnerMap: extractorTemplateRunnerMap,
         extractorTemplate: {
           queryType: "extractorTemplateForDomainModelObjects",
           deploymentUuid: deploymentUuid,
           contextResults: newFetchedData,
           pageParams: pageParams,
           queryParams,
-          select: query.applicationSection
-          ? query
+          select: queryTemplate.applicationSection
+          ? queryTemplate
           : {
-              ...query,
+              ...queryTemplate,
               applicationSection: pageParams.applicationSection as ApplicationSection,
               // applicationSection: pageParams.elementValue.applicationSection.elementValue as ApplicationSection,
             },
@@ -555,18 +561,18 @@ export function innerSelectElementFromQueryTemplate/*ExtractorTemplateRunner*/<S
     }
     case "selectObjectByRelation":
     case "selectObjectByDirectReference": {
-      return extractorRunnerMap.extractEntityInstance(state, {
-        extractorRunnerMap,
+      return extractorTemplateRunnerMap.extractEntityInstance(state, {
+        extractorRunnerMap: extractorTemplateRunnerMap,
         extractorTemplate: {
           queryType: "extractorTemplateForDomainModelObjects",
           deploymentUuid: deploymentUuid,
           contextResults: newFetchedData,
           pageParams,
           queryParams,
-          select: query.applicationSection // TODO: UGLY!!! WHERE IS THE APPLICATION SECTION PLACED?
-          ? query
+          select: queryTemplate.applicationSection // TODO: UGLY!!! WHERE IS THE APPLICATION SECTION PLACED?
+          ? queryTemplate
           : {
-              ...query,
+              ...queryTemplate,
               applicationSection: pageParams?.elementValue?.applicationSection?.elementValue as ApplicationSection,
             },
         }
@@ -579,14 +585,14 @@ export function innerSelectElementFromQueryTemplate/*ExtractorTemplateRunner*/<S
       return {
         elementType: "object",
         elementValue: Object.fromEntries(
-          Object.entries(query.definition).map((e: [string, QueryTemplate]) => [
+          Object.entries(queryTemplate.definition).map((e: [string, QueryTemplate]) => [
             e[0],
             innerSelectElementFromQueryTemplate( // recursive call
               state,
               newFetchedData,
               pageParams ?? {},
               queryParams ?? {},
-              extractorRunnerMap,
+              extractorTemplateRunnerMap,
               deploymentUuid,
               e[1]
             ).elementValue, // TODO: check for error!
@@ -599,13 +605,13 @@ export function innerSelectElementFromQueryTemplate/*ExtractorTemplateRunner*/<S
     case "wrapperReturningList": { // List map
       return {
         elementType: "array",
-        elementValue: query.definition.map((e) =>
+        elementValue: queryTemplate.definition.map((e) =>
           innerSelectElementFromQueryTemplate( // recursive call
             state,
             newFetchedData,
             pageParams ?? {},
             queryParams ?? {},
-            extractorRunnerMap,
+            extractorTemplateRunnerMap,
             deploymentUuid,
             e
           ).elementValue // TODO: check for error!
@@ -619,9 +625,9 @@ export function innerSelectElementFromQueryTemplate/*ExtractorTemplateRunner*/<S
         newFetchedData,
         pageParams,
         queryParams,
-        extractorRunnerMap,
+        extractorTemplateRunnerMap,
         deploymentUuid,
-        query.rootQuery
+        queryTemplate.rootQuery
       );
       if (["instanceUuidIndex", "object", "any"].includes(rootQueryResults.elementType)) {
         const result: DomainElementObject = {
@@ -637,12 +643,12 @@ export function innerSelectElementFromQueryTemplate/*ExtractorTemplateRunner*/<S
                   {
                     ...queryParams.elementValue,
                     ...Object.fromEntries(
-                      Object.entries(applyTransformer(query.subQuery.rootQueryObjectTransformer, entry[1]))
+                      Object.entries(applyTransformer(queryTemplate.subQuery.rootQueryObjectTransformer, entry[1]))
                     ),
                   },
-                  extractorRunnerMap,
+                  extractorTemplateRunnerMap,
                   deploymentUuid,
-                  query.subQuery.query
+                  queryTemplate.subQuery.query
                 ).elementValue, // TODO: check for error!
               ];
             })
@@ -654,7 +660,7 @@ export function innerSelectElementFromQueryTemplate/*ExtractorTemplateRunner*/<S
           elementType: "failure",
           elementValue: {
             queryFailure: "IncorrectParameters",
-            query: JSON.stringify(query.rootQuery),
+            query: JSON.stringify(queryTemplate.rootQuery),
             queryContext: "innerSelectElementFromQueryTemplate for queryCombiner, rootQuery is not instanceUuidIndex, rootQuery=" + JSON.stringify(rootQueryResults,null,2),
           },
         };
@@ -662,24 +668,24 @@ export function innerSelectElementFromQueryTemplate/*ExtractorTemplateRunner*/<S
       break;
     }
     case "queryContextReference": {
-      log.info("innerSelectElementFromQueryTemplate queryContextReference", query, "newFetchedData", Object.keys(newFetchedData), "result", newFetchedData[query.queryReference]);
+      log.info("innerSelectElementFromQueryTemplate queryContextReference", queryTemplate, "newFetchedData", Object.keys(newFetchedData), "result", newFetchedData[queryTemplate.queryReference]);
       return newFetchedData &&
         // newFetchedData.elementType == "object" &&
-        newFetchedData[query.queryReference]
-        ? { elementType: "any", elementValue:newFetchedData[query.queryReference]}
+        newFetchedData[queryTemplate.queryReference]
+        ? { elementType: "any", elementValue:newFetchedData[queryTemplate.queryReference]}
         : {
             elementType: "failure",
             elementValue: {
               queryFailure: "ReferenceNotFound",
               failureOrigin: ["QuerySelector", "innerSelectElementFromQueryTemplate"],
-              queryContext: "innerSelectElementFromQueryTemplate could not find " + query.queryReference + " in " + JSON.stringify(newFetchedData),
-              query: JSON.stringify(query),
+              queryContext: "innerSelectElementFromQueryTemplate could not find " + queryTemplate.queryReference + " in " + JSON.stringify(newFetchedData),
+              query: JSON.stringify(queryTemplate),
             },
           };
       break;
     }
     default: {
-      return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable", query } };
+      return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable", query: queryTemplate } };
       break;
     }
   }
@@ -764,28 +770,69 @@ export const extractWithManyExtractorTemplates = <StateType>(
   for (const extractorTemplate of Object.entries(
     selectorParams.extractorTemplate.extractorTemplates ?? {}
   )) {
-    let result = innerSelectElementFromQueryTemplate(
+    const queryParams = {
+      ...selectorParams.extractorTemplate.pageParams,
+      ...selectorParams.extractorTemplate.queryParams,
+    };
+
+    const query = resolveQueryTemplate(extractorTemplate[1], queryParams, context);
+
+    if ((query as any)?.queryFailure) {
+      log.error(
+        "extractWithManyExtractorTemplates failed for extractor",
+        extractorTemplate[0],
+        "query",
+        extractorTemplate[1],
+        "result=",
+        query
+      );
+      // context[extractorTemplate[0]] = query;
+      
+    }
+    let result = innerSelectElementFromQuery(
       state,
       context,
       selectorParams.extractorTemplate.pageParams,
-      {
-        ...selectorParams.extractorTemplate.pageParams,
-        ...selectorParams.extractorTemplate.queryParams,
-      },
+      queryParams,
       localSelectorMap as any,
       selectorParams.extractorTemplate.deploymentUuid,
-      extractorTemplate[1]
+      query as MiroirQuery
     );
+    // let result = innerSelectElementFromQueryTemplate(
+    //   state,
+    //   context,
+    //   selectorParams.extractorTemplate.pageParams,
+    //   queryParams,
+    //   localSelectorMap as any,
+    //   selectorParams.extractorTemplate.deploymentUuid,
+    //   extractorTemplate[1]
+    // );
     // TODO: test for error!
     if (result.elementType == "failure") {
-      log.error("extractWithManyExtractorTemplates failed for extractor", extractorTemplate[0], "query", extractorTemplate[1], "result=", result);
-      context[extractorTemplate[0]] = result    
+      log.error(
+        "extractWithManyExtractorTemplates failed for extractor",
+        extractorTemplate[0],
+        "query",
+        extractorTemplate[1],
+        "result=",
+        result
+      );
+      context[extractorTemplate[0]] = result;
       // return { elementType: "object", elementValue: {
       // }}
       // return result;
     }
     context[extractorTemplate[0]] = result.elementValue; // does side effect!
-    log.info("extractWithManyExtractorTemplates done for extractors", extractorTemplate[0], "query", extractorTemplate[1], "result=", result, "context keys=", Object.keys(context));
+    log.info(
+      "extractWithManyExtractorTemplates done for extractors",
+      extractorTemplate[0],
+      "query",
+      extractorTemplate[1],
+      "result=",
+      result,
+      "context keys=",
+      Object.keys(context)
+    );
   }
   for (const combiner of Object.entries(
     selectorParams.extractorTemplate.combinerTemplates ?? {}

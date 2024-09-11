@@ -156,71 +156,8 @@ export function plainObjectToDomainElement(r:any): DomainElement {
   }
 }
 
-// // ################################################################################################
-// // TODO: almost the same as in Transformes.ts: transformer_InnerReference_resolve
-// export const resolveContextReferenceDEFUNCT = (
-//   queryTemplateConstantOrAnyReference: QueryTemplateConstantOrAnyReference,
-//   // queryParams: Record<string, any>,
-//   // contextResults: Record<string, any>,
-//   queryParams: DomainElementObject,
-//   contextResults: DomainElement,
-// ) : DomainElement => {
-//   // log.info("resolveContextReferenceDEFUNCT for queryTemplateConstantOrAnyReference=", queryTemplateConstantOrAnyReference, "queryParams=", queryParams,"contextResults=", contextResults)
-//   if (
-//     (queryTemplateConstantOrAnyReference.queryTemplateType == "queryContextReference" &&
-//       (!contextResults.elementValue ||
-//         !(contextResults.elementValue as any)[queryTemplateConstantOrAnyReference.referenceName])) ||
-//     (queryTemplateConstantOrAnyReference.queryTemplateType == "queryParameterReference" &&
-//       (!Object.keys(queryParams.elementValue).includes(queryTemplateConstantOrAnyReference.referenceName)))
-
-//   ) {
-//     // checking that given reference does exist
-//     return {
-//       elementType: "failure",
-//       elementValue: {
-//         queryFailure: "ReferenceNotFound",
-//         failureOrigin: ["QuerySelector", "resolveContextReferenceDEFUNCT"],
-//         failureMessage:
-//           "resolvedContextReference failed to find " +
-//           queryTemplateConstantOrAnyReference.referenceName +
-//           " in " +
-//           (queryTemplateConstantOrAnyReference.queryTemplateType == "queryContextReference"
-//             ? JSON.stringify(Object.keys(contextResults.elementValue))
-//             : JSON.stringify(Object.keys(queryParams.elementValue))),
-//       },
-//     };
-//   }
-
-//   if (
-//     (
-//       queryTemplateConstantOrAnyReference.queryTemplateType == "queryContextReference" &&
-//         !(contextResults.elementValue as any)[queryTemplateConstantOrAnyReference.referenceName].elementValue
-//     ) ||
-//     (
-//       (queryTemplateConstantOrAnyReference.queryTemplateType == "queryParameterReference" &&
-//       (!queryParams.elementValue[queryTemplateConstantOrAnyReference.referenceName]))
-//     )
-//   ) { // checking that given reference does exist
-//     return {
-//       elementType: "failure",
-//       elementValue: { queryFailure: "ReferenceFoundButUndefined", queryContext: JSON.stringify(contextResults) },
-//     };
-//   }
-
-//   const reference: DomainElement =
-//   queryTemplateConstantOrAnyReference.queryTemplateType == "queryContextReference"
-//     ? (contextResults.elementValue as any)[queryTemplateConstantOrAnyReference.referenceName]
-//     : queryTemplateConstantOrAnyReference.queryTemplateType == "queryParameterReference"
-//     ? queryParams.elementValue[queryTemplateConstantOrAnyReference.referenceName]
-//     : queryTemplateConstantOrAnyReference.queryTemplateType == "constantUuid"
-//     ? {elementType: "instanceUuid", elementValue: queryTemplateConstantOrAnyReference.constantUuidValue } // new object
-//     : undefined /* this should not happen. Provide "error" value instead?*/;
-
-//   return reference
-// }
-
 // ################################################################################################
-// TODO: almost the same as in Transformes.ts: transformer_InnerReference_resolve
+// TODO: almost the same as in Transformer.ts: transformer_InnerReference_resolve
 export const resolveContextReference = (
   queryTemplateConstantOrAnyReference: QueryTemplateConstantOrAnyReference,
   queryParams: Record<string, any>,
@@ -863,7 +800,7 @@ export const extractWithManyExtractors = <StateType>(
   }
 
   // log.info(
-  //   "extractWithManyExtractorTemplates",
+  //   "extractWithManyExtractors",
   //   "query",
   //   selectorParams,
   //   "domainState",

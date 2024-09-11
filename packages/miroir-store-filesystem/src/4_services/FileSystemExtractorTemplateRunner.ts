@@ -59,9 +59,9 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
   }
 
   // ################################################################################################
-  async handleQueryTemplate(queryTemplateAction: QueryTemplateAction): Promise<ActionReturnType> {
+  async handleQueryTemplateForServerONLY(queryTemplateAction: QueryTemplateAction): Promise<ActionReturnType> {
     // TODO: fix applicationSection!!!
-    log.info(this.logHeader, "handleQueryTemplate", "queryTemplateAction", JSON.stringify(queryTemplateAction, null, 2));
+    log.info(this.logHeader, "handleQueryTemplateForServerONLY", "queryTemplateAction", JSON.stringify(queryTemplateAction, null, 2));
     let queryResult: DomainElement;
     switch (queryTemplateAction.query.queryType) {
       case "extractorTemplateForDomainModelObjects": {
@@ -97,7 +97,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
       } as ActionReturnType;
     } else {
       const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
-      log.info(this.logHeader, "handleQueryTemplate", "queryTemplateAction", queryTemplateAction, "result", JSON.stringify(result, null, 2));
+      log.info(this.logHeader, "handleQueryTemplateForServerONLY", "queryTemplateAction", queryTemplateAction, "result", JSON.stringify(result, null, 2));
       return result;
     }
     // const result = { status: "ok", returnedDomainElement: { elementType: "object", elementValue: {}}} as ActionReturnType;

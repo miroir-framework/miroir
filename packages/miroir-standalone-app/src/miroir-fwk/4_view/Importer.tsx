@@ -669,7 +669,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       },
     };
     const miroirMenuInstances: ActionReturnType = 
-      await domainController.handleQueryTemplate(
+      await domainController.handleQueryTemplateForServerONLY(
         {
           actionType: "queryTemplateAction",
           actionName: "runQuery",
@@ -1716,7 +1716,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     // };
 
     // const splittedEntityInstances: ActionReturnType = 
-    //   await domainController.handleQueryTemplate(
+    //   await domainController.handleQueryTemplateForServerONLY(
     //     {
     //       actionType: "queryTemplateAction",
     //       actionName: "runQuery",
@@ -1848,7 +1848,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     //   },
     // };
     // const miroirMenuInstances: ActionReturnType = 
-    //   await domainController.handleQueryTemplate(
+    //   await domainController.handleQueryTemplateForServerONLY(
     //     {
     //       actionType: "queryTemplateAction",
     //       actionName: "runQuery",

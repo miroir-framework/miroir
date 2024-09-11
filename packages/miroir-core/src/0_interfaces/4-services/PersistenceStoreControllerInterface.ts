@@ -79,7 +79,7 @@ export interface StorageSpaceHandlerInterface {
 export interface PersistenceStoreInstanceSectionAbstractInterface extends PersistenceStoreAbstractSectionInterface{
   getInstance(parentUuid: string, uuid: string): Promise<ActionEntityInstanceReturnType>;
   getInstances(parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType>;
-  handleQueryTemplate(query: QueryTemplateAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
+  handleQueryTemplateForServerONLY(query: QueryTemplateAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
   handleQuery(query: QueryAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
   upsertInstance(parentUuid:string, instance:EntityInstance):Promise<ActionVoidReturnType>;
   deleteInstances(parentUuid:string, instances:EntityInstance[]):Promise<ActionVoidReturnType>;
@@ -185,7 +185,7 @@ export interface PersistenceStoreControllerInterface
   getDataState(): Promise<{ [uuid: string]: EntityInstanceCollection }>; // used only for testing purposes!
 
   // same interface as in PersistenceStoreInstanceSectionAbstractInterface; it implies that QueryTemplateAction includes applicationSection
-  handleQueryTemplate(query: QueryTemplateAction): Promise<ActionReturnType>;
+  handleQueryTemplateForServerONLY(query: QueryTemplateAction): Promise<ActionReturnType>;
   handleQuery(query: QueryAction): Promise<ActionReturnType>;
   
   getInstance(section: ApplicationSection, parentUuid: string, uuid: Uuid): Promise<ActionEntityInstanceReturnType>;

@@ -596,7 +596,6 @@ export {
 export {
   domainElementToPlainObject,
   plainObjectToDomainElement,
-  // resolveContextReferenceDEFUNCT,
   resolveContextReference,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractFetchQueryJzodSchema,

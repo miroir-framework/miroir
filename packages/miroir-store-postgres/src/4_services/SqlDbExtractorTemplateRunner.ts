@@ -23,18 +23,14 @@ import {
   MiroirLoggerFactory,
   QueryTemplateAction,
   QueryTemplateSelectObject,
-  resolveContextReferenceDEFUNCT,
-  TransformerForRuntime,
-  selectEntityJzodSchemaFromDomainStateNew,
-  selectFetchQueryJzodSchemaFromDomainStateNew,
-  selectJzodSchemaByDomainModelQueryFromDomainStateNew,
-  selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
   resolveContextReference,
-  selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
+  resolveContextReferenceDEFUNCT,
   selectEntityJzodSchemaFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
+  selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
-  transformer_InnerReference_resolve
+  transformer_InnerReference_resolve,
+  TransformerForRuntime
 } from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
@@ -239,8 +235,8 @@ export class SqlDbExtractTemplateRunner {
   };
 
   // ##############################################################################################
-  async handleQueryTemplate(queryTemplateAction: QueryTemplateAction): Promise<ActionReturnType> {
-    log.info(this.logHeader, "handleQueryTemplate", "queryTemplateAction", JSON.stringify(queryTemplateAction, null, 2));
+  async handleQueryTemplateForServerONLY(queryTemplateAction: QueryTemplateAction): Promise<ActionReturnType> {
+    log.info(this.logHeader, "handleQueryTemplateForServerONLY", "queryTemplateAction", JSON.stringify(queryTemplateAction, null, 2));
     let queryResult: DomainElement;
     switch (queryTemplateAction.query.queryType) {
       case "extractorTemplateForDomainModelObjects": {
@@ -272,7 +268,7 @@ export class SqlDbExtractTemplateRunner {
       } as ActionReturnType;
     } else {
       const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
-      log.info(this.logHeader, "handleQueryTemplate", "queryTemplateAction", queryTemplateAction, "result", JSON.stringify(result, null, 2));
+      log.info(this.logHeader, "handleQueryTemplateForServerONLY", "queryTemplateAction", queryTemplateAction, "result", JSON.stringify(result, null, 2));
       return result;
     }
   }

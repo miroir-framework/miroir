@@ -28,15 +28,10 @@ import { getDeploymentEntityStateIndex } from "./DeploymentEntityState.js";
 import {
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractFetchQueryJzodSchema,
-  // resolveContextReferenceDEFUNCT,
-  // extractWithManyExtractorTemplates,
-  // extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory,
-  // extractFetchQueryJzodSchema,
   extractJzodSchemaForDomainModelQuery,
   extractWithExtractor,
   extractWithManyExtractors,
   extractzodSchemaForSingleSelectQuery,
-  // extractWithExtractorTemplate,
   resolveContextReference,
 } from "./QuerySelectors.js";
 

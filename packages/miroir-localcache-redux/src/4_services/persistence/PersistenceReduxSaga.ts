@@ -230,7 +230,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                     "restMethodGetHandler could not find controller for deployment: " + action.deploymentUuid
                   );
                 }
-                const localStoreResult = yield* call(() => localPersistenceStoreController.handleQueryTemplate(action));
+                const localStoreResult = yield* call(() => localPersistenceStoreController.handleQueryTemplateForServerONLY(action));
                 return  yield localStoreResult;
                 break;
 

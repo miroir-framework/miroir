@@ -205,12 +205,12 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     }
 
     // #############################################################################################
-    async handleQueryTemplate(query: QueryTemplateAction): Promise<ActionReturnType> {
-      log.info(this.logHeader, "handleQueryTemplate", "query", query);
+    async handleQueryTemplateForServerONLY(query: QueryTemplateAction): Promise<ActionReturnType> {
+      log.info(this.logHeader, "handleQueryTemplateForServerONLY", "query", query);
 
-      const result: ActionReturnType = await this.extractorTemplateRunner.handleQueryTemplate(query);
+      const result: ActionReturnType = await this.extractorTemplateRunner.handleQueryTemplateForServerONLY(query);
 
-      log.info(this.logHeader, "handleQueryTemplate", "query", query, "result", result);
+      log.info(this.logHeader, "handleQueryTemplateForServerONLY", "query", query, "result", result);
       return result;
     }
 

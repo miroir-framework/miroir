@@ -638,10 +638,15 @@ export class DomainController implements DomainControllerInterface {
   }
 
   // ##############################################################################################
-  async handleQueryTemplate(queryTemplateAction: QueryTemplateAction): Promise<ActionReturnType> {
+  // called only in server.ts to handle queries on the server side
+  // used in RootComponent to fetch data from the server
+  // used in Importer.tsx
+  // used in scripts.ts
+  // used in tests
+  async handleQueryTemplateForServerONLY(queryTemplateAction: QueryTemplateAction): Promise<ActionReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     log.info(
-      "handleQueryTemplate",
+      "handleQueryTemplateForServerONLY",
       "deploymentUuid",
       queryTemplateAction.deploymentUuid,
       "actionName",
@@ -658,7 +663,7 @@ export class DomainController implements DomainControllerInterface {
        */
 
       const result: ActionReturnType = await this.persistenceStore.handlePersistenceAction(queryTemplateAction);
-      log.info("DomainController handleQueryTemplate queryTemplateAction callPersistenceAction Result=", result);
+      log.info("DomainController handleQueryTemplateForServerONLY queryTemplateAction callPersistenceAction Result=", result);
       return result;
     } else {
       // we're on the client, the query is sent to the server for execution.
@@ -667,7 +672,7 @@ export class DomainController implements DomainControllerInterface {
       // while non-transactional accesses are limited to persistence store access (does this make sense?)
       // in both cases this enforces only the most up-to-date data is accessed.
       log.info(
-        "DomainController handleQueryTemplate queryTemplateAction sending query to server for execution",
+        "DomainController handleQueryTemplateForServerONLY queryTemplateAction sending query to server for execution",
         JSON.stringify(queryTemplateAction)
       );
       const result = await this.callUtil.callPersistenceAction(
@@ -679,7 +684,7 @@ export class DomainController implements DomainControllerInterface {
         }, // continuation
         queryTemplateAction
       );
-      log.info("handleQueryTemplate queryTemplateAction callPersistenceAction Result=", result);
+      log.info("handleQueryTemplateForServerONLY queryTemplateAction callPersistenceAction Result=", result);
       return result["dataEntitiesFromModelSection"];
     }
 
@@ -775,7 +780,7 @@ export class DomainController implements DomainControllerInterface {
           //   actionParamValues
           // );
   
-          const actionResult = await this.handleQueryTemplate(currentAction.queryTemplateAction);
+          const actionResult = await this.handleQueryTemplateForServerONLY(currentAction.queryTemplateAction);
           if (actionResult?.status != "ok") {
             log.error("Error on query", JSON.stringify(actionResult, null, 2));
           } else {
@@ -816,21 +821,6 @@ export class DomainController implements DomainControllerInterface {
       case "compositeAction": {
         // old school, not used anymore (or should not be used anymore)
         throw new Error("DomainController handleAction compositeAction should not be used anymore");
-        // for (const currentAction of domainAction.definition) {
-        //   log.info("handleAction compositeAction resolved action", currentAction);
-        //   if (currentAction.compositeActionType == "query") {
-        //     const actionResult = await this.handleQueryTemplate(currentAction.query);
-        //     if (actionResult?.status != "ok") {
-        //       log.error("Error query", JSON.stringify(actionResult, null, 2));
-        //     }
-        //   } else {
-        //     const actionResult = await this.handleAction(currentAction.action, currentModel);
-        //     if (actionResult?.status != "ok") {
-        //       log.error("Error action", JSON.stringify(actionResult, null, 2));
-        //     }
-        //   }
-        // }
-        // return Promise.resolve(ACTION_OK);
         break;
       }
       case "modelAction": {

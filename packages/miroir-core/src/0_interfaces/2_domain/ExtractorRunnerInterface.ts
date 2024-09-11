@@ -105,8 +105,7 @@ export type ExtractorTemplateRunnerMap<StateType> = AsyncExtractorTemplateRunner
 
 // ################################################################################################
 export interface ExtractorTemplatePersistenceStoreRunner {
-  // handleQueryTemplate(section: ApplicationSection, query: QueryTemplateAction): Promise<ActionReturnType>;
-  handleQueryTemplate(query: QueryTemplateAction): Promise<ActionReturnType>;
+  handleQueryTemplateForServerONLY(query: QueryTemplateAction): Promise<ActionReturnType>;
   extractEntityInstance:AsyncExtractorTemplateRunner<
     ExtractorTemplateForSingleObject, DomainElementEntityInstanceOrFailed
   >;
@@ -197,7 +196,6 @@ export type ExtractorRunnerMap<StateType> = AsyncExtractorRunnerMap | SyncExtrac
 
 // ################################################################################################
 export interface ExtractorPersistenceStoreRunner {
-  // handleQueryTemplate(query: QueryTemplateAction): Promise<ActionReturnType>;
   handleQuery(query: QueryAction): Promise<ActionReturnType>;
   extractEntityInstance:AsyncExtractorRunner<
     ExtractorForSingleObject, DomainElementEntityInstanceOrFailed

@@ -71,7 +71,7 @@ export class ErrorModelStore implements PersistenceStoreModelSectionInterface {
   getInstances(parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType> {
     throw new Error("Method not implemented.");
   }
-  handleQueryTemplate(query: QueryTemplateAction): Promise<ActionReturnType> {
+  handleQueryTemplateForServerONLY(query: QueryTemplateAction): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
   handleQuery(query: QueryAction): Promise<ActionReturnType> {

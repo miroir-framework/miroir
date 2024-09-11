@@ -119,14 +119,14 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       query.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
     const result: ActionReturnType = await currentStore.handleQuery(query);
 
-    log.info(this.logHeader,'handleQueryTemplate','query',query, "result", JSON.stringify(result));
+    log.info(this.logHeader,'handleQueryTemplateForServerONLY','query',query, "result", JSON.stringify(result));
     return Promise.resolve(result);
   }
 
   // #############################################################################################
-  async handleQueryTemplate(query: QueryTemplateAction): Promise<ActionReturnType> {
+  async handleQueryTemplateForServerONLY(query: QueryTemplateAction): Promise<ActionReturnType> {
     // TODO: fix applicationSection!!!
-    log.info(this.logHeader,'handleQueryTemplate','query',query);
+    log.info(this.logHeader,'handleQueryTemplateForServerONLY','query',query);
     // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
     // log.info(this.logHeader,'this.modelStoreSection',this.modelStoreSection);
     
@@ -134,9 +134,18 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     // RIGHT NOW RESTRICT ALL SUBQUERIES OF A QUERY TO THE SAME SECTION !!!!
     const currentStore: PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface =
       query.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
-    const result: ActionReturnType = await currentStore.handleQueryTemplate(query);
+    // switch (query.query.queryType) {
+    //   case "extractorTemplateForDomainModelObjects":
+    //   case "extractorTemplateForRecordOfExtractors":
+        
+    //     break;
+    
+    //   default:
+    //     break;
+    // }
+    const result: ActionReturnType = await currentStore.handleQueryTemplateForServerONLY(query);
 
-    log.info(this.logHeader,'handleQueryTemplate','query',query, "result", JSON.stringify(result));
+    log.info(this.logHeader,'handleQueryTemplateForServerONLY','query',query, "result", JSON.stringify(result));
     return Promise.resolve(result);
   }
 
