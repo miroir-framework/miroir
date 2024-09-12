@@ -428,7 +428,7 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
                     attributeName: "name",
                     value: {
                       queryTemplateType: "constantString",
-                      definition: "or",
+                      constantStringValue: "or",
                     },
                   },
                 },

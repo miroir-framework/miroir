@@ -320,11 +320,18 @@ export class SqlDbExtractTemplateRunner {
 
     switch (querySelectorParams?.queryType) {
       case "selectObjectByRelation": {
-        const referenceObject = resolveContextReference(
+        const referenceObject = transformer_InnerReference_resolve(
+          "build",
           querySelectorParams.objectReference,
           selectorParams.extractorTemplate.queryParams,
           selectorParams.extractorTemplate.contextResults
         );
+
+        // const referenceObject = resolveContextReference(
+        //   querySelectorParams.objectReference,
+        //   selectorParams.extractorTemplate.queryParams,
+        //   selectorParams.extractorTemplate.contextResults
+        // );
 
         if (
           !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
@@ -600,7 +607,7 @@ export class SqlDbExtractTemplateRunner {
           //     },
           //   };
           // }
-          if (extractorRunnerParams.extractorTemplate.select.filter.value.queryTemplateType != "constantString") {
+          if (extractorRunnerParams.extractorTemplate.select.filter.value.templateType != "constantString") {
             return {
               elementType: "failure",
               elementValue: {
@@ -613,7 +620,7 @@ export class SqlDbExtractTemplateRunner {
             entityUuid.elementValue,
             {
               attribute: extractorRunnerParams.extractorTemplate.select.filter.attributeName,
-              value: extractorRunnerParams.extractorTemplate.select.filter.value.definition,
+              value: extractorRunnerParams.extractorTemplate.select.filter.value.constantStringValue,
             }
           );
           // if (entityInstanceCollection.status == "error") {

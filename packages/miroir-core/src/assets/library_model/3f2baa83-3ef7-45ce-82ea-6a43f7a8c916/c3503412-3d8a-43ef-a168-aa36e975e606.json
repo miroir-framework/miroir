@@ -30,7 +30,7 @@
           "constantUuidValue": "a027c379-8468-43a5-ba4d-bf618be25cab"
         },
         "objectReference": {
-          "queryTemplateType": "queryContextReference",
+          "templateType": "contextReference",
           "referenceName": "book"
         },
         "AttributeOfObjectToCompareToReferenceUuid": "publisher"
@@ -43,7 +43,7 @@
           "constantUuidValue": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
         },
         "objectReference": {
-          "queryTemplateType": "queryContextReference",
+          "templateType": "contextReference",
           "referenceName": "book"
         },
         "AttributeOfObjectToCompareToReferenceUuid": "author"

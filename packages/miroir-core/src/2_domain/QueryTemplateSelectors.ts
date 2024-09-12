@@ -300,7 +300,7 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
     case "queryTemplateExtractObjectListByEntity": {
       const localQuery: QueryTemplateExtractObjectListByEntity = extractor.select;
       const filterTest = localQuery.filter
-        ? new RegExp((localQuery.filter.value as any).definition, "i") // TODO: check for correct type
+        ? new RegExp((localQuery.filter.value as any).constantStringValue, "i") // TODO: check for correct type
         : undefined;
       log.info(
         "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory queryTemplateExtractObjectListByEntity filter",
@@ -775,38 +775,38 @@ export const extractWithManyExtractorTemplates = <StateType>(
       ...selectorParams.extractorTemplate.queryParams,
     };
 
-    const query = resolveQueryTemplate(extractorTemplate[1], queryParams, context);
+    // const query = resolveQueryTemplate(extractorTemplate[1], queryParams, context);
 
-    if ((query as any)?.queryFailure) {
-      log.error(
-        "extractWithManyExtractorTemplates failed for extractor",
-        extractorTemplate[0],
-        "query",
-        extractorTemplate[1],
-        "result=",
-        query
-      );
-      // context[extractorTemplate[0]] = query;
+    // if ((query as any)?.queryFailure) {
+    //   log.error(
+    //     "extractWithManyExtractorTemplates failed for extractor",
+    //     extractorTemplate[0],
+    //     "query",
+    //     extractorTemplate[1],
+    //     "result=",
+    //     query
+    //   );
+    //   // context[extractorTemplate[0]] = query;
       
-    }
-    let result = innerSelectElementFromQuery(
-      state,
-      context,
-      selectorParams.extractorTemplate.pageParams,
-      queryParams,
-      localSelectorMap as any,
-      selectorParams.extractorTemplate.deploymentUuid,
-      query as MiroirQuery
-    );
-    // let result = innerSelectElementFromQueryTemplate(
+    // }
+    // let result = innerSelectElementFromQuery(
     //   state,
     //   context,
     //   selectorParams.extractorTemplate.pageParams,
     //   queryParams,
     //   localSelectorMap as any,
     //   selectorParams.extractorTemplate.deploymentUuid,
-    //   extractorTemplate[1]
+    //   query as MiroirQuery
     // );
+    let result = innerSelectElementFromQueryTemplate(
+      state,
+      context,
+      selectorParams.extractorTemplate.pageParams,
+      queryParams,
+      localSelectorMap as any,
+      selectorParams.extractorTemplate.deploymentUuid,
+      extractorTemplate[1]
+    );
     // TODO: test for error!
     if (result.elementType == "failure") {
       log.error(

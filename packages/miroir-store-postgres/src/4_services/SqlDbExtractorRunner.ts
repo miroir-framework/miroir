@@ -619,7 +619,7 @@ export class SqlDbExtractRunner {
             entityUuid,
             {
               attribute: extractorRunnerParams.extractor.select.filter.attributeName,
-              value: extractorRunnerParams.extractor.select.filter.value.definition,
+              value: extractorRunnerParams.extractor.select.filter.value.constantStringValue,
             }
           );
           // if (entityInstanceCollection.status == "error") {

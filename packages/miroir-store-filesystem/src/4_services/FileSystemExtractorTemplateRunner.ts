@@ -27,7 +27,8 @@ import {
   selectEntityJzodSchemaFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
-  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate
+  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
+  transformer_InnerReference_resolve
 } from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
@@ -156,11 +157,17 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
 
     switch (querySelectorParams?.queryType) {
       case "selectObjectByRelation": {
-        const referenceObject = resolveContextReference(
+        const referenceObject = transformer_InnerReference_resolve(
+          "build",
           querySelectorParams.objectReference,
           selectorParams.extractorTemplate.queryParams,
           selectorParams.extractorTemplate.contextResults
         );
+        // const referenceObject = resolveContextReference(
+        //   querySelectorParams.objectReference,
+        //   selectorParams.extractorTemplate.queryParams,
+        //   selectorParams.extractorTemplate.contextResults
+        // );
 
         if (
           !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid ||
@@ -217,11 +224,17 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
         break;
       }
       case "selectObjectByDirectReference": {
-        const instanceDomainElement = resolveContextReference(
+        const instanceDomainElement = transformer_InnerReference_resolve(
+          "build",
           querySelectorParams.instanceUuid,
           selectorParams.extractorTemplate.queryParams,
           selectorParams.extractorTemplate.contextResults
         );
+        // const instanceDomainElement = resolveContextReference(
+        //   querySelectorParams.instanceUuid,
+        //   selectorParams.extractorTemplate.queryParams,
+        //   selectorParams.extractorTemplate.contextResults
+        // );
         // log.info("extractEntityInstance selectObjectByDirectReference found domainState", JSON.stringify(domainState))
 
         log.info(

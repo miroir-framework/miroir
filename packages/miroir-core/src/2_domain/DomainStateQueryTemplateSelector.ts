@@ -230,11 +230,17 @@ export const selectEntityInstanceFromObjectQueryAndDomainStateForTemplate: SyncE
 
   switch (querySelectorParams?.queryType) {
     case "selectObjectByRelation": {
-      const referenceObject = resolveContextReference(
+      const referenceObject = transformer_InnerReference_resolve(
+        "build",
         querySelectorParams.objectReference,
         selectorParams.extractorTemplate.queryParams,
         selectorParams.extractorTemplate.contextResults
       );
+      // const referenceObject = resolveContextReference(
+      //   querySelectorParams.objectReference,
+      //   selectorParams.extractorTemplate.queryParams,
+      //   selectorParams.extractorTemplate.contextResults
+      // );
 
       if (
         !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid

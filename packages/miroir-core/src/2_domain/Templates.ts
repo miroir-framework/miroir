@@ -104,8 +104,13 @@ export function resolveQueryTemplate(
       return {
         ...queryTemplate,
         parentUuid: resolveContextReference(queryTemplate.parentUuid, queryParams, contextResults).elementValue, // TODO: check for failure!
-        objectReference: resolveContextReference(queryTemplate.objectReference, queryParams, contextResults)
-          .elementValue, // TODO: check for failure!
+        // objectReference: resolveContextReference(queryTemplate.objectReference, queryParams, contextResults)
+        objectReference: transformer_InnerReference_resolve(
+          "build",
+          queryTemplate.objectReference,
+          queryParams,
+          contextResults
+        ).elementValue, // TODO: check for failure!
       };
       break;
     }

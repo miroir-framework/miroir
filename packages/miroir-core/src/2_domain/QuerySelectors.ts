@@ -252,7 +252,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
     case "queryExtractObjectListByEntity": {
       const localQuery: QueryExtractObjectListByEntity = extractor.select;
       const filterTest = localQuery.filter
-        ? new RegExp((localQuery.filter.value as any).definition, "i") // TODO: check for correct type
+        ? new RegExp((localQuery.filter.value as any).constantStringValue, "i") // TODO: check for correct type
         : undefined;
       log.info(
         "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory queryTemplateExtractObjectListByEntity filter",

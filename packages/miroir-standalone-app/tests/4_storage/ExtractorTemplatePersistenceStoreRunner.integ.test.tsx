@@ -198,6 +198,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
             actionType: "queryTemplateAction",
             actionName: "runQuery",
             deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+            // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             applicationSection: applicationSection,
             query: {
@@ -206,6 +207,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
               queryParams: {},
               contextResults: {},
               deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+              // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               select: {
                 queryType: "selectObjectByDirectReference",
                 applicationSection: "model",
@@ -442,8 +444,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   filter: {
                     attributeName: "name",
                     value: {
-                      queryTemplateType: "constantString",
-                      definition: "or",
+                      templateType: "constantString",
+                      constantStringValue: "or",
                     },
                   },
                 },
@@ -805,7 +807,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   constantUuidValue: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
                 },
                 objectReference: {
-                  queryTemplateType: "queryContextReference",
+                  templateType: "contextReference",
                   referenceName: "book",
                 },
                 AttributeOfObjectToCompareToReferenceUuid: "author",
