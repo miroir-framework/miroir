@@ -23,7 +23,6 @@ import {
   MiroirLoggerFactory,
   QueryAction,
   QuerySelectObject,
-  resolveContextReferenceDEFUNCT,
   selectEntityJzodSchemaFromDomainStateNew,
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
@@ -93,10 +92,12 @@ export class SqlDbExtractRunner {
       throw new Error("applyExtractorTransformerSql missing referencedExtractor");
     }
     
-    const referenceName = (actionRuntimeTransformer as any).referencedExtractor;
+    const referenceName:string = (actionRuntimeTransformer as any).referencedExtractor;
 
-    const resolvedReference = resolveContextReferenceDEFUNCT( // TODO: REMOVE resolveContextReferenceDEFUNCT!!
-      { queryTemplateType: "queryContextReference", referenceName: (actionRuntimeTransformer as any).referencedExtractor },
+    // const resolvedReference = resolveContextReferenceDEFUNCT( // TODO: REMOVE resolveContextReferenceDEFUNCT!!
+    const resolvedReference = transformer_InnerReference_resolve( // TODO: REMOVE resolveContextReferenceDEFUNCT!!
+      "build",
+      { templateType: "contextReference", referenceName },
       queryParams,
       newFetchedData
     );
