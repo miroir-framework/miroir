@@ -820,7 +820,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
                 },
                 objectReference: {
-                  queryTemplateType: "queryContextReference",
+                  templateType: "contextReference",
                   referenceName: "author",
                 },
                 AttributeOfListObjectToCompareToReferenceUuid: "author",

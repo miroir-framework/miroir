@@ -355,18 +355,24 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
 
             let otherIndex = undefined
             if (
-              relationQuery.objectReference?.queryTemplateType == "queryContextReference" &&
+              relationQuery.objectReference?.templateType == "contextReference" &&
               // extractor.contextResults?.elementType == "object" &&
               // extractor.contextResults.elementValue &&
               // extractor.contextResults.elementValue[relationQuery.objectReference.referenceName ?? ""]
               extractor.contextResults[relationQuery.objectReference.referenceName ?? ""]
             ) {
               otherIndex = ((extractor.contextResults[
-                relationQuery.objectReference.referenceName
+                relationQuery.objectReference.referenceName??""
               ] as any) ?? {})[relationQuery.objectReferenceAttribute ?? "uuid"];
-            } else if (relationQuery.objectReference?.queryTemplateType == "constantUuid") {
-              otherIndex = relationQuery.objectReference?.constantUuidValue;
+            } else {
+              throw new Error(
+                "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation must be a reference to an Object:" +
+                  JSON.stringify(relationQuery.objectReference, undefined, 2)
+              );
             }
+            // else if (relationQuery.objectReference?.templateType == "constantUuid") {
+            //   otherIndex = relationQuery.objectReference?.constantUuidValue;
+            // }
 
             log.info(
               "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation",
