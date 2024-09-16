@@ -456,10 +456,10 @@ export function getSelectorMapForTemplate(): SyncExtractorTemplateRunnerMap<Doma
 }
 
 // ################################################################################################
-export function getSelectorParamsForTemplate<QueryType extends ExtractorTemplateForDomainModel>(
-  query: QueryType,
+export function getSelectorParamsForTemplate<ExtractorTemplateType extends ExtractorTemplateForDomainModel>(
+  query: ExtractorTemplateType,
   extractorRunnerMap?: SyncExtractorTemplateRunnerMap<DomainState>
-): SyncExtractorTemplateRunnerParams<QueryType, DomainState> {
+): SyncExtractorTemplateRunnerParams<ExtractorTemplateType, DomainState> {
   return {
     extractorTemplate: query,
     extractorRunnerMap: extractorRunnerMap ?? getSelectorMapForTemplate(),

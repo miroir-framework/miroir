@@ -399,14 +399,14 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
       // log.info("applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation", selectedInstances)
       let otherList: Record<string,any> | undefined = undefined
       if (
-        relationQuery.objectListReference?.queryTemplateType == "queryContextReference" &&
+        relationQuery.objectListReference?.templateType == "contextReference" &&
         // extractor.contextResults?.elementType == "object" &&
         // extractor.contextResults.elementValue &&
         // extractor.contextResults.elementValue[relationQuery.objectListReference.referenceName ?? ""]
         extractor.contextResults[relationQuery.objectListReference.referenceName ?? ""]
       ) {
         otherList = (extractor.contextResults[
-          relationQuery.objectListReference.referenceName
+          relationQuery.objectListReference.referenceName??""
         ]) ?? {};
         // otherList = ((extractor.contextResults?.elementValue[
         //   relationQuery.objectListReference.referenceName
@@ -414,9 +414,10 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
         
         // log.info("applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation found otherList", otherList);
         
-      } else if (relationQuery.objectListReference?.queryTemplateType == "constantUuid") {
+      } else {
         throw new Error(
-          "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation provided constant for objectListReference. This cannot be a constant, it must be a reference to a List of Objects."
+          "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation must be a reference to a List of Objects: " +
+            JSON.stringify(relationQuery.objectListReference, undefined, 2)
         );
       }
 

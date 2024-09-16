@@ -404,7 +404,7 @@
               "objectListReference": {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "queryTemplateConstantOrAnyReference"
+                  "relativePath": "transformer_contextReference"
                 }
               },
               "objectListReferenceAttribute": {

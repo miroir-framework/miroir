@@ -4498,7 +4498,7 @@ export const miroirFundamentalJzodSchema = {
           "objectListReference": {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "queryTemplateConstantOrAnyReference",
+              "relativePath": "transformer_contextReference",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
             "context": {}
@@ -24773,7 +24773,7 @@ export const miroirFundamentalJzodSchema = {
               "objectListReference": {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryTemplateConstantOrAnyReference"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_contextReference"
                 },
                 "context": {}
               },

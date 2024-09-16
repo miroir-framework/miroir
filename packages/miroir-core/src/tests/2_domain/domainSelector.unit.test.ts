@@ -2,17 +2,15 @@ import adminConfigurationDeploymentLibrary from "../../assets/admin_data/7959d81
 
 import { DomainState } from "../../0_interfaces/2_domain/DomainControllerInterface.js";
 import {
-  getSelectorParams,
-  extractWithManyExtractorsFromDomainStateForTemplate,
-  extractWithExtractorFromDomainState
+  extractWithExtractorFromDomainState,
+  getSelectorParams
 } from "../../2_domain/DomainStateQuerySelectors.js";
 
 import {
-  DomainElement,
-  ExtractorTemplateForRecordOfExtractors,
+  ExtractorTemplateForRecordOfExtractors
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { circularReplacer } from "../../tools.js";
 import domainStateImport from "./domainState.json";
+import { extractWithExtractorFromDomainStateForTemplate, getSelectorParamsForTemplate } from "../../2_domain/DomainStateQueryTemplateSelector.js";
 
 const domainState: DomainState = domainStateImport as DomainState;
 
@@ -418,15 +416,19 @@ describe("domainSelector", () => {
             filter: {
               attributeName: "name",
               value: {
-                queryTemplateType: "constantString",
-                definition: "or",
+                templateType: "constantString",
+                constantStringValue: "or",
+                // definition: "or",
               },
             },
           },
         },
       };
 
-      const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
+      const queryResult: any = extractWithExtractorFromDomainStateForTemplate(
+        domainState,
+        getSelectorParamsForTemplate(queryParam)
+      );
 
       console.log("result", queryResult);
       
@@ -476,7 +478,7 @@ describe("domainSelector", () => {
               constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             instanceUuid: {
-              queryTemplateType: "constantUuid",
+              templateType: "constantUuid",
               constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
             },
           },
@@ -490,7 +492,7 @@ describe("domainSelector", () => {
               constantUuidValue: "a027c379-8468-43a5-ba4d-bf618be25cab",
             },
             objectReference: {
-              queryTemplateType: "queryContextReference",
+              templateType: "contextReference",
               referenceName: "book",
             },
             AttributeOfObjectToCompareToReferenceUuid: "publisher",
@@ -503,7 +505,7 @@ describe("domainSelector", () => {
               constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             objectReference: {
-              queryTemplateType: "queryContextReference",
+              templateType: "contextReference",
               referenceName: "publisher",
             },
             AttributeOfListObjectToCompareToReferenceUuid: "publisher",
@@ -513,7 +515,11 @@ describe("domainSelector", () => {
         },
       };
 
-      const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
+      // const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
+      const queryResult: any = extractWithExtractorFromDomainStateForTemplate(
+        domainState,
+        getSelectorParamsForTemplate(queryParam)
+      );
 
       console.log("result", queryResult);
       
@@ -552,7 +558,7 @@ describe("domainSelector", () => {
               constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             instanceUuid: {
-              queryTemplateType: "constantUuid",
+              templateType: "constantUuid",
               constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
             },
           },
@@ -566,7 +572,7 @@ describe("domainSelector", () => {
               constantUuidValue: "a027c379-8468-43a5-ba4d-bf618be25cab",
             },
             objectReference: {
-              queryTemplateType: "queryContextReference",
+              templateType: "contextReference",
               referenceName: "book",
             },
             AttributeOfObjectToCompareToReferenceUuid: "publisher",
@@ -579,7 +585,7 @@ describe("domainSelector", () => {
               constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             objectReference: {
-              queryTemplateType: "queryContextReference",
+              templateType: "contextReference",
               referenceName: "publisher",
             },
             AttributeOfListObjectToCompareToReferenceUuid: "publisher",
@@ -603,7 +609,11 @@ describe("domainSelector", () => {
         },
       };
 
-      const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
+      // const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
+      const queryResult: any = extractWithExtractorFromDomainStateForTemplate(
+        domainState,
+        getSelectorParamsForTemplate(queryParam)
+      );
 
       console.log("result", JSON.stringify(queryResult, undefined, 2));
 
@@ -678,7 +688,11 @@ describe("domainSelector", () => {
         },
       };
 
-      const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
+      // const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
+      const queryResult: any = extractWithExtractorFromDomainStateForTemplate(
+        domainState,
+        getSelectorParamsForTemplate(queryParam)
+      );
 
       // console.log("result", JSON.stringify(queryResult, undefined, 2));
 
@@ -736,7 +750,11 @@ describe("domainSelector", () => {
         },
       };
 
-      const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
+      // const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParams(queryParam));
+      const queryResult: any = extractWithExtractorFromDomainStateForTemplate(
+        domainState,
+        getSelectorParamsForTemplate(queryParam)
+      );
 
       console.log("result", JSON.stringify(queryResult, null, 2));
       

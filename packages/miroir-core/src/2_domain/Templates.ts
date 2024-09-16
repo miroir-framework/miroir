@@ -26,7 +26,13 @@ export function resolveQueryTemplate(
           parentUuid: resolveContextReference(queryTemplate.parentUuid, queryParams, contextResults).elementValue, // TODO: check for failure!
           filter: {
             attributeName: queryTemplate.filter.attributeName,
-            value: resolveContextReference(queryTemplate.filter.value, queryParams, contextResults).elementValue, // TODO: check for failure!
+            // value: resolveContextReference(queryTemplate.filter.value, queryParams, contextResults).elementValue, // TODO: check for failure!
+            value: transformer_InnerReference_resolve(
+              "build",
+              queryTemplate.filter.value,
+              queryParams,
+              contextResults
+            ).elementValue, // TODO: check for failure!
           },
         };
       } else {
@@ -118,8 +124,12 @@ export function resolveQueryTemplate(
       return {
         ...queryTemplate,
         parentUuid: resolveContextReference(queryTemplate.parentUuid, queryParams, contextResults).elementValue, // TODO: check for failure!
-        objectListReference: resolveContextReference(queryTemplate.objectListReference, queryParams, contextResults)
-          .elementValue, // TODO: check for failure!
+        objectListReference: transformer_InnerReference_resolve(
+          "build",
+          queryTemplate.objectListReference,
+          queryParams,
+          contextResults
+        ).elementValue, // TODO: check for failure!
       };
       break;
     }
@@ -127,8 +137,13 @@ export function resolveQueryTemplate(
       return {
         ...queryTemplate,
         parentUuid: resolveContextReference(queryTemplate.parentUuid, queryParams, contextResults).elementValue, // TODO: check for failure!
-        objectReference: resolveContextReference(queryTemplate.objectReference, queryParams, contextResults)
-          .elementValue, // TODO: check for failure!
+        // objectReference: resolveContextReference(queryTemplate.objectReference, queryParams, contextResults)
+        objectReference: transformer_InnerReference_resolve(
+          "build",
+          queryTemplate.objectReference,
+          queryParams,
+          contextResults
+        ).elementValue, // TODO: check for failure!
       };
       break;
     }
