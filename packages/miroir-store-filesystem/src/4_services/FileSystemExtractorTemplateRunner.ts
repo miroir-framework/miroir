@@ -127,11 +127,6 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
       selectorParams.extractorTemplate.queryParams,
       selectorParams.extractorTemplate.contextResults
     );
-    // const entityUuidReference: DomainElement = resolveContextReference(
-    //   querySelectorParams.parentUuid,
-    //   selectorParams.extractorTemplate.queryParams,
-    //   selectorParams.extractorTemplate.contextResults
-    // );
 
     log.info(
       "extractEntityInstance params",
@@ -169,11 +164,6 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
           selectorParams.extractorTemplate.queryParams,
           selectorParams.extractorTemplate.contextResults
         );
-        // const referenceObject = resolveContextReference(
-        //   querySelectorParams.objectReference,
-        //   selectorParams.extractorTemplate.queryParams,
-        //   selectorParams.extractorTemplate.contextResults
-        // );
 
         if (
           !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid ||
@@ -236,11 +226,6 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
           selectorParams.extractorTemplate.queryParams,
           selectorParams.extractorTemplate.contextResults
         );
-        // const instanceDomainElement = resolveContextReference(
-        //   querySelectorParams.instanceUuid,
-        //   selectorParams.extractorTemplate.queryParams,
-        //   selectorParams.extractorTemplate.contextResults
-        // );
         // log.info("extractEntityInstance selectObjectByDirectReference found domainState", JSON.stringify(domainState))
 
         log.info(
@@ -350,11 +335,6 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
       extractorRunnerParams.extractorTemplate.queryParams,
       extractorRunnerParams.extractorTemplate.contextResults
     );
-    // const entityUuid: DomainElement = resolveContextReference(
-    //   extractorRunnerParams.extractorTemplate.select.parentUuid,
-    //   extractorRunnerParams.extractorTemplate.queryParams,
-    //   extractorRunnerParams.extractorTemplate.contextResults
-    // );
 
     // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate params", selectorParams, deploymentUuid, applicationSection, entityUuid);
     // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate domainState", domainState);

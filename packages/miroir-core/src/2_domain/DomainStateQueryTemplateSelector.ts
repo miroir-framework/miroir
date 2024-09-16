@@ -96,11 +96,6 @@ export const selectEntityInstanceUuidIndexFromDomainStateForTemplate: SyncExtrac
     selectorParams.extractorTemplate.queryParams,
     selectorParams.extractorTemplate.contextResults
   );
-  // const entityUuid: DomainElement = resolveContextReference(
-  //   selectorParams.extractorTemplate.select.parentUuid,
-  //   selectorParams.extractorTemplate.queryParams,
-  //   selectorParams.extractorTemplate.contextResults
-  // );
 
   // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate params", selectorParams, deploymentUuid, applicationSection, entityUuid);
   // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate domainState", domainState);
@@ -220,11 +215,6 @@ export const selectEntityInstanceFromObjectQueryAndDomainStateForTemplate: SyncE
     selectorParams.extractorTemplate.queryParams,
     selectorParams.extractorTemplate.contextResults
   );
-  // const entityUuidReference: DomainElement = resolveContextReference(
-  //   querySelectorParams.parentUuid,
-  //   selectorParams.extractorTemplate.queryParams,
-  //   selectorParams.extractorTemplate.contextResults
-  // );
   log.info("selectEntityInstanceFromObjectQueryAndDomainStateForTemplate entityUuidReference", entityUuidDomainElement);
 
   if (entityUuidDomainElement.elementType != "string" && entityUuidDomainElement.elementType != "instanceUuid") {
@@ -248,16 +238,9 @@ export const selectEntityInstanceFromObjectQueryAndDomainStateForTemplate: SyncE
         selectorParams.extractorTemplate.queryParams,
         selectorParams.extractorTemplate.contextResults
       );
-      // const referenceObject = resolveContextReference(
-      //   querySelectorParams.objectReference,
-      //   selectorParams.extractorTemplate.queryParams,
-      //   selectorParams.extractorTemplate.contextResults
-      // );
 
       if (
         !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
-        // ||
-        // referenceObject.elementType != "instance"
       ) {
         return {
           elementType: "failure",
@@ -323,11 +306,6 @@ export const selectEntityInstanceFromObjectQueryAndDomainStateForTemplate: SyncE
         selectorParams.extractorTemplate.queryParams,
         selectorParams.extractorTemplate.contextResults
       );
-      // const instanceUuidDomainElement = resolveContextReference(
-      //   querySelectorParams.instanceUuid,
-      //   selectorParams.extractorTemplate.queryParams,
-      //   selectorParams.extractorTemplate.contextResults
-      // );
 
       log.info(
         "selectEntityInstanceFromObjectQueryAndDomainStateForTemplate found instanceUuid",

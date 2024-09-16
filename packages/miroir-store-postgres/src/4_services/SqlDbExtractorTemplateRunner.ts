@@ -294,11 +294,6 @@ export class SqlDbExtractTemplateRunner {
       selectorParams.extractorTemplate.queryParams,
       selectorParams.extractorTemplate.contextResults
     );
-    // const entityUuidReference: DomainElement = resolveContextReference(
-    //   querySelectorParams.parentUuid,
-    //   selectorParams.extractorTemplate.queryParams,
-    //   selectorParams.extractorTemplate.contextResults
-    // );
 
     log.info(
       "extractEntityInstanceForTemplate params",
@@ -333,12 +328,6 @@ export class SqlDbExtractTemplateRunner {
           selectorParams.extractorTemplate.queryParams,
           selectorParams.extractorTemplate.contextResults
         );
-
-        // const referenceObject = resolveContextReference(
-        //   querySelectorParams.objectReference,
-        //   selectorParams.extractorTemplate.queryParams,
-        //   selectorParams.extractorTemplate.contextResults
-        // );
 
         if (
           !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
@@ -404,11 +393,6 @@ export class SqlDbExtractTemplateRunner {
           selectorParams.extractorTemplate.contextResults
         );
 
-        // const instanceDomainElement = resolveContextReference(
-        //   querySelectorParams.instanceUuid,
-        //   selectorParams.extractorTemplate.queryParams,
-        //   selectorParams.extractorTemplate.contextResults
-        // );
         // log.info("extractEntityInstanceForTemplate selectObjectByDirectReference found domainState", JSON.stringify(domainState))
 
         log.info(
@@ -493,11 +477,6 @@ export class SqlDbExtractTemplateRunner {
       extractorRunnerParams.extractorTemplate.queryParams,
       extractorRunnerParams.extractorTemplate.contextResults
     );
-    // const entityUuid: DomainElement = resolveContextReference(
-    //   extractorRunnerParams.extractorTemplate.select.parentUuid,
-    //   extractorRunnerParams.extractorTemplate.queryParams,
-    //   extractorRunnerParams.extractorTemplate.contextResults
-    // );
 
     // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate params", selectorParams, deploymentUuid, applicationSection, entityUuid);
     // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate domainState", domainState);
@@ -581,11 +560,6 @@ export class SqlDbExtractTemplateRunner {
       extractorRunnerParams.extractorTemplate.queryParams,
       extractorRunnerParams.extractorTemplate.contextResults
     );
-    // const entityUuid: DomainElement = resolveContextReference(
-    //   extractorRunnerParams.extractorTemplate.select.parentUuid,
-    //   extractorRunnerParams.extractorTemplate.queryParams,
-    //   extractorRunnerParams.extractorTemplate.contextResults
-    // );
 
     // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate params", selectorParams, deploymentUuid, applicationSection, entityUuid);
     // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate domainState", domainState);

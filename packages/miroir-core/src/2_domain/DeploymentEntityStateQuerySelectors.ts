@@ -34,6 +34,7 @@ import {
   extractzodSchemaForSingleSelectQuery,
   resolveContextReference,
 } from "./QuerySelectors.js";
+import { transformer_InnerReference_resolve } from "./Transformers.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "DeploymentEntityStateQuerySelector");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -65,11 +66,6 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorRunner<
       "data") as ApplicationSection);
 
   const entityUuidReference = querySelectorParams.parentUuid
-  // const entityUuidReference: DomainElement = resolveContextReference(
-  //   querySelectorParams.parentUuid,
-  //   selectorParams.extractor.queryParams,
-  //   selectorParams.extractor.contextResults
-  // );
 
   log.info(
     "selectEntityInstanceFromDeploymentEntityState params",
@@ -97,16 +93,15 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorRunner<
   switch (querySelectorParams?.queryType) {
     case "selectObjectByRelation": {
       // TODO: reference object is implicitly a contextReference here, should be made explicit?!
-      const referenceObject = resolveContextReference(
-        { queryTemplateType: "queryContextReference", referenceName: querySelectorParams.objectReference },
+      const referenceObject = transformer_InnerReference_resolve(
+        "build",
+        { templateType: "contextReference", referenceName: querySelectorParams.objectReference },
         selectorParams.extractor.queryParams,
         selectorParams.extractor.contextResults
       );
-
+    
       if (
         !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
-        // ||
-        // referenceObject.elementType != "instance"
       ) {
         log.error(
           "selectEntityInstanceFromDeploymentEntityState selectObjectByRelation, querySelectorParams",
@@ -168,11 +163,6 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorRunner<
     case "selectObjectByDirectReference": {
       // TODO: instanceUuid is implicitly a constant here, should be made explicit?!
       const instanceDomainElement = querySelectorParams.instanceUuid;
-      // const instanceDomainElement = resolveContextReference(
-      //   querySelectorParams.instanceUuid,
-      //   selectorParams.extractor.queryParams,
-      //   selectorParams.extractor.contextResults
-      // );
       // log.info("selectEntityInstanceFromDeploymentEntityState selectObjectByDirectReference found domainState", JSON.stringify(domainState))
 
       log.info(
@@ -263,11 +253,6 @@ export const selectEntityInstanceUuidIndexFromDeploymentEntityState: SyncExtract
   const applicationSection = selectorParams.extractor.select.applicationSection ?? "data";
 
   const entityUuid = selectorParams.extractor.select.parentUuid;
-  // const entityUuid: DomainElement = resolveContextReference(
-  //   selectorParams.extractor.select.parentUuid,
-  //   selectorParams.extractor.queryParams,
-  //   selectorParams.extractor.contextResults
-  // );
 
   log.info(
     "selectEntityInstanceUuidIndexFromDeploymentEntityState params",

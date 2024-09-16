@@ -18,18 +18,17 @@ import {
   ExtractorForSingleObject,
   ExtractorForSingleObjectList,
   ExtractorRunnerMapForJzodSchema,
-  ExtractorTemplateRunnerMapForJzodSchema,
   getLoggerName,
   LoggerInterface,
   MiroirLoggerFactory,
   QueryAction,
   QuerySelectObject,
-  resolveContextReference,
   resolveContextReferenceDEFUNCT,
   selectEntityJzodSchemaFromDomainStateNew,
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
+  transformer_InnerReference_resolve,
   TransformerForRuntime
 } from "miroir-core";
 import { packageName } from "../constants.js";
@@ -296,11 +295,6 @@ export class SqlDbExtractRunner {
         "data") as ApplicationSection);
 
     const entityUuidReference = querySelectorParams.parentUuid
-    // const entityUuidReference: DomainElement = resolveContextReference(
-    //   querySelectorParams.parentUuid,
-    //   selectorParams.extractor.queryParams,
-    //   selectorParams.extractor.contextResults
-    // );
 
     log.info(
       "extractEntityInstance params",
@@ -310,30 +304,15 @@ export class SqlDbExtractRunner {
       entityUuidReference
     );
 
-    // if (entityUuidReference.elementType != "string" && entityUuidReference.elementType != "instanceUuid") {
-    //   return {
-    //     elementType: "failure",
-    //     elementValue: {
-    //       queryFailure: "IncorrectParameters",
-    //       queryReference: JSON.stringify(querySelectorParams.parentUuid),
-    //     },
-    //   };
-    // }
-
-    // const index = getDeploymentEntityStateIndex(
-    //   deploymentUuid,
-    //   applicationSection,
-    //   entityUuidReference.elementValue
-    // )
-
     switch (querySelectorParams?.queryType) {
       case "selectObjectByRelation": {
-        const referenceObject = resolveContextReference( // TODO: remove resolveContextReference altogether
-          { queryTemplateType: "queryContextReference", referenceName: querySelectorParams.objectReference},
+        const referenceObject = transformer_InnerReference_resolve(
+          "build",
+          { templateType: "contextReference", referenceName: querySelectorParams.objectReference },
           selectorParams.extractor.queryParams,
           selectorParams.extractor.contextResults
         );
-
+  
         if (
           !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
           ||
@@ -384,21 +363,11 @@ export class SqlDbExtractRunner {
         return {
           elementType: "instance",
           elementValue: result.returnedDomainElement.elementValue,
-          // deploymentEntityState[index].entities[
-          //   (referenceObject.elementValue as any)[
-          //     querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
-          //   ]
-          // ],
         };
         break;
       }
       case "selectObjectByDirectReference": {
         const instanceDomainElement = querySelectorParams.instanceUuid
-        // const instanceDomainElement = resolveContextReference(
-        //   querySelectorParams.instanceUuid,
-        //   selectorParams.extractor.queryParams,
-        //   selectorParams.extractor.contextResults
-        // );
         // log.info("selectEntityInstanceFromDeploymentEntityStateForTemplate selectObjectByDirectReference found domainState", JSON.stringify(domainState))
 
         log.info(
@@ -406,21 +375,6 @@ export class SqlDbExtractRunner {
           JSON.stringify(instanceDomainElement)
         );
 
-        // if (instanceUuid.elementType != "string" && instanceUuid.elementType != "instanceUuid") {
-        // if (instanceDomainElement.elementType == "instance") {
-        //   return instanceDomainElement; /* QueryResults, elementType == "failure" */
-        // }
-        // if (instanceDomainElement.elementType != "string" && instanceDomainElement.elementType != "instanceUuid") {
-        //   return {
-        //     elementType: "failure",
-        //     elementValue: {
-        //       queryFailure: "EntityNotFound",
-        //       deploymentUuid,
-        //       applicationSection,
-        //       entityUuid: entityUuidReference.elementValue,
-        //     },
-        //   };
-        // }
         log.info("extractEntityInstance resolved instanceUuid =", instanceDomainElement);
         const result = await this.persistenceStoreController.getInstance(
           entityUuidReference,
@@ -478,30 +432,10 @@ export class SqlDbExtractRunner {
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
 
     const entityUuid = extractorRunnerParams.extractor.select.parentUuid;
-    // const entityUuid: DomainElement = resolveContextReference(
-    //   extractorRunnerParams.extractor.select.parentUuid,
-    //   extractorRunnerParams.extractor.queryParams,
-    //   extractorRunnerParams.extractor.contextResults
-    // );
 
     // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate params", selectorParams, deploymentUuid, applicationSection, entityUuid);
     // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate domainState", domainState);
 
-    // if (!deploymentUuid || !applicationSection || !entityUuid) {
-    //   return {
-    //     // new object
-    //     elementType: "failure",
-    //     elementValue: {
-    //       queryFailure: "IncorrectParameters",
-    //       queryParameters: JSON.stringify(extractorRunnerParams),
-    //     },
-    //   };
-    //   // resolving by fetchDataReference, fetchDataReferenceAttribute
-    // }
-
-    // switch (entityUuid.elementType) {
-    //   case "string":
-    //   case "instanceUuid": {
     const entityInstanceCollection: ActionEntityInstanceCollectionReturnType =
       await this.persistenceStoreController.getInstances(
         entityUuid
@@ -522,32 +456,6 @@ export class SqlDbExtractRunner {
       entityInstanceCollection.returnedDomainElement.elementValue.instances.map((i) => [i.uuid, i])
     );
     return { elementType: "instanceUuidIndex", elementValue: entityInstanceUuidIndex };
-      //   break;
-      // }
-      // case "object":
-      // case "instance":
-      // case "instanceUuidIndex":
-      // case "instanceUuidIndexUuidIndex":
-      // case "array": {
-      //   return {
-      //     elementType: "failure",
-      //     elementValue: {
-      //       queryFailure: "IncorrectParameters",
-      //       queryReference: JSON.stringify(extractorRunnerParams.extractor.select.parentUuid),
-      //     },
-      //   };
-      // }
-      // case "failure": {
-      //   return entityUuid;
-      //   break;
-      // }
-      // default: {
-      //   throw new Error(
-      //     "selectEntityInstanceUuidIndexFromDomainStateForTemplate could not handle reference entityUuid=" + entityUuid
-      //   );
-      //   break;
-      // }
-    // }
   };
 
   // ##############################################################################################
@@ -561,11 +469,6 @@ export class SqlDbExtractRunner {
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
 
     const entityUuid = extractorRunnerParams.extractor.select.parentUuid;
-    // const entityUuid: DomainElement = resolveContextReference(
-    //   extractorRunnerParams.extractor.select.parentUuid,
-    //   extractorRunnerParams.extractor.queryParams,
-    //   extractorRunnerParams.extractor.contextResults
-    // );
 
     // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate params", selectorParams, deploymentUuid, applicationSection, entityUuid);
     // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate domainState", domainState);
@@ -582,107 +485,39 @@ export class SqlDbExtractRunner {
       // resolving by fetchDataReference, fetchDataReferenceAttribute
     }
 
-    // switch (entityUuid.elementType) {
-    //   case "string":
-    //   case "instanceUuid": {
     let entityInstanceCollection: ActionEntityInstanceCollectionReturnType;
     if (
       extractorRunnerParams.extractor.select.queryType == "queryExtractObjectListByEntity" &&
       extractorRunnerParams.extractor.select.filter
     ) {
-          // TODO: resolve filter value
-          // const resolvedFilterValue: DomainElement = resolveContextReferenceDEFUNCT(
-          //   extractorRunnerParams.extractor.select.parentUuid,
-          //   extractorRunnerParams.extractor.queryParams,
-          //   extractorRunnerParams.extractor.contextResults
-          // );
-          // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate resolvedFilterValue", resolvedFilterValue);
-          // if (resolvedFilterValue.elementType != "string") {
-          //   return {
-          //     elementType: "failure",
-          //     elementValue: {
-          //       queryFailure: "IncorrectParameters",
-          //       queryParameters: JSON.stringify(extractorRunnerParams),
-          //     },
-          //   };
-          // }
-          // if (extractorRunnerParams.extractor.select.filter.value.queryTemplateType != "constantString") {
-          //   return {
-          //     elementType: "failure",
-          //     elementValue: {
-          //       queryFailure: "IncorrectParameters",
-          //       queryParameters: JSON.stringify(extractorRunnerParams),
-          //     },
-          //   };
-          // }
-          entityInstanceCollection = await this.persistenceStoreController.getInstancesWithFilter(
-            entityUuid,
-            {
-              attribute: extractorRunnerParams.extractor.select.filter.attributeName,
-              value: extractorRunnerParams.extractor.select.filter.value.constantStringValue,
-            }
-          );
-          // if (entityInstanceCollection.status == "error") {
-          //   return {
-          //     elementType: "failure",
-          //     elementValue: {
-          //       queryFailure: "EntityNotFound",
-          //       deploymentUuid,
-          //       applicationSection,
-          //       entityUuid: entityUuid.elementValue,
-          //     },
-          //   };
-          // }
-          // const entityInstanceUuidIndex = Object.fromEntries(entityInstanceCollection.returnedDomainElement.elementValue.instances.map(i => [i.uuid, i]));
-          // return { elementType: "instanceUuidIndex", elementValue: entityInstanceUuidIndex };
-        } else {
-          entityInstanceCollection = await this.persistenceStoreController.getInstances(
-            // applicationSection,
-            entityUuid
-          );
+      entityInstanceCollection = await this.persistenceStoreController.getInstancesWithFilter(
+        entityUuid,
+        {
+          attribute: extractorRunnerParams.extractor.select.filter.attributeName,
+          value: extractorRunnerParams.extractor.select.filter.value.constantStringValue,
         }
+      );
+    } else {
+      entityInstanceCollection = await this.persistenceStoreController.getInstances(
+        entityUuid
+      );
+    }
 
-        if (entityInstanceCollection.status == "error") {
-          return {
-            elementType: "failure",
-            elementValue: {
-              queryFailure: "EntityNotFound", // TODO: find corresponding queryFailure from data.status
-              deploymentUuid,
-              applicationSection,
-              entityUuid: entityUuid,
-            },
-          };
-        }
-        const entityInstanceUuidIndex = Object.fromEntries(
-          entityInstanceCollection.returnedDomainElement.elementValue.instances.map((i) => [i.uuid, i])
-        );
-        return { elementType: "instanceUuidIndex", elementValue: entityInstanceUuidIndex };
-    //     break;
-    //   }
-    //   case "object":
-    //   case "instance":
-    //   case "instanceUuidIndex":
-    //   case "instanceUuidIndexUuidIndex":
-    //   case "array": {
-    //     return {
-    //       elementType: "failure",
-    //       elementValue: {
-    //         queryFailure: "IncorrectParameters",
-    //         queryReference: JSON.stringify(extractorRunnerParams.extractor.select.parentUuid),
-    //       },
-    //     };
-    //   }
-    //   case "failure": {
-    //     return entityUuid;
-    //     break;
-    //   }
-    //   default: {
-    //     throw new Error(
-    //       "selectEntityInstanceUuidIndexFromDomainStateForTemplate could not handle reference entityUuid=" + entityUuid
-    //     );
-    //     break;
-    //   }
-    // }
+    if (entityInstanceCollection.status == "error") {
+      return {
+        elementType: "failure",
+        elementValue: {
+          queryFailure: "EntityNotFound", // TODO: find corresponding queryFailure from data.status
+          deploymentUuid,
+          applicationSection,
+          entityUuid: entityUuid,
+        },
+      };
+    }
+    const entityInstanceUuidIndex = Object.fromEntries(
+      entityInstanceCollection.returnedDomainElement.elementValue.instances.map((i) => [i.uuid, i])
+    );
+    return { elementType: "instanceUuidIndex", elementValue: entityInstanceUuidIndex };
   };
 
   // ##############################################################################################

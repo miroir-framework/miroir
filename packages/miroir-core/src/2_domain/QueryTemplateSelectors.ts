@@ -921,11 +921,6 @@ export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
     );
   }
 
-  // const entityUuidDomainElement: DomainElement = resolveContextReference(
-  //   selectorParams.query.select.parentUuid,
-  //   selectorParams.query.queryParams,
-  //   selectorParams.query.contextResults
-  // );
   const entityUuidDomainElement = transformer_InnerReference_resolve(
     "build",
     selectorParams.query.select.parentUuid,

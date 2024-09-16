@@ -44,6 +44,7 @@ import {
 import {
   resolveContextReference
 } from "./QueryTemplateSelectors.js";
+import { transformer_InnerReference_resolve } from "./Transformers.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "DomainStateQuerySelector");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -109,11 +110,6 @@ export const selectEntityInstanceUuidIndexFromDomainState: SyncExtractorRunner<
   const applicationSection = selectorParams.extractor.select.applicationSection ?? "data";
 
   const entityUuid: Uuid = selectorParams.extractor.select.parentUuid;
-  // const entityUuid: DomainElement = resolveContextReference(
-  //   selectorParams.extractor.select.parentUuid,
-  //   selectorParams.extractor.queryParams,
-  //   selectorParams.extractor.contextResults
-  // );
 
   // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate params", selectorParams, deploymentUuid, applicationSection, entityUuid);
   // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate domainState", domainState);
@@ -228,11 +224,6 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
     applicationSection
   );
   const entityUuidReference: Uuid = querySelectorParams.parentUuid;
-  // const entityUuidReference: DomainElement = resolveContextReference(
-  //   querySelectorParams.parentUuid,
-  //   selectorParams.extractorTemplate.queryParams,
-  //   selectorParams.extractorTemplate.contextResults
-  // );
   log.info("selectEntityInstanceFromObjectQueryAndDomainStateForTemplate entityUuidReference", entityUuidReference);
 
   // if (entityUuidReference.elementType != "string" && entityUuidReference.elementType != "instanceUuid") {
@@ -250,9 +241,9 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
 
   switch (querySelectorParams?.queryType) {
     case "selectObjectByRelation": {
-      // const referenceObject = resolveContextReference(
-      const referenceObject = resolveContextReference(
-        { queryTemplateType: "queryContextReference", referenceName: querySelectorParams.objectReference},
+      const referenceObject = transformer_InnerReference_resolve(
+        "build",
+        { templateType: "contextReference", referenceName: querySelectorParams.objectReference },
         selectorParams.extractor.queryParams,
         selectorParams.extractor.contextResults
       );
@@ -321,11 +312,6 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
     }
     case "selectObjectByDirectReference": {
       const instanceUuidDomainElement = querySelectorParams.instanceUuid;
-      // const instanceUuidDomainElement = resolveContextReference(
-      //   querySelectorParams.instanceUuid,
-      //   selectorParams.extractorTemplate.queryParams,
-      //   selectorParams.extractorTemplate.contextResults
-      // );
 
       log.info(
         "selectEntityInstanceFromObjectQueryAndDomainStateForTemplate found instanceUuid",

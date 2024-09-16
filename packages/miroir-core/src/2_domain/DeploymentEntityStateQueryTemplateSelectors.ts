@@ -77,12 +77,6 @@ export const selectEntityInstanceFromDeploymentEntityStateForTemplate: SyncExtra
     selectorParams.extractorTemplate.contextResults
   );
   
-  // const parentUuidDomainElement: DomainElement = resolveContextReference(
-  //   querySelectorParams.parentUuid,
-  //   selectorParams.extractorTemplate.queryParams,
-  //   selectorParams.extractorTemplate.contextResults
-  // );
-
   log.info(
     "selectEntityInstanceFromDeploymentEntityStateForTemplate params",
     querySelectorParams,
@@ -118,16 +112,8 @@ export const selectEntityInstanceFromDeploymentEntityStateForTemplate: SyncExtra
         selectorParams.extractorTemplate.queryParams,
         selectorParams.extractorTemplate.contextResults
       );
-      // const referenceObject = resolveContextReference(
-      //   querySelectorParams.objectReference,
-      //   selectorParams.extractorTemplate.queryParams,
-      //   selectorParams.extractorTemplate.contextResults
-      // );
-
       if (
         !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
-        // ||
-        // referenceObject.elementType != "instance"
       ) {
         log.error(
           "selectEntityInstanceFromDeploymentEntityStateForTemplate selectObjectByRelation, querySelectorParams",
@@ -193,11 +179,6 @@ export const selectEntityInstanceFromDeploymentEntityStateForTemplate: SyncExtra
         selectorParams.extractorTemplate.queryParams,
         selectorParams.extractorTemplate.contextResults
       );
-      // const instanceDomainElement = resolveContextReference(
-      //   querySelectorParams.instanceUuid,
-      //   selectorParams.extractorTemplate.queryParams,
-      //   selectorParams.extractorTemplate.contextResults
-      // );
       // log.info("selectEntityInstanceFromDeploymentEntityStateForTemplate selectObjectByDirectReference found domainState", JSON.stringify(domainState))
 
       log.info(
@@ -301,11 +282,6 @@ export const selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate: 
     selectorParams.extractorTemplate.queryParams,
     selectorParams.extractorTemplate.contextResults
   );
-  // const entityUuid: DomainElement = resolveContextReference(
-  //   selectorParams.extractorTemplate.select.parentUuid,
-  //   selectorParams.extractorTemplate.queryParams,
-  //   selectorParams.extractorTemplate.contextResults
-  // );
 
   log.info(
     "selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate params",

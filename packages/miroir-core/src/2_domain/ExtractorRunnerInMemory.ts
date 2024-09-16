@@ -34,6 +34,7 @@ import {
 import {
   resolveContextReference,
 } from "./QueryTemplateSelectors.js";
+import { transformer_InnerReference_resolve } from "./Transformers.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "ExtractorRunnerInMemory");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -121,11 +122,6 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
         "data") as ApplicationSection);
 
     const entityUuidReference = querySelectorParams.parentUuid // TODO: we assume this ia a constant here
-    // const entityUuidReference: DomainElement = resolveContextReference(
-    //   querySelectorParams.parentUuid,
-    //   selectorParams.extractor.queryParams,
-    //   selectorParams.extractor.contextResults
-    // );
 
     log.info(
       "extractEntityInstance params",
@@ -154,12 +150,13 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
     switch (querySelectorParams?.queryType) {
       case "selectObjectByRelation": {
         // TODO: we assume this ia a constant, get rid of resolution altogether (push it up)
-        const referenceObject = resolveContextReference(
-          { queryTemplateType: "queryContextReference", referenceName: querySelectorParams.objectReference }, 
+        const referenceObject = transformer_InnerReference_resolve(
+          "build",
+          { templateType: "contextReference", referenceName: querySelectorParams.objectReference },
           selectorParams.extractor.queryParams,
           selectorParams.extractor.contextResults
         );
-
+  
         if (
           !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
           // ||
@@ -217,11 +214,6 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
       }
       case "selectObjectByDirectReference": {
         const instanceUuid = querySelectorParams.instanceUuid;
-        // const instanceDomainElement = resolveContextReference(
-        //   querySelectorParams.instanceUuid,
-        //   selectorParams.extractor.queryParams,
-        //   selectorParams.extractor.contextResults
-        // );
         // log.info("extractEntityInstance selectObjectByDirectReference found domainState", JSON.stringify(domainState))
 
         log.info(
@@ -325,11 +317,6 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
 
     const entityUuid = extractorRunnerParams.extractor.select.parentUuid;
-    // const entityUuid: DomainElement = resolveContextReference(
-    //   extractorRunnerParams.extractor.select.parentUuid,
-    //   extractorRunnerParams.extractor.queryParams,
-    //   extractorRunnerParams.extractor.contextResults
-    // );
 
     // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate params", selectorParams, deploymentUuid, applicationSection, entityUuid);
     // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate domainState", domainState);
