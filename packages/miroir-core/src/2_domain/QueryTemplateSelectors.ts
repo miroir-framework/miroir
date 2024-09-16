@@ -11,27 +11,23 @@ import {
   DomainModelGetFetchParamJzodSchemaForExtractorTemplate,
   DomainModelGetSingleSelectQueryJzodSchemaForExtractorTemplate,
   DomainModelQueryTemplateJzodSchemaParams,
-  ExtractorTemplateForDomainModelObjects,
   EntityInstance,
-  QueryTemplateExtractObjectListByEntity,
+  ExtractorTemplateForDomainModelObjects,
   ExtractorTemplateForRecordOfExtractors,
   ExtractorTemplateForSingleObjectList,
   JzodElement,
   JzodObject,
   QueryTemplate,
+  QueryTemplateExtractObjectListByEntity,
   QueryTemplateSelectObjectListByManyToManyRelation,
   QueryTemplateSelectObjectListByRelation,
-  QueryTemplateConstantOrAnyReference,
-  TransformerForRuntime,
-  QueryFailed,
-  MiroirQuery,
+  TransformerForRuntime
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   AsyncExtractorTemplateRunnerMap,
   ExtractorTemplateRunnerParamsForJzodSchema,
   RecordOfJzodElement,
   RecordOfJzodObject,
-  SyncExtractorRunnerMap,
   SyncExtractorTemplateRunnerMap,
   SyncExtractorTemplateRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
@@ -40,8 +36,6 @@ import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
-import { innerSelectElementFromQuery } from "./QuerySelectors.js";
-import { resolveQueryTemplate } from "./Templates.js";
 import { applyTransformer, transformer_apply, transformer_InnerReference_resolve } from "./Transformers.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"SyncExtractorTemplateRunner");
@@ -72,211 +66,83 @@ const emptyAsyncSelectorMap:AsyncExtractorTemplateRunnerMap = {
 }
 
 // // ################################################################################################
-// export function domainElementToPlainObject(r:DomainElement): any {
-//   switch (r.elementType) {
-//     case "instanceArray":
-//     case "string":
-//     case "instanceUuid":
-//     case "instanceUuidIndex":
-//     case "instance": {
-//       return r.elementValue
-//     }
-//     case "object": {
-//       return Object.fromEntries(Object.entries(r.elementValue).map(e => [e[0], domainElementToPlainObject(e[1])]))
-//     }
-//     case "array": {
-//       return r.elementValue.map(e => domainElementToPlainObject(e))
-//     }
-//     case "failure": {
-//       return undefined
-//       break;
-//     }
-//     default: {
-//       throw new Error("could not handle Results from query: " + JSON.stringify(r,undefined,2));
-//       break;
-//     }
+// // TODO: almost the same as in Transformes.ts: transformer_InnerReference_resolve
+// export const resolveContextReference = (
+//   queryTemplateConstantOrAnyReference: QueryTemplateConstantOrAnyReference,
+//   queryParams: Record<string, any>,
+//   contextResults: Record<string, any>,
+// ) : DomainElement => {
+//   // log.info("resolveContextReferenceDEFUNCT for queryTemplateConstantOrAnyReference=", queryTemplateConstantOrAnyReference, "queryParams=", queryParams,"contextResults=", contextResults)
+//   if (
+//     (queryTemplateConstantOrAnyReference.queryTemplateType == "queryContextReference" &&
+//       (!contextResults || !(contextResults as any)[queryTemplateConstantOrAnyReference.referenceName])) ||
+//     (queryTemplateConstantOrAnyReference.queryTemplateType == "queryParameterReference" &&
+//       !Object.keys(queryParams).includes(queryTemplateConstantOrAnyReference.referenceName))
+//   ) {
+//     // checking that given reference does exist
+//     return {
+//       elementType: "failure",
+//       elementValue: {
+//         queryFailure: "ReferenceNotFound",
+//         failureOrigin: ["QuerySelector", "resolveContextReference"],
+//         queryContext:
+//           "resolvedContextReference failed to find " +
+//           queryTemplateConstantOrAnyReference.referenceName +
+//           " in " +
+//           (queryTemplateConstantOrAnyReference.queryTemplateType == "queryContextReference"
+//             ? JSON.stringify(Object.keys(contextResults))
+//             : JSON.stringify(Object.keys(queryParams))),
+//       },
+//     };
 //   }
-// }
 
-// // ################################################################################################
-// // export function plainObjectToDomainElement(r:{[k:string]: any}): DomainElementObject {
-// export function plainObjectToDomainElement(r:any): DomainElement {
-//   switch (typeof r) {
-//     case "string": {
-//       return {elementType: "string", elementValue: r}
-//     }
-//     case "number": 
-//     case "boolean":
-//     case "bigint":
-//       {
-//         return {elementType: "string", elementValue: r.toString()}
-//       }
-//     case "symbol": {
-//       throw new Error("plainObjectToDomainElement could not convert symbol: " + JSON.stringify(r,undefined,2));
-//     }
-//     case "undefined": {
-//       return {elementType: "void", elementValue: undefined}
-//       // throw new Error("plainObjectToDomainElement could not convert undefined: " + JSON.stringify(r,undefined,2));
-//     }
-//     case "function": {
-//       throw new Error("plainObjectToDomainElement could not convert function: " + JSON.stringify(r,undefined,2));
-//       // return {elementType: "string", elementValue: r}
-//     }
-//     case "object": {
-//       if (Array.isArray(r)) {
-//         return {elementType: "array", elementValue: r.map(e => plainObjectToDomainElement(e))}
-//       } else {
-//         return {elementType: "object", elementValue: Object.fromEntries(Object.entries(r).map(e => [e[0], plainObjectToDomainElement(e[1])]))}
-//       }
-//     }
-//     default: {
-//       throw new Error("plainObjectToDomainElement could not convert object: " + JSON.stringify(r,undefined,2));
-//       break;
-//     }
+//   if (
+//     (queryTemplateConstantOrAnyReference.queryTemplateType == "queryContextReference" &&
+//       !(contextResults as any)[queryTemplateConstantOrAnyReference.referenceName]) ||
+//     (queryTemplateConstantOrAnyReference.queryTemplateType == "queryParameterReference" &&
+//       !queryParams[queryTemplateConstantOrAnyReference.referenceName])
+//   ) {
+//     // checking that given reference does exist
+//     return {
+//       elementType: "failure",
+//       elementValue: { queryFailure: "ReferenceFoundButUndefined", queryContext: JSON.stringify(contextResults) },
+//     };
 //   }
+
+//   const reference: DomainElement =
+//     queryTemplateConstantOrAnyReference.queryTemplateType == "queryContextReference"
+//       ? {
+//           elementType:
+//             typeof (contextResults as any)[queryTemplateConstantOrAnyReference.referenceName] == "string"
+//               ? "string"
+//               : "any",
+//           elementValue: (contextResults as any)[queryTemplateConstantOrAnyReference.referenceName],
+//         }
+//       : queryTemplateConstantOrAnyReference.queryTemplateType == "queryParameterReference"
+//       ? {
+//           elementType:
+//             typeof queryParams[queryTemplateConstantOrAnyReference.referenceName] == "string" ? "string" : "any",
+//           elementValue: queryParams[queryTemplateConstantOrAnyReference.referenceName],
+//         }
+//       : queryTemplateConstantOrAnyReference.queryTemplateType == "constantUuid"
+//       ? { elementType: "instanceUuid", elementValue: queryTemplateConstantOrAnyReference.constantUuidValue } // new object
+//       : {
+//           elementType: "failure",
+//           elementValue: {
+//             queryFailure: "QueryNotExecutable",
+//             failureOrigin: ["QuerySelector", "resolveContextReference"],
+//             failureMessage: "could not resolve " +
+//               queryTemplateConstantOrAnyReference +
+//               " in parameters " +
+//               JSON.stringify(queryParams) +
+//               " and context results" +
+//               JSON.stringify(contextResults),
+//             // queryContext:,
+//           }
+//         }; /* this should not happen. Provide "error" value instead?*/
+
+//   return reference;
 // }
-
-// ################################################################################################
-// TODO: almost the same as in Transformes.ts: transformer_InnerReference_resolve
-export const resolveContextReferenceDEFUNCT = (
-  queryTemplateConstantOrAnyReference: QueryTemplateConstantOrAnyReference,
-  // queryParams: Record<string, any>,
-  // contextResults: Record<string, any>,
-  queryParams: DomainElementObject,
-  contextResults: DomainElement,
-) : DomainElement => {
-  // log.info("resolveContextReferenceDEFUNCT for queryTemplateConstantOrAnyReference=", queryTemplateConstantOrAnyReference, "queryParams=", queryParams,"contextResults=", contextResults)
-  if (
-    (queryTemplateConstantOrAnyReference.queryTemplateType == "queryContextReference" &&
-      (!contextResults.elementValue ||
-        !(contextResults.elementValue as any)[queryTemplateConstantOrAnyReference.referenceName])) ||
-    (queryTemplateConstantOrAnyReference.queryTemplateType == "queryParameterReference" &&
-      (!Object.keys(queryParams.elementValue).includes(queryTemplateConstantOrAnyReference.referenceName)))
-
-  ) {
-    // checking that given reference does exist
-    return {
-      elementType: "failure",
-      elementValue: {
-        queryFailure: "ReferenceNotFound",
-        failureOrigin: ["QuerySelector", "resolveContextReferenceDEFUNCT"],
-        failureMessage:
-          "resolvedContextReference failed to find " +
-          queryTemplateConstantOrAnyReference.referenceName +
-          " in " +
-          (queryTemplateConstantOrAnyReference.queryTemplateType == "queryContextReference"
-            ? JSON.stringify(Object.keys(contextResults.elementValue))
-            : JSON.stringify(Object.keys(queryParams.elementValue))),
-      },
-    };
-  }
-
-  if (
-    (
-      queryTemplateConstantOrAnyReference.queryTemplateType == "queryContextReference" &&
-        !(contextResults.elementValue as any)[queryTemplateConstantOrAnyReference.referenceName].elementValue
-    ) ||
-    (
-      (queryTemplateConstantOrAnyReference.queryTemplateType == "queryParameterReference" &&
-      (!queryParams.elementValue[queryTemplateConstantOrAnyReference.referenceName]))
-    )
-  ) { // checking that given reference does exist
-    return {
-      elementType: "failure",
-      elementValue: { queryFailure: "ReferenceFoundButUndefined", queryContext: JSON.stringify(contextResults) },
-    };
-  }
-
-  const reference: DomainElement =
-  queryTemplateConstantOrAnyReference.queryTemplateType == "queryContextReference"
-    ? (contextResults.elementValue as any)[queryTemplateConstantOrAnyReference.referenceName]
-    : queryTemplateConstantOrAnyReference.queryTemplateType == "queryParameterReference"
-    ? queryParams.elementValue[queryTemplateConstantOrAnyReference.referenceName]
-    : queryTemplateConstantOrAnyReference.queryTemplateType == "constantUuid"
-    ? {elementType: "instanceUuid", elementValue: queryTemplateConstantOrAnyReference.constantUuidValue } // new object
-    : undefined /* this should not happen. Provide "error" value instead?*/;
-
-  return reference
-}
-
-// ################################################################################################
-// TODO: almost the same as in Transformes.ts: transformer_InnerReference_resolve
-export const resolveContextReference = (
-  queryTemplateConstantOrAnyReference: QueryTemplateConstantOrAnyReference,
-  queryParams: Record<string, any>,
-  contextResults: Record<string, any>,
-) : DomainElement => {
-  // log.info("resolveContextReferenceDEFUNCT for queryTemplateConstantOrAnyReference=", queryTemplateConstantOrAnyReference, "queryParams=", queryParams,"contextResults=", contextResults)
-  if (
-    (queryTemplateConstantOrAnyReference.queryTemplateType == "queryContextReference" &&
-      (!contextResults || !(contextResults as any)[queryTemplateConstantOrAnyReference.referenceName])) ||
-    (queryTemplateConstantOrAnyReference.queryTemplateType == "queryParameterReference" &&
-      !Object.keys(queryParams).includes(queryTemplateConstantOrAnyReference.referenceName))
-  ) {
-    // checking that given reference does exist
-    return {
-      elementType: "failure",
-      elementValue: {
-        queryFailure: "ReferenceNotFound",
-        failureOrigin: ["QuerySelector", "resolveContextReference"],
-        queryContext:
-          "resolvedContextReference failed to find " +
-          queryTemplateConstantOrAnyReference.referenceName +
-          " in " +
-          (queryTemplateConstantOrAnyReference.queryTemplateType == "queryContextReference"
-            ? JSON.stringify(Object.keys(contextResults))
-            : JSON.stringify(Object.keys(queryParams))),
-      },
-    };
-  }
-
-  if (
-    (queryTemplateConstantOrAnyReference.queryTemplateType == "queryContextReference" &&
-      !(contextResults as any)[queryTemplateConstantOrAnyReference.referenceName]) ||
-    (queryTemplateConstantOrAnyReference.queryTemplateType == "queryParameterReference" &&
-      !queryParams[queryTemplateConstantOrAnyReference.referenceName])
-  ) {
-    // checking that given reference does exist
-    return {
-      elementType: "failure",
-      elementValue: { queryFailure: "ReferenceFoundButUndefined", queryContext: JSON.stringify(contextResults) },
-    };
-  }
-
-  const reference: DomainElement =
-    queryTemplateConstantOrAnyReference.queryTemplateType == "queryContextReference"
-      ? {
-          elementType:
-            typeof (contextResults as any)[queryTemplateConstantOrAnyReference.referenceName] == "string"
-              ? "string"
-              : "any",
-          elementValue: (contextResults as any)[queryTemplateConstantOrAnyReference.referenceName],
-        }
-      : queryTemplateConstantOrAnyReference.queryTemplateType == "queryParameterReference"
-      ? {
-          elementType:
-            typeof queryParams[queryTemplateConstantOrAnyReference.referenceName] == "string" ? "string" : "any",
-          elementValue: queryParams[queryTemplateConstantOrAnyReference.referenceName],
-        }
-      : queryTemplateConstantOrAnyReference.queryTemplateType == "constantUuid"
-      ? { elementType: "instanceUuid", elementValue: queryTemplateConstantOrAnyReference.constantUuidValue } // new object
-      : {
-          elementType: "failure",
-          elementValue: {
-            queryFailure: "QueryNotExecutable",
-            failureOrigin: ["QuerySelector", "resolveContextReference"],
-            failureMessage: "could not resolve " +
-              queryTemplateConstantOrAnyReference +
-              " in parameters " +
-              JSON.stringify(queryParams) +
-              " and context results" +
-              JSON.stringify(contextResults),
-            // queryContext:,
-          }
-        }; /* this should not happen. Provide "error" value instead?*/
-
-  return reference;
-}
 
 
 

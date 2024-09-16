@@ -1,6 +1,5 @@
 import {
   ApplicationSection,
-  DomainElement,
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
   DomainModelGetEntityDefinitionExtractor,
@@ -9,7 +8,7 @@ import {
   ExtractorTemplateForSingleObject,
   ExtractorTemplateForSingleObjectList,
   JzodObject,
-  QueryTemplateSelectObject,
+  QueryTemplateSelectObject
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface.js";
 import {
@@ -26,10 +25,6 @@ import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
 import { getDeploymentEntityStateIndex } from "./DeploymentEntityState.js";
-import {
-  // extractWithExtractorTemplate,
-  resolveContextReference
-} from "./QuerySelectors.js";
 import {
   extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory,
   extractFetchQueryTemplateJzodSchema,

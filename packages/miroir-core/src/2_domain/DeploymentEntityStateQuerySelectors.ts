@@ -31,8 +31,7 @@ import {
   extractJzodSchemaForDomainModelQuery,
   extractWithExtractor,
   extractWithManyExtractors,
-  extractzodSchemaForSingleSelectQuery,
-  resolveContextReference,
+  extractzodSchemaForSingleSelectQuery
 } from "./QuerySelectors.js";
 import { transformer_InnerReference_resolve } from "./Transformers.js";
 

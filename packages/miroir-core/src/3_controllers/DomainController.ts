@@ -693,9 +693,7 @@ export class DomainController implements DomainControllerInterface {
 
   // ##############################################################################################
   async handleCompositeActionTemplate(
-    // domainAction: CompositeInstanceActionTemplate,
     compositeAction: CompositeActionTemplate,
-    // actionParamValues: DomainElementObject,
     actionParamValues: Record<string, any>,
     currentModel: MetaModel
   ): Promise<ActionVoidReturnType> {
@@ -743,7 +741,10 @@ export class DomainController implements DomainControllerInterface {
     ).elementValue;
 
     log.info("handleCompositeActionTemplate compositeInstanceAction localActionParams", localActionParams);
-    log.info("handleCompositeActionTemplate compositeInstanceAction resolvedCompositeActionDefinition", JSON.stringify(resolvedCompositeActionDefinition, null, 2));
+    log.info(
+      "handleCompositeActionTemplate compositeInstanceAction resolvedCompositeActionDefinition",
+      JSON.stringify(resolvedCompositeActionDefinition, null, 2)
+    );
 
     for (const currentAction of resolvedCompositeActionDefinition) {
       log.info(

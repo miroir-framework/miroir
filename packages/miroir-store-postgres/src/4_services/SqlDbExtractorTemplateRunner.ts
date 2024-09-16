@@ -23,8 +23,6 @@ import {
   MiroirLoggerFactory,
   QueryTemplateAction,
   QueryTemplateSelectObject,
-  resolveContextReference,
-  resolveContextReferenceDEFUNCT,
   selectEntityJzodSchemaFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
@@ -96,11 +94,17 @@ export class SqlDbExtractTemplateRunner {
     
     const referenceName = (actionRuntimeTransformer as any).referencedExtractor;
 
-    const resolvedReference = resolveContextReferenceDEFUNCT(
-      { queryTemplateType: "queryContextReference", referenceName: (actionRuntimeTransformer as any).referencedExtractor },
+    const resolvedReference = transformer_InnerReference_resolve(
+      "build",
+      { templateType: "contextReference", referenceName },
       queryParams,
       newFetchedData
     );
+    // const resolvedReference = resolveContextReferenceDEFUNCT(
+    //   { queryTemplateType: "queryContextReference", referenceName: (actionRuntimeTransformer as any).referencedExtractor },
+    //   queryParams,
+    //   newFetchedData
+    // );
 
     log.info("SqlDbExtractRunner applyExtractorTransformerSql resolvedReference", resolvedReference);
 
@@ -585,11 +589,6 @@ export class SqlDbExtractTemplateRunner {
           extractorRunnerParams.extractorTemplate.select.filter
         ) {
           // TODO: resolve filter value
-          // const resolvedFilterValue: DomainElement = resolveContextReferenceDEFUNCT(
-          //   extractorRunnerParams.extractorTemplate.select.parentUuid,
-          //   extractorRunnerParams.extractorTemplate.queryParams,
-          //   extractorRunnerParams.extractorTemplate.contextResults
-          // );
           // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate resolvedFilterValue", resolvedFilterValue);
           // if (resolvedFilterValue.elementType != "string") {
           //   return {

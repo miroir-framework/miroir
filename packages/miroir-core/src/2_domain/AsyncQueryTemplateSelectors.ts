@@ -10,11 +10,6 @@ import {
   ExtractorTemplateForRecordOfExtractors,
   ExtractorTemplateForSingleObject,
   ExtractorTemplateForSingleObjectList,
-  MiroirQuery,
-  QueryExtractObjectByDirectReference,
-  QueryFailed,
-  QuerySelectExtractorWrapperReturningList,
-  QuerySelectExtractorWrapperReturningObject,
   QueryTemplate,
   TransformerForRuntime
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
@@ -29,10 +24,9 @@ import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
 import {
   applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory,
-  applyExtractorTemplateTransformerInMemory,
-  resolveContextReference,
+  applyExtractorTemplateTransformerInMemory
 } from "./QueryTemplateSelectors.js";
-import { applyTransformer, transformer_InnerReference_resolve } from "./Transformers.js";
+import { applyTransformer } from "./Transformers.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"AsyncExtractorTemplateRunner");
 let log:LoggerInterface = console as any as LoggerInterface;

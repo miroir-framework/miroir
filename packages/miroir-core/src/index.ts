@@ -577,14 +577,7 @@ export {
   ExtractorRunnerInMemory
 } from './2_domain/ExtractorRunnerInMemory.js';
 export {
-  // domainElementToPlainObject,
-  // plainObjectToDomainElement,
-  resolveContextReferenceDEFUNCT,
-  // resolveContextReference,
   extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory,
-  // extractFetchQueryJzodSchema,
-  // extractJzodSchemaForDomainModelQuery,
-  // extractzodSchemaForSingleSelectQuery,
   extractWithManyExtractorTemplates,
   extractWithExtractorTemplate,
   applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory,

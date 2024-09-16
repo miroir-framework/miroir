@@ -10,22 +10,12 @@ import {
   ExtractorForRecordOfExtractors,
   ExtractorForSingleObject,
   ExtractorForSingleObjectList,
-  ExtractorTemplateForRecordOfExtractors,
-  ExtractorTemplateForSingleObject,
-  ExtractorTemplateForSingleObjectList,
   MiroirQuery,
-  QueryExtractObjectByDirectReference,
-  QueryFailed,
-  QuerySelectExtractorWrapperReturningList,
-  QuerySelectExtractorWrapperReturningObject,
-  QueryTemplate,
   TransformerForRuntime
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   AsyncExtractorRunnerMap,
-  AsyncExtractorRunnerParams,
-  AsyncExtractorTemplateRunnerMap,
-  AsyncExtractorTemplateRunnerParams
+  AsyncExtractorRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
@@ -33,11 +23,6 @@ import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
 import { applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory, applyExtractorTransformerInMemory } from "./QuerySelectors.js";
-import {
-  applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory,
-  applyExtractorTemplateTransformerInMemory,
-  resolveContextReference,
-} from "./QueryTemplateSelectors.js";
 import { applyTransformer } from "./Transformers.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"AsyncExtractorTemplateRunner");

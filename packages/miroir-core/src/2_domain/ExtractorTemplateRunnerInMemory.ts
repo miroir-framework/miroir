@@ -36,9 +36,6 @@ import {
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
 } from "./DomainStateQueryTemplateSelector.js";
-import {
-  resolveContextReference
-} from "./QueryTemplateSelectors.js";
 import { transformer_InnerReference_resolve } from "./Transformers.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "ExtractorTemplateRunnerInMemory");

@@ -23,7 +23,6 @@ import {
   PersistenceStoreInstanceSectionAbstractInterface,
   QueryTemplateAction,
   QueryTemplateSelectObject,
-  resolveContextReference,
   selectEntityJzodSchemaFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,

@@ -23,7 +23,6 @@ import {
   PersistenceStoreInstanceSectionAbstractInterface,
   QueryAction,
   QuerySelectObject,
-  resolveContextReference,
   selectEntityJzodSchemaFromDomainStateNew,
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
@@ -161,12 +160,6 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
           selectorParams.extractor.contextResults
         );
   
-        // const referenceObject = resolveContextReference(
-        //   { queryTemplateType: "queryContextReference", referenceName: querySelectorParams.objectReference},
-        //   selectorParams.extractor.queryParams,
-        //   selectorParams.extractor.contextResults
-        // );
-
         if (
           !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
           ||
@@ -215,11 +208,6 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
         return {
           elementType: "instance",
           elementValue: result.returnedDomainElement.elementValue,
-          // deploymentEntityState[index].entities[
-          //   (referenceObject.elementValue as any)[
-          //     querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
-          //   ]
-          // ],
         };
         break;
       }

@@ -1,11 +1,10 @@
 import {
-  QueryTemplate,
   MiroirQuery,
-  QueryFailed,
   QueryExtractObjectByDirectReference,
+  QueryFailed,
   QuerySelectExtractorWrapperReturningList,
+  QueryTemplate,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { resolveContextReference } from "./QuerySelectors.js";
 import { transformer_InnerReference_resolve } from "./Transformers.js";
 
 // ################################################################################################

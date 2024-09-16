@@ -8,14 +8,13 @@ import {
   DomainElementObject,
   DomainModelGetEntityDefinitionExtractor,
   EntityDefinition,
-  ExtractorForRecordOfExtractors,
   ExtractorTemplateForDomainModel,
   ExtractorTemplateForDomainModelObjects,
   ExtractorTemplateForRecordOfExtractors,
   ExtractorTemplateForSingleObject,
   ExtractorTemplateForSingleObjectList,
   JzodObject,
-  QueryTemplateSelectObject,
+  QueryTemplateSelectObject
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import {
@@ -37,8 +36,7 @@ import {
   extractJzodSchemaForDomainModelQueryTemplate,
   extractWithExtractorTemplate,
   extractWithManyExtractorTemplates,
-  extractzodSchemaForSingleSelectQueryTemplate,
-  resolveContextReference,
+  extractzodSchemaForSingleSelectQueryTemplate
 } from "./QueryTemplateSelectors.js";
 import { transformer_InnerReference_resolve } from "./Transformers.js";
 
