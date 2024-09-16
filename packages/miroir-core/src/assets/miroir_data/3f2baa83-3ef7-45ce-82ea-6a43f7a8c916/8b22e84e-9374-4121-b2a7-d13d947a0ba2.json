@@ -12,7 +12,7 @@
         "queryType": "queryTemplateExtractObjectListByEntity",
         "parentName": "JzodSchema",
         "parentUuid": {
-          "queryTemplateType": "constantUuid",
+          "templateType": "constantUuid",
           "constantUuidValue": "5e81e1b9-38be-487c-b3e5-53796c57fccf"
         }
       }

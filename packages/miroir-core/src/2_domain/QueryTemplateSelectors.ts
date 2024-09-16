@@ -42,7 +42,7 @@ import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
 import { innerSelectElementFromQuery } from "./QuerySelectors.js";
 import { resolveQueryTemplate } from "./Templates.js";
-import { applyTransformer, transformer_apply } from "./Transformers.js";
+import { applyTransformer, transformer_apply, transformer_InnerReference_resolve } from "./Transformers.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"SyncExtractorTemplateRunner");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -519,8 +519,6 @@ export const applyExtractorTemplateTransformerInMemory = (
   actionRuntimeTransformer: TransformerForRuntime,
   queryParams: Record<string, any>,
   newFetchedData: Record<string, any>
-  // queryParams: DomainElementObject,
-  // newFetchedData: DomainElementObject
 ): DomainElement => {
   log.info("applyExtractorTemplateTransformerInMemory  query", JSON.stringify(actionRuntimeTransformer, null, 2));
   return transformer_apply("runtime", "ROOT"/**WHAT?? */, actionRuntimeTransformer, queryParams, newFetchedData);
@@ -923,11 +921,18 @@ export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
     );
   }
 
-  const entityUuidDomainElement: DomainElement = resolveContextReference(
+  // const entityUuidDomainElement: DomainElement = resolveContextReference(
+  //   selectorParams.query.select.parentUuid,
+  //   selectorParams.query.queryParams,
+  //   selectorParams.query.contextResults
+  // );
+  const entityUuidDomainElement = transformer_InnerReference_resolve(
+    "build",
     selectorParams.query.select.parentUuid,
     selectorParams.query.queryParams,
     selectorParams.query.contextResults
   );
+
   log.info(
     "extractzodSchemaForSingleSelectQuery called",
     selectorParams.query,

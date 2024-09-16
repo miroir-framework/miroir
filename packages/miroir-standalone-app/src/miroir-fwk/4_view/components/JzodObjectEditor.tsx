@@ -473,7 +473,7 @@ export const JzodObjectEditor = (
                 applicationSection: getApplicationSection(props.currentDeploymentUuid,unfoldedRawSchema.tag?.value?.targetEntity),
                 parentName: "",
                 parentUuid: {
-                  queryTemplateType: "constantUuid",
+                  templateType: "constantUuid",
                   constantUuidValue: unfoldedRawSchema.tag?.value?.targetEntity,
                 },
               }

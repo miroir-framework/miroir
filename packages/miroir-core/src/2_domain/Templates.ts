@@ -23,7 +23,13 @@ export function resolveQueryTemplate(
         return {
           ...queryTemplate,
           queryType: "queryExtractObjectListByEntity",
-          parentUuid: resolveContextReference(queryTemplate.parentUuid, queryParams, contextResults).elementValue, // TODO: check for failure!
+          // parentUuid: resolveContextReference(queryTemplate.parentUuid, queryParams, contextResults).elementValue, // TODO: check for failure!
+          parentUuid: transformer_InnerReference_resolve(
+            "build",
+            queryTemplate.parentUuid,
+            queryParams,
+            contextResults
+          ).elementValue, // TODO: check for failure!
           filter: {
             attributeName: queryTemplate.filter.attributeName,
             // value: resolveContextReference(queryTemplate.filter.value, queryParams, contextResults).elementValue, // TODO: check for failure!
@@ -39,7 +45,13 @@ export function resolveQueryTemplate(
         return {
           ...queryTemplate,
           queryType: "queryExtractObjectListByEntity",
-          parentUuid: resolveContextReference(queryTemplate.parentUuid, queryParams, contextResults).elementValue, // TODO: check for failure!
+          // parentUuid: resolveContextReference(queryTemplate.parentUuid, queryParams, contextResults).elementValue, // TODO: check for failure!
+          parentUuid: transformer_InnerReference_resolve(
+            "build",
+            queryTemplate.parentUuid,
+            queryParams,
+            contextResults
+          ).elementValue, // TODO: check for failure!
         };
       }
       break;
@@ -48,7 +60,13 @@ export function resolveQueryTemplate(
       return {
         ...queryTemplate,
         queryType: "selectObjectByDirectReference",
-        parentUuid: resolveContextReference(queryTemplate.parentUuid, queryParams, contextResults).elementValue, // TODO: check for failure!
+        // parentUuid: resolveContextReference(queryTemplate.parentUuid, queryParams, contextResults).elementValue, // TODO: check for failure!
+        parentUuid: transformer_InnerReference_resolve(
+          "build",
+          queryTemplate.parentUuid,
+          queryParams,
+          contextResults
+        ).elementValue, // TODO: check for failure!
         // instanceUuid: resolveContextReference(queryTemplate.parentUuid, queryParams, contextResults).elementValue, // TODO: check for failure!
         instanceUuid: transformer_InnerReference_resolve(
           "build",
@@ -109,7 +127,13 @@ export function resolveQueryTemplate(
     case "selectObjectListByRelation": {
       return {
         ...queryTemplate,
-        parentUuid: resolveContextReference(queryTemplate.parentUuid, queryParams, contextResults).elementValue, // TODO: check for failure!
+        // parentUuid: resolveContextReference(queryTemplate.parentUuid, queryParams, contextResults).elementValue, // TODO: check for failure!
+        parentUuid: transformer_InnerReference_resolve(
+          "build",
+          queryTemplate.parentUuid,
+          queryParams,
+          contextResults
+        ).elementValue, // TODO: check for failure!
         // objectReference: resolveContextReference(queryTemplate.objectReference, queryParams, contextResults)
         objectReference: transformer_InnerReference_resolve(
           "build",
@@ -123,7 +147,13 @@ export function resolveQueryTemplate(
     case "selectObjectListByManyToManyRelation": {
       return {
         ...queryTemplate,
-        parentUuid: resolveContextReference(queryTemplate.parentUuid, queryParams, contextResults).elementValue, // TODO: check for failure!
+        // parentUuid: resolveContextReference(queryTemplate.parentUuid, queryParams, contextResults).elementValue, // TODO: check for failure!
+        parentUuid: transformer_InnerReference_resolve(
+          "build",
+          queryTemplate.parentUuid,
+          queryParams,
+          contextResults
+        ).elementValue, // TODO: check for failure!
         objectListReference: transformer_InnerReference_resolve(
           "build",
           queryTemplate.objectListReference,
@@ -136,7 +166,13 @@ export function resolveQueryTemplate(
     case "selectObjectByRelation": {
       return {
         ...queryTemplate,
-        parentUuid: resolveContextReference(queryTemplate.parentUuid, queryParams, contextResults).elementValue, // TODO: check for failure!
+        // parentUuid: resolveContextReference(queryTemplate.parentUuid, queryParams, contextResults).elementValue, // TODO: check for failure!
+        parentUuid: transformer_InnerReference_resolve(
+          "build",
+          queryTemplate.parentUuid,
+          queryParams,
+          contextResults
+        ).elementValue, // TODO: check for failure!
         // objectReference: resolveContextReference(queryTemplate.objectReference, queryParams, contextResults)
         objectReference: transformer_InnerReference_resolve(
           "build",

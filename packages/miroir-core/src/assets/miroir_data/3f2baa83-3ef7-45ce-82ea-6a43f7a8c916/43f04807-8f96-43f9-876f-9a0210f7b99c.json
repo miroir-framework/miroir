@@ -12,7 +12,7 @@
         "queryType": "queryTemplateExtractObjectListByEntity",
         "parentName": "StoreBasedConfiguration",
         "parentUuid": {
-          "queryTemplateType": "constantUuid",
+          "templateType": "constantUuid",
           "constantUuidValue": "7990c0c9-86c3-40a1-a121-036c91b55ed7"
         }
       }

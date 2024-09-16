@@ -213,7 +213,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                 applicationSection: "model",
                 parentName: "Entity",
                 parentUuid: {
-                  queryTemplateType: "constantUuid",
+                  templateType: "constantUuid",
                   constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                 },
                 instanceUuid: {
@@ -271,7 +271,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   applicationSection: applicationSection,
                   parentName: "Entity",
                   parentUuid: {
-                    queryTemplateType: "constantUuid",
+                    templateType: "constantUuid",
                     constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                   },
                 }
@@ -438,7 +438,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   applicationSection: applicationSection,
                   parentName: "Entity",
                   parentUuid: {
-                    queryTemplateType: "constantUuid",
+                    templateType: "constantUuid",
                     constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                   },
                   filter: {
@@ -509,7 +509,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                 applicationSection: applicationSection,
                 parentName: "Book",
                 parentUuid: {
-                  queryTemplateType: "constantUuid",
+                  templateType: "constantUuid",
                   // constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                   constantUuidValue: entityBook.uuid,
                 },
@@ -566,7 +566,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                 applicationSection: applicationSection,
                 parentName: "Book",
                 parentUuid: {
-                  queryTemplateType: "constantUuid",
+                  templateType: "constantUuid",
                   constantUuidValue: entityBook.uuid,
                 },
               },
@@ -618,7 +618,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                 applicationSection: applicationSection,
                 parentName: "Book",
                 parentUuid: {
-                  queryTemplateType: "constantUuid",
+                  templateType: "constantUuid",
                   constantUuidValue: entityBook.uuid,
                 },
               },
@@ -677,7 +677,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                 applicationSection: applicationSection,
                 parentName: "Book",
                 parentUuid: {
-                  queryTemplateType: "constantUuid",
+                  templateType: "constantUuid",
                   constantUuidValue: entityBook.uuid,
                 },
               },
@@ -789,7 +789,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                 queryType: "selectObjectByDirectReference",
                 parentName: "Book",
                 parentUuid: {
-                  queryTemplateType: "constantUuid",
+                  templateType: "constantUuid",
                   constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
                 },
                 instanceUuid: {
@@ -803,7 +803,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                 queryType: "selectObjectByRelation",
                 parentName: "Author",
                 parentUuid: {
-                  queryTemplateType: "constantUuid",
+                  templateType: "constantUuid",
                   constantUuidValue: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
                 },
                 objectReference: {
@@ -816,7 +816,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                 queryType: "selectObjectListByRelation",
                 parentName: "Book",
                 parentUuid: {
-                  queryTemplateType: "constantUuid",
+                  templateType: "constantUuid",
                   constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
                 },
                 objectReference: {

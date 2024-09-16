@@ -126,22 +126,28 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
       ((selectorParams.extractorTemplate.pageParams?.elementValue?.applicationSection?.elementValue ??
         "data") as ApplicationSection);
 
-    const entityUuidReference: DomainElement = resolveContextReference(
+    const entityUuidDomainElement = transformer_InnerReference_resolve(
+      "build",
       querySelectorParams.parentUuid,
       selectorParams.extractorTemplate.queryParams,
       selectorParams.extractorTemplate.contextResults
     );
+    // const entityUuidReference: DomainElement = resolveContextReference(
+    //   querySelectorParams.parentUuid,
+    //   selectorParams.extractorTemplate.queryParams,
+    //   selectorParams.extractorTemplate.contextResults
+    // );
 
     log.info(
       "extractEntityInstance params",
       querySelectorParams,
       deploymentUuid,
       applicationSection,
-      entityUuidReference
+      entityUuidDomainElement
     );
 
     // log.info("extractEntityInstance found entityUuidReference", JSON.stringify(entityUuidReference))
-    if (entityUuidReference.elementType != "string" && entityUuidReference.elementType != "instanceUuid") {
+    if (entityUuidDomainElement.elementType != "string" && entityUuidDomainElement.elementType != "instanceUuid") {
       return {
         elementType: "failure",
         elementValue: {
@@ -188,7 +194,7 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
 
         const result = await this.persistenceStoreController.getInstance(
           // applicationSection,
-          entityUuidReference.elementValue,
+          entityUuidDomainElement.elementValue,
           (referenceObject.elementValue as any)[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
         );
 
@@ -199,7 +205,7 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
               queryFailure: "InstanceNotFound",
               deploymentUuid,
               applicationSection,
-              entityUuid: entityUuidReference.elementValue,
+              entityUuid: entityUuidDomainElement.elementValue,
             },
           };
         }
@@ -257,7 +263,7 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
               queryFailure: "EntityNotFound",
               deploymentUuid,
               applicationSection,
-              entityUuid: entityUuidReference.elementValue,
+              entityUuid: entityUuidDomainElement.elementValue,
             },
           };
         }
@@ -287,7 +293,7 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
         // }
         const result = await this.persistenceStoreController.getInstance(
           // applicationSection,
-          entityUuidReference.elementValue,
+          entityUuidDomainElement.elementValue,
           instanceDomainElement.elementValue
         );
 
@@ -298,7 +304,7 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
               queryFailure: "InstanceNotFound",
               deploymentUuid,
               applicationSection,
-              entityUuid: entityUuidReference.elementValue,
+              entityUuid: entityUuidDomainElement.elementValue,
               instanceUuid: instanceDomainElement.elementValue,
             },
           };
@@ -307,9 +313,9 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
           "extractEntityInstance selectObjectByDirectReference, ############# reference",
           querySelectorParams,
           "entityUuidReference",
-          entityUuidReference,
+          entityUuidDomainElement,
           "######### context entityUuid",
-          entityUuidReference,
+          entityUuidDomainElement,
           "######### queryParams",
           JSON.stringify(selectorParams.extractorTemplate.queryParams, undefined, 2),
           "######### contextResults",
@@ -342,16 +348,22 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
     const deploymentUuid = extractorRunnerParams.extractorTemplate.deploymentUuid;
     const applicationSection = extractorRunnerParams.extractorTemplate.select.applicationSection ?? "data";
 
-    const entityUuid: DomainElement = resolveContextReference(
+    const entityUuidDomainElement = transformer_InnerReference_resolve(
+      "build",
       extractorRunnerParams.extractorTemplate.select.parentUuid,
       extractorRunnerParams.extractorTemplate.queryParams,
       extractorRunnerParams.extractorTemplate.contextResults
     );
+    // const entityUuid: DomainElement = resolveContextReference(
+    //   extractorRunnerParams.extractorTemplate.select.parentUuid,
+    //   extractorRunnerParams.extractorTemplate.queryParams,
+    //   extractorRunnerParams.extractorTemplate.contextResults
+    // );
 
     // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate params", selectorParams, deploymentUuid, applicationSection, entityUuid);
     // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate domainState", domainState);
 
-    if (!deploymentUuid || !applicationSection || !entityUuid) {
+    if (!deploymentUuid || !applicationSection || !entityUuidDomainElement) {
       return {
         // new object
         elementType: "failure",
@@ -363,18 +375,18 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
             ", applicationSection=" +
             applicationSection +
             ", entityUuid=" +
-            entityUuid,
+            entityUuidDomainElement,
           queryParameters: JSON.stringify(extractorRunnerParams),
         },
       };
       // resolving by fetchDataReference, fetchDataReferenceAttribute
     }
 
-    switch (entityUuid.elementType) {
+    switch (entityUuidDomainElement.elementType) {
       case "string":
       case "instanceUuid": {
         const entityInstanceCollection: ActionEntityInstanceCollectionReturnType =
-          await this.persistenceStoreController.getInstances(/*applicationSection, */ entityUuid.elementValue);
+          await this.persistenceStoreController.getInstances(/*applicationSection, */ entityUuidDomainElement.elementValue);
 
         if (entityInstanceCollection.status == "error") {
           // return data;
@@ -384,7 +396,7 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
               queryFailure: "EntityNotFound", // TODO: find corresponding queryFailure from data.status
               deploymentUuid,
               applicationSection,
-              entityUuid: entityUuid.elementValue,
+              entityUuid: entityUuidDomainElement.elementValue,
             },
           };
         }
@@ -408,12 +420,12 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
         };
       }
       case "failure": {
-        return entityUuid;
+        return entityUuidDomainElement;
         break;
       }
       default: {
         throw new Error(
-          "selectEntityInstanceUuidIndexFromDomainStateForTemplate could not handle reference entityUuid=" + entityUuid
+          "selectEntityInstanceUuidIndexFromDomainStateForTemplate could not handle reference entityUuid=" + entityUuidDomainElement
         );
         break;
       }

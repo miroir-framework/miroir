@@ -14,7 +14,7 @@
         "queryType": "queryTemplateExtractObjectListByEntity",
         "parentName": "Publisher",
         "parentUuid": {
-          "queryTemplateType": "constantUuid",
+          "templateType": "constantUuid",
           "constantUuidValue": "a027c379-8468-43a5-ba4d-bf618be25cab"
         }
       }

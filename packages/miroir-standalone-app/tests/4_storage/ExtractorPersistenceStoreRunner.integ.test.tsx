@@ -194,12 +194,12 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
                 parentName: "Entity",
                 parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                 // parentUuid: {
-                //   queryTemplateType: "constantUuid",
+                //   templateType: "constantUuid",
                 //   constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                 // },
                 instanceUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                 // instanceUuid: {
-                //   queryTemplateType: "constantUuid",
+                //   templateType: "constantUuid",
                 //   constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                 // },
               },
@@ -253,7 +253,7 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
                   parentName: "Entity",
                   parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
                   // parentUuid: {
-                  //   queryTemplateType: "constantUuid",
+                  //   templateType: "constantUuid",
                   //   constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                   // },
                 }
@@ -421,7 +421,7 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
                   parentName: "Entity",
                   parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                   // parentUuid: {
-                  //   queryTemplateType: "constantUuid",
+                  //   templateType: "constantUuid",
                   //   constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                   // },
                   filter: {
@@ -493,7 +493,7 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
                 parentName: "Book",
                 parentUuid: entityBook.uuid,
                 // parentUuid: {
-                //   queryTemplateType: "constantUuid",
+                //   templateType: "constantUuid",
                 //   // constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                 //   constantUuidValue: entityBook.uuid,
                 // },
@@ -551,7 +551,7 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
                 parentName: "Book",
                 parentUuid: entityBook.uuid,
                 // parentUuid: {
-                //   queryTemplateType: "constantUuid",
+                //   templateType: "constantUuid",
                 //   constantUuidValue: entityBook.uuid,
                 // },
               },
@@ -604,7 +604,7 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
                 parentName: "Book",
                 parentUuid: entityBook.uuid,
                 // parentUuid: {
-                //   queryTemplateType: "constantUuid",
+                //   templateType: "constantUuid",
                 //   constantUuidValue: entityBook.uuid,
                 // },
               },
@@ -664,7 +664,7 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
                 parentName: "Book",
                 parentUuid: entityBook.uuid,
                 // parentUuid: {
-                //   queryTemplateType: "constantUuid",
+                //   templateType: "constantUuid",
                 //   constantUuidValue: entityBook.uuid,
                 // },
               },

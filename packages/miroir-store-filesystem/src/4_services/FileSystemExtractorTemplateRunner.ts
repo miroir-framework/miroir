@@ -121,28 +121,34 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
       ((selectorParams.extractorTemplate.pageParams?.applicationSection ??
         "data") as ApplicationSection);
 
-    const entityUuidReference: DomainElement = resolveContextReference(
+    const entityUuidReferenceDomainElement = transformer_InnerReference_resolve(
+      "build",
       querySelectorParams.parentUuid,
       selectorParams.extractorTemplate.queryParams,
       selectorParams.extractorTemplate.contextResults
     );
+    // const entityUuidReference: DomainElement = resolveContextReference(
+    //   querySelectorParams.parentUuid,
+    //   selectorParams.extractorTemplate.queryParams,
+    //   selectorParams.extractorTemplate.contextResults
+    // );
 
     log.info(
       "extractEntityInstance params",
       querySelectorParams,
       deploymentUuid,
       applicationSection,
-      entityUuidReference
+      entityUuidReferenceDomainElement
     );
 
     // log.info("extractEntityInstance found entityUuidReference", JSON.stringify(entityUuidReference))
     // if (entityUuidReference.elementType != "string" && entityUuidReference.elementType != "instanceUuid") {
-    if (entityUuidReference.elementType == "failure") {
+    if (entityUuidReferenceDomainElement.elementType == "failure") {
       return {
         elementType: "failure",
         elementValue: {
           queryFailure: "IncorrectParameters",
-          failureMessage: "FileSystementityUuidReference is not a string or instanceUuid:" + JSON.stringify(entityUuidReference),
+          failureMessage: "FileSystementityUuidReference is not a string or instanceUuid:" + JSON.stringify(entityUuidReferenceDomainElement),
           queryContext: JSON.stringify(selectorParams.extractorTemplate.contextResults),
           queryReference: JSON.stringify(querySelectorParams.parentUuid),
         },
@@ -185,7 +191,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
 
         const result = await this.persistenceStoreController.getInstance(
           // applicationSection,
-          entityUuidReference.elementValue,
+          entityUuidReferenceDomainElement.elementValue,
           (referenceObject.elementValue as any)[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
         );
 
@@ -196,7 +202,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
               queryFailure: "InstanceNotFound",
               deploymentUuid,
               applicationSection,
-              entityUuid: entityUuidReference.elementValue,
+              entityUuid: entityUuidReferenceDomainElement.elementValue,
             },
           };
         }
@@ -253,7 +259,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
               queryFailure: "EntityNotFound",
               deploymentUuid,
               applicationSection,
-              entityUuid: entityUuidReference.elementValue,
+              entityUuid: entityUuidReferenceDomainElement.elementValue,
             },
           };
         }
@@ -283,7 +289,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
         // }
         const result = await this.persistenceStoreController.getInstance(
           // applicationSection,
-          entityUuidReference.elementValue,
+          entityUuidReferenceDomainElement.elementValue,
           instanceDomainElement.elementValue
         );
 
@@ -294,7 +300,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
               queryFailure: "InstanceNotFound",
               deploymentUuid,
               applicationSection,
-              entityUuid: entityUuidReference.elementValue,
+              entityUuid: entityUuidReferenceDomainElement.elementValue,
               instanceUuid: instanceDomainElement.elementValue,
             },
           };
@@ -303,9 +309,9 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
           "extractEntityInstance selectObjectByDirectReference, ############# reference",
           querySelectorParams,
           "entityUuidReference",
-          entityUuidReference,
+          entityUuidReferenceDomainElement,
           "######### context entityUuid",
-          entityUuidReference,
+          entityUuidReferenceDomainElement,
           "######### queryParams",
           JSON.stringify(selectorParams.extractorTemplate.queryParams, undefined, 2),
           "######### contextResults",
@@ -338,16 +344,22 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
     const deploymentUuid = extractorRunnerParams.extractorTemplate.deploymentUuid;
     const applicationSection = extractorRunnerParams.extractorTemplate.select.applicationSection ?? "data";
 
-    const entityUuid: DomainElement = resolveContextReference(
+    const entityUuidDomainElement = transformer_InnerReference_resolve(
+      "build",
       extractorRunnerParams.extractorTemplate.select.parentUuid,
       extractorRunnerParams.extractorTemplate.queryParams,
       extractorRunnerParams.extractorTemplate.contextResults
     );
+    // const entityUuid: DomainElement = resolveContextReference(
+    //   extractorRunnerParams.extractorTemplate.select.parentUuid,
+    //   extractorRunnerParams.extractorTemplate.queryParams,
+    //   extractorRunnerParams.extractorTemplate.contextResults
+    // );
 
     // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate params", selectorParams, deploymentUuid, applicationSection, entityUuid);
     // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate domainState", domainState);
 
-    if (!deploymentUuid || !applicationSection || !entityUuid) {
+    if (!deploymentUuid || !applicationSection || !entityUuidDomainElement) {
       return {
         // new object
         elementType: "failure",
@@ -359,11 +371,11 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
       // resolving by fetchDataReference, fetchDataReferenceAttribute
     }
 
-    switch (entityUuid.elementType) {
+    switch (entityUuidDomainElement.elementType) {
       case "string":
       case "instanceUuid": {
         const entityInstanceCollection: ActionEntityInstanceCollectionReturnType =
-          await this.persistenceStoreController.getInstances(/*applicationSection, */ entityUuid.elementValue);
+          await this.persistenceStoreController.getInstances(/*applicationSection, */ entityUuidDomainElement.elementValue);
 
         if (entityInstanceCollection.status == "error") {
           // return data;
@@ -373,7 +385,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
               queryFailure: "EntityNotFound", // TODO: find corresponding queryFailure from data.status
               deploymentUuid,
               applicationSection,
-              entityUuid: entityUuid.elementValue,
+              entityUuid: entityUuidDomainElement.elementValue,
             },
           };
         }
@@ -397,12 +409,12 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
         };
       }
       case "failure": {
-        return entityUuid;
+        return entityUuidDomainElement;
         break;
       }
       default: {
         throw new Error(
-          "selectEntityInstanceUuidIndexFromDomainStateForTemplate could not handle reference entityUuid=" + entityUuid
+          "selectEntityInstanceUuidIndexFromDomainStateForTemplate could not handle reference entityUuid=" + entityUuidDomainElement
         );
         break;
       }

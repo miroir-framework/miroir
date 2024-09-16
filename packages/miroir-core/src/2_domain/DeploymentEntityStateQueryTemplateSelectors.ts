@@ -70,11 +70,18 @@ export const selectEntityInstanceFromDeploymentEntityStateForTemplate: SyncExtra
   const applicationSection: ApplicationSection =
     selectorParams.extractorTemplate.select.applicationSection ??"data";
 
-  const parentUuidDomainElement: DomainElement = resolveContextReference(
+  const parentUuidDomainElement = transformer_InnerReference_resolve(
+    "build",
     querySelectorParams.parentUuid,
     selectorParams.extractorTemplate.queryParams,
     selectorParams.extractorTemplate.contextResults
   );
+  
+  // const parentUuidDomainElement: DomainElement = resolveContextReference(
+  //   querySelectorParams.parentUuid,
+  //   selectorParams.extractorTemplate.queryParams,
+  //   selectorParams.extractorTemplate.contextResults
+  // );
 
   log.info(
     "selectEntityInstanceFromDeploymentEntityStateForTemplate params",
@@ -288,26 +295,32 @@ export const selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate: 
   const deploymentUuid = selectorParams.extractorTemplate.deploymentUuid;
   const applicationSection = selectorParams.extractorTemplate.select.applicationSection ?? "data";
 
-  const entityUuid: DomainElement = resolveContextReference(
+  const entityUuidDomainElement = transformer_InnerReference_resolve(
+    "build",
     selectorParams.extractorTemplate.select.parentUuid,
     selectorParams.extractorTemplate.queryParams,
     selectorParams.extractorTemplate.contextResults
   );
+  // const entityUuid: DomainElement = resolveContextReference(
+  //   selectorParams.extractorTemplate.select.parentUuid,
+  //   selectorParams.extractorTemplate.queryParams,
+  //   selectorParams.extractorTemplate.contextResults
+  // );
 
   log.info(
     "selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate params",
     selectorParams,
     deploymentUuid,
     applicationSection,
-    entityUuid
+    entityUuidDomainElement
   );
   log.info("selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate deploymentEntityState", deploymentEntityState);
 
   if (
     !deploymentUuid ||
     !applicationSection ||
-    !entityUuid ||
-    (entityUuid.elementType != "string" && entityUuid.elementType != "instanceUuid")
+    !entityUuidDomainElement ||
+    (entityUuidDomainElement.elementType != "string" && entityUuidDomainElement.elementType != "instanceUuid")
   ) {
     return {
       // new object
@@ -321,7 +334,7 @@ export const selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate: 
           " applicationSection=" +
           applicationSection +
           " " +
-          JSON.stringify(entityUuid),
+          JSON.stringify(entityUuidDomainElement),
         queryParameters: JSON.stringify(selectorParams),
       },
     };
@@ -330,9 +343,9 @@ export const selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate: 
   const deploymentEntityStateIndex = getDeploymentEntityStateIndex(
     deploymentUuid,
     applicationSection,
-    entityUuid.elementValue
+    entityUuidDomainElement.elementValue
   );
-  switch (entityUuid.elementType) {
+  switch (entityUuidDomainElement.elementType) {
     case "string":
     case "instanceUuid": {
       if (!deploymentEntityState[deploymentEntityStateIndex]) {
@@ -348,7 +361,7 @@ export const selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate: 
             queryFailure: "EntityNotFound",
             deploymentUuid,
             applicationSection,
-            entityUuid: entityUuid.elementValue,
+            entityUuid: entityUuidDomainElement.elementValue,
           },
         };
       }
@@ -368,7 +381,7 @@ export const selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate: 
     }
     default: {
       throw new Error(
-        "selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate could not handle reference entityUuid=" + entityUuid
+        "selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate could not handle reference entityUuid=" + entityUuidDomainElement
       );
       break;
     }

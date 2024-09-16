@@ -12,7 +12,7 @@
         "queryType": "queryTemplateExtractObjectListByEntity",
         "parentName": "Deployment",
         "parentUuid": {
-          "queryTemplateType": "constantUuid",
+          "templateType": "constantUuid",
           "constantUuidValue": "7959d814-400c-4e80-988f-a00fe582ab98"
         }
       }

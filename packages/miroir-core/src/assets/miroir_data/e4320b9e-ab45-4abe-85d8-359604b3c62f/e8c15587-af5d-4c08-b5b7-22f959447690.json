@@ -21,7 +21,7 @@
             "queryType": "selectObjectByDirectReference",
             "parentName": "ApplicationVersion",
             "parentUuid": {
-              "queryTemplateType": "constantUuid",
+              "templateType": "constantUuid",
               "constantUuidValue": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24"
             },
             "instanceUuid": {
@@ -34,7 +34,7 @@
             "applicationSection": "model",
             "parentName": "Entity",
             "parentUuid": {
-              "queryTemplateType": "constantUuid",
+              "templateType": "constantUuid",
               "constantUuidValue": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
             }
           },
@@ -43,7 +43,7 @@
             "applicationSection": "model",
             "parentName": "Entity",
             "parentUuid": {
-              "queryTemplateType": "constantUuid",
+              "templateType": "constantUuid",
               "constantUuidValue": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd"
             }
           },
@@ -51,7 +51,7 @@
             "queryType": "queryTemplateExtractObjectListByEntity",
             "parentName": "Report",
             "parentUuid": {
-              "queryTemplateType": "constantUuid",
+              "templateType": "constantUuid",
               "constantUuidValue": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916"
             }
           },
@@ -59,7 +59,7 @@
             "queryType": "queryTemplateExtractObjectListByEntity",
             "parentName": "Query",
             "parentUuid": {
-              "queryTemplateType": "constantUuid",
+              "templateType": "constantUuid",
               "constantUuidValue": "e4320b9e-ab45-4abe-85d8-359604b3c62f"
             }
           },
@@ -67,7 +67,7 @@
             "queryType": "queryTemplateExtractObjectListByEntity",
             "parentName": "Query",
             "parentUuid": {
-              "queryTemplateType": "constantUuid",
+              "templateType": "constantUuid",
               "constantUuidValue": "3d8da4d4-8f76-4bb4-9212-14869d81c00c"
             }
           },
@@ -78,7 +78,7 @@
               "applicationSection": "model",
               "parentName": "Entity",
               "parentUuid": {
-                "queryTemplateType": "constantUuid",
+                "templateType": "constantUuid",
                 "constantUuidValue": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
               }
             },

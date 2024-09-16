@@ -13,7 +13,7 @@
         "queryType": "queryTemplateExtractObjectListByEntity",
         "parentName": "Commit",
         "parentUuid": {
-          "queryTemplateType": "constantUuid",
+          "templateType": "constantUuid",
           "constantUuidValue": "73bb0c69-e636-4e3b-a230-51f25469c089"
         }
       }

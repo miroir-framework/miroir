@@ -12,7 +12,7 @@
         "queryType": "selectObjectByDirectReference",
         "parentName": "Report",
         "parentUuid": {
-          "queryTemplateType": "constantUuid",
+          "templateType": "constantUuid",
           "constantUuidValue": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916"
         },
         "instanceUuid": {

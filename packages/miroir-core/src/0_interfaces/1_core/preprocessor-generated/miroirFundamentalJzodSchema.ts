@@ -4327,7 +4327,7 @@ export const miroirFundamentalJzodSchema = {
               }
             },
             "definition": {
-              "relativePath": "queryTemplateConstantOrAnyReference",
+              "relativePath": "transformer_InnerReference",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
             "context": {}
@@ -10336,7 +10336,7 @@ export const miroirFundamentalJzodSchema = {
               }
             },
             "definition": {
-              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryTemplateConstantOrAnyReference"
+              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_InnerReference"
             },
             "context": {}
           }
@@ -24208,7 +24208,7 @@ export const miroirFundamentalJzodSchema = {
                   }
                 },
                 "definition": {
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryTemplateConstantOrAnyReference"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_InnerReference"
                 },
                 "context": {}
               }

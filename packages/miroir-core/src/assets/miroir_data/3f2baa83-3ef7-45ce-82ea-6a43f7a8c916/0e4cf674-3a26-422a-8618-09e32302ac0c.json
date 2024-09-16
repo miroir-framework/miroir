@@ -11,7 +11,7 @@
       "applications": {
         "queryType": "queryTemplateExtractObjectListByEntity",
         "parentUuid": {
-          "queryTemplateType": "constantUuid",
+          "templateType": "constantUuid",
           "constantUuidValue": "a659d350-dd97-4da9-91de-524fa01745dc"
         }
       }

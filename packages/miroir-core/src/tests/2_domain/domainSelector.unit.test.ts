@@ -31,11 +31,11 @@ describe("domainSelector", () => {
   //           queryType: "selectObjectByDirectReference",
   //           parentName: "Book",
   //           parentUuid: {
-  //             queryTemplateType: "constantUuid",
+  //             templateType: "constantUuid",
   //             constantUuidValue: "XXXXXX"
   //           },
   //           instanceUuid: {
-  //             queryTemplateType: "constantUuid",
+  //             templateType: "constantUuid",
   //             constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
   //           }
   //         },
@@ -75,11 +75,11 @@ describe("domainSelector", () => {
   //           queryType: "selectObjectByDirectReference",
   //           parentName: "Book",
   //           parentUuid: {
-  //             "queryTemplateType": "constantUuid",
+  //             "templateType": "constantUuid",
   //             "constantUuidValue": "XXXXXX"
   //           },
   //           instanceUuid: {
-  //             queryTemplateType: "constantUuid",
+  //             templateType: "constantUuid",
   //             constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
   //           }
   //         },
@@ -120,11 +120,11 @@ describe("domainSelector", () => {
   //           queryType: "selectObjectByDirectReference",
   //           parentName: "Book",
   //           parentUuid: {
-  //             queryTemplateType: "constantUuid",
+  //             templateType: "constantUuid",
   //             constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
   //           },
   //           instanceUuid: {
-  //             queryTemplateType: "constantUuid",
+  //             templateType: "constantUuid",
   //             constantUuidValue: "XXXXXXXXX"
   //           }
   //         }
@@ -167,11 +167,11 @@ describe("domainSelector", () => {
   //           queryType: "selectObjectByDirectReference",
   //           parentName: "Book",
   //           parentUuid: {
-  //             queryTemplateType: "constantUuid",
+  //             templateType: "constantUuid",
   //             constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
   //           },
   //           instanceUuid: {
-  //             queryTemplateType: "constantUuid",
+  //             templateType: "constantUuid",
   //             constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
   //           },
   //         },
@@ -200,11 +200,11 @@ describe("domainSelector", () => {
   //           queryType: "selectObjectByDirectReference",
   //           parentName: "Book",
   //           parentUuid: {
-  //             queryTemplateType: "constantUuid",
+  //             templateType: "constantUuid",
   //             constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
   //           },
   //           instanceUuid: {
-  //             queryTemplateType: "constantUuid",
+  //             templateType: "constantUuid",
   //             constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
   //           },
   //         },
@@ -239,7 +239,7 @@ describe("domainSelector", () => {
   //           queryType: "selectObjectByDirectReference",
   //           parentName: "Book",
   //           parentUuid: {
-  //             queryTemplateType: "constantUuid",
+  //             templateType: "constantUuid",
   //             constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
   //           },
   //           instanceUuid: {
@@ -278,11 +278,11 @@ describe("domainSelector", () => {
   //           queryType: "selectObjectByDirectReference",
   //           parentName: "Book",
   //           parentUuid: {
-  //             queryTemplateType: "constantUuid",
+  //             templateType: "constantUuid",
   //             constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
   //           },
   //           instanceUuid: {
-  //             queryTemplateType: "constantUuid",
+  //             templateType: "constantUuid",
   //             constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
   //           },
   //         },
@@ -292,7 +292,7 @@ describe("domainSelector", () => {
   //           queryType: "selectObjectByRelation",
   //           parentName: "Publisher",
   //           parentUuid: {
-  //             queryTemplateType: "constantUuid",
+  //             templateType: "constantUuid",
   //             constantUuidValue: "a027c379-8468-43a5-ba4d-bf618be25cab",
   //           },
   //           objectReference: {
@@ -343,7 +343,7 @@ describe("domainSelector", () => {
   //           queryType: "queryTemplateExtractObjectListByEntity",
   //           parentName: "Author",
   //           parentUuid: {
-  //             queryTemplateType: "constantUuid",
+  //             templateType: "constantUuid",
   //             constantUuidValue: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
   //           },
   //         },
@@ -410,7 +410,7 @@ describe("domainSelector", () => {
             queryType: "queryTemplateExtractObjectListByEntity",
             parentName: "Author",
             parentUuid: {
-              queryTemplateType: "constantUuid",
+              templateType: "constantUuid",
               constantUuidValue: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
             },
             filter: {
@@ -474,7 +474,7 @@ describe("domainSelector", () => {
             queryType: "selectObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
-              queryTemplateType: "constantUuid",
+              templateType: "constantUuid",
               constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             instanceUuid: {
@@ -488,7 +488,7 @@ describe("domainSelector", () => {
             queryType: "selectObjectByRelation",
             parentName: "Publisher",
             parentUuid: {
-              queryTemplateType: "constantUuid",
+              templateType: "constantUuid",
               constantUuidValue: "a027c379-8468-43a5-ba4d-bf618be25cab",
             },
             objectReference: {
@@ -501,7 +501,7 @@ describe("domainSelector", () => {
             queryType: "selectObjectListByRelation",
             parentName: "Book",
             parentUuid: {
-              queryTemplateType: "constantUuid",
+              templateType: "constantUuid",
               constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             objectReference: {
@@ -554,7 +554,7 @@ describe("domainSelector", () => {
             queryType: "selectObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
-              queryTemplateType: "constantUuid",
+              templateType: "constantUuid",
               constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             instanceUuid: {
@@ -568,7 +568,7 @@ describe("domainSelector", () => {
             queryType: "selectObjectByRelation",
             parentName: "Publisher",
             parentUuid: {
-              queryTemplateType: "constantUuid",
+              templateType: "constantUuid",
               constantUuidValue: "a027c379-8468-43a5-ba4d-bf618be25cab",
             },
             objectReference: {
@@ -581,7 +581,7 @@ describe("domainSelector", () => {
             queryType: "selectObjectListByRelation",
             parentName: "Book",
             parentUuid: {
-              queryTemplateType: "constantUuid",
+              templateType: "constantUuid",
               constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             objectReference: {
@@ -654,7 +654,7 @@ describe("domainSelector", () => {
             applicationSection: "model",
             parentName: "Entity",
             parentUuid: {
-              queryTemplateType: "constantUuid",
+              templateType: "constantUuid",
               constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
             },
           },
@@ -670,7 +670,7 @@ describe("domainSelector", () => {
               query: {
                 queryType: "queryTemplateExtractObjectListByEntity",
                 parentUuid: {
-                  queryTemplateType: "queryParameterReference",
+                  templateType: "parameterReference",
                   referenceName: "uuid",
                 },
               },
@@ -735,7 +735,7 @@ describe("domainSelector", () => {
             queryType: "queryTemplateExtractObjectListByEntity",
             parentName: "Book",
             parentUuid: {
-              queryTemplateType: "constantUuid",
+              templateType: "constantUuid",
               constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
           },

@@ -256,7 +256,7 @@
                 "type": "schemaReference",
                 "tag": { "value": {  "id":4, "defaultLabel": "Parent Uuid", "editable": false }},
                 "definition": {
-                  "relativePath": "queryTemplateConstantOrAnyReference"
+                  "relativePath": "transformer_InnerReference"
                 }
               }
             }
