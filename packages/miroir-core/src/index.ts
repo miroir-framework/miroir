@@ -626,6 +626,11 @@ export {
   transformer_InnerReference_resolve,
 } from "./2_domain/Transformers.js";
 export {
+  resolveQueryTemplate,
+  resolveExtractorTemplateForRecordOfExtractors,
+  resolveQueryTemplateSelectExtractorWrapper,
+} from "./2_domain/Templates.js";
+export {
   cacheFetchPolicy,
   cacheInvalidationPolicy,
   ConfigurationService,

@@ -290,6 +290,13 @@ export function transformer_InnerReference_resolve  (
   //   "contextResults=",
   //   Object.keys(contextResults?.elementValue ?? {})
   // );
+  if (step == "build" && (transformerInnerReference as any).interpolation == "runtime") {
+    log.warn("transformer_InnerReference_resolve called for runtime interpolation in build step", transformerInnerReference);
+    return {
+      elementType: "any",
+      elementValue: transformerInnerReference
+    }
+  }
   if (
     (transformerInnerReference.templateType == "contextReference" &&
       (!contextResults ||
@@ -324,7 +331,9 @@ export function transformer_InnerReference_resolve  (
   ) {
     // checking that given reference does exist
     log.warn(
-      "transformer_InnerReference_resolve could not find",
+      "transformer_InnerReference_resolve for reference=",
+      JSON.stringify(transformerInnerReference, null, 2),
+      "could not find",
       transformerInnerReference.templateType,
       "with referenceName",
       transformerInnerReference.referenceName,
@@ -601,11 +610,6 @@ export function transformer_apply(
               queryParams,
               contextResults
             );
-
-            // log.info(
-            //   "innerSelectElementFromQueryTemplate extractorTransformer count referencedExtractor resolvedReference",
-            //   resolvedReference
-            // );
           
             if (!["instanceUuidIndex", "object"].includes(resolvedReference.elementType)) {
               log.error(

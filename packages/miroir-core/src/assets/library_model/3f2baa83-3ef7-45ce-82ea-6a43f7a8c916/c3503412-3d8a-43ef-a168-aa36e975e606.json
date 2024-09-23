@@ -31,6 +31,7 @@
         },
         "objectReference": {
           "templateType": "contextReference",
+          "interpolation": "runtime",
           "referenceName": "book"
         },
         "AttributeOfObjectToCompareToReferenceUuid": "publisher"
@@ -44,6 +45,7 @@
         },
         "objectReference": {
           "templateType": "contextReference",
+          "interpolation": "runtime",
           "referenceName": "book"
         },
         "AttributeOfObjectToCompareToReferenceUuid": "author"
@@ -57,6 +59,7 @@
         },
         "objectReference": {
           "templateType": "contextReference",
+          "interpolation": "runtime",
           "referenceName": "publisher"
         },
         "AttributeOfListObjectToCompareToReferenceUuid": "publisher"
@@ -70,6 +73,7 @@
         },
         "objectReference": {
           "templateType": "contextReference",
+          "interpolation": "runtime",
           "referenceName": "author"
         },
         "AttributeOfListObjectToCompareToReferenceUuid": "author"

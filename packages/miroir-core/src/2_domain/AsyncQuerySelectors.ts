@@ -21,6 +21,7 @@ import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
+import { asyncInnerSelectElementFromQueryTemplate } from "./AsyncQueryTemplateSelectors.js";
 import { cleanLevel } from "./constants.js";
 import { applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory, applyExtractorTransformerInMemory } from "./QuerySelectors.js";
 import { applyTransformer } from "./Transformers.js";
@@ -41,6 +42,13 @@ const emptyAsyncSelectorMap:AsyncExtractorRunnerMap = {
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: undefined as any,
   extractEntityInstanceUuidIndex: undefined as any,
   applyExtractorTransformer: undefined as any,
+  // ##############################################################################################
+  extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: undefined as any,
+  extractWithExtractorTemplate: undefined as any,
+  extractWithManyExtractorTemplates: undefined as any,
+  applyExtractorTemplateTransformer: undefined as any,
+  extractEntityInstanceForTemplate: undefined as any,
+  extractEntityInstanceUuidIndexForTemplate: undefined as any,
 }
 
 // ################################################################################################
@@ -210,7 +218,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
         if (rootQueryResults.elementType == "instanceUuidIndex") {
           const entries = Object.entries(rootQueryResults.elementValue);
           const promises = entries.map((entry: [string, EntityInstance]) => {
-            return asyncInnerSelectElementFromQuery(
+            return asyncInnerSelectElementFromQueryTemplate(
               newFetchedData,
               pageParams,
               {
@@ -218,17 +226,31 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
                 elementValue: {
                   ...queryParams.elementValue,
                   ...Object.fromEntries(
-                    Object.entries(applyTransformer(query.subQuery.rootQueryObjectTransformer, entry[1])).map((e: [string, any]) => [
+                    Object.entries(applyTransformer(query.subQueryTemplate.rootQueryObjectTransformer, entry[1])).map((e: [string, any]) => [
                       e[0],
                       { elementType: "instanceUuid", elementValue: e[1] },
                     ])
                   ),
                 },
               },
-              extractorRunnerMap,
+              // extractorRunnerMap,
+              {
+                extractorType: "async",
+                applyExtractorTransformer: extractorRunnerMap.applyExtractorTemplateTransformer,
+                extractEntityInstance: extractorRunnerMap.extractEntityInstanceForTemplate,
+                extractEntityInstanceUuidIndex: extractorRunnerMap.extractEntityInstanceUuidIndexForTemplate,
+                extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory,
+                extractWithExtractorTemplate: extractorRunnerMap.extractWithExtractorTemplate,
+                extractWithManyExtractorTemplates: extractorRunnerMap.extractWithManyExtractorTemplates,
+                // extractEntityInstance: extractorRunnerMap.extractEntityInstanceForTemplate,
+                // extractEntityInstanceUuidIndex: extractorRunnerMap.extractEntityInstanceUuidIndexForTemplate,
+                // extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory,
+                // extractWithExtractorTemplate: extractorRunnerMap.extractWithExtractorTemplate,
+                // extractWithManyExtractorTemplates: extractorRunnerMap.extractWithManyExtractorTemplates,
+              },
               deploymentUuid,
-              extractors,
-              query.subQuery.query
+              // extractors,
+              query.subQueryTemplate.query
             ).then((result) => {
               return [entry[1].uuid, result];
             });

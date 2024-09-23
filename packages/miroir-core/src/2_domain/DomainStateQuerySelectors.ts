@@ -42,6 +42,8 @@ import {
   innerSelectElementFromQuery,
 } from "./QuerySelectors.js";
 import { transformer_InnerReference_resolve } from "./Transformers.js";
+import { extractEntityInstanceListFromListQueryTemplateAndDomainState, extractWithManyExtractorsFromDomainStateForTemplate, selectEntityInstanceFromObjectQueryAndDomainStateForTemplate, selectEntityInstanceUuidIndexFromDomainStateForTemplate } from "./DomainStateQueryTemplateSelector.js";
+import { extractWithExtractorTemplate } from "./QueryTemplateSelectors.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "DomainStateQuerySelector");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -213,7 +215,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
     ((selectorParams.extractor.pageParams?.applicationSection ?? "data") as ApplicationSection);
 
   log.info(
-    "selectEntityInstanceFromObjectQueryAndDomainStateForTemplate params",
+    "selectEntityInstanceFromObjectQueryAndDomainState params",
     querySelectorParams,
     "deploymentUuid",
     deploymentUuid,
@@ -221,7 +223,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
     applicationSection
   );
   const entityUuidReference: Uuid = querySelectorParams.parentUuid;
-  log.info("selectEntityInstanceFromObjectQueryAndDomainStateForTemplate entityUuidReference", entityUuidReference);
+  log.info("selectEntityInstanceFromObjectQueryAndDomainState entityUuidReference", entityUuidReference);
 
   // if (entityUuidReference.elementType != "string" && entityUuidReference.elementType != "instanceUuid") {
   //   return {
@@ -229,7 +231,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
   //     elementValue: {
   //       queryFailure: "IncorrectParameters",
   //       queryContext:
-  //         "selectEntityInstanceFromObjectQueryAndDomainStateForTemplate wrong entityUuidReference=" +
+  //         "selectEntityInstanceFromObjectQueryAndDomainState wrong entityUuidReference=" +
   //         JSON.stringify(entityUuidReference),
   //       queryReference: JSON.stringify(querySelectorParams.parentUuid),
   //     },
@@ -287,7 +289,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
       }
 
       // log.info(
-      //   "selectEntityInstanceFromObjectQueryAndDomainStateForTemplate selectObjectByRelation, ############# reference",
+      //   "selectEntityInstanceFromObjectQueryAndDomainState selectObjectByRelation, ############# reference",
       //   querySelectorParams,
       //   "######### context entityUuid",
       //   entityUuidReference,
@@ -311,7 +313,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
       const instanceUuidDomainElement = querySelectorParams.instanceUuid;
 
       log.info(
-        "selectEntityInstanceFromObjectQueryAndDomainStateForTemplate found instanceUuid",
+        "selectEntityInstanceFromObjectQueryAndDomainState found instanceUuid",
         JSON.stringify(instanceUuidDomainElement)
       );
 
@@ -333,7 +335,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
       //     },
       //   };
       // }
-      // log.info("selectEntityInstanceFromObjectQueryAndDomainStateForTemplate resolved instanceUuid =", instanceUuid);
+      // log.info("selectEntityInstanceFromObjectQueryAndDomainState resolved instanceUuid =", instanceUuid);
       if (!domainState) {
         return { elementType: "failure", elementValue: { queryFailure: "DomainStateNotLoaded" } };
       }
@@ -374,7 +376,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
         };
       }
 
-      // log.info("selectEntityInstanceFromObjectQueryAndDomainStateForTemplate selectObjectByDirectReference, ############# reference",
+      // log.info("selectEntityInstanceFromObjectQueryAndDomainState selectObjectByDirectReference, ############# reference",
       //   querySelectorParams,
       //   "entityUuidReference",
       //   entityUuidReference,
@@ -398,7 +400,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
     }
     default: {
       throw new Error(
-        "selectEntityInstanceFromObjectQueryAndDomainStateForTemplate can not handle QueryTemplateSelectObject query with queryType=" +
+        "selectEntityInstanceFromObjectQueryAndDomainState can not handle QueryTemplateSelectObject query with queryType=" +
           selectorParams.extractor.select.queryType
       );
       break;
@@ -502,6 +504,11 @@ export function getSelectorMap(): SyncExtractorRunnerMap<DomainState> {
     extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: exractEntityInstanceListFromListQueryAndDomainState,
     extractWithManyExtractors: extractWithManyExtractorsFromDomainState,
     extractWithExtractor: extractWithExtractor,
+    extractEntityInstanceUuidIndexForTemplate: selectEntityInstanceUuidIndexFromDomainStateForTemplate,
+    extractEntityInstanceForTemplate: selectEntityInstanceFromObjectQueryAndDomainStateForTemplate,
+    extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: extractEntityInstanceListFromListQueryTemplateAndDomainState,
+    extractWithManyExtractorTemplates: extractWithManyExtractorsFromDomainStateForTemplate,
+    extractWithExtractorTemplate: extractWithExtractorTemplate,
   };
 }
 

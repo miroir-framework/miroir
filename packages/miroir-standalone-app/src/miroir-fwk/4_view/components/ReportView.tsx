@@ -25,7 +25,9 @@ import {
   SyncExtractorRunnerMap,
   ExtractorRunnerParamsForJzodSchema,
   DomainModelGetFetchParamJzodSchemaForExtractor,
-  ExtractorRunnerMapForJzodSchema
+  ExtractorRunnerMapForJzodSchema,
+  resolveQueryTemplate,
+  resolveExtractorTemplateForRecordOfExtractors
 } from "miroir-core";
 
 
@@ -130,15 +132,29 @@ export const ReportView = (props: ReportViewProps) => {
           ),
     [deploymentEntityStateSelectorTemplateMap, props.pageParams, props.reportDefinition]
   );
+
+  log.info("deploymentEntityStateFetchQueryTemplateParams",deploymentEntityStateFetchQueryTemplateParams)
+
+  const resolvedQuery = useMemo(
+    () =>
+      resolveExtractorTemplateForRecordOfExtractors(
+        deploymentEntityStateFetchQueryTemplateParams.extractorTemplate,
+      ),
+    [deploymentEntityStateFetchQueryTemplateParams]
+  );
+
+  log.info("resolvedQuery",resolvedQuery)
+
   const deploymentEntityStateFetchQueryParams: SyncExtractorRunnerParams<
     ExtractorForRecordOfExtractors,
     DeploymentEntityState
   > = useMemo(
     () =>
-      props.reportDefinition.extractors &&
       props.pageParams.deploymentUuid &&
       props.pageParams.applicationSection &&
       props.pageParams.reportUuid
+      ?
+        props.reportDefinition.extractors
         ? getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>(
             {
               queryType: "extractorForRecordOfExtractors",
@@ -154,6 +170,29 @@ export const ReportView = (props: ReportViewProps) => {
             deploymentEntityStateSelectorMap
           )
         : // dummy query
+          getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>(
+            {
+              queryType: "extractorForRecordOfExtractors",
+              deploymentUuid: props.pageParams.deploymentUuid,
+              pageParams: props.pageParams,
+              queryParams: {},
+              contextResults: {},
+              extractors: resolvedQuery.extractors,
+              // extractorTemplates: props.reportDefinition.extractorTemplates,
+              combiners: resolvedQuery.combiners,
+              runtimeTransformers: resolvedQuery.runtimeTransformers,
+            },
+            // {
+            //   queryType: "extractorForRecordOfExtractors",
+            //   deploymentUuid: "",
+            //   pageParams: paramsAsdomainElements,
+            //   queryParams: {},
+            //   contextResults: {},
+            //   extractors: {},
+            // },
+            deploymentEntityStateSelectorMap
+          )
+          :
           getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>(
             {
               queryType: "extractorForRecordOfExtractors",
@@ -281,7 +320,7 @@ export const ReportView = (props: ReportViewProps) => {
               queryType: "getFetchParamsJzodSchema",
               deploymentUuid: props.pageParams.deploymentUuid,
               pageParams: {
-                applicationSection: props.pageParams.applicationSection ,
+                applicationSection: props.pageParams.applicationSection,
                 deploymentUuid: props.pageParams.deploymentUuid,
                 instanceUuid: props.pageParams.instanceUuid ?? "",
               },
@@ -294,7 +333,7 @@ export const ReportView = (props: ReportViewProps) => {
               queryType: "getFetchParamsJzodSchema",
               deploymentUuid: "DUMMY",
               pageParams: {
-                applicationSection: "data" ,
+                applicationSection: "data",
                 deploymentUuid: "",
                 instanceUuid: "",
               },
@@ -312,7 +351,7 @@ export const ReportView = (props: ReportViewProps) => {
             },
     }),
     [jzodSchemaSelectorTemplateMap, props.pageParams, props.reportDefinition]
-  )
+  );
   ;
 
   const fetchedDataJzodSchema: RecordOfJzodObject | undefined = useDeploymentEntityStateJzodSchemaSelector(
@@ -379,8 +418,8 @@ export const ReportView = (props: ReportViewProps) => {
             props.deploymentUuid?
               <div>
                 <div>ReportView rendered {count}</div>
-                {
-                  props.reportDefinition.extractors?
+                {/* {
+                  props.reportDefinition.extractors? */}
                   <ReportSectionView
                     queryResults={deploymentEntityStateQueryResults}
                     fetchedDataJzodSchema={fetchedDataJzodSchema}
@@ -389,9 +428,9 @@ export const ReportView = (props: ReportViewProps) => {
                     applicationSection={props.applicationSection}
                     deploymentUuid={props.deploymentUuid}
                     paramsAsdomainElements={paramsAsdomainElements}
-                    extractorRunnerMap={deploymentEntityStateSelectorTemplateMap}
+                    extractorTemplateRunnerMap={deploymentEntityStateSelectorTemplateMap}
                   />
-                  :
+                  {/* :
                   <ReportSectionView
                     queryResults={deploymentEntityStateQueryTemplateResults}
                     fetchedDataJzodSchema={fetchedDataJzodSchemaForTemplate}
@@ -400,9 +439,9 @@ export const ReportView = (props: ReportViewProps) => {
                     applicationSection={props.applicationSection}
                     deploymentUuid={props.deploymentUuid}
                     paramsAsdomainElements={paramsAsdomainElements}
-                    extractorRunnerMap={deploymentEntityStateSelectorTemplateMap}
+                    extractorTemplateRunnerMap={deploymentEntityStateSelectorTemplateMap}
                   />
-                }
+                } */}
               </div>
             :
             <div style={{color:"red"}}>no deployment found!</div>

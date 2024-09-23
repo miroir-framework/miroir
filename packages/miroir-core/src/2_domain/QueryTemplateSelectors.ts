@@ -157,21 +157,21 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
   selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed,
   extractor: ExtractorTemplateForSingleObjectList,
 ) => {
-  log.info(
-    "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectedInstancesUuidIndex",
-    selectedInstancesUuidIndex,
-    JSON.stringify(extractor, undefined, 2)
-  );
+  // log.info(
+  //   "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectedInstancesUuidIndex",
+  //   selectedInstancesUuidIndex,
+  //   JSON.stringify(extractor, undefined, 2)
+  // );
   switch (extractor.select.queryType) {
     case "queryTemplateExtractObjectListByEntity": {
       const localQuery: QueryTemplateExtractObjectListByEntity = extractor.select;
       const filterTest = localQuery.filter
         ? new RegExp((localQuery.filter.value as any).constantStringValue, "i") // TODO: check for correct type
         : undefined;
-      log.info(
-        "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory queryTemplateExtractObjectListByEntity filter",
-        JSON.stringify(localQuery.filter)
-      );
+      // log.info(
+      //   "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory queryTemplateExtractObjectListByEntity filter",
+      //   JSON.stringify(localQuery.filter)
+      // );
       const result:DomainElementInstanceUuidIndexOrFailed = localQuery.filter
         ? {
             elementType: "instanceUuidIndex",
@@ -180,12 +180,12 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
                 const matchResult = filterTest?.test(
                   (i as any)[1][localQuery.filter?.attributeName??""]
                 )
-                log.info(
-                  "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory queryTemplateExtractObjectListByEntity filter",
-                  JSON.stringify(i[1]),
-                  "matchResult",
-                  matchResult
-                );
+                // log.info(
+                //   "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory queryTemplateExtractObjectListByEntity filter",
+                //   JSON.stringify(i[1]),
+                //   "matchResult",
+                //   matchResult
+                // );
                 return matchResult
               }
               )
@@ -201,10 +201,10 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
         //   )
         : selectedInstancesUuidIndex;
       ;
-      log.info(
-        "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory queryTemplateExtractObjectListByEntity result",
-        JSON.stringify(result, undefined, 2)
-      );
+      // log.info(
+      //   "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory queryTemplateExtractObjectListByEntity result",
+      //   JSON.stringify(result, undefined, 2)
+      // );
       return result;
       break;
     }
@@ -225,7 +225,8 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
               // extractor.contextResults?.elementType == "object" &&
               // extractor.contextResults.elementValue &&
               // extractor.contextResults.elementValue[relationQuery.objectReference.referenceName ?? ""]
-              extractor.contextResults[relationQuery.objectReference.referenceName ?? ""]
+              (relationQuery.objectReference.referenceName??"") in extractor.contextResults
+              // extractor.contextResults[relationQuery.objectReference.referenceName ?? ""]
             ) {
               otherIndex = ((extractor.contextResults[
                 relationQuery.objectReference.referenceName??""
@@ -233,28 +234,30 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
             } else {
               throw new Error(
                 "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation must be a reference to an Object:" +
-                  JSON.stringify(relationQuery.objectReference, undefined, 2)
+                  JSON.stringify(relationQuery.objectReference, undefined, 2) +
+                  " but reference name not found in contextResults=" +
+                  JSON.stringify(Object.keys(extractor.contextResults), undefined, 2)
               );
             }
             // else if (relationQuery.objectReference?.templateType == "constantUuid") {
             //   otherIndex = relationQuery.objectReference?.constantUuidValue;
             // }
 
-            log.info(
-              "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation",
-              (i[1] as any).name,
-              (i[1] as any)[localIndex] === otherIndex,
-              "localIndex",
-              (i[1] as any)[localIndex],
-              "otherIndex",
-              otherIndex
-            );
+            // log.info(
+            //   "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation",
+            //   (i[1] as any).name,
+            //   (i[1] as any)[localIndex] === otherIndex,
+            //   "localIndex",
+            //   (i[1] as any)[localIndex],
+            //   "otherIndex",
+            //   otherIndex
+            // );
             return (i[1] as any)[localIndex] === otherIndex
           }
         )
       )} as DomainElementInstanceUuidIndex;
-      log.info("applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation query", relationQuery)
-      log.info("applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation result", result)
+      // log.info("applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation query", relationQuery)
+      // log.info("applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation result", result)
       return result;
     }
     case "selectObjectListByManyToManyRelation": {
@@ -369,9 +372,9 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemo
   const selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed =
     (selectorParams?.extractorRunnerMap ?? emptySelectorMap).extractEntityInstanceUuidIndex(deploymentEntityState, selectorParams);
 
-  log.info(
-    "extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory found selectedInstances", selectedInstancesUuidIndex
-  );
+  // log.info(
+  //   "extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory found selectedInstances", selectedInstancesUuidIndex
+  // );
 
   return applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory(
     selectedInstancesUuidIndex,
@@ -514,12 +517,12 @@ export function innerSelectElementFromQueryTemplate/*ExtractorTemplateRunner*/<S
                   {
                     ...queryParams.elementValue,
                     ...Object.fromEntries(
-                      Object.entries(applyTransformer(queryTemplate.subQuery.rootQueryObjectTransformer, entry[1]))
+                      Object.entries(applyTransformer(queryTemplate.subQueryTemplate.rootQueryObjectTransformer, entry[1]))
                     ),
                   },
                   extractorTemplateRunnerMap,
                   deploymentUuid,
-                  queryTemplate.subQuery.query
+                  queryTemplate.subQueryTemplate.query
                 ).elementValue, // TODO: check for error!
               ];
             })
@@ -628,12 +631,8 @@ export const extractWithManyExtractorTemplates = <StateType>(
 
   // log.info("########## extractWithManyExtractorTemplates begin, query", selectorParams);
   const context: Record<string, any> = {
-    ...selectorParams.extractorTemplate.contextResults
+    ...selectorParams.extractorTemplate.contextResults,
   };
-  // const context: DomainElementObject = {
-  //   elementType: "object",
-  //   elementValue: { ...selectorParams.extractor.contextResults.elementValue },
-  // };
   // log.info("########## DomainSelector extractWithManyExtractorTemplates will use context", context);
   const localSelectorMap: SyncExtractorTemplateRunnerMap<StateType> =
     selectorParams?.extractorRunnerMap ?? emptySelectorMap;
@@ -689,22 +688,24 @@ export const extractWithManyExtractorTemplates = <StateType>(
         result
       );
       context[extractorTemplate[0]] = result;
-      // return { elementType: "object", elementValue: {
-      // }}
-      // return result;
+    } else {
+      context[extractorTemplate[0]] = result.elementValue; // does side effect!
     }
-    context[extractorTemplate[0]] = result.elementValue; // does side effect!
     log.info(
       "extractWithManyExtractorTemplates done for extractors",
       extractorTemplate[0],
       "query",
       extractorTemplate[1],
-      "result=",
-      result,
+      // "result=",
+      // result,
       "context keys=",
-      Object.keys(context)
+      Object.keys(context),
+      "current result=",
+      context[extractorTemplate[0]]
     );
   }
+  log.info("########## DomainSelector extractWithManyExtractorTemplates using combiners", selectorParams.extractorTemplate.combinerTemplates);
+
   for (const combiner of Object.entries(
     selectorParams.extractorTemplate.combinerTemplates ?? {}
   )) {
@@ -725,6 +726,7 @@ export const extractWithManyExtractorTemplates = <StateType>(
     // log.info("extractWithManyExtractorTemplates done for entry", entry[0], "query", entry[1], "result=", result);
   }
 
+  log.info("########## DomainSelector extractWithManyExtractorTemplates using runtime transformers", selectorParams.extractorTemplate.runtimeTransformers);
   for (const transformerForRuntime of 
     Object.entries(
     selectorParams.extractorTemplate.runtimeTransformers ?? {}
@@ -743,7 +745,6 @@ export const extractWithManyExtractorTemplates = <StateType>(
         result
       );
       return { elementType: "object", elementValue: {}}
-      
     }
     context[transformerForRuntime[0]] = result.elementValue; // does side effect!
     // context.elementValue[transformerForRuntime[0]] = result; // does side effect!

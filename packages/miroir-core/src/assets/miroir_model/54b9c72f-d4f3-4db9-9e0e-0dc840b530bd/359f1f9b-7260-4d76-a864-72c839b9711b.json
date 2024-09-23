@@ -455,7 +455,7 @@
                   "relativePath": "queryTemplate"
                 }
               },
-              "subQuery": {
+              "subQueryTemplate": {
                 "type": "object",
                 "definition": {
                   "query": {
@@ -873,14 +873,14 @@
                   "relativePath": "miroirQuery"
                 }
               },
-              "subQuery": {
+              "subQueryTemplate": {
                 "type": "object",
                 "definition": {
                   "query": {
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "miroirQuery"
+                      "relativePath": "queryTemplate"
                     }
                   },
                   "rootQueryObjectTransformer": {

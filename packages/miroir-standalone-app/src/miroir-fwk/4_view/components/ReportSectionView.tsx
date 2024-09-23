@@ -40,7 +40,7 @@ export interface ReportSectionViewProps {
   paramsAsdomainElements: DomainElementObject,
   reportSection: ReportSection,
   rootReport: RootReport,
-  extractorRunnerMap: SyncExtractorTemplateRunnerMap<DeploymentEntityState>
+  extractorTemplateRunnerMap: SyncExtractorTemplateRunnerMap<DeploymentEntityState>
 }
 
 // ###############################################################################################################
@@ -227,7 +227,7 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
                               paramsAsdomainElements={props.paramsAsdomainElements}
                               reportSection={innerReportSection}
                               rootReport={props.rootReport}
-                              extractorRunnerMap={props.extractorRunnerMap}
+                              extractorTemplateRunnerMap={props.extractorTemplateRunnerMap}
                               // instanceUuid={props.instanceUuid}
                             />
                           </td>

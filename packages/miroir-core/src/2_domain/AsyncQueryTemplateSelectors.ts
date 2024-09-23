@@ -100,7 +100,7 @@ export function asyncInnerSelectElementFromQueryTemplate/*ExtractorTemplateRunne
   // queryParams: DomainElementObject,
   extractorRunnerMap:AsyncExtractorTemplateRunnerMap,
   deploymentUuid: Uuid,
-  extractorTemplates: Record<string, ExtractorTemplateForSingleObjectList | ExtractorTemplateForSingleObject | ExtractorTemplateForRecordOfExtractors>,
+  // extractorTemplates: Record<string, ExtractorTemplateForSingleObjectList | ExtractorTemplateForSingleObject | ExtractorTemplateForRecordOfExtractors>,
   query: QueryTemplate
 ): Promise<DomainElement> {
   switch (query.queryType) {
@@ -163,7 +163,7 @@ export function asyncInnerSelectElementFromQueryTemplate/*ExtractorTemplateRunne
           queryParams ?? {},
           extractorRunnerMap,
           deploymentUuid,
-          extractorTemplates,
+          // extractorTemplates,
           e[1]
         ).then((result) => {
           return [e[0], result];
@@ -186,7 +186,7 @@ export function asyncInnerSelectElementFromQueryTemplate/*ExtractorTemplateRunne
           queryParams ?? {},
           extractorRunnerMap,
           deploymentUuid,
-          extractorTemplates,
+          // extractorTemplates,
           e
         );
       })
@@ -205,7 +205,7 @@ export function asyncInnerSelectElementFromQueryTemplate/*ExtractorTemplateRunne
         queryParams,
         extractorRunnerMap,
         deploymentUuid,
-        extractorTemplates,
+        // extractorTemplates,
         query.rootQuery
       );
       return rootQueryResults.then((rootQueryResults) => {
@@ -220,7 +220,7 @@ export function asyncInnerSelectElementFromQueryTemplate/*ExtractorTemplateRunne
                 elementValue: {
                   ...queryParams.elementValue,
                   ...Object.fromEntries(
-                    Object.entries(applyTransformer(query.subQuery.rootQueryObjectTransformer, entry[1])).map((e: [string, any]) => [
+                    Object.entries(applyTransformer(query.subQueryTemplate.rootQueryObjectTransformer, entry[1])).map((e: [string, any]) => [
                       e[0],
                       { elementType: "instanceUuid", elementValue: e[1] },
                     ])
@@ -229,8 +229,8 @@ export function asyncInnerSelectElementFromQueryTemplate/*ExtractorTemplateRunne
               },
               extractorRunnerMap,
               deploymentUuid,
-              extractorTemplates,
-              query.subQuery.query
+              // extractorTemplates,
+              query.subQueryTemplate.query
             ).then((result) => {
               return [entry[1].uuid, result];
             });
@@ -298,7 +298,7 @@ export const asyncExtractWithExtractorTemplate /**: SyncExtractorTemplateRunner 
         selectorParams.extractorTemplate.queryParams,
         localSelectorMap as any,
         selectorParams.extractorTemplate.deploymentUuid,
-        {},
+        // {}, // templates
         selectorParams.extractorTemplate.select
       );
       return result;
@@ -364,7 +364,7 @@ export const asyncExtractWithManyExtractorTemplates = async (
         },
         localSelectorMap as any,
         selectorParams.extractorTemplate.deploymentUuid,
-        selectorParams.extractorTemplate.extractorTemplates ?? ({} as any),
+        // selectorParams.extractorTemplate.extractorTemplates ?? ({} as any),
         query[1]
       ).then((result): [string, DomainElement] => {
         return [query[0], result.elementValue]; // TODO: check for failure!
@@ -396,7 +396,7 @@ export const asyncExtractWithManyExtractorTemplates = async (
       },
       localSelectorMap as any,
       selectorParams.extractorTemplate.deploymentUuid,
-      selectorParams.extractorTemplate.extractorTemplates ?? ({} as any),
+      // selectorParams.extractorTemplate.extractorTemplates ?? ({} as any),
       query[1]
     ).then((result): [string, DomainElement] => {
       return [query[0], result.elementValue];

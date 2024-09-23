@@ -24,6 +24,7 @@ import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { asyncApplyExtractorTransformerInMemory, asyncExtractEntityInstanceUuidIndexWithObjectListExtractor, asyncExtractWithExtractor, asyncExtractWithManyExtractors } from "./AsyncQuerySelectors.js";
+import { asyncApplyExtractorTemplateTransformerInMemory, asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate, asyncExtractWithExtractorTemplate, asyncExtractWithManyExtractorTemplates } from "./AsyncQueryTemplateSelectors.js";
 import { cleanLevel } from "./constants.js";
 import {
   selectEntityJzodSchemaFromDomainStateNew,
@@ -31,6 +32,7 @@ import {
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
 } from "./DomainStateQuerySelectors.js";
+import { ExtractorTemplateRunnerInMemory } from "./ExtractorTemplateRunnerInMemory.js";
 import { transformer_InnerReference_resolve } from "./Transformers.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "ExtractorRunnerInMemory");
@@ -42,10 +44,12 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner {
   private logHeader: string;
   private selectorMap: AsyncExtractorRunnerMap;
+  private extractorTemplateRunner: ExtractorTemplateRunnerInMemory;
 
   // ################################################################################################
   constructor(private persistenceStoreController: PersistenceStoreInstanceSectionAbstractInterface) {
     this.logHeader = "PersistenceStoreController " + persistenceStoreController.getStoreName();
+    this.extractorTemplateRunner = new ExtractorTemplateRunnerInMemory(persistenceStoreController);
     this.selectorMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex,
@@ -54,6 +58,13 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
+      // ##########################################################################################
+      extractEntityInstanceUuidIndexForTemplate: this.extractorTemplateRunner.extractEntityInstanceUuidIndex,
+      extractEntityInstanceForTemplate: this.extractorTemplateRunner.extractEntityInstance,
+      extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate,
+      extractWithManyExtractorTemplates: asyncExtractWithManyExtractorTemplates,
+      extractWithExtractorTemplate: asyncExtractWithExtractorTemplate,
+      applyExtractorTemplateTransformer: asyncApplyExtractorTemplateTransformerInMemory,
     };
   }
 

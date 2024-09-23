@@ -25,6 +25,7 @@ import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
 import { getDeploymentEntityStateIndex } from "./DeploymentEntityState.js";
+import { selectEntityInstanceFromDeploymentEntityStateForTemplate, selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate } from "./DeploymentEntityStateQueryTemplateSelectors.js";
 import {
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractFetchQueryJzodSchema,
@@ -33,6 +34,7 @@ import {
   extractWithManyExtractors,
   extractzodSchemaForSingleSelectQuery
 } from "./QuerySelectors.js";
+import { extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory, extractWithExtractorTemplate, extractWithManyExtractorTemplates } from "./QueryTemplateSelectors.js";
 import { transformer_InnerReference_resolve } from "./Transformers.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "DeploymentEntityStateQuerySelector");
@@ -430,6 +432,13 @@ export function getDeploymentEntityStateSelectorMap(): SyncExtractorRunnerMap<De
       extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
     extractWithManyExtractors: extractWithManyExtractors,
     extractWithExtractor: extractWithExtractor,
+    // ############################################################################################
+    extractEntityInstanceUuidIndexForTemplate: selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate,
+    extractEntityInstanceForTemplate: selectEntityInstanceFromDeploymentEntityStateForTemplate,
+    extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory:
+      extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory,
+    extractWithManyExtractorTemplates: extractWithManyExtractorTemplates,
+    extractWithExtractorTemplate: extractWithExtractorTemplate,
   };
 }
 
