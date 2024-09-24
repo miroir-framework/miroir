@@ -10,8 +10,9 @@ import {
   TransformerForRuntime,
   EntityInstance,
   TransformerForRuntime_InnerReference,
+  ExtractorTemplateForRecordOfExtractors,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { book1, book2, book3, book4, book5, book6, Country1, Country2, Country3, Country4, ignorePostgresExtraAttributesOnList, ignorePostgresExtraAttributesOnRecord } from '../../index.js';
+import { book1, book2, book3, book4, book5, book6, Country1, Country2, Country3, Country4, ignorePostgresExtraAttributesOnList, ignorePostgresExtraAttributesOnRecord, resolveExtractorTemplateForRecordOfExtractors } from '../../index.js';
 import { object } from 'zod';
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);

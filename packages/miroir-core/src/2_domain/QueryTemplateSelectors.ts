@@ -191,14 +191,6 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
               )
             )
           }
-        // }
-        // Object.fromEntries(
-        //     Object.entries(selectedInstancesUuidIndex.elementValue).filter((i: [string, EntityInstance]) =>
-        //       (selectorParams as any).extractor.select.filter.value.match(
-        //         (i as any)[1][(selectorParams as any).extractor.select.filter.attributeName]
-        //       )
-        //     )
-        //   )
         : selectedInstancesUuidIndex;
       ;
       // log.info(
@@ -222,11 +214,7 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
             let otherIndex = undefined
             if (
               relationQuery.objectReference?.templateType == "contextReference" &&
-              // extractor.contextResults?.elementType == "object" &&
-              // extractor.contextResults.elementValue &&
-              // extractor.contextResults.elementValue[relationQuery.objectReference.referenceName ?? ""]
               (relationQuery.objectReference.referenceName??"") in extractor.contextResults
-              // extractor.contextResults[relationQuery.objectReference.referenceName ?? ""]
             ) {
               otherIndex = ((extractor.contextResults[
                 relationQuery.objectReference.referenceName??""
@@ -239,10 +227,6 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
                   JSON.stringify(Object.keys(extractor.contextResults), undefined, 2)
               );
             }
-            // else if (relationQuery.objectReference?.templateType == "constantUuid") {
-            //   otherIndex = relationQuery.objectReference?.constantUuidValue;
-            // }
-
             // log.info(
             //   "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation",
             //   (i[1] as any).name,
@@ -261,26 +245,17 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
       return result;
     }
     case "selectObjectListByManyToManyRelation": {
-      // const relationQuery: QueryTemplateSelectObjectListByManyToManyRelation = query;
-      // const relationQuery: QueryTemplateSelectObjectListByManyToManyRelation = selectorParams.extractor.select;
       const relationQuery: QueryTemplateSelectObjectListByManyToManyRelation = extractor.select;
 
       // log.info("applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation", selectedInstances)
       let otherList: Record<string,any> | undefined = undefined
       if (
         relationQuery.objectListReference?.templateType == "contextReference" &&
-        // extractor.contextResults?.elementType == "object" &&
-        // extractor.contextResults.elementValue &&
-        // extractor.contextResults.elementValue[relationQuery.objectListReference.referenceName ?? ""]
         extractor.contextResults[relationQuery.objectListReference.referenceName ?? ""]
       ) {
         otherList = (extractor.contextResults[
           relationQuery.objectListReference.referenceName??""
         ]) ?? {};
-        // otherList = ((extractor.contextResults?.elementValue[
-        //   relationQuery.objectListReference.referenceName
-        // ]) ?? {elementType: "void", elementValue: undefined });
-        
         // log.info("applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation found otherList", otherList);
         
       } else {
@@ -298,44 +273,24 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
               const otherListAttribute = relationQuery.objectListReferenceAttribute ?? "uuid";
               const rootListAttribute = relationQuery.AttributeOfRootListObjectToCompareToListReferenceUuid ?? "uuid";
   
-              // switch (localOtherList.elementType) { // TODO: remove useless switch
-              //   case "instanceUuidIndex": {
-                  // TODO: take into account!
-                  // [relationQuery.objectListReferenceAttribute ?? "uuid"];
-                  const result =
-                    Object.values(otherList??{}).findIndex(
-                      (v: any) => v[otherListAttribute] == (selectedInstancesEntry[1] as any)[rootListAttribute]
-                    ) >= 0;
-                  // log.info(
-                  //   "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation search otherList for attribute",
-                  //   otherListAttribute,
-                  //   "on object",
-                  //   selectedInstancesEntry[1],
-                  //   "uuidToFind",
-                  //   (selectedInstancesEntry[1] as any)[otherListAttribute],
-                  //   "otherList",
-                  //   localOtherList,
-                  //   "result",
-                  //   result
-                  // );
+              const result =
+                Object.values(otherList??{}).findIndex(
+                  (v: any) => v[otherListAttribute] == (selectedInstancesEntry[1] as any)[rootListAttribute]
+                ) >= 0;
+              // log.info(
+              //   "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation search otherList for attribute",
+              //   otherListAttribute,
+              //   "on object",
+              //   selectedInstancesEntry[1],
+              //   "uuidToFind",
+              //   (selectedInstancesEntry[1] as any)[otherListAttribute],
+              //   "otherList",
+              //   localOtherList,
+              //   "result",
+              //   result
+              // );
 
-                  return result 
-                //   break;
-                // }
-                // case "object":
-                // case "string":
-                // case "instance":
-                // case "instanceUuidIndexUuidIndex":
-                // case "failure":
-                // case "array":
-                // default: {
-                //   throw new Error(
-                //     "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation can not use objectListReference, selectedInstances elementType=" +
-                //     selectedInstancesUuidIndex.elementType + " other list elementType" + localOtherList.elementType
-                //   );
-                //   break;
-                // }
-              // }
+              return result 
             }
           )
         )} as DomainElementInstanceUuidIndex;

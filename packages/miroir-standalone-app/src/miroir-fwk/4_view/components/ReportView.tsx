@@ -135,6 +135,8 @@ export const ReportView = (props: ReportViewProps) => {
 
   log.info("deploymentEntityStateFetchQueryTemplateParams",deploymentEntityStateFetchQueryTemplateParams)
 
+  log.info("################################################################ resolving query Template")
+
   const resolvedQuery = useMemo(
     () =>
       resolveExtractorTemplateForRecordOfExtractors(
@@ -144,6 +146,7 @@ export const ReportView = (props: ReportViewProps) => {
   );
 
   log.info("resolvedQuery",resolvedQuery)
+  log.info("################################################################ resolved query Template DONE")
 
   const deploymentEntityStateFetchQueryParams: SyncExtractorRunnerParams<
     ExtractorForRecordOfExtractors,
@@ -212,6 +215,7 @@ export const ReportView = (props: ReportViewProps) => {
   // //   "props.reportSection?.extractors",
   // //   props.reportSection?.extractors,
   // // )
+  log.info("################################################################ Fecth Template report data")
 
   const deploymentEntityStateQueryTemplateResults: DomainElementObjectOrFailed = useDeploymentEntityStateQueryTemplateSelector(
     deploymentEntityStateSelectorTemplateMap.extractWithManyExtractorTemplates,
@@ -219,6 +223,8 @@ export const ReportView = (props: ReportViewProps) => {
   );
 
   log.info("deploymentEntityStateQueryTemplateResults",deploymentEntityStateQueryTemplateResults)
+
+  log.info("################################################################ Fecth NON-Template report data")
 
   const deploymentEntityStateQueryResults: DomainElementObjectOrFailed = useDeploymentEntityStateQuerySelector(
     deploymentEntityStateSelectorMap.extractWithManyExtractors,
@@ -244,6 +250,8 @@ export const ReportView = (props: ReportViewProps) => {
     []
   )
 
+  log.info("################################################################ Fecth Template report schema")
+
   const fetchedDataJzodSchemaParamsForTemplate: ExtractorTemplateRunnerParamsForJzodSchema<
     DomainModelGetFetchParamJzodSchemaForExtractorTemplate,
     DeploymentEntityState
@@ -251,7 +259,7 @@ export const ReportView = (props: ReportViewProps) => {
     () => ({
       extractorRunnerMap: jzodSchemaSelectorTemplateMap,
       query:
-        props.pageParams.deploymentUuid && props.pageParams.applicationSection && props.pageParams.reportUuid
+        props.pageParams.deploymentUuid && props.pageParams.applicationSection && props.pageParams.reportUuid && props.reportDefinition.extractorTemplates
           ? {
               queryType: "getFetchParamsJzodSchema",
               deploymentUuid: props.pageParams.deploymentUuid,
@@ -308,6 +316,8 @@ export const ReportView = (props: ReportViewProps) => {
     fetchedDataJzodSchemaParamsForTemplate
   ) as RecordOfJzodObject | undefined; // TODO: use correct return type
 
+  log.info("################################################################ Fecth NON-Template report schema")
+
   const fetchedDataJzodSchemaParams: ExtractorRunnerParamsForJzodSchema<
     DomainModelGetFetchParamJzodSchemaForExtractor,
     DeploymentEntityState
@@ -315,7 +325,10 @@ export const ReportView = (props: ReportViewProps) => {
     () => ({
       extractorRunnerMap: jzodSchemaSelectorMap,
       query:
-        props.pageParams.deploymentUuid && props.pageParams.applicationSection && props.pageParams.reportUuid
+        props.pageParams.deploymentUuid &&
+        props.pageParams.applicationSection &&
+        props.pageParams.reportUuid &&
+        props.reportDefinition.extractors
           ? {
               queryType: "getFetchParamsJzodSchema",
               deploymentUuid: props.pageParams.deploymentUuid,

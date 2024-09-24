@@ -331,7 +331,9 @@ export function transformer_InnerReference_resolve  (
   ) {
     // checking that given reference does exist
     log.warn(
-      "transformer_InnerReference_resolve for reference=",
+      "transformer_InnerReference_resolve failed, reference not found for step",
+      step,
+      "reference=",
       JSON.stringify(transformerInnerReference, null, 2),
       "could not find",
       transformerInnerReference.templateType,
@@ -341,7 +343,9 @@ export function transformer_InnerReference_resolve  (
       transformerInnerReference.referencePath,
       "in",
       transformerInnerReference.templateType == "contextReference"
-        ? JSON.stringify(Object.keys(contextResults ?? {}))
+        // ? JSON.stringify(Object.keys(contextResults ?? {}))
+        ? (contextResults ?? {})
+        // : Object.keys(queryParams)
         : Object.keys(queryParams)
     );
     return {
@@ -396,7 +400,9 @@ export function transformer_InnerReference_resolve  (
   ) {
     // checking that given reference does exist
     log.warn(
-      "transformer_InnerReference_resolve found undefined reference",
+      "transformer_InnerReference_resolve step",
+      step,
+      "found undefined reference",
       transformerInnerReference.templateType,
       "with referenceName",
       transformerInnerReference.referenceName,
@@ -492,19 +498,19 @@ export function transformer_InnerReference_resolve  (
           elementValue: { queryFailure: transformerInnerReference },
         }; /* this should not happen. Provide "error" value instead?*/
 
-  // log.info(
-  //   "transformer_InnerReference_resolve returning for transformerInnerReference=",
-  //   transformerInnerReference,
-  //   "resolved as",
-  //   reference,
-  //   "in",
-  //   (
-  //     transformerInnerReference.templateType ==
-  //     "contextReference"
-  //       ? JSON.stringify(contextResults)
-  //       : JSON.stringify(Object.keys(queryParams))
-  //   )
-  // );
+  log.info(
+    "transformer_InnerReference_resolve returning for transformerInnerReference=",
+    transformerInnerReference,
+    "resolved as",
+    reference,
+    "in",
+    (
+      transformerInnerReference.templateType ==
+      "contextReference"
+        ? JSON.stringify(contextResults)
+        : JSON.stringify(Object.keys(queryParams))
+    )
+  );
 
   return reference;
 };

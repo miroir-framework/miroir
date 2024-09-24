@@ -66,7 +66,7 @@ export const selectEntityInstanceFromDeploymentEntityStateForTemplate: SyncExtra
     selectorParams.extractorTemplate.select.applicationSection ??"data";
 
   const parentUuidDomainElement = transformer_InnerReference_resolve(
-    "build",
+    "runtime",
     querySelectorParams.parentUuid,
     selectorParams.extractorTemplate.queryParams,
     selectorParams.extractorTemplate.contextResults

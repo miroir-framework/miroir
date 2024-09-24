@@ -142,12 +142,11 @@ export function resolveQueryTemplate(
           queryParams,
           contextResults
         ).elementValue, // TODO: check for failure!
-        objectReference: transformer_InnerReference_resolve(
-          "build",
-          queryTemplate.objectReference,
-          queryParams,
-          contextResults
-        ).elementValue, // TODO: check for failure!
+        objectReference:
+          queryTemplate.objectReference.templateType == "contextReference"
+            ? queryTemplate.objectReference.referenceName ??
+              "ERROR CONVERTING OBJECT REFERENCE FOR selectObjectListByRelation query template: no referenceName"
+            : "ERROR CONVERTING OBJECT REFERENCE FOR selectObjectListByRelation query template: objectReference is not a contextReference",
       };
       break;
     }
@@ -160,30 +159,24 @@ export function resolveQueryTemplate(
           queryParams,
           contextResults
         ).elementValue, // TODO: check for failure!
-        objectListReference: transformer_InnerReference_resolve(
-          "build",
-          queryTemplate.objectListReference,
-          queryParams,
-          contextResults
-        ).elementValue, // TODO: check for failure!
+        objectListReference:
+          queryTemplate.objectListReference.templateType == "contextReference"
+            ? queryTemplate.objectListReference.referenceName ??
+              "ERROR CONVERTING OBJECT REFERENCE FOR selectObjectListByRelation query template: no referenceName"
+            : "ERROR CONVERTING OBJECT REFERENCE FOR selectObjectListByRelation query template: objectReference is not a contextReference",
       };
       break;
     }
     case "selectObjectByRelation": {
       return {
         ...queryTemplate,
-        parentUuid: transformer_InnerReference_resolve(
-          "build",
-          queryTemplate.parentUuid,
-          queryParams,
-          contextResults
-        ).elementValue, // TODO: check for failure!
-        objectReference: transformer_InnerReference_resolve(
-          "build",
-          queryTemplate.objectReference,
-          queryParams,
-          contextResults
-        ).elementValue, // TODO: check for failure!
+        parentUuid: transformer_InnerReference_resolve("build", queryTemplate.parentUuid, queryParams, contextResults)
+          .elementValue, // TODO: check for failure!
+        objectReference:
+          queryTemplate.objectReference.templateType == "contextReference"
+            ? queryTemplate.objectReference.referenceName ??
+              "ERROR CONVERTING OBJECT REFERENCE FOR selectObjectByRelation query template: no referenceName"
+            : "ERROR CONVERTING OBJECT REFERENCE FOR selectObjectByRelation query template: objectReference is not a contextReference",
       };
       break;
     }

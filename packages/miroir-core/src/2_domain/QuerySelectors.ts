@@ -313,8 +313,10 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
       // } else if (relationQuery.objectReference?.queryTemplateType == "constantUuid") {
       } else {
         log.error(
-          "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation could not find objectReference, selectedInstances elementType=" +
-            selectedInstancesUuidIndex.elementType
+          "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation could not find objectReference in contextResults, objectReference=",
+          relationQuery.objectReference,
+          "contextResults",
+          extractor.contextResults
         );
       }
 

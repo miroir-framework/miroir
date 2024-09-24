@@ -58,207 +58,207 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
     }
   )
 
-  // // ###########################################################################################
-  // it('error on non-existing Entity: EntityNotFound',
-  //   () => {
-  //     const queryParam: ExtractorTemplateForRecordOfExtractors = {
-  //       queryType: "extractorTemplateForRecordOfExtractors",
-  //       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-  //       contextResults: {},
-  //       pageParams: { },
-  //       queryParams: { },
-  //       extractorTemplates: {
-  //         book: {
-  //           queryType: "selectObjectByDirectReference",
-  //           parentName: "Book",
-  //           parentUuid: {
-  //             "templateType": "constantUuid",
-  //             "constantUuidValue": "XXXXXX"
-  //           },
-  //           instanceUuid: {
-  //             templateType: "constantUuid",
-  //             constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
-  //           }
-  //         },
-  //       },
-  //     };
-  //     // const result = extractWithManyExtractorsFromDomainStateForTemplate(domainState, getSelectorParamsForTemplate(queryParam));
-  //     const result = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParamsForTemplate(queryParam));
-  //     console.info("result", result);
-  //     expect(result).toEqual({
-  //       elementType: "object",
-  //       elementValue: {
-  //         book: {
-  //           elementType: "failure",
-  //           elementValue: {
-  //             applicationSection: "data",
-  //             deploymentUuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-  //             entityUuid: "XXXXXX",
-  //             queryFailure: "EntityNotFound",
-  //           },
-  //         },
-  //       },
-  //     });
-  //   }
-  // )
+  // ###########################################################################################
+  it('error on non-existing Entity: EntityNotFound',
+    () => {
+      const queryParam: ExtractorTemplateForRecordOfExtractors = {
+        queryType: "extractorTemplateForRecordOfExtractors",
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        contextResults: {},
+        pageParams: { },
+        queryParams: { },
+        extractorTemplates: {
+          book: {
+            queryType: "selectObjectByDirectReference",
+            parentName: "Book",
+            parentUuid: {
+              "templateType": "constantUuid",
+              "constantUuidValue": "XXXXXX"
+            },
+            instanceUuid: {
+              templateType: "constantUuid",
+              constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+            }
+          },
+        },
+      };
+      // const result = extractWithManyExtractorsFromDomainStateForTemplate(domainState, getSelectorParamsForTemplate(queryParam));
+      const result = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParamsForTemplate(queryParam));
+      console.info("result", result);
+      expect(result).toEqual({
+        elementType: "object",
+        elementValue: {
+          book: {
+            elementType: "failure",
+            elementValue: {
+              applicationSection: "data",
+              deploymentUuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+              entityUuid: "XXXXXX",
+              queryFailure: "EntityNotFound",
+            },
+          },
+        },
+      });
+    }
+  )
 
-  // // ###########################################################################################
-  // it('error on non-existing object uuid: InstanceNotFound',
-  //   () => {
+  // ###########################################################################################
+  it('error on non-existing object uuid: InstanceNotFound',
+    () => {
 
-  //     const queryParam: ExtractorTemplateForRecordOfExtractors = {
-  //       queryType: "extractorTemplateForRecordOfExtractors",
-  //       "deploymentUuid": adminConfigurationDeploymentLibrary.uuid,
-  //       contextResults: {},
-  //       pageParams: { },
-  //       queryParams: { },
-  //       "extractorTemplates": {
-  //         "book": {
-  //           queryType: "selectObjectByDirectReference",
-  //           parentName: "Book",
-  //           parentUuid: {
-  //             templateType: "constantUuid",
-  //             constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-  //           },
-  //           instanceUuid: {
-  //             templateType: "constantUuid",
-  //             constantUuidValue: "XXXXXXXXX"
-  //           }
-  //         }
-  //       }
-  //     };
+      const queryParam: ExtractorTemplateForRecordOfExtractors = {
+        queryType: "extractorTemplateForRecordOfExtractors",
+        "deploymentUuid": adminConfigurationDeploymentLibrary.uuid,
+        contextResults: {},
+        pageParams: { },
+        queryParams: { },
+        "extractorTemplates": {
+          "book": {
+            queryType: "selectObjectByDirectReference",
+            parentName: "Book",
+            parentUuid: {
+              templateType: "constantUuid",
+              constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            },
+            instanceUuid: {
+              templateType: "constantUuid",
+              constantUuidValue: "XXXXXXXXX"
+            }
+          }
+        }
+      };
 
-  //     expect(
-  //       // extractWithManyExtractorsFromDomainStateForTemplate(domainState, getSelectorParamsForTemplate(queryParam)))
-  //       extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParamsForTemplate(queryParam)))
-  //       .toEqual({
-  //       elementType: "object",
-  //       elementValue: {
-  //         book: {
-  //           elementType: "failure",
-  //           elementValue: {
-  //             applicationSection: "data",
-  //             deploymentUuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-  //             entityUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //             instanceUuid: "XXXXXXXXX",
-  //             queryFailure: "InstanceNotFound",
-  //           },
-  //         },
-  //       },
-  //     });
-  //   }
-  // )
+      expect(
+        // extractWithManyExtractorsFromDomainStateForTemplate(domainState, getSelectorParamsForTemplate(queryParam)))
+        extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParamsForTemplate(queryParam)))
+        .toEqual({
+        elementType: "object",
+        elementValue: {
+          book: {
+            elementType: "failure",
+            elementValue: {
+              applicationSection: "data",
+              deploymentUuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+              entityUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              instanceUuid: "XXXXXXXXX",
+              queryFailure: "InstanceNotFound",
+            },
+          },
+        },
+      });
+    }
+  )
 
-  // // ###########################################################################################
-  // it('select 1 object from Domain State',
-  //   () => {
+  // ###########################################################################################
+  it('select 1 object from Domain State',
+    () => {
 
-  //     const queryParam: ExtractorTemplateForRecordOfExtractors = {
-  //       queryType: "extractorTemplateForRecordOfExtractors",
-  //       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-  //       contextResults: {},
-  //       pageParams: {},
-  //       queryParams: {},
-  //       extractorTemplates: {
-  //         book: {
-  //           queryType: "selectObjectByDirectReference",
-  //           parentName: "Book",
-  //           parentUuid: {
-  //             templateType: "constantUuid",
-  //             constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //           },
-  //           instanceUuid: {
-  //             templateType: "constantUuid",
-  //             constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
-  //           },
-  //         },
-  //       },
-  //     };
+      const queryParam: ExtractorTemplateForRecordOfExtractors = {
+        queryType: "extractorTemplateForRecordOfExtractors",
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        contextResults: {},
+        pageParams: {},
+        queryParams: {},
+        extractorTemplates: {
+          book: {
+            queryType: "selectObjectByDirectReference",
+            parentName: "Book",
+            parentUuid: {
+              templateType: "constantUuid",
+              constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            },
+            instanceUuid: {
+              templateType: "constantUuid",
+              constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+            },
+          },
+        },
+      };
 
-  //     const queryResult:any = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParamsForTemplate(queryParam));
+      const queryResult:any = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParamsForTemplate(queryParam));
 
-  //     expect(queryResult.elementValue.book).toBe(domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"])
-  //   }
-  // )
+      expect(queryResult.elementValue.book).toBe(domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"])
+    }
+  )
 
 
-  // // ###########################################################################################
-  // it('select 1 object from Domain State using context reference',
-  //   () => {
+  // ###########################################################################################
+  it('select 1 object from Domain State using context reference',
+    () => {
 
-  //     const queryParam: ExtractorTemplateForRecordOfExtractors = {
-  //       queryType: "extractorTemplateForRecordOfExtractors",
-  //       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-  //       contextResults: {},
-  //       pageParams: { },
-  //       queryParams: { },
-  //       extractorTemplates: {
-  //         book: {
-  //           queryType: "selectObjectByDirectReference",
-  //           parentName: "Book",
-  //           parentUuid: {
-  //             templateType: "constantUuid",
-  //             constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //           },
-  //           instanceUuid: {
-  //             templateType: "constantUuid",
-  //             constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
-  //           },
-  //         },
-  //       },
-  //       combinerTemplates: {
-  //         book2: {
-  //           queryType: "queryContextReference",
-  //           queryReference: "book",
-  //         },
-  //       },
-  //     };
+      const queryParam: ExtractorTemplateForRecordOfExtractors = {
+        queryType: "extractorTemplateForRecordOfExtractors",
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        contextResults: {},
+        pageParams: { },
+        queryParams: { },
+        extractorTemplates: {
+          book: {
+            queryType: "selectObjectByDirectReference",
+            parentName: "Book",
+            parentUuid: {
+              templateType: "constantUuid",
+              constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            },
+            instanceUuid: {
+              templateType: "constantUuid",
+              constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+            },
+          },
+        },
+        combinerTemplates: {
+          book2: {
+            queryType: "queryContextReference",
+            queryReference: "book",
+          },
+        },
+      };
 
-  //     const queryResult:any = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParamsForTemplate(queryParam));
+      const queryResult:any = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParamsForTemplate(queryParam));
 
-  //     expect(queryResult.elementValue.book2).toBe(domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"])
-  //   }
-  // )
+      expect(queryResult.elementValue.book2).toBe(domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"])
+    }
+  )
 
-  // // ###########################################################################################
-  // it('select 1 object from Domain State using direct query parameter reference',
-  //   () => {
+  // ###########################################################################################
+  it('select 1 object from Domain State using direct query parameter reference',
+    () => {
 
-  //     const queryParam: ExtractorTemplateForRecordOfExtractors = {
-  //       queryType: "extractorTemplateForRecordOfExtractors",
-  //       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-  //       contextResults: { },
-  //       pageParams: { },
-  //       queryParams: { wantedBookUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f" },
-  //       // queryParams: { elementType: "object", elementValue: { wantedBookUuid: { elementType: "instanceUuid", elementValue:"caef8a59-39eb-48b5-ad59-a7642d3a1e8f" } } },
-  //       extractorTemplates: {
-  //         book: {
-  //           queryType: "selectObjectByDirectReference",
-  //           parentName: "Book",
-  //           parentUuid: {
-  //             templateType: "constantUuid",
-  //             constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //           },
-  //           instanceUuid: {
-  //             templateType: "parameterReference",
-  //             referenceName: "wantedBookUuid",
-  //           },
-  //         },
-  //       },
-  //       runtimeTransformers: {
-  //       },
-  //     };
+      const queryParam: ExtractorTemplateForRecordOfExtractors = {
+        queryType: "extractorTemplateForRecordOfExtractors",
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        contextResults: { },
+        pageParams: { },
+        queryParams: { wantedBookUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f" },
+        // queryParams: { elementType: "object", elementValue: { wantedBookUuid: { elementType: "instanceUuid", elementValue:"caef8a59-39eb-48b5-ad59-a7642d3a1e8f" } } },
+        extractorTemplates: {
+          book: {
+            queryType: "selectObjectByDirectReference",
+            parentName: "Book",
+            parentUuid: {
+              templateType: "constantUuid",
+              constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            },
+            instanceUuid: {
+              templateType: "parameterReference",
+              referenceName: "wantedBookUuid",
+            },
+          },
+        },
+        runtimeTransformers: {
+        },
+      };
 
-  //     const queryResult:any = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParamsForTemplate(queryParam));
-  //     console.log("queryResult", JSON.stringify(queryResult, null, 2));
+      const queryResult:any = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParamsForTemplate(queryParam));
+      console.log("queryResult", JSON.stringify(queryResult, null, 2));
 
-  //     expect(queryResult.elementValue.book).toBe(
-  //       domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"][
-  //         "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
-  //       ]
-  //     );
-  //   }    
-  // )
+      expect(queryResult.elementValue.book).toBe(
+        domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"][
+          "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+        ]
+      );
+    }    
+  )
 
   // ###########################################################################################
   it('select 1 object from the uuid found in an attribute of another object from Domain State',
@@ -294,6 +294,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
             },
             objectReference: {
               templateType: "contextReference",
+              interpolation: "runtime",
               referenceName: "book",
             },
             AttributeOfObjectToCompareToReferenceUuid: "publisher",
@@ -490,6 +491,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
             },
             objectReference: {
               templateType: "contextReference",
+              interpolation: "runtime",
               referenceName: "book",
             },
             AttributeOfObjectToCompareToReferenceUuid: "publisher",
@@ -503,6 +505,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
             },
             objectReference: {
               templateType: "contextReference",
+              interpolation: "runtime",
               referenceName: "publisher",
             },
             AttributeOfListObjectToCompareToReferenceUuid: "publisher",
@@ -570,6 +573,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
             },
             objectReference: {
               templateType: "contextReference",
+              interpolation: "runtime",
               referenceName: "book",
             },
             AttributeOfObjectToCompareToReferenceUuid: "publisher",
@@ -583,6 +587,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
             },
             objectReference: {
               templateType: "contextReference",
+              interpolation: "runtime",
               referenceName: "publisher",
             },
             AttributeOfListObjectToCompareToReferenceUuid: "publisher",

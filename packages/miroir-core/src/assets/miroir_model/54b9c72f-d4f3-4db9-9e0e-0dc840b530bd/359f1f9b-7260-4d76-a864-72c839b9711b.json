@@ -278,7 +278,7 @@
               "objectReference": {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "transformer_InnerReference"
+                  "relativePath": "transformerForRuntime_InnerReference"
                 }
               },
               "AttributeOfObjectToCompareToReferenceUuid": {
@@ -375,7 +375,7 @@
               "objectReference": {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "transformer_contextReference"
+                  "relativePath": "transformerForRuntime_InnerReference"
                 }
               },
               "objectReferenceAttribute": {
