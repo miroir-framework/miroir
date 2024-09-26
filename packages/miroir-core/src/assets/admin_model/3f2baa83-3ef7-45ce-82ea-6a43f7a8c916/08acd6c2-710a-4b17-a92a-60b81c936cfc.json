@@ -16,7 +16,7 @@
           "constantUuidValue": "7959d814-400c-4e80-988f-a00fe582ab98"
         },
         "instanceUuid": {
-          "queryTemplateType": "queryParameterReference",
+          "templateType": "parameterReference",
           "referenceName": "instanceUuid"
         }
       }

@@ -10,6 +10,7 @@
     "extractorTemplates": {
       "report": {
         "queryType": "selectObjectByDirectReference",
+        "applicationSection": "model",
         "parentName": "Report",
         "parentUuid": {
           "templateType": "constantUuid",

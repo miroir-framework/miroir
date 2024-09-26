@@ -11,7 +11,6 @@ import {
 import { MiroirModel } from '../../0_interfaces/1_core/Model.js';
 
 import { getDefaultValueForJzodSchema } from "../../1_core/jzod/getDefaultValueForJzodSchema.js";
-// import { resolveReferencesForJzodSchemaAndValueObject} from "../../tmp/src/1_core/Jzod.js";
 
 
 import entitySelfApplication from '../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a659d350-dd97-4da9-91de-524fa01745dc.json';

@@ -86,7 +86,7 @@
               "query": {
                 "queryType":"queryTemplateExtractObjectListByEntity",
                 "parentUuid": {
-                  "queryTemplateType": "queryParameterReference",
+                  "templateType": "parameterReference",
                   "referenceName": "uuid"
                 }
               },

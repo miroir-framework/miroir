@@ -10,6 +10,7 @@
     "extractorTemplates": {
       "entityDefinition": {
         "queryType": "selectObjectByDirectReference",
+        "applicationSection": "model",
         "parentName": "EntityDefinition",
         "parentUuid": {
           "templateType": "constantUuid",

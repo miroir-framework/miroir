@@ -254,6 +254,11 @@ export function getMiroirFundamentalJzodSchema(
             true
           ) as any
         ).context,
+        ______________________________________________templates_____________________________________________: {
+          type: "never",
+        },
+        // ...(transformerJzodSchema as any).definition.context, // gives "transformer_InnerReference", "transformerForBuild", "actionHandler"
+        ...(makeReferencesAbsolute((transformerJzodSchema as any).definition,"fe9b7d99-f216-44de-bb6e-60e1a1ebb739", true)).context, // gives "transformer_InnerReference", "transformerForBuild", "actionHandler"
         ______________________________________________miroirMetaModel_____________________________________________: {
           type: "never",
         },
@@ -2137,7 +2142,7 @@ export function getMiroirFundamentalJzodSchema(
           type: "union",
           definition: domainEndpointVersionV1.definition.actions.map((e: any) => e.actionParameters),
         },
-        ...(transformerJzodSchema as any).definition.context, // gives "transformer_InnerReference", "transformerForBuild", "actionHandler"
+        // ...(transformerJzodSchema as any).definition.context, // gives "transformer_InnerReference", "transformerForBuild", "actionHandler"
         modelActionReplayableAction: {
           type: "union",
           definition: [
@@ -2525,7 +2530,7 @@ export function getMiroirFundamentalJzodSchema(
     },
   };
 
-  log.info("innerResolutionStore", innerResolutionStore);
+  // log.info("innerResolutionStore", innerResolutionStore);
 
   // log.info("innerResolutionStore baseObject", JSON.stringify((innerResolutionStore["fe9b7d99-f216-44de-bb6e-60e1a1ebb739"] as any).context["jzodBaseObject"], null, 2));
   // log.info("innerResolutionStore array", JSON.stringify((innerResolutionStore["fe9b7d99-f216-44de-bb6e-60e1a1ebb739"] as any).context["jzodArray"], null, 2));

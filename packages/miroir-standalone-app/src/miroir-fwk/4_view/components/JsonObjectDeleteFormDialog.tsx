@@ -118,7 +118,7 @@ export function JsonObjectDeleteFormDialog(props: JsonObjectEditFormDialogProps)
     [props, context.miroirFundamentalJzodSchema]
   )
   log.info(
-    "called resolveReferencesForJzodSchemaAndValueObject for valueObject",
+    "JsonObjectDeleteFormDialog called resolveReferencesForJzodSchemaAndValueObject for valueObject",
     props.defaultFormValuesObject,
     "jzodSchema",
     props.entityDefinitionJzodSchema,

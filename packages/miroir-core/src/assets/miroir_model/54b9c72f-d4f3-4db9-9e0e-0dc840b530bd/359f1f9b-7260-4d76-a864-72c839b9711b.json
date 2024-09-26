@@ -256,6 +256,7 @@
                 "type": "schemaReference",
                 "tag": { "value": {  "id":4, "defaultLabel": "Parent Uuid", "editable": false }},
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "transformer_InnerReference"
                 }
               }
@@ -278,6 +279,7 @@
               "objectReference": {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath":"fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "transformerForRuntime_InnerReference"
                 }
               },
@@ -351,6 +353,7 @@
                   "value": {
                     "type": "schemaReference",
                     "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "transformer_constantString"
                     }
                   }
@@ -375,6 +378,7 @@
               "objectReference": {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath":"fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "transformerForRuntime_InnerReference"
                 }
               },
@@ -404,6 +408,7 @@
               "objectListReference": {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "transformer_contextReference"
                 }
               },

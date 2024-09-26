@@ -11,7 +11,6 @@ import {
 import { MiroirModel } from "../../0_interfaces/1_core/Model.js";
 
 import { resolveReferencesForJzodSchemaAndValueObject } from "../../1_core/jzod/JzodUnfoldSchemaForValue.js";
-// import { resolveReferencesForJzodSchemaAndValueObject} from "../../tmp/src/1_core/Jzod.js";
 
 import entitySelfApplication from "../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a659d350-dd97-4da9-91de-524fa01745dc.json";
 // import entitySelfApplication from '../../../src assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a659d350-dd97-4da9-91de-524fa01745dc.json';
@@ -199,7 +198,7 @@ function testResolve(testId: string, testSchema: JzodElement, testValueObject: a
   );
   if (testResult.status == "ok") {
     expect(testResult.status).toEqual("ok");
-    // console.log("test", testId, "has result", JSON.stringify(testResult.element, null, 2));
+    console.log("test", testId, "has result", JSON.stringify(testResult.element, null, 2));
     expect(testResult.element).toEqual(expectedResult);
   } else {
     console.log("test", testId, "failed with error", testResult.error);
@@ -219,7 +218,7 @@ interface testFormat {
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-describe("jzodUnfoldSchemaForValue", () => {
+describe("jzod.unfoldSchemaForValue", () => {
   // ###########################################################################################
   it("miroir entity definition object format", () => {
     const tests: { [k: string]: testFormat } = {
@@ -1304,9 +1303,375 @@ describe("jzodUnfoldSchemaForValue", () => {
           ],
         },
       },
+      // based on "real" cases
+      te_st920: {
+        testSchema: {
+          type: "schemaReference",
+          context: {
+            applicationSection: {
+              type: "union",
+              definition: [
+                {
+                  type: "literal",
+                  definition: "model",
+                },
+                {
+                  type: "literal",
+                  definition: "data",
+                },
+              ],
+            },
+            transformer_constantUuid: {
+              type: "object",
+              definition: {
+                templateType: {
+                  type: "literal",
+                  definition: "constantUuid",
+                },
+                constantUuidValue: {
+                  type: "string",
+                },
+              },
+            },
+            transformer_constantString: {
+              type: "object",
+              definition: {
+                templateType: {
+                  type: "literal",
+                  definition: "constantString",
+                },
+                constantStringValue: {
+                  type: "string",
+                },
+              },
+            },
+            transformer_newUuid: {
+              type: "object",
+              definition: {
+                templateType: {
+                  type: "literal",
+                  definition: "newUuid",
+                },
+              },
+            },
+            transformer_contextReference: {
+              type: "object",
+              definition: {
+                templateType: {
+                  type: "literal",
+                  definition: "contextReference",
+                },
+                referenceName: {
+                  optional: true,
+                  type: "string",
+                },
+                referencePath: {
+                  optional: true,
+                  type: "array",
+                  definition: {
+                    type: "string",
+                  },
+                },
+              },
+            },
+            transformer_parameterReference: {
+              type: "object",
+              definition: {
+                templateType: {
+                  type: "literal",
+                  definition: "parameterReference",
+                },
+                referenceName: {
+                  optional: true,
+                  type: "string",
+                },
+                referencePath: {
+                  optional: true,
+                  type: "array",
+                  definition: {
+                    type: "string",
+                  },
+                },
+              },
+            },
+            transformer_contextOrParameterReference: {
+              type: "union",
+              discriminator: "templateType",
+              definition: [
+                {
+                  type: "schemaReference",
+                  definition: {
+                    relativePath: "transformer_contextReference",
+                  },
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    relativePath: "transformer_parameterReference",
+                  },
+                },
+              ],
+            },
+            transformer_InnerReference: {
+              type: "union",
+              discriminator: "templateType",
+              definition: [
+                {
+                  type: "schemaReference",
+                  definition: {
+                    relativePath: "transformer_constantUuid",
+                  },
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    relativePath: "transformer_constantString",
+                  },
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    relativePath: "transformer_newUuid",
+                  },
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    relativePath: "transformer_contextOrParameterReference",
+                  },
+                },
+              ],
+            },
+            queryTemplateRoot: {
+              type: "object",
+              definition: {
+                label: {
+                  type: "string",
+                  optional: true,
+                  tag: { value: { id: 1, defaultLabel: "Label", editable: false } },
+                },
+                applicationSection: {
+                  type: "schemaReference",
+                  optional: true,
+                  tag: { value: { id: 2, defaultLabel: "Parent Uuid", editable: false } },
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "applicationSection",
+                  },
+                },
+                parentName: {
+                  type: "string",
+                  optional: true,
+                  tag: { value: { id: 3, defaultLabel: "Parent Name", editable: false } },
+                },
+                parentUuid: {
+                  type: "schemaReference",
+                  tag: { value: { id: 4, defaultLabel: "Parent Uuid", editable: false } },
+                  definition: {
+                    relativePath: "transformer_InnerReference",
+                  },
+                },
+              },
+            },
+            queryTemplateExtractObjectByDirectReference: {
+              type: "object",
+              extend: {
+                type: "schemaReference",
+                definition: {
+                  eager: true,
+                  relativePath: "queryTemplateRoot",
+                },
+              },
+              definition: {
+                queryType: {
+                  type: "literal",
+                  definition: "selectObjectByDirectReference",
+                },
+                instanceUuid: {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "transformer_InnerReference",
+                  },
+                },
+              },
+            },
+            queryTemplateExtractObjectListByEntity: {
+              type: "object",
+              extend: {
+                type: "schemaReference",
+                definition: {
+                  eager: true,
+                  relativePath: "queryTemplateRoot",
+                },
+              },
+              definition: {
+                queryType: {
+                  type: "literal",
+                  definition: "queryTemplateExtractObjectListByEntity",
+                },
+                filter: {
+                  type: "object",
+                  optional: true,
+                  definition: {
+                    attributeName: {
+                      type: "string",
+                    },
+                    value: {
+                      type: "schemaReference",
+                      definition: {
+                        relativePath: "transformer_constantString",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            queryTemplateSelectExtractorWrapperReturningObject: {
+              type: "union",
+              discriminator: "queryType",
+              definition: [
+                {
+                  type: "schemaReference",
+                  definition: {
+                    relativePath: "queryTemplateExtractObjectByDirectReference",
+                  },
+                },
+                {
+                  type: "object",
+                  definition: {
+                    queryType: {
+                      type: "literal",
+                      definition: "extractorWrapperReturningObject",
+                    },
+                    definition: {
+                      type: "record",
+                      definition: {
+                        type: "schemaReference",
+                        definition: {
+                          relativePath: "queryTemplateSelectExtractorWrapperReturningObject",
+                        },
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+            queryTemplateSelectExtractorWrapperReturningList: {
+              type: "union",
+              discriminator: "queryType",
+              definition: [
+                {
+                  type: "schemaReference",
+                  definition: {
+                    relativePath: "queryTemplateExtractObjectListByEntity",
+                  },
+                },
+                {
+                  type: "object",
+                  definition: {
+                    queryType: {
+                      type: "literal",
+                      definition: "extractorWrapperReturningList",
+                    },
+                    definition: {
+                      type: "array",
+                      definition: {
+                        type: "schemaReference",
+                        definition: {
+                          relativePath: "queryTemplateSelectExtractorWrapperReturningList",
+                        },
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+            queryTemplateSelectExtractorWrapper: {
+              type: "union",
+              discriminator: "queryType",
+              definition: [
+                {
+                  type: "schemaReference",
+                  definition: {
+                    relativePath: "queryTemplateSelectExtractorWrapperReturningObject",
+                  },
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    relativePath: "queryTemplateSelectExtractorWrapperReturningList",
+                  },
+                },
+              ],
+            },
+          },
+          definition: {
+            relativePath: "queryTemplateSelectExtractorWrapper",
+          },
+        },
+        expectedResult: { // TODO: missing alternate possible union branches in parentUuid, instanceUuid?
+          type: "object",
+          definition: {
+            queryType: {
+              type: "literal",
+              definition: "selectObjectByDirectReference",
+            },
+            parentName: {
+              type: "string",
+              optional: true,
+              tag: {
+                value: {
+                  id: 3,
+                  defaultLabel: "Parent Name",
+                  editable: false,
+                },
+              },
+            },
+            parentUuid: {
+              type: "object",
+              definition: {
+                templateType: {
+                  type: "literal",
+                  definition: "constantUuid",
+                },
+                constantUuidValue: {
+                  type: "string",
+                },
+              },
+            },
+            instanceUuid: {
+              type: "object",
+              definition: {
+                templateType: {
+                  type: "literal",
+                  definition: "parameterReference",
+                },
+                referenceName: {
+                  optional: true,
+                  type: "string",
+                },
+              },
+            },
+          },
+        },
+        testValueObject: {
+          queryType: "selectObjectByDirectReference",
+          parentName: "Report",
+          parentUuid: {
+            templateType: "constantUuid",
+            constantUuidValue: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+          },
+          instanceUuid: {
+            templateType: "parameterReference",
+            referenceName: "instanceUuid",
+          },
+        },
+      },
+
       // based on "real" cases: bootstrap EntityDefinitionEntityDefinition
       //  TODO: resolve resolution issue for "JzodObject": resolveJzodSchemaReferenceInContext could not resolve reference {"relativePath":"jzodObject"} absoluteReferences keys ["fe9b7d99-f216-44de-bb6e-60e1a1ebb739","1e8dab4b-65a3-4686-922e-ce89a2d62aa9","1e8dab4b-65a3-4686-922e-ce89a2d62aa9"] current Model configuration,entities,entityDefinitions,jzodSchemas,menus,applicationVersions,reports,applicationVersionCrossEntityDefinition relativeReferenceJzodContext keys {}
-      // test920: {
+      // test990: {
       //   testSchema: entityDefinitionEntityDefinition.jzodSchema as JzodElement,
       //   expectedResult: {
       //     type: "object",

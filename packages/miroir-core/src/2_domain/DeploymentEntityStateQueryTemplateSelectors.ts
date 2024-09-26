@@ -29,9 +29,6 @@ import {
   extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory,
   extractFetchQueryTemplateJzodSchema,
   extractJzodSchemaForDomainModelQueryTemplate,
-  // extractFetchQueryJzodSchema,
-  // extractJzodSchemaForDomainModelQuery,
-  // extractzodSchemaForSingleSelectQuery,
   extractWithExtractorTemplate,
   extractWithManyExtractorTemplates,
   extractzodSchemaForSingleSelectQueryTemplate

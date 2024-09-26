@@ -448,6 +448,176 @@ export type JzodUnion = {
     carryOn?: JzodObject | undefined;
     definition: JzodElement[];
 };
+export type ______________________________________________templates_____________________________________________ = never;
+export type RecordOfTransformers = {
+    transformerType: "recordOfTransformers";
+    definition: {
+        [x: string]: Transformer;
+    };
+};
+export type Transformer = {
+    transformerType: "objectTransformer";
+    attributeName: string;
+} | RecordOfTransformers;
+export type Transformer_constantUuid = {
+    templateType: "constantUuid";
+    constantUuidValue: string;
+};
+export type Transformer_constantString = {
+    templateType: "constantString";
+    constantStringValue: string;
+};
+export type Transformer_newUuid = {
+    templateType: "newUuid";
+};
+export type Transformer_contextReference = {
+    templateType: "contextReference";
+    referenceName?: string | undefined;
+    referencePath?: string[] | undefined;
+};
+export type Transformer_parameterReference = {
+    templateType: "parameterReference";
+    referenceName?: string | undefined;
+    referencePath?: string[] | undefined;
+};
+export type Transformer_contextOrParameterReference = Transformer_contextReference | Transformer_parameterReference;
+export type Transformer_InnerReference = Transformer_constantUuid | Transformer_constantString | Transformer_newUuid | Transformer_contextOrParameterReference;
+export type TransformerForBuild_AbstractForCountAndUnique = {
+    orderBy?: string | undefined;
+};
+export type TransformerForBuild_Count = {
+    orderBy?: string | undefined;
+    queryName: "count";
+    groupBy?: string | undefined;
+};
+export type TransformerForBuild_fullObjectTemplate = {
+    orderBy?: string | undefined;
+    templateType: "fullObjectTemplate";
+    referencedExtractor: string;
+    definition: {
+        attributeKey: Transformer_InnerReference;
+        attributeValue: TransformerForBuild;
+    }[];
+};
+export type TransformerForBuild_freeObjectTemplate = {
+    templateType: "freeObjectTemplate";
+    definition: {
+        [x: string]: TransformerForBuild | {
+            [x: string]: TransformerForBuild;
+        } | string | number;
+    };
+};
+export type TransformerForBuild_mustacheStringTemplate = {
+    templateType: "mustacheStringTemplate";
+    definition: string;
+};
+export type TransformerForBuild_listMapper = {
+    orderBy?: string | undefined;
+    templateType: "listMapper";
+    referencedExtractor: string;
+    elementTransformer: TransformerForBuild_fullObjectTemplate;
+};
+export type TransformerForBuild_objectValues = {
+    orderBy?: string | undefined;
+};
+export type TransformerForBuild_Unique = {
+    orderBy?: string | undefined;
+    queryName: "unique";
+    attribute: string;
+};
+export type TransformerForBuild = Transformer_InnerReference | TransformerForBuild_fullObjectTemplate | TransformerForBuild_freeObjectTemplate | TransformerForBuild_listMapper | TransformerForBuild_mustacheStringTemplate;
+export type TransformerForRuntime_Abstract = {
+    interpolation: "runtime";
+};
+export type TransformerForRuntime_AbstractForCountAndUnique = {
+    interpolation: "runtime";
+    orderBy?: string | undefined;
+    referencedExtractor: string;
+};
+export type TransformerForRuntime_count = {
+    interpolation: "runtime";
+    orderBy?: string | undefined;
+    referencedExtractor: string;
+    templateType: "count";
+    groupBy?: string | undefined;
+};
+export type TransformerForRuntime_InnerReference = {
+    interpolation: "runtime";
+    templateType: "constantUuid";
+    constantUuidValue: string;
+} | {
+    interpolation: "runtime";
+    templateType: "newUuid";
+} | {
+    interpolation: "runtime";
+    templateType: "constantString";
+    constantStringValue: string;
+} | {
+    interpolation: "runtime";
+    templateType: "contextReference";
+    referenceName?: string | undefined;
+    referencePath?: string[] | undefined;
+} | {
+    interpolation: "runtime";
+    templateType: "parameterReference";
+    referenceName?: string | undefined;
+    referencePath?: string[] | undefined;
+};
+export type TransformerForRuntime_freeObjectTemplate = {
+    templateType: "freeObjectTemplate";
+    definition: {
+        [x: string]: TransformerForRuntime | {
+            [x: string]: TransformerForRuntime;
+        } | string | number;
+    };
+};
+export type TransformerForRuntime_fullObjectTemplate = {
+    interpolation: "runtime";
+    orderBy?: string | undefined;
+    referencedExtractor: string;
+    templateType: "fullObjectTemplate";
+    definition: {
+        attributeKey: TransformerForRuntime_InnerReference;
+        attributeValue: TransformerForRuntime;
+    }[];
+};
+export type TransformerForRuntime_mapObject = {
+    interpolation: "runtime";
+    orderBy?: string | undefined;
+    referencedExtractor: string;
+    templateType: "listMapper";
+    elementTransformer: TransformerForRuntime_fullObjectTemplate;
+};
+export type TransformerForRuntime_mustacheStringTemplate = {
+    interpolation: "runtime";
+    templateType: "mustacheStringTemplate";
+    definition: string;
+};
+export type TransformerForRuntime_objectValues = {
+    interpolation: "runtime";
+    orderBy?: string | undefined;
+    referencedExtractor: string;
+    templateType: "objectValues";
+};
+export type TransformerForRuntime_unique = {
+    interpolation: "runtime";
+    orderBy?: string | undefined;
+    referencedExtractor: string;
+    templateType: "unique";
+    attribute: string;
+};
+export type TransformerForRuntime = TransformerForRuntime_InnerReference | TransformerForRuntime_fullObjectTemplate | TransformerForRuntime_freeObjectTemplate | TransformerForRuntime_count | TransformerForRuntime_mapObject | TransformerForRuntime_mustacheStringTemplate | TransformerForRuntime_objectValues | TransformerForRuntime_unique;
+export type ActionHandler = {
+    interface: {
+        actionJzodObjectSchema: JzodObject;
+    };
+    implementation: {
+        templates?: {
+            [x: string]: any;
+        } | undefined;
+        compositeActionTemplate: CompositeActionTemplate;
+    };
+};
 export type ______________________________________________miroirMetaModel_____________________________________________ = never;
 export type EntityAttributeExpandedType = "UUID" | "STRING" | "BOOLEAN" | "OBJECT";
 export type EntityAttributeType = EntityInstance | ("ENTITY_INSTANCE_UUID" | "ARRAY");
@@ -1727,175 +1897,6 @@ export type DomainAction = UndoRedoAction | StoreOrBundleAction | ModelAction | 
         compositeActionType: "query";
         query: QueryTemplateAction;
     })[];
-};
-export type RecordOfTransformers = {
-    transformerType: "recordOfTransformers";
-    definition: {
-        [x: string]: Transformer;
-    };
-};
-export type Transformer = {
-    transformerType: "objectTransformer";
-    attributeName: string;
-} | RecordOfTransformers;
-export type Transformer_constantUuid = {
-    templateType: "constantUuid";
-    constantUuidValue: string;
-};
-export type Transformer_constantString = {
-    templateType: "constantString";
-    constantStringValue: string;
-};
-export type Transformer_newUuid = {
-    templateType: "newUuid";
-};
-export type Transformer_contextReference = {
-    templateType: "contextReference";
-    referenceName?: string | undefined;
-    referencePath?: string[] | undefined;
-};
-export type Transformer_parameterReference = {
-    templateType: "parameterReference";
-    referenceName?: string | undefined;
-    referencePath?: string[] | undefined;
-};
-export type Transformer_contextOrParameterReference = Transformer_contextReference | Transformer_parameterReference;
-export type Transformer_InnerReference = Transformer_constantUuid | Transformer_constantString | Transformer_newUuid | Transformer_contextOrParameterReference;
-export type TransformerForBuild_AbstractForCountAndUnique = {
-    orderBy?: string | undefined;
-};
-export type TransformerForBuild_Count = {
-    orderBy?: string | undefined;
-    queryName: "count";
-    groupBy?: string | undefined;
-};
-export type TransformerForBuild_fullObjectTemplate = {
-    orderBy?: string | undefined;
-    templateType: "fullObjectTemplate";
-    referencedExtractor: string;
-    definition: {
-        attributeKey: Transformer_InnerReference;
-        attributeValue: TransformerForBuild;
-    }[];
-};
-export type TransformerForBuild_freeObjectTemplate = {
-    templateType: "freeObjectTemplate";
-    definition: {
-        [x: string]: TransformerForBuild | {
-            [x: string]: TransformerForBuild;
-        } | string | number;
-    };
-};
-export type TransformerForBuild_mustacheStringTemplate = {
-    templateType: "mustacheStringTemplate";
-    definition: string;
-};
-export type TransformerForBuild_listMapper = {
-    orderBy?: string | undefined;
-    templateType: "listMapper";
-    referencedExtractor: string;
-    elementTransformer: TransformerForBuild_fullObjectTemplate;
-};
-export type TransformerForBuild_objectValues = {
-    orderBy?: string | undefined;
-};
-export type TransformerForBuild_Unique = {
-    orderBy?: string | undefined;
-    queryName: "unique";
-    attribute: string;
-};
-export type TransformerForBuild = Transformer_InnerReference | TransformerForBuild_fullObjectTemplate | TransformerForBuild_freeObjectTemplate | TransformerForBuild_listMapper | TransformerForBuild_mustacheStringTemplate;
-export type TransformerForRuntime_Abstract = {
-    interpolation: "runtime";
-};
-export type TransformerForRuntime_AbstractForCountAndUnique = {
-    interpolation: "runtime";
-    orderBy?: string | undefined;
-    referencedExtractor: string;
-};
-export type TransformerForRuntime_count = {
-    interpolation: "runtime";
-    orderBy?: string | undefined;
-    referencedExtractor: string;
-    templateType: "count";
-    groupBy?: string | undefined;
-};
-export type TransformerForRuntime_InnerReference = {
-    interpolation: "runtime";
-    templateType: "constantUuid";
-    constantUuidValue: string;
-} | {
-    interpolation: "runtime";
-    templateType: "newUuid";
-} | {
-    interpolation: "runtime";
-    templateType: "constantString";
-    constantStringValue: string;
-} | {
-    interpolation: "runtime";
-    templateType: "contextReference";
-    referenceName?: string | undefined;
-    referencePath?: string[] | undefined;
-} | {
-    interpolation: "runtime";
-    templateType: "parameterReference";
-    referenceName?: string | undefined;
-    referencePath?: string[] | undefined;
-};
-export type TransformerForRuntime_freeObjectTemplate = {
-    templateType: "freeObjectTemplate";
-    definition: {
-        [x: string]: TransformerForRuntime | {
-            [x: string]: TransformerForRuntime;
-        } | string | number;
-    };
-};
-export type TransformerForRuntime_fullObjectTemplate = {
-    interpolation: "runtime";
-    orderBy?: string | undefined;
-    referencedExtractor: string;
-    templateType: "fullObjectTemplate";
-    definition: {
-        attributeKey: TransformerForRuntime_InnerReference;
-        attributeValue: TransformerForRuntime;
-    }[];
-};
-export type TransformerForRuntime_mapObject = {
-    interpolation: "runtime";
-    orderBy?: string | undefined;
-    referencedExtractor: string;
-    templateType: "listMapper";
-    elementTransformer: TransformerForRuntime_fullObjectTemplate;
-};
-export type TransformerForRuntime_mustacheStringTemplate = {
-    interpolation: "runtime";
-    templateType: "mustacheStringTemplate";
-    definition: string;
-};
-export type TransformerForRuntime_objectValues = {
-    interpolation: "runtime";
-    orderBy?: string | undefined;
-    referencedExtractor: string;
-    templateType: "objectValues";
-};
-export type TransformerForRuntime_unique = {
-    interpolation: "runtime";
-    orderBy?: string | undefined;
-    referencedExtractor: string;
-    templateType: "unique";
-    attribute: string;
-};
-export type TransformerForRuntime = TransformerForRuntime_InnerReference | TransformerForRuntime_fullObjectTemplate | TransformerForRuntime_freeObjectTemplate | TransformerForRuntime_count | TransformerForRuntime_mapObject | TransformerForRuntime_mustacheStringTemplate | TransformerForRuntime_objectValues | TransformerForRuntime_unique;
-export type ActionHandler = {
-    interface: {
-        actionJzodObjectSchema: JzodObject;
-    };
-    implementation: {
-        templates?: {
-            [x: string]: any;
-        } | undefined;
-        compositeActionTemplate: CompositeActionTemplate;
-    };
 };
 export type ModelActionReplayableAction = ModelActionAlterEntityAttribute | ModelActionCreateEntity | ModelActionDropEntity | ModelActionRenameEntity;
 export type BundleAction = {
@@ -3461,6 +3462,37 @@ export const jzodReference: z.ZodType<JzodReference> = z.object({optional:z.bool
 export const jzodSet: z.ZodType<JzodSet> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.literal("set"), definition:z.lazy(() =>jzodElement)}).strict();
 export const jzodTuple: z.ZodType<JzodTuple> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.literal("tuple"), definition:z.array(z.lazy(() =>jzodElement))}).strict();
 export const jzodUnion: z.ZodType<JzodUnion> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), tag:z.object({optional:z.boolean().optional(), value:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional()}).strict().optional()}).strict().extend({type:z.literal("union"), discriminator:z.string().optional(), discriminatorNew:z.union([z.object({discriminatorType:z.literal("string"), value:z.string()}).strict(), z.object({discriminatorType:z.literal("array"), value:z.array(z.string())}).strict()]).optional(), carryOn:z.lazy(() =>jzodObject).optional(), definition:z.array(z.lazy(() =>jzodElement))}).strict();
+export const ______________________________________________templates_____________________________________________: z.ZodType<______________________________________________templates_____________________________________________> = z.never();
+export const recordOfTransformers: z.ZodType<RecordOfTransformers> = z.object({transformerType:z.literal("recordOfTransformers"), definition:z.record(z.string(),z.lazy(() =>transformer))}).strict();
+export const transformer: z.ZodType<Transformer> = z.union([z.object({transformerType:z.literal("objectTransformer"), attributeName:z.string()}).strict(), z.lazy(() =>recordOfTransformers)]);
+export const transformer_constantUuid: z.ZodType<Transformer_constantUuid> = z.object({templateType:z.literal("constantUuid"), constantUuidValue:z.string()}).strict();
+export const transformer_constantString: z.ZodType<Transformer_constantString> = z.object({templateType:z.literal("constantString"), constantStringValue:z.string()}).strict();
+export const transformer_newUuid: z.ZodType<Transformer_newUuid> = z.object({templateType:z.literal("newUuid")}).strict();
+export const transformer_contextReference: z.ZodType<Transformer_contextReference> = z.object({templateType:z.literal("contextReference"), referenceName:z.string().optional(), referencePath:z.array(z.string()).optional()}).strict();
+export const transformer_parameterReference: z.ZodType<Transformer_parameterReference> = z.object({templateType:z.literal("parameterReference"), referenceName:z.string().optional(), referencePath:z.array(z.string()).optional()}).strict();
+export const transformer_contextOrParameterReference: z.ZodType<Transformer_contextOrParameterReference> = z.union([z.lazy(() =>transformer_contextReference), z.lazy(() =>transformer_parameterReference)]);
+export const transformer_InnerReference: z.ZodType<Transformer_InnerReference> = z.union([z.lazy(() =>transformer_constantUuid), z.lazy(() =>transformer_constantString), z.lazy(() =>transformer_newUuid), z.lazy(() =>transformer_contextOrParameterReference)]);
+export const transformerForBuild_AbstractForCountAndUnique: z.ZodType<TransformerForBuild_AbstractForCountAndUnique> = z.object({orderBy:z.string().optional()}).strict();
+export const transformerForBuild_Count: z.ZodType<TransformerForBuild_Count> = z.object({orderBy:z.string().optional()}).strict().extend({queryName:z.literal("count"), groupBy:z.string().optional()}).strict();
+export const transformerForBuild_fullObjectTemplate: z.ZodType<TransformerForBuild_fullObjectTemplate> = z.object({orderBy:z.string().optional()}).strict().extend({templateType:z.literal("fullObjectTemplate"), referencedExtractor:z.string(), definition:z.array(z.object({attributeKey:z.lazy(() =>transformer_InnerReference), attributeValue:z.lazy(() =>transformerForBuild)}).strict())}).strict();
+export const transformerForBuild_freeObjectTemplate: z.ZodType<TransformerForBuild_freeObjectTemplate> = z.object({templateType:z.literal("freeObjectTemplate"), definition:z.record(z.string(),z.union([z.lazy(() =>transformerForBuild), z.record(z.string(),z.lazy(() =>transformerForBuild)), z.string(), z.number()]))}).strict();
+export const transformerForBuild_mustacheStringTemplate: z.ZodType<TransformerForBuild_mustacheStringTemplate> = z.object({templateType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict();
+export const transformerForBuild_listMapper: z.ZodType<TransformerForBuild_listMapper> = z.object({orderBy:z.string().optional()}).strict().extend({templateType:z.literal("listMapper"), referencedExtractor:z.string(), elementTransformer:z.lazy(() =>transformerForBuild_fullObjectTemplate)}).strict();
+export const transformerForBuild_objectValues: z.ZodType<TransformerForBuild_objectValues> = z.object({orderBy:z.string().optional()}).strict().extend({}).strict();
+export const transformerForBuild_Unique: z.ZodType<TransformerForBuild_Unique> = z.object({orderBy:z.string().optional()}).strict().extend({queryName:z.literal("unique"), attribute:z.string()}).strict();
+export const transformerForBuild: z.ZodType<TransformerForBuild> = z.union([z.lazy(() =>transformer_InnerReference), z.lazy(() =>transformerForBuild_fullObjectTemplate), z.lazy(() =>transformerForBuild_freeObjectTemplate), z.lazy(() =>transformerForBuild_listMapper), z.lazy(() =>transformerForBuild_mustacheStringTemplate)]);
+export const transformerForRuntime_Abstract: z.ZodType<TransformerForRuntime_Abstract> = z.object({interpolation:z.literal("runtime")}).strict();
+export const transformerForRuntime_AbstractForCountAndUnique: z.ZodType<TransformerForRuntime_AbstractForCountAndUnique> = z.object({interpolation:z.literal("runtime")}).strict().extend({orderBy:z.string().optional(), referencedExtractor:z.string()}).strict();
+export const transformerForRuntime_count: z.ZodType<TransformerForRuntime_count> = z.object({interpolation:z.literal("runtime")}).strict().extend({orderBy:z.string().optional(), referencedExtractor:z.string()}).strict().extend({templateType:z.literal("count"), groupBy:z.string().optional()}).strict();
+export const transformerForRuntime_InnerReference: z.ZodType<TransformerForRuntime_InnerReference> = z.union([z.object({interpolation:z.literal("runtime")}).strict().extend({templateType:z.literal("constantUuid"), constantUuidValue:z.string()}).strict(), z.object({interpolation:z.literal("runtime")}).strict().extend({templateType:z.literal("newUuid")}).strict(), z.object({interpolation:z.literal("runtime")}).strict().extend({templateType:z.literal("constantString"), constantStringValue:z.string()}).strict(), z.object({interpolation:z.literal("runtime")}).strict().extend({templateType:z.literal("contextReference"), referenceName:z.string().optional(), referencePath:z.array(z.string()).optional()}).strict(), z.object({interpolation:z.literal("runtime")}).strict().extend({templateType:z.literal("parameterReference"), referenceName:z.string().optional(), referencePath:z.array(z.string()).optional()}).strict()]);
+export const transformerForRuntime_freeObjectTemplate: z.ZodType<TransformerForRuntime_freeObjectTemplate> = z.object({templateType:z.literal("freeObjectTemplate"), definition:z.record(z.string(),z.union([z.lazy(() =>transformerForRuntime), z.record(z.string(),z.lazy(() =>transformerForRuntime)), z.string(), z.number()]))}).strict();
+export const transformerForRuntime_fullObjectTemplate: z.ZodType<TransformerForRuntime_fullObjectTemplate> = z.object({interpolation:z.literal("runtime")}).strict().extend({orderBy:z.string().optional(), referencedExtractor:z.string()}).strict().extend({templateType:z.literal("fullObjectTemplate"), definition:z.array(z.object({attributeKey:z.lazy(() =>transformerForRuntime_InnerReference), attributeValue:z.lazy(() =>transformerForRuntime)}).strict())}).strict();
+export const transformerForRuntime_mapObject: z.ZodType<TransformerForRuntime_mapObject> = z.object({interpolation:z.literal("runtime")}).strict().extend({orderBy:z.string().optional(), referencedExtractor:z.string()}).strict().extend({templateType:z.literal("listMapper"), elementTransformer:z.lazy(() =>transformerForRuntime_fullObjectTemplate)}).strict();
+export const transformerForRuntime_mustacheStringTemplate: z.ZodType<TransformerForRuntime_mustacheStringTemplate> = z.object({interpolation:z.literal("runtime")}).strict().extend({templateType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict();
+export const transformerForRuntime_objectValues: z.ZodType<TransformerForRuntime_objectValues> = z.object({interpolation:z.literal("runtime")}).strict().extend({orderBy:z.string().optional(), referencedExtractor:z.string()}).strict().extend({templateType:z.literal("objectValues")}).strict();
+export const transformerForRuntime_unique: z.ZodType<TransformerForRuntime_unique> = z.object({interpolation:z.literal("runtime")}).strict().extend({orderBy:z.string().optional(), referencedExtractor:z.string()}).strict().extend({templateType:z.literal("unique"), attribute:z.string()}).strict();
+export const transformerForRuntime: z.ZodType<TransformerForRuntime> = z.union([z.lazy(() =>transformerForRuntime_InnerReference), z.lazy(() =>transformerForRuntime_fullObjectTemplate), z.lazy(() =>transformerForRuntime_freeObjectTemplate), z.lazy(() =>transformerForRuntime_count), z.lazy(() =>transformerForRuntime_mapObject), z.lazy(() =>transformerForRuntime_mustacheStringTemplate), z.lazy(() =>transformerForRuntime_objectValues), z.lazy(() =>transformerForRuntime_unique)]);
+export const actionHandler: z.ZodType<ActionHandler> = z.object({interface:z.object({actionJzodObjectSchema:z.lazy(() =>jzodObject)}).strict(), implementation:z.object({templates:z.record(z.string(),z.any()).optional(), compositeActionTemplate:z.lazy(() =>compositeActionTemplate)}).strict()}).strict();
 export const ______________________________________________miroirMetaModel_____________________________________________: z.ZodType<______________________________________________miroirMetaModel_____________________________________________> = z.never();
 export const entityAttributeExpandedType: z.ZodType<EntityAttributeExpandedType> = z.enum(["UUID","STRING","BOOLEAN","OBJECT"]);
 export const entityAttributeType: z.ZodType<EntityAttributeType> = z.union([z.lazy(() =>entityInstance), z.enum(["ENTITY_INSTANCE_UUID","ARRAY"])]);
@@ -3622,36 +3654,6 @@ export const queryTemplateAction: z.ZodType<QueryTemplateAction> = z.object({act
 export const queryAction: z.ZodType<QueryAction> = z.object({actionType:z.literal("queryAction"), actionName:z.literal("runQuery"), endpoint:z.literal("9e404b3c-368c-40cb-be8b-e3c28550c25e"), applicationSection:z.lazy(() =>applicationSection).optional(), deploymentUuid:z.string().uuid(), query:z.union([z.lazy(() =>extractorForDomainModelObjects), z.lazy(() =>extractorForRecordOfExtractors)])}).strict();
 export const compositeAction: z.ZodType<CompositeAction> = z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), deploymentUuid:z.string().uuid().optional(), templates:z.record(z.string(),z.any()).optional(), definition:z.array(z.union([z.object({compositeActionType:z.literal("action"), action:z.lazy(() =>domainAction)}).strict(), z.object({compositeActionType:z.literal("query"), query:z.lazy(() =>queryTemplateAction)}).strict()]))}).strict();
 export const domainAction: z.ZodType<DomainAction> = z.union([z.lazy(() =>undoRedoAction), z.lazy(() =>storeOrBundleAction), z.lazy(() =>modelAction), z.lazy(() =>instanceAction), z.object({actionType:z.literal("transactionalInstanceAction"), deploymentUuid:z.string().uuid().optional(), instanceAction:z.lazy(() =>instanceCUDAction)}).strict(), z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), deploymentUuid:z.string().uuid().optional(), templates:z.record(z.string(),z.any()).optional(), definition:z.array(z.union([z.object({compositeActionType:z.literal("action"), action:z.lazy(() =>domainAction)}).strict(), z.object({compositeActionType:z.literal("query"), query:z.lazy(() =>queryTemplateAction)}).strict()]))}).strict()]);
-export const recordOfTransformers: z.ZodType<RecordOfTransformers> = z.object({transformerType:z.literal("recordOfTransformers"), definition:z.record(z.string(),z.lazy(() =>transformer))}).strict();
-export const transformer: z.ZodType<Transformer> = z.union([z.object({transformerType:z.literal("objectTransformer"), attributeName:z.string()}).strict(), z.lazy(() =>recordOfTransformers)]);
-export const transformer_constantUuid: z.ZodType<Transformer_constantUuid> = z.object({templateType:z.literal("constantUuid"), constantUuidValue:z.string()}).strict();
-export const transformer_constantString: z.ZodType<Transformer_constantString> = z.object({templateType:z.literal("constantString"), constantStringValue:z.string()}).strict();
-export const transformer_newUuid: z.ZodType<Transformer_newUuid> = z.object({templateType:z.literal("newUuid")}).strict();
-export const transformer_contextReference: z.ZodType<Transformer_contextReference> = z.object({templateType:z.literal("contextReference"), referenceName:z.string().optional(), referencePath:z.array(z.string()).optional()}).strict();
-export const transformer_parameterReference: z.ZodType<Transformer_parameterReference> = z.object({templateType:z.literal("parameterReference"), referenceName:z.string().optional(), referencePath:z.array(z.string()).optional()}).strict();
-export const transformer_contextOrParameterReference: z.ZodType<Transformer_contextOrParameterReference> = z.union([z.lazy(() =>transformer_contextReference), z.lazy(() =>transformer_parameterReference)]);
-export const transformer_InnerReference: z.ZodType<Transformer_InnerReference> = z.union([z.lazy(() =>transformer_constantUuid), z.lazy(() =>transformer_constantString), z.lazy(() =>transformer_newUuid), z.lazy(() =>transformer_contextOrParameterReference)]);
-export const transformerForBuild_AbstractForCountAndUnique: z.ZodType<TransformerForBuild_AbstractForCountAndUnique> = z.object({orderBy:z.string().optional()}).strict();
-export const transformerForBuild_Count: z.ZodType<TransformerForBuild_Count> = z.object({orderBy:z.string().optional()}).strict().extend({queryName:z.literal("count"), groupBy:z.string().optional()}).strict();
-export const transformerForBuild_fullObjectTemplate: z.ZodType<TransformerForBuild_fullObjectTemplate> = z.object({orderBy:z.string().optional()}).strict().extend({templateType:z.literal("fullObjectTemplate"), referencedExtractor:z.string(), definition:z.array(z.object({attributeKey:z.lazy(() =>transformer_InnerReference), attributeValue:z.lazy(() =>transformerForBuild)}).strict())}).strict();
-export const transformerForBuild_freeObjectTemplate: z.ZodType<TransformerForBuild_freeObjectTemplate> = z.object({templateType:z.literal("freeObjectTemplate"), definition:z.record(z.string(),z.union([z.lazy(() =>transformerForBuild), z.record(z.string(),z.lazy(() =>transformerForBuild)), z.string(), z.number()]))}).strict();
-export const transformerForBuild_mustacheStringTemplate: z.ZodType<TransformerForBuild_mustacheStringTemplate> = z.object({templateType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict();
-export const transformerForBuild_listMapper: z.ZodType<TransformerForBuild_listMapper> = z.object({orderBy:z.string().optional()}).strict().extend({templateType:z.literal("listMapper"), referencedExtractor:z.string(), elementTransformer:z.lazy(() =>transformerForBuild_fullObjectTemplate)}).strict();
-export const transformerForBuild_objectValues: z.ZodType<TransformerForBuild_objectValues> = z.object({orderBy:z.string().optional()}).strict().extend({}).strict();
-export const transformerForBuild_Unique: z.ZodType<TransformerForBuild_Unique> = z.object({orderBy:z.string().optional()}).strict().extend({queryName:z.literal("unique"), attribute:z.string()}).strict();
-export const transformerForBuild: z.ZodType<TransformerForBuild> = z.union([z.lazy(() =>transformer_InnerReference), z.lazy(() =>transformerForBuild_fullObjectTemplate), z.lazy(() =>transformerForBuild_freeObjectTemplate), z.lazy(() =>transformerForBuild_listMapper), z.lazy(() =>transformerForBuild_mustacheStringTemplate)]);
-export const transformerForRuntime_Abstract: z.ZodType<TransformerForRuntime_Abstract> = z.object({interpolation:z.literal("runtime")}).strict();
-export const transformerForRuntime_AbstractForCountAndUnique: z.ZodType<TransformerForRuntime_AbstractForCountAndUnique> = z.object({interpolation:z.literal("runtime")}).strict().extend({orderBy:z.string().optional(), referencedExtractor:z.string()}).strict();
-export const transformerForRuntime_count: z.ZodType<TransformerForRuntime_count> = z.object({interpolation:z.literal("runtime")}).strict().extend({orderBy:z.string().optional(), referencedExtractor:z.string()}).strict().extend({templateType:z.literal("count"), groupBy:z.string().optional()}).strict();
-export const transformerForRuntime_InnerReference: z.ZodType<TransformerForRuntime_InnerReference> = z.union([z.object({interpolation:z.literal("runtime")}).strict().extend({templateType:z.literal("constantUuid"), constantUuidValue:z.string()}).strict(), z.object({interpolation:z.literal("runtime")}).strict().extend({templateType:z.literal("newUuid")}).strict(), z.object({interpolation:z.literal("runtime")}).strict().extend({templateType:z.literal("constantString"), constantStringValue:z.string()}).strict(), z.object({interpolation:z.literal("runtime")}).strict().extend({templateType:z.literal("contextReference"), referenceName:z.string().optional(), referencePath:z.array(z.string()).optional()}).strict(), z.object({interpolation:z.literal("runtime")}).strict().extend({templateType:z.literal("parameterReference"), referenceName:z.string().optional(), referencePath:z.array(z.string()).optional()}).strict()]);
-export const transformerForRuntime_freeObjectTemplate: z.ZodType<TransformerForRuntime_freeObjectTemplate> = z.object({templateType:z.literal("freeObjectTemplate"), definition:z.record(z.string(),z.union([z.lazy(() =>transformerForRuntime), z.record(z.string(),z.lazy(() =>transformerForRuntime)), z.string(), z.number()]))}).strict();
-export const transformerForRuntime_fullObjectTemplate: z.ZodType<TransformerForRuntime_fullObjectTemplate> = z.object({interpolation:z.literal("runtime")}).strict().extend({orderBy:z.string().optional(), referencedExtractor:z.string()}).strict().extend({templateType:z.literal("fullObjectTemplate"), definition:z.array(z.object({attributeKey:z.lazy(() =>transformerForRuntime_InnerReference), attributeValue:z.lazy(() =>transformerForRuntime)}).strict())}).strict();
-export const transformerForRuntime_mapObject: z.ZodType<TransformerForRuntime_mapObject> = z.object({interpolation:z.literal("runtime")}).strict().extend({orderBy:z.string().optional(), referencedExtractor:z.string()}).strict().extend({templateType:z.literal("listMapper"), elementTransformer:z.lazy(() =>transformerForRuntime_fullObjectTemplate)}).strict();
-export const transformerForRuntime_mustacheStringTemplate: z.ZodType<TransformerForRuntime_mustacheStringTemplate> = z.object({interpolation:z.literal("runtime")}).strict().extend({templateType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict();
-export const transformerForRuntime_objectValues: z.ZodType<TransformerForRuntime_objectValues> = z.object({interpolation:z.literal("runtime")}).strict().extend({orderBy:z.string().optional(), referencedExtractor:z.string()}).strict().extend({templateType:z.literal("objectValues")}).strict();
-export const transformerForRuntime_unique: z.ZodType<TransformerForRuntime_unique> = z.object({interpolation:z.literal("runtime")}).strict().extend({orderBy:z.string().optional(), referencedExtractor:z.string()}).strict().extend({templateType:z.literal("unique"), attribute:z.string()}).strict();
-export const transformerForRuntime: z.ZodType<TransformerForRuntime> = z.union([z.lazy(() =>transformerForRuntime_InnerReference), z.lazy(() =>transformerForRuntime_fullObjectTemplate), z.lazy(() =>transformerForRuntime_freeObjectTemplate), z.lazy(() =>transformerForRuntime_count), z.lazy(() =>transformerForRuntime_mapObject), z.lazy(() =>transformerForRuntime_mustacheStringTemplate), z.lazy(() =>transformerForRuntime_objectValues), z.lazy(() =>transformerForRuntime_unique)]);
-export const actionHandler: z.ZodType<ActionHandler> = z.object({interface:z.object({actionJzodObjectSchema:z.lazy(() =>jzodObject)}).strict(), implementation:z.object({templates:z.record(z.string(),z.any()).optional(), compositeActionTemplate:z.lazy(() =>compositeActionTemplate)}).strict()}).strict();
 export const modelActionReplayableAction: z.ZodType<ModelActionReplayableAction> = z.union([z.lazy(() =>modelActionAlterEntityAttribute), z.lazy(() =>modelActionCreateEntity), z.lazy(() =>modelActionDropEntity), z.lazy(() =>modelActionRenameEntity)]);
 export const bundleAction: z.ZodType<BundleAction> = z.union([z.object({actionType:z.literal("bundleAction"), actionName:z.literal("createBundle"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("bundleAction"), actionName:z.literal("deleteBundle"), deploymentUuid:z.string().uuid()}).strict()]);
 export const storeOrBundleAction: z.ZodType<StoreOrBundleAction> = z.union([z.lazy(() =>storeManagementAction), z.lazy(() =>bundleAction)]);

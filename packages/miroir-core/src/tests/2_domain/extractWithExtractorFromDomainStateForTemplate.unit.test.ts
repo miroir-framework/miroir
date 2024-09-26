@@ -6,7 +6,10 @@ import {
   DomainElement,
   ExtractorTemplateForRecordOfExtractors
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { extractWithExtractorFromDomainStateForTemplate, getSelectorParamsForTemplate } from "../../2_domain/DomainStateQueryTemplateSelector.js";
+import {
+  extractWithExtractorFromDomainStateForTemplate,
+  getSelectorParamsForTemplate,
+} from "../../2_domain/DomainStateQueryTemplateSelector.js";
 import domainStateImport from "./domainState.json";
 
 const domainState: DomainState = domainStateImport as DomainState;
