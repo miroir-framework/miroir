@@ -62,6 +62,19 @@
           }
         }
       },
+      "transformer_constantObject":{
+        "type": "object",
+        "definition": {
+          "templateType": {
+            "type": "literal",
+            "definition": "constantObject"
+          },
+          "constantObjectValue": {
+            "type": "record",
+            "definition": { "type": "any" }
+          }
+        }
+      },
       "transformer_constantString":{
         "type": "object",
         "definition": {
@@ -149,6 +162,12 @@
             "type": "schemaReference",
             "definition": {
               "relativePath": "transformer_constantUuid"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformer_constantObject"
             }
           },
           {

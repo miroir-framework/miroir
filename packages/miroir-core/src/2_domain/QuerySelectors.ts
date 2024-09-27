@@ -269,7 +269,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
         ? new RegExp((localQuery.filter.value as any).constantStringValue, "i") // TODO: check for correct type
         : undefined;
       // log.info(
-      //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory queryTemplateExtractObjectListByEntity filter",
+      //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory filter",
       //   JSON.stringify(localQuery.filter)
       // );
       const result:DomainElementInstanceUuidIndexOrFailed = localQuery.filter
@@ -281,7 +281,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
                   (i as any)[1][localQuery.filter?.attributeName??""]
                 )
                 // log.info(
-                //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory queryTemplateExtractObjectListByEntity filter",
+                //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory filter",
                 //   JSON.stringify(i[1]),
                 //   "matchResult",
                 //   matchResult
@@ -294,7 +294,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
         : selectedInstancesUuidIndex;
       ;
       // log.info(
-      //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory queryTemplateExtractObjectListByEntity result",
+      //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory  result",
       //   JSON.stringify(result, undefined, 2)
       // );
       return result;

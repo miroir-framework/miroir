@@ -330,7 +330,7 @@ export function transformer_InnerReference_resolve  (
       // )
   ) {
     // checking that given reference does exist
-    log.warn(
+    log.error(
       "transformer_InnerReference_resolve failed, reference not found for step",
       step,
       "reference=",
@@ -533,16 +533,16 @@ function mustacheStringTemplate_apply(
   //   ? domainElementToPlainObject(contextResults)
   //   : domainElementToPlainObject(queryParams); // TODO: highly inefficient & buggy!!
   const result = Mustache.render(transformer.definition, {...queryParams, ...contextResults});
-  log.info(
-    "mustacheStringTemplate_apply for",
-    transformer,
-    "queryParams",
-    JSON.stringify(queryParams, null, 2),
-    "contextResults",
-    JSON.stringify(contextResults, null, 2),
-    "result",
-    result
-  );
+  // log.info(
+  //   "mustacheStringTemplate_apply for",
+  //   transformer,
+  //   "queryParams",
+  //   JSON.stringify(queryParams, null, 2),
+  //   "contextResults",
+  //   JSON.stringify(contextResults, null, 2),
+  //   "result",
+  //   result
+  // );
   return { elementType: "string", elementValue: result };
 }
 
@@ -592,16 +592,26 @@ export function transformer_apply(
           elementValue: subObject.map((e) => e.elementValue), // TODO: clean result instead? (deep!)
         }
       } else {
+        log.error(
+          "transformer_apply failed converting array",
+          transformer,
+          "with params",
+          queryParams,
+          "error in",
+          JSON.stringify(subObject[failureIndex], null, 2)
+        );
         return {
           elementType: "failure",
           elementValue: {
             queryFailure: "ReferenceNotFound",
             failureOrigin: ["transformer_apply"],
             queryContext:
-              "failed to transform object attribute for object " +
-              objectName +
-              " transformer" +
-              transformer[failureIndex],
+              "failed to transform object attribute for array index " +
+              failureIndex +
+              " failure " +
+              JSON.stringify(subObject[failureIndex]) +
+              " in transformer " +
+              JSON.stringify(transformer[failureIndex]),
           },
         };
       }
@@ -748,6 +758,11 @@ export function transformer_apply(
               })
             );
             return { elementType: "object", elementValue: result};
+            break;
+          }
+          case "constantObject": {
+            log.info("transformer_apply constantObject", transformer.constantObjectValue);
+            return { elementType: "object", elementValue: transformer.constantObjectValue };
             break;
           }
           case "newUuid":

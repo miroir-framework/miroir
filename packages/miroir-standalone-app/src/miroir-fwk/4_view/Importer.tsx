@@ -267,6 +267,10 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             templateType: "parameterReference",
             referenceName: "newEntityListReportUuid",
           },
+          application: {
+            templateType: "parameterReference",
+            referenceName: "currentApplicationUuid",
+          },
           parentName: "Report",
           parentUuid: {
             templateType: "mustacheStringTemplate",
@@ -283,19 +287,16 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           },
           type: "list",
           definition: {
-            extractorTemplatess: {
+            extractors: {
               instanceList: {
-                queryType: "queryTemplateExtractObjectListByEntity",
+                queryType: "queryExtractObjectListByEntity",
                 parentName: {
                   templateType: "parameterReference",
                   referenceName: "newEntityName",
                 },
                 parentUuid: {
-                  templateType: "constantUuid",
-                  constantUuidValue: {
-                    templateType: "mustacheStringTemplate",
-                    definition: "{{newEntity.uuid}}",
-                  },
+                  templateType: "mustacheStringTemplate",
+                  definition: "{{newEntity.uuid}}",
                 },
               },
             },
@@ -321,6 +322,10 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           uuid: {
             templateType: "parameterReference",
             referenceName: "newEntityDetailsReportUuid",
+          },
+          application: {
+            templateType: "parameterReference",
+            referenceName: "currentApplicationUuid",
           },
           parentName: {
             templateType: "mustacheStringTemplate",
@@ -348,15 +353,15 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                   referenceName: "newEntityName",
                 },
                 parentUuid: {
-                  templateType: "constantUuid",
-                  constantUuidValue: {
-                    templateType: "mustacheStringTemplate",
-                    definition: "{{newEntity.uuid}}",
-                  },
+                  templateType: "mustacheStringTemplate",
+                  definition: "{{newEntity.uuid}}",
                 },
                 instanceUuid: {
-                  queryTemplateType: "queryParameterReference",
-                  referenceName: "instanceUuid",
+                  templateType: "constantObject",
+                  constantObjectValue: {
+                    templateType: "parameterReference",
+                    referenceName: "instanceUuid",
+                  }
                 },
               },
             },
@@ -691,7 +696,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     log.info("createEntity found miroirMenuInstances", JSON.stringify(miroirMenuInstances));
 
     const oldMenu: Menu | undefined = (Object.values(
-      miroirMenuInstances.returnedDomainElement.elementValue["menus"].elementValue
+      miroirMenuInstances.returnedDomainElement.elementValue["menus"]
     ) as Menu[]).find((e: Menu) => e.name == actionEffectiveParamsCreateEntity.currentApplicationName + "Menu");
 
     if (!oldMenu) {
@@ -902,7 +907,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             },
             type: "list",
             definition: {
-              extractorTemplates: {
+              extractors: {
                 listReportSectionElements: {
                   queryType: "queryTemplateExtractObjectListByEntity",
                   parentName: {
@@ -910,11 +915,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                     referenceName: "newEntityName",
                   },
                   parentUuid: {
-                    templateType: "constantUuid",
-                    constantUuidValue: {
-                      templateType: "mustacheStringTemplate",
-                      definition: "{{newEntity.uuid}}",
-                    },
+                    templateType: "mustacheStringTemplate",
+                    definition: "{{newEntity.uuid}}",
                   },
                 },
               },
@@ -1588,7 +1590,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                   interpolation: "runtime",
                   referencedExtractor: "uniqueSplittedEntityInstances",
                   elementTransformer: {
-                    templateType: "fullObjectTemplate",
+                    templateType: "fullObjectTemplate", // TODO: fullObjectTemplate is not needed, all attributeKeys are constantString, objectTemplate should be enough
                     interpolation: "runtime",
                     referencedExtractor: "municipality",
                     definition: [
@@ -1617,8 +1619,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                       {
                         attributeKey: {
                           interpolation: "runtime",
-                          templateType: "constantUuid",
-                          constantUuidValue: "name"
+                          templateType: "constantString",
+                          constantStringValue: "name"
                         },
                         attributeValue: {
                           interpolation: "runtime",
@@ -1958,6 +1960,9 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       </p> : null
     }
       found row A:{JSON.stringify(fileData?fileData[0]:'')}
+      <h4>
+        importer props: application={JSON.stringify(props.currentApplicationUuid)} deployment={JSON.stringify(props.currentDeploymentUuid)} filename={JSON.stringify(props.filename)}
+      </h4>
       <h3>
         create Entity from Excel File:
         <Button variant="outlined" onClick={()=>createEntity()}>

@@ -202,6 +202,7 @@ export function resolveQueryTemplate(
   }
 }
 
+// ################################################################################################
 export function resolveQueryTemplateSelectExtractorWrapper(
   queryTemplate: QueryTemplateSelectExtractorWrapper,
   queryParams: Record<string, any>,
@@ -224,16 +225,18 @@ export function resolveExtractorTemplateForRecordOfExtractors(
   log.info("resolveExtractorTemplateForRecordOfExtractors converting extractorTemplates:", recordOfExtractorTemplate.extractorTemplates);
   
   const queries = Object.fromEntries(
-    Object.entries(recordOfExtractorTemplate.extractorTemplates??{}).map((e: [string, QueryTemplateSelectExtractorWrapper]) => [
-      e[0],
-      resolveQueryTemplateSelectExtractorWrapper(e[1], params, recordOfExtractorTemplate.contextResults), // TODO: generalize to MiroirQuery & check for failure!
-    ])
+    Object.entries(recordOfExtractorTemplate.extractorTemplates ?? {}).map(
+      (e: [string, QueryTemplateSelectExtractorWrapper]) => [
+        e[0],
+        resolveQueryTemplateSelectExtractorWrapper(e[1], params, recordOfExtractorTemplate.contextResults), // TODO: generalize to MiroirQuery & check for failure!
+      ]
+    )
   );
   log.info("resolveExtractorTemplateForRecordOfExtractors converted extractorTemplates, result:", queries);
   
   log.info("resolveExtractorTemplateForRecordOfExtractors converting combinerTemplates:", recordOfExtractorTemplate.combinerTemplates);
   const combiners = Object.fromEntries(
-    Object.entries(recordOfExtractorTemplate.combinerTemplates??{}).map((e: [string, QueryTemplate]) => [
+    Object.entries(recordOfExtractorTemplate.combinerTemplates ?? {}).map((e: [string, QueryTemplate]) => [
       e[0],
       resolveQueryTemplate(e[1], params, recordOfExtractorTemplate.contextResults), // TODO: generalize to MiroirQuery & check for failure!
     ])

@@ -83,15 +83,15 @@ export const ReportView = (props: ReportViewProps) => {
   //   "extractors",
   //   props.reportSection.extractors
   // );
-  
+
   const deploymentEntityStateSelectorTemplateMap: SyncExtractorTemplateRunnerMap<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorForTemplateMap(),
     []
-  )
+  );
   const deploymentEntityStateSelectorMap: SyncExtractorRunnerMap<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
-  )
+  );
 
   const deploymentEntityStateFetchQueryTemplate: ExtractorTemplateForRecordOfExtractors = useMemo(
     () =>
@@ -99,8 +99,7 @@ export const ReportView = (props: ReportViewProps) => {
       props.pageParams.deploymentUuid &&
       props.pageParams.applicationSection &&
       props.pageParams.reportUuid
-        ? 
-          {
+        ? {
             queryType: "extractorTemplateForRecordOfExtractors",
             deploymentUuid: props.pageParams.deploymentUuid,
             pageParams: props.pageParams,
@@ -135,63 +134,54 @@ export const ReportView = (props: ReportViewProps) => {
 
   // log.info("deploymentEntityStateFetchQueryTemplateParams",deploymentEntityStateFetchQueryTemplateParams)
 
-  log.info("################################################################ resolving query Template")
+  log.info("################################################################ resolving query Template");
 
-  const resolvedQuery:ExtractorForRecordOfExtractors = useMemo(
+  const resolvedTemplateQuery: ExtractorForRecordOfExtractors = useMemo(
     () =>
       resolveExtractorTemplateForRecordOfExtractors(
         // deploymentEntityStateFetchQueryTemplateParams.extractorTemplate,
-        deploymentEntityStateFetchQueryTemplate,
+        deploymentEntityStateFetchQueryTemplate
       ),
     // [deploymentEntityStateFetchQueryTemplateParams]
     [deploymentEntityStateFetchQueryTemplate]
   );
 
-  log.info("resolvedQuery",resolvedQuery)
-  log.info("################################################################ resolved query Template DONE")
+  log.info("resolvedQuery", resolvedTemplateQuery);
+  log.info("################################################################ resolved query Template DONE");
 
+  const usedQuery: ExtractorForRecordOfExtractors = useMemo(
+    () =>
+    props.pageParams.deploymentUuid && props.pageParams.applicationSection && props.pageParams.reportUuid
+      ? props.reportDefinition.extractors
+        ? {
+            queryType: "extractorForRecordOfExtractors",
+            deploymentUuid: props.pageParams.deploymentUuid,
+            pageParams: props.pageParams,
+            queryParams: {},
+            contextResults: {},
+            extractors: props.reportDefinition.extractors,
+            // extractorTemplates: props.reportDefinition.extractorTemplates,
+            combiners: props.reportDefinition.combiners,
+            runtimeTransformers: props.reportDefinition.runtimeTransformers,
+          }
+        : resolvedTemplateQuery
+      : {
+          queryType: "extractorForRecordOfExtractors",
+          deploymentUuid: "",
+          pageParams: paramsAsdomainElements,
+          queryParams: {},
+          contextResults: {},
+          extractors: {},
+        },
+    [props.reportDefinition, props.pageParams, resolvedTemplateQuery]
+  );
+  resolvedTemplateQuery;
   const deploymentEntityStateFetchQueryParams: SyncExtractorRunnerParams<
     ExtractorForRecordOfExtractors,
     DeploymentEntityState
   > = useMemo(
-    () =>
-      props.pageParams.deploymentUuid &&
-      props.pageParams.applicationSection &&
-      props.pageParams.reportUuid
-      ?
-        props.reportDefinition.extractors
-        ? getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>(
-            {
-              queryType: "extractorForRecordOfExtractors",
-              deploymentUuid: props.pageParams.deploymentUuid,
-              pageParams: props.pageParams,
-              queryParams: {},
-              contextResults: {},
-              extractors: props.reportDefinition.extractors,
-              // extractorTemplates: props.reportDefinition.extractorTemplates,
-              combiners: props.reportDefinition.combiners,
-              runtimeTransformers: props.reportDefinition.runtimeTransformers,
-            },
-            deploymentEntityStateSelectorMap
-          )
-        : // resolved query
-          getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>(
-            resolvedQuery,
-            deploymentEntityStateSelectorMap
-          )
-      : // dummy query
-        getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>(
-          {
-            queryType: "extractorForRecordOfExtractors",
-            deploymentUuid: "",
-            pageParams: paramsAsdomainElements,
-            queryParams: {},
-            contextResults: {},
-            extractors: {},
-          },
-          deploymentEntityStateSelectorMap
-        ),
-    [deploymentEntityStateSelectorMap, props.pageParams, props.reportDefinition]
+    () =>  getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>(usedQuery, deploymentEntityStateSelectorMap),
+    [deploymentEntityStateSelectorMap, usedQuery]
   );
   // // log.info(
   // //   "-------------------------------------------------- props.reportSection",
@@ -208,14 +198,14 @@ export const ReportView = (props: ReportViewProps) => {
 
   // log.info("deploymentEntityStateQueryTemplateResults",deploymentEntityStateQueryTemplateResults)
 
-  log.info("################################################################ Fecth NON-Template report data")
+  log.info("################################################################ Fecth NON-Template report data", usedQuery);
 
   const deploymentEntityStateQueryResults: DomainElementObjectOrFailed = useDeploymentEntityStateQuerySelector(
     deploymentEntityStateSelectorMap.extractWithManyExtractors,
     deploymentEntityStateFetchQueryParams
   );
 
-  log.info("deploymentEntityStateQueryResults",deploymentEntityStateQueryResults)
+  log.info("deploymentEntityStateQueryResults", deploymentEntityStateQueryResults);
 
   // log.info(
   //   "-------------------------------------------------- props.reportSection",
@@ -232,75 +222,12 @@ export const ReportView = (props: ReportViewProps) => {
   const jzodSchemaSelectorMap: ExtractorRunnerMapForJzodSchema<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateJzodSchemaSelectorMap(),
     []
-  )
+  );
 
   // log.info("################################################################ Fecth Template report schema")
 
-  // const fetchedDataJzodSchemaParamsForTemplate: ExtractorTemplateRunnerParamsForJzodSchema<
-  //   DomainModelGetFetchParamJzodSchemaForExtractorTemplate,
-  //   DeploymentEntityState
-  // > = useMemo(
-  //   () => ({
-  //     extractorRunnerMap: jzodSchemaSelectorTemplateMap,
-  //     query:
-  //       props.pageParams.deploymentUuid && props.pageParams.applicationSection && props.pageParams.reportUuid && props.reportDefinition.extractorTemplates
-  //         ? {
-  //             queryType: "getFetchParamsJzodSchema",
-  //             deploymentUuid: props.pageParams.deploymentUuid,
-  //             pageParams: {
-  //               applicationSection: props.pageParams.applicationSection ,
-  //               deploymentUuid: props.pageParams.deploymentUuid,
-  //               instanceUuid: props.pageParams.instanceUuid ?? "",
-  //             // elementType: "object",
-  //               // elementValue: {
-  //               //   applicationSection: { elementType: "string", elementValue: props.pageParams.applicationSection },
-  //               //   deploymentUuid: { elementType: "string", elementValue: props.pageParams.deploymentUuid },
-  //               //   instanceUuid: { elementType: "string", elementValue: props.pageParams.instanceUuid ?? "" },
-  //               // },
-  //             },
-  //             queryParams: {},
-  //             contextResults: {},
-  //             // fetchParams: deploymentEntityStateFetchQueryParams.query,
-  //             fetchParams: deploymentEntityStateFetchQueryTemplateParams.extractorTemplate,
-  //             // fetchParams: deploymentEntityStateFetchQueryParams.extractor,
-  //           }
-  //         : // dummy query
-  //           {
-  //             queryType: "getFetchParamsJzodSchema",
-  //             deploymentUuid: "DUMMY",
-  //             pageParams: {
-  //               // elementType: "object",
-  //               // elementValue: {
-  //               applicationSection: "data" ,
-  //               deploymentUuid: "",
-  //               instanceUuid: "",
-  //                 // applicationSection: { elementType: "string", elementValue: "data" },
-  //                 // deploymentUuid: { elementType: "string", elementValue: "" },
-  //                 // instanceUuid: { elementType: "string", elementValue: "" },
-  //               // },
-  //             },
-  //             queryParams: {},
-  //             contextResults: {},
-  //             fetchParams: {
-  //               queryType: "extractorTemplateForRecordOfExtractors",
-  //               deploymentUuid: "DUMMY",
-  //               pageParams: paramsAsdomainElements,
-  //               queryParams: {},
-  //               contextResults: {},
-  //               extractorTemplates: {},
-  //             },
-  //           },
-  //   }),
-  //   [jzodSchemaSelectorTemplateMap, props.pageParams, props.reportDefinition]
-  // )
-  // ;
 
-  // const fetchedDataJzodSchemaForTemplate: RecordOfJzodObject | undefined = useDeploymentEntityStateJzodSchemaSelectorForTemplate(
-  //   jzodSchemaSelectorTemplateMap.extractFetchQueryJzodSchema,
-  //   fetchedDataJzodSchemaParamsForTemplate
-  // ) as RecordOfJzodObject | undefined; // TODO: use correct return type
-
-  log.info("################################################################ Fecth NON-Template report schema")
+  log.info("################################################################ Fecth NON-Template report schema");
 
   const fetchedDataJzodSchemaParams: ExtractorRunnerParamsForJzodSchema<
     DomainModelGetFetchParamJzodSchemaForExtractor,
@@ -349,8 +276,6 @@ export const ReportView = (props: ReportViewProps) => {
     }),
     [jzodSchemaSelectorMap, props.pageParams, props.reportDefinition]
   );
-  ;
-
   const fetchedDataJzodSchema: RecordOfJzodObject | undefined = useDeploymentEntityStateJzodSchemaSelector(
     jzodSchemaSelectorMap.extractFetchQueryJzodSchema,
     fetchedDataJzodSchemaParams
@@ -367,14 +292,15 @@ export const ReportView = (props: ReportViewProps) => {
     "props.reportSection?.combinerTemplates",
     props.reportDefinition?.combinerTemplates,
     "props.reportSection?.runtimeTransformers",
-    props.reportDefinition?.runtimeTransformers,
+    props.reportDefinition?.runtimeTransformers
     // "props.deploymentEntityStateQueryResults",
     // deploymentEntityStateQueryTemplateResults,
   );
-  log.info('ReportView props.reportSection',props.reportDefinition);
+  log.info("ReportView props.reportSection", props.reportDefinition);
 
   if (props.applicationSection) {
-    {/* <div>
+    {
+      /* <div>
       <div>
         deploymentUuid:
         {props.deploymentUuid}
@@ -387,36 +313,18 @@ export const ReportView = (props: ReportViewProps) => {
         application:
         {props.applicationSection}
       </div>
-    </div> */}
-    // if (deploymentEntityStateQueryResults.elementType == "object") {
-    //   const queryFailures = Object.entries(deploymentEntityStateQueryResults.elementValue).filter(
-    //     (e) => e[1].elementType == "failure"
-    //   );
-    //   if (queryFailures.length > 0) {
-    //     return (
-    //       <div>
-    //         found query failures! {JSON.stringify(queryFailures, null, 2)}
-    //       </div>
-    //     )        
-    //   }
-    // }
+    </div> */
+    }
     return (
       <>
-      {
-        // deploymentEntityStateQueryTemplateResults.elementType == "failure" ||
-        deploymentEntityStateQueryResults.elementType == "failure"
-        ?
-          <div>
-            found query failure! {JSON.stringify(deploymentEntityStateQueryResults, null, 2)}
-          </div>
-        :
-        <>
-          {
-            props.deploymentUuid?
-              <div>
-                <div>ReportView rendered {count}</div>
-                {/* {
-                  props.reportDefinition.extractors? */}
+        {
+          deploymentEntityStateQueryResults.elementType == "failure" ? (
+            <div>found query failure! {JSON.stringify(deploymentEntityStateQueryResults, null, 2)}</div>
+          ) : (
+            <>
+              {props.deploymentUuid ? (
+                <div>
+                  <div>ReportView rendered {count}</div>
                   <ReportSectionView
                     queryResults={deploymentEntityStateQueryResults}
                     fetchedDataJzodSchema={fetchedDataJzodSchema}
@@ -427,31 +335,16 @@ export const ReportView = (props: ReportViewProps) => {
                     paramsAsdomainElements={paramsAsdomainElements}
                     extractorTemplateRunnerMap={deploymentEntityStateSelectorTemplateMap}
                   />
-                  {/* :
-                  <ReportSectionView
-                    queryResults={deploymentEntityStateQueryTemplateResults}
-                    fetchedDataJzodSchema={fetchedDataJzodSchemaForTemplate}
-                    reportSection={props.reportDefinition?.section}
-                    rootReport={props.reportDefinition}
-                    applicationSection={props.applicationSection}
-                    deploymentUuid={props.deploymentUuid}
-                    paramsAsdomainElements={paramsAsdomainElements}
-                    extractorTemplateRunnerMap={deploymentEntityStateSelectorTemplateMap}
-                  />
-                } */}
-              </div>
-            :
-            <div style={{color:"red"}}>no deployment found!</div>
-          }
-        </>
-      }
+                </div>
+              ) : (
+                <div style={{ color: "red" }}>no deployment found!</div>
+              )}
+            </>
+          )
+        }
       </>
     );
   } else {
-    return (
-      <>
-        RootReport Invalid props! {JSON.stringify(props)}
-      </>
-    )
+    return <>RootReport Invalid props! {JSON.stringify(props)}</>;
   }
 };

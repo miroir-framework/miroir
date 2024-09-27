@@ -12,7 +12,21 @@ import {
   TransformerForRuntime_InnerReference,
   ExtractorTemplateForRecordOfExtractors,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { book1, book2, book3, book4, book5, book6, Country1, Country2, Country3, Country4, ignorePostgresExtraAttributesOnList, ignorePostgresExtraAttributesOnRecord, resolveExtractorTemplateForRecordOfExtractors } from '../../index.js';
+import {
+  book1,
+  book2,
+  book3,
+  book4,
+  book5,
+  book6,
+  Country1,
+  Country2,
+  Country3,
+  Country4,
+  ignorePostgresExtraAttributesOnList,
+  ignorePostgresExtraAttributesOnRecord,
+  resolveExtractorTemplateForRecordOfExtractors,
+} from "../../index.js";
 import { object } from 'zod';
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
@@ -47,6 +61,21 @@ describe("queryTemplates.unit.test", () => {
             instanceUuid: {
               templateType: "parameterReference",
               referenceName: "instanceUuid",
+            },
+          },
+          fountain: {
+            queryType: "selectObjectByDirectReference",
+            parentName: "Fountain",
+            parentUuid: {
+              templateType: "mustacheStringTemplate",
+              definition: "{{newEntity.uuid}}",
+            },
+            instanceUuid: {
+              templateType: "constantObject",
+              constantObjectValue: {
+                templateType: "parameterReference",
+                referenceName: "instanceUuid",
+              }
             },
           },
         },
@@ -109,27 +138,6 @@ describe("queryTemplates.unit.test", () => {
         },
       };
 
-      // const preTestResult: {[k: string]: {[l:string]: any}} = transformer_apply(
-      // const preTestResult: {[k: string]: {[l:string]: any}} = transformer_apply(
-      //   "runtime",
-      //   "ROOT",
-      //   // uniqueRuntimeTemplate,
-      //   uniqueRuntimeTemplate as any,
-      //   {
-      //     newUuid: newUuid ,
-      //   }, // queryParams
-      //   {
-      //     countries: [
-      //         Country1 as EntityInstance,
-      //         Country2 as EntityInstance,
-      //         Country3 as EntityInstance,
-      //         Country4 as EntityInstance,
-      //     ],
-      //   } // context
-      // ).elementValue;
-
-      // console.log("################################ convert queryTemplate to query with resolveExtractorTemplateForRecordOfExtractors preTestResult", preTestResult)
-      // const testResult = ignorePostgresExtraAttributesOnList(preTestResult as any,["uuid"]); // uuid value is ignored
       const testResult = resolveExtractorTemplateForRecordOfExtractors(uniqueRuntimeTemplate); // uuid value is ignored
       console.log("################################ converted queryTemplate to query with resolveExtractorTemplateForRecordOfExtractors", JSON.stringify(testResult, null, 2))
       expect(testResult).toEqual(

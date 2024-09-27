@@ -2493,6 +2493,7 @@ export function getMiroirFundamentalJzodSchema(
         queryTemplate: (miroirFundamentalJzodSchema as any).definition.context.queryTemplate,
         queryTemplateRecord: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateRecord,
         transformer_constantUuid: (transformerJzodSchema as any).definition.context.transformer_constantUuid,
+        transformer_constantObject: (transformerJzodSchema as any).definition.context.transformer_constantObject,
         transformer_constantString: (transformerJzodSchema as any).definition.context.transformer_constantString,
         transformer_newUuid: (transformerJzodSchema as any).definition.context.transformer_newUuid,
         transformer_parameterReference: (transformerJzodSchema as any).definition.context.transformer_parameterReference,

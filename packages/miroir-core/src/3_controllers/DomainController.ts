@@ -758,7 +758,7 @@ export class DomainController implements DomainControllerInterface {
       switch (currentAction.compositeActionType) {
         case 'action': {
           const resolvedActionTemplate: InstanceAction = transformer_apply(
-            "runtime",
+            "build",
             "NO NAME",
             currentAction.action as TransformerForBuild,
             actionParamsAndTemplates,
