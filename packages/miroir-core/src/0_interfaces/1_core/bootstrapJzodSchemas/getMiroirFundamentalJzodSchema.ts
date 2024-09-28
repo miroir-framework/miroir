@@ -2492,6 +2492,7 @@ export function getMiroirFundamentalJzodSchema(
         queryTemplateSelectByQueryCombiner: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateSelectByQueryCombiner,
         queryTemplate: (miroirFundamentalJzodSchema as any).definition.context.queryTemplate,
         queryTemplateRecord: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateRecord,
+        transformer_mustacheStringTemplate: (transformerJzodSchema as any).definition.context.transformer_mustacheStringTemplate,
         transformer_constantUuid: (transformerJzodSchema as any).definition.context.transformer_constantUuid,
         transformer_constantObject: (transformerJzodSchema as any).definition.context.transformer_constantObject,
         transformer_constantString: (transformerJzodSchema as any).definition.context.transformer_constantString,

@@ -140,8 +140,7 @@ describe("queryTemplates.unit.test", () => {
 
       const testResult = resolveExtractorTemplateForRecordOfExtractors(uniqueRuntimeTemplate); // uuid value is ignored
       console.log("################################ converted queryTemplate to query with resolveExtractorTemplateForRecordOfExtractors", JSON.stringify(testResult, null, 2))
-      expect(testResult).toEqual(
-      {
+      expect(testResult).toEqual({
         pageParams: {
           instanceUuid: "xxxxx",
         },
@@ -155,6 +154,20 @@ describe("queryTemplates.unit.test", () => {
             parentName: "Book",
             parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             instanceUuid: "xxxxx",
+          },
+          fountain: {
+            queryType: "selectObjectByDirectReference",
+            parentName: "Fountain",
+            parentUuid: "",
+            instanceUuid: {
+              queryFailure: {
+                templateType: "constantObject",
+                constantObjectValue: {
+                  templateType: "parameterReference",
+                  referenceName: "instanceUuid",
+                },
+              },
+            },
           },
         },
         combiners: {
@@ -187,8 +200,7 @@ describe("queryTemplates.unit.test", () => {
             objectListReferenceAttribute: "publisher",
           },
         },
-      }
-    );
+      });
       console.log("convert queryTemplate to query with resolveExtractorTemplateForRecordOfExtractors END")
     }
   );

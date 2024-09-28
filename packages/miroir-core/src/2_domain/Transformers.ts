@@ -297,6 +297,9 @@ export function transformer_InnerReference_resolve  (
       elementValue: transformerInnerReference
     }
   }
+  if (transformerInnerReference.templateType == "mustacheStringTemplate") {
+    return mustacheStringTemplate_apply(step, transformerInnerReference, queryParams, contextResults); 
+  }
   if (
     (transformerInnerReference.templateType == "contextReference" &&
       (!contextResults ||

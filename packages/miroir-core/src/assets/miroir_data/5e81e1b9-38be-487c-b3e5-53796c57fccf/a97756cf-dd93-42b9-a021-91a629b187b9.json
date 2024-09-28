@@ -50,6 +50,18 @@
           }
         ]
       },
+      "transformer_mustacheStringTemplate": {
+        "type": "object",
+        "definition": {
+          "templateType": {
+            "type": "literal",
+            "definition": "mustacheStringTemplate"
+          },
+          "definition": {
+            "type": "string"
+          }
+        }
+      },
       "transformer_constantUuid": {
         "type": "object",
         "definition": {
@@ -158,6 +170,12 @@
         "type": "union",
         "discriminator": "templateType",
         "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformer_mustacheStringTemplate"
+            }
+          },
           {
             "type": "schemaReference",
             "definition": {

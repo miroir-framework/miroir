@@ -353,8 +353,14 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                   referenceName: "newEntityName",
                 },
                 parentUuid: {
-                  templateType: "mustacheStringTemplate",
-                  definition: "{{newEntity.uuid}}",
+                  templateType: "freeObjectTemplate",
+                  definition: {
+                    templateType: "constantString",
+                    constantStringValue: {
+                      templateType: "mustacheStringTemplate",
+                      definition: "{{newEntity.uuid}}",
+                    },
+                  }
                 },
                 instanceUuid: {
                   templateType: "constantObject",
