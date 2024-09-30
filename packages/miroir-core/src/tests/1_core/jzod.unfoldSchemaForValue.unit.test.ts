@@ -1304,7 +1304,7 @@ describe("jzod.unfoldSchemaForValue", () => {
         },
       },
       // based on "real" cases
-      te_st920: {
+      test920: {
         testSchema: {
           type: "schemaReference",
           context: {

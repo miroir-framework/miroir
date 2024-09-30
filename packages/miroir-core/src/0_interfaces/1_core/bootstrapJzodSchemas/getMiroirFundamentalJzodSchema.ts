@@ -1295,6 +1295,18 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 elementType: {
                   type: "literal",
+                  definition: "number",
+                },
+                elementValue: {
+                  type: "number",
+                },
+              },
+            },
+            {
+              type: "object",
+              definition: {
+                elementType: {
+                  type: "literal",
                   definition: "array",
                 },
                 elementValue: {

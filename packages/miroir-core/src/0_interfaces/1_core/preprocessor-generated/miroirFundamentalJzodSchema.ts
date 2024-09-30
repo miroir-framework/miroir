@@ -6569,6 +6569,18 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "elementType": {
                 "type": "literal",
+                "definition": "number"
+              },
+              "elementValue": {
+                "type": "number"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "elementType": {
+                "type": "literal",
                 "definition": "array"
               },
               "elementValue": {
@@ -15707,6 +15719,40 @@ export const miroirFundamentalJzodSchema = {
                 "definition": [
                   {
                     "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "elementType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "number"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "elementValue": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "number"
                   },
                   {
                     "type": "schemaReference",

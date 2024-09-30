@@ -36,6 +36,7 @@ import {
   RestPersistenceAction,
   TransactionalInstanceAction,
   TransformerForBuild,
+  TransformerForRuntime,
   UndoRedoAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface.js';
@@ -702,7 +703,7 @@ export class DomainController implements DomainControllerInterface {
     const localActionParams = { ...actionParamValues };
     let localContext: Record<string, any> = { ...actionParamValues }; 
 
-    // log.info("handleCompositeActionTemplate compositeAction",compositeAction,"localActionParams", localActionParams);
+    log.info("handleCompositeActionTemplate compositeAction",compositeAction,"localActionParams", localActionParams);
     // if ((compositeAction as any).templateType) {
     //   throw new Error("DomainController handleCompositeActionTemplate can not deal with compositeAction as whole tranformer");
     // }
@@ -758,25 +759,29 @@ export class DomainController implements DomainControllerInterface {
     for (const currentAction of resolved.resolvedCompositeActionDefinition) {
       log.info(
         "handleCompositeActionTemplate compositeInstanceAction currentAction",
-        JSON.stringify(currentAction, null, 2),
+        // JSON.stringify(currentAction, null, 2),
+        currentAction,
         "actionParamsAndTemplates",
         resolved.actionParamsAndTemplates,
+        "localContext keys",
+        Object.keys(localContext),
         "localContext",
-        Object.keys(localContext)
+        localContext
       );
       switch (currentAction.compositeActionType) {
         case 'action': {
-          // const resolvedActionTemplate: InstanceAction = transformer_apply(
-          //   "build",
-          //   "NO NAME",
-          //   currentAction.action as TransformerForBuild,
-          //   resolved.actionParamsAndTemplates,
-          //   localContext
-          // ).elementValue as InstanceAction;
-          log.info("handleCompositeActionTemplate compositeInstanceAction resolved action", JSON.stringify(currentAction.action, null, 2));
+          log.info("handleCompositeActionTemplate compositeInstanceAction action to resolve", JSON.stringify(currentAction.action, null, 2));
+          const resolvedActionTemplate: InstanceAction = transformer_apply(
+            "runtime",
+            "NO NAME",
+            currentAction.action as TransformerForRuntime,
+            resolved.actionParamsAndTemplates,
+            localContext
+          ).elementValue as InstanceAction;
+          log.info("handleCompositeActionTemplate compositeInstanceAction resolved action", JSON.stringify(resolvedActionTemplate, null, 2));
           // log.info("handleCompositeActionTemplate compositeInstanceAction current model", currentModel);
-          // const actionResult = await this.handleAction(resolvedActionTemplate, currentModel);
-          const actionResult = await this.handleAction(currentAction.action, currentModel);
+          const actionResult = await this.handleAction(resolvedActionTemplate, currentModel);
+          // const actionResult = await this.handleAction(currentAction.action, currentModel);
           if (actionResult?.status != "ok") {
             log.error("Error on action", JSON.stringify(actionResult, null, 2));
           }

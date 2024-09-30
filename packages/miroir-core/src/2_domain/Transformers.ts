@@ -443,7 +443,12 @@ export function transformer_InnerReference_resolve  (
             elementValue: { queryFailure: "ReferenceFoundButUndefined", queryContext: JSON.stringify(contextResults) },
           }
         : transformerInnerReference.referencePath
-        ? getValue(contextResults, transformerInnerReference.referencePath) ?? {
+        ? getValue(contextResults, transformerInnerReference.referencePath) ?
+          {
+            elementType: typeof getValue(contextResults, transformerInnerReference.referencePath) as any,
+            elementValue: getValue(contextResults, transformerInnerReference.referencePath)
+          }:
+          {
             elementType: "failure",
             elementValue: {
               queryFailure: "ReferenceFoundButUndefined",
@@ -475,7 +480,10 @@ export function transformer_InnerReference_resolve  (
               elementValue: { queryFailure: "ReferenceFoundButUndefined", queryContext: JSON.stringify(queryParams) },
             }
         : transformerInnerReference.referencePath
-        ? getValue(queryParams, transformerInnerReference.referencePath) ?? {
+        ? getValue(queryParams, transformerInnerReference.referencePath) ? { // TODO: optimize calls to getValue
+            elementType: typeof getValue(queryParams, transformerInnerReference.referencePath),
+            elementValue: getValue(queryParams, transformerInnerReference.referencePath)
+        }: {
             elementType: "failure",
             elementValue: {
               queryFailure: "ReferenceFoundButUndefined",
@@ -802,19 +810,29 @@ export function transformer_apply(
           ];
         });
         // log.info("transformer_apply converting plain object", transformer, "with params", JSON.stringify(queryParams, null, 2));
-        // log.info("transformer_apply converting plain object", transformer, "converted attributes", JSON.stringify(attributeEntries, null, 2));
+        log.info("transformer_apply converting plain object", transformer, "converted attributes", JSON.stringify(attributeEntries, null, 2));
         const failureIndex = attributeEntries.findIndex((e) => e[1].elementType == "failure");
         if (failureIndex == -1) {
           const result = Object.fromEntries(
             attributeEntries.map((e) => [e[0], e[1].elementValue])
           )
-          // log.info("transformer_apply converted plain object", transformer, "converted attributes", JSON.stringify(result, null, 2));
+          log.info("transformer_apply converted plain object", transformer, "converted object", JSON.stringify(result, null, 2));
 
           return {
             elementType: "object",
             elementValue: result,
           };
         } else {
+          log.error(
+            "transformer_apply failed converting plain object",
+            transformer,
+            "with params",
+            queryParams,
+            "error in",
+            objectName,
+            "in",
+            JSON.stringify(attributeEntries[failureIndex], null, 2)
+          );
           return {
             elementType: "failure",
             elementValue: {

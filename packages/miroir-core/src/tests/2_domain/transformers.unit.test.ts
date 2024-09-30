@@ -11,6 +11,7 @@ import {
   EntityInstance,
   TransformerForRuntime_InnerReference,
   ExtractorTemplateForRecordOfExtractors,
+  DomainElement,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { book1, book2, book3, book4, book5, book6, Country1, Country2, Country3, Country4, ignorePostgresExtraAttributesOnList, ignorePostgresExtraAttributesOnRecord, resolveExtractorTemplateForRecordOfExtractors } from '../../index.js';
 import { object } from 'zod';
@@ -23,6 +24,113 @@ import { object } from 'zod';
 describe("transformers.unit.test", () => {
 
   // ################################################################################################
+  it("resolve basic transformer path reference for string", async () => { // TODO: test failure cases!
+      console.log("resolve basic transformer path reference for string START")
+
+      const result: DomainElement = transformer_apply(
+        "runtime",
+        "ROOT",
+        {
+          templateType: "contextReference",
+          interpolation: "runtime",
+          referencePath: ["Municipality", "municipalities"],
+        },
+        {},
+        {
+          Municipality: {
+            municipalities: "test"
+          },
+        },
+      );
+
+      const expectedResult: DomainElement = {
+        elementType: "string",
+        elementValue: "test",
+      };
+
+      console.log("################################ result", JSON.stringify(result,null,2))
+      console.log("################################ expectedResult", JSON.stringify(expectedResult,null,2))
+      expect(result).toEqual(expectedResult);
+
+      console.log("resovle basic transformer path reference for string END")
+    }
+  );
+
+  // ################################################################################################
+  it("resolve basic transformer path reference for number", async () => { // TODO: test failure cases!
+      console.log("resolve basic transformer path reference for string START")
+
+      const result: DomainElement = transformer_apply(
+        "runtime",
+        "ROOT",
+        {
+          templateType: "contextReference",
+          interpolation: "runtime",
+          referencePath: ["Municipality", "municipalities"],
+        },
+        {},
+        {
+          Municipality: {
+            municipalities: 1
+          },
+        },
+      );
+
+      const expectedResult: DomainElement = {
+        elementType: "number",
+        elementValue: 1,
+      };
+
+      console.log("################################ result", JSON.stringify(result,null,2))
+      console.log("################################ expectedResult", JSON.stringify(expectedResult,null,2))
+      expect(result).toEqual(expectedResult);
+
+      console.log("resovle basic transformer path reference for number END")
+    }
+  );
+
+  // ################################################################################################
+  it("resolve basic transformer path reference for object", async () => { // TODO: test failure cases!
+      console.log("resolve basic transformer path reference for object START")
+
+      const result: DomainElement = transformer_apply(
+        "runtime",
+        "ROOT",
+        {
+          templateType: "contextReference",
+          interpolation: "runtime",
+          referencePath: ["Municipality", "municipalities"],
+        },
+        {},
+        {
+          Municipality: {
+            municipalities: {
+              "1": {
+                name: "test",
+              },
+            },
+          },
+        },
+      );
+
+      const expectedResult: DomainElement = {
+        elementType: "object",
+        elementValue: {
+          "1": {
+            name: "test",
+          } as any, // TODO: redefine "object" DomainElement, so as to be non-recursive
+        }
+      };
+
+      console.log("################################ result", JSON.stringify(result,null,2))
+      console.log("################################ expectedResult", JSON.stringify(expectedResult,null,2))
+      expect(result).toEqual(expectedResult);
+
+      console.log("resovle basic transformer path reference for object END")
+    }
+  );
+
+  // ################################################################################################
   it("convert basic template", async () => { // TODO: test failure cases!
       console.log("convert basic template START")
       const newApplicationName = "test";
@@ -31,31 +139,31 @@ describe("transformers.unit.test", () => {
       const newDeploymentUuid = uuidv4();
 
       const newDeploymentStoreConfigurationTemplate = {
-        "admin": {
-          "emulatedServerType": "sql",
-          "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-          "schema": "miroirAdmin"
+        admin: {
+          emulatedServerType: "sql",
+          connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+          schema: "miroirAdmin",
         },
-        "model": {
-          "emulatedServerType": "sql",
-          "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-          "schema": {
+        model: {
+          emulatedServerType: "sql",
+          connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+          schema: {
             templateType: "parameterReference",
             referenceName: "newApplicationName",
-            applyFunction: (a:string) => (a + "Model")
-          }
+            applyFunction: (a: string) => a + "Model",
+          },
         },
-        "data": {
-          "emulatedServerType": "sql",
-          "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-          "schema": {
+        data: {
+          emulatedServerType: "sql",
+          connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+          schema: {
             templateType: "parameterReference",
             referenceName: "newApplicationName",
-            applyFunction: (a:string) => (a + "Data")
-          }
+            applyFunction: (a: string) => a + "Data",
+          },
           // "schema": newApplicationName + "Data"
-        }
-      }
+        },
+      };
 
       const newDeploymentStoreConfiguration: StoreUnitConfiguration = transformer_apply(
         "build",
