@@ -76,6 +76,7 @@
     "happy-dom": "^12.10.3",
     "miroir-store-filesystem": "*",
     "msw": "^2.0.11",
+    "mustache": "^4.2.0",
     "sequelize": "^6.29.0",
     "typescript": "^4.9.4",
     "vite": "4.5.0",

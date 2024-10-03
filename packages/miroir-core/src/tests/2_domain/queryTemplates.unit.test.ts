@@ -48,7 +48,9 @@ describe("queryTemplates.unit.test", () => {
         pageParams: {
           instanceUuid: "xxxxx",
         },
-        queryParams: {},
+        queryParams: {
+          parentUuid: "yyyyy",
+        },
         contextResults: {},
         extractorTemplates: {
           book: {
@@ -67,13 +69,14 @@ describe("queryTemplates.unit.test", () => {
             queryType: "selectObjectByDirectReference",
             parentName: "Fountain",
             parentUuid: {
-              templateType: "mustacheStringTemplate",
-              definition: "{{newEntity.uuid}}",
+              templateType: "parameterReference",
+              referenceName: "parentUuid",
             },
             instanceUuid: {
               templateType: "constantObject",
               constantObjectValue: {
-                templateType: "parameterReference",
+                templateType: "contextReference",
+                interpolation: "runtime",
                 referenceName: "instanceUuid",
               }
             },
@@ -139,12 +142,17 @@ describe("queryTemplates.unit.test", () => {
       };
 
       const testResult = resolveExtractorTemplateForRecordOfExtractors(uniqueRuntimeTemplate); // uuid value is ignored
-      console.log("################################ converted queryTemplate to query with resolveExtractorTemplateForRecordOfExtractors", JSON.stringify(testResult, null, 2))
+      console.log(
+        "################################ converted queryTemplate to query with resolveExtractorTemplateForRecordOfExtractors testResults",
+        JSON.stringify(testResult, null, 2)
+      );
       expect(testResult).toEqual({
         pageParams: {
           instanceUuid: "xxxxx",
         },
-        queryParams: {},
+        queryParams: {
+          parentUuid: "yyyyy",
+        },
         contextResults: {},
         deploymentUuid: "xxxxx",
         queryType: "extractorForRecordOfExtractors",
@@ -158,15 +166,11 @@ describe("queryTemplates.unit.test", () => {
           fountain: {
             queryType: "selectObjectByDirectReference",
             parentName: "Fountain",
-            parentUuid: "",
+            parentUuid: "yyyyy",
             instanceUuid: {
-              queryFailure: {
-                templateType: "constantObject",
-                constantObjectValue: {
-                  templateType: "parameterReference",
-                  referenceName: "instanceUuid",
-                },
-              },
+              templateType: "contextReference",
+              interpolation: "runtime",
+              referenceName: "instanceUuid",
             },
           },
         },

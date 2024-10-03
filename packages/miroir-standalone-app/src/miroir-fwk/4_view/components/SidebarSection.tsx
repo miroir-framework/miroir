@@ -167,9 +167,12 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
       queryType: "extractorForRecordOfExtractors",
       deploymentUuid: props.deploymentUuid,
       // applicationSection: "data",
-      pageParams: { elementType: "object", elementValue: {} },
-      queryParams: { elementType: "object", elementValue: {} },
-      contextResults: { elementType: "object", elementValue: {} },
+      pageParams: {},
+      queryParams: {},
+      contextResults: {},
+      // pageParams: { elementType: "object", elementValue: {} },
+      // queryParams: { elementType: "object", elementValue: {} },
+      // contextResults: { elementType: "object", elementValue: {} },
       extractors: {
         menus: {
           queryType: "selectObjectByDirectReference",

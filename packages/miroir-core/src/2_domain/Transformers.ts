@@ -2,18 +2,23 @@ import Mustache from "mustache";
 import {
   DomainElement,
   DomainElementObject,
+  DomainElementObjectOrFailed,
   Transformer,
   Transformer_InnerReference,
   TransformerForBuild,
   TransformerForBuild_fullObjectTemplate,
-  TransformerForBuild_listMapper,
+  TransformerForBuild_mapper_listToList,
+  TransformerForBuild_mapper_listToObject,
   TransformerForBuild_mustacheStringTemplate,
+  TransformerForBuild_object_alter,
   transformerForRuntime,
   TransformerForRuntime,
   TransformerForRuntime_fullObjectTemplate,
   TransformerForRuntime_InnerReference,
-  TransformerForRuntime_mapObject,
+  TransformerForRuntime_mapper_listToList,
+  TransformerForRuntime_mapper_listToObject,
   TransformerForRuntime_mustacheStringTemplate,
+  TransformerForRuntime_object_alter,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
@@ -35,13 +40,11 @@ export type ActionTemplate = any;
 export type Step = "build" | "runtime";
 
 // ################################################################################################
-function transformer_listMapper_apply(
+function transformer_mapper_listToList_apply(
   step: Step,
-  transformer: TransformerForRuntime_mapObject | TransformerForBuild_listMapper,
+  transformer: TransformerForRuntime_mapper_listToList | TransformerForBuild_mapper_listToList,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  // queryParams: DomainElementObject,
-  // contextResults?: DomainElementObject
 ): DomainElement {
   const resolvedReference = transformer_InnerReference_resolve(
     step,
@@ -50,32 +53,11 @@ function transformer_listMapper_apply(
     contextResults
   );
 
-  // log.info(
-  //   "transformer_listMapper_apply extractorTransformer resolvedReference",
-  //   resolvedReference
-  // );
+  log.info(
+    "transformer_mapper_listToList_apply extractorTransformer resolvedReference",
+    resolvedReference
+  );
 
-  // can't check for elementType, because we're not using DomainElement anymore
-  // if (resolvedReference.elementType != "instanceArray") {
-  //   log.error("transformer_listMapper_apply extractorTransformer resolvedReference", resolvedReference);
-  //   return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
-  // }
-  // if (
-  //   // !["object", "instanceUuidIndex"].includes(resolvedReference.elementType) ||
-  //   !(resolvedReference.elementValue instanceof Array)
-  // ) {
-  //   log.error("transformer_listMapper_apply extractorTransformer can not work on resolvedReference", resolvedReference);
-  //   return {
-  //     elementType: "failure",
-  //     elementValue: {
-  //       queryFailure: "QueryNotExecutable",
-  //       queryContext:
-  //         "resolved reference is not instanceUuidIndex or object " + JSON.stringify(resolvedReference, null, 2),
-  //     },
-  //   }; // TODO: improve error message / queryFailure
-  // }
-  // const resultObject:{[k:string]: any} = {};
-  // const resultArray:{[k:string]: DomainElement}[] = [];
   const resultArray:DomainElement[] = [];
   if (resolvedReference.elementValue instanceof Array) {
     for (const element of resolvedReference.elementValue) {
@@ -98,22 +80,18 @@ function transformer_listMapper_apply(
         // resultObject[element[0]] = transformer_apply(step, element[0], transformer.elementTransformer as any, queryParams, {
         resultArray.push(
           transformer_apply(step, element[0], transformer.elementTransformer as any, queryParams, {
-            // elementType: "object",
-            // elementValue: {
               ...contextResults,
-              // [transformer.elementTransformer.referencedExtractor]: { elementType: "instance", elementValue: element[1] },
               [transformer.elementTransformer.referencedExtractor]: element[1],
-            // }, // inefficient!
           }).elementValue
         ); // TODO: constrain type of transformer
       }
     } else {
-      log.error("transformer_listMapper_apply extractorTransformer can not work on resolvedReference", resolvedReference);
+      log.error("transformer_mapper_listToList_apply extractorTransformer can not work on resolvedReference", resolvedReference);
       return {
         elementType: "failure",
         elementValue: {
           queryFailure: "QueryNotExecutable",
-          failureOrigin: ["transformer_listMapper_apply"],
+          failureOrigin: ["transformer_mapper_listToList_apply"],
           failureMessage:
             "resolved reference is not instanceUuidIndex or object " + JSON.stringify(resolvedReference, null, 2),
         },
@@ -131,12 +109,49 @@ function transformer_listMapper_apply(
 
   const sortedResultArray = sortByAttribute(resultArray);
   // log.info(
-  //   "transformer_listMapper_apply sorted resultArray with orderBy",
+  //   "transformer_mapper_listToList_apply sorted resultArray with orderBy",
   //   transformer.orderBy,
   //   "sortedResultArray",
   //   sortedResultArray
   // );
   return { elementType: "array", elementValue: sortedResultArray };
+  // return { elementType: "object", elementValue: resultObject };
+  // return { elementType: "array", elementValue: resultArray };
+}
+
+// ################################################################################################
+function transformer_mapper_listToObject_apply(
+  step: Step,
+  transformer: TransformerForRuntime_mapper_listToObject | TransformerForBuild_mapper_listToObject,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+): DomainElementObjectOrFailed {
+  log.info(
+    "transformer_mapper_listToObject_apply called for transformer",
+    transformer,
+    "queryParams",
+    JSON.stringify(queryParams, null, 2),
+    "contextResults",
+    JSON.stringify(contextResults, null, 2)
+  );
+  const resolvedReference = transformer_InnerReference_resolve(
+    step,
+    { templateType: "contextReference", referenceName:transformer.referencedExtractor },
+    queryParams,
+    contextResults
+  );
+
+  // TODO: test if resolvedReference is a list
+  const result = Object.fromEntries(
+    resolvedReference.elementValue.map((entry: Record<string, any>) => {
+      return [
+        entry[transformer.indexAttribute],
+        entry
+      ];
+    })
+  );
+
+  return { elementType: "object", elementValue: result };
   // return { elementType: "object", elementValue: resultObject };
   // return { elementType: "array", elementValue: resultArray };
 }
@@ -149,7 +164,6 @@ function transformer_listMapper_apply(
  * 
  */
 // ################################################################################################
-// fullObjectTemplate { a: A, b: B } -> object { ...[buildTimeAttributes.map -> leftValue.elementvalue: resolved rightValue type], ...any for runtime attributes }
 function transformer_fullObjectTemplate(
   step: Step,
   objectName: string,
@@ -261,6 +275,58 @@ function transformer_fullObjectTemplate(
   }
 }
 
+// ################################################################################################
+function transformer_objectAlter(
+  step: Step,
+  objectName: string,
+  transformer: TransformerForBuild_object_alter | TransformerForRuntime_object_alter,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+  // queryParams: DomainElementObject,
+  // contextResults?: DomainElementObject,
+): DomainElement {
+  const resolvedReference = transformer_InnerReference_resolve(
+    step,
+    { templateType: "contextReference", referenceName:transformer.referencedExtractor },
+    queryParams,
+    contextResults
+  );
+  // TODO: test if resolvedReference is an object
+  const overrideObject = transformer_apply(
+    step,
+    "NO NAME",
+    transformer.definition,
+    queryParams,
+    contextResults
+  );
+
+  log.info(
+    "transformer_objectAlter resolvedReference",
+    resolvedReference,
+    "overrideObject",
+    overrideObject
+  );
+  // TODO: check for failures!
+  return {
+    elementType: "object",
+    // elementValue: fullObjectResult,
+    elementValue: {
+      ...resolvedReference.elementValue,
+      ...overrideObject.elementValue,
+    },
+  };
+  // } else {
+  //   return {
+  //     elementType: "failure",
+  //     elementValue: {
+  //       queryFailure: "ReferenceNotFound",
+  //       failureOrigin: ["transformer_fullObjectTemplate"],
+  //       queryContext: "fullObjectTemplate error in " + objectName + " in " + JSON.stringify(attributeEntries[failureIndex], null, 2),
+  //     },
+  //   };
+  // }
+}
+
 /**
  * names for transformer functions are not satisfactory or consistent, this indicates that Transformer could 
  * be a class somehow.
@@ -361,7 +427,7 @@ export function transformer_InnerReference_resolve  (
             transformerInnerReference.referenceName +
             " or referencePath " +
             transformerInnerReference.referencePath +
-            " in " +
+            " from " +
             transformerInnerReference.templateType ==
           "contextReference"
             ? JSON.stringify(contextResults)
@@ -504,9 +570,15 @@ export function transformer_InnerReference_resolve  (
       ? { elementType: "instanceUuid", elementValue: uuidv4() } // new object
       : transformerInnerReference.templateType == "constantString"
       ? { elementType: "string", elementValue: transformerInnerReference.constantStringValue } // new object
+      : transformerInnerReference.templateType == "constantObject"
+      ? { elementType: "object", elementValue: transformerInnerReference.constantObjectValue } // new object
       : {
           elementType: "failure",
-          elementValue: { queryFailure: transformerInnerReference },
+          elementValue: { 
+            queryFailure: "QueryNotExecutable",
+            failureOrigin: ["transformer_InnerReference_resolve"],
+            queryContext: "unhandled templateType " + transformerInnerReference.templateType,
+            query: transformerInnerReference },
         }; /* this should not happen. Provide "error" value instead?*/
 
   log.info(
@@ -514,13 +586,13 @@ export function transformer_InnerReference_resolve  (
     transformerInnerReference,
     "resolved as",
     reference,
-    "in",
-    (
-      transformerInnerReference.templateType ==
-      "contextReference"
-        ? JSON.stringify(contextResults)
-        : JSON.stringify(Object.keys(queryParams))
-    )
+    // "from",
+    // (
+    //   transformerInnerReference.templateType ==
+    //   "contextReference"
+    //     ? JSON.stringify(contextResults)
+    //     : JSON.stringify(Object.keys(queryParams))
+    // )
   );
 
   return reference;
@@ -535,14 +607,7 @@ function mustacheStringTemplate_apply(
   transformer: TransformerForBuild_mustacheStringTemplate | TransformerForRuntime_mustacheStringTemplate,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  // queryParams: DomainElementObject,
-  // contextResults?: DomainElementObject,
 ): DomainElement {
-  // const cleanedQueryParams = domainElementToPlainObject(queryParams); // TODO: highly inefficient!!
-  // const result = Mustache.render(transformerForBuild.definition, cleanedQueryParams);
-  // const cleanedReferences = contextResults
-  //   ? domainElementToPlainObject(contextResults)
-  //   : domainElementToPlainObject(queryParams); // TODO: highly inefficient & buggy!!
   const result = Mustache.render(transformer.definition, {...queryParams, ...contextResults});
   // log.info(
   //   "mustacheStringTemplate_apply for",
@@ -570,20 +635,22 @@ export function transformer_apply(
   // queryParams: DomainElementObject,
   // contextResults?: DomainElementObject,
 ): DomainElement {
-  // log.info(
-  //   "transformer_apply called for object named",
-  //   objectName,
-  //   "step",
-  //   step,
-  //   "transformer.interpolation==",
-  //   (transformer as any)?.interpolation??"build",
-  //   "step==transformer.interpolation",
-  //   step==((transformer as any)?.interpolation??"build"),
-  //   "transformer",
-  //   JSON.stringify(transformer, null, 2),
-  //   "queryParams",
-  //   JSON.stringify(Object.keys(queryParams), null, 2)
-  // );
+  log.info(
+    "transformer_apply called for object named",
+    objectName,
+    "step:",
+    step,
+    "transformer.interpolation:",
+    (transformer as any)?.interpolation??"build",
+    // "step==transformer.interpolation",
+    // step==((transformer as any)?.interpolation??"build"),
+    "transformer",
+    JSON.stringify(transformer, null, 2),
+    "queryParams elements",
+    JSON.stringify(Object.keys(queryParams??{}), null, 2),
+    "contextResults elements",
+    JSON.stringify(Object.keys(contextResults??{}), null, 2)
+  );
   if (typeof transformer == "object") {
     if (transformer instanceof Array) {
       // log.info(
@@ -688,6 +755,19 @@ export function transformer_apply(
             // return {};
             break;
           }
+          case "objectAlter": {
+            return transformer_objectAlter(
+              step,
+              objectName,
+              transformer,
+              queryParams,
+              contextResults
+            );
+            // const result = Object.fromEntries(
+            // );
+            // return {};
+            break;
+          }
           case "objectValues": {
             const resolvedReference = transformer_InnerReference_resolve(
               step,
@@ -701,7 +781,7 @@ export function transformer_apply(
             //   resolvedReference
             // );
           
-            if (resolvedReference.elementType != "instanceUuidIndex") {
+            if (resolvedReference.elementType in ["instanceUuidIndex", "object"]) {
               log.error(
                 "transformer_apply extractorTransformer count referencedExtractor resolvedReference",
                 resolvedReference
@@ -710,13 +790,104 @@ export function transformer_apply(
             }
             return { elementType: "instanceArray", elementValue: Object.values(resolvedReference.elementValue)}
           }
-          case "listMapper": {
-            return transformer_listMapper_apply(
+          case "mapperListToList": {
+            return transformer_mapper_listToList_apply(
               step,
               transformer,
               queryParams,
               contextResults,
             );
+            break;
+          }
+          case "mapperListToObject": {
+            return transformer_mapper_listToObject_apply(
+              step,
+              transformer,
+              queryParams,
+              contextResults,
+            );
+            break;
+          }
+          // case ""
+          case "objectDynamicAccess": {
+            const result = (transformer.objectAccessPath.reduce as any)( // triggers "error TS2349: This expression is not callable" in tsc. Not in eslint, though!
+              ((acc: any, currentPathElement: any): any => {
+                switch (typeof currentPathElement) {
+                  case "string": {
+                    if (!acc) {
+                      return {
+                        elementType: "failure",
+                        elementValue: {
+                          queryFailure: "ReferenceNotFound",
+                          failureOrigin: ["transformer_apply"],
+                          query: currentPathElement,
+                          queryContext: "error in objectDynamicAccess, could not find key: " + JSON.stringify(currentPathElement, null, 2),
+                        },
+                      };
+                    }
+                    const innerResult = acc[currentPathElement]
+                    log.info(
+                      "transformer_apply objectDynamicAccess (string) for",
+                      transformer,
+                      "path element",
+                      currentPathElement,
+                      "used as key",
+                      "to be applied on acc",
+                      acc,
+                      "result",
+                      innerResult
+                    );
+                    return innerResult;
+                    break;
+                  }
+                  case "object": {
+                    if (Array.isArray(currentPathElement)) {
+                      throw new Error("objectDynamicAccess can not handle arrays");
+                    }
+                    if (!currentPathElement.templateType) {
+                      throw new Error("objectDynamicAccess can not handle objects without templateType");
+                    }
+                    const key = transformer_apply(step, "NO NAME", currentPathElement, queryParams, contextResults);
+                    if (key.elementType == "failure") {
+                      return {
+                        elementType: "failure",
+                        elementValue: {
+                          queryFailure: "ReferenceNotFound",
+                          failureOrigin: ["transformer_apply"],
+                          query: currentPathElement,
+                          queryContext: "error in objectDynamicAccess, could not find key: " + JSON.stringify(key.elementValue, null, 2),
+                        },
+                      };
+                    }
+                    const innerResult = acc?acc[key.elementValue]:key.elementValue;
+                    log.info(
+                      "transformer_apply objectDynamicAccess (object) for",
+                      transformer,
+                      "path element",
+                      currentPathElement,
+                      "resolved key",
+                      key,
+                      "to be applied on acc",
+                      acc,
+                      "result",
+                      innerResult
+                    );
+                    // return { elementType: "any", elementValue: acc?acc[key.elementValue]:key.elementValue};
+                    return innerResult;
+                  }
+                  case "number":
+                  case "bigint":
+                  case "boolean":
+                  case "symbol":
+                  case "undefined":
+                  case "function": {
+                    throw new Error("objectDynamicAccess can not handle " + typeof currentPathElement);
+                  }
+                }
+              }) as (acc: any, current: any) => any,
+              undefined
+            );
+            return { elementType: "any", elementValue: result };
             break;
           }
           case "mustacheStringTemplate": {
@@ -764,7 +935,8 @@ export function transformer_apply(
               Object.entries(transformer.definition).map((objectTemplateEntry: [string, any]) => {
                 return [
                   objectTemplateEntry[0],
-                  transformer_apply(step, objectTemplateEntry[0], objectTemplateEntry[1], queryParams, contextResults).elementValue,
+                  transformer_apply(step, objectTemplateEntry[0], objectTemplateEntry[1], queryParams, contextResults)
+                    .elementValue,
                 ];
               })
             );
@@ -810,7 +982,12 @@ export function transformer_apply(
           ];
         });
         // log.info("transformer_apply converting plain object", transformer, "with params", JSON.stringify(queryParams, null, 2));
-        log.info("transformer_apply converting plain object", transformer, "converted attributes", JSON.stringify(attributeEntries, null, 2));
+        log.info(
+          "transformer_apply converting plain object",
+          transformer,
+          "converted attributes",
+          JSON.stringify(attributeEntries, null, 2)
+        );
         const failureIndex = attributeEntries.findIndex((e) => e[1].elementType == "failure");
         if (failureIndex == -1) {
           const result = Object.fromEntries(

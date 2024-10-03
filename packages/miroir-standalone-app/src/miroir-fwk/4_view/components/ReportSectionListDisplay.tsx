@@ -327,8 +327,10 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           deploymentUuid: props.deploymentUuid,
           // applicationSection: props.applicationSection,
           pageParams: props.paramsAsdomainElements,
-          queryParams: { elementType: "object", elementValue: {} },
-          contextResults: { elementType: "object", elementValue: {} },
+          // queryParams: { elementType: "object", elementValue: {} },
+          queryParams: {},
+          // contextResults: { elementType: "object", elementValue: {} },
+          contextResults: {},
           extractorTemplates: Object.fromEntries(
             foreignKeyObjectsAttributeDefinition.map((e) => [
               e[1].tag?.value?.targetEntity,

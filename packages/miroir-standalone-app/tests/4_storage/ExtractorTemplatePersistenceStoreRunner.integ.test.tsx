@@ -684,7 +684,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
             },
             runtimeTransformers: {
               countries: {
-                templateType: "listMapper",
+                templateType: "mapperListToList",
                 interpolation: "runtime",
                 referencedExtractor: "books",
                 orderBy: "name",

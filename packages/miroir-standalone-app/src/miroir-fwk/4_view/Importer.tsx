@@ -1512,6 +1512,19 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             },
           }
         },
+        // refresh / rollback
+        {
+          compositeActionType: "action",
+          action: {
+            actionName: "rollback",
+            actionType: "modelAction",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            deploymentUuid: {
+              templateType: "parameterReference",
+              referenceName: "currentDeploymentUuid",
+            },
+          }
+        },
             // // find splitted entity instances
             // {
             //   compositeActionType: "query",
@@ -1630,13 +1643,18 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                     referenceName: "splittedEntityAttribute",
                   },
                 },
+                "fountains": {
+                  templateType: "objectValues",
+                  interpolation: "runtime",
+                  referencedExtractor: splittedEntityName,
+                },
                 // splittedEntityInstancesArray: {
                 //   templateType: "objectValues",
                 //   interpolation: "runtime",
                 //   referencedExtractor: "uniqueSplittedEntityInstances",
                 // },
                 municipalities: {
-                  templateType: "listMapper",
+                  templateType: "mapperListToList",
                   interpolation: "runtime",
                   referencedExtractor: "uniqueSplittedEntityInstances",
                   elementTransformer: {
@@ -1675,19 +1693,75 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                         attributeValue: {
                           interpolation: "runtime",
                           templateType: "mustacheStringTemplate",
-                          definition: "{{municipality.Commune}}"
+                          definition: "{{municipality.Commune}}" // TODO: correct attribute name!
                         }
                       }
                     ]
                   }
+                },
+                municipalitiesIndexedByUuid: {
+                  templateType: "mapperListToObject",
+                  interpolation: "runtime",
+                  referencedExtractor: "municipalities",
+                  indexAttribute: "uuid",
+                },
+                municipalitiesIndexedByName: {
+                  templateType: "mapperListToObject",
+                  interpolation: "runtime",
+                  referencedExtractor: "municipalities",
+                  indexAttribute: "name",
+                },
+                updatedFountains: {
+                  templateType: "mapperListToList",
+                  interpolation: "runtime",
+                  referencedExtractor: "fountains",
+                  elementTransformer: {
+                    templateType: "objectAlter",
+                    interpolation: "runtime",
+                    referencedExtractor: "objectAlterTmpReference",
+                    definition: {
+                      templateType: "freeObjectTemplate",
+                      interpolation: "runtime",
+                      definition: {
+                        [newEntityName]: {
+                          templateType: "objectDynamicAccess",
+                          interpolation: "runtime",
+                          objectAccessPath: [
+                            {
+                              templateType: "contextReference",
+                              interpolation: "runtime",
+                              referenceName: "municipalitiesIndexedByName",
+                            },
+                            {
+                              templateType: "objectDynamicAccess",
+                              interpolation: "runtime",
+                              objectAccessPath: [
+                                {
+                                  templateType: "contextReference",
+                                  interpolation: "runtime",
+                                  // referenceName: splittedEntityName,
+                                  // referenceName: "fountains",
+                                  referenceName: "objectAlterTmpReference",
+                                },
+                                splittedEntityAttribute,
+                                // "Commune",
+                              ],
+                            },
+                            "uuid"
+                          ],
+                        },
+                      }
+                    }
+                  }
                 }
-              }
+              },
             }
           }
         },
         // insert municipalities with new uuid for each
         {
           compositeActionType: "action",
+          compositeActionName: "insert municipalities",
           action: {
             actionType: "instanceAction",
             actionName: "createInstance",
@@ -1720,6 +1794,70 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           },
         // // },// as CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction, // TODO: why is type inferrence failing?
         } as any,// as CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction, // TODO: why is type inferrence failing?
+        // update SplittedEntity with new FK attribute
+        {
+          compositeActionType: "action",
+          compositeActionName: "update fountains",
+          action: {
+            actionType: 'instanceAction',
+            actionName: "createInstance",
+            applicationSection: "data",
+            deploymentUuid: currentDeploymentUuid,
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            objects: [
+              {
+                parentName:newEntityName,
+                parentUuid:newEntityUuid,
+                applicationSection:'data',
+                instances: {
+                  templateType: "contextReference",
+                  interpolation: "runtime",
+                  // referenceName: "municipalities"
+                  referencePath: ["Municipality", "updatedFountains"]
+                }
+              }
+            ]
+          }
+        }
+
+    // const splitInstancesNewValues = splittedEntityInstances.returnedDomainElement.elementValue.instances.map(
+    //   (e: any) => (
+    //     {
+    //       ...e,
+    //       [newEntityName]: newInstancesUuidMap[e[splittedEntityAttribute]]
+    //     }
+    //   ) as any // EntityInstance. Only uuid is needed to identify entity instance
+    // );
+    // log.info("splitEntity splitInstancesNewValues", splitInstancesNewValues);
+
+        // {
+
+        // }
+        // {
+        //   compositeActionType: "query",
+        //   nameGivenToResult: "fountainsToBeAltered",
+        //   // compositeActionName: "commit",
+        //   query: {
+        //       queryType: "extractorTemplateForRecordOfExtractors",
+        //       deploymentUuid: currentDeploymentUuid,
+        //       pageParams,
+        //       queryParams: { elementType: "object", elementValue: {} },
+        //       contextResults: { elementType: "object", elementValue: {} },
+        //       runtimeTransformers: {
+        //         select: {
+        //           [splittedEntityName]: {
+        //             queryType: "queryTemplateExtractObjectListByEntity",
+        //             applicationSection: "data",
+        //             parentName: splittedEntityName,
+        //             parentUuid: {
+        //               templateType: "constantUuid",
+        //               constantUuidValue: splittedEntityDefinition?.entityUuid,
+        //             },
+        //           },
+        //         }
+        //       },
+        //     }
+        //   }
       ]
     };
 
@@ -1820,6 +1958,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     // ;
     // log.info('adding instances',newEntityInstances);
     
+    // inserting new entity instances
     // const createNewEntityInstancesAction: InstanceAction = {
     //   actionType: 'instanceAction',
     //   actionName: "createInstance",

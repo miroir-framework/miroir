@@ -463,9 +463,12 @@ export const JzodObjectEditor = (
             deploymentUuid: props.currentDeploymentUuid,
             // applicationSection: props.applicationSection,
             // pageParams: props.paramsAsdomainElements,
-            pageParams: { elementType: "object", elementValue: {} },
-            queryParams: { elementType: "object", elementValue: {} },
-            contextResults: { elementType: "object", elementValue: {} },
+            pageParams: {},
+            queryParams: {},
+            contextResults: {},
+            // pageParams: { elementType: "object", elementValue: {} },
+            // queryParams: { elementType: "object", elementValue: {} },
+            // contextResults: { elementType: "object", elementValue: {} },
             extractorTemplates: {
               [unfoldedRawSchema.tag?.value?.targetEntity]:
               {
