@@ -233,7 +233,7 @@ export const ToolsPage: React.FC<any> = (
         //     emulatedServerType: "sql",
         //     connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
         //     schema: {
-        //       templateType: "mustacheStringTemplate",
+        //       transformerType: "mustacheStringTemplate",
         //       definition: "{{newApplicationName}}Model",
         //     },
         //   },
@@ -241,96 +241,96 @@ export const ToolsPage: React.FC<any> = (
         //     emulatedServerType: "sql",
         //     connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
         //     schema: {
-        //       templateType: "mustacheStringTemplate",
+        //       transformerType: "mustacheStringTemplate",
         //       definition: "{{newApplicationName}}Data",
         //     },
         //   },
         // },
         // newApplicationForAdmin: {
         //   uuid: {
-        //     templateType: "parameterReference",
+        //     transformerType: "parameterReference",
         //     referenceName: "newAdminAppApplicationUuid",
         //   },
         //   parentName: {
-        //     templateType: "mustacheStringTemplate",
+        //     transformerType: "mustacheStringTemplate",
         //     definition: "{{entityApplicationForAdmin.name}}",
         //   },
         //   parentUuid: {
-        //     templateType: "mustacheStringTemplate",
+        //     transformerType: "mustacheStringTemplate",
         //     definition: "{{entityApplicationForAdmin.uuid}}",
         //   },
         //   name: {
-        //     templateType: "parameterReference",
+        //     transformerType: "parameterReference",
         //     referenceName: "newApplicationName",
         //   },
         //   defaultLabel: {
-        //     templateType: "mustacheStringTemplate",
+        //     transformerType: "mustacheStringTemplate",
         //     definition: "The {{newApplicationName}} application.",
         //   },
         //   description: {
-        //     templateType: "mustacheStringTemplate",
+        //     transformerType: "mustacheStringTemplate",
         //     definition: "This application contains the {{newApplicationName}} model and data",
         //   },
         //   selfApplication: {
-        //     templateType: "parameterReference",
+        //     transformerType: "parameterReference",
         //     referenceName: "newSelfApplicationUuid",
         //   },
         // },
         // newSelfApplication: {
         //   uuid: {
-        //     templateType: "parameterReference",
+        //     transformerType: "parameterReference",
         //     referenceName: "newSelfApplicationUuid",
         //   },
         //   parentName: "Application",
         //   parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
         //   name: {
-        //     templateType: "parameterReference",
+        //     transformerType: "parameterReference",
         //     referenceName: "newApplicationName",
         //   },
         //   defaultLabel: {
-        //     templateType: "mustacheStringTemplate",
+        //     transformerType: "mustacheStringTemplate",
         //     definition: "The {{newApplicationName}} application.",
         //   },
         //   description: {
-        //     templateType: "mustacheStringTemplate",
+        //     transformerType: "mustacheStringTemplate",
         //     definition: "This application contains the {{newApplicationName}} model and data",
         //   },
         //   selfApplication: {
-        //     templateType: "parameterReference",
+        //     transformerType: "parameterReference",
         //     referenceName: "newSelfApplicationUuid",
         //   },
         // },
         // newDeployment: {
         //   uuid: {
-        //     templateType: "parameterReference",
+        //     transformerType: "parameterReference",
         //     referenceName: "newDeploymentUuid",
         //   },
         //   parentName: {
-        //     templateType: "mustacheStringTemplate",
+        //     transformerType: "mustacheStringTemplate",
         //     definition: "{{entityDeployment.name}}",
         //   },
         //   parentUuid: {
-        //     templateType: "mustacheStringTemplate",
+        //     transformerType: "mustacheStringTemplate",
         //     definition: "{{entityDeployment.uuid}}",
         //   },
         //   name: {
-        //     templateType: "mustacheStringTemplate",
+        //     transformerType: "mustacheStringTemplate",
         //     definition: "{{newApplicationName}}ApplicationSqlDeployment",
         //   },
         //   defaultLabel: {
-        //     templateType: "mustacheStringTemplate",
+        //     transformerType: "mustacheStringTemplate",
         //     definition: "{{newApplicationName}}ApplicationSqlDeployment",
         //   },
         //   application: {
-        //     templateType: "mustacheStringTemplate",
+        //     transformerType: "mustacheStringTemplate",
         //     definition: "{{newApplicationForAdmin.uuid}}",
         //   },
         //   description: {
-        //     templateType: "mustacheStringTemplate",
+        //     transformerType: "mustacheStringTemplate",
         //     definition: "The default Sql Deployment for Application {{newApplicationName}}",
         //   },
         //   configuration: {
-        //     templateType: "parameterReference",
+        //     transformerType: "parameterReference",
         //     referenceName: "newDeploymentStoreConfiguration",
         //   },
         // },
@@ -340,12 +340,12 @@ export const ToolsPage: React.FC<any> = (
         //   parentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
         //   parentDefinitionVersionUuid: "0f421b2f-2fdc-47ee-8232-62121ea46350",
         //   name: {
-        //     templateType: "mustacheStringTemplate",
+        //     transformerType: "mustacheStringTemplate",
         //     definition: "{{newApplicationName}}Menu",
         //   },
         //   defaultLabel: "Meta-Model",
         //   description: {
-        //     templateType: "mustacheStringTemplate",
+        //     transformerType: "mustacheStringTemplate",
         //     definition: "This is the default menu allowing to explore the {{newApplicationName}} Application",
         //   },
         //   definition: {
@@ -353,22 +353,22 @@ export const ToolsPage: React.FC<any> = (
         //     definition: [
         //       {
         //         title: {
-        //           templateType: "parameterReference",
+        //           transformerType: "parameterReference",
         //           referenceName: "newApplicationName",
         //         },
         //         label: {
-        //           templateType: "parameterReference",
+        //           transformerType: "parameterReference",
         //           referenceName: "newApplicationName",
         //         },
         //         items: [
         //           {
         //             label: {
-        //               templateType: "mustacheStringTemplate",
+        //               transformerType: "mustacheStringTemplate",
         //               definition: "{{newApplicationName}} Entities",
         //             },
         //             section: "model",
         //             application: {
-        //               templateType: "parameterReference",
+        //               transformerType: "parameterReference",
         //               referenceName: "newDeploymentUuid",
         //             },
         //             reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
@@ -376,12 +376,12 @@ export const ToolsPage: React.FC<any> = (
         //           },
         //           {
         //             label: {
-        //               templateType: "mustacheStringTemplate",
+        //               transformerType: "mustacheStringTemplate",
         //               definition: "{{newApplicationName}} Entity Definitions",
         //             },
         //             section: "model",
         //             application: {
-        //               templateType: "parameterReference",
+        //               transformerType: "parameterReference",
         //               referenceName: "newDeploymentUuid",
         //             },
         //             reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
@@ -389,12 +389,12 @@ export const ToolsPage: React.FC<any> = (
         //           },
         //           {
         //             label: {
-        //               templateType: "mustacheStringTemplate",
+        //               transformerType: "mustacheStringTemplate",
         //               definition: "{{newApplicationName}} Reports",
         //             },
         //             section: "model",
         //             application: {
-        //               templateType: "parameterReference",
+        //               transformerType: "parameterReference",
         //               referenceName: "newDeploymentUuid",
         //             },
         //             reportUuid: "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
@@ -411,22 +411,22 @@ export const ToolsPage: React.FC<any> = (
         //   actionName: "openStore",
         //   endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         //   configuration: {
-        //     templateType: "fullObjectTemplate",
+        //     transformerType: "fullObjectTemplate",
         //     definition: [
         //       {
         //         attibuteKey: {
-        //           templateType: "parameterReference",
+        //           transformerType: "parameterReference",
         //           referenceName: "newDeploymentUuid",
         //         },
         //         attributeValue: {
-        //           templateType: "parameterReference",
+        //           transformerType: "parameterReference",
         //           referenceName: "newDeploymentStoreConfiguration",
         //         }
         //       }
         //     ],
         //   },
         //   deploymentUuid: {
-        //     templateType: "parameterReference",
+        //     transformerType: "parameterReference",
         //     referenceName: "newDeploymentUuid",
         //   },
         // },
@@ -435,11 +435,11 @@ export const ToolsPage: React.FC<any> = (
         //   actionName: "createStore",
         //   endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         //   deploymentUuid: {
-        //     templateType: "parameterReference",
+        //     transformerType: "parameterReference",
         //     referenceName: "newDeploymentUuid",
         //   },
         //   configuration: {
-        //     templateType: "parameterReference",
+        //     transformerType: "parameterReference",
         //     referenceName: "newDeploymentStoreConfiguration",
         //   },
         // },
@@ -450,7 +450,7 @@ export const ToolsPage: React.FC<any> = (
         //   deploymentUuid: "",
         //   deployments: [
         //     {
-        //       templateType: "parameterReference",
+        //       transformerType: "parameterReference",
         //       referenceName: "newDeployment",
         //     },
         //   ],
@@ -460,24 +460,24 @@ export const ToolsPage: React.FC<any> = (
         //   actionName: "createInstance",
         //   applicationSection: "model",
         //   deploymentUuid: {
-        //     templateType: "parameterReference",
+        //     transformerType: "parameterReference",
         //     referenceName: "newDeploymentUuid",
         //   },
         //   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
         //   objects: [
         //     {
         //       parentName: {
-        //         templateType: "mustacheStringTemplate",
+        //         transformerType: "mustacheStringTemplate",
         //         definition: "{{entitySelfApplication.name}}",
         //       },
         //       parentUuid: {
-        //         templateType: "mustacheStringTemplate",
+        //         transformerType: "mustacheStringTemplate",
         //         definition: "{{entitySelfApplication.uuid}}",
         //       },
         //       applicationSection: "model",
         //       instances: [
         //         {
-        //           templateType: "parameterReference",
+        //           transformerType: "parameterReference",
         //           referenceName: "newSelfApplication",
         //         },
         //       ],
@@ -489,24 +489,24 @@ export const ToolsPage: React.FC<any> = (
         //   actionName: "createInstance",
         //   applicationSection: "model",
         //   deploymentUuid: {
-        //     templateType: "parameterReference",
+        //     transformerType: "parameterReference",
         //     referenceName: "newDeploymentUuid",
         //   },
         //   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
         //   objects: [
         //     {
         //       parentName: {
-        //         templateType: "mustacheStringTemplate",
+        //         transformerType: "mustacheStringTemplate",
         //         definition: "{{entityMenu.name}}",
         //       },
         //       parentUuid: {
-        //         templateType: "mustacheStringTemplate",
+        //         transformerType: "mustacheStringTemplate",
         //         definition: "{{entityMenu.uuid}}",
         //       },
         //       applicationSection: "model",
         //       instances: [
         //         {
-        //           templateType: "parameterReference",
+        //           transformerType: "parameterReference",
         //           referenceName: "newApplicationMenu",
         //         },
         //       ],
@@ -518,7 +518,7 @@ export const ToolsPage: React.FC<any> = (
         //   actionType: "modelAction",
         //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         //   deploymentUuid: {
-        //     templateType: "parameterReference",
+        //     transformerType: "parameterReference",
         //     referenceName: "newDeploymentUuid",
         //   },
         // },
@@ -527,24 +527,24 @@ export const ToolsPage: React.FC<any> = (
         //   actionName: "createInstance",
         //   applicationSection: "data",
         //   deploymentUuid: {
-        //     templateType: "mustacheStringTemplate",
+        //     transformerType: "mustacheStringTemplate",
         //     definition: "{{adminConfigurationDeploymentAdmin.uuid}}",
         //   },
         //   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
         //   objects: [
         //     {
         //       parentName: {
-        //         templateType: "mustacheStringTemplate",
+        //         transformerType: "mustacheStringTemplate",
         //         definition: "{{entityApplicationForAdmin.name}}",
         //       },
         //       parentUuid: {
-        //         templateType: "mustacheStringTemplate",
+        //         transformerType: "mustacheStringTemplate",
         //         definition: "{{entityApplicationForAdmin.uuid}}",
         //       },
         //       applicationSection: "data",
         //       instances: [
         //         {
-        //           templateType: "parameterReference",
+        //           transformerType: "parameterReference",
         //           referenceName: "newApplicationForAdmin",
         //         },
         //       ],
@@ -556,24 +556,24 @@ export const ToolsPage: React.FC<any> = (
         //   actionName: "createInstance",
         //   applicationSection: "data",
         //   deploymentUuid: {
-        //     templateType: "mustacheStringTemplate",
+        //     transformerType: "mustacheStringTemplate",
         //     definition: "{{adminConfigurationDeploymentAdmin.uuid}}",
         //   },
         //   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
         //   objects: [
         //     {
         //       parentName: {
-        //         templateType: "mustacheStringTemplate",
+        //         transformerType: "mustacheStringTemplate",
         //         definition: "{{entityDeployment.name}}",
         //       },
         //       parentUuid: {
-        //         templateType: "mustacheStringTemplate",
+        //         transformerType: "mustacheStringTemplate",
         //         definition: "{{entityDeployment.uuid}}",
         //       },
         //       applicationSection: "data",
         //       instances: [
         //         {
-        //           templateType: "parameterReference",
+        //           transformerType: "parameterReference",
         //           referenceName: "newDeployment",
         //         },
         //       ],
@@ -592,22 +592,22 @@ export const ToolsPage: React.FC<any> = (
           //     actionName: "openStore",
           //     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           //     configuration: {
-          //       templateType: "fullObjectTemplate",
+          //       transformerType: "fullObjectTemplate",
           //       definition: [
           //         {
           //           attributeKey: {
-          //             templateType: "parameterReference",
+          //             transformerType: "parameterReference",
           //             referenceName: "newDeploymentUuid",
           //           },
           //           attributeValue: {
-          //             templateType: "parameterReference",
+          //             transformerType: "parameterReference",
           //             referenceName: "newDeploymentStoreConfiguration",
           //           }
           //         }
           //       ],
           //     },
           //     deploymentUuid: {
-          //       templateType: "parameterReference",
+          //       transformerType: "parameterReference",
           //       referenceName: "newDeploymentUuid",
           //     },
           //   }
@@ -615,49 +615,49 @@ export const ToolsPage: React.FC<any> = (
           // {
           //   compositeActionType: "action",
           //   action: {
-          //     templateType: "parameterReference",
+          //     transformerType: "parameterReference",
           //     referenceName: "createStoreAction",
           //   }
           // },
           // {
           //   compositeActionType: "action",
           //   action: {
-          //     templateType: "parameterReference",
+          //     transformerType: "parameterReference",
           //     referenceName: "resetAndInitAction",
           //   }
           // },
           // {
           //   compositeActionType: "action",
           //   action: {
-          //     templateType: "parameterReference",
+          //     transformerType: "parameterReference",
           //     referenceName: "createSelfApplicationAction",
           //   }
           // },
           // {
           //   compositeActionType: "action",
           //   action: {
-          //     templateType: "parameterReference",
+          //     transformerType: "parameterReference",
           //     referenceName: "createApplicationForAdminAction",
           //   }
           // },
           // {
           //   compositeActionType: "action",
           //   action: {
-          //     templateType: "parameterReference",
+          //     transformerType: "parameterReference",
           //     referenceName: "createAdminDeploymentAction",
           //   }
           // },
           // {
           //   compositeActionType: "action",
           //   action: {
-          //     templateType: "parameterReference",
+          //     transformerType: "parameterReference",
           //     referenceName: "createNewApplicationMenuAction",
           //   }
           // },
           // {
           //   compositeActionType: "action",
           //   action: {
-          //     templateType: "parameterReference",
+          //     transformerType: "parameterReference",
           //     referenceName: "commitAction",
           //   }
           // },
@@ -670,56 +670,56 @@ export const ToolsPage: React.FC<any> = (
       //     {
       //       compositeActionType: "action",
       //       action: {
-      //         templateType: "parameterReference",
+      //         transformerType: "parameterReference",
       //         referenceName: "openStoreAction",
       //       }
       //     },
       //     // {
       //     //   compositeActionType: "action",
       //     //   action: {
-      //     //     templateType: "parameterReference",
+      //     //     transformerType: "parameterReference",
       //     //     referenceName: "createStoreAction",
       //     //   }
       //     // },
       //     // {
       //     //   compositeActionType: "action",
       //     //   action: {
-      //     //     templateType: "parameterReference",
+      //     //     transformerType: "parameterReference",
       //     //     referenceName: "resetAndInitAction",
       //     //   }
       //     // },
       //     // {
       //     //   compositeActionType: "action",
       //     //   action: {
-      //     //     templateType: "parameterReference",
+      //     //     transformerType: "parameterReference",
       //     //     referenceName: "createSelfApplicationAction",
       //     //   }
       //     // },
       //     // {
       //     //   compositeActionType: "action",
       //     //   action: {
-      //     //     templateType: "parameterReference",
+      //     //     transformerType: "parameterReference",
       //     //     referenceName: "createApplicationForAdminAction",
       //     //   }
       //     // },
       //     // {
       //     //   compositeActionType: "action",
       //     //   action: {
-      //     //     templateType: "parameterReference",
+      //     //     transformerType: "parameterReference",
       //     //     referenceName: "createAdminDeploymentAction",
       //     //   }
       //     // },
       //     // {
       //     //   compositeActionType: "action",
       //     //   action: {
-      //     //     templateType: "parameterReference",
+      //     //     transformerType: "parameterReference",
       //     //     referenceName: "createNewApplicationMenuAction",
       //     //   }
       //     // },
       //     // {
       //     //   compositeActionType: "action",
       //     //   action: {
-      //     //     templateType: "parameterReference",
+      //     //     transformerType: "parameterReference",
       //     //     referenceName: "commitAction",
       //     //   }
       //     // },
@@ -739,7 +739,7 @@ export const ToolsPage: React.FC<any> = (
   //     emulatedServerType: "sql",
   //     connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
   //     schema: {
-  //       templateType: "mustacheStringTemplate",
+  //       transformerType: "mustacheStringTemplate",
   //       definition: "{{newApplicationName}}Model",
   //     },
   //   },
@@ -747,7 +747,7 @@ export const ToolsPage: React.FC<any> = (
   //     emulatedServerType: "sql",
   //     connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
   //     schema: {
-  //       templateType: "mustacheStringTemplate",
+  //       transformerType: "mustacheStringTemplate",
   //       definition: "{{newApplicationName}}Data",
   //     },
   //   },
@@ -768,7 +768,7 @@ export const ToolsPage: React.FC<any> = (
           emulatedServerType: "sql",
           connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
           schema: {
-            templateType: "mustacheStringTemplate",
+            transformerType: "mustacheStringTemplate",
             definition: "{{newApplicationName}}Model",
           },
         },
@@ -776,96 +776,96 @@ export const ToolsPage: React.FC<any> = (
           emulatedServerType: "sql",
           connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
           schema: {
-            templateType: "mustacheStringTemplate",
+            transformerType: "mustacheStringTemplate",
             definition: "{{newApplicationName}}Data",
           },
         },
       },
       newApplicationForAdmin: {
         uuid: {
-          templateType: "parameterReference",
+          transformerType: "parameterReference",
           referenceName: "newAdminAppApplicationUuid",
         },
         parentName: {
-          templateType: "mustacheStringTemplate",
+          transformerType: "mustacheStringTemplate",
           definition: "{{entityApplicationForAdmin.name}}",
         },
         parentUuid: {
-          templateType: "mustacheStringTemplate",
+          transformerType: "mustacheStringTemplate",
           definition: "{{entityApplicationForAdmin.uuid}}",
         },
         name: {
-          templateType: "parameterReference",
+          transformerType: "parameterReference",
           referenceName: "newApplicationName",
         },
         defaultLabel: {
-          templateType: "mustacheStringTemplate",
+          transformerType: "mustacheStringTemplate",
           definition: "The {{newApplicationName}} application.",
         },
         description: {
-          templateType: "mustacheStringTemplate",
+          transformerType: "mustacheStringTemplate",
           definition: "This application contains the {{newApplicationName}} model and data",
         },
         selfApplication: {
-          templateType: "parameterReference",
+          transformerType: "parameterReference",
           referenceName: "newSelfApplicationUuid",
         },
       },
       newSelfApplication: {
         uuid: {
-          templateType: "parameterReference",
+          transformerType: "parameterReference",
           referenceName: "newSelfApplicationUuid",
         },
         parentName: "Application",
         parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
         name: {
-          templateType: "parameterReference",
+          transformerType: "parameterReference",
           referenceName: "newApplicationName",
         },
         defaultLabel: {
-          templateType: "mustacheStringTemplate",
+          transformerType: "mustacheStringTemplate",
           definition: "The {{newApplicationName}} application.",
         },
         description: {
-          templateType: "mustacheStringTemplate",
+          transformerType: "mustacheStringTemplate",
           definition: "This application contains the {{newApplicationName}} model and data",
         },
         selfApplication: {
-          templateType: "parameterReference",
+          transformerType: "parameterReference",
           referenceName: "newSelfApplicationUuid",
         },
       },
       newDeployment: {
         uuid: {
-          templateType: "parameterReference",
+          transformerType: "parameterReference",
           referenceName: "newDeploymentUuid",
         },
         parentName: {
-          templateType: "mustacheStringTemplate",
+          transformerType: "mustacheStringTemplate",
           definition: "{{entityDeployment.name}}",
         },
         parentUuid: {
-          templateType: "mustacheStringTemplate",
+          transformerType: "mustacheStringTemplate",
           definition: "{{entityDeployment.uuid}}",
         },
         name: {
-          templateType: "mustacheStringTemplate",
+          transformerType: "mustacheStringTemplate",
           definition: "{{newApplicationName}}ApplicationSqlDeployment",
         },
         defaultLabel: {
-          templateType: "mustacheStringTemplate",
+          transformerType: "mustacheStringTemplate",
           definition: "{{newApplicationName}}ApplicationSqlDeployment",
         },
         application: {
-          templateType: "mustacheStringTemplate",
+          transformerType: "mustacheStringTemplate",
           definition: "{{newApplicationForAdmin.uuid}}",
         },
         description: {
-          templateType: "mustacheStringTemplate",
+          transformerType: "mustacheStringTemplate",
           definition: "The default Sql Deployment for Application {{newApplicationName}}",
         },
         configuration: {
-          templateType: "parameterReference",
+          transformerType: "parameterReference",
           referenceName: "newDeploymentStoreConfiguration",
         },
       },
@@ -875,12 +875,12 @@ export const ToolsPage: React.FC<any> = (
         parentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
         parentDefinitionVersionUuid: "0f421b2f-2fdc-47ee-8232-62121ea46350",
         name: {
-          templateType: "mustacheStringTemplate",
+          transformerType: "mustacheStringTemplate",
           definition: "{{newApplicationName}}Menu",
         },
         defaultLabel: "Meta-Model",
         description: {
-          templateType: "mustacheStringTemplate",
+          transformerType: "mustacheStringTemplate",
           definition: "This is the default menu allowing to explore the {{newApplicationName}} Application",
         },
         definition: {
@@ -888,22 +888,22 @@ export const ToolsPage: React.FC<any> = (
           definition: [
             {
               title: {
-                templateType: "parameterReference",
+                transformerType: "parameterReference",
                 referenceName: "newApplicationName",
               },
               label: {
-                templateType: "parameterReference",
+                transformerType: "parameterReference",
                 referenceName: "newApplicationName",
               },
               items: [
                 {
                   label: {
-                    templateType: "mustacheStringTemplate",
+                    transformerType: "mustacheStringTemplate",
                     definition: "{{newApplicationName}} Entities",
                   },
                   section: "model",
                   application: {
-                    templateType: "parameterReference",
+                    transformerType: "parameterReference",
                     referenceName: "newDeploymentUuid",
                   },
                   reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
@@ -911,12 +911,12 @@ export const ToolsPage: React.FC<any> = (
                 },
                 {
                   label: {
-                    templateType: "mustacheStringTemplate",
+                    transformerType: "mustacheStringTemplate",
                     definition: "{{newApplicationName}} Entity Definitions",
                   },
                   section: "model",
                   application: {
-                    templateType: "parameterReference",
+                    transformerType: "parameterReference",
                     referenceName: "newDeploymentUuid",
                   },
                   reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
@@ -924,12 +924,12 @@ export const ToolsPage: React.FC<any> = (
                 },
                 {
                   label: {
-                    templateType: "mustacheStringTemplate",
+                    transformerType: "mustacheStringTemplate",
                     definition: "{{newApplicationName}} Reports",
                   },
                   section: "model",
                   application: {
-                    templateType: "parameterReference",
+                    transformerType: "parameterReference",
                     referenceName: "newDeploymentUuid",
                   },
                   reportUuid: "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
@@ -951,23 +951,23 @@ export const ToolsPage: React.FC<any> = (
           actionName: "openStore",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           configuration: {
-            templateType: "fullObjectTemplate",
+            transformerType: "fullObjectTemplate",
             referencedExtractor: "NOT_RELEVANT",
             definition: [
               {
                 attributeKey: {
-                  templateType: "parameterReference",
+                  transformerType: "parameterReference",
                   referenceName: "newDeploymentUuid",
                 },
                 attributeValue: {
-                  templateType: "parameterReference",
+                  transformerType: "parameterReference",
                   referenceName: "newDeploymentStoreConfiguration",
                 }
               }
             ],
           },
           deploymentUuid: {
-            templateType: "parameterReference",
+            transformerType: "parameterReference",
             referenceName: "newDeploymentUuid",
           },
         }
@@ -981,16 +981,16 @@ export const ToolsPage: React.FC<any> = (
           actionName: "createStore",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           deploymentUuid: {
-            templateType: "parameterReference",
+            transformerType: "parameterReference",
             referenceName: "newDeploymentUuid",
           },
           configuration: {
-            templateType: "parameterReference",
+            transformerType: "parameterReference",
             referenceName: "newDeploymentStoreConfiguration",
           },
         }
         // action: {
-        //   templateType: "parameterReference",
+        //   transformerType: "parameterReference",
         //   referenceName: "createStoreAction",
         // }
       },
@@ -1005,13 +1005,13 @@ export const ToolsPage: React.FC<any> = (
           deploymentUuid: "",
           deployments: [
             {
-              templateType: "parameterReference",
+              transformerType: "parameterReference",
               referenceName: "newDeployment",
             },
           ],
         }
         // action: {
-        //   templateType: "parameterReference",
+        //   transformerType: "parameterReference",
         //   referenceName: "resetAndInitAction",
         // }
       },
@@ -1024,24 +1024,24 @@ export const ToolsPage: React.FC<any> = (
           actionName: "createInstance",
           applicationSection: "model",
           deploymentUuid: {
-            templateType: "parameterReference",
+            transformerType: "parameterReference",
             referenceName: "newDeploymentUuid",
           },
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           objects: [
             {
               parentName: {
-                templateType: "mustacheStringTemplate",
+                transformerType: "mustacheStringTemplate",
                 definition: "{{entitySelfApplication.name}}",
               },
               parentUuid: {
-                templateType: "mustacheStringTemplate",
+                transformerType: "mustacheStringTemplate",
                 definition: "{{entitySelfApplication.uuid}}",
               },
               applicationSection: "model",
               instances: [
                 {
-                  templateType: "parameterReference",
+                  transformerType: "parameterReference",
                   referenceName: "newSelfApplication",
                 },
               ],
@@ -1049,7 +1049,7 @@ export const ToolsPage: React.FC<any> = (
           ],
         }
         // action: {
-        //   templateType: "parameterReference",
+        //   transformerType: "parameterReference",
         //   referenceName: "createSelfApplicationAction",
         // }
       },
@@ -1062,24 +1062,24 @@ export const ToolsPage: React.FC<any> = (
           actionName: "createInstance",
           applicationSection: "data",
           deploymentUuid: {
-            templateType: "mustacheStringTemplate",
+            transformerType: "mustacheStringTemplate",
             definition: "{{adminConfigurationDeploymentAdmin.uuid}}",
           },
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           objects: [
             {
               parentName: {
-                templateType: "mustacheStringTemplate",
+                transformerType: "mustacheStringTemplate",
                 definition: "{{entityApplicationForAdmin.name}}",
               },
               parentUuid: {
-                templateType: "mustacheStringTemplate",
+                transformerType: "mustacheStringTemplate",
                 definition: "{{entityApplicationForAdmin.uuid}}",
               },
               applicationSection: "data",
               instances: [
                 {
-                  templateType: "parameterReference",
+                  transformerType: "parameterReference",
                   referenceName: "newApplicationForAdmin",
                 },
               ],
@@ -1087,7 +1087,7 @@ export const ToolsPage: React.FC<any> = (
           ],
         }
         // action: {
-        //   templateType: "parameterReference",
+        //   transformerType: "parameterReference",
         //   referenceName: "createApplicationForAdminAction",
         // }
       },
@@ -1100,24 +1100,24 @@ export const ToolsPage: React.FC<any> = (
           actionName: "createInstance",
           applicationSection: "data",
           deploymentUuid: {
-            templateType: "mustacheStringTemplate",
+            transformerType: "mustacheStringTemplate",
             definition: "{{adminConfigurationDeploymentAdmin.uuid}}",
           },
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           objects: [
             {
               parentName: {
-                templateType: "mustacheStringTemplate",
+                transformerType: "mustacheStringTemplate",
                 definition: "{{entityDeployment.name}}",
               },
               parentUuid: {
-                templateType: "mustacheStringTemplate",
+                transformerType: "mustacheStringTemplate",
                 definition: "{{entityDeployment.uuid}}",
               },
               applicationSection: "data",
               instances: [
                 {
-                  templateType: "parameterReference",
+                  transformerType: "parameterReference",
                   referenceName: "newDeployment",
                 },
               ],
@@ -1125,7 +1125,7 @@ export const ToolsPage: React.FC<any> = (
           ],
         }
         // action: {
-        //   templateType: "parameterReference",
+        //   transformerType: "parameterReference",
         //   referenceName: "createAdminDeploymentAction",
         // }
       },
@@ -1138,24 +1138,24 @@ export const ToolsPage: React.FC<any> = (
           actionName: "createInstance",
           applicationSection: "model",
           deploymentUuid: {
-            templateType: "parameterReference",
+            transformerType: "parameterReference",
             referenceName: "newDeploymentUuid",
           },
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           objects: [
             {
               parentName: {
-                templateType: "mustacheStringTemplate",
+                transformerType: "mustacheStringTemplate",
                 definition: "{{entityMenu.name}}",
               },
               parentUuid: {
-                templateType: "mustacheStringTemplate",
+                transformerType: "mustacheStringTemplate",
                 definition: "{{entityMenu.uuid}}",
               },
               applicationSection: "model",
               instances: [
                 {
-                  templateType: "parameterReference",
+                  transformerType: "parameterReference",
                   referenceName: "newApplicationMenu",
                 },
               ],
@@ -1163,7 +1163,7 @@ export const ToolsPage: React.FC<any> = (
           ],
         }
         // action: {
-        //   templateType: "parameterReference",
+        //   transformerType: "parameterReference",
         //   referenceName: "createNewApplicationMenuAction",
         // }
       },
@@ -1176,12 +1176,12 @@ export const ToolsPage: React.FC<any> = (
           actionType: "modelAction",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           deploymentUuid: {
-            templateType: "parameterReference",
+            transformerType: "parameterReference",
             referenceName: "newDeploymentUuid",
           },
         }
         // action: {
-        //   templateType: "parameterReference",
+        //   transformerType: "parameterReference",
         //   referenceName: "commitAction",
         // }
       },

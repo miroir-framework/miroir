@@ -1071,10 +1071,58 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
+      "transformer_metaSchema": {
+        "type": "object",
+        "definition": {
+          "interface": {
+            "type": "object",
+            "optional": true,
+            "definition": {
+              "parameterSchema": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "jzodObject"
+                },
+                "context": {}
+              },
+              "resultSchema": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "jzodSchema"
+                },
+                "context": {}
+              }
+            }
+          },
+          "definition": {
+            "type": "object",
+            "definition": {
+              "transformerType": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "jzodLiteral"
+                },
+                "context": {}
+              },
+              "definition": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "jzodElement"
+                },
+                "context": {}
+              }
+            }
+          }
+        }
+      },
       "transformer_mustacheStringTemplate": {
         "type": "object",
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "mustacheStringTemplate"
           },
@@ -1086,7 +1134,7 @@ export const miroirFundamentalJzodSchema = {
       "transformer_constantUuid": {
         "type": "object",
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "constantUuid"
           },
@@ -1098,7 +1146,7 @@ export const miroirFundamentalJzodSchema = {
       "transformer_constantObject": {
         "type": "object",
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "constantObject"
           },
@@ -1113,7 +1161,7 @@ export const miroirFundamentalJzodSchema = {
       "transformer_constantString": {
         "type": "object",
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "constantString"
           },
@@ -1125,7 +1173,7 @@ export const miroirFundamentalJzodSchema = {
       "transformer_newUuid": {
         "type": "object",
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "newUuid"
           }
@@ -1134,7 +1182,7 @@ export const miroirFundamentalJzodSchema = {
       "transformer_contextReference": {
         "type": "object",
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "contextReference"
           },
@@ -1154,7 +1202,7 @@ export const miroirFundamentalJzodSchema = {
       "transformer_parameterReference": {
         "type": "object",
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "parameterReference"
           },
@@ -1173,7 +1221,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "transformer_contextOrParameterReference": {
         "type": "union",
-        "discriminator": "templateType",
+        "discriminator": "transformerType",
         "definition": [
           {
             "type": "schemaReference",
@@ -1196,7 +1244,7 @@ export const miroirFundamentalJzodSchema = {
       "transformer_objectDynamicAccess": {
         "type": "object",
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "objectDynamicAccess"
           },
@@ -1239,7 +1287,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "transformer_InnerReference": {
         "type": "union",
-        "discriminator": "templateType",
+        "discriminator": "transformerType",
         "definition": [
           {
             "type": "schemaReference",
@@ -1342,7 +1390,7 @@ export const miroirFundamentalJzodSchema = {
           "context": {}
         },
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "fullObjectTemplate"
           },
@@ -1378,7 +1426,7 @@ export const miroirFundamentalJzodSchema = {
       "transformerForBuild_freeObjectTemplate": {
         "type": "object",
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "freeObjectTemplate"
           },
@@ -1420,7 +1468,7 @@ export const miroirFundamentalJzodSchema = {
       "transformerForBuild_object_alter": {
         "type": "object",
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "objectAlter"
           },
@@ -1440,7 +1488,7 @@ export const miroirFundamentalJzodSchema = {
       "transformerForBuild_mustacheStringTemplate": {
         "type": "object",
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "mustacheStringTemplate"
           },
@@ -1461,7 +1509,7 @@ export const miroirFundamentalJzodSchema = {
           "context": {}
         },
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "mapperListToList"
           },
@@ -1503,7 +1551,7 @@ export const miroirFundamentalJzodSchema = {
           "context": {}
         },
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "mapperListToObject"
           },
@@ -1551,7 +1599,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "transformerForBuild": {
         "type": "union",
-        "discriminator": "templateType",
+        "discriminator": "transformerType",
         "definition": [
           {
             "type": "schemaReference",
@@ -1653,7 +1701,7 @@ export const miroirFundamentalJzodSchema = {
           "context": {}
         },
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "count"
           },
@@ -1675,7 +1723,7 @@ export const miroirFundamentalJzodSchema = {
           "context": {}
         },
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "constantUuid"
           },
@@ -1696,7 +1744,7 @@ export const miroirFundamentalJzodSchema = {
           "context": {}
         },
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "constantObject"
           },
@@ -1720,7 +1768,7 @@ export const miroirFundamentalJzodSchema = {
           "context": {}
         },
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "constantString"
           },
@@ -1741,7 +1789,7 @@ export const miroirFundamentalJzodSchema = {
           "context": {}
         },
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "newUuid"
           }
@@ -1759,7 +1807,7 @@ export const miroirFundamentalJzodSchema = {
           "context": {}
         },
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "contextReference"
           },
@@ -1788,7 +1836,7 @@ export const miroirFundamentalJzodSchema = {
           "context": {}
         },
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "parameterReference"
           },
@@ -1807,7 +1855,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "transformerForRuntime_contextOrParameterReference": {
         "type": "union",
-        "discriminator": "templateType",
+        "discriminator": "transformerType",
         "definition": [
           {
             "type": "schemaReference",
@@ -1839,7 +1887,7 @@ export const miroirFundamentalJzodSchema = {
           "context": {}
         },
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "objectDynamicAccess"
           },
@@ -1882,7 +1930,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "transformerForRuntime_InnerReference": {
         "type": "union",
-        "discriminator": "templateType",
+        "discriminator": "transformerType",
         "definition": [
           {
             "type": "schemaReference",
@@ -1954,7 +2002,7 @@ export const miroirFundamentalJzodSchema = {
           "context": {}
         },
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "freeObjectTemplate"
           },
@@ -2005,7 +2053,7 @@ export const miroirFundamentalJzodSchema = {
           "context": {}
         },
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "fullObjectTemplate"
           },
@@ -2047,7 +2095,7 @@ export const miroirFundamentalJzodSchema = {
           "context": {}
         },
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "objectAlter"
           },
@@ -2076,7 +2124,7 @@ export const miroirFundamentalJzodSchema = {
           "context": {}
         },
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "mapperListToList"
           },
@@ -2115,7 +2163,7 @@ export const miroirFundamentalJzodSchema = {
           "context": {}
         },
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "mapperListToObject"
           },
@@ -2136,7 +2184,7 @@ export const miroirFundamentalJzodSchema = {
           "context": {}
         },
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "mustacheStringTemplate"
           },
@@ -2157,7 +2205,7 @@ export const miroirFundamentalJzodSchema = {
           "context": {}
         },
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "objectValues"
           }
@@ -2175,7 +2223,7 @@ export const miroirFundamentalJzodSchema = {
           "context": {}
         },
         "definition": {
-          "templateType": {
+          "transformerType": {
             "type": "literal",
             "definition": "unique"
           },
@@ -2186,7 +2234,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "transformerForRuntime": {
         "type": "union",
-        "discriminator": "templateType",
+        "discriminator": "transformerType",
         "definition": [
           {
             "type": "schemaReference",
@@ -26147,7 +26195,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "object",
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -26192,7 +26240,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "object",
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -26237,7 +26285,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "object",
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -26296,7 +26344,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "object",
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -26341,7 +26389,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "object",
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -26372,7 +26420,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "object",
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -26449,7 +26497,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "object",
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -26516,7 +26564,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_contextOrParameterReference": {
         "type": "union",
-        "discriminator": "templateType",
+        "discriminator": "transformerType",
         "definition": [
           {
             "type": "schemaReference",
@@ -26552,7 +26600,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "object",
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -26622,7 +26670,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_InnerReference": {
         "type": "union",
-        "discriminator": "templateType",
+        "discriminator": "transformerType",
         "definition": [
           {
             "type": "schemaReference",
@@ -26683,7 +26731,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild": {
         "type": "union",
-        "discriminator": "templateType",
+        "discriminator": "transformerType",
         "definition": [
           {
             "type": "schemaReference",
@@ -26754,7 +26802,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "object",
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -26947,7 +26995,7 @@ export const miroirFundamentalJzodSchema = {
               "context": {}
             },
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -27036,7 +27084,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "object",
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -27115,7 +27163,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "object",
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -27175,7 +27223,7 @@ export const miroirFundamentalJzodSchema = {
               "context": {}
             },
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -27253,7 +27301,7 @@ export const miroirFundamentalJzodSchema = {
               "context": {}
             },
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -27343,7 +27391,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "object",
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -27388,7 +27436,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "object",
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -27433,7 +27481,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "object",
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -27492,7 +27540,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "object",
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -27537,7 +27585,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "object",
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -27568,7 +27616,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "object",
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -27645,7 +27693,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "object",
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -27712,7 +27760,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_contextOrParameterReference": {
         "type": "union",
-        "discriminator": "templateType",
+        "discriminator": "transformerType",
         "definition": [
           {
             "type": "schemaReference",
@@ -27748,7 +27796,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "object",
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -27890,7 +27938,7 @@ export const miroirFundamentalJzodSchema = {
               "context": {}
             },
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -27945,7 +27993,7 @@ export const miroirFundamentalJzodSchema = {
               "context": {}
             },
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -28010,7 +28058,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_InnerReference": {
         "type": "union",
-        "discriminator": "templateType",
+        "discriminator": "transformerType",
         "definition": [
           {
             "type": "schemaReference",
@@ -28089,7 +28137,7 @@ export const miroirFundamentalJzodSchema = {
               "context": {}
             },
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -28142,7 +28190,7 @@ export const miroirFundamentalJzodSchema = {
               "context": {}
             },
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -28206,7 +28254,7 @@ export const miroirFundamentalJzodSchema = {
               "context": {}
             },
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -28259,7 +28307,7 @@ export const miroirFundamentalJzodSchema = {
               "context": {}
             },
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -28298,7 +28346,7 @@ export const miroirFundamentalJzodSchema = {
               "context": {}
             },
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -28385,7 +28433,7 @@ export const miroirFundamentalJzodSchema = {
               "context": {}
             },
             "definition": {
-              "templateType": {
+              "transformerType": {
                 "type": "union",
                 "definition": [
                   {
@@ -28427,7 +28475,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime": {
         "type": "union",
-        "discriminator": "templateType",
+        "discriminator": "transformerType",
         "definition": [
           {
             "type": "schemaReference",
@@ -28906,7 +28954,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOnObject": {
         "type": "union",
-        "discriminator": "templateType",
+        "discriminator": "transformerType",
         "definition": [
           {
             "type": "schemaReference",

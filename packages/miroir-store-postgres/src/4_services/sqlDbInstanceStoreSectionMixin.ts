@@ -165,7 +165,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           // }
           // );
           // log.info(this.logHeader, "sqlForExtractor", "extractorTemplateForDomainModelObjects", result);
-          if (extractor.parentUuid.templateType != "constantUuid") {
+          if (extractor.parentUuid.transformerType != "constantUuid") {
             throw new Error(
               "sqlForExtractor can not handle queryTemplateType for extractor" + JSON.stringify(extractor)
             );

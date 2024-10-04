@@ -212,7 +212,7 @@ describe("extractWithExtractorFromDomainState.unit", () => {
             parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
 //           instanceUuid: {
-//             templateType: "parameterReference",
+//             transformerType: "parameterReference",
 //             referenceName: "wantedBookUuid",
 //           },
           }
@@ -367,7 +367,7 @@ describe("extractWithExtractorFromDomainState.unit", () => {
             filter: {
               attributeName: "name",
               value: {
-                templateType: "constantString",
+                transformerType: "constantString",
                 constantStringValue: "or",
               },
             },
@@ -582,7 +582,7 @@ describe("extractWithExtractorFromDomainState.unit", () => {
                 queryType: "queryTemplateExtractObjectListByEntity",
                 // parentUuid: {
                 parentUuid: {
-                  templateType: "parameterReference",
+                  transformerType: "parameterReference",
                   referenceName: "uuid",
                 },
               },
@@ -651,7 +651,7 @@ describe("extractWithExtractorFromDomainState.unit", () => {
         },
         runtimeTransformers: {
           publishers: {
-            templateType: "unique",
+            transformerType: "unique",
             interpolation: "runtime",
             referencedExtractor: "books",
             attribute: "publisher",

@@ -181,12 +181,12 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
           // applicationSection: "model",
           parentUuid: entityMenu.uuid,
           // parentUuid: {
-          //   templateType: "constantUuid",
+          //   transformerType: "constantUuid",
           //   constantUuidValue: entityMenu.uuid,
           // },
           instanceUuid: props.menuUuid,
           // instanceUuid: {
-          //   templateType: "constantUuid",
+          //   transformerType: "constantUuid",
           //   constantUuidValue: props.menuUuid,
           // }
         },

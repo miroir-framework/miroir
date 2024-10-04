@@ -48,7 +48,7 @@ function transformer_mapper_listToList_apply(
 ): DomainElement {
   const resolvedReference = transformer_InnerReference_resolve(
     step,
-    { templateType: "contextReference", referenceName:transformer.referencedExtractor },
+    { transformerType: "contextReference", referenceName:transformer.referencedExtractor },
     queryParams,
     contextResults
   );
@@ -136,7 +136,7 @@ function transformer_mapper_listToObject_apply(
   );
   const resolvedReference = transformer_InnerReference_resolve(
     step,
-    { templateType: "contextReference", referenceName:transformer.referencedExtractor },
+    { transformerType: "contextReference", referenceName:transformer.referencedExtractor },
     queryParams,
     contextResults
   );
@@ -191,7 +191,7 @@ function transformer_fullObjectTemplate(
       { renderedRightValue: DomainElement; finalRightValue: DomainElement }
     ] => {
 
-      const rawLeftValue: DomainElement = innerEntry.attributeKey.templateType
+      const rawLeftValue: DomainElement = innerEntry.attributeKey.transformerType
         ? transformer_InnerReference_resolve(step, innerEntry.attributeKey, queryParams, contextResults)
         : { elementType: "string", elementValue: innerEntry.attributeKey };
       const leftValue: { rawLeftValue: DomainElement; finalLeftValue: DomainElement } = {
@@ -287,7 +287,7 @@ function transformer_objectAlter(
 ): DomainElement {
   const resolvedReference = transformer_InnerReference_resolve(
     step,
-    { templateType: "contextReference", referenceName:transformer.referencedExtractor },
+    { transformerType: "contextReference", referenceName:transformer.referencedExtractor },
     queryParams,
     contextResults
   );
@@ -363,11 +363,11 @@ export function transformer_InnerReference_resolve  (
       elementValue: transformerInnerReference
     }
   }
-  if (transformerInnerReference.templateType == "mustacheStringTemplate") {
+  if (transformerInnerReference.transformerType == "mustacheStringTemplate") {
     return mustacheStringTemplate_apply(step, transformerInnerReference, queryParams, contextResults); 
   }
   if (
-    (transformerInnerReference.templateType == "contextReference" &&
+    (transformerInnerReference.transformerType == "contextReference" &&
       (!contextResults ||
         (!transformerInnerReference.referenceName && !transformerInnerReference.referencePath) ||
         (transformerInnerReference.referenceName && transformerInnerReference.referencePath) ||
@@ -382,7 +382,7 @@ export function transformer_InnerReference_resolve  (
       )
     ) ||
     (
-      transformerInnerReference.templateType == "parameterReference" &&
+      transformerInnerReference.transformerType == "parameterReference" &&
       // (typeof queryParams != "object" ||
       //   !queryParams.elementValue ||
       (
@@ -405,13 +405,13 @@ export function transformer_InnerReference_resolve  (
       "reference=",
       JSON.stringify(transformerInnerReference, null, 2),
       "could not find",
-      transformerInnerReference.templateType,
+      transformerInnerReference.transformerType,
       "with referenceName",
       transformerInnerReference.referenceName,
       "and referencePath",
       transformerInnerReference.referencePath,
       "in",
-      transformerInnerReference.templateType == "contextReference"
+      transformerInnerReference.transformerType == "contextReference"
         // ? JSON.stringify(Object.keys(contextResults ?? {}))
         ? (contextResults ?? {})
         // : Object.keys(queryParams)
@@ -428,7 +428,7 @@ export function transformer_InnerReference_resolve  (
             " or referencePath " +
             transformerInnerReference.referencePath +
             " from " +
-            transformerInnerReference.templateType ==
+            transformerInnerReference.transformerType ==
           "contextReference"
             ? JSON.stringify(contextResults)
             : JSON.stringify(Object.keys(queryParams)),
@@ -437,7 +437,7 @@ export function transformer_InnerReference_resolve  (
   }
 
   if (
-    (transformerInnerReference.templateType == "contextReference" &&
+    (transformerInnerReference.transformerType == "contextReference" &&
       (!contextResults ||
         // (!queryTemplateConstantOrAnyReference.referenceName && !queryTemplateConstantOrAnyReference.referencePath) ||
         // (queryTemplateConstantOrAnyReference.referenceName && queryTemplateConstantOrAnyReference.referencePath) ||
@@ -452,7 +452,7 @@ export function transformer_InnerReference_resolve  (
       )
     ) ||
     (
-      transformerInnerReference.templateType == "parameterReference" &&
+      transformerInnerReference.transformerType == "parameterReference" &&
       // (typeof queryParams != "object" ||
       //   !queryParams.elementValue ||
       (
@@ -472,14 +472,14 @@ export function transformer_InnerReference_resolve  (
       "transformer_InnerReference_resolve step",
       step,
       "found undefined reference",
-      transformerInnerReference.templateType,
+      transformerInnerReference.transformerType,
       "with referenceName",
       transformerInnerReference.referenceName,
       "and referencePath",
       transformerInnerReference.referencePath,
       "in",
       (
-        transformerInnerReference.templateType == "contextReference"
+        transformerInnerReference.transformerType == "contextReference"
           ? contextResults
           : queryParams
           // ? JSON.stringify(Object.keys(contextResults?.elementValue ?? {}))
@@ -495,7 +495,7 @@ export function transformer_InnerReference_resolve  (
   }
 
   const reference: DomainElement =
-    transformerInnerReference.templateType == "contextReference"
+    transformerInnerReference.transformerType == "contextReference"
       ? // ? {elementType: "any", elementValue: contextResults[queryTemplateConstantOrAnyReference.referenceName ]}
         transformerInnerReference.referenceName
         ? ((contextResults??{})[transformerInnerReference.referenceName]) ? 
@@ -532,7 +532,7 @@ export function transformer_InnerReference_resolve  (
               queryContext: "no referenceName or referencePath found in " + JSON.stringify(contextResults),
             },
           }
-      : transformerInnerReference.templateType == "parameterReference"
+      : transformerInnerReference.transformerType == "parameterReference"
       ? // ? { elementType: "any", elementValue: queryParams[queryTemplateConstantOrAnyReference.referenceName] }
         transformerInnerReference.referenceName
         ? queryParams[transformerInnerReference.referenceName] ? 
@@ -564,20 +564,20 @@ export function transformer_InnerReference_resolve  (
             elementType: "failure",
             elementValue: { queryFailure: "ReferenceFoundButUndefined", queryContext: JSON.stringify(queryParams) },
           }
-      : transformerInnerReference.templateType == "constantUuid"
+      : transformerInnerReference.transformerType == "constantUuid"
       ? { elementType: "instanceUuid", elementValue: transformerInnerReference.constantUuidValue } // new object
-      : transformerInnerReference.templateType == "newUuid"
+      : transformerInnerReference.transformerType == "newUuid"
       ? { elementType: "instanceUuid", elementValue: uuidv4() } // new object
-      : transformerInnerReference.templateType == "constantString"
+      : transformerInnerReference.transformerType == "constantString"
       ? { elementType: "string", elementValue: transformerInnerReference.constantStringValue } // new object
-      : transformerInnerReference.templateType == "constantObject"
+      : transformerInnerReference.transformerType == "constantObject"
       ? { elementType: "object", elementValue: transformerInnerReference.constantObjectValue } // new object
       : {
           elementType: "failure",
           elementValue: { 
             queryFailure: "QueryNotExecutable",
             failureOrigin: ["transformer_InnerReference_resolve"],
-            queryContext: "unhandled templateType " + transformerInnerReference.templateType,
+            queryContext: "unhandled transformerType " + transformerInnerReference.transformerType,
             query: transformerInnerReference },
         }; /* this should not happen. Provide "error" value instead?*/
 
@@ -588,7 +588,7 @@ export function transformer_InnerReference_resolve  (
     reference,
     // "from",
     // (
-    //   transformerInnerReference.templateType ==
+    //   transformerInnerReference.transformerType ==
     //   "contextReference"
     //     ? JSON.stringify(contextResults)
     //     : JSON.stringify(Object.keys(queryParams))
@@ -695,12 +695,12 @@ export function transformer_apply(
       }
     } else {
       // TODO: improve test, refuse interpretation of build transformer in runtime step
-      if (transformer.templateType && (((transformer as any)?.interpolation??"build") == step)) {
-        switch (transformer.templateType) {
+      if (transformer.transformerType && (((transformer as any)?.interpolation??"build") == step)) {
+        switch (transformer.transformerType) {
           case "count": {
             const resolvedReference = transformer_InnerReference_resolve(
               step,
-              { templateType: "contextReference", referenceName:transformer.referencedExtractor }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
+              { transformerType: "contextReference", referenceName:transformer.referencedExtractor }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
               queryParams,
               contextResults
             );
@@ -771,7 +771,7 @@ export function transformer_apply(
           case "objectValues": {
             const resolvedReference = transformer_InnerReference_resolve(
               step,
-              { templateType: "contextReference", referenceName:transformer.referencedExtractor }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
+              { transformerType: "contextReference", referenceName:transformer.referencedExtractor }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
               queryParams,
               contextResults
             );
@@ -844,8 +844,8 @@ export function transformer_apply(
                     if (Array.isArray(currentPathElement)) {
                       throw new Error("objectDynamicAccess can not handle arrays");
                     }
-                    if (!currentPathElement.templateType) {
-                      throw new Error("objectDynamicAccess can not handle objects without templateType");
+                    if (!currentPathElement.transformerType) {
+                      throw new Error("objectDynamicAccess can not handle objects without transformerType");
                     }
                     const key = transformer_apply(step, "NO NAME", currentPathElement, queryParams, contextResults);
                     if (key.elementType == "failure") {
@@ -897,7 +897,7 @@ export function transformer_apply(
           case "unique": {
             const resolvedReference = transformer_InnerReference_resolve(
               step,
-              { templateType: "contextReference", referenceName:transformer.referencedExtractor },  // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
+              { transformerType: "contextReference", referenceName:transformer.referencedExtractor },  // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
               queryParams,
               contextResults
             );

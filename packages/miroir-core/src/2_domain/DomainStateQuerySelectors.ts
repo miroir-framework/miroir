@@ -242,7 +242,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
     case "selectObjectByRelation": {
       const referenceObject = transformer_InnerReference_resolve(
         "build",
-        { templateType: "contextReference", referenceName: querySelectorParams.objectReference },
+        { transformerType: "contextReference", referenceName: querySelectorParams.objectReference },
         selectorParams.extractor.queryParams,
         selectorParams.extractor.contextResults
       );

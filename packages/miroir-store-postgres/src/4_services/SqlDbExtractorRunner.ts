@@ -2,13 +2,17 @@ import {
   ActionEntityInstanceCollectionReturnType,
   ActionReturnType,
   ApplicationSection,
+  asyncApplyExtractorTemplateTransformerInMemory,
   asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+  asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate,
   AsyncExtractorRunner,
   AsyncExtractorRunnerMap,
   AsyncExtractorRunnerParams,
   asyncExtractWithExtractor,
+  asyncExtractWithExtractorTemplate,
   asyncExtractWithManyExtractors,
+  asyncExtractWithManyExtractorTemplates,
   DomainElement,
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
@@ -34,6 +38,7 @@ import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 import { SqlDbDataStoreSection } from "./SqlDbDataStoreSection.js";
 import { SqlDbModelStoreSection } from "./SqlDbModelStoreSection.js";
+import { SqlDbExtractTemplateRunner } from "./SqlDbExtractorTemplateRunner.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "PostgresExtractorRunner");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -46,6 +51,7 @@ export type RecursiveStringRecords = string | { [x: string]: RecursiveStringReco
 export class SqlDbExtractRunner {
   private logHeader: string;
   private extractorRunnerMap: AsyncExtractorRunnerMap;
+  private sqlDbExtractTemplateRunner: SqlDbExtractTemplateRunner;
 
   constructor(
     private persistenceStoreController:
@@ -54,6 +60,7 @@ export class SqlDbExtractRunner {
   ) // private persistenceStoreController: typeof MixedSqlDbInstanceStoreSection // does not work
   {
     this.logHeader = "PersistenceStoreController " + persistenceStoreController.getStoreName();
+    this.sqlDbExtractTemplateRunner = new SqlDbExtractTemplateRunner(persistenceStoreController);
     const InMemoryImplementationExtractorRunnerMap: AsyncExtractorRunnerMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex.bind(this),
@@ -62,6 +69,14 @@ export class SqlDbExtractRunner {
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
+      // 
+      extractEntityInstanceUuidIndexForTemplate: this.sqlDbExtractTemplateRunner.extractEntityInstanceUuidIndex.bind(this.sqlDbExtractTemplateRunner),
+      extractEntityInstanceForTemplate: this.sqlDbExtractTemplateRunner.extractEntityInstanceForTemplate.bind(this.sqlDbExtractTemplateRunner),
+      extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate,
+      extractWithManyExtractorTemplates: asyncExtractWithManyExtractorTemplates,
+      extractWithExtractorTemplate: asyncExtractWithExtractorTemplate,
+      applyExtractorTemplateTransformer: asyncApplyExtractorTemplateTransformerInMemory,
+
     };
     const dbImplementationExtractorRunnerMap: AsyncExtractorRunnerMap = {
       extractorType: "async",
@@ -72,6 +87,14 @@ export class SqlDbExtractRunner {
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
       applyExtractorTransformer: this.applyExtractorTransformerSql.bind(this),
+      // 
+      extractEntityInstanceUuidIndexForTemplate: this.sqlDbExtractTemplateRunner.extractEntityInstanceUuidIndex.bind(this.sqlDbExtractTemplateRunner),
+      extractEntityInstanceForTemplate: this.sqlDbExtractTemplateRunner.extractEntityInstanceForTemplate.bind(this.sqlDbExtractTemplateRunner),
+      extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory:
+        this.sqlDbExtractTemplateRunner.asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractorForTemplate.bind(this.sqlDbExtractTemplateRunner),
+      extractWithManyExtractorTemplates: asyncExtractWithManyExtractorTemplates,
+      extractWithExtractorTemplate: asyncExtractWithExtractorTemplate,
+      applyExtractorTemplateTransformer: this.sqlDbExtractTemplateRunner.applyExtractorTemplateTransformerSql.bind(this.sqlDbExtractTemplateRunner),
     };
 
     this.extractorRunnerMap = InMemoryImplementationExtractorRunnerMap;
@@ -97,7 +120,7 @@ export class SqlDbExtractRunner {
     // const resolvedReference = resolveContextReferenceDEFUNCT( // TODO: REMOVE resolveContextReferenceDEFUNCT!!
     const resolvedReference = transformer_InnerReference_resolve( // TODO: REMOVE resolveContextReferenceDEFUNCT!!
       "build",
-      { templateType: "contextReference", referenceName },
+      { transformerType: "contextReference", referenceName },
       queryParams,
       newFetchedData
     );
@@ -125,7 +148,7 @@ export class SqlDbExtractRunner {
     const orderBy = (actionRuntimeTransformer as any).orderBy
       ? `ORDER BY ${(actionRuntimeTransformer as any).orderBy}`
       : "";
-    switch (actionRuntimeTransformer.templateType) {
+    switch (actionRuntimeTransformer.transformerType) {
       case "unique": {
         log.info("applyExtractorTransformerSql actionRuntimeTransformer.attribute", actionRuntimeTransformer.attribute);
         // TODO: resolve query.referencedExtractor.referenceName properly
@@ -309,7 +332,7 @@ export class SqlDbExtractRunner {
       case "selectObjectByRelation": {
         const referenceObject = transformer_InnerReference_resolve(
           "build",
-          { templateType: "contextReference", referenceName: querySelectorParams.objectReference },
+          { transformerType: "contextReference", referenceName: querySelectorParams.objectReference },
           selectorParams.extractor.queryParams,
           selectorParams.extractor.contextResults
         );

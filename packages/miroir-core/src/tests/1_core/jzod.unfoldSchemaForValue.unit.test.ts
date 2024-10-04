@@ -1324,7 +1324,7 @@ describe("jzod.unfoldSchemaForValue", () => {
             transformer_constantUuid: {
               type: "object",
               definition: {
-                templateType: {
+                transformerType: {
                   type: "literal",
                   definition: "constantUuid",
                 },
@@ -1336,7 +1336,7 @@ describe("jzod.unfoldSchemaForValue", () => {
             transformer_constantString: {
               type: "object",
               definition: {
-                templateType: {
+                transformerType: {
                   type: "literal",
                   definition: "constantString",
                 },
@@ -1348,7 +1348,7 @@ describe("jzod.unfoldSchemaForValue", () => {
             transformer_newUuid: {
               type: "object",
               definition: {
-                templateType: {
+                transformerType: {
                   type: "literal",
                   definition: "newUuid",
                 },
@@ -1357,7 +1357,7 @@ describe("jzod.unfoldSchemaForValue", () => {
             transformer_contextReference: {
               type: "object",
               definition: {
-                templateType: {
+                transformerType: {
                   type: "literal",
                   definition: "contextReference",
                 },
@@ -1377,7 +1377,7 @@ describe("jzod.unfoldSchemaForValue", () => {
             transformer_parameterReference: {
               type: "object",
               definition: {
-                templateType: {
+                transformerType: {
                   type: "literal",
                   definition: "parameterReference",
                 },
@@ -1396,7 +1396,7 @@ describe("jzod.unfoldSchemaForValue", () => {
             },
             transformer_contextOrParameterReference: {
               type: "union",
-              discriminator: "templateType",
+              discriminator: "transformerType",
               definition: [
                 {
                   type: "schemaReference",
@@ -1414,7 +1414,7 @@ describe("jzod.unfoldSchemaForValue", () => {
             },
             transformer_InnerReference: {
               type: "union",
-              discriminator: "templateType",
+              discriminator: "transformerType",
               definition: [
                 {
                   type: "schemaReference",
@@ -1631,7 +1631,7 @@ describe("jzod.unfoldSchemaForValue", () => {
             parentUuid: {
               type: "object",
               definition: {
-                templateType: {
+                transformerType: {
                   type: "literal",
                   definition: "constantUuid",
                 },
@@ -1643,7 +1643,7 @@ describe("jzod.unfoldSchemaForValue", () => {
             instanceUuid: {
               type: "object",
               definition: {
-                templateType: {
+                transformerType: {
                   type: "literal",
                   definition: "parameterReference",
                 },
@@ -1659,11 +1659,11 @@ describe("jzod.unfoldSchemaForValue", () => {
           queryType: "selectObjectByDirectReference",
           parentName: "Report",
           parentUuid: {
-            templateType: "constantUuid",
+            transformerType: "constantUuid",
             constantUuidValue: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
           },
           instanceUuid: {
-            templateType: "parameterReference",
+            transformerType: "parameterReference",
             referenceName: "instanceUuid",
           },
         },

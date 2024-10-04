@@ -180,7 +180,11 @@ export const ReportView = (props: ReportViewProps) => {
     ExtractorForRecordOfExtractors,
     DeploymentEntityState
   > = useMemo(
-    () =>  getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>(usedQuery, deploymentEntityStateSelectorMap),
+    () =>
+      getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>(
+        usedQuery,
+        deploymentEntityStateSelectorMap
+      ),
     [deploymentEntityStateSelectorMap, usedQuery]
   );
   // // log.info(

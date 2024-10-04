@@ -63,52 +63,51 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 // ACCESS TO DeploymentEntityState
 // ################################################################################################
 // ################################################################################################
-export function useDeploymentEntityStateQueryTemplateSelector<QueryType extends ExtractorTemplateForDomainModel, ResultType extends DomainElement>(
-  deploymentEntityStateQuerySelector:SyncExtractorTemplateRunner<QueryType, DeploymentEntityState, ResultType>,
-  selectorParams:SyncExtractorTemplateRunnerParams<QueryType, DeploymentEntityState>,
-  customQueryInterpreter?: { [k: string]: (query:ExtractorTemplateForDomainModel) => ResultType }
+export function useDeploymentEntityStateQueryTemplateSelector<
+  QueryType extends ExtractorTemplateForDomainModel,
+  ResultType extends DomainElement
+>(
+  deploymentEntityStateQuerySelector: SyncExtractorTemplateRunner<QueryType, DeploymentEntityState, ResultType>,
+  selectorParams: SyncExtractorTemplateRunnerParams<QueryType, DeploymentEntityState>,
+  customQueryInterpreter?: { [k: string]: (query: ExtractorTemplateForDomainModel) => ResultType }
 ): ResultType {
-  const innerSelector = useMemo(
-    () => {
-      return applyDeploymentEntityStateQueryTemplateSelector(deploymentEntityStateQuerySelector);
-    }, [deploymentEntityStateQuerySelector]);
-  const result: ResultType = useSelector((state: ReduxStateWithUndoRedo) =>
-    innerSelector(state, selectorParams)
-  );
-  return result
+  const innerSelector = useMemo(() => {
+    return applyDeploymentEntityStateQueryTemplateSelector(deploymentEntityStateQuerySelector);
+  }, [deploymentEntityStateQuerySelector]);
+  const result: ResultType = useSelector((state: ReduxStateWithUndoRedo) => innerSelector(state, selectorParams));
+  return result;
 }
 
 // ################################################################################################
-export function useDeploymentEntityStateQuerySelector<QueryType extends ExtractorForDomainModel, ResultType extends DomainElement>(
-  deploymentEntityStateQuerySelector:SyncExtractorRunner<QueryType, DeploymentEntityState, ResultType>,
-  selectorParams:SyncExtractorRunnerParams<QueryType, DeploymentEntityState>,
-  customQueryInterpreter?: { [k: string]: (query:ExtractorForDomainModel) => ResultType }
+export function useDeploymentEntityStateQuerySelector<
+  QueryType extends ExtractorForDomainModel,
+  ResultType extends DomainElement
+>(
+  deploymentEntityStateQuerySelector: SyncExtractorRunner<QueryType, DeploymentEntityState, ResultType>,
+  selectorParams: SyncExtractorRunnerParams<QueryType, DeploymentEntityState>,
+  customQueryInterpreter?: { [k: string]: (query: ExtractorForDomainModel) => ResultType }
 ): ResultType {
-  const innerSelector = useMemo(
-    () => {
-      return applyDeploymentEntityStateQuerySelector(deploymentEntityStateQuerySelector);
-    }, [deploymentEntityStateQuerySelector]);
-  const result: ResultType = useSelector((state: ReduxStateWithUndoRedo) =>
-    innerSelector(state, selectorParams)
-  );
-  return result
+  const innerSelector = useMemo(() => {
+    return applyDeploymentEntityStateQuerySelector(deploymentEntityStateQuerySelector);
+  }, [deploymentEntityStateQuerySelector]);
+  const result: ResultType = useSelector((state: ReduxStateWithUndoRedo) => innerSelector(state, selectorParams));
+  return result;
 }
 
 // ################################################################################################
-export function useDeploymentEntityStateQueryTemplateSelectorForCleanedResult<QueryType extends ExtractorTemplateForDomainModel>(
+export function useDeploymentEntityStateQueryTemplateSelectorForCleanedResult<
+  QueryType extends ExtractorTemplateForDomainModel
+>(
   // deploymentEntityStateQuerySelector:SyncExtractorTemplateRunner<QueryType, DeploymentEntityState, DomainElement>,
-  deploymentEntityStateQuerySelector:SyncExtractorTemplateRunner<QueryType, DeploymentEntityState, DomainElement>,
-  selectorParams:SyncExtractorTemplateRunnerParams<QueryType, DeploymentEntityState>,
-  customQueryInterpreter?: { [k: string]: (query:ExtractorTemplateForDomainModel) => DomainElement }
+  deploymentEntityStateQuerySelector: SyncExtractorTemplateRunner<QueryType, DeploymentEntityState, DomainElement>,
+  selectorParams: SyncExtractorTemplateRunnerParams<QueryType, DeploymentEntityState>,
+  customQueryInterpreter?: { [k: string]: (query: ExtractorTemplateForDomainModel) => DomainElement }
 ): any {
-  const innerSelector = useMemo(
-    () => {
-      return applyDeploymentEntityStateQueryTemplateSelectorForCleanedResult(deploymentEntityStateQuerySelector);
-    }, [deploymentEntityStateQuerySelector]);
-  const result: any = useSelector((state: ReduxStateWithUndoRedo) =>
-    innerSelector(state, selectorParams)
-  );
-  return result
+  const innerSelector = useMemo(() => {
+    return applyDeploymentEntityStateQueryTemplateSelectorForCleanedResult(deploymentEntityStateQuerySelector);
+  }, [deploymentEntityStateQuerySelector]);
+  const result: any = useSelector((state: ReduxStateWithUndoRedo) => innerSelector(state, selectorParams));
+  return result;
 }
 
 

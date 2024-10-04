@@ -213,11 +213,11 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                 applicationSection: "model",
                 parentName: "Entity",
                 parentUuid: {
-                  templateType: "constantUuid",
+                  transformerType: "constantUuid",
                   constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                 },
                 instanceUuid: {
-                  templateType: "constantUuid",
+                  transformerType: "constantUuid",
                   constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                 },
               },
@@ -271,7 +271,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   applicationSection: applicationSection,
                   parentName: "Entity",
                   parentUuid: {
-                    templateType: "constantUuid",
+                    transformerType: "constantUuid",
                     constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                   },
                 }
@@ -438,13 +438,13 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   applicationSection: applicationSection,
                   parentName: "Entity",
                   parentUuid: {
-                    templateType: "constantUuid",
+                    transformerType: "constantUuid",
                     constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                   },
                   filter: {
                     attributeName: "name",
                     value: {
-                      templateType: "constantString",
+                      transformerType: "constantString",
                       constantStringValue: "or",
                     },
                   },
@@ -509,7 +509,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                 applicationSection: applicationSection,
                 parentName: "Book",
                 parentUuid: {
-                  templateType: "constantUuid",
+                  transformerType: "constantUuid",
                   // constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                   constantUuidValue: entityBook.uuid,
                 },
@@ -517,7 +517,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
             },
             runtimeTransformers: {
               uniqueAuthors: {
-                templateType: "unique",
+                transformerType: "unique",
                 interpolation: "runtime",
                 referencedExtractor: "books",
                 attribute: "author",
@@ -566,7 +566,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                 applicationSection: applicationSection,
                 parentName: "Book",
                 parentUuid: {
-                  templateType: "constantUuid",
+                  transformerType: "constantUuid",
                   constantUuidValue: entityBook.uuid,
                 },
               },
@@ -575,7 +575,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
               uniqueAuthors: {
                 referencedExtractor: "books",
                 interpolation: "runtime",
-                templateType: "count",
+                transformerType: "count",
               },
             },
           },
@@ -618,7 +618,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                 applicationSection: applicationSection,
                 parentName: "Book",
                 parentUuid: {
-                  templateType: "constantUuid",
+                  transformerType: "constantUuid",
                   constantUuidValue: entityBook.uuid,
                 },
               },
@@ -626,7 +626,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
             runtimeTransformers: {
               countBooksByAuthors: {
                 referencedExtractor: "books",
-                templateType: "count",
+                transformerType: "count",
                 interpolation: "runtime",
                 groupBy: "author",
                 orderBy: "author",
@@ -677,41 +677,41 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                 applicationSection: applicationSection,
                 parentName: "Book",
                 parentUuid: {
-                  templateType: "constantUuid",
+                  transformerType: "constantUuid",
                   constantUuidValue: entityBook.uuid,
                 },
               },
             },
             runtimeTransformers: {
               countries: {
-                templateType: "mapperListToList",
+                transformerType: "mapperListToList",
                 interpolation: "runtime",
                 referencedExtractor: "books",
                 orderBy: "name",
                 elementTransformer: {
-                  templateType: "fullObjectTemplate",
+                  transformerType: "fullObjectTemplate",
                   interpolation: "runtime",
                   referencedExtractor: "book",
                   definition: [
                     {
                       attributeKey: {
                         interpolation: "runtime",
-                        templateType: "constantUuid",
+                        transformerType: "constantUuid",
                         constantUuidValue: "uuid",
                       },
                       attributeValue: {
                         interpolation: "runtime",
-                        templateType: "newUuid",
+                        transformerType: "newUuid",
                       },
                     },
                     {
                       attributeKey: {
                         interpolation: "runtime",
-                        templateType: "constantUuid",
+                        transformerType: "constantUuid",
                         constantUuidValue: "name",
                       },
                       attributeValue: {
-                        templateType: "mustacheStringTemplate",
+                        transformerType: "mustacheStringTemplate",
                         interpolation: "runtime",
                         definition: "{{book.name}}",
                       },
@@ -789,11 +789,11 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                 queryType: "selectObjectByDirectReference",
                 parentName: "Book",
                 parentUuid: {
-                  templateType: "constantUuid",
+                  transformerType: "constantUuid",
                   constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
                 },
                 instanceUuid: {
-                  templateType: "parameterReference",
+                  transformerType: "parameterReference",
                   referenceName: "instanceUuid",
                 },
               },
@@ -803,11 +803,11 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                 queryType: "selectObjectByRelation",
                 parentName: "Author",
                 parentUuid: {
-                  templateType: "constantUuid",
+                  transformerType: "constantUuid",
                   constantUuidValue: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
                 },
                 objectReference: {
-                  templateType: "contextReference",
+                  transformerType: "contextReference",
                   referenceName: "book",
                 },
                 AttributeOfObjectToCompareToReferenceUuid: "author",
@@ -816,11 +816,11 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                 queryType: "selectObjectListByRelation",
                 parentName: "Book",
                 parentUuid: {
-                  templateType: "constantUuid",
+                  transformerType: "constantUuid",
                   constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
                 },
                 objectReference: {
-                  templateType: "contextReference",
+                  transformerType: "contextReference",
                   referenceName: "author",
                 },
                 AttributeOfListObjectToCompareToReferenceUuid: "author",

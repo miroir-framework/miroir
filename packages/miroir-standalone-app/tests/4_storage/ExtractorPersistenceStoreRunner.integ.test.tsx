@@ -194,12 +194,12 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
                 parentName: "Entity",
                 parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                 // parentUuid: {
-                //   templateType: "constantUuid",
+                //   transformerType: "constantUuid",
                 //   constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                 // },
                 instanceUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                 // instanceUuid: {
-                //   templateType: "constantUuid",
+                //   transformerType: "constantUuid",
                 //   constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                 // },
               },
@@ -253,7 +253,7 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
                   parentName: "Entity",
                   parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
                   // parentUuid: {
-                  //   templateType: "constantUuid",
+                  //   transformerType: "constantUuid",
                   //   constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                   // },
                 }
@@ -421,7 +421,7 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
                   parentName: "Entity",
                   parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                   // parentUuid: {
-                  //   templateType: "constantUuid",
+                  //   transformerType: "constantUuid",
                   //   constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                   // },
                   filter: {
@@ -493,7 +493,7 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
                 parentName: "Book",
                 parentUuid: entityBook.uuid,
                 // parentUuid: {
-                //   templateType: "constantUuid",
+                //   transformerType: "constantUuid",
                 //   // constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                 //   constantUuidValue: entityBook.uuid,
                 // },
@@ -501,7 +501,7 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
             },
             runtimeTransformers: {
               uniqueAuthors: {
-                templateType: "unique",
+                transformerType: "unique",
                 interpolation: "runtime",
                 referencedExtractor: "books",
                 attribute: "author",
@@ -551,7 +551,7 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
                 parentName: "Book",
                 parentUuid: entityBook.uuid,
                 // parentUuid: {
-                //   templateType: "constantUuid",
+                //   transformerType: "constantUuid",
                 //   constantUuidValue: entityBook.uuid,
                 // },
               },
@@ -560,7 +560,7 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
               uniqueAuthors: {
                 referencedExtractor: "books",
                 interpolation: "runtime",
-                templateType: "count",
+                transformerType: "count",
               },
             },
           },
@@ -604,7 +604,7 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
                 parentName: "Book",
                 parentUuid: entityBook.uuid,
                 // parentUuid: {
-                //   templateType: "constantUuid",
+                //   transformerType: "constantUuid",
                 //   constantUuidValue: entityBook.uuid,
                 // },
               },
@@ -612,7 +612,7 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
             runtimeTransformers: {
               countBooksByAuthors: {
                 referencedExtractor: "books",
-                templateType: "count",
+                transformerType: "count",
                 interpolation: "runtime",
                 groupBy: "author",
                 orderBy: "author",
@@ -664,42 +664,42 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
                 parentName: "Book",
                 parentUuid: entityBook.uuid,
                 // parentUuid: {
-                //   templateType: "constantUuid",
+                //   transformerType: "constantUuid",
                 //   constantUuidValue: entityBook.uuid,
                 // },
               },
             },
             runtimeTransformers: {
               countries: {
-                templateType: "mapperListToList",
+                transformerType: "mapperListToList",
                 interpolation: "runtime",
                 referencedExtractor: "books",
                 orderBy: "name",
                 elementTransformer: {
-                  templateType: "fullObjectTemplate",
+                  transformerType: "fullObjectTemplate",
                   interpolation: "runtime",
                   referencedExtractor: "book",
                   definition: [
                     {
                       attributeKey: {
                         interpolation: "runtime",
-                        templateType: "constantUuid",
+                        transformerType: "constantUuid",
                         constantUuidValue: "uuid",
                       },
                       attributeValue: {
                         interpolation: "runtime",
-                        templateType: "newUuid",
+                        transformerType: "newUuid",
                       },
                     },
                     {
                       attributeKey: {
                         interpolation: "runtime",
-                        templateType: "constantUuid",
+                        transformerType: "constantUuid",
                         constantUuidValue: "name",
                       },
                       attributeValue: {
                         interpolation: "runtime",
-                        templateType: "mustacheStringTemplate",
+                        transformerType: "mustacheStringTemplate",
                         definition: "{{book.name}}",
                       },
                     },

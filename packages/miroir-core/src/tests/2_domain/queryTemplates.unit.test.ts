@@ -57,11 +57,11 @@ describe("queryTemplates.unit.test", () => {
             queryType: "selectObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             instanceUuid: {
-              templateType: "parameterReference",
+              transformerType: "parameterReference",
               referenceName: "instanceUuid",
             },
           },
@@ -69,13 +69,13 @@ describe("queryTemplates.unit.test", () => {
             queryType: "selectObjectByDirectReference",
             parentName: "Fountain",
             parentUuid: {
-              templateType: "parameterReference",
+              transformerType: "parameterReference",
               referenceName: "parentUuid",
             },
             instanceUuid: {
-              templateType: "constantObject",
+              transformerType: "constantObject",
               constantObjectValue: {
-                templateType: "contextReference",
+                transformerType: "contextReference",
                 interpolation: "runtime",
                 referenceName: "instanceUuid",
               }
@@ -87,11 +87,11 @@ describe("queryTemplates.unit.test", () => {
             queryType: "selectObjectByRelation",
             parentName: "Publisher",
             parentUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "a027c379-8468-43a5-ba4d-bf618be25cab",
             },
             objectReference: {
-              templateType: "contextReference",
+              transformerType: "contextReference",
               interpolation: "runtime",
               referenceName: "book",
             },
@@ -101,11 +101,11 @@ describe("queryTemplates.unit.test", () => {
             queryType: "selectObjectListByRelation",
             parentName: "Book",
             parentUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             objectReference: {
-              templateType: "contextReference",
+              transformerType: "contextReference",
               interpolation: "runtime",
               referenceName: "publisher",
             },
@@ -115,11 +115,11 @@ describe("queryTemplates.unit.test", () => {
             queryType: "selectObjectListByRelation",
             parentName: "Book",
             parentUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             objectReference: {
-              templateType: "contextReference",
+              transformerType: "contextReference",
               interpolation: "runtime",
               referenceName: "author",
             },
@@ -129,11 +129,11 @@ describe("queryTemplates.unit.test", () => {
             queryType: "selectObjectListByManyToManyRelation",
             parentName: "Publisher",
             parentUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "a027c379-8468-43a5-ba4d-bf618be25cab",
             },
             objectListReference: {
-              templateType: "contextReference",
+              transformerType: "contextReference",
               referenceName: "booksOfAuthor",
             },
             objectListReferenceAttribute: "publisher",
@@ -168,7 +168,7 @@ describe("queryTemplates.unit.test", () => {
             parentName: "Fountain",
             parentUuid: "yyyyy",
             instanceUuid: {
-              templateType: "contextReference",
+              transformerType: "contextReference",
               interpolation: "runtime",
               referenceName: "instanceUuid",
             },

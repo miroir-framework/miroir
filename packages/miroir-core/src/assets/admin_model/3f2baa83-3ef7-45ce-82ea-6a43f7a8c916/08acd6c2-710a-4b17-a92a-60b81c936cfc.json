@@ -12,11 +12,11 @@
         "queryType": "selectObjectByDirectReference",
         "parentName": "Deployment",
         "parentUuid": {
-          "templateType": "constantUuid",
+          "transformerType": "constantUuid",
           "constantUuidValue": "7959d814-400c-4e80-988f-a00fe582ab98"
         },
         "instanceUuid": {
-          "templateType": "parameterReference",
+          "transformerType": "parameterReference",
           "referenceName": "instanceUuid"
         }
       }

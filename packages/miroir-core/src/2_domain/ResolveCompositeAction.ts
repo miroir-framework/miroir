@@ -32,7 +32,7 @@ export function resolveCompositeActionTemplate(
   let localContext: Record<string, any> = { ...actionParamValues }; 
 
   log.info("resolveCompositeActionTemplate compositeActionTemplate",compositeActionTemplate,"localActionParams", localActionParams);
-  if ((compositeActionTemplate as any).templateType) {
+  if ((compositeActionTemplate as any).transformerType) {
     throw new Error("resolveCompositeActionTemplate can not deal with compositeActionTemplate as whole tranformer");
   }
   // const localeCompositeAction = compositeActionTemplate as CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction;

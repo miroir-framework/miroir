@@ -12,11 +12,11 @@
         "queryType": "selectObjectByDirectReference",
         "parentName": "Country",
         "parentUuid": {
-          "templateType": "constantUuid",
+          "transformerType": "constantUuid",
           "constantUuidValue": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
         },
         "instanceUuid": {
-          "templateType": "parameterReference",
+          "transformerType": "parameterReference",
           "referenceName": "instanceUuid"
         }
       }
@@ -26,11 +26,11 @@
         "queryType": "selectObjectListByRelation",
         "parentName": "Publisher",
         "parentUuid": {
-          "templateType": "constantUuid",
+          "transformerType": "constantUuid",
           "constantUuidValue": "a027c379-8468-43a5-ba4d-bf618be25cab"
         },
         "objectReference": {
-          "templateType": "contextReference",
+          "transformerType": "contextReference",
           "referenceName": "country"
         },
         "AttributeOfListObjectToCompareToReferenceUuid": "country"

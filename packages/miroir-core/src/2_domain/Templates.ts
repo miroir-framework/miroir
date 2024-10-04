@@ -143,7 +143,7 @@ export function resolveQueryTemplate(
           contextResults
         ).elementValue, // TODO: check for failure!
         objectReference:
-          queryTemplate.objectReference.templateType == "contextReference"
+          queryTemplate.objectReference.transformerType == "contextReference"
             ? queryTemplate.objectReference.referenceName ??
               "ERROR CONVERTING OBJECT REFERENCE FOR selectObjectListByRelation query template: no referenceName"
             : "ERROR CONVERTING OBJECT REFERENCE FOR selectObjectListByRelation query template: objectReference is not a contextReference",
@@ -160,7 +160,7 @@ export function resolveQueryTemplate(
           contextResults
         ).elementValue, // TODO: check for failure!
         objectListReference:
-          queryTemplate.objectListReference.templateType == "contextReference"
+          queryTemplate.objectListReference.transformerType == "contextReference"
             ? queryTemplate.objectListReference.referenceName ??
               "ERROR CONVERTING OBJECT REFERENCE FOR selectObjectListByRelation query template: no referenceName"
             : "ERROR CONVERTING OBJECT REFERENCE FOR selectObjectListByRelation query template: objectReference is not a contextReference",
@@ -173,7 +173,7 @@ export function resolveQueryTemplate(
         parentUuid: transformer_InnerReference_resolve("build", queryTemplate.parentUuid, queryParams, contextResults)
           .elementValue, // TODO: check for failure!
         objectReference:
-          queryTemplate.objectReference.templateType == "contextReference"
+          queryTemplate.objectReference.transformerType == "contextReference"
             ? queryTemplate.objectReference.referenceName ??
               "ERROR CONVERTING OBJECT REFERENCE FOR selectObjectByRelation query template: no referenceName"
             : "ERROR CONVERTING OBJECT REFERENCE FOR selectObjectByRelation query template: objectReference is not a contextReference",

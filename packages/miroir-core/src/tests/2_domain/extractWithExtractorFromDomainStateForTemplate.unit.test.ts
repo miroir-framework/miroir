@@ -31,11 +31,11 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
             queryType: "selectObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "XXXXXX"
             },
             instanceUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
             }
           },
@@ -75,11 +75,11 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
             queryType: "selectObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
-              "templateType": "constantUuid",
+              "transformerType": "constantUuid",
               "constantUuidValue": "XXXXXX"
             },
             instanceUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
             }
           },
@@ -120,11 +120,11 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
             queryType: "selectObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
             },
             instanceUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "XXXXXXXXX"
             }
           }
@@ -167,11 +167,11 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
             queryType: "selectObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             instanceUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
             },
           },
@@ -200,11 +200,11 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
             queryType: "selectObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             instanceUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
             },
           },
@@ -239,11 +239,11 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
             queryType: "selectObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             instanceUuid: {
-              templateType: "parameterReference",
+              transformerType: "parameterReference",
               referenceName: "wantedBookUuid",
             },
           },
@@ -278,11 +278,11 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
             queryType: "selectObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             instanceUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
             },
           },
@@ -292,11 +292,11 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
             queryType: "selectObjectByRelation",
             parentName: "Publisher",
             parentUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "a027c379-8468-43a5-ba4d-bf618be25cab",
             },
             objectReference: {
-              templateType: "contextReference",
+              transformerType: "contextReference",
               interpolation: "runtime",
               referenceName: "book",
             },
@@ -344,7 +344,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
             queryType: "queryTemplateExtractObjectListByEntity",
             parentName: "Author",
             parentUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
             },
           },
@@ -411,13 +411,13 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
             queryType: "queryTemplateExtractObjectListByEntity",
             parentName: "Author",
             parentUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
             },
             filter: {
               attributeName: "name",
               value: {
-                templateType: "constantString",
+                transformerType: "constantString",
                 constantStringValue: "or",
                 // definition: "or",
               },
@@ -475,11 +475,11 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
             queryType: "selectObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             instanceUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
             },
           },
@@ -489,11 +489,11 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
             queryType: "selectObjectByRelation",
             parentName: "Publisher",
             parentUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "a027c379-8468-43a5-ba4d-bf618be25cab",
             },
             objectReference: {
-              templateType: "contextReference",
+              transformerType: "contextReference",
               interpolation: "runtime",
               referenceName: "book",
             },
@@ -503,11 +503,11 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
             queryType: "selectObjectListByRelation",
             parentName: "Book",
             parentUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             objectReference: {
-              templateType: "contextReference",
+              transformerType: "contextReference",
               interpolation: "runtime",
               referenceName: "publisher",
             },
@@ -557,11 +557,11 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
             queryType: "selectObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             instanceUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
             },
           },
@@ -571,11 +571,11 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
             queryType: "selectObjectByRelation",
             parentName: "Publisher",
             parentUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "a027c379-8468-43a5-ba4d-bf618be25cab",
             },
             objectReference: {
-              templateType: "contextReference",
+              transformerType: "contextReference",
               interpolation: "runtime",
               referenceName: "book",
             },
@@ -585,11 +585,11 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
             queryType: "selectObjectListByRelation",
             parentName: "Book",
             parentUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             objectReference: {
-              templateType: "contextReference",
+              transformerType: "contextReference",
               interpolation: "runtime",
               referenceName: "publisher",
             },
@@ -659,7 +659,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
             applicationSection: "model",
             parentName: "Entity",
             parentUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
             },
           },
@@ -675,7 +675,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
               query: {
                 queryType: "queryTemplateExtractObjectListByEntity",
                 parentUuid: {
-                  templateType: "parameterReference",
+                  transformerType: "parameterReference",
                   referenceName: "uuid",
                 },
               },
@@ -740,14 +740,14 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
             queryType: "queryTemplateExtractObjectListByEntity",
             parentName: "Book",
             parentUuid: {
-              templateType: "constantUuid",
+              transformerType: "constantUuid",
               constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
           },
         },
         runtimeTransformers: {
           publishers: {
-            templateType: "unique",
+            transformerType: "unique",
             interpolation: "runtime",
             referencedExtractor: "books",
             attribute: "publisher",

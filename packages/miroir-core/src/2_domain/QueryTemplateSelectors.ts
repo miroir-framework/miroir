@@ -213,7 +213,7 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
 
             let otherIndex = undefined
             if (
-              relationQuery.objectReference?.templateType == "contextReference" &&
+              relationQuery.objectReference?.transformerType == "contextReference" &&
               (relationQuery.objectReference.referenceName??"") in extractor.contextResults
             ) {
               otherIndex = ((extractor.contextResults[
@@ -250,7 +250,7 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
       // log.info("applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation", selectedInstances)
       let otherList: Record<string,any> | undefined = undefined
       if (
-        relationQuery.objectListReference?.templateType == "contextReference" &&
+        relationQuery.objectListReference?.transformerType == "contextReference" &&
         extractor.contextResults[relationQuery.objectListReference.referenceName ?? ""]
       ) {
         otherList = (extractor.contextResults[

@@ -12,7 +12,7 @@
         "queryType": "queryTemplateExtractObjectListByEntity",
         "parentName": "Menu",
         "parentUuid": {
-          "templateType": "constantUuid",
+          "transformerType": "constantUuid",
           "constantUuidValue": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842"
         }
       }

@@ -2,13 +2,17 @@ import {
   ActionEntityInstanceCollectionReturnType,
   ActionReturnType,
   ApplicationSection,
+  asyncApplyExtractorTemplateTransformerInMemory,
   asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+  asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate,
   AsyncExtractorRunner,
   AsyncExtractorRunnerMap,
   AsyncExtractorRunnerParams,
   asyncExtractWithExtractor,
+  asyncExtractWithExtractorTemplate,
   asyncExtractWithManyExtractors,
+  asyncExtractWithManyExtractorTemplates,
   DomainElement,
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
@@ -31,6 +35,7 @@ import {
 } from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
+import { FileSystemExtractorTemplateRunner } from "./FileSystemExtractorTemplateRunner.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "FilesystemExtractorRunner");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -41,12 +46,12 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunner {
   private logHeader: string;
   private selectorMap: AsyncExtractorRunnerMap;
+  private fileSystemExtractorTemplateRunner: FileSystemExtractorTemplateRunner;
 
   // ################################################################################################
-  // constructor(private persistenceStoreController: PersistenceStoreControllerInterface) {
-  // constructor(private persistenceStoreController: PersistenceStoreDataOrModelSectionInterface) {
   constructor(private persistenceStoreController: PersistenceStoreInstanceSectionAbstractInterface) {
     this.logHeader = "PersistenceStoreController " + persistenceStoreController.getStoreName();
+    this.fileSystemExtractorTemplateRunner = new FileSystemExtractorTemplateRunner(persistenceStoreController);
     this.selectorMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex,
@@ -54,7 +59,15 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
       extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
-      applyExtractorTransformer: asyncApplyExtractorTransformerInMemory
+      applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
+      // ############################################################################
+      extractEntityInstanceUuidIndexForTemplate: this.fileSystemExtractorTemplateRunner.extractEntityInstanceUuidIndex,
+      extractEntityInstanceForTemplate: this.fileSystemExtractorTemplateRunner.extractEntityInstance,
+      extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate,
+      extractWithManyExtractorTemplates: asyncExtractWithManyExtractorTemplates,
+      extractWithExtractorTemplate: asyncExtractWithExtractorTemplate,
+      applyExtractorTemplateTransformer: asyncApplyExtractorTemplateTransformerInMemory
+
     };
   }
 
@@ -155,7 +168,7 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
         // const referenceObject = querySelectorParams.objectReference;
         const referenceObject = transformer_InnerReference_resolve(
           "build",
-          { templateType: "contextReference", referenceName: querySelectorParams.objectReference },
+          { transformerType: "contextReference", referenceName: querySelectorParams.objectReference },
           selectorParams.extractor.queryParams,
           selectorParams.extractor.contextResults
         );

@@ -704,50 +704,6 @@ export class DomainController implements DomainControllerInterface {
     let localContext: Record<string, any> = { ...actionParamValues }; 
 
     log.info("handleCompositeActionTemplate compositeAction",compositeAction,"localActionParams", localActionParams);
-    // if ((compositeAction as any).templateType) {
-    //   throw new Error("DomainController handleCompositeActionTemplate can not deal with compositeAction as whole tranformer");
-    // }
-    // // const localeCompositeAction = compositeAction as CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction;
-    // const localeCompositeAction = compositeAction as any;
-
-
-    // const resolvedCompositeActionTemplates: any = {}
-    // // going imperatively to handle inner references
-    // if (localeCompositeAction.templates) {
-    //   log.info("handleCompositeActionTemplate resolving templates", localeCompositeAction.templates);
-    //   for (const t of Object.entries(localeCompositeAction.templates)) {
-    //     const newLocalParameters: Record<string,any> = { ...localActionParams, ...resolvedCompositeActionTemplates };
-    //     log.info("handleCompositeActionTemplate resolving template", t[0], t[1], "newLocalParameters", newLocalParameters);
-    //     const resolvedTemplate = transformer_apply(
-    //       "build",
-    //       t[0],
-    //       t[1] as any,
-    //       newLocalParameters,
-    //       undefined
-    //     );
-    //     log.info("handleCompositeActionTemplate resolved template", t[0], resolvedTemplate)
-    //     if (resolvedTemplate.elementType == "failure") {
-    //       log.error("handleCompositeActionTemplate resolved template error", resolvedTemplate);
-    //     } else {
-    //       resolvedCompositeActionTemplates[t[0]] = resolvedTemplate.elementValue;
-    //     }
-    //   }
-    // }
-
-    // const resolvedCompositeActionTemplates: any = resolveCompositeActionTemplate(compositeAction, localActionParams, currentModel);
-
-    // const actionParamsAndTemplates = { ...localActionParams, ...resolvedCompositeActionTemplates };
-    // const resolvedCompositeActionDefinition = transformer_apply(
-    //   "build",
-    //   "NO NAME",
-    //   (compositeAction as any).definition as any as TransformerForBuild,
-    //   actionParamsAndTemplates,
-    //   localContext
-    // ).elementValue;
-
-    // const actionParamsAndTemplates = { ...localActionParams, ...resolvedCompositeActionTemplates };
-    // const resolvedCompositeActionDefinition: CompositeAction = resolveActionTemplate(compositeAction, localActionParams, currentModel);
-    // const resolvedCompositeActionDefinition: any = resolveCompositeActionTemplate(compositeAction, localActionParams, currentModel);
     const resolved: any = resolveCompositeActionTemplate(compositeAction, localActionParams, currentModel);
 
     log.info("handleCompositeActionTemplate compositeInstanceAction localActionParams", localActionParams);
@@ -787,7 +743,6 @@ export class DomainController implements DomainControllerInterface {
           }
           break;
         }
-        // case 'queryTemplateAction': {
         case 'query': {
           // log.info(
           //   "handleCompositeActionTemplate resolved query",

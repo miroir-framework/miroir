@@ -96,7 +96,7 @@ export class SqlDbExtractTemplateRunner {
 
     const resolvedReference = transformer_InnerReference_resolve(
       "build",
-      { templateType: "contextReference", referenceName },
+      { transformerType: "contextReference", referenceName },
       queryParams,
       newFetchedData
     );
@@ -121,7 +121,7 @@ export class SqlDbExtractTemplateRunner {
     const orderBy = (actionRuntimeTransformer as any).orderBy
       ? `ORDER BY ${(actionRuntimeTransformer as any).orderBy}`
       : "";
-    switch (actionRuntimeTransformer.templateType) {
+    switch (actionRuntimeTransformer.transformerType) {
       case "unique": {
         log.info("applyExtractorTransformerSql actionRuntimeTransformer.attribute", actionRuntimeTransformer.attribute);
         // TODO: resolve query.referencedExtractor.referenceName properly
@@ -191,7 +191,7 @@ export class SqlDbExtractTemplateRunner {
    * @param selectorParams
    * @returns
    */
-  private asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractorForTemplate = (
+  public asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractorForTemplate = (
     selectorParams: AsyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObjectList>
   ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
     // (
@@ -599,7 +599,7 @@ export class SqlDbExtractTemplateRunner {
           //     },
           //   };
           // }
-          if (extractorRunnerParams.extractorTemplate.select.filter.value.templateType != "constantString") {
+          if (extractorRunnerParams.extractorTemplate.select.filter.value.transformerType != "constantString") {
             return {
               elementType: "failure",
               elementValue: {

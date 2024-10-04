@@ -96,7 +96,7 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorRunner<
       // TODO: reference object is implicitly a contextReference here, should be made explicit?!
       const referenceObject = transformer_InnerReference_resolve(
         "runtime",
-        { templateType: "contextReference", referenceName: querySelectorParams.objectReference },
+        { transformerType: "contextReference", referenceName: querySelectorParams.objectReference },
         selectorParams.extractor.queryParams,
         selectorParams.extractor.contextResults
       );
