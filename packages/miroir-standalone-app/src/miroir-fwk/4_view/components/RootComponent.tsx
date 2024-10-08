@@ -50,7 +50,8 @@ import {
   StoreOrBundleAction,
   StoreUnitConfiguration,
   transformerJzodSchema,
-  undoRedoEndpointVersionV1
+  undoRedoEndpointVersionV1,
+  transformerMenuV1
 } from "miroir-core";
 import { ReduxStateChanges } from "miroir-localcache-redux";
 
@@ -177,6 +178,7 @@ export const RootComponent = (props: RootComponentProps) => {
     persistenceEndpointVersionV1,
     jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
     transformerJzodSchema as JzodSchema,
+    [transformerMenuV1],
     entityDefinitionSelfApplication as EntityDefinition,
     entityDefinitionSelfApplicationVersion as EntityDefinition,
     entityDefinitionDeployment as EntityDefinition,

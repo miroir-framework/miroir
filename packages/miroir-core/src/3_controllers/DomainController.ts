@@ -42,7 +42,7 @@ import {
 import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface.js';
 import { ACTION_OK } from '../1_core/constants.js';
 import { defaultMiroirMetaModel, metaModelEntities, miroirModelEntities } from '../1_core/Model.js';
-import { transformer_apply } from '../2_domain/Transformers.js';
+import { transformer_apply, transformer_extended_apply } from '../2_domain/Transformers.js';
 import { MiroirLoggerFactory } from '../4_services/Logger.js';
 import { packageName } from '../constants.js';
 import {
@@ -727,7 +727,8 @@ export class DomainController implements DomainControllerInterface {
       switch (currentAction.compositeActionType) {
         case 'action': {
           log.info("handleCompositeActionTemplate compositeInstanceAction action to resolve", JSON.stringify(currentAction.action, null, 2));
-          const resolvedActionTemplate: InstanceAction = transformer_apply(
+          // const resolvedActionTemplate: InstanceAction = transformer_apply(
+          const resolvedActionTemplate: InstanceAction = transformer_extended_apply(
             "runtime",
             "NO NAME",
             currentAction.action as TransformerForRuntime,

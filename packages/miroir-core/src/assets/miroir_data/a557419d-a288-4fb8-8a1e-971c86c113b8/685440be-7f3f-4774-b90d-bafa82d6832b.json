@@ -1,0 +1,42 @@
+{
+  "uuid": "685440be-7f3f-4774-b90d-bafa82d6832b",
+  "parentName":"TransformerDefinition",
+  "parentUuid":"a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "name":"transformer_menu_addItem",
+  "defaultLabel": "The Transformer adding an Item to a Menu.",
+  "description": "This Transformer adds an Item to an existing Menu.",
+  "transformerInterface": {
+    "transformerParameterSchema": {
+      "transformerType": {
+        "type": "literal",
+        "definition": "transformer_menu_addItem"
+      },
+      "transformerDefinition": {
+        "type": "object",
+        "definition": {
+          "menuReference": {
+            "type": "string"
+          },
+          "menuItemReference": {
+            "type": "string"
+          },
+          "menuSectionInsertionIndex": {
+            "type": "number",
+            "optional": true
+          },
+          "menuSectionItemInsertionIndex": {
+            "type": "number",
+            "optional": true
+          }
+        }
+      }
+    },
+    "transformerResultSchema": {
+      "type": "any"
+    }
+  },
+  "transformerImplementation": {
+    "type": "transformerImplementationType",
+    "implementationFunctionName": "transformer_menu_addItem"
+  }
+}

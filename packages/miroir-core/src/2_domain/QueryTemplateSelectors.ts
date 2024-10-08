@@ -12,6 +12,7 @@ import {
   DomainModelGetSingleSelectQueryJzodSchemaForExtractorTemplate,
   DomainModelQueryTemplateJzodSchemaParams,
   EntityInstance,
+  ExtendedTransformerForRuntime,
   ExtractorTemplateForDomainModelObjects,
   ExtractorTemplateForRecordOfExtractors,
   ExtractorTemplateForSingleObjectList,
@@ -340,12 +341,53 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemo
 
 // ################################################################################################
 export const applyExtractorTemplateTransformerInMemory = (
-  actionRuntimeTransformer: TransformerForRuntime,
+  actionRuntimeTransformer: ExtendedTransformerForRuntime,
   queryParams: Record<string, any>,
   newFetchedData: Record<string, any>
 ): DomainElement => {
   log.info("applyExtractorTemplateTransformerInMemory  query", JSON.stringify(actionRuntimeTransformer, null, 2));
-  return transformer_apply("runtime", "ROOT"/**WHAT?? */, actionRuntimeTransformer, queryParams, newFetchedData);
+  switch (actionRuntimeTransformer.transformerType) {
+    case "mustacheStringTemplate":
+    case "constantUuid":
+    case "constantObject":
+    case "constantString":
+    case "newUuid":
+    case "contextReference":
+    case "parameterReference":
+    case "objectDynamicAccess":
+    case "fullObjectTemplate":
+    case "freeObjectTemplate":
+    case "objectAlter":
+    case "count":
+    case "mapperListToList":
+    case "mapperListToObject":
+    case "objectValues":
+    case "unique": {
+      return transformer_apply("runtime", "ROOT"/**WHAT?? */, actionRuntimeTransformer, queryParams, newFetchedData);
+      break;
+    }
+    case "transformer_menu_addItem":{
+      return {
+        elementType: "failure",
+        elementValue: {
+          queryFailure: "IncorrectParameters",
+          query: JSON.stringify(actionRuntimeTransformer),
+          queryContext: "applyExtractorTemplateTransformerInMemory transformer_menu_addItem not implemented",
+        },
+      }
+    }
+    default: {
+      return {
+        elementType: "failure",
+        elementValue: {
+          queryFailure: "IncorrectParameters",
+          query: JSON.stringify(actionRuntimeTransformer),
+          queryContext: "applyExtractorTemplateTransformerInMemory not implemented for transformerType of " + JSON.stringify(actionRuntimeTransformer),
+        },
+      };
+      break;
+    }
+  }
 };
 
 // ################################################################################################

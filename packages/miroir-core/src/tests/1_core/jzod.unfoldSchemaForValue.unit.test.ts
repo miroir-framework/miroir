@@ -101,6 +101,7 @@ import entityDefinitionReportV1 from "../../assets/miroir_model/54b9c72f-d4f3-4d
 
 // import entityDefinitionDeployment from "../../src/assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c50240e7-c451-46c2-b60a-07b3172a5ef9.json" assert { type: "json" };
 import entityDefinitionDeployment from "../../assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c50240e7-c451-46c2-b60a-07b3172a5ef9.json";
+import { transformerMenuV1 } from "../../index.js";
 
 export const defaultMiroirMetaModel: MetaModel = {
   configuration: [instanceConfigurationReference],
@@ -174,6 +175,7 @@ const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
   persistenceEndpointVersionV1,
   jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
   transformerJzodSchema as JzodSchema,
+  [transformerMenuV1],
   entityDefinitionSelfApplication as EntityDefinition,
   entityDefinitionSelfApplicationVersion as EntityDefinition,
   entityDefinitionDeployment as EntityDefinition,

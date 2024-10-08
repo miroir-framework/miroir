@@ -1622,11 +1622,6 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                         definition: "{{splittedEntityDefinition.entityUuid}}",
                       },
                     },
-                    //   transformerType: "constantUuid",
-                    // constantUuidValue: {
-                    //   transformerType: "mustacheStringTemplate",
-                    //   definition: "{{splittedEntityDefinition.entityUuid}}",
-                    // },
                   },
                 },
                 // {
@@ -1646,9 +1641,9 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                     constantUuidValue: entityMenu.uuid,
                   },
                 },
-                  //     }
-                  //   },
-                  // }
+                // updatedMenu: {
+
+                // }
               },
               runtimeTransformers: {
                 uniqueSplittedEntityInstances: {

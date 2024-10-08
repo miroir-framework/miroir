@@ -1,15 +1,61 @@
-import { Menu, MiroirMenuItem } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { ComplexMenu, DomainElement, Menu, MiroirMenuItem, Transformer_menu_addItem } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
+import { Step } from "../2_domain/Transformers.js";
+import { MiroirLoggerFactory } from "../4_services/Logger.js";
+import { packageName } from "../constants.js";
+import { getLoggerName } from "../tools.js";
+import { cleanLevel } from "./constants.js";
 
-export function menu_AddItem_T(menu: Menu, item: MiroirMenuItem, index?: number) {
-  switch (menu.definition.menuType) {
-    case "simpleMenu": {
-      menu.definition.definition.push(item);
-      // menu.items.push(item);
-      break;
-    }
-    case "complexMenu": {
-      // TODO: add new section if no section exists, or index not provided or index is invalid (out of range, ??)
-      menu.definition.definition[index??0].items.push(item);
-    }
+const loggerName: string = getLoggerName(packageName, cleanLevel,"Menu");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
+  (value: LoggerInterface) => {
+    log = value;
   }
+);
+
+export function transformer_menu_AddItem(
+  transformers: any,
+  step: Step,
+  objectName: string,
+  transformer: Transformer_menu_addItem,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+): DomainElement {
+  const menu = transformers.transformer_InnerReference_resolve(
+    step,
+    { transformerType: "contextReference", referenceName:transformer.transformerDefinition.menuReference },
+    queryParams,
+    contextResults
+  ).elementValue as Menu;
+
+  const menuItem = transformers.transformer_InnerReference_resolve(
+    step,
+    { transformerType: "contextReference", referenceName:transformer.transformerDefinition.menuItemReference },
+    queryParams,
+    contextResults
+  ).elementValue as MiroirMenuItem;
+
+  if (menu.definition.menuType === "simpleMenu") {
+    log.error("transformer_menu_AddItem not implemented for simpleMenu yet");
+    return {
+      elementType: "object",
+      elementValue: menu // this is a free object, not a recursive DomainElement object
+    } as any;
+    
+  }
+  const sectionIndex = transformer.transformerDefinition.menuSectionInsertionIndex??0;
+  const itemIndex = transformer.transformerDefinition.menuSectionItemInsertionIndex??0;
+
+  const updatedMenu: Menu = { ...menu };
+  const items = (updatedMenu.definition as ComplexMenu).definition[sectionIndex].items;
+  const insertionIndex = itemIndex < 0 ? itemIndex == -1 ? items.length : itemIndex -1 : itemIndex;
+  items.splice(insertionIndex, 0, menuItem);
+
+  // log.debug("transformer_menu_AddItem modified menu", JSON.stringify(menu, null, 2));
+  // log.debug("transformer_menu_AddItem modified menu", JSON.stringify(updatedMenu, null, 2));
+  return {
+    elementType: "object",
+    elementValue: updatedMenu // this is a free object, not a recursive DomainElement object
+  } as any;
 }

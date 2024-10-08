@@ -285,7 +285,7 @@ export {
   extractorTemplateForSingleObjectList,
   ExtractorTemplateForDomainModelObjects,
   extractorTemplateForDomainModelObjects,
-  transformerForBuild_Unique,
+  transformerForBuild_unique,
   QueryTemplateSelectExtractorWrapper,
   queryTemplateSelectExtractorWrapper,
   QueryTemplateSelectExtractorWrapperReturningList,
@@ -776,6 +776,8 @@ import jzodSchemajzodMiroirBootstrapSchema from "../src/assets/miroir_data/5e81e
 // import entityDefinitionEntity from "../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/381ab1be-337f-4198-b1d3-f686867fc1dd.json" assert { type: "json" };
 // import entityDefinitionMenu  from "../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/0f421b2f-2fdc-47ee-8232-62121ea46350.json" assert { type: "json" };
 
+import transformerMenuV1 from "../src/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json" assert { type: "json" };
+
 export {
 
   selfApplicationMiroir,
@@ -861,6 +863,7 @@ export {
   reportQueryVersionList,
   // 
   transformerJzodSchema,
+  transformerMenuV1,
 };
 
 // ################################################################################################

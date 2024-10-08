@@ -12,6 +12,7 @@ import {
   DomainModelGetSingleSelectQueryJzodSchemaForExtractor,
   DomainModelQueryJzodSchemaParams,
   EntityInstance,
+  ExtendedTransformerForRuntime,
   ExtractorForDomainModelObjects,
   ExtractorForRecordOfExtractors,
   ExtractorForSingleObjectList,
@@ -38,7 +39,7 @@ import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
 import { innerSelectElementFromQueryTemplate } from "./QueryTemplateSelectors.js";
-import { applyTransformer, transformer_apply } from "./Transformers.js";
+import { applyTransformer, transformer_apply, transformer_extended_apply } from "./Transformers.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"SyncExtractorTemplateRunner");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -422,14 +423,16 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
 
 // ################################################################################################
 export const applyExtractorTransformerInMemory = (
-  actionRuntimeTransformer: TransformerForRuntime,
+  // actionRuntimeTransformer: TransformerForRuntime,
+  actionRuntimeTransformer: ExtendedTransformerForRuntime,
   queryParams: Record<string, any>,
   newFetchedData: Record<string, any>
   // queryParams: DomainElementObject,
   // newFetchedData: DomainElementObject
 ): DomainElement => {
   log.info("applyExtractorTemplateTransformerInMemory  query", JSON.stringify(actionRuntimeTransformer, null, 2));
-  return transformer_apply("runtime", "ROOT"/**WHAT?? */, actionRuntimeTransformer, queryParams, newFetchedData);
+  // return transformer_apply("runtime", "ROOT"/**WHAT?? */, actionRuntimeTransformer, queryParams, newFetchedData);
+  return transformer_extended_apply("runtime", "ROOT"/**WHAT?? */, actionRuntimeTransformer, queryParams, newFetchedData);
 };
 
 // ################################################################################################

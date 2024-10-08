@@ -1,0 +1,26 @@
+{
+  "uuid": "297bcefa-be4c-4b09-869b-49403339acd3",
+  "parentName":"TransformerDefinition",
+  "parentUuid":"a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "name":"transformer_mustacheStringTemplate",
+  "defaultLabel": "The Mustache string template Transformer Definition.",
+  "description": "This Transformer Definition enables the transformation of Entity Instances using a Mustache string template.",
+  "transformerInterface": {
+    "parameterSchema": {
+      "transformerType": {
+        "type": "literal",
+        "definition": "mustacheStringTemplate"
+      },
+      "definition": {
+        "type": "string"
+      }
+    },
+    "resultSchema": {
+      "type": "string"
+    }
+  },
+  "transformerImplementation": {
+    "type": "transformerImplementationType",
+    "implementationFunctionName": "transformer_mustacheStringTemplate"
+  }
+}

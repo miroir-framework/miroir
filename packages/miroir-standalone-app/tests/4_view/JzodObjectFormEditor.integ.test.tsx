@@ -41,7 +41,8 @@ import {
   queryEndpointVersionV1,
   resolveReferencesForJzodSchemaAndValueObject,
   storeManagementEndpoint,
-  undoRedoEndpointVersionV1
+  undoRedoEndpointVersionV1,
+  transformerMenuV1
 } from "miroir-core";
 
 import {
@@ -92,6 +93,7 @@ const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
   queryEndpointVersionV1,
   persistenceEndpointVersionV1,
   jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
+  [transformerMenuV1],
   entityDefinitionSelfApplication as EntityDefinition,
   entityDefinitionSelfApplicationVersion as EntityDefinition,
   entityDefinitionDeployment as EntityDefinition,

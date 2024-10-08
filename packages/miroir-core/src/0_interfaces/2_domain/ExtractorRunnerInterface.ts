@@ -24,7 +24,8 @@ import {
   QueryAction,
   DomainModelGetFetchParamJzodSchemaForExtractor,
   DomainModelGetSingleSelectQueryJzodSchemaForExtractor,
-  DomainModelQueryJzodSchemaParams
+  DomainModelQueryJzodSchemaParams,
+  ExtendedTransformerForRuntime
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
 // ################################################################################################
@@ -81,7 +82,8 @@ export type AsyncExtractorTemplateRunnerMap = {
     DomainElementInstanceUuidIndexOrFailed
   >,
   applyExtractorTransformer(
-    query: TransformerForRuntime,
+    // query: TransformerForRuntime,
+    query: ExtendedTransformerForRuntime,
     queryParams: Record<string, any>,
     newFetchedData: Record<string, any>,
     // queryParams: DomainElementObject,
@@ -192,7 +194,8 @@ export type AsyncExtractorRunnerMap = {
     DomainElementInstanceUuidIndexOrFailed
   >;
   applyExtractorTransformer(
-    query: TransformerForRuntime,
+    // query: TransformerForRuntime,
+    query: ExtendedTransformerForRuntime,
     queryParams: Record<string, any>,
     newFetchedData: Record<string, any>,
     // queryParams: DomainElementObject,
@@ -220,7 +223,8 @@ export type AsyncExtractorRunnerMap = {
     DomainElementInstanceUuidIndexOrFailed
   >;
   applyExtractorTemplateTransformer(
-    query: TransformerForRuntime,
+    // query: TransformerForRuntime,
+    query: ExtendedTransformerForRuntime,
     queryParams: Record<string, any>,
     newFetchedData: Record<string, any>,
     // queryParams: DomainElementObject,

@@ -1,0 +1,118 @@
+{
+  "uuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName":"EntityDefinition",
+  "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "conceptLevel":"Model",
+  "name":"TransformerDefinition",
+  "icon": "Interests",
+  "viewAttributes": [
+    "name",
+    "defaultLabel",
+    "selfApplication",
+    "uuid"
+  ],
+  "jzodSchema": {
+    "type": "object",
+    "definition": {
+      "uuid": {
+        "type": "uuid",
+        "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
+      },
+      "parentName": {
+        "type": "string",
+        "optional": true,
+        "tag": { "value": {  "id":2, "defaultLabel": "Entity Name", "editable": false }}
+      },
+      "parentUuid": {
+        "type": "uuid",
+        "tag": { "value": {  "id":3, "defaultLabel": "Entity Uuid", "editable": false }}
+      },
+      "parentDefinitionVersionUuid": {
+        "type": "uuid",
+        "optional": true,
+        "tag": { "value": {  "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }}
+      },
+      "name": {
+        "type": "string",
+        "tag": { "value": {  "id":5, "defaultLabel": "Name", "editable": true }}
+      },
+      "defaultLabel": {
+        "type": "string",
+        "tag": { "value": {  "id":6, "defaultLabel": "Default Label", "editable": true }}
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": { "value": {  "id":7, "defaultLabel": "Description", "editable": true }}
+      },
+      "transformerInterface": {
+        "type": "object",
+        "optional": true,
+        "definition": {
+          "transformerParameterSchema": {
+            "type": "object",
+            "definition": {
+              "transformerType": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "jzodLiteral"
+                }
+              },
+              "transformerDefinition": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "jzodElement"
+                }
+              }
+            }
+          },
+          "transformerResultSchema": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "jzodSchema"
+            }
+          }
+        }
+      },
+      "transformerImplementation": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "object",
+            "definition": {
+              "transformerImplementationType": {
+                "type": "literal",
+                "definition": "libraryImplementation"
+              },
+              "implementationFunctionName": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "transformerType": {
+                "type": "literal",
+                "definition": "queryReturningJzodSchema"
+              },
+              "definition": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerTemplateForRecordOfTransformers"
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

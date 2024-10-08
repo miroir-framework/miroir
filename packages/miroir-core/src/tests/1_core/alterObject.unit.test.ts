@@ -170,31 +170,6 @@ export const defaultMiroirMetaModel: MetaModel = {
 // ################################################################################################
 // ################################################################################################
 
-// const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
-//   entityDefinitionBundleV1 as EntityDefinition,
-//   entityDefinitionCommit as EntityDefinition,
-//   modelEndpointV1,
-//   storeManagementEndpoint,
-//   instanceEndpointVersionV1,
-//   undoRedoEndpointVersionV1,
-//   localCacheEndpointVersionV1,
-//   domainEndpointVersionV1,
-//   queryEndpointVersionV1,
-//   persistenceEndpointVersionV1,
-//   jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
-//   transformerJzodSchema as JzodSchema,
-//   entityDefinitionSelfApplication as EntityDefinition,
-//   entityDefinitionSelfApplicationVersion as EntityDefinition,
-//   entityDefinitionDeployment as EntityDefinition,
-//   entityDefinitionEntity as EntityDefinition,
-//   entityDefinitionEntityDefinition as EntityDefinition,
-//   entityDefinitionJzodSchema as EntityDefinition,
-//   entityDefinitionMenu  as EntityDefinition,
-//   entityDefinitionQueryVersionV1 as EntityDefinition,
-//   entityDefinitionReport as EntityDefinition,
-//   // jzodSchemajzodMiroirBootstrapSchema as any,
-// );
-
 function testResolve(
   testId: string,
   object: any,

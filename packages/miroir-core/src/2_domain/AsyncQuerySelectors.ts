@@ -7,6 +7,7 @@ import {
   DomainElementInstanceUuidIndexOrFailed,
   DomainElementObject,
   EntityInstance,
+  ExtendedTransformerForRuntime,
   ExtractorForRecordOfExtractors,
   ExtractorForSingleObject,
   ExtractorForSingleObjectList,
@@ -86,7 +87,8 @@ export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
 
 // ################################################################################################
 export async function asyncApplyExtractorTransformerInMemory(
-  actionRuntimeTransformer: TransformerForRuntime,
+  // actionRuntimeTransformer: TransformerForRuntime,
+  actionRuntimeTransformer: ExtendedTransformerForRuntime,
   queryParams: Record<string, any>,
   newFetchedData: Record<string, any>,
   // queryParams: DomainElementObject,
