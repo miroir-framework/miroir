@@ -21,7 +21,7 @@ import { MiroirLoggerFactory } from "../../../4_services/Logger.js";
 import { packageName } from "../../../constants.js";
 import { getLoggerName } from "../../../tools.js";
 import { LoggerInterface } from "../../4-services/LoggerInterface.js";
-import { JzodElement } from "../preprocessor-generated/miroirFundamentalType.js";
+import { JzodElement, transformerForBuild_list_pickElement, transformerForRuntime_list_pickElement } from "../preprocessor-generated/miroirFundamentalType.js";
 import { optional } from "zod";
 // import { Endpoint } from "../../../3_controllers/Endpoint.js";
 
@@ -31,6 +31,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
+export const miroirFundamentalJzodSchemaUuid = "fe9b7d99-f216-44de-bb6e-60e1a1ebb739";
 /**
  * 
  * @param jzodSchema 
@@ -205,7 +206,7 @@ export function getMiroirFundamentalJzodSchema(
   // ): JzodSchema {
   const entityDefinitionQueryVersionV1WithAbsoluteReferences = makeReferencesAbsolute(
     entityDefinitionQueryVersionV1.jzodSchema.definition.definition,
-    "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+    miroirFundamentalJzodSchemaUuid
   ) as any;
 
   // const domainActionDefinitions = Object.fromEntries(
@@ -225,7 +226,7 @@ export function getMiroirFundamentalJzodSchema(
 
   const miroirFundamentalJzodSchema: any = {
     // const miroirFundamentalJzodSchema: JzodSchema = {
-    uuid: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+    uuid: miroirFundamentalJzodSchemaUuid,
     parentName: "JzodSchema",
     parentUuid: "5e81e1b9-38be-487c-b3e5-53796c57fccf",
     name: "miroirFundamentalJzodSchema",
@@ -240,7 +241,7 @@ export function getMiroirFundamentalJzodSchema(
           makeReferencesAbsolute(
             // jzodSchemajzodMiroirBootstrapSchema.definition as JzodElement,
             jzodSchemajzodMiroirBootstrapSchema.definition as any,
-            "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            miroirFundamentalJzodSchemaUuid,
             true
           ) as any
         ).context,
@@ -250,7 +251,7 @@ export function getMiroirFundamentalJzodSchema(
         // ...(transformerJzodSchema as any).definition.context, // gives "transformer_InnerReference", "transformerForBuild", "actionHandler"
         ...makeReferencesAbsolute(
           (transformerJzodSchema as any).definition,
-          "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          miroirFundamentalJzodSchemaUuid,
           true
         ).context, // gives "transformer_InnerReference", "transformerForBuild", "actionHandler"
         ...Object.fromEntries(
@@ -265,14 +266,14 @@ export function getMiroirFundamentalJzodSchema(
             {
               "type": "schemaReference",
               "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "absolutePath": miroirFundamentalJzodSchemaUuid,
                 "relativePath": "transformerForRuntime"
               }
             },
             {
               "type": "schemaReference",
               "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "absolutePath": miroirFundamentalJzodSchemaUuid,
                 "relativePath": "transformer_menu_addItem"
               }
             }
@@ -291,7 +292,7 @@ export function getMiroirFundamentalJzodSchema(
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "entityInstance",
               },
             },
@@ -318,7 +319,7 @@ export function getMiroirFundamentalJzodSchema(
             type: "schemaReference",
             definition: {
               eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              absolutePath: miroirFundamentalJzodSchemaUuid,
               relativePath: "entityAttributeUntypedCore",
             },
           },
@@ -326,7 +327,7 @@ export function getMiroirFundamentalJzodSchema(
             type: {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "entityAttributeExpandedType",
               },
             },
@@ -338,7 +339,7 @@ export function getMiroirFundamentalJzodSchema(
             type: "schemaReference",
             definition: {
               eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              absolutePath: miroirFundamentalJzodSchemaUuid,
               relativePath: "entityAttributeUntypedCore",
             },
           },
@@ -352,7 +353,7 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 type: "schemaReference",
                 definition: {
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
                   relativePath: "entityAttributeCore",
                 },
               },
@@ -365,7 +366,7 @@ export function getMiroirFundamentalJzodSchema(
             type: "schemaReference",
             definition: {
               eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              absolutePath: miroirFundamentalJzodSchemaUuid,
               relativePath: "entityAttributeUntypedCore",
             },
           },
@@ -378,7 +379,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               optional: true,
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "applicationSection",
               },
             },
@@ -394,14 +395,14 @@ export function getMiroirFundamentalJzodSchema(
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "entityForeignKeyAttribute",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "entityArrayAttribute",
               },
             },
@@ -412,7 +413,7 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             eager: true,
             partial: true,
-            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            absolutePath: miroirFundamentalJzodSchemaUuid,
             relativePath: "jzodElement",
           },
         },
@@ -518,7 +519,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               optional: false,
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "applicationSection",
               },
             },
@@ -527,7 +528,7 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 type: "schemaReference",
                 definition: {
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
                   relativePath: "entityInstance",
                 },
               },
@@ -550,7 +551,7 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             type: "schemaReference",
             definition: {
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              absolutePath: miroirFundamentalJzodSchemaUuid,
               relativePath: "entityInstance",
             },
           },
@@ -560,7 +561,7 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             type: "schemaReference",
             definition: {
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              absolutePath: miroirFundamentalJzodSchemaUuid,
               relativePath: "entityInstancesUuidIndex",
             },
           },
@@ -608,7 +609,7 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 type: "schemaReference",
                 definition: {
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
                   relativePath: "applicationVersion",
                 },
               },
@@ -653,7 +654,7 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 type: "schemaReference",
                 definition: {
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
                   relativePath: "storeBasedConfiguration",
                 },
               },
@@ -663,7 +664,7 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 type: "schemaReference",
                 definition: {
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
                   relativePath: "entity",
                 },
               },
@@ -673,7 +674,7 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 type: "schemaReference",
                 definition: {
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
                   relativePath: "entityDefinition",
                 },
               },
@@ -683,7 +684,7 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 type: "schemaReference",
                 definition: {
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
                   relativePath: "jzodSchema",
                 },
               },
@@ -693,7 +694,7 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 type: "schemaReference",
                 definition: {
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
                   relativePath: "menu",
                 },
               },
@@ -703,7 +704,7 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 type: "schemaReference",
                 definition: {
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
                   relativePath: "report",
                 },
               },
@@ -742,21 +743,21 @@ export function getMiroirFundamentalJzodSchema(
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "indexedDbStoreSectionConfiguration",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "filesystemDbStoreSectionConfiguration",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "sqlDbStoreSectionConfiguration",
               },
             },
@@ -768,21 +769,21 @@ export function getMiroirFundamentalJzodSchema(
             admin: {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "storeSectionConfiguration",
               },
             },
             model: {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "storeSectionConfiguration",
               },
             },
             data: {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "storeSectionConfiguration",
               },
             },
@@ -793,7 +794,7 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             type: "schemaReference",
             definition: {
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              absolutePath: miroirFundamentalJzodSchemaUuid,
               relativePath: "storeUnitConfiguration",
             },
           },
@@ -812,7 +813,7 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 type: "schemaReference",
                 definition: {
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
                   relativePath: "storeUnitConfiguration",
                 },
               },
@@ -832,7 +833,7 @@ export function getMiroirFundamentalJzodSchema(
             deploymentStorageConfig: {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "deploymentStorageConfig",
               },
             },
@@ -848,7 +849,7 @@ export function getMiroirFundamentalJzodSchema(
             serverConfig: {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "serverConfigForClientConfig",
               },
             },
@@ -863,14 +864,14 @@ export function getMiroirFundamentalJzodSchema(
                 {
                   type: "schemaReference",
                   definition: {
-                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    absolutePath: miroirFundamentalJzodSchemaUuid,
                     relativePath: "miroirConfigForMswClient",
                   },
                 },
                 {
                   type: "schemaReference",
                   definition: {
-                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    absolutePath: miroirFundamentalJzodSchemaUuid,
                     relativePath: "miroirConfigForRestClient",
                   },
                 },
@@ -920,7 +921,7 @@ export function getMiroirFundamentalJzodSchema(
                   actionArguments: {
                     type: "schemaReference",
                     definition: {
-                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      absolutePath: miroirFundamentalJzodSchemaUuid,
                       relativePath: "modelAction",
                     },
                   },
@@ -941,28 +942,28 @@ export function getMiroirFundamentalJzodSchema(
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "applicationSection",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "entityInstance",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "entityInstanceCollection",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "instanceAction",
               },
             },
@@ -971,7 +972,7 @@ export function getMiroirFundamentalJzodSchema(
         ______________________________________________queries_____________________________________________: {
           type: "never",
         },
-        // ...(makeReferencesAbsolute(entityDefinitionQueryVersionV1.jzodSchema.definition.definition,"fe9b7d99-f216-44de-bb6e-60e1a1ebb739") as any).context,
+        // ...(makeReferencesAbsolute(entityDefinitionQueryVersionV1.jzodSchema.definition.definition,miroirFundamentalJzodSchemaUuid) as any).context,
         ...entityDefinitionQueryVersionV1WithAbsoluteReferences.context,
         domainElementVoid: {
           type: "object",
@@ -1007,7 +1008,7 @@ export function getMiroirFundamentalJzodSchema(
             elementValue: {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "queryFailed",
               },
             },
@@ -1037,14 +1038,14 @@ export function getMiroirFundamentalJzodSchema(
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainElementObject",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainElementFailed",
               },
             },
@@ -1060,7 +1061,7 @@ export function getMiroirFundamentalJzodSchema(
             elementValue: {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "entityInstancesUuidIndex",
               },
             },
@@ -1072,14 +1073,14 @@ export function getMiroirFundamentalJzodSchema(
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainElementInstanceUuidIndex",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainElementFailed",
               },
             },
@@ -1095,7 +1096,7 @@ export function getMiroirFundamentalJzodSchema(
             elementValue: {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "entityInstance",
               },
             },
@@ -1107,14 +1108,14 @@ export function getMiroirFundamentalJzodSchema(
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainElementEntityInstance",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainElementFailed",
               },
             },
@@ -1130,7 +1131,7 @@ export function getMiroirFundamentalJzodSchema(
             elementValue: {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "entityInstanceCollection",
               },
             },
@@ -1142,14 +1143,14 @@ export function getMiroirFundamentalJzodSchema(
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainElementEntityInstanceCollection",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainElementFailed",
               },
             },
@@ -1167,7 +1168,7 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 type: "schemaReference",
                 definition: {
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
                   relativePath: "entityInstance",
                 },
               },
@@ -1180,14 +1181,14 @@ export function getMiroirFundamentalJzodSchema(
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainElementInstanceArray",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainElementFailed",
               },
             },
@@ -1212,56 +1213,56 @@ export function getMiroirFundamentalJzodSchema(
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainElementVoid",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainElementAny",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainElementFailed",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainElementObjectOrFailed",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainElementInstanceUuidIndexOrFailed",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainElementEntityInstanceCollectionOrFailed",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainElementInstanceArrayOrFailed",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainElementEntityInstanceOrFailed",
               },
             },
@@ -1275,7 +1276,7 @@ export function getMiroirFundamentalJzodSchema(
                 elementValue: {
                   type: "schemaReference",
                   definition: {
-                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    absolutePath: miroirFundamentalJzodSchemaUuid,
                     relativePath: "entityInstanceUuid",
                   },
                 },
@@ -1291,7 +1292,7 @@ export function getMiroirFundamentalJzodSchema(
                 elementValue: {
                   type: "schemaReference",
                   definition: {
-                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    absolutePath: miroirFundamentalJzodSchemaUuid,
                     relativePath: "entityInstancesUuidIndex",
                   },
                 },
@@ -1363,7 +1364,7 @@ export function getMiroirFundamentalJzodSchema(
                   type: "schemaReference",
                   optional: true,
                   definition: {
-                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    absolutePath: miroirFundamentalJzodSchemaUuid,
                     relativePath: "applicationSection",
                   },
                 },
@@ -1395,7 +1396,7 @@ export function getMiroirFundamentalJzodSchema(
               },
               // type: "schemaReference",
               // definition: {
-              //   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              //   absolutePath: miroirFundamentalJzodSchemaUuid,
               //   relativePath: "domainElementObject",
               // },
             },
@@ -1406,7 +1407,7 @@ export function getMiroirFundamentalJzodSchema(
               },
               // type: "schemaReference",
               // definition: {
-              //   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              //   absolutePath: miroirFundamentalJzodSchemaUuid,
               //   relativePath: "domainElementObject",
               // },
             },
@@ -1417,7 +1418,7 @@ export function getMiroirFundamentalJzodSchema(
               },
               // type: "schemaReference",
               // definition: {
-              //   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              //   absolutePath: miroirFundamentalJzodSchemaUuid,
               //   relativePath: "domainElementObject",
               // },
             },
@@ -1429,7 +1430,7 @@ export function getMiroirFundamentalJzodSchema(
             type: "schemaReference",
             definition: {
               eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              absolutePath: miroirFundamentalJzodSchemaUuid,
               relativePath: "domainModelRootExtractor",
             },
           },
@@ -1441,7 +1442,7 @@ export function getMiroirFundamentalJzodSchema(
             select: {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "querySelectObject", // TODO: is this still an extractor, while it includes queryTemplateSelectObjectByRelation?
               },
             },
@@ -1453,7 +1454,7 @@ export function getMiroirFundamentalJzodSchema(
             type: "schemaReference",
             definition: {
               eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              absolutePath: miroirFundamentalJzodSchemaUuid,
               relativePath: "domainModelRootExtractor",
             },
           },
@@ -1465,7 +1466,7 @@ export function getMiroirFundamentalJzodSchema(
             select: {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "querySelectObjectList",
               },
             },
@@ -1478,14 +1479,14 @@ export function getMiroirFundamentalJzodSchema(
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "extractorForSingleObject",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "extractorForSingleObjectList",
               },
             },
@@ -1497,7 +1498,7 @@ export function getMiroirFundamentalJzodSchema(
             type: "schemaReference",
             definition: {
               eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              absolutePath: miroirFundamentalJzodSchemaUuid,
               relativePath: "domainModelRootExtractor",
             },
           },
@@ -1512,7 +1513,7 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 type: "schemaReference",
                 definition: {
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
                   relativePath: "querySelectExtractorWrapper",
                 },
               },
@@ -1521,7 +1522,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               optional: true,
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "queryRecord",
               },
             },
@@ -1531,7 +1532,7 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 type: "schemaReference",
                 definition: {
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
                   // relativePath: "transformerForRuntime",
                   relativePath: "extendedTransformerForRuntime",
                 },
@@ -1545,7 +1546,7 @@ export function getMiroirFundamentalJzodSchema(
             type: "schemaReference",
             definition: {
               eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              absolutePath: miroirFundamentalJzodSchemaUuid,
               relativePath: "domainModelRootExtractor",
             },
           },
@@ -1557,7 +1558,7 @@ export function getMiroirFundamentalJzodSchema(
             select: {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "queryTemplateSelectObject", // TODO: is this still an extractor, while it includes queryTemplateSelectObjectByRelation?
               },
             },
@@ -1569,7 +1570,7 @@ export function getMiroirFundamentalJzodSchema(
             type: "schemaReference",
             definition: {
               eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              absolutePath: miroirFundamentalJzodSchemaUuid,
               relativePath: "domainModelRootExtractor",
             },
           },
@@ -1581,7 +1582,7 @@ export function getMiroirFundamentalJzodSchema(
             select: {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "queryTemplateSelectObjectList",
               },
             },
@@ -1594,14 +1595,14 @@ export function getMiroirFundamentalJzodSchema(
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "extractorTemplateForSingleObject",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "extractorTemplateForSingleObjectList",
               },
             },
@@ -1613,7 +1614,7 @@ export function getMiroirFundamentalJzodSchema(
             type: "schemaReference",
             definition: {
               eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              absolutePath: miroirFundamentalJzodSchemaUuid,
               relativePath: "domainModelRootExtractor",
             },
           },
@@ -1628,7 +1629,7 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 type: "schemaReference",
                 definition: {
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
                   relativePath: "queryTemplateSelectExtractorWrapper",
                 },
               },
@@ -1637,7 +1638,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               optional: true,
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "queryTemplateRecord",
               },
             },
@@ -1647,7 +1648,7 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 type: "schemaReference",
                 definition: {
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
                   // relativePath: "transformerForRuntime",
                   relativePath: "extendedTransformerForRuntime",
                 },
@@ -1662,7 +1663,7 @@ export function getMiroirFundamentalJzodSchema(
             type: "schemaReference",
             definition: {
               eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              absolutePath: miroirFundamentalJzodSchemaUuid,
               relativePath: "domainModelRootExtractor",
             },
           },
@@ -1687,7 +1688,7 @@ export function getMiroirFundamentalJzodSchema(
             type: "schemaReference",
             definition: {
               eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              absolutePath: miroirFundamentalJzodSchemaUuid,
               relativePath: "domainModelRootExtractor",
             },
           },
@@ -1699,7 +1700,7 @@ export function getMiroirFundamentalJzodSchema(
             fetchParams: {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "extractorTemplateForRecordOfExtractors",
               },
             },
@@ -1711,7 +1712,7 @@ export function getMiroirFundamentalJzodSchema(
             type: "schemaReference",
             definition: {
               eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              absolutePath: miroirFundamentalJzodSchemaUuid,
               relativePath: "domainModelRootExtractor",
             },
           },
@@ -1723,7 +1724,7 @@ export function getMiroirFundamentalJzodSchema(
             fetchParams: {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "extractorForRecordOfExtractors",
               },
             },
@@ -1735,7 +1736,7 @@ export function getMiroirFundamentalJzodSchema(
             type: "schemaReference",
             definition: {
               eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              absolutePath: miroirFundamentalJzodSchemaUuid,
               relativePath: "domainModelRootExtractor",
             },
           },
@@ -1747,7 +1748,7 @@ export function getMiroirFundamentalJzodSchema(
             select: {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "queryTemplate",
               },
             },
@@ -1759,7 +1760,7 @@ export function getMiroirFundamentalJzodSchema(
             type: "schemaReference",
             definition: {
               eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              absolutePath: miroirFundamentalJzodSchemaUuid,
               relativePath: "domainModelRootExtractor",
             },
           },
@@ -1771,7 +1772,7 @@ export function getMiroirFundamentalJzodSchema(
             select: {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "miroirQuery",
               },
             },
@@ -1785,21 +1786,21 @@ export function getMiroirFundamentalJzodSchema(
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainModelGetEntityDefinitionExtractor",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainModelGetFetchParamJzodSchemaForExtractorTemplate",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainModelGetSingleSelectQueryJzodSchemaForExtractorTemplate",
               },
             },
@@ -1812,21 +1813,21 @@ export function getMiroirFundamentalJzodSchema(
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainModelGetEntityDefinitionExtractor",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainModelGetFetchParamJzodSchemaForExtractor",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainModelGetSingleSelectQueryJzodSchemaForExtractor",
               },
             },
@@ -1839,21 +1840,21 @@ export function getMiroirFundamentalJzodSchema(
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "extractorTemplateForDomainModelObjects",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "extractorTemplateForRecordOfExtractors",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "localCacheExtractor",
               },
             },
@@ -1862,7 +1863,7 @@ export function getMiroirFundamentalJzodSchema(
             // {
             //   "type": "schemaReference",
             //   "definition": {
-            //     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            //     "absolutePath": miroirFundamentalJzodSchemaUuid,
             //     "relativePath": "domainModelQueryTemplateJzodSchemaParams"
             //   }
             // }
@@ -1873,21 +1874,21 @@ export function getMiroirFundamentalJzodSchema(
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainModelGetEntityDefinitionExtractor",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainModelGetFetchParamJzodSchemaForExtractorTemplate",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainModelGetSingleSelectQueryJzodSchemaForExtractorTemplate",
               },
             },
@@ -1900,21 +1901,21 @@ export function getMiroirFundamentalJzodSchema(
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "extractorForDomainModelObjects",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "extractorForRecordOfExtractors",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "localCacheExtractor",
               },
             },
@@ -1923,7 +1924,7 @@ export function getMiroirFundamentalJzodSchema(
             // {
             //   "type": "schemaReference",
             //   "definition": {
-            //     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            //     "absolutePath": miroirFundamentalJzodSchemaUuid,
             //     "relativePath": "domainModelQueryTemplateJzodSchemaParams"
             //   }
             // }
@@ -1934,21 +1935,21 @@ export function getMiroirFundamentalJzodSchema(
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainModelGetEntityDefinitionExtractor",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainModelGetFetchParamJzodSchemaForExtractor",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainModelGetSingleSelectQueryJzodSchemaForExtractor",
               },
             },
@@ -1997,7 +1998,7 @@ export function getMiroirFundamentalJzodSchema(
             status: { type: "literal", definition: "ok" },
             returnedDomainElement: {
               type: "schemaReference",
-              definition: { absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", relativePath: "domainElementVoid" },
+              definition: { absolutePath: miroirFundamentalJzodSchemaUuid, relativePath: "domainElementVoid" },
             },
           },
         },
@@ -2006,11 +2007,11 @@ export function getMiroirFundamentalJzodSchema(
           definition: [
             {
               type: "schemaReference",
-              definition: { absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", relativePath: "actionError" },
+              definition: { absolutePath: miroirFundamentalJzodSchemaUuid, relativePath: "actionError" },
             },
             {
               type: "schemaReference",
-              definition: { absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", relativePath: "actionVoidSuccess" },
+              definition: { absolutePath: miroirFundamentalJzodSchemaUuid, relativePath: "actionVoidSuccess" },
             },
           ],
         },
@@ -2021,7 +2022,7 @@ export function getMiroirFundamentalJzodSchema(
             returnedDomainElement: {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainElementEntityInstance",
               },
             },
@@ -2032,12 +2033,12 @@ export function getMiroirFundamentalJzodSchema(
           definition: [
             {
               type: "schemaReference",
-              definition: { absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", relativePath: "actionError" },
+              definition: { absolutePath: miroirFundamentalJzodSchemaUuid, relativePath: "actionError" },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "actionEntityInstanceSuccess",
               },
             },
@@ -2050,7 +2051,7 @@ export function getMiroirFundamentalJzodSchema(
             returnedDomainElement: {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainElementEntityInstanceCollection",
               },
             },
@@ -2061,12 +2062,12 @@ export function getMiroirFundamentalJzodSchema(
           definition: [
             {
               type: "schemaReference",
-              definition: { absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", relativePath: "actionError" },
+              definition: { absolutePath: miroirFundamentalJzodSchemaUuid, relativePath: "actionError" },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "actionEntityInstanceCollectionSuccess",
               },
             },
@@ -2078,7 +2079,7 @@ export function getMiroirFundamentalJzodSchema(
             status: { type: "literal", definition: "ok" },
             returnedDomainElement: {
               type: "schemaReference",
-              definition: { absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", relativePath: "domainElement" },
+              definition: { absolutePath: miroirFundamentalJzodSchemaUuid, relativePath: "domainElement" },
             },
           },
         },
@@ -2087,11 +2088,11 @@ export function getMiroirFundamentalJzodSchema(
           definition: [
             {
               type: "schemaReference",
-              definition: { absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", relativePath: "actionError" },
+              definition: { absolutePath: miroirFundamentalJzodSchemaUuid, relativePath: "actionError" },
             },
             {
               type: "schemaReference",
-              definition: { absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", relativePath: "actionSuccess" },
+              definition: { absolutePath: miroirFundamentalJzodSchemaUuid, relativePath: "actionSuccess" },
             },
           ],
         },
@@ -2182,28 +2183,28 @@ export function getMiroirFundamentalJzodSchema(
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "modelActionAlterEntityAttribute",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "modelActionCreateEntity",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "modelActionDropEntity",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "modelActionRenameEntity",
               },
             },
@@ -2268,14 +2269,14 @@ export function getMiroirFundamentalJzodSchema(
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "storeManagementAction",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "bundleAction",
               },
             },
@@ -2301,7 +2302,7 @@ export function getMiroirFundamentalJzodSchema(
         },
       },
       definition: {
-        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        absolutePath: miroirFundamentalJzodSchemaUuid,
         relativePath: "miroirAllFundamentalTypesUnion",
       },
     },
@@ -2333,7 +2334,7 @@ export function getMiroirFundamentalJzodSchema(
   // const innerResolutionStore: Record<string, JzodReference> = {
   const innerResolutionStore: Record<string, any> = {
     // TODO: transform all inner references in jzodSchemajzodMiroirBootstrapSchema into innerResolutionStoreReferences
-    "fe9b7d99-f216-44de-bb6e-60e1a1ebb739": {
+    [miroirFundamentalJzodSchemaUuid]: {
       type: "schemaReference",
       context: {
         // ...(jzodSchemajzodMiroirBootstrapSchema.definition as JzodReference).context,
@@ -2364,7 +2365,7 @@ export function getMiroirFundamentalJzodSchema(
         //       elementValue: {
         //         type: "schemaReference",
         //         definition: {
-        //           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        //           absolutePath: miroirFundamentalJzodSchemaUuid,
         //           relativePath: "entityInstancesUuidIndex",
         //         },
         //       },
@@ -2380,7 +2381,7 @@ export function getMiroirFundamentalJzodSchema(
         //       elementValue: {
         //         type: "schemaReference",
         //         definition: {
-        //           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        //           absolutePath: miroirFundamentalJzodSchemaUuid,
         //           relativePath: "queryFailed",
         //         },
         //       },
@@ -2541,6 +2542,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_orderBy: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_orderBy,
         transformerForBuild_unique: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_unique,
         transformerForBuild_count: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_count,
+        transformerForBuild_list_pickElement: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_list_pickElement,
         transformerForBuild_fullObjectTemplate: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_fullObjectTemplate,
         transformerForBuild_freeObjectTemplate: (transformerJzodSchema as any).definition.context.transformerForBuild_freeObjectTemplate,
         transformerForBuild_object_alter: (transformerJzodSchema as any).definition.context.transformerForBuild_object_alter,
@@ -2565,6 +2567,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForRuntime_mapper_listToList: (transformerJzodSchema as any).definition.context.transformerForRuntime_mapper_listToList,
         transformerForRuntime_mapper_listToObject: (transformerJzodSchema as any).definition.context.transformerForRuntime_mapper_listToObject,
         transformerForRuntime_objectValues: (transformerJzodSchema as any).definition.context.transformerForRuntime_objectValues,
+        transformerForRuntime_list_pickElement: (transformerJzodSchema as any).definition.context.transformerForRuntime_list_pickElement,
         transformerForRuntime_freeObjectTemplate: (transformerJzodSchema as any).definition.context.transformerForRuntime_freeObjectTemplate,
         transformerForRuntime_object_alter: (transformerJzodSchema as any).definition.context.transformerForRuntime_object_alter,
         transformerForRuntime: (transformerJzodSchema as any).definition.context.transformerForRuntime,
@@ -2584,15 +2587,15 @@ export function getMiroirFundamentalJzodSchema(
 
   // log.info("innerResolutionStore", innerResolutionStore);
 
-  // log.info("innerResolutionStore baseObject", JSON.stringify((innerResolutionStore["fe9b7d99-f216-44de-bb6e-60e1a1ebb739"] as any).context["jzodBaseObject"], null, 2));
-  // log.info("innerResolutionStore array", JSON.stringify((innerResolutionStore["fe9b7d99-f216-44de-bb6e-60e1a1ebb739"] as any).context["jzodArray"], null, 2));
+  // log.info("innerResolutionStore baseObject", JSON.stringify((innerResolutionStore[miroirFundamentalJzodSchemaUuid] as any).context["jzodBaseObject"], null, 2));
+  // log.info("innerResolutionStore array", JSON.stringify((innerResolutionStore[miroirFundamentalJzodSchemaUuid] as any).context["jzodArray"], null, 2));
 
   const localizedResolutionStore: Record<string, any> = Object.fromEntries(
     // const localizedResolutionStore: Record<string, JzodReference> = Object.fromEntries(
     Object.entries(innerResolutionStore).map((e) => [
       e[0],
-      makeReferencesAbsolute(e[1], "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", true) as any,
-      // makeReferencesAbsolute(e[1], "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", true) as JzodReference,
+      makeReferencesAbsolute(e[1], miroirFundamentalJzodSchemaUuid, true) as any,
+      // makeReferencesAbsolute(e[1], miroirFundamentalJzodSchemaUuid, true) as JzodReference,
     ])
   );
 
@@ -2617,7 +2620,7 @@ export function getMiroirFundamentalJzodSchema(
         ? resolvedAbsolutePath.context[ref.definition?.relativePath ?? ""]
         : undefined;
     const resultWithAbsoluteReferences = result
-      ? (makeReferencesAbsolute(result, "fe9b7d99-f216-44de-bb6e-60e1a1ebb739") as any)
+      ? (makeReferencesAbsolute(result, miroirFundamentalJzodSchemaUuid) as any)
       : result;
     // console.log(
     //   "getMiroirFundamentalJzodSchema applyCarryOnSchema resolving reference " +
@@ -2656,6 +2659,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_orderBy",
     "transformerForBuild_count",
     "transformerForBuild_unique",
+    "transformerForBuild_list_pickElement",
     "transformerForRuntime_Abstract",
     "transformerForRuntime_referencingTransformer",
   ];
@@ -2747,7 +2751,7 @@ export function getMiroirFundamentalJzodSchema(
                         type: "schemaReference",
                         definition: {
                           relativePath: forgeCarryOnReferenceName(
-                            "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            miroirFundamentalJzodSchemaUuid,
                             "instanceAction"
                           ),
                         },
@@ -2764,7 +2768,7 @@ export function getMiroirFundamentalJzodSchema(
                         type: "schemaReference",
                         definition: {
                           relativePath: forgeCarryOnReferenceName(
-                            "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            miroirFundamentalJzodSchemaUuid,
                             "queryTemplateAction"
                           ),
                         },
@@ -2783,7 +2787,7 @@ export function getMiroirFundamentalJzodSchema(
             {
               type: "schemaReference",
               definition: {
-                relativePath: forgeCarryOnReferenceName("fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "compositeAction"),
+                relativePath: forgeCarryOnReferenceName(miroirFundamentalJzodSchemaUuid, "compositeAction"),
               },
             },
             carryOnSchemaReference as any,

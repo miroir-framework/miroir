@@ -22,19 +22,39 @@ export function transformer_menu_AddItem(
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): DomainElement {
-  const menu = transformers.transformer_InnerReference_resolve(
+  const menu = typeof transformer.transformerDefinition.menuReference == "string"?transformers.transformer_InnerReference_resolve(
     step,
     { transformerType: "contextReference", referenceName:transformer.transformerDefinition.menuReference },
     queryParams,
     contextResults
-  ).elementValue as Menu;
+  ).elementValue as Menu
+  :
+  transformers.transformer_InnerReference_resolve(
+    step,
+    transformer.transformerDefinition.menuReference,
+    queryParams,
+    contextResults
+  ).elementValue as Menu
+  ;
 
-  const menuItem = transformers.transformer_InnerReference_resolve(
+  log.debug("transformer_menu_AddItem resolved menu", JSON.stringify(menu, null, 2));
+
+  const menuItem = typeof transformer.transformerDefinition.menuItemReference == "string"?transformers.transformer_InnerReference_resolve(
     step,
     { transformerType: "contextReference", referenceName:transformer.transformerDefinition.menuItemReference },
     queryParams,
     contextResults
-  ).elementValue as MiroirMenuItem;
+  ).elementValue as MiroirMenuItem
+  :
+  transformers.transformer_InnerReference_resolve(
+    step,
+    transformer.transformerDefinition.menuItemReference,
+    queryParams,
+    contextResults
+  ).elementValue as MiroirMenuItem
+  ;
+
+  log.debug("transformer_menu_AddItem resolved menuItem", JSON.stringify(menuItem, null, 2));
 
   if (menu.definition.menuType === "simpleMenu") {
     log.error("transformer_menu_AddItem not implemented for simpleMenu yet");

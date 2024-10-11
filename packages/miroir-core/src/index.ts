@@ -1,4 +1,7 @@
-export { getMiroirFundamentalJzodSchema } from "../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.js"
+export {
+  miroirFundamentalJzodSchemaUuid,
+  getMiroirFundamentalJzodSchema,
+} from "../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.js"
 
 export {
   ActionError,

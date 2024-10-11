@@ -74,7 +74,7 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
   // ################################################################################################
   async handleQuery(queryAction: QueryAction): Promise<ActionReturnType> {
     // TODO: fix applicationSection!!!
-    log.info(this.logHeader, "handleQueryTemplateForServerONLY", "queryTemplateAction", JSON.stringify(queryAction, null, 2));
+    log.info(this.logHeader, "handleQuery", "queryTemplateAction", JSON.stringify(queryAction, null, 2));
     let queryResult: DomainElement;
     switch (queryAction.query.queryType) {
       case "extractorForDomainModelObjects": {

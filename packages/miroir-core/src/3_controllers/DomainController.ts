@@ -745,12 +745,12 @@ export class DomainController implements DomainControllerInterface {
           break;
         }
         case 'query': {
-          // log.info(
-          //   "handleCompositeActionTemplate resolved query",
-          //   resolvedQueryTemplate,
-          //   "with actionParamValues",
-          //   actionParamValues
-          // );
+          log.info(
+            "handleCompositeActionTemplate resolved query action",
+            currentAction,
+            "with actionParamValues",
+            actionParamValues
+          );
   
           const actionResult = await this.handleQueryTemplateForServerONLY(currentAction.queryTemplateAction);
           if (actionResult?.status != "ok") {

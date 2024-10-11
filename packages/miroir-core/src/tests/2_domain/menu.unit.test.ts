@@ -50,7 +50,15 @@ describe("menu.unit.test", () => {
           transformerType: "transformer_menu_addItem",
           transformerDefinition: {
             menuItemReference: "menuItem",
-            menuReference: "menu",
+            menuReference: {
+              transformerType: "objectDynamicAccess",
+              interpolation: "runtime",
+              objectAccessPath: [{
+                transformerType: "contextReference",
+                interpolation: "runtime",
+                referenceName: "menu",
+              }]
+            },
             menuSectionItemInsertionIndex: -1,
           },
         },
@@ -110,13 +118,13 @@ describe("menu.unit.test", () => {
               ],
             },
           },
-          menuItem:{
-              "label": "Test",
-              "section": "data",
-              "application": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-              "reportUuid": "ace3d5c9-b6a7-43e6-a277-595329e7532a",
-              "icon": "location_on"
-            },
+          menuItem: {
+            label: "Test",
+            section: "data",
+            application: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+            reportUuid: "ace3d5c9-b6a7-43e6-a277-595329e7532a",
+            icon: "location_on",
+          },
         }
       );
 

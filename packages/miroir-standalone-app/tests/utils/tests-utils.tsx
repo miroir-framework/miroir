@@ -559,7 +559,7 @@ export async function miroirBeforeEach(
     } else {
       throw new Error("miroirBeforeEach could not send commands to reset remote datastore because no domain controller has been provided.");
     }
-  } else {
+  } else { // EMULATED SERVER, USING LOCAL DATASTORE
     try {
       try {
         const miroirModelStoreCreated: ActionReturnType = await localMiroirPersistenceStoreController.createStore(
@@ -597,7 +597,7 @@ export async function miroirBeforeEach(
         await localAppPersistenceStoreController.clear();
         await localMiroirPersistenceStoreController.clear();
       } catch (error) {
-        console.error('could not clear persistence stores, can not go further!');
+        console.error('miroirBeforeEach could not clear persistence stores, can not go further!');
         throw(error);
       }
       try {
@@ -613,7 +613,7 @@ export async function miroirBeforeEach(
         );
         console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach initApplication miroir END');
       } catch (error) {
-        console.error('could not initApplication for miroir datastore, can not go further!');
+        console.error('miroirBeforeEach could not initApplication for miroir datastore, can not go further!');
         throw(error);
       }
       try {
@@ -629,7 +629,7 @@ export async function miroirBeforeEach(
         );
         console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach initApplication app END');
       } catch (error) {
-        console.error('could not initApplication for app datastore, can not go further!');
+        console.error('miroirBeforeEach could not initApplication for app datastore, can not go further!');
         throw(error);
       }
     } catch (error) {
@@ -838,6 +838,7 @@ export const chainVitestSteps = async (
      console.log("########################################### chainTestAsyncDomainCalls", stepName, "no test done because expectedDomainElementType is undefined", expectedDomainElementType);
     }
   } else {
+    console.log("########################################### chainTestAsyncDomainCalls", stepName, "error:", JSON.stringify(domainElement.error,undefined, 2));
     expect(
       domainElement.status,
       domainElement.error?.errorType ?? "no errorType" + ": " + domainElement.error?.errorMessage ?? "no errorMessage"

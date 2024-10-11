@@ -465,6 +465,28 @@
           }
         }
       },
+      "transformerForBuild_list_pickElement": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "relativePath": "transformerForBuild_orderBy"
+          }
+        },
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "listPickElement"
+          },
+          "referencedExtractor": {
+            "type": "string"
+          },
+          "index": {
+            "type": "number"
+          }
+        }
+      },
       "transformerForBuild_objectValues": {
         "type": "object",
         "extend": {
@@ -502,6 +524,12 @@
             "type": "schemaReference",
             "definition": {
               "relativePath": "transformerForBuild_object_alter"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuild_list_pickElement"
             }
           },
           {
@@ -1009,6 +1037,22 @@
           }
         }
       },
+      "transformerForRuntime_list_pickElement": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "relativePath": "transformerForBuild_list_pickElement"
+          }
+        },
+        "definition": {
+          "interpolation": {
+            "type": "literal",
+            "definition": "runtime"
+          }
+        }
+      },
       "transformerForRuntime": {
       "type": "union",
         "discriminator": "transformerType",
@@ -1041,6 +1085,12 @@
             "type": "schemaReference",
             "definition": {
               "relativePath": "transformerForRuntime_count"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForRuntime_list_pickElement"
             }
           },
           {

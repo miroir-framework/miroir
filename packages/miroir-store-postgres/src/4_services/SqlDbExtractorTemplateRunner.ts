@@ -53,7 +53,7 @@ export class SqlDbExtractTemplateRunner {
       | SqlDbModelStoreSection /* concrete types for MixedSqlDbInstanceStoreSection */
   ) // private persistenceStoreController: typeof MixedSqlDbInstanceStoreSection // does not work
   {
-    this.logHeader = "PersistenceStoreController " + persistenceStoreController.getStoreName();
+    this.logHeader = "SqlDbExtractTemplateRunner " + persistenceStoreController.getStoreName();
     const InMemoryImplementationExtractorRunnerMap: AsyncExtractorTemplateRunnerMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex.bind(this),
@@ -567,6 +567,7 @@ export class SqlDbExtractTemplateRunner {
 
     // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate params", selectorParams, deploymentUuid, applicationSection, entityUuid);
     // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate domainState", domainState);
+    log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate entityUuidDomainElement", entityUuidDomainElement);
 
     if (!deploymentUuid || !applicationSection || !entityUuidDomainElement) {
       return {

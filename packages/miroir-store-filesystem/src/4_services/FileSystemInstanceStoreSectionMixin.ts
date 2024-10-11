@@ -66,7 +66,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
       
       const result: ActionReturnType = await this.extractorRunner.handleQuery(query);
 
-      log.info(this.logHeader,'handleQuery','query',query, "result", result);
+      log.info(this.logHeader,'handleQuery DONE','query',query, "result", result);
       return result;
     }
     
@@ -107,6 +107,8 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
         "FileSystemInstanceStore getInstances",
         "entityUuid",
         entityUuid,
+        "applicationSection",
+        this.applicationSection,
         "directory",
         this.directory
       );
@@ -118,6 +120,8 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
           "FileSystemInstanceStore getInstances",
           "entityUuid",
           entityUuid,
+          "applicationSection",
+          this.applicationSection,
           "could not find path",
           entityInstancesPath
         );
@@ -136,6 +140,8 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
         "FileSystemInstanceStore getInstances",
         "entityUuid",
         entityUuid,
+        "applicationSection",
+        this.applicationSection,
         "directory",
         this.directory,
         "found entity instances",
@@ -153,6 +159,8 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
         "FileSystemInstanceStore getInstances",
         "entityUuid",
         entityUuid,
+        "applicationSection",
+        this.applicationSection,
         "directory",
         this.directory,
         "found entity instances",
@@ -177,6 +185,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     // #############################################################################################
     async deleteInstances(parentUuid: string, instances: EntityInstance[]): Promise<ActionVoidReturnType> {
       log.info(this.logHeader, "deleteInstances", parentUuid, instances);
+      // TODO: delete in parallel, not sequentially
       for (const o of instances) {
         await this.deleteInstance(parentUuid, { uuid: o.uuid } as EntityInstance);
       }

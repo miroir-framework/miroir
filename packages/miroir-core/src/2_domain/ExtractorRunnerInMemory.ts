@@ -48,7 +48,7 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
 
   // ################################################################################################
   constructor(private persistenceStoreController: PersistenceStoreInstanceSectionAbstractInterface) {
-    this.logHeader = "PersistenceStoreController " + persistenceStoreController.getStoreName();
+    this.logHeader = "ExtractorRunnerInMemory for store=" + persistenceStoreController.getStoreName();
     this.extractorTemplateRunner = new ExtractorTemplateRunnerInMemory(persistenceStoreController);
     this.selectorMap = {
       extractorType: "async",
@@ -71,7 +71,7 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
   // ################################################################################################
   async handleQuery(queryAction: QueryAction): Promise<ActionReturnType> {
     // TODO: fix applicationSection!!!
-    log.info(this.logHeader, "handleQuery", "queryAction", JSON.stringify(queryAction, null, 2));
+    log.info(this.logHeader, "handleQuery start", "queryAction", JSON.stringify(queryAction, null, 2));
     let queryResult: DomainElement;
     switch (queryAction.query.queryType) {
       case "extractorForDomainModelObjects": {

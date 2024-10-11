@@ -668,7 +668,7 @@ describe(
           //   testSchema: {
           //     "type": "schemaReference",
           //     "definition": {
-          //       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //       "absolutePath": miroirFundamentalJzodSchemaUuid,
           //       "relativePath": "jzodElement"
           //     }
           //   },
@@ -692,7 +692,7 @@ describe(
           //   testSchema: {
           //     "type": "schemaReference",
           //     "definition": {
-          //       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //       "absolutePath": miroirFundamentalJzodSchemaUuid,
           //       "relativePath": "jzodElement"
           //     }
           //   },
@@ -716,7 +716,7 @@ describe(
           //   testSchema: {
           //     type: "schemaReference",
           //     definition: {
-          //       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //       absolutePath: miroirFundamentalJzodSchemaUuid,
           //       relativePath: "jzodElement",
           //     },
           //   },
@@ -754,7 +754,7 @@ describe(
           //   testSchema: {
           //     type: "schemaReference",
           //     definition: {
-          //       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //       absolutePath: miroirFundamentalJzodSchemaUuid,
           //       relativePath: "jzodElement",
           //     },
           //   },
@@ -784,7 +784,7 @@ describe(
           //   },
           //   testValueObject: {
           //     type: "schemaReference",
-          //     definition: { absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", relativePath: "jzodElement" },
+          //     definition: { absolutePath: miroirFundamentalJzodSchemaUuid, relativePath: "jzodElement" },
           //   },
           // },
           // // JzodSchema: schema reference for object with extend clause
@@ -792,7 +792,7 @@ describe(
           //   testSchema: {
           //     type: "schemaReference",
           //     definition: {
-          //       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //       absolutePath: miroirFundamentalJzodSchemaUuid,
           //       relativePath: "jzodElement",
           //     },
           //   },
@@ -1040,7 +1040,7 @@ describe(
           //           section: {
           //             type: "schemaReference",
           //             definition: {
-          //               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //               absolutePath: miroirFundamentalJzodSchemaUuid,
           //               relativePath: "applicationSection",
           //             },
           //           },

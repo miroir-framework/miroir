@@ -127,13 +127,15 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
     // #########################################################################################
     async dropEntity(entityUuid: string): Promise<ActionVoidReturnType> {
       // TODO: implementation ~ indexedDb case. share it?
-      if (this.dataStore.getEntityUuids().includes(entityUuid)) {
+      // if (this.dataStore.getEntityUuids().includes(entityUuid)) {
+      if (this.getEntityUuids().includes(entityUuid)) {
         // this.localUuidIndexedDb.removeSubLevels([entityUuid]);
         await this.dataStore.dropStorageSpaceForInstancesOfEntity(entityUuid);
       } else {
         log.warn(this.logHeader, "dropEntity entity not found:", entityUuid);
       }
 
+      // TODO: does the following code work at all?
       if (this.getEntityUuids().includes(entityEntityDefinition.uuid)) {
         await this.deleteInstance(entityEntity.uuid, { uuid: entityUuid } as EntityInstance);
       } else {
@@ -146,10 +148,12 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
         );
       }
 
+      // this repeats exactly the previous code block, BUG??
       if (this.getEntityUuids().includes(entityEntityDefinition.uuid)) {
         await this.deleteInstance(entityEntity.uuid, { uuid: entityUuid } as EntityInstance);
 
-        const entityDefinitions: ActionEntityInstanceCollectionReturnType = await this.dataStore.getInstances(
+        // const entityDefinitions: ActionEntityInstanceCollectionReturnType = await this.dataStore.getInstances(
+        const entityDefinitions: ActionEntityInstanceCollectionReturnType = await this.getInstances(
           entityEntityDefinition.uuid
         );
         if (entityDefinitions.status != "ok") {
@@ -161,15 +165,6 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
             },
           });
         }
-        // if (entityDefinitions.returnedDomainElement?.elementType != "entityInstanceCollection") {
-        //   return Promise.resolve({
-        //     status: "error",
-        //     error: {
-        //       errorType: "FailedToGetInstances", // TODO: correct errorType
-        //       errorMessage: `getInstances failed for section: data, entityUuid ${entityUuid} wrong element type, expected "entityInstanceCollection", got elementType: ${entityDefinitions.returnedDomainElement?.elementType}`,
-        //     },
-        //   });
-        // }
 
         for (const entityDefinition of entityDefinitions.returnedDomainElement.elementValue.instances.filter(
           (i: EntityInstance) => (i as EntityDefinition).entityUuid == entityUuid

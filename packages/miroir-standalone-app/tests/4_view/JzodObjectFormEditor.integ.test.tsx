@@ -42,7 +42,9 @@ import {
   resolveReferencesForJzodSchemaAndValueObject,
   storeManagementEndpoint,
   undoRedoEndpointVersionV1,
-  transformerMenuV1
+  transformerMenuV1,
+  miroirFundamentalJzodSchemaUuid,
+  transformerJzodSchema
 } from "miroir-core";
 
 import {
@@ -93,6 +95,7 @@ const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
   queryEndpointVersionV1,
   persistenceEndpointVersionV1,
   jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
+  transformerJzodSchema as JzodSchema,
   [transformerMenuV1],
   entityDefinitionSelfApplication as EntityDefinition,
   entityDefinitionSelfApplicationVersion as EntityDefinition,
@@ -701,7 +704,7 @@ describe(
             [attributeName]: {
               "type": "schemaReference",
               "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "absolutePath": miroirFundamentalJzodSchemaUuid,
                 // "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
                 "relativePath": "jzodElement"
               }

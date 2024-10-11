@@ -77,7 +77,7 @@ import transformerJzodSchema from "../../assets/miroir_data/5e81e1b9-38be-487c-b
 import instanceConfigurationReference from "../../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json";
 import menuDefaultMiroir from "../../assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/eaac459c-6c2b-475c-8ae4-c6c3032dae00.json";
 
-import { getMiroirFundamentalJzodSchema } from "../../0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.js";
+import { getMiroirFundamentalJzodSchema, miroirFundamentalJzodSchemaUuid } from "../../0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.js";
 
 import entityDefinitionBundleV1 from "../../assets/miroirAdmin/model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/01a051d8-d43c-430d-a98e-739048f54942.json";
 // import entityDefinitionCommit from "../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b17d5e9e-12f2-4ed8-abdb-2576c01514a4.json";
@@ -630,7 +630,7 @@ describe("jzod.unfoldSchemaForValue", () => {
         testSchema: {
           type: "schemaReference",
           definition: {
-            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            absolutePath: miroirFundamentalJzodSchemaUuid,
             relativePath: "jzodElement",
           },
         },
@@ -653,7 +653,7 @@ describe("jzod.unfoldSchemaForValue", () => {
         testSchema: {
           type: "schemaReference",
           definition: {
-            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            absolutePath: miroirFundamentalJzodSchemaUuid,
             relativePath: "jzodElement",
           },
         },
@@ -673,7 +673,7 @@ describe("jzod.unfoldSchemaForValue", () => {
         testSchema: {
           type: "schemaReference",
           definition: {
-            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            absolutePath: miroirFundamentalJzodSchemaUuid,
             relativePath: "jzodElement",
           },
         },
@@ -707,7 +707,7 @@ describe("jzod.unfoldSchemaForValue", () => {
         testSchema: {
           type: "schemaReference",
           definition: {
-            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            absolutePath: miroirFundamentalJzodSchemaUuid,
             relativePath: "jzodElement",
           },
         },
@@ -735,7 +735,7 @@ describe("jzod.unfoldSchemaForValue", () => {
         },
         testValueObject: {
           type: "schemaReference",
-          definition: { absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", relativePath: "jzodElement" },
+          definition: { absolutePath: miroirFundamentalJzodSchemaUuid, relativePath: "jzodElement" },
         },
       },
       // JzodSchema: schema reference for object with extend clause
@@ -743,7 +743,7 @@ describe("jzod.unfoldSchemaForValue", () => {
         testSchema: {
           type: "schemaReference",
           definition: {
-            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            absolutePath: miroirFundamentalJzodSchemaUuid,
             relativePath: "jzodElement",
           },
         },
@@ -997,7 +997,7 @@ describe("jzod.unfoldSchemaForValue", () => {
                 section: {
                   type: "schemaReference",
                   definition: {
-                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    absolutePath: miroirFundamentalJzodSchemaUuid,
                     relativePath: "applicationSection",
                   },
                 },
@@ -1457,7 +1457,7 @@ describe("jzod.unfoldSchemaForValue", () => {
                   optional: true,
                   tag: { value: { id: 2, defaultLabel: "Parent Uuid", editable: false } },
                   definition: {
-                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    absolutePath: miroirFundamentalJzodSchemaUuid,
                     relativePath: "applicationSection",
                   },
                 },
@@ -1492,7 +1492,7 @@ describe("jzod.unfoldSchemaForValue", () => {
                 instanceUuid: {
                   type: "schemaReference",
                   definition: {
-                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    absolutePath: miroirFundamentalJzodSchemaUuid,
                     relativePath: "transformer_InnerReference",
                   },
                 },
@@ -1672,7 +1672,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
 
       // based on "real" cases: bootstrap EntityDefinitionEntityDefinition
-      //  TODO: resolve resolution issue for "JzodObject": resolveJzodSchemaReferenceInContext could not resolve reference {"relativePath":"jzodObject"} absoluteReferences keys ["fe9b7d99-f216-44de-bb6e-60e1a1ebb739","1e8dab4b-65a3-4686-922e-ce89a2d62aa9","1e8dab4b-65a3-4686-922e-ce89a2d62aa9"] current Model configuration,entities,entityDefinitions,jzodSchemas,menus,applicationVersions,reports,applicationVersionCrossEntityDefinition relativeReferenceJzodContext keys {}
+      //  TODO: resolve resolution issue for "JzodObject": resolveJzodSchemaReferenceInContext could not resolve reference {"relativePath":"jzodObject"} absoluteReferences keys [miroirFundamentalJzodSchemaUuid,"1e8dab4b-65a3-4686-922e-ce89a2d62aa9","1e8dab4b-65a3-4686-922e-ce89a2d62aa9"] current Model configuration,entities,entityDefinitions,jzodSchemas,menus,applicationVersions,reports,applicationVersionCrossEntityDefinition relativeReferenceJzodContext keys {}
       // test990: {
       //   testSchema: entityDefinitionEntityDefinition.jzodSchema as JzodElement,
       //   expectedResult: {

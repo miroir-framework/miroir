@@ -95,31 +95,31 @@ export const applicationParis = {
   "selfApplication": "70e02039-e283-4381-9575-8c52aed18a87"
 };
 export const adminConfigurationDeploymentParis = {
-  "parentName": "Deployment",
-  "parentUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
-  "uuid": "f1b74341-129b-474c-affa-e910d6cba01d",
-  "name": "ParisApplicationSqlDeployment",
-  "defaultLabel": "ParisApplicationSqlDeployment",
-  "application": "70e02039-e283-4381-9575-8c52aed18a87",
-  "description": "The default Sql Deployment for Application Paris",
-  "configuration": {
-    "admin": {
-      "emulatedServerType": "sql",
-      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "miroirAdmin"
+  uuid: "f1b74341-129b-474c-affa-e910d6cba01d",
+  parentName: "Deployment",
+  parentUuid: "7959d814-400c-4e80-988f-a00fe582ab98",
+  name: "ParisApplicationSqlDeployment",
+  defaultLabel: "ParisApplicationSqlDeployment",
+  application: "70e02039-e283-4381-9575-8c52aed18a87",
+  description: "The default Sql Deployment for Application Paris",
+  configuration: {
+    admin: {
+      emulatedServerType: "sql",
+      connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+      schema: "miroirAdmin",
     },
-    "model": {
-      "emulatedServerType": "sql",
-      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "ParisModel"
+    model: {
+      emulatedServerType: "sql",
+      connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+      schema: "ParisModel",
     },
-    "data": {
-      "emulatedServerType": "sql",
-      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "ParisData"
-    }
-  }
-}
+    data: {
+      emulatedServerType: "sql",
+      connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+      schema: "ParisData",
+    },
+  },
+};
 
 export const deployments = [
   adminConfigurationDeploymentMiroir,

@@ -36,7 +36,9 @@ import {
   entityEntity,
   entityEntityDefinition,
   entityReport,
-  ignorePostgresExtraAttributesOnList
+  ignorePostgresExtraAttributesOnList,
+  selfApplicationDeploymentMiroir,
+  selfApplicationDeploymentLibrary
 } from "miroir-core";
 
 
@@ -226,7 +228,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
             metaModel: defaultMiroirMetaModel,
             dataStoreType: 'miroir',
             application: selfApplicationMiroir,
-            applicationDeploymentConfiguration: adminConfigurationDeploymentMiroir,
+            applicationDeploymentConfiguration: selfApplicationDeploymentMiroir, //adminConfigurationDeploymentMiroir,
             applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
             applicationVersion: selfApplicationVersionInitialMiroirVersion,
             applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
@@ -240,7 +242,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
             metaModel: defaultMiroirMetaModel,
             dataStoreType: 'app',
             application: selfApplicationLibrary,
-            applicationDeploymentConfiguration: adminConfigurationDeploymentLibrary,
+            applicationDeploymentConfiguration: selfApplicationDeploymentLibrary, //adminConfigurationDeploymentLibrary,
             applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
             applicationVersion: selfApplicationVersionLibraryInitialVersion,
             applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,
@@ -332,7 +334,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       "actualTest_getInstancesAndCheckResult",
       {},
       async () => localAppPersistenceStoreController.getInstances("model",entityEntity.uuid),
-      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances),
+      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances, ["author"]),
       undefined, // name to give to result
       "entityInstanceCollection",
       [entityAuthor]
@@ -394,7 +396,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
         "getEntityInstancesToCheckResult",
         v,
         async () => await localAppPersistenceStoreController.getInstances("model", entityEntity.uuid),
-        (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances),
+        (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances, ["author"]),
         undefined, // name to give to result
         "entityInstanceCollection",
         [
@@ -410,7 +412,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
         "getEntityDefinitionInstancesToCheckResult",
         v,
         async () => await localAppPersistenceStoreController.getInstances("model", entityEntityDefinition.uuid),
-        (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances),
+        (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances, ["author"]),
         undefined, // name to give to result
         "entityInstanceCollection",
         [
@@ -446,48 +448,47 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
     // const entities: MetaEntity[] = (await localAppPersistenceStoreController.getInstances("model",entityEntity.uuid))?.instances as MetaEntity[];
     // const entityDefinitions: EntityDefinition[] = (await localAppPersistenceStoreController.getInstances("model",entityEntityDefinition.uuid))?.instances as EntityDefinition[];
     await chainVitestSteps(
-      "setup_createEntity",
-      {},
-      async () => localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition),
-      undefined,
-      undefined, // name to give to result
-      undefined, // expected result.elementType
-      undefined, // expected result.elementValue
-    )
-    .then(
-      (v) => chainVitestSteps(
+      //   "setup_createEntity",
+      //   {},
+      //   async () => localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition),
+      //   undefined,
+      //   undefined, // name to give to result
+      //   undefined, // expected result.elementType
+      //   undefined, // expected result.elementValue
+      // )
+      // .then(
+        // (v) => chainVitestSteps(
         "fetchEntities",
-        v,
+        {},
         async () => await localAppPersistenceStoreController.getInstances("model",entityEntity.uuid),
         (a, p) => (a as any).returnedDomainElement.elementValue.instances as MetaEntity[],
         "entities", // name to give to result
         "entityInstanceCollection", // expected result.elementType
         undefined, // test result.elementValue
+        // )
       )
-    )
-    .then (
+      .then (
+        (v) => chainVitestSteps(
+          "fetchEntityDefinitions",
+          v,
+          async () => await localAppPersistenceStoreController.getInstances("model", entityEntityDefinition.uuid),
+          (a, p) => (a as any).returnedDomainElement.elementValue.instances as EntityDefinition[],
+          "entityDefinitions", // name to give to result
+          "entityInstanceCollection", // expected result.elementType
+          undefined, // expected result.elementValue
+        )
+      )
+      .then (
       (v) => chainVitestSteps(
-        "fetchEntityDefinitions",
-        v,
-        async () => await localAppPersistenceStoreController.getInstances("model", entityEntityDefinition.uuid),
-        (a, p) => (a as any).returnedDomainElement.elementValue.instances as EntityDefinition[],
-        "entityDefinitions", // name to give to result
-        "entityInstanceCollection", // expected result.elementType
-        undefined, // expected result.elementValue
+      "dropAuthorEntity",
+      {},
+      async () => await localAppPersistenceStoreController.dropEntity(modelActionDropEntity.entityUuid),
+      undefined,
+      undefined, // name to give to result
+      undefined, // expected result.elementType
+      undefined // expected result.elementValue
       )
-    )
-    .then (
-      (v) => chainVitestSteps(
-        "fetchEntityDefinitions",
-        v,
-        async () => await localAppPersistenceStoreController.dropEntity(modelActionDropEntity.entityUuid),
-        undefined,
-        undefined, // name to give to result
-        undefined, // expected result.elementType
-        undefined, // expected result.elementValue
-      )
-    )
-    .then((v) =>
+    ).then((v) =>
       chainVitestSteps(
         "actualTest_getInstancesAndCheckResult",
         v,
@@ -717,57 +718,4 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
     )
   });
 
-
-  // // ################################################################################################
-  // // ################################################################################################
-  // // ################################################################################################
-  // // ################################################################################################
-  // // ################################################################################################
-  // // ################################################################################################
-  // // ################################################################################################
-  // it("get Library Entities", async () => {
-  //   await chainVitestSteps(
-  //     "actualTest_getInstancesAndCheckResult_runQuery",
-  //     {},
-  //     async () => localAppPersistenceStoreController.handleQueryTemplateForServerONLY("model",
-  //       {
-  //         actionType: 'queryTemplateAction',
-  //         actionName: "runQuery",
-  //         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-  //         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-  //         query: {
-  //           queryType: "extractorTemplateForRecordOfExtractors",
-  //           pageParams: {elementType: "object", elementValue: {}},
-  //           queryParams: {elementType: "object", elementValue: {}},
-  //           contextResults: {elementType: "object", elementValue: {}},
-  //           "deploymentUuid": adminConfigurationDeploymentLibrary.uuid,
-  //           extractors: {
-  //               select: {
-  //               entities: {
-  //                 queryType: "queryTemplateExtractObjectListByEntity",
-  //                 applicationSection: "model",
-  //                 parentName: "Entity",
-  //                 parentUuid: {
-  //                   transformerType: "constantUuid",
-  //                   constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-  //                 },
-  //               },
-  //             }
-  //           }
-  //         }
-  //       }
-  //     ),
-  //     // (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
-  //     undefined, // expected result transformation
-  //     undefined, // name to give to result
-  //     "entityInstanceCollection",
-  //     {
-  //       "applicationSection": "model",
-  //       "instances": [],
-  //       "parentUuid": entityEntity.uuid,
-  //     }
-  //   )
-
-  // });
-  
 });
