@@ -195,6 +195,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       entityEntityDefinition,
       entityReport,
       newEntity,
+      entityMenu,
     }
 
     const objectAttributeNames = fileData[0];
@@ -327,7 +328,6 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                   transformerType: "mustacheStringTemplate",
                   definition: "{{newEntityName}}s",
                 },
-                // "parentName": "Fountain",
                 parentUuid: {
                   transformerType: "mustacheStringTemplate",
                   definition: "{{newEntity.uuid}}",
@@ -337,7 +337,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             },
           },
         },
-        // // Details of an instance Report Definition
+        // Details of an instance Report Definition
         newEntityDetailsReport: {
           uuid: {
             transformerType: "parameterReference",
@@ -439,10 +439,6 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               },
             ],
           },
-          // action: {
-          //   transformerType: "parameterReference",
-          //   referenceName: "createEntityAction",
-          // },
         } as any,
         // createReports
         {
@@ -479,8 +475,6 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                       transformerType: "parameterReference",
                       referenceName: "newEntityDetailsReport",
                     },
-                    // newEntityListReport as EntityInstance,
-                    // newEntityDetailsReport as EntityInstance,
                   ],
                 },
               ],
@@ -505,9 +499,10 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           //   referenceName: "commitAction",
           // },
         },
+        // instances for new Entity, put in "menuUpdateQueryResult"
         {
           compositeActionType: "query",
-          nameGivenToResult: newEntityName,
+          nameGivenToResult: "menuUpdateQueryResult",
           queryTemplateAction: {
             actionType: "queryTemplateAction",
             actionName: "runQuery",
@@ -532,11 +527,17 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                   applicationSection: "model",
                   parentName: "Menu",
                   parentUuid: {
-                    transformerType: "constantObject",
-                    constantObjectValue: {
-                      transformerType: "constantUuid",
-                      constantUuidValue: entityMenu.uuid,
-                    }
+                    transformerType: "freeObjectTemplate",
+                    definition: {
+                      transformerType: {
+                        transformerType: "constantString",
+                        constantStringValue: "constantUuid"
+                      },
+                      constantUuidValue: {
+                        transformerType: "mustacheStringTemplate",
+                        definition: "{{entityMenu.uuid}}",
+                      },
+                    },
                   },
                 },
               },
@@ -556,10 +557,6 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                   "label": "List of " + newEntityName,
                   "section": "data",
                   application: adminConfigurationDeploymentParis.uuid, // TODO: replace with application uuid, this is a deployment at the moment
-                  // {
-                  //   transformerType: "parameterReference",
-                  //   referenceName: "currentApplicationUuid",
-                  // },
                   "reportUuid": actionEffectiveParamsCreateEntity.newEntityListReportUuid,
                   "icon": "local_drink"
                 },
@@ -611,7 +608,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                         {
                           transformerType: "contextReference",
                           interpolation: "runtime",
-                          referenceName: newEntityName,
+                          referenceName: "menuUpdateQueryResult",
                         },
                         "updatedMenu"
                       ],
