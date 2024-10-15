@@ -19,6 +19,8 @@ import {
   DomainElementInstanceUuidIndexOrFailed,
   DomainElementObject,
   DomainState,
+  ExtractorForDomainModelObjects,
+  ExtractorForRecordOfExtractors,
   ExtractorTemplateForRecordOfExtractors,
   ExtractorTemplateForSingleObject,
   ExtractorTemplateForSingleObjectList,
@@ -28,6 +30,8 @@ import {
   MiroirLoggerFactory,
   QueryTemplateAction,
   QueryTemplateSelectObject,
+  resolveExtractorTemplateForDomainModelObjects,
+  resolveExtractorTemplateForRecordOfExtractors,
   selectEntityJzodSchemaFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
@@ -290,17 +294,38 @@ export class SqlDbExtractTemplateRunner {
     let queryResult: DomainElement;
     switch (queryTemplateAction.query.queryType) {
       case "extractorTemplateForDomainModelObjects": {
-        queryResult = await this.extractorRunnerMap.extractWithExtractorTemplate({
-          extractorTemplate: queryTemplateAction.query,
-          extractorRunnerMap: this.extractorTemplateRunnerMap,
-        });
+        const resolvedQuery: ExtractorForDomainModelObjects = resolveExtractorTemplateForDomainModelObjects(
+          queryTemplateAction.query,
+        );
+
+        queryResult = await this.extractorRunnerMap.extractWithExtractor(
+          {
+            extractor: resolvedQuery,
+            extractorRunnerMap: this.extractorRunnerMap,
+          }
+        );
+        // queryResult = await this.extractorRunnerMap.extractWithExtractorTemplate({
+        //   extractorTemplate: queryTemplateAction.query,
+        //   extractorRunnerMap: this.extractorTemplateRunnerMap,
+        // });
         break;
       }
       case "extractorTemplateForRecordOfExtractors": {
-        queryResult = await this.extractorRunnerMap.extractWithManyExtractorTemplates({
-          extractorTemplate: queryTemplateAction.query,
-          extractorRunnerMap: this.extractorTemplateRunnerMap,
-        });
+        const resolvedQuery: ExtractorForRecordOfExtractors = resolveExtractorTemplateForRecordOfExtractors(
+          queryTemplateAction.query,
+        );
+
+        queryResult = await this.extractorRunnerMap.extractWithManyExtractors(
+          {
+            extractor: resolvedQuery,
+            extractorRunnerMap: this.extractorRunnerMap,
+          }
+        );
+
+        // queryResult = await this.extractorRunnerMap.extractWithManyExtractorTemplates({
+        //   extractorTemplate: queryTemplateAction.query,
+        //   extractorRunnerMap: this.extractorTemplateRunnerMap,
+        // });
         break;
       }
       default: {
