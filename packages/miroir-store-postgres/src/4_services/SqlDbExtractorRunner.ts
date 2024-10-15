@@ -60,7 +60,7 @@ export class SqlDbExtractRunner {
   ) // private persistenceStoreController: typeof MixedSqlDbInstanceStoreSection // does not work
   {
     this.logHeader = "PersistenceStoreController " + persistenceStoreController.getStoreName();
-    this.sqlDbExtractTemplateRunner = new SqlDbExtractTemplateRunner(persistenceStoreController);
+    this.sqlDbExtractTemplateRunner = new SqlDbExtractTemplateRunner(persistenceStoreController, this);
     const InMemoryImplementationExtractorRunnerMap: AsyncExtractorRunnerMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex.bind(this),
@@ -97,6 +97,7 @@ export class SqlDbExtractRunner {
       applyExtractorTemplateTransformer: this.sqlDbExtractTemplateRunner.applyExtractorTemplateTransformerSql.bind(this.sqlDbExtractTemplateRunner),
     };
 
+    // TODO: design error: this has to be kept consistent with SqlDbExtractTemplateRunner
     this.extractorRunnerMap = InMemoryImplementationExtractorRunnerMap;
     // this.extractorRunnerMap = dbImplementationExtractorRunnerMap;
   }
@@ -218,7 +219,7 @@ export class SqlDbExtractRunner {
    * @param selectorParams
    * @returns
    */
-  private asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor = (
+  public asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor = (
     selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList>
   ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
     // (
@@ -518,7 +519,7 @@ export class SqlDbExtractRunner {
         entityUuid,
         {
           attribute: extractorRunnerParams.extractor.select.filter.attributeName,
-          value: extractorRunnerParams.extractor.select.filter.value.constantStringValue,
+          value: extractorRunnerParams.extractor.select.filter.value,
         }
       );
     } else {

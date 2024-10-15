@@ -269,10 +269,10 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
       const filterTest = localQuery.filter
         ? new RegExp(localQuery.filter.value??"", "i") // TODO: check for correct type
         : undefined;
-      log.info(
-        "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory filter",
-        JSON.stringify(localQuery.filter)
-      );
+      // log.info(
+      //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory filter",
+      //   JSON.stringify(localQuery.filter)
+      // );
       const result:DomainElementInstanceUuidIndexOrFailed = localQuery.filter
         ? {
             elementType: "instanceUuidIndex",

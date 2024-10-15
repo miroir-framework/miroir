@@ -169,10 +169,10 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
       const filterTest = localQuery.filter
         ? new RegExp((localQuery.filter.value as any).constantStringValue, "i") // TODO: check for correct type
         : undefined;
-      log.info(
-        "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory queryTemplateExtractObjectListByEntity filter",
-        JSON.stringify(localQuery.filter)
-      );
+      // log.info(
+      //   "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory queryTemplateExtractObjectListByEntity filter",
+      //   JSON.stringify(localQuery.filter)
+      // );
       const result:DomainElementInstanceUuidIndexOrFailed = localQuery.filter
         ? {
             elementType: "instanceUuidIndex",
