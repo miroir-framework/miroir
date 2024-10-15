@@ -70,12 +70,12 @@ export class SqlDbExtractRunner {
       extractWithExtractor: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
       // 
-      extractEntityInstanceUuidIndexForTemplate: this.sqlDbExtractTemplateRunner.extractEntityInstanceUuidIndex.bind(this.sqlDbExtractTemplateRunner),
-      extractEntityInstanceForTemplate: this.sqlDbExtractTemplateRunner.extractEntityInstanceForTemplate.bind(this.sqlDbExtractTemplateRunner),
-      extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate,
-      extractWithManyExtractorTemplates: asyncExtractWithManyExtractorTemplates,
-      extractWithExtractorTemplate: asyncExtractWithExtractorTemplate,
-      applyExtractorTemplateTransformer: asyncApplyExtractorTemplateTransformerInMemory,
+      extractEntityInstanceUuidIndexForTemplate: undefined as any,
+      extractEntityInstanceForTemplate: undefined as any,
+      extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: undefined as any,
+      extractWithManyExtractorTemplates: undefined as any,
+      extractWithExtractorTemplate: undefined as any,
+      applyExtractorTemplateTransformer: undefined as any,
 
     };
     const dbImplementationExtractorRunnerMap: AsyncExtractorRunnerMap = {
@@ -88,13 +88,12 @@ export class SqlDbExtractRunner {
       extractWithExtractor: asyncExtractWithExtractor,
       applyExtractorTransformer: this.applyExtractorTransformerSql.bind(this),
       // 
-      extractEntityInstanceUuidIndexForTemplate: this.sqlDbExtractTemplateRunner.extractEntityInstanceUuidIndex.bind(this.sqlDbExtractTemplateRunner),
-      extractEntityInstanceForTemplate: this.sqlDbExtractTemplateRunner.extractEntityInstanceForTemplate.bind(this.sqlDbExtractTemplateRunner),
-      extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory:
-        this.sqlDbExtractTemplateRunner.asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractorForTemplate.bind(this.sqlDbExtractTemplateRunner),
-      extractWithManyExtractorTemplates: asyncExtractWithManyExtractorTemplates,
-      extractWithExtractorTemplate: asyncExtractWithExtractorTemplate,
-      applyExtractorTemplateTransformer: this.sqlDbExtractTemplateRunner.applyExtractorTemplateTransformerSql.bind(this.sqlDbExtractTemplateRunner),
+      extractEntityInstanceUuidIndexForTemplate: undefined as any,
+      extractEntityInstanceForTemplate: undefined as any,
+      extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: undefined as any,
+      extractWithManyExtractorTemplates: undefined as any,
+      extractWithExtractorTemplate: undefined as any,
+      applyExtractorTemplateTransformer: undefined as any,
     };
 
     // TODO: design error: this has to be kept consistent with SqlDbExtractTemplateRunner
