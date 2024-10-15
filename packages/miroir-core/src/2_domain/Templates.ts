@@ -1,5 +1,7 @@
 import {
+  ExtractorForDomainModelObjects,
   ExtractorForRecordOfExtractors,
+  ExtractorTemplateForDomainModelObjects,
   ExtractorTemplateForRecordOfExtractors,
   MiroirQuery,
   QueryExtractObjectByDirectReference,
@@ -258,4 +260,30 @@ export function resolveExtractorTemplateForRecordOfExtractors(
     combiners: combiners as Record<string, MiroirQuery>,
     runtimeTransformers: recordOfExtractorTemplate.runtimeTransformers,
   };
+}
+
+// ################################################################################################
+export function resolveExtractorTemplateForDomainModelObjects(
+  extractorTemplateForDomainModelObjects: ExtractorTemplateForDomainModelObjects,
+): ExtractorForDomainModelObjects {
+
+  const params = { ...extractorTemplateForDomainModelObjects.pageParams, ...extractorTemplateForDomainModelObjects.queryParams };
+
+  log.info("resolveExtractorTemplateForDomainModelObjects converting extractorTemplates:", extractorTemplateForDomainModelObjects);
+  
+  const select = resolveQueryTemplate(
+    extractorTemplateForDomainModelObjects.select,
+    params,
+    extractorTemplateForDomainModelObjects.contextResults
+  ) as any;
+  log.info("resolveExtractorTemplateForDomainModelObjects converted extractorTemplates, result:", select);
+  return {
+    pageParams: extractorTemplateForDomainModelObjects.pageParams,
+    queryParams: extractorTemplateForDomainModelObjects.queryParams,
+    contextResults: extractorTemplateForDomainModelObjects.contextResults,
+    deploymentUuid: extractorTemplateForDomainModelObjects.deploymentUuid,
+    queryType: "extractorForDomainModelObjects",
+    select: select,
+    // runtimeTransformers: extractorTemplateForDomainModelObjects.runtimeTransformers,
+  }
 }

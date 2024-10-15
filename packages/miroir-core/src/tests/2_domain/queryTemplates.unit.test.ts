@@ -11,6 +11,7 @@ import {
   EntityInstance,
   TransformerForRuntime_InnerReference,
   ExtractorTemplateForRecordOfExtractors,
+  ExtractorTemplateForDomainModelObjects,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   book1,
@@ -28,6 +29,7 @@ import {
   resolveExtractorTemplateForRecordOfExtractors,
 } from "../../index.js";
 import { object } from 'zod';
+import { resolveExtractorTemplateForDomainModelObjects } from '../../2_domain/Templates.js';
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
@@ -206,6 +208,62 @@ describe("queryTemplates.unit.test", () => {
         },
       });
       console.log("convert queryTemplate to query with resolveExtractorTemplateForRecordOfExtractors END")
+    }
+  );
+
+  // ################################################################################################
+  it("convert queryTemplate to query with resolveExtractorTemplateForDomainModelObjects", async () => { // TODO: test failure cases!
+      console.log("convert queryTemplate to query with resolveExtractorTemplateForDomainModelObjects START")
+      const newApplicationName = "test";
+      const newUuid = uuidv4();
+
+      const uniqueRuntimeTemplate: ExtractorTemplateForDomainModelObjects = {
+        queryType: "extractorTemplateForDomainModelObjects",
+        deploymentUuid: "xxxxx",
+        pageParams: {
+          instanceUuid: "xxxxx",
+        },
+        queryParams: {
+          parentUuid: "yyyyy",
+        },
+        contextResults: {},
+        select: {
+            queryType: "selectObjectByDirectReference",
+            parentName: "Book",
+            parentUuid: {
+              transformerType: "constantUuid",
+              constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            },
+            instanceUuid: {
+              transformerType: "parameterReference",
+              referenceName: "instanceUuid",
+            },
+        },
+      };
+
+      const testResult = resolveExtractorTemplateForDomainModelObjects(uniqueRuntimeTemplate); // uuid value is ignored
+      console.log(
+        "################################ converted queryTemplate to query with resolveExtractorTemplateForDomainModelObjects testResults",
+        JSON.stringify(testResult, null, 2)
+      );
+      expect(testResult).toEqual({
+        pageParams: {
+          instanceUuid: "xxxxx",
+        },
+        queryParams: {
+          parentUuid: "yyyyy",
+        },
+        contextResults: {},
+        deploymentUuid: "xxxxx",
+        queryType: "extractorForDomainModelObjects",
+        select: {
+          queryType: "selectObjectByDirectReference",
+          parentName: "Book",
+          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          instanceUuid: "xxxxx",
+        },
+      });
+      console.log("convert queryTemplate to query with resolveExtractorTemplateForDomainModelObjects END")
     }
   );
 

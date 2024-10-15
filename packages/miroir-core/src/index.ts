@@ -626,11 +626,13 @@ export {
 export { 
   ActionTemplate,
   transformer_apply,
+  transformer_extended_apply,
   transformer_InnerReference_resolve,
 } from "./2_domain/Transformers.js";
 export {
   resolveQueryTemplate,
   resolveExtractorTemplateForRecordOfExtractors,
+  resolveExtractorTemplateForDomainModelObjects,
   resolveQueryTemplateSelectExtractorWrapper,
 } from "./2_domain/Templates.js";
 export {

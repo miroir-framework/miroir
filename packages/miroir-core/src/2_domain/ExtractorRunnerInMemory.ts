@@ -49,7 +49,7 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
   // ################################################################################################
   constructor(private persistenceStoreController: PersistenceStoreInstanceSectionAbstractInterface) {
     this.logHeader = "ExtractorRunnerInMemory for store=" + persistenceStoreController.getStoreName();
-    this.extractorTemplateRunner = new ExtractorTemplateRunnerInMemory(persistenceStoreController);
+    this.extractorTemplateRunner = new ExtractorTemplateRunnerInMemory(persistenceStoreController, this);
     this.selectorMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex,

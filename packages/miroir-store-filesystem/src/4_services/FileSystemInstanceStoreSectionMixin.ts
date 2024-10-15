@@ -56,8 +56,8 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
       ...args: any[]
     ) {
       super(...args);
-      this.extractorTemplateRunner = new ExtractorTemplateRunnerInMemory(this);
       this.extractorRunner = new ExtractorRunnerInMemory(this);
+      this.extractorTemplateRunner = new ExtractorTemplateRunnerInMemory(this,this.extractorRunner); // TODO: extractorRunner has its own extractorTemplateRunner, this means 2 instances of ExtractorTemplateRunnerInMemory are created here
     }
 
     // #############################################################################################

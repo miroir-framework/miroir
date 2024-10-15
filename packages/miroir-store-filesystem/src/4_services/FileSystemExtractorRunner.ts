@@ -51,7 +51,7 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
   // ################################################################################################
   constructor(private persistenceStoreController: PersistenceStoreInstanceSectionAbstractInterface) {
     this.logHeader = "PersistenceStoreController " + persistenceStoreController.getStoreName();
-    this.fileSystemExtractorTemplateRunner = new FileSystemExtractorTemplateRunner(persistenceStoreController);
+    this.fileSystemExtractorTemplateRunner = new FileSystemExtractorTemplateRunner(persistenceStoreController, this);
     this.selectorMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex,
@@ -110,7 +110,7 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
       } as ActionReturnType;
     } else {
       const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
-      log.info(this.logHeader, "handleQueryTemplateForServerONLY", "queryTemplateAction", queryAction, "result", JSON.stringify(result, null, 2));
+      log.info(this.logHeader, "handleQuery", "queryTemplateAction", queryAction, "result", JSON.stringify(result, null, 2));
       return result;
     }
     // const result = { status: "ok", returnedDomainElement: { elementType: "object", elementValue: {}}} as ActionReturnType;

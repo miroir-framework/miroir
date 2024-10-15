@@ -3,34 +3,51 @@ import {
   ActionReturnType,
   ApplicationSection,
   asyncApplyExtractorTemplateTransformerInMemory,
+  asyncApplyExtractorTransformerInMemory,
+  asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate,
+  AsyncExtractorRunnerMap,
   AsyncExtractorTemplateRunner,
   AsyncExtractorTemplateRunnerMap,
   AsyncExtractorTemplateRunnerParams,
+  asyncExtractWithExtractor,
   asyncExtractWithExtractorTemplate,
+  asyncExtractWithManyExtractors,
   asyncExtractWithManyExtractorTemplates,
   DomainElement,
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
   DomainState,
+  ExtractorForDomainModelObjects,
+  ExtractorForRecordOfExtractors,
+  ExtractorTemplateForRecordOfExtractors,
   ExtractorTemplateForSingleObject,
   ExtractorTemplateForSingleObjectList,
   ExtractorTemplatePersistenceStoreRunner,
   ExtractorTemplateRunnerMapForJzodSchema,
   getLoggerName,
+  InstanceAction,
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreInstanceSectionAbstractInterface,
+  QueryAction,
   QueryTemplateAction,
   QueryTemplateSelectObject,
+  resolveExtractorTemplateForDomainModelObjects,
+  resolveExtractorTemplateForRecordOfExtractors,
+  resolveQueryTemplate,
   selectEntityJzodSchemaFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
-  transformer_InnerReference_resolve
+  transformer_extended_apply,
+  transformer_InnerReference_resolve,
+  TransformerForBuild,
+  TransformerForRuntime
 } from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
+import { FileSystemExtractorRunner } from "./FileSystemExtractorRunner.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "FilesystemExtractorRunner");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -40,14 +57,35 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersistenceStoreRunner {
   private logHeader: string;
-  private selectorMap: AsyncExtractorTemplateRunnerMap;
+  private selectorMap: AsyncExtractorRunnerMap;
+  private selectorTemplateMap: AsyncExtractorTemplateRunnerMap;
+  // private fileSystemExtractorTemplateRunner: FileSystemExtractorTemplateRunner;
 
   // ################################################################################################
   // constructor(private persistenceStoreController: PersistenceStoreControllerInterface) {
   // constructor(private persistenceStoreController: PersistenceStoreDataOrModelSectionInterface) {
-  constructor(private persistenceStoreController: PersistenceStoreInstanceSectionAbstractInterface) {
+  constructor(
+    private persistenceStoreController: PersistenceStoreInstanceSectionAbstractInterface,
+    private fileSystemExtractorRunner: FileSystemExtractorRunner
+  ) {
     this.logHeader = "PersistenceStoreController " + persistenceStoreController.getStoreName();
     this.selectorMap = {
+      extractorType: "async",
+      extractEntityInstanceUuidIndex: this.fileSystemExtractorRunner.extractEntityInstanceUuidIndex,
+      extractEntityInstance: this.fileSystemExtractorRunner.extractEntityInstance,
+      extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+      extractWithManyExtractors: asyncExtractWithManyExtractors,
+      extractWithExtractor: asyncExtractWithExtractor,
+      applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
+      // 
+      extractEntityInstanceUuidIndexForTemplate: this.extractEntityInstanceUuidIndex,
+      extractEntityInstanceForTemplate: this.extractEntityInstance,
+      extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate,
+      extractWithManyExtractorTemplates: asyncExtractWithManyExtractorTemplates,
+      extractWithExtractorTemplate: asyncExtractWithExtractorTemplate,
+      applyExtractorTemplateTransformer: asyncApplyExtractorTemplateTransformerInMemory
+    };
+    this.selectorTemplateMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex,
       extractEntityInstance: this.extractEntityInstance,
@@ -65,18 +103,26 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
     let queryResult: DomainElement;
     switch (queryTemplateAction.query.queryType) {
       case "extractorTemplateForDomainModelObjects": {
-        queryResult = await this.selectorMap.extractWithExtractorTemplate(
+        const resolvedQuery: ExtractorForDomainModelObjects = resolveExtractorTemplateForDomainModelObjects(
+          queryTemplateAction.query,
+        );
+
+        queryResult = await this.selectorMap.extractWithExtractor(
           {
-            extractorTemplate: queryTemplateAction.query,
+            extractor: resolvedQuery,
             extractorRunnerMap: this.selectorMap,
           }
         );
         break;
       }
       case "extractorTemplateForRecordOfExtractors": {
-        queryResult = await this.selectorMap.extractWithManyExtractorTemplates(
+        const resolvedQuery: ExtractorForRecordOfExtractors = resolveExtractorTemplateForRecordOfExtractors(
+          queryTemplateAction.query,
+        );
+
+        queryResult = await this.selectorMap.extractWithManyExtractors(
           {
-            extractorTemplate: queryTemplateAction.query,
+            extractor: resolvedQuery,
             extractorRunnerMap: this.selectorMap,
           }
         );
@@ -401,7 +447,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
   };
 
   public getSelectorMap(): AsyncExtractorTemplateRunnerMap {
-    return this.selectorMap;
+    return this.selectorTemplateMap;
   }
 }
 

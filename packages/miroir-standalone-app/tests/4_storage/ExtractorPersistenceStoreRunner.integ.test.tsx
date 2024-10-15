@@ -728,16 +728,9 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
                   applicationSection: applicationSection,
                   parentName: "Entity",
                   parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  // parentUuid: {
-                  //   transformerType: "constantUuid",
-                  //   constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  // },
                   filter: {
                     attributeName: "name",
-                    value: {
-                      queryTemplateType: "constantString",
-                      constantStringValue: "or",
-                    },
+                    value: "or"
                   },
                 },
               },

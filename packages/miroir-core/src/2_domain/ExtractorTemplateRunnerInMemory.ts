@@ -5,6 +5,8 @@ import {
   DomainElement,
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
+  ExtractorForDomainModelObjects,
+  ExtractorForRecordOfExtractors,
   ExtractorTemplateForSingleObject,
   ExtractorTemplateForSingleObjectList,
   QueryTemplateAction,
@@ -12,6 +14,7 @@ import {
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import {
+  AsyncExtractorRunnerMap,
   AsyncExtractorTemplateRunner,
   AsyncExtractorTemplateRunnerMap,
   AsyncExtractorTemplateRunnerParams,
@@ -23,6 +26,7 @@ import { PersistenceStoreInstanceSectionAbstractInterface } from "../0_interface
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
+import { asyncApplyExtractorTransformerInMemory, asyncExtractEntityInstanceUuidIndexWithObjectListExtractor, asyncExtractWithExtractor, asyncExtractWithManyExtractors } from "./AsyncQuerySelectors.js";
 import {
   asyncApplyExtractorTemplateTransformerInMemory,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate,
@@ -36,6 +40,8 @@ import {
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
 } from "./DomainStateQueryTemplateSelector.js";
+import { ExtractorRunnerInMemory } from "./ExtractorRunnerInMemory.js";
+import { resolveExtractorTemplateForDomainModelObjects, resolveExtractorTemplateForRecordOfExtractors } from "./Templates.js";
 import { transformer_InnerReference_resolve } from "./Transformers.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "ExtractorTemplateRunnerInMemory");
@@ -46,20 +52,46 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersistenceStoreRunner {
   private logHeader: string;
-  private selectorMap: AsyncExtractorTemplateRunnerMap;
+  // private selectorMap: AsyncExtractorTemplateRunnerMap;
+  private selectorMap: AsyncExtractorRunnerMap;
+  private selectorTemplateMap: AsyncExtractorTemplateRunnerMap;
+  // private extractorRunnerInMemory: ExtractorRunnerInMemory
+
 
   // ################################################################################################
-  constructor(private persistenceStoreController: PersistenceStoreInstanceSectionAbstractInterface) {
+  constructor(
+    private persistenceStoreController: PersistenceStoreInstanceSectionAbstractInterface,
+    private extractorRunnerInMemory: ExtractorRunnerInMemory,
+  ) {
     this.logHeader = "PersistenceStoreController " + persistenceStoreController.getStoreName();
+    // this.extractorRunnerInMemory = new ExtractorRunnerInMemory(persistenceStoreController
     this.selectorMap = {
+      extractorType: "async",
+      extractEntityInstanceUuidIndex: this.extractorRunnerInMemory.extractEntityInstanceUuidIndex,
+      extractEntityInstance: this.extractorRunnerInMemory.extractEntityInstance,
+      extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+      extractWithManyExtractors: asyncExtractWithManyExtractors,
+      extractWithExtractor: asyncExtractWithExtractor,
+      applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
+      // 
+      extractEntityInstanceUuidIndexForTemplate: this.extractEntityInstanceUuidIndex,
+      extractEntityInstanceForTemplate: this.extractEntityInstance,
+      extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate,
+      extractWithManyExtractorTemplates: asyncExtractWithManyExtractorTemplates,
+      extractWithExtractorTemplate: asyncExtractWithExtractorTemplate,
+      applyExtractorTemplateTransformer: asyncApplyExtractorTemplateTransformerInMemory
+      
+    };
+    this.selectorTemplateMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex,
       extractEntityInstance: this.extractEntityInstance,
       extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate,
       extractWithManyExtractorTemplates: asyncExtractWithManyExtractorTemplates,
       extractWithExtractorTemplate: asyncExtractWithExtractorTemplate,
-      applyExtractorTransformer: asyncApplyExtractorTemplateTransformerInMemory,
+      applyExtractorTransformer: asyncApplyExtractorTemplateTransformerInMemory
     };
+
   }
 
   // ################################################################################################
@@ -69,18 +101,26 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
     let queryResult: DomainElement;
     switch (queryTemplateAction.query.queryType) {
       case "extractorTemplateForDomainModelObjects": {
-        queryResult = await this.selectorMap.extractWithExtractorTemplate(
+        const resolvedQuery: ExtractorForDomainModelObjects = resolveExtractorTemplateForDomainModelObjects(
+          queryTemplateAction.query,
+        );
+
+        queryResult = await this.selectorMap.extractWithExtractor(
           {
-            extractorTemplate: queryTemplateAction.query,
+            extractor: resolvedQuery,
             extractorRunnerMap: this.selectorMap,
           }
         );
         break;
       }
       case "extractorTemplateForRecordOfExtractors": {
-        queryResult = await this.selectorMap.extractWithManyExtractorTemplates(
+        const resolvedQuery: ExtractorForRecordOfExtractors = resolveExtractorTemplateForRecordOfExtractors(
+          queryTemplateAction.query,
+        );
+
+        queryResult = await this.selectorMap.extractWithManyExtractors(
           {
-            extractorTemplate: queryTemplateAction.query,
+            extractor: resolvedQuery,
             extractorRunnerMap: this.selectorMap,
           }
         );
@@ -409,7 +449,7 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
 
   // ##############################################################################################
   public getSelectorMap(): AsyncExtractorTemplateRunnerMap {
-    return this.selectorMap;
+    return this.selectorTemplateMap;
   }
 } // end of class ExtractorTemplateRunnerInMemory
 

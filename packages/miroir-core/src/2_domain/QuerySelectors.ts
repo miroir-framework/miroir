@@ -267,12 +267,12 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
     case "queryExtractObjectListByEntity": {
       const localQuery: QueryExtractObjectListByEntity = extractor.select;
       const filterTest = localQuery.filter
-        ? new RegExp((localQuery.filter.value as any).constantStringValue, "i") // TODO: check for correct type
+        ? new RegExp(localQuery.filter.value??"", "i") // TODO: check for correct type
         : undefined;
-      // log.info(
-      //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory filter",
-      //   JSON.stringify(localQuery.filter)
-      // );
+      log.info(
+        "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory filter",
+        JSON.stringify(localQuery.filter)
+      );
       const result:DomainElementInstanceUuidIndexOrFailed = localQuery.filter
         ? {
             elementType: "instanceUuidIndex",

@@ -676,7 +676,8 @@ export class DomainController implements DomainControllerInterface {
       // in both cases this enforces only the most up-to-date data is accessed.
       log.info(
         "DomainController handleQueryTemplateForServerONLY queryTemplateAction sending query to server for execution",
-        JSON.stringify(queryTemplateAction)
+        // JSON.stringify(queryTemplateAction)
+        queryTemplateAction
       );
       const result = await this.callUtil.callPersistenceAction(
         // what if it is a REAL persistence store?? exception?
@@ -726,7 +727,10 @@ export class DomainController implements DomainControllerInterface {
       );
       switch (currentAction.compositeActionType) {
         case 'action': {
-          log.info("handleCompositeActionTemplate compositeInstanceAction action to resolve", JSON.stringify(currentAction.action, null, 2));
+          log.info(
+            "handleCompositeActionTemplate compositeInstanceAction action to resolve",
+            JSON.stringify(currentAction.action, null, 2)
+          );
           // const resolvedActionTemplate: InstanceAction = transformer_apply(
           const resolvedActionTemplate: InstanceAction = transformer_extended_apply(
             "runtime",
@@ -735,7 +739,10 @@ export class DomainController implements DomainControllerInterface {
             resolved.actionParamsAndTemplates,
             localContext
           ).elementValue as InstanceAction;
-          log.info("handleCompositeActionTemplate compositeInstanceAction resolved action", JSON.stringify(resolvedActionTemplate, null, 2));
+          log.info(
+            "handleCompositeActionTemplate compositeInstanceAction resolved action",
+            JSON.stringify(resolvedActionTemplate, null, 2)
+          );
           // log.info("handleCompositeActionTemplate compositeInstanceAction current model", currentModel);
           const actionResult = await this.handleAction(resolvedActionTemplate, currentModel);
           // const actionResult = await this.handleAction(currentAction.action, currentModel);
