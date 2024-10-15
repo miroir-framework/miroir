@@ -2,7 +2,6 @@
 // import ChevronRight from '@mui/icons-material/ChevronRight';
 import Divider from '@mui/material/Divider';
 import MuiDrawer from '@mui/material/Drawer';
-import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -17,30 +16,23 @@ import { Icon } from '@mui/material';
 import {
   adminConfigurationDeploymentMiroir,
   DeploymentEntityState,
-  DomainElementObject,
-  ExtractorTemplateForRecordOfExtractors,
+  DomainElementObjectOrFailed,
   entityMenu,
+  ExtractorForRecordOfExtractors,
   getApplicationSection,
-  getDeploymentEntityStateSelectorTemplateParams,
+  getDeploymentEntityStateSelectorParams,
   getLoggerName,
   LoggerInterface,
-  menuDefaultMiroir,
   MiroirLoggerFactory,
-  ExtractorTemplateForDomainModel,
-  SyncExtractorTemplateRunnerMap,
-  SyncExtractorTemplateRunnerParams,
-  Uuid,
-  DomainElementObjectOrFailed,
-  ExtractorForRecordOfExtractors,
+  SyncExtractorRunnerMap,
   SyncExtractorRunnerParams,
-  getDeploymentEntityStateSelectorParams,
-  SyncExtractorRunnerMap
+  Uuid
 } from "miroir-core";
-import { getMemoizedDeploymentEntityStateSelectorForTemplateMap, getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
+import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
 import { FC, useMemo } from 'react';
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
-import { useDeploymentEntityStateQuerySelector, useDeploymentEntityStateQueryTemplateSelector } from '../ReduxHooks.js';
+import { useDeploymentEntityStateQuerySelector } from '../ReduxHooks.js';
 
 const MatDivider: any = Divider;
 const MatList: any = List;

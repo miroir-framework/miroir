@@ -228,10 +228,9 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
                 elementValue: {
                   ...queryParams.elementValue,
                   ...Object.fromEntries(
-                    Object.entries(applyTransformer(query.subQueryTemplate.rootQueryObjectTransformer, entry[1])).map((e: [string, any]) => [
-                      e[0],
-                      { elementType: "instanceUuid", elementValue: e[1] },
-                    ])
+                    Object.entries(applyTransformer(query.subQueryTemplate.rootQueryObjectTransformer, entry[1])).map(
+                      (e: [string, any]) => [e[0], { elementType: "instanceUuid", elementValue: e[1] }]
+                    )
                   ),
                 },
               },
@@ -241,7 +240,8 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
                 applyExtractorTransformer: extractorRunnerMap.applyExtractorTemplateTransformer,
                 extractEntityInstance: extractorRunnerMap.extractEntityInstanceForTemplate,
                 extractEntityInstanceUuidIndex: extractorRunnerMap.extractEntityInstanceUuidIndexForTemplate,
-                extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory,
+                extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory:
+                  extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory,
                 extractWithExtractorTemplate: extractorRunnerMap.extractWithExtractorTemplate,
                 extractWithManyExtractorTemplates: extractorRunnerMap.extractWithManyExtractorTemplates,
               },

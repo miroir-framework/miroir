@@ -2,17 +2,13 @@ import {
   ActionEntityInstanceCollectionReturnType,
   ActionReturnType,
   ApplicationSection,
-  asyncApplyExtractorTemplateTransformerInMemory,
   asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
-  asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate,
   AsyncExtractorRunner,
   AsyncExtractorRunnerMap,
   AsyncExtractorRunnerParams,
   asyncExtractWithExtractor,
-  asyncExtractWithExtractorTemplate,
   asyncExtractWithManyExtractors,
-  asyncExtractWithManyExtractorTemplates,
   DomainElement,
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
@@ -61,13 +57,12 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
       extractWithExtractor: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
       // ############################################################################
-      extractEntityInstanceUuidIndexForTemplate: this.fileSystemExtractorTemplateRunner.extractEntityInstanceUuidIndex,
-      extractEntityInstanceForTemplate: this.fileSystemExtractorTemplateRunner.extractEntityInstance,
-      extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate,
-      extractWithManyExtractorTemplates: asyncExtractWithManyExtractorTemplates,
-      extractWithExtractorTemplate: asyncExtractWithExtractorTemplate,
-      applyExtractorTemplateTransformer: asyncApplyExtractorTemplateTransformerInMemory
-
+      extractEntityInstanceUuidIndexForTemplate: undefined as any,
+      extractEntityInstanceForTemplate: undefined as any,
+      extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: undefined as any,
+      extractWithManyExtractorTemplates: undefined as any,
+      extractWithExtractorTemplate: undefined as any,
+      applyExtractorTemplateTransformer: undefined as any
     };
   }
 

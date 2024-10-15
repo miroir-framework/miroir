@@ -1054,7 +1054,7 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
   // ################################################################################################
   it("get books of an author with combiner", async () => {
     await chainVitestSteps(
-      "ExtractorTemplatePersistenceStoreRunner_getBooksOfAuthorWithCombiner",
+      "ExtractorPersistenceStoreRunner_getBooksOfAuthorWithCombiner",
       {},
       async () => {
         const applicationSection: ApplicationSection = "data";

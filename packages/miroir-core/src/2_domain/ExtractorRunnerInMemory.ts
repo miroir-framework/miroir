@@ -24,7 +24,6 @@ import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { asyncApplyExtractorTransformerInMemory, asyncExtractEntityInstanceUuidIndexWithObjectListExtractor, asyncExtractWithExtractor, asyncExtractWithManyExtractors } from "./AsyncQuerySelectors.js";
-import { asyncApplyExtractorTemplateTransformerInMemory, asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate, asyncExtractWithExtractorTemplate, asyncExtractWithManyExtractorTemplates } from "./AsyncQueryTemplateSelectors.js";
 import { cleanLevel } from "./constants.js";
 import {
   selectEntityJzodSchemaFromDomainStateNew,
@@ -59,12 +58,18 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
       extractWithExtractor: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
       // ##########################################################################################
-      extractEntityInstanceUuidIndexForTemplate: this.extractorTemplateRunner.extractEntityInstanceUuidIndex,
-      extractEntityInstanceForTemplate: this.extractorTemplateRunner.extractEntityInstance,
-      extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate,
-      extractWithManyExtractorTemplates: asyncExtractWithManyExtractorTemplates,
-      extractWithExtractorTemplate: asyncExtractWithExtractorTemplate,
-      applyExtractorTemplateTransformer: asyncApplyExtractorTemplateTransformerInMemory,
+      extractEntityInstanceUuidIndexForTemplate: undefined as any,
+      extractEntityInstanceForTemplate: undefined as any,
+      extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: undefined as any,
+      extractWithManyExtractorTemplates: undefined as any,
+      extractWithExtractorTemplate: undefined as any,
+      applyExtractorTemplateTransformer: undefined as any,
+      // extractEntityInstanceUuidIndexForTemplate: this.extractorTemplateRunner.extractEntityInstanceUuidIndex,
+      // extractEntityInstanceForTemplate: this.extractorTemplateRunner.extractEntityInstance,
+      // extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate,
+      // extractWithManyExtractorTemplates: asyncExtractWithManyExtractorTemplates,
+      // extractWithExtractorTemplate: asyncExtractWithExtractorTemplate,
+      // applyExtractorTemplateTransformer: asyncApplyExtractorTemplateTransformerInMemory,
     };
   }
 

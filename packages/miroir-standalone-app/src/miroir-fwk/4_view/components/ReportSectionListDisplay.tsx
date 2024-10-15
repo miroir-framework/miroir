@@ -367,10 +367,15 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   )
 
   // const foreignKeyObjects:  = useDeploymentEntityStateQueryTemplateSelectorForCleanedResult(
-  const foreignKeyObjects: Record<string,EntityInstancesUuidIndex> = useDeploymentEntityStateQueryTemplateSelectorForCleanedResult(
-    deploymentEntityStateSelectorMap.extractWithManyExtractorTemplates as SyncExtractorTemplateRunner<ExtractorTemplateForRecordOfExtractors, DeploymentEntityState, DomainElement>,
-    foreignKeyObjectsFetchQueryParams
-  );
+  const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
+    useDeploymentEntityStateQueryTemplateSelectorForCleanedResult(
+      deploymentEntityStateSelectorMap.extractWithManyExtractorTemplates as SyncExtractorTemplateRunner<
+        ExtractorTemplateForRecordOfExtractors,
+        DeploymentEntityState,
+        DomainElement
+      >,
+      foreignKeyObjectsFetchQueryParams
+    );
 
   log.info("ReportSectionListDisplay foreignKeyObjects", foreignKeyObjects);
 

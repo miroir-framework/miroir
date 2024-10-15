@@ -128,45 +128,6 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
   count++;
   const theme = useTheme();
 
-  // const deploymentEntityStateSelectorMap: SyncExtractorTemplateRunnerMap<DeploymentEntityState> = useMemo(
-  //   () => getMemoizedDeploymentEntityStateSelectorForTemplateMap(),
-  //   []
-  // )
-
-  // const FetchMiroirMenusQueryParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForRecordOfExtractors, DeploymentEntityState> = useMemo(
-  //   () => 
-  //   getDeploymentEntityStateSelectorTemplateParams<ExtractorTemplateForRecordOfExtractors>({
-  //     queryType: "extractorTemplateForRecordOfExtractors",
-  //     deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-  //     // applicationSection: "data",
-  //     pageParams: { elementType: "object", elementValue: {} },
-  //     queryParams: { elementType: "object", elementValue: {} },
-  //     contextResults: { elementType: "object", elementValue: {} },
-  //     extractorTemplates: {
-  //       select: {
-  //         menus: {
-  //           queryType: "selectObjectByDirectReference",
-  //           parentName: "Menu",
-  //           parentUuid: {
-  //             transformerType: "constantUuid",
-  //             constantUuidValue: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
-  //           },
-  //           instanceUuid: {
-  //             transformerType: "constantUuid",
-  //             constantUuidValue: menuDefaultMiroir.uuid,
-  //           }
-  //         },
-  //       },
-  //     },
-  //   }, deploymentEntityStateSelectorMap),
-  //   [deploymentEntityStateSelectorMap]
-  // );
-
-  // const miroirMenusDomainElementObject: DomainElementObject = useDeploymentEntityStateQueryTemplateSelector(
-  //   deploymentEntityStateSelectorMap.extractWithManyExtractorTemplates,
-  //   FetchMiroirMenusQueryParams
-  // );
-
   // log.info("deploymentEntityStateDomainElementObject",miroirMenusDomainElementObject)
   // // const defaultMiroirMenu = (domainElementObject?.elementValue?.menus?.elementValue as any)?.definition;
   // console.log(

@@ -57,6 +57,7 @@ export const selectEntityInstanceFromDeploymentEntityStateForTemplate: SyncExtra
   deploymentEntityState: DeploymentEntityState,
   selectorParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObject, DeploymentEntityState>
 ): DomainElementEntityInstanceOrFailed => {
+  // TODO: implement using DeploymentEntityStateQuerySelectors.selectEntityInstanceFromDeploymentEntityState
   const querySelectorParams: QueryTemplateSelectObject = selectorParams.extractorTemplate.select as QueryTemplateSelectObject;
   const deploymentUuid = selectorParams.extractorTemplate.deploymentUuid;
   const applicationSection: ApplicationSection =
@@ -265,6 +266,7 @@ export const selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate: 
   deploymentEntityState: DeploymentEntityState,
   selectorParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObjectList, DeploymentEntityState>
 ): DomainElementInstanceUuidIndexOrFailed => {
+  // TODO: implement using DeploymentEntityStateQuerySelectors.selectEntityInstanceUuidIndexFromDeploymentEntityState
   const deploymentUuid = selectorParams.extractorTemplate.deploymentUuid;
   const applicationSection = selectorParams.extractorTemplate.select.applicationSection ?? "data";
 
