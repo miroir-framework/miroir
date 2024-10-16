@@ -26,9 +26,16 @@ import {
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
-import { entityEntityDefinition } from "../index.js";
+import {
+  entityEntityDefinition,
+  extractEntityInstanceListFromListQueryAndDomainState,
+  extractWithExtractor,
+  selectEntityInstanceFromObjectQueryAndDomainState,
+  selectEntityInstanceUuidIndexFromDomainState,
+} from "../index.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
+import { extractWithManyExtractorsFromDomainState } from "./DomainStateQuerySelectors.js";
 // import { extractWithManyExtractors } from "./QuerySelectors.js";
 import {
   extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory,
@@ -435,8 +442,14 @@ export const selectEntityJzodSchemaFromDomainStateNewForTemplate = (
 export function getSelectorMapForTemplate(): SyncExtractorTemplateRunnerMap<DomainState> {
   return {
     extractorType: "sync",
-    extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDomainStateForTemplate,
-    extractEntityInstance: selectEntityInstanceFromObjectQueryAndDomainStateForTemplate,
+    extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDomainState,
+    extractEntityInstance: selectEntityInstanceFromObjectQueryAndDomainState,
+    extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: extractEntityInstanceListFromListQueryAndDomainState,
+    extractWithManyExtractors: extractWithManyExtractorsFromDomainState,
+    extractWithExtractor: extractWithExtractor,
+    // 
+    extractEntityInstanceUuidIndexForTemplate: selectEntityInstanceUuidIndexFromDomainStateForTemplate,
+    extractEntityInstanceForTemplate: selectEntityInstanceFromObjectQueryAndDomainStateForTemplate,
     extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: extractEntityInstanceListFromListQueryTemplateAndDomainState,
     extractWithManyExtractorTemplates: extractWithManyExtractorsFromDomainStateForTemplate,
     extractWithExtractorTemplate: extractWithExtractorTemplate,

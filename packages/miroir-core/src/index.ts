@@ -541,7 +541,7 @@ export {
   selectEntityJzodSchemaFromDomainStateNew,
   selectEntityInstanceUuidIndexFromDomainState,
   selectEntityInstanceFromObjectQueryAndDomainState,
-  exractEntityInstanceListFromListQueryAndDomainState,
+  extractEntityInstanceListFromListQueryAndDomainState,
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
 } from './2_domain/DomainStateQuerySelectors.js';
@@ -583,9 +583,9 @@ export {
   extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory,
   extractWithManyExtractorTemplates,
   extractWithExtractorTemplate,
-  applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory,
+  applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemoryDEFUNCT,
   applyExtractorTemplateTransformerInMemory,
-  innerSelectElementFromQueryTemplate,
+  innerSelectElementFromQueryTemplateDEFUNCT,
   extractFetchQueryTemplateJzodSchema,
   extractJzodSchemaForDomainModelQueryTemplate,
 } from './2_domain/QueryTemplateSelectors.js';

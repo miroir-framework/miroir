@@ -366,10 +366,7 @@ describe("extractWithExtractorFromDomainState.unit", () => {
             parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
             filter: {
               attributeName: "name",
-              value: {
-                transformerType: "constantString",
-                constantStringValue: "or",
-              },
+              value: "or",
             },
           },
         },
@@ -572,7 +569,7 @@ describe("extractWithExtractorFromDomainState.unit", () => {
         },
         combiners: {
           instancesOfEntities: {
-            queryType: "queryCombiner", // heteronomous many-to-many join, not possible with SQL
+            queryType: "queryCombiner", // heteronomous many-to-many join, possible but akward with SQL (huge "select" clause, dealing with homonym attributes)
             rootQuery: {
               queryType: "queryContextReference",
               queryReference: "entities",
@@ -580,7 +577,6 @@ describe("extractWithExtractorFromDomainState.unit", () => {
             subQueryTemplate: {
               query: {
                 queryType: "queryTemplateExtractObjectListByEntity",
-                // parentUuid: {
                 parentUuid: {
                   transformerType: "parameterReference",
                   referenceName: "uuid",

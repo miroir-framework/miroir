@@ -3,14 +3,19 @@ import {
   DeploymentEntityState,
   ExtractorTemplateRunnerMapForJzodSchema,
   SyncExtractorTemplateRunnerMap,
+  extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory,
   extractEntityJzodSchemaFromDeploymentEntityState,
   extractFetchQueryJzodSchema,
   extractJzodSchemaForDomainModelQuery,
+  extractWithExtractor,
   extractWithExtractorTemplate,
   extractWithManyExtractorTemplates,
+  extractWithManyExtractors,
   extractzodSchemaForSingleSelectQuery,
+  selectEntityInstanceFromDeploymentEntityState,
   selectEntityInstanceFromDeploymentEntityStateForTemplate,
+  selectEntityInstanceUuidIndexFromDeploymentEntityState,
   selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate
 } from "miroir-core";
 
@@ -22,9 +27,31 @@ export function getMemoizedDeploymentEntityStateSelectorForTemplateMap(): SyncEx
     extractorType: "sync",
     extractEntityInstance: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-      selectEntityInstanceFromDeploymentEntityStateForTemplate
+      selectEntityInstanceFromDeploymentEntityState
     ),
     extractEntityInstanceUuidIndex: createSelector(
+      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
+      selectEntityInstanceUuidIndexFromDeploymentEntityState
+    ),
+    extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: createSelector(
+      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
+      extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
+    ),
+    extractWithManyExtractors: createSelector(
+      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
+      extractWithManyExtractors
+    ),
+    extractWithExtractor: createSelector(
+      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
+      extractWithExtractor
+    ),
+
+    // 
+    extractEntityInstanceForTemplate: createSelector(
+      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
+      selectEntityInstanceFromDeploymentEntityStateForTemplate
+    ),
+    extractEntityInstanceUuidIndexForTemplate: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
       selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate
     ),

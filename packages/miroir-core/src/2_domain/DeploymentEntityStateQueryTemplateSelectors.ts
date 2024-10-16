@@ -25,6 +25,8 @@ import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
 import { getDeploymentEntityStateIndex } from "./DeploymentEntityState.js";
+import { selectEntityInstanceUuidIndexFromDeploymentEntityState, selectEntityInstanceFromDeploymentEntityState } from "./DeploymentEntityStateQuerySelectors.js";
+import { extractEntityInstanceUuidIndexWithObjectListExtractorInMemory, extractWithManyExtractors, extractWithExtractor } from "./QuerySelectors.js";
 import {
   extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory,
   extractFetchQueryTemplateJzodSchema,
@@ -448,8 +450,15 @@ export const extractEntityJzodSchemaFromDeploymentEntityStateForTemplate = (
 export function getDeploymentEntityStateSelectorTemplateMap(): SyncExtractorTemplateRunnerMap<DeploymentEntityState> {
   return {
     extractorType: "sync",
-    extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate,
-    extractEntityInstance: selectEntityInstanceFromDeploymentEntityStateForTemplate,
+    extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDeploymentEntityState,
+    extractEntityInstance: selectEntityInstanceFromDeploymentEntityState,
+    extractEntityInstanceUuidIndexWithObjectListExtractorInMemory:
+      extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
+    extractWithManyExtractors: extractWithManyExtractors,
+    extractWithExtractor: extractWithExtractor,
+    // 
+    extractEntityInstanceUuidIndexForTemplate: selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate,
+    extractEntityInstanceForTemplate: selectEntityInstanceFromDeploymentEntityStateForTemplate,
     extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory:
       extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory,
     extractWithManyExtractorTemplates: extractWithManyExtractorTemplates,

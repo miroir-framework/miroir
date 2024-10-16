@@ -22,10 +22,8 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
         queryType: "extractorTemplateForRecordOfExtractors",
         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: {},
-        pageParams: { },
-        queryParams: { },
-        // pageParams: { },
-        // queryParams: { },
+        pageParams: {},
+        queryParams: {},
         extractorTemplates: {
           book: {
             queryType: "selectObjectByDirectReference",
@@ -41,8 +39,10 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
           },
         },
       };
-      // const result = extractWithManyExtractorsFromDomainStateForTemplate(domainState, getSelectorParamsForTemplate(queryParam));
-      const result = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParamsForTemplate(queryParam));
+      const result = extractWithExtractorFromDomainStateForTemplate(
+        domainState,
+        getSelectorParamsForTemplate(queryParam)
+      );
       console.info("result", result);
       expect(result).toEqual({
         elementType: "object",
@@ -772,32 +772,4 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
       )
     }
   )
-
-
-
-
-
-
-
-
-
-  // // ###########################################################################################
-  // it("getEntityDefinition query: get entity definition from entity Uuid", () => {
-  //   const queryParam: DomainModelQueryTemplateJzodSchemaParams = {
-  //     queryType: "getEntityDefinition",
-  //     contextResults: {},
-  //     pageParams: { },
-  //     queryParams: { },
-  //     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-  //     entityUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //   };
-
-  //   const result: RecordOfJzodElement | JzodElement | undefined = selectJzodSchemaByDomainModelQueryFromDomainState(domainState, queryParam);
-
-  //   expect(result).toBe(
-  //     (domainState[adminConfigurationDeploymentLibrary.uuid]["model"]["54b9c72f-d4f3-4db9-9e0e-0dc840b530bd"][
-  //       "797dd185-0155-43fd-b23f-f6d0af8cae06"
-  //     ] as EntityDefinition).jzodSchema
-  //   );
-  // });
 });

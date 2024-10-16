@@ -13,6 +13,7 @@ import {
   DomainModelQueryTemplateJzodSchemaParams,
   EntityInstance,
   ExtendedTransformerForRuntime,
+  ExtractorForRecordOfExtractors,
   ExtractorTemplateForDomainModelObjects,
   ExtractorTemplateForRecordOfExtractors,
   ExtractorTemplateForSingleObjectList,
@@ -37,6 +38,8 @@ import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
+import { extractWithManyExtractors } from "./QuerySelectors.js";
+import { resolveExtractorTemplateForRecordOfExtractors } from "./Templates.js";
 import { applyTransformer, transformer_apply, transformer_extended_apply, transformer_InnerReference_resolve } from "./Transformers.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"SyncExtractorTemplateRunner");
@@ -49,21 +52,34 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 
 const emptySelectorMap:SyncExtractorTemplateRunnerMap<any> = {
   extractorType: "sync",
+  extractEntityInstanceUuidIndex: undefined as any,
+  extractEntityInstance: undefined as any,
+  extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: undefined as any,
+  extractWithManyExtractors: undefined as any,
+  extractWithExtractor: undefined as any,
+  // 
   extractWithExtractorTemplate: undefined as any, 
   extractWithManyExtractorTemplates: undefined as any, 
-  extractEntityInstance: undefined as any,
+  extractEntityInstanceForTemplate: undefined as any,
   extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: undefined as any,
-  extractEntityInstanceUuidIndex: undefined as any,
+  extractEntityInstanceUuidIndexForTemplate: undefined as any,
 }
 
 const emptyAsyncSelectorMap:AsyncExtractorTemplateRunnerMap = {
   extractorType: "async",
+  extractEntityInstanceUuidIndex: undefined as any,
+  extractEntityInstance: undefined as any,
+  extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: undefined as any,
+  extractWithManyExtractors: undefined as any,
+  extractWithExtractor: undefined as any,
+  applyExtractorTransformer: undefined as any,
+  // 
   extractWithExtractorTemplate: undefined as any, 
   extractWithManyExtractorTemplates: undefined as any, 
-  extractEntityInstance: undefined as any,
+  extractEntityInstanceForTemplate: undefined as any,
   extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: undefined as any,
-  extractEntityInstanceUuidIndex: undefined as any,
-  applyExtractorTransformer: undefined as any,
+  extractEntityInstanceUuidIndexForTemplate: undefined as any,
+  applyExtractorTemplateTransformer: undefined as any,
 }
 
 // // ################################################################################################
@@ -154,12 +170,12 @@ const emptyAsyncSelectorMap:AsyncExtractorTemplateRunnerMap = {
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory = (
+export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemoryDEFUNCT = (
   selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed,
   extractor: ExtractorTemplateForSingleObjectList,
 ) => {
   // log.info(
-  //   "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectedInstancesUuidIndex",
+  //   "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemoryDEFUNCT selectedInstancesUuidIndex",
   //   selectedInstancesUuidIndex,
   //   JSON.stringify(extractor, undefined, 2)
   // );
@@ -170,7 +186,7 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
         ? new RegExp((localQuery.filter.value as any).constantStringValue, "i") // TODO: check for correct type
         : undefined;
       // log.info(
-      //   "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory queryTemplateExtractObjectListByEntity filter",
+      //   "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemoryDEFUNCT queryTemplateExtractObjectListByEntity filter",
       //   JSON.stringify(localQuery.filter)
       // );
       const result:DomainElementInstanceUuidIndexOrFailed = localQuery.filter
@@ -182,7 +198,7 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
                   (i as any)[1][localQuery.filter?.attributeName??""]
                 )
                 // log.info(
-                //   "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory queryTemplateExtractObjectListByEntity filter",
+                //   "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemoryDEFUNCT queryTemplateExtractObjectListByEntity filter",
                 //   JSON.stringify(i[1]),
                 //   "matchResult",
                 //   matchResult
@@ -195,7 +211,7 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
         : selectedInstancesUuidIndex;
       ;
       // log.info(
-      //   "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory queryTemplateExtractObjectListByEntity result",
+      //   "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemoryDEFUNCT queryTemplateExtractObjectListByEntity result",
       //   JSON.stringify(result, undefined, 2)
       // );
       return result;
@@ -204,8 +220,8 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
     case "selectObjectListByRelation": {
       const relationQuery: QueryTemplateSelectObjectListByRelation = extractor.select;
 
-      // log.info("applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation", JSON.stringify(selectedInstances))
-      // log.info("applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation", selectedInstances)
+      // log.info("applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemoryDEFUNCT selectObjectListByRelation", JSON.stringify(selectedInstances))
+      // log.info("applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemoryDEFUNCT selectObjectListByRelation", selectedInstances)
       const result = { "elementType": "instanceUuidIndex", "elementValue": Object.fromEntries(
         Object.entries(selectedInstancesUuidIndex.elementValue ?? {}).filter(
         // Object.entries(selectedInstancesUuidIndex.elementValue ?? {}).filter(
@@ -222,14 +238,14 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
               ] as any) ?? {})[relationQuery.objectReferenceAttribute ?? "uuid"];
             } else {
               throw new Error(
-                "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation must be a reference to an Object:" +
+                "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemoryDEFUNCT selectObjectListByRelation must be a reference to an Object:" +
                   JSON.stringify(relationQuery.objectReference, undefined, 2) +
                   " but reference name not found in contextResults=" +
                   JSON.stringify(Object.keys(extractor.contextResults), undefined, 2)
               );
             }
             // log.info(
-            //   "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation",
+            //   "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemoryDEFUNCT selectObjectListByRelation",
             //   (i[1] as any).name,
             //   (i[1] as any)[localIndex] === otherIndex,
             //   "localIndex",
@@ -241,14 +257,14 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
           }
         )
       )} as DomainElementInstanceUuidIndex;
-      // log.info("applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation query", relationQuery)
-      // log.info("applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation result", result)
+      // log.info("applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemoryDEFUNCT selectObjectListByRelation query", relationQuery)
+      // log.info("applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemoryDEFUNCT selectObjectListByRelation result", result)
       return result;
     }
     case "selectObjectListByManyToManyRelation": {
       const relationQuery: QueryTemplateSelectObjectListByManyToManyRelation = extractor.select;
 
-      // log.info("applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation", selectedInstances)
+      // log.info("applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemoryDEFUNCT selectObjectListByManyToManyRelation", selectedInstances)
       let otherList: Record<string,any> | undefined = undefined
       if (
         relationQuery.objectListReference?.transformerType == "contextReference" &&
@@ -257,11 +273,11 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
         otherList = (extractor.contextResults[
           relationQuery.objectListReference.referenceName??""
         ]) ?? {};
-        // log.info("applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation found otherList", otherList);
+        // log.info("applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemoryDEFUNCT selectObjectListByManyToManyRelation found otherList", otherList);
         
       } else {
         throw new Error(
-          "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation must be a reference to a List of Objects: " +
+          "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemoryDEFUNCT selectObjectListByManyToManyRelation must be a reference to a List of Objects: " +
             JSON.stringify(relationQuery.objectListReference, undefined, 2)
         );
       }
@@ -279,7 +295,7 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
                   (v: any) => v[otherListAttribute] == (selectedInstancesEntry[1] as any)[rootListAttribute]
                 ) >= 0;
               // log.info(
-              //   "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation search otherList for attribute",
+              //   "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemoryDEFUNCT selectObjectListByManyToManyRelation search otherList for attribute",
               //   otherListAttribute,
               //   "on object",
               //   selectedInstancesEntry[1],
@@ -297,14 +313,14 @@ export const applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidInd
         )} as DomainElementInstanceUuidIndex;
       } else {
         throw new Error(
-          "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation could not find list for objectListReference, selectedInstances elementType=" +
+          "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemoryDEFUNCT selectObjectListByManyToManyRelation could not find list for objectListReference, selectedInstances elementType=" +
             selectedInstancesUuidIndex.elementType
         );
       }
     }
     default: {
       throw new Error(
-        "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory could not handle query, selectorParams=" +
+        "applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemoryDEFUNCT could not handle query, selectorParams=" +
           JSON.stringify(extractor.select, undefined, 2)
       );
       break;
@@ -326,13 +342,13 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemo
   selectorParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObjectList, StateType>
 ): DomainElementInstanceUuidIndexOrFailed => {
   const selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed =
-    (selectorParams?.extractorRunnerMap ?? emptySelectorMap).extractEntityInstanceUuidIndex(deploymentEntityState, selectorParams);
+    (selectorParams?.extractorRunnerMap ?? emptySelectorMap).extractEntityInstanceUuidIndexForTemplate(deploymentEntityState, selectorParams);
 
   // log.info(
   //   "extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory found selectedInstances", selectedInstancesUuidIndex
   // );
 
-  return applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory(
+  return applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemoryDEFUNCT(
     selectedInstancesUuidIndex,
     selectorParams.extractorTemplate,
   );
@@ -347,54 +363,10 @@ export const applyExtractorTemplateTransformerInMemory = (
 ): DomainElement => {
   log.info("applyExtractorTemplateTransformerInMemory ###### query", JSON.stringify(actionRuntimeTransformer, null, 2));
   return transformer_extended_apply("runtime", "ROOT"/**WHAT?? */, actionRuntimeTransformer, queryParams, newFetchedData);
-  // switch (actionRuntimeTransformer.transformerType) {
-  //   case "mustacheStringTemplate":
-  //   case "constantUuid":
-  //   case "constantObject":
-  //   case "constantString":
-  //   case "newUuid":
-  //   case "contextReference":
-  //   case "parameterReference":
-  //   case "objectDynamicAccess":
-  //   case "fullObjectTemplate":
-  //   case "freeObjectTemplate":
-  //   case "objectAlter":
-  //   case "count":
-  //   case "mapperListToList":
-  //   case "mapperListToObject":
-  //   case "listPickElement":
-  //   case "objectValues":
-  //   case "unique": {
-  //     return transformer_apply("runtime", "ROOT"/**WHAT?? */, actionRuntimeTransformer, queryParams, newFetchedData);
-  //     break;
-  //   }
-  //   case "transformer_menu_addItem":{
-  //     return transformer_extended_apply("runtime", "ROOT"/**WHAT?? */, actionRuntimeTransformer, queryParams, newFetchedData);
-  //     // return {
-  //     //   elementType: "failure",
-  //     //   elementValue: {
-  //     //     queryFailure: "IncorrectParameters",
-  //     //     query: JSON.stringify(actionRuntimeTransformer),
-  //     //     queryContext: "applyExtractorTemplateTransformerInMemory transformer_menu_addItem not implemented",
-  //     //   },
-  //     // }
-  //   }
-  //   default: {
-  //     return {
-  //       elementType: "failure",
-  //       elementValue: {
-  //         queryFailure: "IncorrectParameters",
-  //         query: JSON.stringify(actionRuntimeTransformer),
-  //         queryContext: "applyExtractorTemplateTransformerInMemory not implemented for transformerType of " + JSON.stringify(actionRuntimeTransformer),
-  //       },
-  //     };
-  //     break;
-  //   }
-  // }
 };
 
 // ################################################################################################
-export function innerSelectElementFromQueryTemplate/*ExtractorTemplateRunner*/<StateType>(
+export function innerSelectElementFromQueryTemplateDEFUNCT/*ExtractorTemplateRunner*/<StateType>(
   state: StateType,
   newFetchedData: Record<string, any>,
   pageParams: Record<string, any>,
@@ -435,7 +407,7 @@ export function innerSelectElementFromQueryTemplate/*ExtractorTemplateRunner*/<S
     }
     case "selectObjectByRelation":
     case "selectObjectByDirectReference": {
-      return extractorTemplateRunnerMap.extractEntityInstance(state, {
+      return extractorTemplateRunnerMap.extractEntityInstanceForTemplate(state, {
         extractorRunnerMap: extractorTemplateRunnerMap,
         extractorTemplate: {
           queryType: "extractorTemplateForDomainModelObjects",
@@ -461,7 +433,7 @@ export function innerSelectElementFromQueryTemplate/*ExtractorTemplateRunner*/<S
         elementValue: Object.fromEntries(
           Object.entries(queryTemplate.definition).map((e: [string, QueryTemplate]) => [
             e[0],
-            innerSelectElementFromQueryTemplate( // recursive call
+            innerSelectElementFromQueryTemplateDEFUNCT( // recursive call
               state,
               newFetchedData,
               pageParams ?? {},
@@ -480,7 +452,7 @@ export function innerSelectElementFromQueryTemplate/*ExtractorTemplateRunner*/<S
       return {
         elementType: "array",
         elementValue: queryTemplate.definition.map((e) =>
-          innerSelectElementFromQueryTemplate( // recursive call
+          innerSelectElementFromQueryTemplateDEFUNCT( // recursive call
             state,
             newFetchedData,
             pageParams ?? {},
@@ -494,7 +466,7 @@ export function innerSelectElementFromQueryTemplate/*ExtractorTemplateRunner*/<S
       break;
     }
     case "queryCombiner": { // join
-      const rootQueryResults = innerSelectElementFromQueryTemplate(
+      const rootQueryResults = innerSelectElementFromQueryTemplateDEFUNCT(
         state,
         newFetchedData,
         pageParams,
@@ -510,7 +482,7 @@ export function innerSelectElementFromQueryTemplate/*ExtractorTemplateRunner*/<S
             Object.entries(rootQueryResults.elementValue).map((entry) => {
               return [
                 (entry[1] as any).uuid??"no uuid found for entry " + entry[0],
-                innerSelectElementFromQueryTemplate( // recursive call
+                innerSelectElementFromQueryTemplateDEFUNCT( // recursive call
                   state,
                   newFetchedData,
                   pageParams,
@@ -535,14 +507,14 @@ export function innerSelectElementFromQueryTemplate/*ExtractorTemplateRunner*/<S
           elementValue: {
             queryFailure: "IncorrectParameters",
             query: JSON.stringify(queryTemplate.rootQuery),
-            queryContext: "innerSelectElementFromQueryTemplate for queryCombiner, rootQuery is not instanceUuidIndex, rootQuery=" + JSON.stringify(rootQueryResults,null,2),
+            queryContext: "innerSelectElementFromQueryTemplateDEFUNCT for queryCombiner, rootQuery is not instanceUuidIndex, rootQuery=" + JSON.stringify(rootQueryResults,null,2),
           },
         };
       }
       break;
     }
     case "queryContextReference": {
-      log.info("innerSelectElementFromQueryTemplate queryContextReference", queryTemplate, "newFetchedData", Object.keys(newFetchedData), "result", newFetchedData[queryTemplate.queryReference]);
+      log.info("innerSelectElementFromQueryTemplateDEFUNCT queryContextReference", queryTemplate, "newFetchedData", Object.keys(newFetchedData), "result", newFetchedData[queryTemplate.queryReference]);
       return newFetchedData &&
         // newFetchedData.elementType == "object" &&
         newFetchedData[queryTemplate.queryReference]
@@ -551,8 +523,8 @@ export function innerSelectElementFromQueryTemplate/*ExtractorTemplateRunner*/<S
             elementType: "failure",
             elementValue: {
               queryFailure: "ReferenceNotFound",
-              failureOrigin: ["QuerySelector", "innerSelectElementFromQueryTemplate"],
-              queryContext: "innerSelectElementFromQueryTemplate could not find " + queryTemplate.queryReference + " in " + JSON.stringify(newFetchedData),
+              failureOrigin: ["QuerySelector", "innerSelectElementFromQueryTemplateDEFUNCT"],
+              queryContext: "innerSelectElementFromQueryTemplateDEFUNCT could not find " + queryTemplate.queryReference + " in " + JSON.stringify(newFetchedData),
               query: JSON.stringify(queryTemplate),
             },
           };
@@ -577,16 +549,21 @@ export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <
   // log.info("########## extractExtractor begin, query", selectorParams);
   const localSelectorMap: SyncExtractorTemplateRunnerMap<StateType> = selectorParams?.extractorRunnerMap ?? emptySelectorMap;
 
+  if (!selectorParams.extractorRunnerMap) {
+    throw new Error("extractWithExtractorTemplate requires extractorRunnerMap");
+  }
+
   switch (selectorParams.extractorTemplate.queryType) {
     case "extractorTemplateForRecordOfExtractors": {
-      return extractWithManyExtractorTemplates(
+      return selectorParams.extractorRunnerMap.extractWithManyExtractorTemplates(
         state,
+        // selectorParams as SyncExtractorTemplateRunnerParams<ExtractorTemplateForRecordOfExtractors, StateType>
         selectorParams as SyncExtractorTemplateRunnerParams<ExtractorTemplateForRecordOfExtractors, StateType>
       );
       break;
     }
     case "extractorTemplateForDomainModelObjects": {
-      const result = innerSelectElementFromQueryTemplate(
+      const result = innerSelectElementFromQueryTemplateDEFUNCT(
         state,
         selectorParams.extractorTemplate.contextResults,
         selectorParams.extractorTemplate.pageParams,
@@ -629,6 +606,16 @@ export const extractWithManyExtractorTemplates = <StateType>(
   selectorParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForRecordOfExtractors, StateType>,
 ): DomainElementObject => { 
 
+  // const resolvedExtractor: ExtractorForRecordOfExtractors = resolveExtractorTemplateForRecordOfExtractors(selectorParams.extractorTemplate); 
+
+  // return extractWithManyExtractors(
+  //   state,
+  //   {
+  //     extractorRunnerMap: {} as any,
+  //     extractor: resolvedExtractor,
+  //   }
+  // )
+
   // log.info("########## extractWithManyExtractorTemplates begin, query", selectorParams);
   const context: Record<string, any> = {
     ...selectorParams.extractorTemplate.contextResults,
@@ -645,30 +632,7 @@ export const extractWithManyExtractorTemplates = <StateType>(
       ...selectorParams.extractorTemplate.queryParams,
     };
 
-    // const query = resolveQueryTemplate(extractorTemplate[1], queryParams, context);
-
-    // if ((query as any)?.queryFailure) {
-    //   log.error(
-    //     "extractWithManyExtractorTemplates failed for extractor",
-    //     extractorTemplate[0],
-    //     "query",
-    //     extractorTemplate[1],
-    //     "result=",
-    //     query
-    //   );
-    //   // context[extractorTemplate[0]] = query;
-      
-    // }
-    // let result = innerSelectElementFromQuery(
-    //   state,
-    //   context,
-    //   selectorParams.extractorTemplate.pageParams,
-    //   queryParams,
-    //   localSelectorMap as any,
-    //   selectorParams.extractorTemplate.deploymentUuid,
-    //   query as MiroirQuery
-    // );
-    let result = innerSelectElementFromQueryTemplate(
+    let result = innerSelectElementFromQueryTemplateDEFUNCT(
       state,
       context,
       selectorParams.extractorTemplate.pageParams,
@@ -704,12 +668,15 @@ export const extractWithManyExtractorTemplates = <StateType>(
       context[extractorTemplate[0]]
     );
   }
-  log.info("########## DomainSelector extractWithManyExtractorTemplates using combiners", selectorParams.extractorTemplate.combinerTemplates);
+  log.info(
+    "########## DomainSelector extractWithManyExtractorTemplates using combiners",
+    selectorParams.extractorTemplate.combinerTemplates
+  );
 
   for (const combiner of Object.entries(
     selectorParams.extractorTemplate.combinerTemplates ?? {}
   )) {
-    let result = innerSelectElementFromQueryTemplate(
+    let result = innerSelectElementFromQueryTemplateDEFUNCT(
       state,
       context,
       selectorParams.extractorTemplate.pageParams,

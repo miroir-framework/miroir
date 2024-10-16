@@ -103,9 +103,6 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
   newFetchedData: Record<string, any>,
   pageParams: Record<string, any>,
   queryParams: Record<string, any>,
-  // newFetchedData: DomainElementObject,
-  // pageParams: DomainElementObject,
-  // queryParams: DomainElementObject,
   extractorRunnerMap:AsyncExtractorRunnerMap,
   deploymentUuid: Uuid,
   extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>,
@@ -234,17 +231,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
                   ),
                 },
               },
-              // extractorRunnerMap,
-              {
-                extractorType: "async",
-                applyExtractorTransformer: extractorRunnerMap.applyExtractorTemplateTransformer,
-                extractEntityInstance: extractorRunnerMap.extractEntityInstanceForTemplate,
-                extractEntityInstanceUuidIndex: extractorRunnerMap.extractEntityInstanceUuidIndexForTemplate,
-                extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory:
-                  extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory,
-                extractWithExtractorTemplate: extractorRunnerMap.extractWithExtractorTemplate,
-                extractWithManyExtractorTemplates: extractorRunnerMap.extractWithManyExtractorTemplates,
-              },
+              extractorRunnerMap,
               deploymentUuid,
               // extractors,
               query.subQueryTemplate.query

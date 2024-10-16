@@ -162,34 +162,6 @@ export const selectEntityInstanceUuidIndexFromDomainState: SyncExtractorRunner<
         elementType: "instanceUuidIndex",
         elementValue: domainState[deploymentUuid][applicationSection][entityUuid],
       };
-  //     break;
-  //   }
-  //   case "object":
-  //   case "instance":
-  //   case "instanceUuidIndex":
-  //   case "instanceUuidIndexUuidIndex":
-  //   case "array": {
-  //     return {
-  //       elementType: "failure",
-  //       elementValue: {
-  //         queryFailure: "IncorrectParameters",
-  //         queryContext:
-  //           "selectEntityInstanceUuidIndexFromDomainStateForTemplate could not handle reference" + JSON.stringify(entityUuid),
-  //         queryReference: JSON.stringify(selectorParams.extractorTemplate.select.parentUuid),
-  //       },
-  //     };
-  //   }
-  //   case "failure": {
-  //     return entityUuid;
-  //     break;
-  //   }
-  //   default: {
-  //     throw new Error(
-  //       "selectEntityInstanceUuidIndexFromDomainStateForTemplate could not handle reference entityUuid=" + entityUuid
-  //     );
-  //     break;
-  //   }
-  // }
 };
 
 // ################################################################################################
@@ -415,7 +387,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
  * @param selectorParams
  * @returns
  */
-export const exractEntityInstanceListFromListQueryAndDomainState: SyncExtractorRunner<
+export const extractEntityInstanceListFromListQueryAndDomainState: SyncExtractorRunner<
   ExtractorForSingleObjectList,
   DomainState,
   DomainElementInstanceUuidIndexOrFailed
@@ -501,9 +473,10 @@ export function getSelectorMap(): SyncExtractorRunnerMap<DomainState> {
     extractorType: "sync",
     extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDomainState,
     extractEntityInstance: selectEntityInstanceFromObjectQueryAndDomainState,
-    extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: exractEntityInstanceListFromListQueryAndDomainState,
+    extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: extractEntityInstanceListFromListQueryAndDomainState,
     extractWithManyExtractors: extractWithManyExtractorsFromDomainState,
     extractWithExtractor: extractWithExtractor,
+    // 
     extractEntityInstanceUuidIndexForTemplate: selectEntityInstanceUuidIndexFromDomainStateForTemplate,
     extractEntityInstanceForTemplate: selectEntityInstanceFromObjectQueryAndDomainStateForTemplate,
     extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: extractEntityInstanceListFromListQueryTemplateAndDomainState,

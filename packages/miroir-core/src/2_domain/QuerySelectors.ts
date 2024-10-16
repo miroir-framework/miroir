@@ -38,7 +38,7 @@ import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
-import { innerSelectElementFromQueryTemplate } from "./QueryTemplateSelectors.js";
+import { innerSelectElementFromQueryTemplateDEFUNCT } from "./QueryTemplateSelectors.js";
 import { applyTransformer, transformer_apply, transformer_extended_apply } from "./Transformers.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"SyncExtractorTemplateRunner");
@@ -423,15 +423,11 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
 
 // ################################################################################################
 export const applyExtractorTransformerInMemory = (
-  // actionRuntimeTransformer: TransformerForRuntime,
   actionRuntimeTransformer: ExtendedTransformerForRuntime,
   queryParams: Record<string, any>,
   newFetchedData: Record<string, any>
-  // queryParams: DomainElementObject,
-  // newFetchedData: DomainElementObject
 ): DomainElement => {
   log.info("applyExtractorTemplateTransformerInMemory  query", JSON.stringify(actionRuntimeTransformer, null, 2));
-  // return transformer_apply("runtime", "ROOT"/**WHAT?? */, actionRuntimeTransformer, queryParams, newFetchedData);
   return transformer_extended_apply("runtime", "ROOT"/**WHAT?? */, actionRuntimeTransformer, queryParams, newFetchedData);
 };
 
@@ -455,6 +451,7 @@ export function innerSelectElementFromQuery/*ExtractorTemplateRunner*/<StateType
     case "queryExtractObjectListByEntity":
     case "selectObjectListByRelation": 
     case "selectObjectListByManyToManyRelation": {
+      // return extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractorInMemory(state, {
       return extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractorInMemory(state, {
         extractorRunnerMap,
         extractor: {
@@ -551,7 +548,7 @@ export function innerSelectElementFromQuery/*ExtractorTemplateRunner*/<StateType
             Object.entries(rootQueryResults.elementValue).map((entry) => {
               return [
                 (entry[1] as any).uuid??"no uuid found for entry " + entry[0],
-                innerSelectElementFromQueryTemplate( // recursive call
+                innerSelectElementFromQueryTemplateDEFUNCT( // recursive call
                   state,
                   newFetchedData,
                   pageParams,
@@ -561,14 +558,7 @@ export function innerSelectElementFromQuery/*ExtractorTemplateRunner*/<StateType
                       Object.entries(applyTransformer(query.subQueryTemplate.rootQueryObjectTransformer, entry[1]))
                     ),
                   },
-                  {
-                    extractorType: "sync",
-                    extractEntityInstance: extractorRunnerMap.extractEntityInstanceForTemplate,
-                    extractEntityInstanceUuidIndex: extractorRunnerMap.extractEntityInstanceUuidIndexForTemplate,
-                    extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory,
-                    extractWithExtractorTemplate: extractorRunnerMap.extractWithExtractorTemplate,
-                    extractWithManyExtractorTemplates: extractorRunnerMap.extractWithManyExtractorTemplates,
-                  },
+                  extractorRunnerMap,
                   deploymentUuid,
                   query.subQueryTemplate.query
                 ).elementValue, // TODO: check for error!
@@ -627,7 +617,6 @@ export function innerSelectElementFromQuery/*ExtractorTemplateRunner*/<StateType
 // ################################################################################################
 export const extractWithExtractor /**: SyncExtractorTemplateRunner */= <StateType>(
   state: StateType,
-  // selectorParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForRecordOfExtractors, DeploymentEntityState>,
   selectorParams: SyncExtractorRunnerParams<
   ExtractorForDomainModelObjects | ExtractorForRecordOfExtractors,
     StateType
@@ -719,9 +708,6 @@ export const extractWithManyExtractors = <StateType>(
     if (result.elementType == "failure") {
       log.error("extractWithManyExtractor failed for extractor", extractor[0], "query", extractor[1], "result=", result);
       context[extractor[0]] = result    
-      // return { elementType: "object", elementValue: {
-      // }}
-      // return result;
     } else {
       context[extractor[0]] = result.elementValue; // does side effect!
     }
@@ -742,7 +728,6 @@ export const extractWithManyExtractors = <StateType>(
       selectorParams.extractor.deploymentUuid,
       combiner[1]
     );
-    // context[combiner[0]] = result; // does side effect!
     context[combiner[0]] = result.elementValue; // does side effect!
     // log.info("extractWithManyExtractors done for entry", entry[0], "query", entry[1], "result=", result);
   }

@@ -23,7 +23,7 @@ import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
 import {
-  applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory,
+  applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemoryDEFUNCT,
   applyExtractorTemplateTransformerInMemory
 } from "./QueryTemplateSelectors.js";
 import { applyTransformer } from "./Transformers.js";
@@ -38,12 +38,19 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 
 const emptyAsyncSelectorMap:AsyncExtractorTemplateRunnerMap = {
   extractorType: "async",
+  extractEntityInstanceUuidIndex: undefined as any,
+  extractEntityInstance: undefined as any,
+  extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: undefined as any,
+  extractWithManyExtractors: undefined as any,
+  extractWithExtractor: undefined as any,
+  applyExtractorTransformer: undefined as any,
+  // 
   extractWithExtractorTemplate: undefined as any, 
   extractWithManyExtractorTemplates: undefined as any, 
-  extractEntityInstance: undefined as any,
+  extractEntityInstanceForTemplate: undefined as any,
   extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: undefined as any,
-  extractEntityInstanceUuidIndex: undefined as any,
-  applyExtractorTransformer: undefined as any,
+  extractEntityInstanceUuidIndexForTemplate: undefined as any,
+  applyExtractorTemplateTransformer: undefined as any,
 }
 
 // ################################################################################################
@@ -62,13 +69,13 @@ export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate
   selectorParams: AsyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObjectList>
 ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
   const result: Promise<DomainElementInstanceUuidIndexOrFailed> =
-    (selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap).extractEntityInstanceUuidIndex(selectorParams)
+    (selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap).extractEntityInstanceUuidIndexForTemplate(selectorParams)
     .then((selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed) => {
       log.info(
         "extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory found selectedInstances", selectedInstancesUuidIndex
       );
 
-      return applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemory(
+      return applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemoryDEFUNCT(
         selectedInstancesUuidIndex,
         selectorParams.extractorTemplate,
       );
@@ -83,8 +90,6 @@ export async function asyncApplyExtractorTemplateTransformerInMemory(
   actionRuntimeTransformer: TransformerForRuntime,
   queryParams: Record<string, any>,
   newFetchedData: Record<string, any>,
-  // queryParams: DomainElementObject,
-  // newFetchedData: DomainElementObject,
   extractorTemplates: Record<string, ExtractorTemplateForSingleObjectList | ExtractorTemplateForSingleObject | ExtractorTemplateForRecordOfExtractors>,
 ): Promise<DomainElement> {
   return Promise.resolve(applyExtractorTemplateTransformerInMemory(actionRuntimeTransformer, queryParams, newFetchedData));
@@ -134,7 +139,7 @@ export function asyncInnerSelectElementFromQueryTemplate/*ExtractorTemplateRunne
     }
     case "selectObjectByRelation":
     case "selectObjectByDirectReference": {
-      return extractorRunnerMap.extractEntityInstance({
+      return extractorRunnerMap.extractEntityInstanceForTemplate({
         extractorRunnerMap,
         extractorTemplate: {
           queryType: "extractorTemplateForDomainModelObjects",
