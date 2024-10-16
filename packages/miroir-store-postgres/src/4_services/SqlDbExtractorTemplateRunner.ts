@@ -71,8 +71,8 @@ export class SqlDbExtractTemplateRunner {
       extractWithManyExtractorTemplates: undefined as any,
     };
 
-    this.extractorRunnerMap = dbImplementationExtractorRunnerMap;
-    // this.extractorRunnerMap = InMemoryImplementationExtractorRunnerMap;
+    // this.extractorRunnerMap = dbImplementationExtractorRunnerMap;
+    this.extractorRunnerMap = InMemoryImplementationExtractorRunnerMap;
   }
 
   // ##############################################################################################
