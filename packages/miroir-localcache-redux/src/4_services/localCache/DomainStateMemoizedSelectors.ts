@@ -46,25 +46,9 @@ export function getMemoizedDeploymentEntityStateSelectorMap(): SyncExtractorRunn
       extractWithExtractor
     ),
     // ############################################################################################
-    extractEntityInstanceForTemplate: createSelector(
-      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-      selectEntityInstanceFromDeploymentEntityStateForTemplate
-    ),
-    extractEntityInstanceUuidIndexForTemplate: createSelector(
-      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-      selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate
-    ),
-    extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: createSelector(
-      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-      extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory
-    ),
     extractWithManyExtractorTemplates: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
       extractWithManyExtractorTemplates
-    ),
-    extractWithExtractorTemplate: createSelector(
-      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-      extractWithExtractorTemplate
     ),
 
   };

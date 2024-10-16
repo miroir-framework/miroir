@@ -57,11 +57,7 @@ const emptySelectorMap:SyncExtractorRunnerMap<any> = {
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: undefined as any,
   extractEntityInstanceUuidIndex: undefined as any,
   // ##############################################################################################
-  extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: undefined as any,
-  extractWithExtractorTemplate: undefined as any,
   extractWithManyExtractorTemplates: undefined as any,
-  extractEntityInstanceForTemplate: undefined as any,
-  extractEntityInstanceUuidIndexForTemplate: undefined as any,
 }
 
 const emptyAsyncSelectorMap:AsyncExtractorRunnerMap = {

@@ -240,13 +240,11 @@ export type AsyncExtractorRunnerMap = {
     DomainElementInstanceUuidIndexOrFailed
   >;
   // 
+  // TODO: called in AsyncQuerySelector
   applyExtractorTransformer(
-    // query: TransformerForRuntime,
     query: ExtendedTransformerForRuntime,
     queryParams: Record<string, any>,
     newFetchedData: Record<string, any>,
-    // queryParams: DomainElementObject,
-    // newFetchedData: DomainElementObject,
     extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>
   ): Promise<DomainElement>;
   extractWithExtractorTemplate: AsyncExtractorTemplateRunner<
@@ -270,12 +268,9 @@ export type AsyncExtractorRunnerMap = {
     DomainElementInstanceUuidIndexOrFailed
   >;
   applyExtractorTemplateTransformer(
-    // query: TransformerForRuntime,
     query: ExtendedTransformerForRuntime,
     queryParams: Record<string, any>,
     newFetchedData: Record<string, any>,
-    // queryParams: DomainElementObject,
-    // newFetchedData: DomainElementObject,
     extractorTemplates: Record<
       string,
       ExtractorTemplateForSingleObjectList | ExtractorTemplateForSingleObject | ExtractorTemplateForRecordOfExtractors
@@ -308,30 +303,11 @@ export type SyncExtractorRunnerMap<StateType> = {
     DomainElementInstanceUuidIndexOrFailed
   >;
   // ################################################################################################
-  extractWithExtractorTemplate: SyncExtractorTemplateRunner<
-    ExtractorTemplateForSingleObject | ExtractorTemplateForSingleObjectList | ExtractorTemplateForRecordOfExtractors,
-    StateType,
-    DomainElement
-  >;
+  // TODO: has direct call in ReportView, ReportSectionListDisplay, JzodObjectEditor
   extractWithManyExtractorTemplates: SyncExtractorTemplateRunner<
     ExtractorTemplateForRecordOfExtractors,
     StateType,
     DomainElementObjectOrFailed
-  >;
-  extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: SyncExtractorTemplateRunner<
-    ExtractorTemplateForSingleObjectList,
-    StateType,
-    DomainElementInstanceUuidIndexOrFailed
-  >;
-  extractEntityInstanceUuidIndexForTemplate: SyncExtractorTemplateRunner<
-    ExtractorTemplateForSingleObjectList,
-    StateType,
-    DomainElementInstanceUuidIndexOrFailed
-  >;
-  extractEntityInstanceForTemplate: SyncExtractorTemplateRunner<
-    ExtractorTemplateForSingleObject,
-    StateType,
-    DomainElementEntityInstanceOrFailed
   >;
 };
 

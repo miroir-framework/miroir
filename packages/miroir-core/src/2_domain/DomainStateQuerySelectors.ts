@@ -477,11 +477,7 @@ export function getSelectorMap(): SyncExtractorRunnerMap<DomainState> {
     extractWithManyExtractors: extractWithManyExtractorsFromDomainState,
     extractWithExtractor: extractWithExtractor,
     // 
-    extractEntityInstanceUuidIndexForTemplate: selectEntityInstanceUuidIndexFromDomainStateForTemplate,
-    extractEntityInstanceForTemplate: selectEntityInstanceFromObjectQueryAndDomainStateForTemplate,
-    extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: extractEntityInstanceListFromListQueryTemplateAndDomainState,
     extractWithManyExtractorTemplates: extractWithManyExtractorsFromDomainStateForTemplate,
-    extractWithExtractorTemplate: extractWithExtractorTemplate,
   };
 }
 
