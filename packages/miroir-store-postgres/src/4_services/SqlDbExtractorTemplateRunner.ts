@@ -1,49 +1,31 @@
 import {
-  ActionEntityInstanceCollectionReturnType,
   ActionReturnType,
-  ApplicationSection,
-  asyncApplyExtractorTemplateTransformerInMemory,
   asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
-  asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate,
   AsyncExtractorRunnerMap,
-  AsyncExtractorTemplateRunner,
-  AsyncExtractorTemplateRunnerMap,
-  AsyncExtractorTemplateRunnerParams,
   asyncExtractWithExtractor,
-  asyncExtractWithExtractorTemplate,
   asyncExtractWithManyExtractors,
-  asyncExtractWithManyExtractorTemplates,
   DomainElement,
-  DomainElementEntityInstanceOrFailed,
-  DomainElementInstanceUuidIndexOrFailed,
-  DomainElementObject,
   DomainState,
   ExtractorForDomainModelObjects,
   ExtractorForRecordOfExtractors,
-  ExtractorTemplateForRecordOfExtractors,
-  ExtractorTemplateForSingleObject,
-  ExtractorTemplateForSingleObjectList,
   ExtractorTemplateRunnerMapForJzodSchema,
   getLoggerName,
   LoggerInterface,
   MiroirLoggerFactory,
   QueryTemplateAction,
-  QueryTemplateSelectObject,
   resolveExtractorTemplateForDomainModelObjects,
   resolveExtractorTemplateForRecordOfExtractors,
   selectEntityJzodSchemaFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
-  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
-  transformer_InnerReference_resolve,
-  TransformerForRuntime
+  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate
 } from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 import { SqlDbDataStoreSection } from "./SqlDbDataStoreSection.js";
-import { SqlDbModelStoreSection } from "./SqlDbModelStoreSection.js";
 import { SqlDbExtractRunner } from "./SqlDbExtractorRunner.js";
+import { SqlDbModelStoreSection } from "./SqlDbModelStoreSection.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "PostgresExtractorRunner");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -100,8 +82,8 @@ export class SqlDbExtractTemplateRunner {
       applyExtractorTemplateTransformer: undefined as any,
     };
 
-    // this.extractorRunnerMap = dbImplementationExtractorRunnerMap;
-    this.extractorRunnerMap = InMemoryImplementationExtractorRunnerMap;
+    this.extractorRunnerMap = dbImplementationExtractorRunnerMap;
+    // this.extractorRunnerMap = InMemoryImplementationExtractorRunnerMap;
   }
 
   // ##############################################################################################

@@ -547,7 +547,7 @@ export function innerSelectElementFromQuery/*ExtractorTemplateRunner*/<StateType
           elementValue: Object.fromEntries(
             Object.entries(rootQueryResults.elementValue).map((entry) => {
 
-              const queryParamms =                 {
+              const innerQueryParams = {
                 ...queryParams.elementValue,
                 ...Object.fromEntries(
                   Object.entries(applyTransformer(query.subQueryTemplate.rootQueryObjectTransformer, entry[1]))
@@ -555,7 +555,7 @@ export function innerSelectElementFromQuery/*ExtractorTemplateRunner*/<StateType
               };
 
               // TODO: faking context results here! Should we send empty contextResults instead?
-              const resolvedQuery: MiroirQuery | QueryFailed = resolveQueryTemplate(query.subQueryTemplate.query,queryParamms, queryParamms); 
+              const resolvedQuery: MiroirQuery | QueryFailed = resolveQueryTemplate(query.subQueryTemplate.query,innerQueryParams, innerQueryParams); 
         
               if ("QueryFailure" in resolvedQuery) {
                 return [
@@ -567,7 +567,7 @@ export function innerSelectElementFromQuery/*ExtractorTemplateRunner*/<StateType
                 state,
                 newFetchedData,
                 pageParams,
-                queryParamms,
+                innerQueryParams,
                 extractorRunnerMap,
                 deploymentUuid,
                 resolvedQuery as MiroirQuery,

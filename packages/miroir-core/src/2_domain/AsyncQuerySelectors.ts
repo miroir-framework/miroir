@@ -12,7 +12,7 @@ import {
   ExtractorForSingleObject,
   ExtractorForSingleObjectList,
   MiroirQuery,
-  TransformerForRuntime
+  QueryFailed
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   AsyncExtractorRunnerMap,
@@ -22,9 +22,9 @@ import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
-import { asyncInnerSelectElementFromQueryTemplate } from "./AsyncQueryTemplateSelectors.js";
 import { cleanLevel } from "./constants.js";
 import { applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory, applyExtractorTransformerInMemory } from "./QuerySelectors.js";
+import { resolveQueryTemplate } from "./Templates.js";
 import { applyTransformer } from "./Transformers.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"AsyncExtractorTemplateRunner");
@@ -217,24 +217,42 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
         if (rootQueryResults.elementType == "instanceUuidIndex") {
           const entries = Object.entries(rootQueryResults.elementValue);
           const promises = entries.map((entry: [string, EntityInstance]) => {
-            return asyncInnerSelectElementFromQueryTemplate(
+            const innerQueryParams =                 {
+              ...queryParams.elementValue,
+              ...Object.fromEntries(
+                Object.entries(applyTransformer(query.subQueryTemplate.rootQueryObjectTransformer, entry[1]))
+              ),
+            };
+
+            // TODO: faking context results here! Should we send empty contextResults instead?
+            const resolvedQuery: MiroirQuery | QueryFailed = resolveQueryTemplate(query.subQueryTemplate.query,innerQueryParams, innerQueryParams); 
+            if ("QueryFailure" in resolvedQuery) {
+              return [
+                (entry[1] as any).uuid??"no uuid found for entry " + entry[0],
+                resolvedQuery
+              ];
+            }
+
+            return asyncInnerSelectElementFromQuery(
               newFetchedData,
               pageParams,
-              {
-                elementType: "object",
-                elementValue: {
-                  ...queryParams.elementValue,
-                  ...Object.fromEntries(
-                    Object.entries(applyTransformer(query.subQueryTemplate.rootQueryObjectTransformer, entry[1])).map(
-                      (e: [string, any]) => [e[0], { elementType: "instanceUuid", elementValue: e[1] }]
-                    )
-                  ),
-                },
-              },
+              innerQueryParams,
+              // {
+              //   elementType: "object",
+              //   elementValue: {
+              //     ...queryParams.elementValue,
+              //     ...Object.fromEntries(
+              //       Object.entries(applyTransformer(query.subQueryTemplate.rootQueryObjectTransformer, entry[1])).map(
+              //         (e: [string, any]) => [e[0], { elementType: "instanceUuid", elementValue: e[1] }]
+              //       )
+              //     ),
+              //   },
+              // },
               extractorRunnerMap,
               deploymentUuid,
-              // extractors,
-              query.subQueryTemplate.query
+              extractors,
+              resolvedQuery as MiroirQuery,
+              // query.subQueryTemplate.query
             ).then((result) => {
               return [entry[1].uuid, result];
             });

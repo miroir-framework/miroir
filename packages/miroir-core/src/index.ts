@@ -585,7 +585,7 @@ export {
   extractWithExtractorTemplate,
   applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemoryDEFUNCT,
   applyExtractorTemplateTransformerInMemory,
-  innerSelectElementFromQueryTemplateDEFUNCT,
+  // innerSelectElementFromQueryTemplateDEFUNCT,
   extractFetchQueryTemplateJzodSchema,
   extractJzodSchemaForDomainModelQueryTemplate,
 } from './2_domain/QueryTemplateSelectors.js';
@@ -600,13 +600,13 @@ export {
   extractWithManyExtractors,
   extractWithExtractor,
 } from './2_domain/QuerySelectors.js';
-export {
-  asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate,
-  asyncExtractWithExtractorTemplate,
-  asyncExtractWithManyExtractorTemplates,
-  asyncApplyExtractorTemplateTransformerInMemory,
-  asyncInnerSelectElementFromQueryTemplate
-} from './2_domain/AsyncQueryTemplateSelectors.js';
+// export {
+//   asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate,
+//   asyncExtractWithExtractorTemplate,
+//   asyncExtractWithManyExtractorTemplates,
+//   asyncApplyExtractorTemplateTransformerInMemory,
+//   asyncInnerSelectElementFromQueryTemplate
+// } from './2_domain/AsyncQueryTemplateSelectors.js';
 export {
   asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,

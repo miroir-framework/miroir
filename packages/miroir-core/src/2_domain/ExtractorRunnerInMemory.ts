@@ -64,12 +64,6 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
       extractWithManyExtractorTemplates: undefined as any,
       extractWithExtractorTemplate: undefined as any,
       applyExtractorTemplateTransformer: undefined as any,
-      // extractEntityInstanceUuidIndexForTemplate: this.extractorTemplateRunner.extractEntityInstanceUuidIndex,
-      // extractEntityInstanceForTemplate: this.extractorTemplateRunner.extractEntityInstance,
-      // extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate,
-      // extractWithManyExtractorTemplates: asyncExtractWithManyExtractorTemplates,
-      // extractWithExtractorTemplate: asyncExtractWithExtractorTemplate,
-      // applyExtractorTemplateTransformer: asyncApplyExtractorTemplateTransformerInMemory,
     };
   }
 

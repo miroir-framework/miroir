@@ -2,17 +2,13 @@ import {
   ActionEntityInstanceCollectionReturnType,
   ActionReturnType,
   ApplicationSection,
-  asyncApplyExtractorTemplateTransformerInMemory,
   asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
-  asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate,
   AsyncExtractorRunner,
   AsyncExtractorRunnerMap,
   AsyncExtractorRunnerParams,
   asyncExtractWithExtractor,
-  asyncExtractWithExtractorTemplate,
   asyncExtractWithManyExtractors,
-  asyncExtractWithManyExtractorTemplates,
   DomainElement,
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
@@ -37,8 +33,8 @@ import {
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 import { SqlDbDataStoreSection } from "./SqlDbDataStoreSection.js";
-import { SqlDbModelStoreSection } from "./SqlDbModelStoreSection.js";
 import { SqlDbExtractTemplateRunner } from "./SqlDbExtractorTemplateRunner.js";
+import { SqlDbModelStoreSection } from "./SqlDbModelStoreSection.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "PostgresExtractorRunner");
 let log: LoggerInterface = console as any as LoggerInterface;
