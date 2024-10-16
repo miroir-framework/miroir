@@ -20,10 +20,10 @@ import {
   JzodObject,
   MiroirQuery,
   QueryExtractObjectListByEntity,
+  QueryFailed,
   QuerySelectObjectListByManyToManyRelation,
   QuerySelectObjectListByRelation,
-  QueryTemplateConstantOrAnyReference,
-  TransformerForRuntime
+  QueryTemplateConstantOrAnyReference
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   AsyncExtractorRunnerMap,
@@ -38,8 +38,8 @@ import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
-import { innerSelectElementFromQueryTemplateDEFUNCT } from "./QueryTemplateSelectors.js";
-import { applyTransformer, transformer_apply, transformer_extended_apply } from "./Transformers.js";
+import { resolveQueryTemplate } from "./Templates.js";
+import { applyTransformer, transformer_extended_apply } from "./Transformers.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"SyncExtractorTemplateRunner");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -546,22 +546,35 @@ export function innerSelectElementFromQuery/*ExtractorTemplateRunner*/<StateType
           elementType: "object",
           elementValue: Object.fromEntries(
             Object.entries(rootQueryResults.elementValue).map((entry) => {
+
+              const queryParamms =                 {
+                ...queryParams.elementValue,
+                ...Object.fromEntries(
+                  Object.entries(applyTransformer(query.subQueryTemplate.rootQueryObjectTransformer, entry[1]))
+                ),
+              };
+
+              // TODO: faking context results here! Should we send empty contextResults instead?
+              const resolvedQuery: MiroirQuery | QueryFailed = resolveQueryTemplate(query.subQueryTemplate.query,queryParamms, queryParamms); 
+        
+              if ("QueryFailure" in resolvedQuery) {
+                return [
+                  (entry[1] as any).uuid??"no uuid found for entry " + entry[0],
+                  resolvedQuery
+                ];
+              }
+              const innerResult = innerSelectElementFromQuery( // recursive call
+                state,
+                newFetchedData,
+                pageParams,
+                queryParamms,
+                extractorRunnerMap,
+                deploymentUuid,
+                resolvedQuery as MiroirQuery,
+              ).elementValue; // TODO: check for error!
               return [
                 (entry[1] as any).uuid??"no uuid found for entry " + entry[0],
-                innerSelectElementFromQueryTemplateDEFUNCT( // recursive call
-                  state,
-                  newFetchedData,
-                  pageParams,
-                  {
-                    ...queryParams.elementValue,
-                    ...Object.fromEntries(
-                      Object.entries(applyTransformer(query.subQueryTemplate.rootQueryObjectTransformer, entry[1]))
-                    ),
-                  },
-                  extractorRunnerMap,
-                  deploymentUuid,
-                  query.subQueryTemplate.query
-                ).elementValue, // TODO: check for error!
+                innerResult
               ];
             })
           ),
