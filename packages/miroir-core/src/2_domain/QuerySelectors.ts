@@ -69,12 +69,7 @@ const emptyAsyncSelectorMap:AsyncExtractorRunnerMap = {
   extractEntityInstanceUuidIndex: undefined as any,
   applyExtractorTransformer: undefined as any,
   // ##############################################################################################
-  extractWithExtractorTemplate: undefined as any,
   extractWithManyExtractorTemplates: undefined as any,
-  applyExtractorTemplateTransformer: undefined as any,
-  extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: undefined as any,
-  extractEntityInstanceForTemplate: undefined as any,
-  extractEntityInstanceUuidIndexForTemplate: undefined as any,
 }
 
 // ################################################################################################

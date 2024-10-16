@@ -54,13 +54,7 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
       extractWithExtractor: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
       // 
-      extractEntityInstanceUuidIndexForTemplate: undefined as any,
-      extractEntityInstanceForTemplate: undefined as any,
-      extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: undefined as any,
       extractWithManyExtractorTemplates: undefined as any,
-      extractWithExtractorTemplate: undefined as any,
-      applyExtractorTemplateTransformer: undefined as any
-      
     };
   }
 

@@ -56,12 +56,7 @@ export class SqlDbExtractTemplateRunner {
       extractWithExtractor: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
       // 
-      extractEntityInstanceUuidIndexForTemplate: undefined as any,
-      extractEntityInstanceForTemplate: undefined as any,
-      extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: undefined as any,
       extractWithManyExtractorTemplates: undefined as any,
-      extractWithExtractorTemplate: undefined as any,
-      applyExtractorTemplateTransformer: undefined as any
     };
     const dbImplementationExtractorRunnerMap: AsyncExtractorRunnerMap = {
       extractorType: "async",
@@ -73,13 +68,7 @@ export class SqlDbExtractTemplateRunner {
       extractWithExtractor: asyncExtractWithExtractor,
       applyExtractorTransformer: this.sqlDbExtractorRunner.applyExtractorTransformerSql.bind(this.sqlDbExtractorRunner),
       // 
-      extractEntityInstanceUuidIndexForTemplate: undefined as any,
-      extractEntityInstanceForTemplate: undefined as any,
-      extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory:
-      undefined as any,
       extractWithManyExtractorTemplates: undefined as any,
-      extractWithExtractorTemplate: undefined as any,
-      applyExtractorTemplateTransformer: undefined as any,
     };
 
     this.extractorRunnerMap = dbImplementationExtractorRunnerMap;

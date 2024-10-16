@@ -147,31 +147,33 @@ export type SyncExtractorTemplateRunnerMap<StateType> = {
     DomainElementInstanceUuidIndexOrFailed
   >;
   // ################################################################################################
-  extractWithExtractorTemplate: SyncExtractorTemplateRunner<
-    ExtractorTemplateForSingleObject | ExtractorTemplateForSingleObjectList | ExtractorTemplateForRecordOfExtractors,
-    StateType,
-    DomainElement
-  >;
+  // extractWithExtractorTemplate: SyncExtractorTemplateRunner<
+  //   ExtractorTemplateForSingleObject | ExtractorTemplateForSingleObjectList | ExtractorTemplateForRecordOfExtractors,
+  //   StateType,
+  //   DomainElement
+  // >;
+  // TODO: called from JzodObjectEditor, ReportView, ReportSectionListDisplay (?)
   extractWithManyExtractorTemplates: SyncExtractorTemplateRunner<
     ExtractorTemplateForRecordOfExtractors,
     StateType,
     DomainElementObjectOrFailed
   >;
+  // TODO: called from QueryTemplateSelector
   extractEntityInstanceUuidIndexForTemplate: SyncExtractorTemplateRunner<
     ExtractorTemplateForSingleObjectList,
     StateType,
     DomainElementInstanceUuidIndexOrFailed
   >;
-  extractEntityInstanceForTemplate: SyncExtractorTemplateRunner<
-    ExtractorTemplateForSingleObject,
-    StateType,
-    DomainElementEntityInstanceOrFailed
-  >;
-  extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: SyncExtractorTemplateRunner<
-    ExtractorTemplateForSingleObjectList,
-    StateType,
-    DomainElementInstanceUuidIndexOrFailed
-  >;
+  // extractEntityInstanceForTemplate: SyncExtractorTemplateRunner<
+  //   ExtractorTemplateForSingleObject,
+  //   StateType,
+  //   DomainElementEntityInstanceOrFailed
+  // >;
+  // extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: SyncExtractorTemplateRunner<
+  //   ExtractorTemplateForSingleObjectList,
+  //   StateType,
+  //   DomainElementInstanceUuidIndexOrFailed
+  // >;
 };
 
 // ################################################################################################
@@ -247,35 +249,11 @@ export type AsyncExtractorRunnerMap = {
     newFetchedData: Record<string, any>,
     extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>
   ): Promise<DomainElement>;
-  extractWithExtractorTemplate: AsyncExtractorTemplateRunner<
-    ExtractorTemplateForSingleObject | ExtractorTemplateForSingleObjectList | ExtractorTemplateForRecordOfExtractors,
-    DomainElement
-  >;
+  // 
   extractWithManyExtractorTemplates: AsyncExtractorTemplateRunner<
     ExtractorTemplateForRecordOfExtractors,
     DomainElementObjectOrFailed
   >;
-  extractEntityInstanceUuidIndexForTemplate: AsyncExtractorTemplateRunner<
-    ExtractorTemplateForSingleObjectList,
-    DomainElementInstanceUuidIndexOrFailed
-  >;
-  extractEntityInstanceForTemplate: AsyncExtractorTemplateRunner<
-    ExtractorTemplateForSingleObject,
-    DomainElementEntityInstanceOrFailed
-  >;
-  extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: AsyncExtractorTemplateRunner<
-    ExtractorTemplateForSingleObjectList,
-    DomainElementInstanceUuidIndexOrFailed
-  >;
-  applyExtractorTemplateTransformer(
-    query: ExtendedTransformerForRuntime,
-    queryParams: Record<string, any>,
-    newFetchedData: Record<string, any>,
-    extractorTemplates: Record<
-      string,
-      ExtractorTemplateForSingleObjectList | ExtractorTemplateForSingleObject | ExtractorTemplateForRecordOfExtractors
-    >
-  ): Promise<DomainElement>;
 };
 
 // ################################################################################################

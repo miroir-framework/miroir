@@ -808,6 +808,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                 },
                 objectReference: {
                   transformerType: "contextReference",
+                  interpolation: "runtime",
                   referenceName: "book",
                 },
                 AttributeOfObjectToCompareToReferenceUuid: "author",
@@ -821,6 +822,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                 },
                 objectReference: {
                   transformerType: "contextReference",
+                  interpolation: "runtime",
                   referenceName: "author",
                 },
                 AttributeOfListObjectToCompareToReferenceUuid: "author",
