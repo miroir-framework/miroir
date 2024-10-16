@@ -4,17 +4,14 @@ import {
   ExtractorTemplateRunnerMapForJzodSchema,
   SyncExtractorTemplateRunnerMap,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
-  extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory,
   extractEntityJzodSchemaFromDeploymentEntityState,
   extractFetchQueryJzodSchema,
   extractJzodSchemaForDomainModelQuery,
   extractWithExtractor,
-  extractWithExtractorTemplate,
   extractWithManyExtractorTemplates,
   extractWithManyExtractors,
   extractzodSchemaForSingleSelectQuery,
   selectEntityInstanceFromDeploymentEntityState,
-  selectEntityInstanceFromDeploymentEntityStateForTemplate,
   selectEntityInstanceUuidIndexFromDeploymentEntityState,
   selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate
 } from "miroir-core";

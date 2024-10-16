@@ -11,7 +11,6 @@ import {
   ExtractorRunnerMapForJzodSchema,
   ExtractorRunnerParamsForJzodSchema,
   ExtractorTemplateForRecordOfExtractors,
-  ExtractorTemplateRunnerMapForJzodSchema,
   LoggerInterface,
   MiroirLoggerFactory,
   RecordOfJzodObject,
@@ -19,10 +18,8 @@ import {
   SyncExtractorRunnerMap,
   SyncExtractorRunnerParams,
   SyncExtractorTemplateRunnerMap,
-  SyncExtractorTemplateRunnerParams,
   Uuid,
   getDeploymentEntityStateSelectorParams,
-  getDeploymentEntityStateSelectorTemplateParams,
   getLoggerName,
   resolveExtractorTemplateForRecordOfExtractors
 } from "miroir-core";
@@ -33,7 +30,7 @@ import { useDeploymentEntityStateJzodSchemaSelector, useDeploymentEntityStateQue
 import { ReportUrlParamKeys } from '../routes/ReportPage.js';
 import { ReportSectionView } from './ReportSectionView.js';
 
-import { getMemoizedDeploymentEntityStateJzodSchemaSelectorMap, getMemoizedDeploymentEntityStateJzodSchemaSelectorTemplateMap, getMemoizedDeploymentEntityStateSelectorForTemplateMap, getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
+import { getMemoizedDeploymentEntityStateJzodSchemaSelectorMap, getMemoizedDeploymentEntityStateSelectorForTemplateMap, getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 
@@ -84,10 +81,6 @@ export const ReportView = (props: ReportViewProps) => {
   //   props.reportSection.extractors
   // );
 
-  const deploymentEntityStateSelectorTemplateMap: SyncExtractorTemplateRunnerMap<DeploymentEntityState> = useMemo(
-    () => getMemoizedDeploymentEntityStateSelectorForTemplateMap(),
-    []
-  );
   const deploymentEntityStateSelectorMap: SyncExtractorRunnerMap<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
@@ -120,17 +113,6 @@ export const ReportView = (props: ReportViewProps) => {
           },
     [props.pageParams, props.reportDefinition]
   );
-  // const deploymentEntityStateFetchQueryTemplateParams: SyncExtractorTemplateRunnerParams<
-  //   ExtractorTemplateForRecordOfExtractors,
-  //   DeploymentEntityState
-  // > = useMemo(
-  //   () =>
-  //     getDeploymentEntityStateSelectorTemplateParams<ExtractorTemplateForRecordOfExtractors>(
-  //       deploymentEntityStateFetchQueryTemplate,
-  //       deploymentEntityStateSelectorTemplateMap
-  //     ),
-  //   [deploymentEntityStateFetchQueryTemplate, props.pageParams, props.reportDefinition]
-  // );
 
   // log.info("deploymentEntityStateFetchQueryTemplateParams",deploymentEntityStateFetchQueryTemplateParams)
 
@@ -139,10 +121,8 @@ export const ReportView = (props: ReportViewProps) => {
   const resolvedTemplateQuery: ExtractorForRecordOfExtractors = useMemo(
     () =>
       resolveExtractorTemplateForRecordOfExtractors(
-        // deploymentEntityStateFetchQueryTemplateParams.extractorTemplate,
         deploymentEntityStateFetchQueryTemplate
       ),
-    // [deploymentEntityStateFetchQueryTemplateParams]
     [deploymentEntityStateFetchQueryTemplate]
   );
 
@@ -194,11 +174,6 @@ export const ReportView = (props: ReportViewProps) => {
   // //   props.reportSection?.extractors,
   // // )
   // log.info("################################################################ Fecth Template report data")
-
-  // const deploymentEntityStateQueryTemplateResults: DomainElementObjectOrFailed = useDeploymentEntityStateQueryTemplateSelector(
-  //   deploymentEntityStateSelectorTemplateMap.extractWithManyExtractorTemplates,
-  //   deploymentEntityStateFetchQueryTemplateParams
-  // );
 
   // log.info("deploymentEntityStateQueryTemplateResults",deploymentEntityStateQueryTemplateResults)
 
@@ -337,7 +312,6 @@ export const ReportView = (props: ReportViewProps) => {
                     applicationSection={props.applicationSection}
                     deploymentUuid={props.deploymentUuid}
                     paramsAsdomainElements={paramsAsdomainElements}
-                    extractorTemplateRunnerMap={deploymentEntityStateSelectorTemplateMap}
                   />
                 </div>
               ) : (

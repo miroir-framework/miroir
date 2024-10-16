@@ -144,10 +144,6 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
   // const miroirConfig = context.getMiroirConfig();
   // const context = useMiroirContext();
 
-  // const deploymentEntityStateSelectorTemplateMap: SyncExtractorTemplateRunnerMap<DeploymentEntityState> = useMemo(
-  //   () => getMemoizedDeploymentEntityStateSelectorForTemplateMap(),
-  //   []
-  // )
   const deploymentEntityStateSelectorMap: SyncExtractorRunnerMap<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorMap(),
     []

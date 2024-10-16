@@ -569,7 +569,7 @@ export {
   getDeploymentEntityStateJzodSchemaSelectorTemplateMap,
   getDeploymentEntityStateSelectorTemplateMap,
   getDeploymentEntityStateSelectorTemplateParams,
-  selectEntityInstanceFromDeploymentEntityStateForTemplate,
+  // selectEntityInstanceFromDeploymentEntityStateForTemplate,
   selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate,
   // extractEntityJzodSchemaFromDeploymentEntityState,
 } from './2_domain/DeploymentEntityStateQueryTemplateSelectors.js';

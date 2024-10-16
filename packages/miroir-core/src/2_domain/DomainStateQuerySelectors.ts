@@ -84,16 +84,6 @@ export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: DomainModelGetF
   },
 };
 
-// function getInstances(entityUuid: Uuid): DomainElementInstanceUuidIndexOrFailed {
-//   return {
-//     elementType: "failure",
-//     elementValue: {
-//       queryFailure: "NotImplemented",
-//       queryParameters: JSON.stringify(entityUuid),
-//     },
-//   };
-//  }
-
 // ################################################################################################
 // ACCESSES DOMAIN STATE
 export const selectEntityInstanceUuidIndexFromDomainState: SyncExtractorRunner<

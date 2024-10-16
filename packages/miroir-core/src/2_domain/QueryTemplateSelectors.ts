@@ -71,13 +71,6 @@ const emptyAsyncSelectorMap:AsyncExtractorTemplateRunnerMap = {
   extractWithManyExtractors: undefined as any,
   extractWithExtractor: undefined as any,
   applyExtractorTransformer: undefined as any,
-  // 
-  // extractWithExtractorTemplate: undefined as any, 
-  // extractWithManyExtractorTemplates: undefined as any, 
-  // extractEntityInstanceForTemplate: undefined as any,
-  // extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory: undefined as any,
-  // extractEntityInstanceUuidIndexForTemplate: undefined as any,
-  // applyExtractorTemplateTransformer: undefined as any,
 }
 
 // ################################################################################################
@@ -256,7 +249,7 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemo
   selectorParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObjectList, StateType>
 ): DomainElementInstanceUuidIndexOrFailed => {
   const selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed =
-    (selectorParams?.extractorRunnerMap ?? emptySelectorMap).extractEntityInstanceUuidIndexForTemplate(deploymentEntityState, selectorParams);
+    (selectorParams?.extractorTemplateRunnerMap ?? emptySelectorMap).extractEntityInstanceUuidIndexForTemplate(deploymentEntityState, selectorParams);
 
   // log.info(
   //   "extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory found selectedInstances", selectedInstancesUuidIndex
@@ -288,7 +281,7 @@ export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <
   >
 ): DomainElement => {
   // log.info("########## extractExtractor begin, query", selectorParams);
-  if (!selectorParams.extractorRunnerMap) {
+  if (!selectorParams.extractorTemplateRunnerMap) {
     throw new Error("extractWithExtractorTemplate requires extractorRunnerMap");
   }
 
@@ -299,7 +292,7 @@ export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <
       return extractWithManyExtractors(
         state,
         {
-          extractorRunnerMap: selectorParams.extractorRunnerMap,
+          extractorRunnerMap: selectorParams.extractorTemplateRunnerMap,
           extractor: resolvedExtractor,
         }
       )
@@ -313,7 +306,7 @@ export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <
         state,
         {
           // extractorRunnerMap: {} as any,
-          extractorRunnerMap: selectorParams.extractorRunnerMap,
+          extractorRunnerMap: selectorParams.extractorTemplateRunnerMap,
           extractor: resolvedExtractor,
         }
       )
@@ -356,7 +349,7 @@ export const extractWithManyExtractorTemplates = <StateType>(
   return extractWithManyExtractors(
     state,
     {
-      extractorRunnerMap: selectorParams.extractorRunnerMap,
+      extractorRunnerMap: selectorParams.extractorTemplateRunnerMap,
       extractor: resolvedExtractor,
     }
   )

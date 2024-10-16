@@ -1,14 +1,10 @@
 import {
-  ApplicationSection,
-  DomainElementEntityInstanceOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
   DomainModelGetEntityDefinitionExtractor,
   EntityDefinition,
   ExtractorTemplateForDomainModel,
-  ExtractorTemplateForSingleObject,
   ExtractorTemplateForSingleObjectList,
-  JzodObject,
-  QueryTemplateSelectObject
+  JzodObject
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface.js";
 import {
@@ -40,221 +36,6 @@ let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;
 });
-
-// ################################################################################################
-// ACCESSES deploymentEntityState
-/**
- * returns an Entity Instance (Object) from and selectObjectByParameterValue
- * @param deploymentEntityState
- * @param selectorParams
- * @returns
- */
-export const selectEntityInstanceFromDeploymentEntityStateForTemplate: SyncExtractorTemplateRunner<
-  ExtractorTemplateForSingleObject,
-  DeploymentEntityState,
-  DomainElementEntityInstanceOrFailed
-> = (
-  deploymentEntityState: DeploymentEntityState,
-  selectorParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObject, DeploymentEntityState>
-): DomainElementEntityInstanceOrFailed => {
-  // TODO: implement using DeploymentEntityStateQuerySelectors.selectEntityInstanceFromDeploymentEntityState
-  const querySelectorParams: QueryTemplateSelectObject = selectorParams.extractorTemplate.select as QueryTemplateSelectObject;
-  const deploymentUuid = selectorParams.extractorTemplate.deploymentUuid;
-  const applicationSection: ApplicationSection =
-    selectorParams.extractorTemplate.select.applicationSection ??"data";
-
-  const parentUuidDomainElement = transformer_InnerReference_resolve(
-    "runtime",
-    querySelectorParams.parentUuid,
-    selectorParams.extractorTemplate.queryParams,
-    selectorParams.extractorTemplate.contextResults
-  );
-  
-  log.info(
-    "selectEntityInstanceFromDeploymentEntityStateForTemplate params",
-    querySelectorParams,
-    "deploymentUuid",
-    deploymentUuid,
-    "applicationSection",
-    applicationSection,
-    "parentUuidDomainElement",
-    parentUuidDomainElement
-  );
-
-  // log.info("selectEntityInstanceFromDeploymentEntityStateForTemplate found entityUuidReference", JSON.stringify(entityUuidReference))
-  if (parentUuidDomainElement.elementType != "string" && parentUuidDomainElement.elementType != "instanceUuid") {
-    return {
-      elementType: "failure",
-      elementValue: {
-        queryFailure: "IncorrectParameters",
-        queryContext:
-          "selectEntityInstanceFromDeploymentEntityStateForTemplate could not resolve entityUuidReference " +
-          JSON.stringify(parentUuidDomainElement),
-        queryReference: JSON.stringify(querySelectorParams.parentUuid),
-      },
-    };
-  }
-
-  const index = getDeploymentEntityStateIndex(deploymentUuid, applicationSection, parentUuidDomainElement.elementValue);
-
-  switch (querySelectorParams?.queryType) {
-    case "selectObjectByRelation": {
-      const referenceObject = transformer_InnerReference_resolve(
-        "build",
-        querySelectorParams.objectReference,
-        selectorParams.extractorTemplate.queryParams,
-        selectorParams.extractorTemplate.contextResults
-      );
-      if (
-        !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
-      ) {
-        log.error(
-          "selectEntityInstanceFromDeploymentEntityStateForTemplate selectObjectByRelation, querySelectorParams",
-          querySelectorParams,
-          "entityUuid",
-          parentUuidDomainElement,
-          "referenceObject",
-          referenceObject,
-          "queryParams",
-          JSON.stringify(selectorParams.extractorTemplate.queryParams, undefined, 2),
-          "######### contextResults",
-          JSON.stringify(selectorParams.extractorTemplate.contextResults, undefined, 2)
-        );
-        return {
-          elementType: "failure",
-          elementValue: {
-            queryFailure: "IncorrectParameters",
-            queryParameters: JSON.stringify(selectorParams.extractorTemplate.pageParams),
-            queryContext:
-              "selectEntityInstanceFromDeploymentEntityStateForTemplate querySelectorParams is missing querySelectorParams.AttributeOfObjectToCompareToReferenceUuid, querySlectorParams=" +
-              JSON.stringify(querySelectorParams),
-          },
-        };
-      }
-
-      if (!deploymentEntityState[index]) {
-        return {
-          elementType: "failure",
-          elementValue: {
-            queryFailure: "EntityNotFound",
-            deploymentUuid,
-            applicationSection,
-            entityUuid: parentUuidDomainElement.elementValue,
-          },
-        };
-      }
-
-      // log.info(
-      //   "selectEntityInstanceFromDeploymentEntityStateForTemplate selectObjectByRelation, ############# reference",
-      //   querySelectorParams,
-      //   "######### context entityUuid",
-      //   entityUuidReference,
-      //   "######### referenceObject",
-      //   referenceObject,
-      //   "######### queryParams",
-      //   JSON.stringify(selectorParams.query.queryParams, undefined, 2),
-      //   "######### contextResults",
-      //   JSON.stringify(selectorParams.query.contextResults, undefined, 2)
-      // );
-      return {
-        elementType: "instance",
-        elementValue:
-          deploymentEntityState[index].entities[
-            (referenceObject.elementValue as any)[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
-          ],
-      };
-      break;
-    }
-    case "selectObjectByDirectReference": {
-      const instanceDomainElement = transformer_InnerReference_resolve(
-        "build",
-        querySelectorParams.instanceUuid,
-        selectorParams.extractorTemplate.queryParams,
-        selectorParams.extractorTemplate.contextResults
-      );
-      // log.info("selectEntityInstanceFromDeploymentEntityStateForTemplate selectObjectByDirectReference found domainState", JSON.stringify(domainState))
-
-      log.info(
-        "selectEntityInstanceFromDeploymentEntityStateForTemplate found instanceDomainElement",
-        JSON.stringify(instanceDomainElement)
-      );
-
-      // if (instanceUuid.elementType != "string" && instanceUuid.elementType != "instanceUuid") {
-      if (instanceDomainElement.elementType == "instance") {
-        return instanceDomainElement; /* QueryResults, elementType == "failure" */
-      }
-      if (instanceDomainElement.elementType != "string" && instanceDomainElement.elementType != "instanceUuid") {
-        log.info("selectEntityInstanceFromDeploymentEntityStateForTemplate could not resolve instanceUuid", instanceDomainElement);
-        return {
-          elementType: "failure",
-          elementValue: {
-            queryFailure: "IncorrectParameters",
-            deploymentUuid,
-            applicationSection,
-            entityUuid: parentUuidDomainElement.elementValue,
-          },
-        };
-      }
-      log.info("selectEntityInstanceFromDeploymentEntityStateForTemplate looking up index", index, "in deploymentEntityState", deploymentEntityState);
-      if (!deploymentEntityState[index]) {
-        return {
-          elementType: "failure",
-          elementValue: {
-            queryFailure: "EntityNotFound",
-            deploymentUuid,
-            applicationSection,
-            entityUuid: parentUuidDomainElement.elementValue,
-          },
-        };
-      }
-      if (!deploymentEntityState[index].entities[instanceDomainElement.elementValue]) {
-        return {
-          elementType: "failure",
-          elementValue: {
-            queryFailure: "InstanceNotFound",
-            deploymentUuid,
-            applicationSection,
-            entityUuid: parentUuidDomainElement.elementValue,
-            instanceUuid: instanceDomainElement.elementValue,
-          },
-        };
-      }
-
-      const result = deploymentEntityState[index].entities[instanceDomainElement.elementValue];
-      log.info(
-        "selectEntityInstanceFromDeploymentEntityStateForTemplate selectObjectByDirectReference, ############# reference",
-        querySelectorParams,
-        "entityUuidReference",
-        parentUuidDomainElement,
-        "######### context entityUuid",
-        parentUuidDomainElement,
-        "######### queryParams",
-        JSON.stringify(selectorParams.extractorTemplate.queryParams, undefined, 2),
-        "######### contextResults",
-        JSON.stringify(selectorParams.extractorTemplate.contextResults, undefined, 2),
-        "index",
-        index,
-        "result",
-        result,
-        "deploymentEntityState",
-        deploymentEntityState
-      );
-      return {
-        elementType: "instance",
-        // elementValue: deploymentEntityState[index].entities[instanceDomainElement.elementValue],
-        elementValue: result,
-      };
-      break;
-    }
-    default: {
-      throw new Error(
-        "selectEntityInstanceFromDeploymentEntityStateForTemplate can not handle QueryTemplateSelectObject query with queryType=" +
-          selectorParams.extractorTemplate.select.queryType
-      );
-      break;
-    }
-  }
-};
 
 // ################################################################################################
 // ACCESSES deploymentEntityState
@@ -477,6 +258,6 @@ export function getDeploymentEntityStateSelectorTemplateParams<QueryType extends
 ): SyncExtractorTemplateRunnerParams<QueryType, DeploymentEntityState> {
   return {
     extractorTemplate: query,
-    extractorRunnerMap: extractorRunnerMap ?? getDeploymentEntityStateSelectorTemplateMap(),
+    extractorTemplateRunnerMap: extractorRunnerMap ?? getDeploymentEntityStateSelectorTemplateMap(),
   };
 }
