@@ -546,8 +546,8 @@ export {
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
 } from './2_domain/DomainStateQuerySelectors.js';
 export {
-  extractEntityInstanceListFromListQueryTemplateAndDomainState,
-  selectEntityInstanceFromObjectQueryAndDomainStateForTemplate,
+  // extractEntityInstanceListFromListQueryTemplateAndDomainState,
+  // selectEntityInstanceFromObjectQueryAndDomainStateForTemplate,
   selectEntityInstanceUuidIndexFromDomainStateForTemplate,
   getSelectorParamsForTemplate,
   getSelectorMapForTemplate,

@@ -1,9 +1,7 @@
 // ################################################################################################
 
 import {
-  ApplicationSection,
   DomainElement,
-  DomainElementEntityInstanceOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
   DomainElementObject,
   DomainModelGetEntityDefinitionExtractor,
@@ -11,10 +9,8 @@ import {
   ExtractorTemplateForDomainModel,
   ExtractorTemplateForDomainModelObjects,
   ExtractorTemplateForRecordOfExtractors,
-  ExtractorTemplateForSingleObject,
   ExtractorTemplateForSingleObjectList,
-  JzodObject,
-  QueryTemplateSelectObject
+  JzodObject
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import {
@@ -38,7 +34,6 @@ import { cleanLevel } from "./constants.js";
 import { extractWithManyExtractorsFromDomainState } from "./DomainStateQuerySelectors.js";
 // import { extractWithManyExtractors } from "./QuerySelectors.js";
 import {
-  extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory,
   extractFetchQueryTemplateJzodSchema,
   extractJzodSchemaForDomainModelQueryTemplate,
   extractWithExtractorTemplate,
@@ -61,6 +56,7 @@ export const selectFetchQueryJzodSchemaFromDomainStateNewForTemplate = extractFe
 export const selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate = extractzodSchemaForSingleSelectQueryTemplate<DomainState>;
 
 // ################################################################################################
+// TODO: used in extractWithExtractorFromDomainStateForTemplate.unit.test ONLY!!!!
 export const extractWithExtractorFromDomainStateForTemplate: SyncExtractorTemplateRunner<
   ExtractorTemplateForDomainModelObjects | ExtractorTemplateForRecordOfExtractors,
   DomainState,
@@ -75,12 +71,12 @@ export const extractWithManyExtractorsFromDomainStateForTemplate: SyncExtractorT
   DomainElementObject
 > = extractWithManyExtractorTemplates<DomainState>;
 
-// ################################################################################################
-export const extractEntityInstanceListFromListQueryTemplateAndDomainState: SyncExtractorTemplateRunner<
-  ExtractorTemplateForSingleObjectList,
-  DomainState,
-  DomainElementInstanceUuidIndexOrFailed
-> = extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory<DomainState>;
+// // ################################################################################################
+// export const extractEntityInstanceListFromListQueryTemplateAndDomainState: SyncExtractorTemplateRunner<
+//   ExtractorTemplateForSingleObjectList,
+//   DomainState,
+//   DomainElementInstanceUuidIndexOrFailed
+// > = extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory<DomainState>;
 
 // ################################################################################################
 // ACCESSES DOMAIN STATE
@@ -184,229 +180,229 @@ export const selectEntityInstanceUuidIndexFromDomainStateForTemplate: SyncExtrac
   }
 };
 
-// ################################################################################################
-// ACCESSES DOMAIN STATE
-/**
- * returns an Entity Instance (Object) from and selectObjectByParameterValue
- * @param domainState
- * @param selectorParams
- * @returns
- */
-export const selectEntityInstanceFromObjectQueryAndDomainStateForTemplate: SyncExtractorTemplateRunner<
-  ExtractorTemplateForSingleObject,
-  DomainState,
-  DomainElementEntityInstanceOrFailed
-> = (
-  domainState: DomainState,
-  selectorParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObject, DomainState>
-): DomainElementEntityInstanceOrFailed => {
-  const querySelectorParams: QueryTemplateSelectObject = selectorParams.extractorTemplate.select as QueryTemplateSelectObject;
-  const deploymentUuid = selectorParams.extractorTemplate.deploymentUuid;
-  const applicationSection: ApplicationSection =
-    selectorParams.extractorTemplate.select.applicationSection ??
-    ((selectorParams.extractorTemplate.pageParams?.applicationSection ?? "data") as ApplicationSection);
+// // ################################################################################################
+// // ACCESSES DOMAIN STATE
+// /**
+//  * returns an Entity Instance (Object) from and selectObjectByParameterValue
+//  * @param domainState
+//  * @param selectorParams
+//  * @returns
+//  */
+// export const selectEntityInstanceFromObjectQueryAndDomainStateForTemplate: SyncExtractorTemplateRunner<
+//   ExtractorTemplateForSingleObject,
+//   DomainState,
+//   DomainElementEntityInstanceOrFailed
+// > = (
+//   domainState: DomainState,
+//   selectorParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObject, DomainState>
+// ): DomainElementEntityInstanceOrFailed => {
+//   const querySelectorParams: QueryTemplateSelectObject = selectorParams.extractorTemplate.select as QueryTemplateSelectObject;
+//   const deploymentUuid = selectorParams.extractorTemplate.deploymentUuid;
+//   const applicationSection: ApplicationSection =
+//     selectorParams.extractorTemplate.select.applicationSection ??
+//     ((selectorParams.extractorTemplate.pageParams?.applicationSection ?? "data") as ApplicationSection);
 
-  log.info(
-    "selectEntityInstanceFromObjectQueryAndDomainStateForTemplate params",
-    querySelectorParams,
-    "deploymentUuid",
-    deploymentUuid,
-    "applicationSection",
-    applicationSection
-  );
-  const entityUuidDomainElement = transformer_InnerReference_resolve(
-    "build",
-    querySelectorParams.parentUuid,
-    selectorParams.extractorTemplate.queryParams,
-    selectorParams.extractorTemplate.contextResults
-  );
-  log.info("selectEntityInstanceFromObjectQueryAndDomainStateForTemplate entityUuidReference", entityUuidDomainElement);
+//   log.info(
+//     "selectEntityInstanceFromObjectQueryAndDomainStateForTemplate params",
+//     querySelectorParams,
+//     "deploymentUuid",
+//     deploymentUuid,
+//     "applicationSection",
+//     applicationSection
+//   );
+//   const entityUuidDomainElement = transformer_InnerReference_resolve(
+//     "build",
+//     querySelectorParams.parentUuid,
+//     selectorParams.extractorTemplate.queryParams,
+//     selectorParams.extractorTemplate.contextResults
+//   );
+//   log.info("selectEntityInstanceFromObjectQueryAndDomainStateForTemplate entityUuidReference", entityUuidDomainElement);
 
-  if (entityUuidDomainElement.elementType != "string" && entityUuidDomainElement.elementType != "instanceUuid") {
-    return {
-      elementType: "failure",
-      elementValue: {
-        queryFailure: "IncorrectParameters",
-        queryContext:
-          "selectEntityInstanceFromObjectQueryAndDomainStateForTemplate wrong entityUuidReference=" +
-          JSON.stringify(entityUuidDomainElement),
-        queryReference: JSON.stringify(querySelectorParams.parentUuid),
-      },
-    };
-  }
+//   if (entityUuidDomainElement.elementType != "string" && entityUuidDomainElement.elementType != "instanceUuid") {
+//     return {
+//       elementType: "failure",
+//       elementValue: {
+//         queryFailure: "IncorrectParameters",
+//         queryContext:
+//           "selectEntityInstanceFromObjectQueryAndDomainStateForTemplate wrong entityUuidReference=" +
+//           JSON.stringify(entityUuidDomainElement),
+//         queryReference: JSON.stringify(querySelectorParams.parentUuid),
+//       },
+//     };
+//   }
 
-  switch (querySelectorParams?.queryType) {
-    case "selectObjectByRelation": {
-      const referenceObject = transformer_InnerReference_resolve(
-        "runtime",
-        querySelectorParams.objectReference,
-        selectorParams.extractorTemplate.queryParams,
-        selectorParams.extractorTemplate.contextResults
-      );
+//   switch (querySelectorParams?.queryType) {
+//     case "selectObjectByRelation": {
+//       const referenceObject = transformer_InnerReference_resolve(
+//         "runtime",
+//         querySelectorParams.objectReference,
+//         selectorParams.extractorTemplate.queryParams,
+//         selectorParams.extractorTemplate.contextResults
+//       );
 
-      if (
-        !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
-      ) {
-        return {
-          elementType: "failure",
-          elementValue: {
-            queryFailure: "IncorrectParameters",
-            queryParameters: JSON.stringify(selectorParams.extractorTemplate.pageParams),
-            queryContext:
-              "DomainStateQuerySelectors selectObjectByRelation did not find AttributeOfObjectToCompareToReferenceUuid in " +
-              JSON.stringify(querySelectorParams),
-          },
-        };
-      }
+//       if (
+//         !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
+//       ) {
+//         return {
+//           elementType: "failure",
+//           elementValue: {
+//             queryFailure: "IncorrectParameters",
+//             queryParameters: JSON.stringify(selectorParams.extractorTemplate.pageParams),
+//             queryContext:
+//               "DomainStateQuerySelectors selectObjectByRelation did not find AttributeOfObjectToCompareToReferenceUuid in " +
+//               JSON.stringify(querySelectorParams),
+//           },
+//         };
+//       }
 
-      if (!domainState) {
-        return { elementType: "failure", elementValue: { queryFailure: "DomainStateNotLoaded" } };
-      }
-      if (!domainState[deploymentUuid]) {
-        return { elementType: "failure", elementValue: { queryFailure: "DeploymentNotFound", deploymentUuid } };
-      }
-      if (!domainState[deploymentUuid][applicationSection]) {
-        return {
-          elementType: "failure",
-          elementValue: { queryFailure: "ApplicationSectionNotFound", deploymentUuid, applicationSection },
-        };
-      }
-      if (!domainState[deploymentUuid][applicationSection][entityUuidDomainElement.elementValue]) {
-        return {
-          elementType: "failure",
-          elementValue: {
-            queryFailure: "EntityNotFound",
-            deploymentUuid,
-            applicationSection,
-            entityUuid: entityUuidDomainElement.elementValue,
-          },
-        };
-      }
+//       if (!domainState) {
+//         return { elementType: "failure", elementValue: { queryFailure: "DomainStateNotLoaded" } };
+//       }
+//       if (!domainState[deploymentUuid]) {
+//         return { elementType: "failure", elementValue: { queryFailure: "DeploymentNotFound", deploymentUuid } };
+//       }
+//       if (!domainState[deploymentUuid][applicationSection]) {
+//         return {
+//           elementType: "failure",
+//           elementValue: { queryFailure: "ApplicationSectionNotFound", deploymentUuid, applicationSection },
+//         };
+//       }
+//       if (!domainState[deploymentUuid][applicationSection][entityUuidDomainElement.elementValue]) {
+//         return {
+//           elementType: "failure",
+//           elementValue: {
+//             queryFailure: "EntityNotFound",
+//             deploymentUuid,
+//             applicationSection,
+//             entityUuid: entityUuidDomainElement.elementValue,
+//           },
+//         };
+//       }
 
-      // log.info(
-      //   "selectEntityInstanceFromObjectQueryAndDomainStateForTemplate selectObjectByRelation, ############# reference",
-      //   querySelectorParams,
-      //   "######### context entityUuid",
-      //   entityUuidReference,
-      //   "######### referenceObject",
-      //   referenceObject,
-      //   "######### queryParams",
-      //   JSON.stringify(selectorParams.query.queryParams, undefined, 2),
-      //   "######### contextResults",
-      //   JSON.stringify(selectorParams.query.contextResults, undefined, 2)
-      // );
-      return {
-        elementType: "instance",
-        elementValue:
-          domainState[deploymentUuid][applicationSection][entityUuidDomainElement.elementValue][
-            (referenceObject.elementValue as any)[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
-          ],
-      };
-      break;
-    }
-    case "selectObjectByDirectReference": {
-      const instanceUuidDomainElement = transformer_InnerReference_resolve(
-        "build",
-        querySelectorParams.instanceUuid,
-        selectorParams.extractorTemplate.queryParams,
-        selectorParams.extractorTemplate.contextResults
-      );
+//       // log.info(
+//       //   "selectEntityInstanceFromObjectQueryAndDomainStateForTemplate selectObjectByRelation, ############# reference",
+//       //   querySelectorParams,
+//       //   "######### context entityUuid",
+//       //   entityUuidReference,
+//       //   "######### referenceObject",
+//       //   referenceObject,
+//       //   "######### queryParams",
+//       //   JSON.stringify(selectorParams.query.queryParams, undefined, 2),
+//       //   "######### contextResults",
+//       //   JSON.stringify(selectorParams.query.contextResults, undefined, 2)
+//       // );
+//       return {
+//         elementType: "instance",
+//         elementValue:
+//           domainState[deploymentUuid][applicationSection][entityUuidDomainElement.elementValue][
+//             (referenceObject.elementValue as any)[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
+//           ],
+//       };
+//       break;
+//     }
+//     case "selectObjectByDirectReference": {
+//       const instanceUuidDomainElement = transformer_InnerReference_resolve(
+//         "build",
+//         querySelectorParams.instanceUuid,
+//         selectorParams.extractorTemplate.queryParams,
+//         selectorParams.extractorTemplate.contextResults
+//       );
 
-      log.info(
-        "selectEntityInstanceFromObjectQueryAndDomainStateForTemplate found instanceUuid",
-        JSON.stringify(instanceUuidDomainElement)
-      );
+//       log.info(
+//         "selectEntityInstanceFromObjectQueryAndDomainStateForTemplate found instanceUuid",
+//         JSON.stringify(instanceUuidDomainElement)
+//       );
 
-      if (instanceUuidDomainElement.elementType == "instance") {
-        return instanceUuidDomainElement; /* QueryResults, elementType == "failure" */
-      }
-      if (
-        instanceUuidDomainElement.elementType != "string" &&
-        instanceUuidDomainElement.elementType != "instanceUuid"
-      ) {
-        return {
-          elementType: "failure",
-          elementValue: {
-            queryFailure: "EntityNotFound",
-            deploymentUuid,
-            applicationSection,
-            entityUuid: entityUuidDomainElement.elementValue,
-            instanceUuid: instanceUuidDomainElement.elementValue,
-          },
-        };
-      }
-      // log.info("selectEntityInstanceFromObjectQueryAndDomainStateForTemplate resolved instanceUuid =", instanceUuid);
-      if (!domainState) {
-        return { elementType: "failure", elementValue: { queryFailure: "DomainStateNotLoaded" } };
-      }
-      if (!domainState[deploymentUuid]) {
-        return { elementType: "failure", elementValue: { queryFailure: "DeploymentNotFound", deploymentUuid } };
-      }
-      if (!domainState[deploymentUuid][applicationSection]) {
-        return {
-          elementType: "failure",
-          elementValue: { queryFailure: "ApplicationSectionNotFound", deploymentUuid, applicationSection },
-        };
-      }
-      if (!domainState[deploymentUuid][applicationSection][entityUuidDomainElement.elementValue]) {
-        return {
-          elementType: "failure",
-          elementValue: {
-            queryFailure: "EntityNotFound",
-            deploymentUuid,
-            applicationSection,
-            entityUuid: entityUuidDomainElement.elementValue,
-          },
-        };
-      }
-      if (
-        !domainState[deploymentUuid][applicationSection][entityUuidDomainElement.elementValue][
-          instanceUuidDomainElement.elementValue
-        ]
-      ) {
-        return {
-          elementType: "failure",
-          elementValue: {
-            queryFailure: "InstanceNotFound",
-            deploymentUuid,
-            applicationSection,
-            entityUuid: entityUuidDomainElement.elementValue,
-            instanceUuid: instanceUuidDomainElement.elementValue,
-          },
-        };
-      }
+//       if (instanceUuidDomainElement.elementType == "instance") {
+//         return instanceUuidDomainElement; /* QueryResults, elementType == "failure" */
+//       }
+//       if (
+//         instanceUuidDomainElement.elementType != "string" &&
+//         instanceUuidDomainElement.elementType != "instanceUuid"
+//       ) {
+//         return {
+//           elementType: "failure",
+//           elementValue: {
+//             queryFailure: "EntityNotFound",
+//             deploymentUuid,
+//             applicationSection,
+//             entityUuid: entityUuidDomainElement.elementValue,
+//             instanceUuid: instanceUuidDomainElement.elementValue,
+//           },
+//         };
+//       }
+//       // log.info("selectEntityInstanceFromObjectQueryAndDomainStateForTemplate resolved instanceUuid =", instanceUuid);
+//       if (!domainState) {
+//         return { elementType: "failure", elementValue: { queryFailure: "DomainStateNotLoaded" } };
+//       }
+//       if (!domainState[deploymentUuid]) {
+//         return { elementType: "failure", elementValue: { queryFailure: "DeploymentNotFound", deploymentUuid } };
+//       }
+//       if (!domainState[deploymentUuid][applicationSection]) {
+//         return {
+//           elementType: "failure",
+//           elementValue: { queryFailure: "ApplicationSectionNotFound", deploymentUuid, applicationSection },
+//         };
+//       }
+//       if (!domainState[deploymentUuid][applicationSection][entityUuidDomainElement.elementValue]) {
+//         return {
+//           elementType: "failure",
+//           elementValue: {
+//             queryFailure: "EntityNotFound",
+//             deploymentUuid,
+//             applicationSection,
+//             entityUuid: entityUuidDomainElement.elementValue,
+//           },
+//         };
+//       }
+//       if (
+//         !domainState[deploymentUuid][applicationSection][entityUuidDomainElement.elementValue][
+//           instanceUuidDomainElement.elementValue
+//         ]
+//       ) {
+//         return {
+//           elementType: "failure",
+//           elementValue: {
+//             queryFailure: "InstanceNotFound",
+//             deploymentUuid,
+//             applicationSection,
+//             entityUuid: entityUuidDomainElement.elementValue,
+//             instanceUuid: instanceUuidDomainElement.elementValue,
+//           },
+//         };
+//       }
 
-      // log.info("selectEntityInstanceFromObjectQueryAndDomainStateForTemplate selectObjectByDirectReference, ############# reference",
-      //   querySelectorParams,
-      //   "entityUuidReference",
-      //   entityUuidReference,
-      //   "######### context entityUuid",
-      //   entityUuidReference,
-      //   "######### queryParams",
-      //   JSON.stringify(selectorParams.query.queryParams, undefined, 2),
-      //   "######### contextResults",
-      //   JSON.stringify(selectorParams.query.contextResults, undefined, 2),
-      //   "domainState",
-      //   domainState
-      // );
-      return {
-        elementType: "instance",
-        elementValue:
-          domainState[deploymentUuid][applicationSection][entityUuidDomainElement.elementValue][
-            instanceUuidDomainElement.elementValue
-          ],
-      };
-      break;
-    }
-    default: {
-      throw new Error(
-        "selectEntityInstanceFromObjectQueryAndDomainStateForTemplate can not handle QueryTemplateSelectObject query with queryType=" +
-          selectorParams.extractorTemplate.select.queryType
-      );
-      break;
-    }
-  }
-};
+//       // log.info("selectEntityInstanceFromObjectQueryAndDomainStateForTemplate selectObjectByDirectReference, ############# reference",
+//       //   querySelectorParams,
+//       //   "entityUuidReference",
+//       //   entityUuidReference,
+//       //   "######### context entityUuid",
+//       //   entityUuidReference,
+//       //   "######### queryParams",
+//       //   JSON.stringify(selectorParams.query.queryParams, undefined, 2),
+//       //   "######### contextResults",
+//       //   JSON.stringify(selectorParams.query.contextResults, undefined, 2),
+//       //   "domainState",
+//       //   domainState
+//       // );
+//       return {
+//         elementType: "instance",
+//         elementValue:
+//           domainState[deploymentUuid][applicationSection][entityUuidDomainElement.elementValue][
+//             instanceUuidDomainElement.elementValue
+//           ],
+//       };
+//       break;
+//     }
+//     default: {
+//       throw new Error(
+//         "selectEntityInstanceFromObjectQueryAndDomainStateForTemplate can not handle QueryTemplateSelectObject query with queryType=" +
+//           selectorParams.extractorTemplate.select.queryType
+//       );
+//       break;
+//     }
+//   }
+// };
 
 // ################################################################################################
 // ################################################################################################

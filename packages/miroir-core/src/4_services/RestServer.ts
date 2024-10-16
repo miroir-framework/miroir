@@ -27,7 +27,11 @@ import { generateRestServiceResponse } from "./RestTools.js";
 import { cleanLevel } from "./constants.js";
 
 import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface.js";
-import { extractWithExtractorFromDomainStateForTemplate, extractWithManyExtractorsFromDomainStateForTemplate, getSelectorParamsForTemplate } from "../2_domain/DomainStateQueryTemplateSelector.js";
+import {
+  extractWithExtractorFromDomainStateForTemplate,
+  extractWithManyExtractorsFromDomainStateForTemplate,
+  getSelectorParamsForTemplate,
+} from "../2_domain/DomainStateQueryTemplateSelector.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RestServer");
 let log:LoggerInterface = console as any as LoggerInterface;
