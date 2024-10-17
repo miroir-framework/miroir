@@ -16,11 +16,9 @@ import {
   QueryTemplate
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
-  AsyncExtractorTemplateRunnerMap,
   ExtractorTemplateRunnerParamsForJzodSchema,
   RecordOfJzodElement,
   RecordOfJzodObject,
-  SyncExtractorTemplateRunnerMap,
   SyncExtractorTemplateRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
@@ -39,28 +37,6 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
     log = value;
   }
 );
-
-const emptySelectorMap:SyncExtractorTemplateRunnerMap<any> = {
-  extractorType: "sync",
-  extractEntityInstanceUuidIndex: undefined as any,
-  extractEntityInstance: undefined as any,
-  extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: undefined as any,
-  extractWithManyExtractors: undefined as any,
-  extractWithExtractor: undefined as any,
-  // 
-  extractWithManyExtractorTemplates: undefined as any, 
-}
-
-const emptyAsyncSelectorMap:AsyncExtractorTemplateRunnerMap = {
-  extractorType: "async",
-  extractEntityInstanceUuidIndex: undefined as any,
-  extractEntityInstance: undefined as any,
-  extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: undefined as any,
-  extractWithManyExtractors: undefined as any,
-  extractWithExtractor: undefined as any,
-  applyExtractorTransformer: undefined as any,
-}
-
 
 // ################################################################################################
 export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <StateType>(
@@ -305,22 +281,6 @@ export const extractFetchQueryTemplateJzodSchema = <StateType>(
       } as ExtractorTemplateRunnerParamsForJzodSchema<DomainModelGetSingleSelectQueryJzodSchemaForExtractorTemplate, StateType>),
     ])
   ) as RecordOfJzodObject;
-
-  // if (localFetchParams.runtimeTransformers?.crossJoin) {
-  //   fetchQueryJzodSchema["crossJoin"] = {
-  //     type: "object",
-  //     definition: Object.fromEntries(
-  //     Object.entries(fetchQueryJzodSchema[localFetchParams.runtimeTransformers?.crossJoin?.a ?? ""]?.definition ?? {}).map((a) => [
-  //       "a-" + a[0],
-  //       a[1]
-  //     ]
-  //     ).concat(
-  //       Object.entries(fetchQueryJzodSchema[localFetchParams.runtimeTransformers?.crossJoin?.b ?? ""]?.definition ?? {}).map((b) => [
-  //         "b-" + b[0], b[1]
-  //       ])
-  //     )
-  //   )};
-  // }
 
   // log.info("selectFetchQueryJzodSchemaFromDomainState query", JSON.stringify(selectorParams.query, undefined, 2), "fetchQueryJzodSchema", fetchQueryJzodSchema)
   return fetchQueryJzodSchema;

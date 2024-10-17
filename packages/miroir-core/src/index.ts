@@ -566,9 +566,6 @@ export {
   getDeploymentEntityStateJzodSchemaSelectorTemplateMap,
   getDeploymentEntityStateSelectorTemplateMap,
   getDeploymentEntityStateSelectorTemplateParams,
-  // selectEntityInstanceFromDeploymentEntityStateForTemplate,
-  selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate,
-  // extractEntityJzodSchemaFromDeploymentEntityState,
 } from './2_domain/DeploymentEntityStateQueryTemplateSelectors.js';
 export {
   ExtractorTemplateRunnerInMemory

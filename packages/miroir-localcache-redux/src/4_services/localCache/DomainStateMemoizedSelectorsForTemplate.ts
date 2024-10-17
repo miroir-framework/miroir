@@ -12,8 +12,7 @@ import {
   extractWithManyExtractors,
   extractzodSchemaForSingleSelectQuery,
   selectEntityInstanceFromDeploymentEntityState,
-  selectEntityInstanceUuidIndexFromDeploymentEntityState,
-  selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate
+  selectEntityInstanceUuidIndexFromDeploymentEntityState
 } from "miroir-core";
 
 const deploymentEntityStateSelector = (domainState: DeploymentEntityState, params: any) => domainState;
