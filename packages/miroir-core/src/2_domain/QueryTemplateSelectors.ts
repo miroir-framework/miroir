@@ -47,7 +47,7 @@ export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <
   >
 ): DomainElement => {
   // log.info("########## extractExtractor begin, query", selectorParams);
-  if (!selectorParams.extractorTemplateRunnerMap) {
+  if (!selectorParams.extractorRunnerMap) {
     throw new Error("extractWithExtractorTemplate requires extractorRunnerMap");
   }
 
@@ -60,7 +60,7 @@ export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <
       return extractWithManyExtractors(
         state,
         {
-          extractorRunnerMap: selectorParams.extractorTemplateRunnerMap,
+          extractorRunnerMap: selectorParams.extractorRunnerMap,
           extractor: resolvedExtractor,
         }
       )
@@ -75,7 +75,7 @@ export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <
         state,
         {
           // extractorRunnerMap: {} as any,
-          extractorRunnerMap: selectorParams.extractorTemplateRunnerMap,
+          extractorRunnerMap: selectorParams.extractorRunnerMap,
           extractor: resolvedExtractor,
         }
       )
@@ -120,7 +120,7 @@ export const extractWithManyExtractorTemplates = <StateType>(
   return extractWithManyExtractors(
     state,
     {
-      extractorRunnerMap: selectorParams.extractorTemplateRunnerMap,
+      extractorRunnerMap: selectorParams.extractorRunnerMap,
       extractor: resolvedExtractor,
     }
   )

@@ -32,7 +32,6 @@ import {
   SyncExtractorRunner,
   SyncExtractorRunnerMap,
   SyncExtractorRunnerParams,
-  SyncExtractorTemplateRunnerMap,
   Uuid,
   adminConfigurationDeploymentMiroir,
   alterObjectAtPath,
@@ -47,7 +46,7 @@ import {
   unfoldJzodSchemaOnce
 } from "miroir-core";
 
-import { getMemoizedDeploymentEntityStateSelectorForTemplateMap, getMemoizedDeploymentEntityStateSelectorMap } from "miroir-localcache-redux";
+import { getMemoizedDeploymentEntityStateSelectorMap } from "miroir-localcache-redux";
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../constants.js";
 import { useMiroirContextService, useMiroirContextformHelperState } from "../MiroirContextReactProvider.js";

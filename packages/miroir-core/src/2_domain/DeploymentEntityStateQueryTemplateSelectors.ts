@@ -8,7 +8,7 @@ import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateI
 import {
   ExtractorTemplateRunnerMapForJzodSchema,
   ExtractorTemplateRunnerParamsForJzodSchema,
-  SyncExtractorTemplateRunnerMap,
+  SyncExtractorRunnerMap,
   SyncExtractorTemplateRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
@@ -43,7 +43,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 // ################################################################################################
 // #### selector Maps
 // ################################################################################################
-export function getDeploymentEntityStateSelectorTemplateMap(): SyncExtractorTemplateRunnerMap<DeploymentEntityState> {
+export function getDeploymentEntityStateSelectorTemplateMap(): SyncExtractorRunnerMap<DeploymentEntityState> {
   return {
     extractorType: "sync",
     extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDeploymentEntityState,
@@ -70,11 +70,11 @@ export function getDeploymentEntityStateJzodSchemaSelectorTemplateMap(): Extract
 // ################################################################################################
 export function getDeploymentEntityStateSelectorTemplateParams<QueryType extends ExtractorTemplateForDomainModel>(
   query: QueryType,
-  extractorRunnerMap?: SyncExtractorTemplateRunnerMap<DeploymentEntityState>
+  extractorRunnerMap?: SyncExtractorRunnerMap<DeploymentEntityState>
 ): SyncExtractorTemplateRunnerParams<QueryType, DeploymentEntityState> {
   return {
     extractorTemplate: query,
-    extractorTemplateRunnerMap: extractorRunnerMap ?? getDeploymentEntityStateSelectorTemplateMap(),
+    extractorRunnerMap: extractorRunnerMap ?? getDeploymentEntityStateSelectorTemplateMap(),
   };
 }
 

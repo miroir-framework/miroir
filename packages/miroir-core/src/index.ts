@@ -397,10 +397,10 @@ export {
   ExtractorTemplateRunnerMapForJzodSchema,
   ExtractorTemplateRunnerParamsForJzodSchema,
   AsyncExtractorTemplateRunner,
-  AsyncExtractorTemplateRunnerMap,
+  // AsyncExtractorTemplateRunnerMap,
   AsyncExtractorTemplateRunnerParams,
   SyncExtractorTemplateRunner,
-  SyncExtractorTemplateRunnerMap,
+  // SyncExtractorTemplateRunnerMap,
   SyncExtractorTemplateRunnerParams,
   ExtractorPersistenceStoreRunner,
   // ExtractorTemplateRunnerMapForJzodSchema,
@@ -417,7 +417,7 @@ export {
   ExtractorRunner,
   ExtractorRunnerMap,
   ExtractorTemplateRunner,
-  ExtractorTemplateRunnerMap,
+  // ExtractorTemplateRunnerMap,
 } from './0_interfaces/2_domain/ExtractorRunnerInterface.js';
 export {
   ZEntityState,
