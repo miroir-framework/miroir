@@ -128,7 +128,7 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
         break;
       }
       case "queryTemplateAction": {
-        const callParams = this.getRestCallParams(action, this.rootApiUrl + "/query");
+        const callParams = this.getRestCallParams(action, this.rootApiUrl + "/queryTemplate");
         log.debug("handleNetworkPersistenceAction", action, "callParams", callParams);
         const result = await callParams.operation(callParams.url, callParams.args);
         log.info("handleNetworkPersistenceAction", action, "result", result);

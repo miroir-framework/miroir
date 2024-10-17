@@ -252,7 +252,7 @@ export async function restActionHandler(
 
 // ################################################################################################
 // USES LocalCache memoized reducers, shall go to miroir-server instead?
-export async function queryHandler(
+export async function queryTemplateHandler(
   useDomainControllerToHandleModelAndInstanceActions: boolean,
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
@@ -263,7 +263,7 @@ export async function queryHandler(
   body: HttpRequestBodyFormat,
   params: any,
 ):Promise<void> {
-  log.info("RestServer queryHandler params", params, "body", body);
+  log.info("RestServer queryTemplateHandler params", params, "body", body);
 
   /**
    * shall a query be executed based on the state of the localCache, or fetching state from a PersistenceStore?
@@ -293,7 +293,7 @@ export async function queryHandler(
     // switch (queryTemplateAction.deploymentUuid) {
     const result = await domainController.handleQueryTemplateForServerONLY(queryTemplateAction)
     log.info(
-      "RestServer queryHandler used adminConfigurationDeploymentMiroir domainController result=",
+      "RestServer queryTemplateHandler used adminConfigurationDeploymentMiroir domainController result=",
       JSON.stringify(result, undefined, 2)
     );
     return continuationFunction(response)(result)
@@ -301,8 +301,8 @@ export async function queryHandler(
     // we're on the client, called by RestServerStub
     // uses the local cache, needs to have done a Model "rollback" action on the client//, or a Model "remoteLocalCacheRollback" action on the server
     const domainState = localCache.getDomainState();
-    log.info("RestServer queryHandler query=", JSON.stringify(queryTemplateAction, undefined, 2))
-    log.info("RestServer queryHandler domainState=", JSON.stringify(domainState, undefined, 2))
+    log.info("RestServer queryTemplateHandler queryTemplateAction=", JSON.stringify(queryTemplateAction, undefined, 2))
+    log.info("RestServer queryTemplateHandler domainState=", JSON.stringify(domainState, undefined, 2))
     let queryResult: DomainElement
     switch (queryTemplateAction.query.queryType) {
       case "extractorTemplateForDomainModelObjects": {
@@ -322,7 +322,7 @@ export async function queryHandler(
       default: {
         return continuationFunction(response)({
           status: "error",
-          error: "RestServer queryHandler could not handle queryTemplateAction.query: " + queryTemplateAction.query,
+          error: "RestServer queryTemplateHandler could not handle queryTemplateAction.query: " + queryTemplateAction.query,
         })
         break;
       }
@@ -331,7 +331,7 @@ export async function queryHandler(
       status: "ok",
       returnedDomainElement: queryResult
     }
-    log.info("RestServer queryHandler used local cache result=", JSON.stringify(result, undefined,2))
+    log.info("RestServer queryTemplateHandler used local cache result=", JSON.stringify(result, undefined,2))
 
     return continuationFunction(response)(result);
   }
@@ -367,7 +367,7 @@ export const restServerDefaultHandlers: RestServiceHandler[] = [
   },
   {
     method: "post",
-    url: "/query",
-    handler: queryHandler
+    url: "/queryTemplate",
+    handler: queryTemplateHandler
   },
 ];
