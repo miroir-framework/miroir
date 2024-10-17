@@ -227,8 +227,6 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
                               paramsAsdomainElements={props.paramsAsdomainElements}
                               reportSection={innerReportSection}
                               rootReport={props.rootReport}
-                              // extractorTemplateRunnerMap={props.extractorTemplateRunnerMap}
-                              // instanceUuid={props.instanceUuid}
                             />
                           </td>
                         </tr>

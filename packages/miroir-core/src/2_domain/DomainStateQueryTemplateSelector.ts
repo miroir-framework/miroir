@@ -55,7 +55,7 @@ export const selectFetchQueryJzodSchemaFromDomainStateNewForTemplate = extractFe
 export const selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate = extractzodSchemaForSingleSelectQueryTemplate<DomainState>;
 
 // ################################################################################################
-// TODO: used in extractWithExtractorFromDomainStateForTemplate.unit.test ONLY!!!!
+// TODO: used in extractWithExtractorFromDomainStateForTemplate.unit.test and RestServer.ts, provide a better interface?
 export const extractWithExtractorFromDomainStateForTemplate: SyncExtractorTemplateRunner<
   ExtractorTemplateForDomainModelObjects | ExtractorTemplateForRecordOfExtractors,
   DomainState,
@@ -69,13 +69,6 @@ export const extractWithManyExtractorsFromDomainStateForTemplate: SyncExtractorT
   DomainState,
   DomainElementObject
 > = extractWithManyExtractorTemplates<DomainState>;
-
-// // ################################################################################################
-// export const extractEntityInstanceListFromListQueryTemplateAndDomainState: SyncExtractorTemplateRunner<
-//   ExtractorTemplateForSingleObjectList,
-//   DomainState,
-//   DomainElementInstanceUuidIndexOrFailed
-// > = extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory<DomainState>;
 
 // ################################################################################################
 // ACCESSES DOMAIN STATE

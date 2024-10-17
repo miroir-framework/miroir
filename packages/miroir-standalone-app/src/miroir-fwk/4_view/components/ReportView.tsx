@@ -17,7 +17,6 @@ import {
   RootReport,
   SyncExtractorRunnerMap,
   SyncExtractorRunnerParams,
-  SyncExtractorTemplateRunnerMap,
   Uuid,
   getDeploymentEntityStateSelectorParams,
   getLoggerName,
@@ -30,7 +29,7 @@ import { useDeploymentEntityStateJzodSchemaSelector, useDeploymentEntityStateQue
 import { ReportUrlParamKeys } from '../routes/ReportPage.js';
 import { ReportSectionView } from './ReportSectionView.js';
 
-import { getMemoizedDeploymentEntityStateJzodSchemaSelectorMap, getMemoizedDeploymentEntityStateSelectorForTemplateMap, getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
+import { getMemoizedDeploymentEntityStateJzodSchemaSelectorMap, getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 

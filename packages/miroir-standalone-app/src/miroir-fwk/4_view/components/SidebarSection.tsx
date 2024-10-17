@@ -154,29 +154,16 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
     getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>({
       queryType: "extractorForRecordOfExtractors",
       deploymentUuid: props.deploymentUuid,
-      // applicationSection: "data",
       pageParams: {},
       queryParams: {},
       contextResults: {},
-      // pageParams: { elementType: "object", elementValue: {} },
-      // queryParams: { elementType: "object", elementValue: {} },
-      // contextResults: { elementType: "object", elementValue: {} },
       extractors: {
         menus: {
           queryType: "selectObjectByDirectReference",
           parentName: "Menu",
           applicationSection: getApplicationSection(props.deploymentUuid,entityMenu.uuid),
-          // applicationSection: "model",
           parentUuid: entityMenu.uuid,
-          // parentUuid: {
-          //   transformerType: "constantUuid",
-          //   constantUuidValue: entityMenu.uuid,
-          // },
           instanceUuid: props.menuUuid,
-          // instanceUuid: {
-          //   transformerType: "constantUuid",
-          //   constantUuidValue: props.menuUuid,
-          // }
         },
       },
     }, deploymentEntityStateSelectorMap),

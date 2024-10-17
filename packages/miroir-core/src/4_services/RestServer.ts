@@ -303,7 +303,6 @@ export async function queryHandler(
     const domainState = localCache.getDomainState();
     log.info("RestServer queryHandler query=", JSON.stringify(queryTemplateAction, undefined, 2))
     log.info("RestServer queryHandler domainState=", JSON.stringify(domainState, undefined, 2))
-    // const queryResult: DomainElement = extractWithManyExtractorsFromDomainStateForTemplate(domainState, getSelectorParams(query));
     let queryResult: DomainElement
     switch (queryTemplateAction.query.queryType) {
       case "extractorTemplateForDomainModelObjects": {

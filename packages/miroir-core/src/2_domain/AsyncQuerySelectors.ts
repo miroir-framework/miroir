@@ -66,7 +66,7 @@ export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
     (selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap).extractEntityInstanceUuidIndex(selectorParams)
     .then((selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed) => {
       log.info(
-        "extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory found selectedInstances",
+        "asyncExtractEntityInstanceUuidIndexWithObjectListExtractor found selectedInstances",
         selectedInstancesUuidIndex
       );
 

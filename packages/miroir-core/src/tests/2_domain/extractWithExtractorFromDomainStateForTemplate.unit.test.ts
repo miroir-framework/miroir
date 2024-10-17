@@ -85,7 +85,6 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
           },
         },
       };
-      // const result = extractWithManyExtractorsFromDomainStateForTemplate(domainState, getSelectorParamsForTemplate(queryParam));
       const result = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParamsForTemplate(queryParam));
       console.info("result", result);
       expect(result).toEqual({
@@ -132,7 +131,6 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
       };
 
       expect(
-        // extractWithManyExtractorsFromDomainStateForTemplate(domainState, getSelectorParamsForTemplate(queryParam)))
         extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParamsForTemplate(queryParam)))
         .toEqual({
         elementType: "object",

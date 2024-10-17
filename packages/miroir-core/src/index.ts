@@ -580,12 +580,8 @@ export {
   ExtractorRunnerInMemory
 } from './2_domain/ExtractorRunnerInMemory.js';
 export {
-  extractEntityInstanceUuidIndexWithObjectListExtractorTemplateInMemory,
   extractWithManyExtractorTemplates,
   extractWithExtractorTemplate,
-  applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemoryDEFUNCT,
-  applyExtractorTemplateTransformerInMemory,
-  // innerSelectElementFromQueryTemplateDEFUNCT,
   extractFetchQueryTemplateJzodSchema,
   extractJzodSchemaForDomainModelQueryTemplate,
 } from './2_domain/QueryTemplateSelectors.js';

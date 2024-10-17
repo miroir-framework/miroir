@@ -418,7 +418,7 @@ export const applyExtractorTransformerInMemory = (
   queryParams: Record<string, any>,
   newFetchedData: Record<string, any>
 ): DomainElement => {
-  log.info("applyExtractorTemplateTransformerInMemory  query", JSON.stringify(actionRuntimeTransformer, null, 2));
+  log.info("applyExtractorTransformerInMemory  query", JSON.stringify(actionRuntimeTransformer, null, 2));
   return transformer_extended_apply("runtime", "ROOT"/**WHAT?? */, actionRuntimeTransformer, queryParams, newFetchedData);
 };
 
