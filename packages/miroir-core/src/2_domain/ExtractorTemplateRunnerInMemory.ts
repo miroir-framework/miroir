@@ -16,7 +16,12 @@ import { PersistenceStoreInstanceSectionAbstractInterface } from "../0_interface
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
-import { asyncApplyExtractorTransformerInMemory, asyncExtractEntityInstanceUuidIndexWithObjectListExtractor, asyncExtractWithExtractor, asyncExtractWithManyExtractors } from "./AsyncQuerySelectors.js";
+import {
+  asyncApplyExtractorTransformerInMemory,
+  asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+  asyncExtractWithExtractor,
+  asyncExtractWithManyExtractors,
+} from "./AsyncQuerySelectors.js";
 import { cleanLevel } from "./constants.js";
 import {
   selectEntityJzodSchemaFromDomainStateNewForTemplate,

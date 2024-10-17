@@ -45,11 +45,6 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
-export const selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate = extractJzodSchemaForDomainModelQueryTemplate<DomainState>;
-
-export const selectFetchQueryJzodSchemaFromDomainStateNewForTemplate = extractFetchQueryTemplateJzodSchema<DomainState>;
-
-export const selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate = extractzodSchemaForSingleSelectQueryTemplate<DomainState>;
 
 // ################################################################################################
 // TODO: used in extractWithExtractorFromDomainStateForTemplate.unit.test and RestServer.ts, provide a better interface?
@@ -70,8 +65,41 @@ export const extractWithManyExtractorsFromDomainStateForTemplate: SyncExtractorT
 > = extractWithManyExtractorTemplates<DomainState>;
 
 // ################################################################################################
+// #### selector Maps
 // ################################################################################################
+export function getSelectorMapForTemplate(): SyncExtractorTemplateRunnerMap<DomainState> {
+  return {
+    extractorType: "sync",
+    extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDomainState,
+    extractEntityInstance: selectEntityInstanceFromObjectQueryAndDomainState,
+    extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: extractEntityInstanceListFromListQueryAndDomainState,
+    extractWithManyExtractors: extractWithManyExtractorsFromDomainState,
+    extractWithExtractor: extractWithExtractor,
+    // 
+    extractWithManyExtractorTemplates: extractWithManyExtractorsFromDomainStateForTemplate,
+  };
+}
+
 // ################################################################################################
+export function getSelectorParamsForTemplate<ExtractorTemplateType extends ExtractorTemplateForDomainModel>(
+  query: ExtractorTemplateType,
+  extractorRunnerMap?: SyncExtractorTemplateRunnerMap<DomainState>
+): SyncExtractorTemplateRunnerParams<ExtractorTemplateType, DomainState> {
+  return {
+    extractorTemplate: query,
+    extractorTemplateRunnerMap: extractorRunnerMap ?? getSelectorMapForTemplate(),
+  };
+}
+
+// ################################################################################################
+// #### JZOD SCHEMAs selectors
+// ################################################################################################
+export const selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate = extractJzodSchemaForDomainModelQueryTemplate<DomainState>;
+
+export const selectFetchQueryJzodSchemaFromDomainStateNewForTemplate = extractFetchQueryTemplateJzodSchema<DomainState>;
+
+export const selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate = extractzodSchemaForSingleSelectQueryTemplate<DomainState>;
+
 // ACCESSES DOMAIN STATE
 export const selectEntityJzodSchemaFromDomainStateNewForTemplate = (
   domainState: DomainState,
@@ -99,27 +127,3 @@ export const selectEntityJzodSchemaFromDomainStateNewForTemplate = (
   }
 };
 
-// ################################################################################################
-export function getSelectorMapForTemplate(): SyncExtractorTemplateRunnerMap<DomainState> {
-  return {
-    extractorType: "sync",
-    extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDomainState,
-    extractEntityInstance: selectEntityInstanceFromObjectQueryAndDomainState,
-    extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: extractEntityInstanceListFromListQueryAndDomainState,
-    extractWithManyExtractors: extractWithManyExtractorsFromDomainState,
-    extractWithExtractor: extractWithExtractor,
-    // 
-    extractWithManyExtractorTemplates: extractWithManyExtractorsFromDomainStateForTemplate,
-  };
-}
-
-// ################################################################################################
-export function getSelectorParamsForTemplate<ExtractorTemplateType extends ExtractorTemplateForDomainModel>(
-  query: ExtractorTemplateType,
-  extractorRunnerMap?: SyncExtractorTemplateRunnerMap<DomainState>
-): SyncExtractorTemplateRunnerParams<ExtractorTemplateType, DomainState> {
-  return {
-    extractorTemplate: query,
-    extractorTemplateRunnerMap: extractorRunnerMap ?? getSelectorMapForTemplate(),
-  };
-}

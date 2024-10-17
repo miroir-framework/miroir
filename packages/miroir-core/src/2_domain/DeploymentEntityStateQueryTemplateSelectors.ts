@@ -18,8 +18,15 @@ import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
 import { getDeploymentEntityStateIndex } from "./DeploymentEntityState.js";
-import { selectEntityInstanceFromDeploymentEntityState, selectEntityInstanceUuidIndexFromDeploymentEntityState } from "./DeploymentEntityStateQuerySelectors.js";
-import { extractEntityInstanceUuidIndexWithObjectListExtractorInMemory, extractWithExtractor, extractWithManyExtractors } from "./QuerySelectors.js";
+import {
+  selectEntityInstanceFromDeploymentEntityState,
+  selectEntityInstanceUuidIndexFromDeploymentEntityState,
+} from "./DeploymentEntityStateQuerySelectors.js";
+import {
+  extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
+  extractWithExtractor,
+  extractWithManyExtractors,
+} from "./QuerySelectors.js";
 import {
   extractFetchQueryTemplateJzodSchema,
   extractJzodSchemaForDomainModelQueryTemplate,
@@ -34,10 +41,46 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 });
 
 // ################################################################################################
+// #### selector Maps
+// ################################################################################################
+export function getDeploymentEntityStateSelectorTemplateMap(): SyncExtractorTemplateRunnerMap<DeploymentEntityState> {
+  return {
+    extractorType: "sync",
+    extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDeploymentEntityState,
+    extractEntityInstance: selectEntityInstanceFromDeploymentEntityState,
+    extractEntityInstanceUuidIndexWithObjectListExtractorInMemory:
+      extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
+    extractWithManyExtractors: extractWithManyExtractors,
+    extractWithExtractor: extractWithExtractor,
+    // 
+    extractWithManyExtractorTemplates: extractWithManyExtractorTemplates,
+  };
+}
+
+// ################################################################################################
+export function getDeploymentEntityStateJzodSchemaSelectorTemplateMap(): ExtractorTemplateRunnerMapForJzodSchema<DeploymentEntityState> {
+  return {
+    extractJzodSchemaForDomainModelQuery: extractJzodSchemaForDomainModelQueryTemplate,
+    extractEntityJzodSchema: extractEntityJzodSchemaFromDeploymentEntityStateForTemplate,
+    extractFetchQueryJzodSchema: extractFetchQueryTemplateJzodSchema,
+    extractzodSchemaForSingleSelectQuery: extractzodSchemaForSingleSelectQueryTemplate,
+  };
+}
+
+// ################################################################################################
+export function getDeploymentEntityStateSelectorTemplateParams<QueryType extends ExtractorTemplateForDomainModel>(
+  query: QueryType,
+  extractorRunnerMap?: SyncExtractorTemplateRunnerMap<DeploymentEntityState>
+): SyncExtractorTemplateRunnerParams<QueryType, DeploymentEntityState> {
+  return {
+    extractorTemplate: query,
+    extractorTemplateRunnerMap: extractorRunnerMap ?? getDeploymentEntityStateSelectorTemplateMap(),
+  };
+}
+
+
 // ################################################################################################
 // JZOD SCHEMAs selectors
-// ################################################################################################
-// ################################################################################################
 // ################################################################################################
 // ACCESSES deploymentEntityState
 export const extractEntityJzodSchemaFromDeploymentEntityStateForTemplate = (
@@ -110,47 +153,3 @@ export const extractEntityJzodSchemaFromDeploymentEntityStateForTemplate = (
     return undefined;
   }
 };
-
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-export function getDeploymentEntityStateSelectorTemplateMap(): SyncExtractorTemplateRunnerMap<DeploymentEntityState> {
-  return {
-    extractorType: "sync",
-    extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDeploymentEntityState,
-    extractEntityInstance: selectEntityInstanceFromDeploymentEntityState,
-    extractEntityInstanceUuidIndexWithObjectListExtractorInMemory:
-      extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
-    extractWithManyExtractors: extractWithManyExtractors,
-    extractWithExtractor: extractWithExtractor,
-    // 
-    extractWithManyExtractorTemplates: extractWithManyExtractorTemplates,
-  };
-}
-
-// ################################################################################################
-export function getDeploymentEntityStateJzodSchemaSelectorTemplateMap(): ExtractorTemplateRunnerMapForJzodSchema<DeploymentEntityState> {
-  return {
-    extractJzodSchemaForDomainModelQuery: extractJzodSchemaForDomainModelQueryTemplate,
-    extractEntityJzodSchema: extractEntityJzodSchemaFromDeploymentEntityStateForTemplate,
-    extractFetchQueryJzodSchema: extractFetchQueryTemplateJzodSchema,
-    extractzodSchemaForSingleSelectQuery: extractzodSchemaForSingleSelectQueryTemplate,
-  };
-}
-
-// ################################################################################################
-export function getDeploymentEntityStateSelectorTemplateParams<QueryType extends ExtractorTemplateForDomainModel>(
-  query: QueryType,
-  extractorRunnerMap?: SyncExtractorTemplateRunnerMap<DeploymentEntityState>
-): SyncExtractorTemplateRunnerParams<QueryType, DeploymentEntityState> {
-  return {
-    extractorTemplate: query,
-    extractorTemplateRunnerMap: extractorRunnerMap ?? getDeploymentEntityStateSelectorTemplateMap(),
-  };
-}
