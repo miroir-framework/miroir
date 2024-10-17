@@ -36,7 +36,11 @@ import {
   getDeploymentEntityStateSelectorTemplateParams,
   getLoggerName,
   jzodObject,
-  objectListReportSection
+  objectListReportSection,
+  ExtractorForRecordOfExtractors,
+  getDeploymentEntityStateSelectorParams,
+  SyncExtractorRunnerParams,
+  SyncExtractorRunner
 } from "miroir-core";
 
 import { Button } from "@mui/material";
@@ -50,7 +54,7 @@ import {
   useMiroirContextInnerFormOutput,
   useMiroirContextService,
 } from "../MiroirContextReactProvider.js";
-import { useCurrentModel, useDeploymentEntityStateQueryTemplateSelectorForCleanedResult } from "../ReduxHooks.js";
+import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult, useDeploymentEntityStateQueryTemplateSelectorForCleanedResult } from "../ReduxHooks.js";
 import { cleanLevel } from "../constants.js";
 import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "../getColumnDefinitionsFromEntityAttributes.js";
 import { deleteCascade } from "../scripts.js";
@@ -316,33 +320,26 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     ]
   );
 
-  const foreignKeyObjectsFetchQueryParams: SyncExtractorTemplateRunnerParams<
-    ExtractorTemplateForRecordOfExtractors,
+  const foreignKeyObjectsFetchQueryParams: SyncExtractorRunnerParams<
+    ExtractorForRecordOfExtractors,
     DeploymentEntityState
   > = useMemo(
     () =>
-      getDeploymentEntityStateSelectorTemplateParams<ExtractorTemplateForRecordOfExtractors>(
+      getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>(
         {
-          queryType: "extractorTemplateForRecordOfExtractors",
+          queryType: "extractorForRecordOfExtractors",
           deploymentUuid: props.deploymentUuid,
-          // applicationSection: props.applicationSection,
           pageParams: props.paramsAsdomainElements,
-          // queryParams: { elementType: "object", elementValue: {} },
           queryParams: {},
-          // contextResults: { elementType: "object", elementValue: {} },
           contextResults: {},
-          extractorTemplates: Object.fromEntries(
+          extractors: Object.fromEntries(
             foreignKeyObjectsAttributeDefinition.map((e) => [
               e[1].tag?.value?.targetEntity,
               {
-                queryType: "queryTemplateExtractObjectListByEntity",
-                // applicationSection: (props.paramsAsdomainElements as any)["applicationSection"],
+                queryType: "queryExtractObjectListByEntity",
                 applicationSection: getApplicationSection(props.deploymentUuid,e[1].tag?.value?.targetEntity??"undefined"),
                 parentName: "",
-                parentUuid: {
-                  transformerType: "constantUuid",
-                  constantUuidValue: e[1].tag?.value?.targetEntity,
-                },
+                parentUuid: e[1].tag?.value?.targetEntity
               },
             ])
           ) as any,
@@ -358,27 +355,23 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     ]
   );
 
-  log.info(
-    "foreignKeyObjectsAttributeDefinition",
-    foreignKeyObjectsAttributeDefinition,
-    "foreignKeyObjectsFetchQueryParams",
-    foreignKeyObjectsFetchQueryParams
-    
-  )
-
-  // const foreignKeyObjects:  = useDeploymentEntityStateQueryTemplateSelectorForCleanedResult(
   const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
-    useDeploymentEntityStateQueryTemplateSelectorForCleanedResult(
-      deploymentEntityStateSelectorMap.extractWithManyExtractorTemplates as SyncExtractorTemplateRunner<
-        ExtractorTemplateForRecordOfExtractors,
-        DeploymentEntityState,
-        DomainElement
-      >,
-      foreignKeyObjectsFetchQueryParams
-    );
+  useDeploymentEntityStateQuerySelectorForCleanedResult(
+    deploymentEntityStateSelectorMap.extractWithManyExtractors as SyncExtractorRunner<
+      ExtractorForRecordOfExtractors,
+      DeploymentEntityState,
+      DomainElement
+    >,
+    foreignKeyObjectsFetchQueryParams
+  );
 
   log.info("ReportSectionListDisplay foreignKeyObjects", foreignKeyObjects);
 
+  log.info(
+    "foreignKeyObjectsAttributeDefinition",
+    foreignKeyObjectsAttributeDefinition,
+    
+  )
 
   // // ##############################################################################################
   // const onSubmitInnerFormDialog: SubmitHandler<JsonObjectEditFormDialogInputs> = useCallback(

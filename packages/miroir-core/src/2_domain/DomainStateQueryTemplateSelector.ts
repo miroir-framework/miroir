@@ -56,7 +56,7 @@ export const extractWithExtractorFromDomainStateForTemplate: SyncExtractorTempla
 
 
 // ################################################################################################
-// TODO: used in extractWithExtractorFromDomainStateForTemplate.unit.test and RestServer.ts (with commented out access in HomePage, to create bundle)
+// TODO: used in RestServer.ts (with commented out access in HomePage, to create bundle)
 //  provide a better interface?
 export const extractWithManyExtractorsFromDomainStateForTemplate: SyncExtractorTemplateRunner<
   ExtractorTemplateForRecordOfExtractors,

@@ -13,11 +13,11 @@ import {
   ApplicationSection,
   DeploymentEntityState,
   DomainElement,
-  ExtractorTemplateForRecordOfExtractors,
   EntityAttribute,
   EntityInstance,
   EntityInstanceWithName,
   EntityInstancesUuidIndex,
+  ExtractorForRecordOfExtractors,
   JzodArray,
   JzodElement,
   JzodEnum,
@@ -28,29 +28,30 @@ import {
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
-  SyncExtractorTemplateRunner,
-  SyncExtractorTemplateRunnerMap,
-  SyncExtractorTemplateRunnerParams,
   ResolvedJzodSchemaReturnType,
+  SyncExtractorRunner,
+  SyncExtractorRunnerMap,
+  SyncExtractorRunnerParams,
+  SyncExtractorTemplateRunnerMap,
   Uuid,
   adminConfigurationDeploymentMiroir,
   alterObjectAtPath,
   deleteObjectAtPath,
-  dummyDomainManyQueriesWithDeploymentUuid,
+  dummyDomainManyQueryWithDeploymentUuid,
   getApplicationSection,
   getDefaultValueForJzodSchemaWithResolution,
-  getDeploymentEntityStateSelectorTemplateParams,
+  getDeploymentEntityStateSelectorParams,
   getLoggerName,
+  getValue,
   resolveReferencesForJzodSchemaAndValueObject,
-  unfoldJzodSchemaOnce,
-  getValue
+  unfoldJzodSchemaOnce
 } from "miroir-core";
 
-import { getMemoizedDeploymentEntityStateSelectorForTemplateMap } from "miroir-localcache-redux";
+import { getMemoizedDeploymentEntityStateSelectorForTemplateMap, getMemoizedDeploymentEntityStateSelectorMap } from "miroir-localcache-redux";
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../constants.js";
 import { useMiroirContextService, useMiroirContextformHelperState } from "../MiroirContextReactProvider.js";
-import { useCurrentModel, useDeploymentEntityStateQueryTemplateSelectorForCleanedResult } from '../ReduxHooks.js';
+import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from '../ReduxHooks.js';
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"JzodObjectEditor");
@@ -251,8 +252,8 @@ export const JzodObjectEditor = (
 ): JSX.Element => {
   count++;
   const context = useMiroirContextService();
-  const deploymentEntityStateSelectorMap: SyncExtractorTemplateRunnerMap<DeploymentEntityState> = useMemo(
-    () => getMemoizedDeploymentEntityStateSelectorForTemplateMap(),
+  const deploymentEntityStateSelectorMap: SyncExtractorRunnerMap<DeploymentEntityState> = useMemo(
+    () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
   );
 
@@ -445,91 +446,55 @@ export const JzodObjectEditor = (
       );
     }
 
-
-    // ############################################################################################
-    // finding foreign objects for uuid schema with targetEntity estra
-    const foreignKeyObjectsFetchQueryParams: SyncExtractorTemplateRunnerParams<
-      ExtractorTemplateForRecordOfExtractors,
-      DeploymentEntityState
-    > = useMemo(
-      () =>
-        getDeploymentEntityStateSelectorTemplateParams<ExtractorTemplateForRecordOfExtractors>(
-          props.currentDeploymentUuid &&
-          unfoldedRawSchema.type == "uuid" &&
-          unfoldedRawSchema.tag?.value?.targetEntity
-          ?
-          {
-            queryType: "extractorTemplateForRecordOfExtractors",
-            deploymentUuid: props.currentDeploymentUuid,
-            // applicationSection: props.applicationSection,
-            // pageParams: props.paramsAsdomainElements,
-            pageParams: {},
-            queryParams: {},
-            contextResults: {},
-            // pageParams: { elementType: "object", elementValue: {} },
-            // queryParams: { elementType: "object", elementValue: {} },
-            // contextResults: { elementType: "object", elementValue: {} },
-            extractorTemplates: {
-              [unfoldedRawSchema.tag?.value?.targetEntity]:
-              {
-                queryType: "queryTemplateExtractObjectListByEntity",
-                applicationSection: getApplicationSection(props.currentDeploymentUuid,unfoldedRawSchema.tag?.value?.targetEntity),
-                parentName: "",
-                parentUuid: {
-                  transformerType: "constantUuid",
-                  constantUuidValue: unfoldedRawSchema.tag?.value?.targetEntity,
-                },
-              }
+    const foreignKeyObjectsFetchQueryParams: SyncExtractorRunnerParams<
+    ExtractorForRecordOfExtractors,
+    DeploymentEntityState
+  > = useMemo(
+    () =>
+      getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>(
+        props.currentDeploymentUuid &&
+        unfoldedRawSchema.type == "uuid" &&
+        unfoldedRawSchema.tag?.value?.targetEntity
+        ?
+        {
+          queryType: "extractorForRecordOfExtractors",
+          deploymentUuid: props.currentDeploymentUuid,
+          pageParams: {},
+          queryParams: {},
+          contextResults: {},
+          extractors: {
+            [unfoldedRawSchema.tag?.value?.targetEntity]:
+            {
+              queryType: "queryExtractObjectListByEntity",
+              applicationSection: getApplicationSection(props.currentDeploymentUuid,unfoldedRawSchema.tag?.value?.targetEntity),
+              parentName: "",
+              parentUuid: unfoldedRawSchema.tag?.value?.targetEntity
             }
-          }
-          :
-          dummyDomainManyQueriesWithDeploymentUuid
-          ,
-          deploymentEntityStateSelectorMap
-        ),
-      [
-        deploymentEntityStateSelectorMap,
-        props.currentDeploymentUuid,
-        unfoldedRawSchema,
-      ]
-    );
+          },
+        }
+        :
+        dummyDomainManyQueryWithDeploymentUuid,
+        deploymentEntityStateSelectorMap
+      ),
+    [
+      deploymentEntityStateSelectorMap,
+      props.currentDeploymentUuid,
+      unfoldedRawSchema,
+    ]
+  );
 
-    // log.info(
-    //   "foreignKeyObjectsFetchQueryParams",
-    //   foreignKeyObjectsFetchQueryParams,
-    //   "props.currentDeploymentUuid",
-    //   props.currentDeploymentUuid,
-    //   "unfoldedRawSchema",
-    //   unfoldedRawSchema
-    // )
+  const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
+  useDeploymentEntityStateQuerySelectorForCleanedResult(
+    deploymentEntityStateSelectorMap.extractWithManyExtractors as SyncExtractorRunner<
+      ExtractorForRecordOfExtractors,
+      DeploymentEntityState,
+      DomainElement
+    >,
+    foreignKeyObjectsFetchQueryParams
+  );
 
-    // const foreignKeyObjects:  = useDeploymentEntityStateQueryTemplateSelectorForCleanedResult(
-    const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
-      useDeploymentEntityStateQueryTemplateSelectorForCleanedResult(
-        deploymentEntityStateSelectorMap.extractWithManyExtractorTemplates as SyncExtractorTemplateRunner<
-          ExtractorTemplateForRecordOfExtractors,
-          DeploymentEntityState,
-          DomainElement
-        >,
-        foreignKeyObjectsFetchQueryParams
-      );
+  log.info("JzodObjectEditor", props.listKey, "count", count, "foreignKeyObjects", foreignKeyObjects);
 
-    // if (unfoldedRawSchema.type == "uuid") {
-    //   log.info(
-    //     "JzodObjectEditor computed foreign keys for uuid schema:",
-    //     props.listKey,
-    //     "currentValue",
-    //     currentValue,
-    //     "foreignKeyObjectsFetchQueryParams",
-    //     foreignKeyObjectsFetchQueryParams,
-    //     "props.currentDeploymentUuid",
-    //     props.currentDeploymentUuid,
-    //     "unfoldedRawSchema",
-    //     unfoldedRawSchema,
-    //     "foreignKeyObjects", foreignKeyObjects
-    //   )
-      
-    // }
 
 
     // ############################################################################################

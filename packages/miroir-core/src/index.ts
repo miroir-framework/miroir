@@ -530,7 +530,8 @@ export {
   selectReportDefinitionFromReportUuid,
 } from './2_domain/DomainDataAccess.js';
 export {
-  dummyDomainManyQueriesWithDeploymentUuid,
+  dummyDomainManyQueryWithDeploymentUuid,
+  dummyDomainManyQueryTemplateWithDeploymentUuid,
   dummyDomainModelGetFetchParamJzodSchemaQueryParams,
   getJzodSchemaSelectorMap,
   getSelectorMap,

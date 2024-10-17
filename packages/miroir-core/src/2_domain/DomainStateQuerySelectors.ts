@@ -52,7 +52,16 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 const emptyDomainObject: DomainElementObject = { elementType: "object", elementValue: {} };
 
-export const dummyDomainManyQueriesWithDeploymentUuid: ExtractorTemplateForRecordOfExtractors = {
+export const dummyDomainManyQueryWithDeploymentUuid: ExtractorForRecordOfExtractors = {
+  queryType: "extractorForRecordOfExtractors",
+  deploymentUuid: "",
+  pageParams: {},
+  queryParams: {},
+  contextResults: emptyDomainObject,
+  runtimeTransformers: {},
+};
+
+export const dummyDomainManyQueryTemplateWithDeploymentUuid: ExtractorTemplateForRecordOfExtractors = {
   queryType: "extractorTemplateForRecordOfExtractors",
   deploymentUuid: "",
   pageParams: {},
