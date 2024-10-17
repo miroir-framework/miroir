@@ -5,17 +5,13 @@ import {
   AsyncExtractorRunnerMap,
   asyncExtractWithExtractor,
   asyncExtractWithManyExtractors,
-  DomainElement,
+  handleQueryTemplateAction,
   DomainState,
-  ExtractorForDomainModelObjects,
-  ExtractorForRecordOfExtractors,
   ExtractorTemplateRunnerMapForJzodSchema,
   getLoggerName,
   LoggerInterface,
   MiroirLoggerFactory,
   QueryTemplateAction,
-  resolveExtractorTemplateForDomainModelObjects,
-  resolveExtractorTemplateForRecordOfExtractors,
   selectEntityJzodSchemaFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
@@ -78,52 +74,7 @@ export class SqlDbExtractTemplateRunner {
   // ##############################################################################################
   async handleQueryTemplateForServerONLY(queryTemplateAction: QueryTemplateAction): Promise<ActionReturnType> {
     log.info(this.logHeader, "handleQueryTemplateForServerONLY", "queryTemplateAction", JSON.stringify(queryTemplateAction, null, 2));
-    let queryResult: DomainElement;
-    switch (queryTemplateAction.query.queryType) {
-      case "extractorTemplateForDomainModelObjects": {
-        const resolvedQuery: ExtractorForDomainModelObjects = resolveExtractorTemplateForDomainModelObjects(
-          queryTemplateAction.query,
-        );
-
-        queryResult = await this.extractorRunnerMap.extractWithExtractor(
-          {
-            extractor: resolvedQuery,
-            extractorRunnerMap: this.extractorRunnerMap,
-          }
-        );
-        break;
-      }
-      case "extractorTemplateForRecordOfExtractors": {
-        const resolvedQuery: ExtractorForRecordOfExtractors = resolveExtractorTemplateForRecordOfExtractors(
-          queryTemplateAction.query,
-        );
-
-        queryResult = await this.extractorRunnerMap.extractWithManyExtractors(
-          {
-            extractor: resolvedQuery,
-            extractorRunnerMap: this.extractorRunnerMap,
-          }
-        );
-        break;
-      }
-      default: {
-        return {
-          status: "error",
-          error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryTemplateAction) },
-        } as ActionReturnType;
-        break;
-      }
-    }
-    if (queryResult.elementType == "failure") {
-      return {
-        status: "error",
-        error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult) },
-      } as ActionReturnType;
-    } else {
-      const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
-      log.info(this.logHeader, "handleQueryTemplateForServerONLY", "queryTemplateAction", queryTemplateAction, "result", JSON.stringify(result, null, 2));
-      return result;
-    }
+    return handleQueryTemplateAction("SqlDbExtractorTemplateRunner", queryTemplateAction, this.extractorRunnerMap);
   }
 
 }

@@ -252,8 +252,8 @@ export class SqlDbExtractRunner {
   };
 
   // ##############################################################################################
-  async handleQuery(queryAction: QueryAction): Promise<ActionReturnType> {
-    log.info(this.logHeader, "handleQuery", "queryAction", JSON.stringify(queryAction, null, 2));
+  async handleQueryAction(queryAction: QueryAction): Promise<ActionReturnType> {
+    log.info(this.logHeader, "handleQueryAction", "queryAction", JSON.stringify(queryAction, null, 2));
     let queryResult: DomainElement;
     switch (queryAction.query.queryType) {
       case "extractorForDomainModelObjects": {
@@ -285,7 +285,7 @@ export class SqlDbExtractRunner {
       } as ActionReturnType;
     } else {
       const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
-      log.info(this.logHeader, "handleQuery", "queryAction", queryAction, "result", JSON.stringify(result, null, 2));
+      log.info(this.logHeader, "handleQueryAction", "queryAction", queryAction, "result", JSON.stringify(result, null, 2));
       return result;
     }
   }

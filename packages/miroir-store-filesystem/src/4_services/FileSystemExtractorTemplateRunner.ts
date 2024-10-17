@@ -5,19 +5,15 @@ import {
   AsyncExtractorRunnerMap,
   asyncExtractWithExtractor,
   asyncExtractWithManyExtractors,
-  DomainElement,
   DomainState,
-  ExtractorForDomainModelObjects,
-  ExtractorForRecordOfExtractors,
   ExtractorTemplatePersistenceStoreRunner,
   ExtractorTemplateRunnerMapForJzodSchema,
   getLoggerName,
+  handleQueryTemplateAction,
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreInstanceSectionAbstractInterface,
   QueryTemplateAction,
-  resolveExtractorTemplateForDomainModelObjects,
-  resolveExtractorTemplateForRecordOfExtractors,
   selectEntityJzodSchemaFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
@@ -58,57 +54,8 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
 
   // ################################################################################################
   async handleQueryTemplateForServerONLY(queryTemplateAction: QueryTemplateAction): Promise<ActionReturnType> {
-    // TODO: fix applicationSection!!!
     log.info(this.logHeader, "handleQueryTemplateForServerONLY", "queryTemplateAction", JSON.stringify(queryTemplateAction, null, 2));
-    let queryResult: DomainElement;
-    switch (queryTemplateAction.query.queryType) {
-      case "extractorTemplateForDomainModelObjects": {
-        const resolvedQuery: ExtractorForDomainModelObjects = resolveExtractorTemplateForDomainModelObjects(
-          queryTemplateAction.query,
-        );
-
-        queryResult = await this.selectorMap.extractWithExtractor(
-          {
-            extractor: resolvedQuery,
-            extractorRunnerMap: this.selectorMap,
-          }
-        );
-        break;
-      }
-      case "extractorTemplateForRecordOfExtractors": {
-        const resolvedQuery: ExtractorForRecordOfExtractors = resolveExtractorTemplateForRecordOfExtractors(
-          queryTemplateAction.query,
-        );
-
-        queryResult = await this.selectorMap.extractWithManyExtractors(
-          {
-            extractor: resolvedQuery,
-            extractorRunnerMap: this.selectorMap,
-          }
-        );
-        break;
-      }
-      default: {
-        return {
-          status: "error",
-          error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryTemplateAction) },
-        } as ActionReturnType;
-        break;
-      }
-    }
-    if (queryResult.elementType == "failure") {
-      return {
-        status: "error",
-        error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult) },
-      } as ActionReturnType;
-    } else {
-      const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
-      log.info(this.logHeader, "handleQueryTemplateForServerONLY", "queryTemplateAction", queryTemplateAction, "result", JSON.stringify(result, null, 2));
-      return result;
-    }
-    // const result = { status: "ok", returnedDomainElement: { elementType: "object", elementValue: {}}} as ActionReturnType;
-
-    // return result;
+    return handleQueryTemplateAction("FileSystemExtractorTemplateRunner", queryTemplateAction, this.selectorMap);
   }
 
 }

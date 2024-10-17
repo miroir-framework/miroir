@@ -287,3 +287,14 @@ export function resolveExtractorTemplateForDomainModelObjects(
     // runtimeTransformers: extractorTemplateForDomainModelObjects.runtimeTransformers,
   }
 }
+
+// ################################################################################################
+export function resolveExtractorTemplate(
+  extractorTemplate: ExtractorTemplateForDomainModelObjects | ExtractorTemplateForRecordOfExtractors
+): ExtractorForDomainModelObjects | ExtractorForRecordOfExtractors {
+  if ('select' in extractorTemplate) { // TODO: implementation-specific, to be improved!
+    return resolveExtractorTemplateForDomainModelObjects(extractorTemplate);
+  } else {
+    return resolveExtractorTemplateForRecordOfExtractors(extractorTemplate);
+  }
+}

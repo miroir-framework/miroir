@@ -807,9 +807,19 @@ export const chainVitestSteps = async (
   expectedDomainElementType?: DomainElementType,
   expectedValue?: any,
 ): Promise<{[k:string]: any}> => {
-  console.log("########################################### chainTestAsyncDomainCalls", stepName, "previousResult:", JSON.stringify(context,undefined, 2));
+  console.log(
+    "########################################### chainTestAsyncDomainCalls",
+    stepName,
+    "previousResult:",
+    JSON.stringify(context, undefined, 2)
+  );
   const domainElement = await functionCallingActionToTest();
-  console.log("########################################### chainTestAsyncDomainCalls", stepName, "result:", JSON.stringify(domainElement,undefined, 2));
+  console.log(
+    "########################################### chainTestAsyncDomainCalls",
+    stepName,
+    "result:",
+    JSON.stringify(domainElement, undefined, 2)
+  );
   let testResult
   if (domainElement.status == "ok") {
     testResult = resultTransformation
@@ -818,7 +828,12 @@ export const chainVitestSteps = async (
       ? domainElement?.returnedDomainElement?.elementValue
       : undefined;
 
-    console.log("########################################### chainTestAsyncDomainCalls", stepName, "testResult that will be compared", JSON.stringify(testResult, null, 2));
+    console.log(
+      "########################################### chainTestAsyncDomainCalls",
+      stepName,
+      "testResult that will be compared",
+      JSON.stringify(testResult, null, 2)
+    );
     if (expectedDomainElementType) {
       if (domainElement.returnedDomainElement?.elementType != expectedDomainElementType) {
         expect(
@@ -835,16 +850,31 @@ export const chainVitestSteps = async (
       }
     } else {
      // no test to be done 
-     console.log("########################################### chainTestAsyncDomainCalls", stepName, "no test done because expectedDomainElementType is undefined", expectedDomainElementType);
+     console.log(
+       "########################################### chainTestAsyncDomainCalls",
+       stepName,
+       "no test done because expectedDomainElementType is undefined",
+       expectedDomainElementType
+     );
     }
   } else {
-    console.log("########################################### chainTestAsyncDomainCalls", stepName, "error:", JSON.stringify(domainElement.error,undefined, 2));
+    console.log(
+      "########################################### chainTestAsyncDomainCalls",
+      stepName,
+      "error:",
+      JSON.stringify(domainElement.error, undefined, 2)
+    );
     expect(
       domainElement.status,
       domainElement.error?.errorType ?? "no errorType" + ": " + domainElement.error?.errorMessage ?? "no errorMessage"
     ).toEqual("ok");
   }
-  console.log("########################################### chainTestAsyncDomainCalls", stepName, "testResult:", JSON.stringify(testResult,undefined, 2));
+  console.log(
+    "########################################### chainTestAsyncDomainCalls",
+    stepName,
+    "testResult:",
+    JSON.stringify(testResult, undefined, 2)
+  );
   if (testResult && addResultToContextAsName) {
     return {...context, [addResultToContextAsName]: testResult}
   } else {

@@ -2,7 +2,6 @@ import {
   ActionEntityInstanceCollectionReturnType,
   ActionReturnType,
   ApplicationSection,
-  DomainElement,
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
   ExtractorForSingleObject,
@@ -31,7 +30,7 @@ import {
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
 } from "./DomainStateQuerySelectors.js";
-import { ExtractorTemplateRunnerInMemory } from "./ExtractorTemplateRunnerInMemory.js";
+import { handleQueryAction } from "./QuerySelectors.js";
 import { transformer_InnerReference_resolve } from "./Transformers.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "ExtractorRunnerInMemory");
@@ -43,12 +42,10 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner {
   private logHeader: string;
   private selectorMap: AsyncExtractorRunnerMap;
-  private extractorTemplateRunner: ExtractorTemplateRunnerInMemory;
 
   // ################################################################################################
   constructor(private persistenceStoreController: PersistenceStoreInstanceSectionAbstractInterface) {
     this.logHeader = "ExtractorRunnerInMemory for store=" + persistenceStoreController.getStoreName();
-    this.extractorTemplateRunner = new ExtractorTemplateRunnerInMemory(persistenceStoreController, this);
     this.selectorMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex,
@@ -63,50 +60,8 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
   }
 
   // ################################################################################################
-  async handleQuery(queryAction: QueryAction): Promise<ActionReturnType> {
-    // TODO: fix applicationSection!!!
-    log.info(this.logHeader, "handleQuery start", "queryAction", JSON.stringify(queryAction, null, 2));
-    let queryResult: DomainElement;
-    switch (queryAction.query.queryType) {
-      case "extractorForDomainModelObjects": {
-        queryResult = await this.selectorMap.extractWithExtractor(
-          {
-            extractor: queryAction.query,
-            extractorRunnerMap: this.selectorMap,
-          }
-        );
-        break;
-      }
-      case "extractorForRecordOfExtractors": {
-        queryResult = await this.selectorMap.extractWithManyExtractors(
-          {
-            extractor: queryAction.query,
-            extractorRunnerMap: this.selectorMap,
-          }
-        );
-        break;
-      }
-      default: {
-        return {
-          status: "error",
-          error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryAction) },
-        } as ActionReturnType;
-        break
-      }
-    }
-    if (queryResult.elementType == "failure") {
-      return {
-        status: "error",
-        error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult) },
-      } as ActionReturnType;
-    } else {
-      const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
-      log.info(this.logHeader, "handleQuery", "queryAction", queryAction, "result", JSON.stringify(result, null, 2));
-      return result;
-    }
-    // const result = { status: "ok", returnedDomainElement: { elementType: "object", elementValue: {}}} as ActionReturnType;
-
-    // return result;
+  async handleQueryAction(queryAction: QueryAction): Promise<ActionReturnType> {
+    return handleQueryAction("ExtractorRunnerInMemory", queryAction, this.selectorMap);
   }
 
   // ################################################################################################

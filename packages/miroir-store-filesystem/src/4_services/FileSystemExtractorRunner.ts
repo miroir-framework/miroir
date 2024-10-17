@@ -62,9 +62,8 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
   }
 
   // ################################################################################################
-  async handleQuery(queryAction: QueryAction): Promise<ActionReturnType> {
-    // TODO: fix applicationSection!!!
-    log.info(this.logHeader, "handleQuery", "queryTemplateAction", JSON.stringify(queryAction, null, 2));
+  async handleQueryAction(queryAction: QueryAction): Promise<ActionReturnType> {
+    log.info(this.logHeader, "handleQueryAction", "queryTemplateAction", JSON.stringify(queryAction, null, 2));
     let queryResult: DomainElement;
     switch (queryAction.query.queryType) {
       case "extractorForDomainModelObjects": {
@@ -100,7 +99,7 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
       } as ActionReturnType;
     } else {
       const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
-      log.info(this.logHeader, "handleQuery", "queryTemplateAction", queryAction, "result", JSON.stringify(result, null, 2));
+      log.info(this.logHeader, "handleQueryAction", "queryTemplateAction", queryAction, "result", JSON.stringify(result, null, 2));
       return result;
     }
     // const result = { status: "ok", returnedDomainElement: { elementType: "object", elementValue: {}}} as ActionReturnType;

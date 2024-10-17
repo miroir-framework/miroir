@@ -45,12 +45,12 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
     }
 
     // #############################################################################################
-    async handleQuery(query: QueryAction): Promise<ActionReturnType> {
-      log.info(this.logHeader,'handleQuery', 'query',query);
+    async handleQueryAction(query: QueryAction): Promise<ActionReturnType> {
+      log.info(this.logHeader,'handleQueryAction', 'query',query);
       
-      const result: ActionReturnType = await this.extractorRunner.handleQuery(query);
+      const result: ActionReturnType = await this.extractorRunner.handleQueryAction(query);
 
-      log.info(this.logHeader,'handleQuery','query',query, "result", result);
+      log.info(this.logHeader,'handleQueryAction','query',query, "result", result);
       return result;
     }
     

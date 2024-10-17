@@ -7,40 +7,33 @@ import { z } from "zod";
 
 
 import {
+  adminConfigurationDeploymentMiroir,
   ApplicationDeploymentConfiguration,
   ApplicationDeploymentSchema,
   ApplicationSection,
+  applicationSection,
   DeploymentEntityState,
   DomainControllerInterface,
   DomainElement,
-  ExtractorTemplateForRecordOfExtractors,
+  domainElementObject,
   Entity,
   EntityDefinition,
   EntityInstancesUuidIndex,
+  ExtractorForRecordOfExtractors,
+  getApplicationSection,
+  getDeploymentEntityStateSelectorParams,
+  getLoggerName,
   InstanceAction,
   JzodElement,
   JzodObject,
+  jzodObject,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
-  SyncExtractorTemplateRunner,
-  SyncExtractorTemplateRunnerMap,
-  SyncExtractorTemplateRunnerParams,
-  adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentLibrary,
-  adminConfigurationDeploymentMiroir,
-  adminConfigurationDeploymentTest1,
-  applicationSection,
-  domainElementObject,
-  getApplicationSection,
-  getDeploymentEntityStateSelectorTemplateParams,
-  getLoggerName,
-  jzodObject,
   objectListReportSection,
-  ExtractorForRecordOfExtractors,
-  getDeploymentEntityStateSelectorParams,
+  SyncExtractorRunner,
+  SyncExtractorRunnerMap,
   SyncExtractorRunnerParams,
-  SyncExtractorRunner
 } from "miroir-core";
 
 import { Button } from "@mui/material";
@@ -48,22 +41,22 @@ import { Button } from "@mui/material";
 
 import { getMemoizedDeploymentEntityStateSelectorForTemplateMap } from "miroir-localcache-redux";
 
+import { AddBox } from "@mui/icons-material";
 import { packageName } from "../../../constants.js";
 import {
   useDomainControllerService,
   useMiroirContextInnerFormOutput,
   useMiroirContextService,
 } from "../MiroirContextReactProvider.js";
-import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult, useDeploymentEntityStateQueryTemplateSelectorForCleanedResult } from "../ReduxHooks.js";
+import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from "../ReduxHooks.js";
 import { cleanLevel } from "../constants.js";
 import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "../getColumnDefinitionsFromEntityAttributes.js";
+import { deployments } from "../routes/ReportPage.js";
 import { deleteCascade } from "../scripts.js";
 import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from "./JsonObjectEditFormDialog.js";
 import { noValue } from "./JzodObjectEditor.js";
 import { MTableComponent } from "./MTableComponent.js";
 import { TableComponentType, TableComponentTypeSchema } from "./MTableComponentInterface.js";
-import { adminConfigurationDeploymentTest4, deployments } from "../routes/ReportPage.js";
-import { AddBox } from "@mui/icons-material";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportSectionListDisplay");
@@ -215,7 +208,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
 
-  const deploymentEntityStateSelectorMap: SyncExtractorTemplateRunnerMap<DeploymentEntityState> = useMemo(
+  const deploymentEntityStateSelectorMap: SyncExtractorRunnerMap<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorForTemplateMap(),
     []
   )

@@ -115,7 +115,7 @@ export const deleteCascade = async (p: {
       contextResults: {},
       // queryParams: { elementType: "object", elementValue: {} },
       // contextResults: { elementType: "object", elementValue: {} },
-      extractors: Object.fromEntries(
+      extractorTemplates: Object.fromEntries(
         Object.keys(foreignKeysPointingToEntity).map((entityUuid) => [
           entityUuid,
           {

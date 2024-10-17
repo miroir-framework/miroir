@@ -1,6 +1,7 @@
 // ################################################################################################
 
 import {
+  ActionReturnType,
   DomainElement,
   DomainElementObject,
   DomainModelGetEntityDefinitionExtractor,
@@ -13,9 +14,11 @@ import {
   ExtractorTemplateForRecordOfExtractors,
   JzodElement,
   JzodObject,
-  QueryTemplate
+  QueryTemplate,
+  QueryTemplateAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
+  AsyncExtractorRunnerMap,
   ExtractorTemplateRunnerParamsForJzodSchema,
   RecordOfJzodElement,
   RecordOfJzodObject,
@@ -26,8 +29,8 @@ import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
-import { extractWithExtractor, extractWithManyExtractors } from "./QuerySelectors.js";
-import { resolveExtractorTemplateForDomainModelObjects, resolveExtractorTemplateForRecordOfExtractors } from "./Templates.js";
+import { handleQueryAction, extractWithExtractor, extractWithManyExtractors } from "./QuerySelectors.js";
+import { resolveExtractorTemplate, resolveExtractorTemplateForDomainModelObjects, resolveExtractorTemplateForRecordOfExtractors } from "./Templates.js";
 import { transformer_InnerReference_resolve } from "./Transformers.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"SyncExtractorTemplateRunner");
@@ -37,6 +40,31 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
     log = value;
   }
 );
+
+  // ################################################################################################
+  export async function handleQueryTemplateAction(
+    origin: string,
+    queryTemplateAction: QueryTemplateAction, 
+    selectorMap: AsyncExtractorRunnerMap
+  ): Promise<ActionReturnType> {
+    log.info("handleQueryTemplateAction for ", origin, "queryTemplateAction", JSON.stringify(queryTemplateAction, null, 2));
+    const resolvedQuery = resolveExtractorTemplate(
+      queryTemplateAction.query
+    );
+
+    return handleQueryAction(
+      origin,
+      {
+        actionType: "queryAction",
+        actionName: queryTemplateAction.actionName,
+        deploymentUuid: queryTemplateAction.deploymentUuid,
+        endpoint: queryTemplateAction.endpoint,
+        applicationSection: queryTemplateAction.applicationSection,
+        query: resolvedQuery,
+      },
+      selectorMap
+    );
+  }
 
 // ################################################################################################
 export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <StateType>(

@@ -113,26 +113,18 @@ export {
   jzodSchema,
   JzodArray,
   jzodArray,
-  // JzodAttribute,
-  // jzodAttribute,
   JzodPlainAttribute,
   jzodPlainAttribute,
   JzodAttributeDateValidations,
   jzodAttributeDateValidations,
-  // JzodAttributeDateWithValidations,
-  // jzodAttributeDateWithValidations,
   JzodAttributePlainDateWithValidations,
   jzodAttributePlainDateWithValidations,
   JzodAttributeNumberValidations,
   jzodAttributeNumberValidations,
-  // JzodAttributeNumberWithValidations,
-  // jzodAttributeNumberWithValidations,
   JzodAttributePlainNumberWithValidations,
   jzodAttributePlainNumberWithValidations,
   JzodAttributeStringValidations,
   jzodAttributeStringValidations,
-  // JzodAttributeStringWithValidations,
-  // jzodAttributeStringWithValidations,
   JzodAttributePlainStringWithValidations,
   jzodAttributePlainStringWithValidations,
   JzodBaseObject,
@@ -385,9 +377,6 @@ export {
   CUDActionNamesArray,
 } from './0_interfaces/2_domain/DomainControllerInterface.js';
 export {
-  // DomainStateJzodSchemaSelector,
-  // DomainStateJzodSchemaSelectorMap,
-  // DomainStateJzodSchemaSelectorParams,
   RecordOfJzodElement,
   RecordOfJzodObject,
 } from './0_interfaces/2_domain/DomainStateQuerySelectorInterface.js';
@@ -397,14 +386,10 @@ export {
   ExtractorTemplateRunnerMapForJzodSchema,
   ExtractorTemplateRunnerParamsForJzodSchema,
   AsyncExtractorTemplateRunner,
-  // AsyncExtractorTemplateRunnerMap,
   AsyncExtractorTemplateRunnerParams,
   SyncExtractorTemplateRunner,
-  // SyncExtractorTemplateRunnerMap,
   SyncExtractorTemplateRunnerParams,
   ExtractorPersistenceStoreRunner,
-  // ExtractorTemplateRunnerMapForJzodSchema,
-  // ExtractorTemplateRunnerParamsForJzodSchema,
   JzodSchemaQuerySelector,
   ExtractorRunnerMapForJzodSchema,
   ExtractorRunnerParamsForJzodSchema,
@@ -417,17 +402,12 @@ export {
   ExtractorRunner,
   ExtractorRunnerMap,
   ExtractorTemplateRunner,
-  // ExtractorTemplateRunnerMap,
 } from './0_interfaces/2_domain/ExtractorRunnerInterface.js';
 export {
   ZEntityState,
   ZEntityStateSchema,
   DeploymentEntityState,
 } from './0_interfaces/2_domain/DeploymentStateInterface.js';
-// export {
-//   // WrappedTransactionalEntityUpdateWithCUDUpdateSchema,
-//   // WrappedTransactionalEntityUpdateWithCUDUpdate,
-// } from './0_interfaces/2_domain/ModelUpdateInterface.js';
 export {
   DataStoreApplicationTypeSchema,
   DataStoreApplicationType,
@@ -575,6 +555,7 @@ export {
   ExtractorRunnerInMemory
 } from './2_domain/ExtractorRunnerInMemory.js';
 export {
+  handleQueryTemplateAction,
   extractWithManyExtractorTemplates,
   extractWithExtractorTemplate,
   extractFetchQueryTemplateJzodSchema,

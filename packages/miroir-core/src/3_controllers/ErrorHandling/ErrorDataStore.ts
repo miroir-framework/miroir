@@ -65,7 +65,7 @@ export class ErrorDataStore implements PersistenceStoreDataSectionInterface {
   handleQueryTemplateForServerONLY(query: QueryTemplateAction): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
-  handleQuery(query: QueryAction): Promise<ActionReturnType> {
+  handleQueryAction(query: QueryAction): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
   upsertInstance(parentUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {

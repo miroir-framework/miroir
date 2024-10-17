@@ -2,6 +2,7 @@
 
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import {
+  ActionReturnType,
   ApplicationSection,
   DomainElement,
   DomainElementInstanceUuidIndex,
@@ -19,6 +20,7 @@ import {
   JzodElement,
   JzodObject,
   MiroirQuery,
+  QueryAction,
   QueryExtractObjectListByEntity,
   QueryFailed,
   QuerySelectObjectListByManyToManyRelation,
@@ -421,6 +423,54 @@ export const applyExtractorTransformerInMemory = (
   log.info("applyExtractorTransformerInMemory  query", JSON.stringify(actionRuntimeTransformer, null, 2));
   return transformer_extended_apply("runtime", "ROOT"/**WHAT?? */, actionRuntimeTransformer, queryParams, newFetchedData);
 };
+
+// ################################################################################################
+export async function handleQueryAction(
+  origin: string,
+  queryAction: QueryAction,
+  selectorMap: AsyncExtractorRunnerMap
+): Promise<ActionReturnType> {
+  log.info("handleQueryAction for", origin, "start", "queryAction", JSON.stringify(queryAction, null, 2));
+  let queryResult: DomainElement;
+  switch (queryAction.query.queryType) {
+    case "extractorForDomainModelObjects": {
+      queryResult = await selectorMap.extractWithExtractor(
+        {
+          extractor: queryAction.query,
+          extractorRunnerMap: selectorMap,
+        }
+      );
+      break;
+    }
+    case "extractorForRecordOfExtractors": {
+      queryResult = await selectorMap.extractWithManyExtractors(
+        {
+          extractor: queryAction.query,
+          extractorRunnerMap: selectorMap,
+        }
+      );
+      break;
+    }
+    default: {
+      return {
+        status: "error",
+        error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryAction) },
+      } as ActionReturnType;
+      break
+    }
+  }
+  if (queryResult.elementType == "failure") {
+    return {
+      status: "error",
+      error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult) },
+    } as ActionReturnType;
+  } else {
+    const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
+    log.info("handleQueryAction for", origin, "queryAction", queryAction, "result", JSON.stringify(result, null, 2));
+    return result;
+  }
+}
+
 
 // ################################################################################################
 export function innerSelectElementFromQuery/*ExtractorTemplateRunner*/<StateType>(
