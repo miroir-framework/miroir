@@ -3,29 +3,26 @@ import {
   DomainElement,
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
-  DomainElementObject,
   DomainElementObjectOrFailed,
-  ExtractorTemplateForDomainModel,
   DomainModelGetEntityDefinitionExtractor,
+  DomainModelGetFetchParamJzodSchemaForExtractor,
   DomainModelGetFetchParamJzodSchemaForExtractorTemplate,
+  DomainModelGetSingleSelectQueryJzodSchemaForExtractor,
   DomainModelGetSingleSelectQueryJzodSchemaForExtractorTemplate,
+  DomainModelQueryJzodSchemaParams,
   DomainModelQueryTemplateJzodSchemaParams,
+  ExtendedTransformerForRuntime,
+  ExtractorForDomainModel,
+  ExtractorForRecordOfExtractors,
+  ExtractorForSingleObject,
+  ExtractorForSingleObjectList,
+  ExtractorTemplateForDomainModel,
   ExtractorTemplateForRecordOfExtractors,
-  ExtractorTemplateForSingleObject,
   ExtractorTemplateForSingleObjectList,
   JzodElement,
   JzodObject,
-  QueryTemplateAction,
-  TransformerForRuntime,
-  ExtractorForDomainModel,
-  ExtractorForSingleObject,
-  ExtractorForSingleObjectList,
-  ExtractorForRecordOfExtractors,
   QueryAction,
-  DomainModelGetFetchParamJzodSchemaForExtractor,
-  DomainModelGetSingleSelectQueryJzodSchemaForExtractor,
-  DomainModelQueryJzodSchemaParams,
-  ExtendedTransformerForRuntime
+  QueryTemplateAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
 // ################################################################################################
@@ -116,12 +113,6 @@ export type SyncExtractorTemplateRunnerMap<StateType> = {
     ExtractorTemplateForRecordOfExtractors,
     StateType,
     DomainElementObjectOrFailed
-  >;
-  // TODO: called from QueryTemplateSelector
-  extractEntityInstanceUuidIndexForTemplate: SyncExtractorTemplateRunner<
-    ExtractorTemplateForSingleObjectList,
-    StateType,
-    DomainElementInstanceUuidIndexOrFailed
   >;
 };
 

@@ -2,14 +2,12 @@
 
 import {
   DomainElement,
-  DomainElementInstanceUuidIndexOrFailed,
   DomainElementObject,
   DomainModelGetEntityDefinitionExtractor,
   EntityDefinition,
   ExtractorTemplateForDomainModel,
   ExtractorTemplateForDomainModelObjects,
   ExtractorTemplateForRecordOfExtractors,
-  ExtractorTemplateForSingleObjectList,
   JzodObject
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.js";
@@ -39,7 +37,6 @@ import {
   extractWithManyExtractorTemplates,
   extractzodSchemaForSingleSelectQueryTemplate
 } from "./QueryTemplateSelectors.js";
-import { transformer_InnerReference_resolve } from "./Transformers.js";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "DomainStateQueryTemplateSelector");
@@ -64,113 +61,13 @@ export const extractWithExtractorFromDomainStateForTemplate: SyncExtractorTempla
 
 
 // ################################################################################################
+// TODO: used in extractWithExtractorFromDomainStateForTemplate.unit.test and RestServer.ts (with commented out access in HomePage, to create bundle)
+//  provide a better interface?
 export const extractWithManyExtractorsFromDomainStateForTemplate: SyncExtractorTemplateRunner<
   ExtractorTemplateForRecordOfExtractors,
   DomainState,
   DomainElementObject
 > = extractWithManyExtractorTemplates<DomainState>;
-
-// ################################################################################################
-// ACCESSES DOMAIN STATE
-export const selectEntityInstanceUuidIndexFromDomainStateForTemplate: SyncExtractorTemplateRunner<
-  ExtractorTemplateForSingleObjectList,
-  DomainState,
-  DomainElementInstanceUuidIndexOrFailed
-> = (
-  domainState: DomainState,
-  selectorParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObjectList, DomainState>
-): DomainElementInstanceUuidIndexOrFailed => {
-  const deploymentUuid = selectorParams.extractorTemplate.deploymentUuid;
-  const applicationSection = selectorParams.extractorTemplate.select.applicationSection ?? "data";
-
-  const entityUuidDomainElement = transformer_InnerReference_resolve(
-    "build",
-    selectorParams.extractorTemplate.select.parentUuid,
-    selectorParams.extractorTemplate.queryParams,
-    selectorParams.extractorTemplate.contextResults
-  );
-
-  // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate params", selectorParams, deploymentUuid, applicationSection, entityUuid);
-  // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate domainState", domainState);
-
-  if (!deploymentUuid || !applicationSection || !entityUuidDomainElement) {
-    return {
-      // new object
-      elementType: "failure",
-      elementValue: {
-        queryFailure: "IncorrectParameters",
-        queryContext:
-          "deploymentUuid=" +
-          deploymentUuid +
-          ", applicationSection=" +
-          applicationSection +
-          ", entityUuid=" +
-          JSON.stringify(entityUuidDomainElement),
-        queryParameters: JSON.stringify(selectorParams),
-      },
-    };
-    // resolving by fetchDataReference, fetchDataReferenceAttribute
-  }
-  if (!domainState) {
-    return { elementType: "failure", elementValue: { queryFailure: "DomainStateNotLoaded" } };
-  }
-  if (!domainState[deploymentUuid]) {
-    return { elementType: "failure", elementValue: { queryFailure: "DeploymentNotFound", deploymentUuid } };
-  }
-  if (!domainState[deploymentUuid][applicationSection]) {
-    return {
-      elementType: "failure",
-      elementValue: { queryFailure: "ApplicationSectionNotFound", deploymentUuid, applicationSection },
-    };
-  }
-  switch (entityUuidDomainElement.elementType) {
-    case "string":
-    case "instanceUuid": {
-      if (!domainState[deploymentUuid][applicationSection][entityUuidDomainElement.elementValue]) {
-        return {
-          elementType: "failure",
-          elementValue: {
-            queryFailure: "EntityNotFound",
-            deploymentUuid,
-            applicationSection,
-            entityUuid: entityUuidDomainElement.elementValue,
-          },
-        };
-      }
-
-      return {
-        elementType: "instanceUuidIndex",
-        elementValue: domainState[deploymentUuid][applicationSection][entityUuidDomainElement.elementValue],
-      };
-      break;
-    }
-    case "object":
-    case "instance":
-    case "instanceUuidIndex":
-    case "instanceUuidIndexUuidIndex":
-    case "array": {
-      return {
-        elementType: "failure",
-        elementValue: {
-          queryFailure: "IncorrectParameters",
-          queryContext:
-            "selectEntityInstanceUuidIndexFromDomainStateForTemplate could not handle reference" + JSON.stringify(entityUuidDomainElement),
-          queryReference: JSON.stringify(selectorParams.extractorTemplate.select.parentUuid),
-        },
-      };
-    }
-    case "failure": {
-      return entityUuidDomainElement;
-      break;
-    }
-    default: {
-      throw new Error(
-        "selectEntityInstanceUuidIndexFromDomainStateForTemplate could not handle reference entityUuid=" + entityUuidDomainElement
-      );
-      break;
-    }
-  }
-};
 
 // ################################################################################################
 // ################################################################################################
@@ -212,7 +109,6 @@ export function getSelectorMapForTemplate(): SyncExtractorTemplateRunnerMap<Doma
     extractWithManyExtractors: extractWithManyExtractorsFromDomainState,
     extractWithExtractor: extractWithExtractor,
     // 
-    extractEntityInstanceUuidIndexForTemplate: selectEntityInstanceUuidIndexFromDomainStateForTemplate,
     extractWithManyExtractorTemplates: extractWithManyExtractorsFromDomainStateForTemplate,
   };
 }

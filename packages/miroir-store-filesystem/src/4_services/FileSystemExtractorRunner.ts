@@ -319,8 +319,8 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
     const entityUuid = extractorRunnerParams.extractor.select.parentUuid
 
-    // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate params", selectorParams, deploymentUuid, applicationSection, entityUuid);
-    // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate domainState", domainState);
+    // log.info("extractEntityInstanceUuidIndex params", selectorParams, deploymentUuid, applicationSection, entityUuid);
+    // log.info("extractEntityInstanceUuidIndex domainState", domainState);
 
     if (!deploymentUuid || !applicationSection || !entityUuid) {
       return {

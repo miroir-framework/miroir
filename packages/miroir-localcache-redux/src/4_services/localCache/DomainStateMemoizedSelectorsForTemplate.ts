@@ -44,10 +44,6 @@ export function getMemoizedDeploymentEntityStateSelectorForTemplateMap(): SyncEx
     ),
 
     // 
-    extractEntityInstanceUuidIndexForTemplate: createSelector(
-      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-      selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate
-    ),
     extractWithManyExtractorTemplates: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
       extractWithManyExtractorTemplates

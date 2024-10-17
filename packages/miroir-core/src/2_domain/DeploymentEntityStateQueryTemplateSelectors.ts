@@ -236,7 +236,6 @@ export function getDeploymentEntityStateSelectorTemplateMap(): SyncExtractorTemp
     extractWithManyExtractors: extractWithManyExtractors,
     extractWithExtractor: extractWithExtractor,
     // 
-    extractEntityInstanceUuidIndexForTemplate: selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate,
     extractWithManyExtractorTemplates: extractWithManyExtractorTemplates,
   };
 }

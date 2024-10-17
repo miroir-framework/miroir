@@ -320,8 +320,8 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
 
     const entityUuid = extractorRunnerParams.extractor.select.parentUuid;
 
-    // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate params", selectorParams, deploymentUuid, applicationSection, entityUuid);
-    // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate domainState", domainState);
+    // log.info("extractEntityInstanceUuidIndex params", selectorParams, deploymentUuid, applicationSection, entityUuid);
+    // log.info("extractEntityInstanceUuidIndex domainState", domainState);
 
     if (!deploymentUuid || !applicationSection || !entityUuid) {
       return {
@@ -364,32 +364,6 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
       entityInstanceCollection.returnedDomainElement.elementValue.instances.map((i:any) => [i.uuid, i])
     );
     return { elementType: "instanceUuidIndex", elementValue: entityInstanceUuidIndex };
-      //   break;
-      // }
-      // case "object":
-      // case "instance":
-      // case "instanceUuidIndex":
-      // case "instanceUuidIndexUuidIndex":
-      // case "array": {
-      //   return {
-      //     elementType: "failure",
-      //     elementValue: {
-      //       queryFailure: "IncorrectParameters",
-      //       queryReference: JSON.stringify(extractorRunnerParams.extractor.select.parentUuid),
-      //     },
-      //   };
-      // }
-      // case "failure": {
-      //   return entityUuid;
-      //   break;
-      // }
-      // default: {
-      //   throw new Error(
-      //     "selectEntityInstanceUuidIndexFromDomainStateForTemplate could not handle reference entityUuid=" + entityUuid
-      //   );
-      //   break;
-      // }
-    // }
   };
 
   // ##############################################################################################

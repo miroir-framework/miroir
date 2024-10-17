@@ -99,8 +99,8 @@ export const selectEntityInstanceUuidIndexFromDomainState: SyncExtractorRunner<
 
   const entityUuid: Uuid = selectorParams.extractor.select.parentUuid;
 
-  // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate params", selectorParams, deploymentUuid, applicationSection, entityUuid);
-  // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate domainState", domainState);
+  // log.info("selectEntityInstanceUuidIndexFromDomainState params", selectorParams, deploymentUuid, applicationSection, entityUuid);
+  // log.info("selectEntityInstanceUuidIndexFromDomainState domainState", domainState);
 
   if (!deploymentUuid || !applicationSection || !entityUuid) {
     return {

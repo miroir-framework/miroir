@@ -443,8 +443,8 @@ export class SqlDbExtractRunner {
 
     const entityUuid = extractorRunnerParams.extractor.select.parentUuid;
 
-    // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate params", selectorParams, deploymentUuid, applicationSection, entityUuid);
-    // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate domainState", domainState);
+    // log.info("extractEntityInstanceUuidIndex params", selectorParams, deploymentUuid, applicationSection, entityUuid);
+    // log.info("extractEntityInstanceUuidIndex domainState", domainState);
 
     const entityInstanceCollection: ActionEntityInstanceCollectionReturnType =
       await this.persistenceStoreController.getInstances(
@@ -480,8 +480,8 @@ export class SqlDbExtractRunner {
 
     const entityUuid = extractorRunnerParams.extractor.select.parentUuid;
 
-    // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate params", selectorParams, deploymentUuid, applicationSection, entityUuid);
-    // log.info("selectEntityInstanceUuidIndexFromDomainStateForTemplate domainState", domainState);
+    // log.info("extractEntityInstanceUuidIndexWithFilter params", selectorParams, deploymentUuid, applicationSection, entityUuid);
+    // log.info("extractEntityInstanceUuidIndexWithFilter domainState", domainState);
 
     if (!deploymentUuid || !applicationSection || !entityUuid) {
       return {

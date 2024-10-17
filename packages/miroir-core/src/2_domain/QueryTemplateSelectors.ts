@@ -1,30 +1,19 @@
 // ################################################################################################
 
-import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import {
-  ApplicationSection,
   DomainElement,
-  DomainElementInstanceUuidIndex,
-  DomainElementInstanceUuidIndexOrFailed,
   DomainElementObject,
   DomainModelGetEntityDefinitionExtractor,
   DomainModelGetFetchParamJzodSchemaForExtractorTemplate,
   DomainModelGetSingleSelectQueryJzodSchemaForExtractorTemplate,
   DomainModelQueryTemplateJzodSchemaParams,
-  EntityInstance,
-  ExtendedTransformerForRuntime,
   ExtractorForDomainModelObjects,
   ExtractorForRecordOfExtractors,
   ExtractorTemplateForDomainModelObjects,
   ExtractorTemplateForRecordOfExtractors,
-  ExtractorTemplateForSingleObjectList,
   JzodElement,
   JzodObject,
-  QueryTemplate,
-  QueryTemplateExtractObjectListByEntity,
-  QueryTemplateSelectObjectListByManyToManyRelation,
-  QueryTemplateSelectObjectListByRelation,
-  TransformerForRuntime
+  QueryTemplate
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   AsyncExtractorTemplateRunnerMap,
@@ -39,9 +28,9 @@ import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
-import { extractWithExtractor, extractWithManyExtractors, innerSelectElementFromQuery } from "./QuerySelectors.js";
+import { extractWithExtractor, extractWithManyExtractors } from "./QuerySelectors.js";
 import { resolveExtractorTemplateForDomainModelObjects, resolveExtractorTemplateForRecordOfExtractors } from "./Templates.js";
-import { applyTransformer, transformer_apply, transformer_extended_apply, transformer_InnerReference_resolve } from "./Transformers.js";
+import { transformer_InnerReference_resolve } from "./Transformers.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"SyncExtractorTemplateRunner");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -60,7 +49,6 @@ const emptySelectorMap:SyncExtractorTemplateRunnerMap<any> = {
   extractWithExtractor: undefined as any,
   // 
   extractWithManyExtractorTemplates: undefined as any, 
-  extractEntityInstanceUuidIndexForTemplate: undefined as any,
 }
 
 const emptyAsyncSelectorMap:AsyncExtractorTemplateRunnerMap = {
