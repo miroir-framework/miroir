@@ -32,7 +32,7 @@ import entityEntityDefinition from "../assets/miroir_model/16dbfe28-e1d7-4f20-9b
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
-import { extractWithManyExtractorsFromDomainStateForTemplate } from "./DomainStateQueryTemplateSelector.js";
+import { extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT } from "./DomainStateQueryTemplateSelector.js";
 import {
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractFetchQueryJzodSchema,
@@ -475,7 +475,7 @@ export function getSelectorMap(): SyncExtractorRunnerMap<DomainState> {
     extractWithManyExtractors: extractWithManyExtractorsFromDomainState,
     extractWithExtractor: extractWithExtractor,
     // 
-    extractWithManyExtractorTemplates: extractWithManyExtractorsFromDomainStateForTemplate,
+    extractWithManyExtractorTemplates: extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT,
   };
 }
 

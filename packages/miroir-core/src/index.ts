@@ -527,9 +527,9 @@ export {
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
 } from './2_domain/DomainStateQuerySelectors.js';
 export {
-  getSelectorParamsForTemplate,
+  getSelectorParamsForTemplateOnDomainState,
   getSelectorMapForTemplate,
-  extractWithManyExtractorsFromDomainStateForTemplate,
+  extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,

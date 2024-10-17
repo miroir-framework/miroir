@@ -8,7 +8,7 @@ import {
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   extractWithExtractorFromDomainStateForTemplate,
-  getSelectorParamsForTemplate,
+  getSelectorParamsForTemplateOnDomainState,
 } from "../../2_domain/DomainStateQueryTemplateSelector.js";
 import domainStateImport from "./domainState.json";
 
@@ -41,7 +41,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
       };
       const result = extractWithExtractorFromDomainStateForTemplate(
         domainState,
-        getSelectorParamsForTemplate(queryParam)
+        getSelectorParamsForTemplateOnDomainState(queryParam)
       );
       console.info("result", result);
       expect(result).toEqual({
@@ -85,7 +85,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
           },
         },
       };
-      const result = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParamsForTemplate(queryParam));
+      const result = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParamsForTemplateOnDomainState(queryParam));
       console.info("result", result);
       expect(result).toEqual({
         elementType: "object",
@@ -131,7 +131,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
       };
 
       expect(
-        extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParamsForTemplate(queryParam)))
+        extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParamsForTemplateOnDomainState(queryParam)))
         .toEqual({
         elementType: "object",
         elementValue: {
@@ -176,7 +176,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
         },
       };
 
-      const queryResult:any = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParamsForTemplate(queryParam));
+      const queryResult:any = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParamsForTemplateOnDomainState(queryParam));
 
       expect(queryResult.elementValue.book).toBe(domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"])
     }
@@ -215,7 +215,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
         },
       };
 
-      const queryResult:any = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParamsForTemplate(queryParam));
+      const queryResult:any = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParamsForTemplateOnDomainState(queryParam));
 
       expect(queryResult.elementValue.book2).toBe(domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"])
     }
@@ -250,7 +250,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
         },
       };
 
-      const queryResult:any = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParamsForTemplate(queryParam));
+      const queryResult:any = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParamsForTemplateOnDomainState(queryParam));
       console.log("queryResult", JSON.stringify(queryResult, null, 2));
 
       expect(queryResult.elementValue.book).toBe(
@@ -305,7 +305,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
         },
       };
 
-      const queryResult:DomainElement = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParamsForTemplate(queryParam));
+      const queryResult:DomainElement = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParamsForTemplateOnDomainState(queryParam));
 
       console.log("result XXXXXXXXXXXXXXXXXXXXXXXXXXXXX", JSON.stringify(queryResult, null, 2));
       
@@ -351,7 +351,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
         },
       };
 
-      const queryResult:any = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParamsForTemplate(queryParam));
+      const queryResult:any = extractWithExtractorFromDomainStateForTemplate(domainState, getSelectorParamsForTemplateOnDomainState(queryParam));
 
       console.log("result", queryResult);
       
@@ -426,7 +426,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
 
       const queryResult: any = extractWithExtractorFromDomainStateForTemplate(
         domainState,
-        getSelectorParamsForTemplate(queryParam)
+        getSelectorParamsForTemplateOnDomainState(queryParam)
       );
 
       console.log("result", queryResult);
@@ -516,10 +516,10 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
         },
       };
 
-      // const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParamsForTemplate(queryParam));
+      // const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParamsForTemplateOnDomainState(queryParam));
       const queryResult: any = extractWithExtractorFromDomainStateForTemplate(
         domainState,
-        getSelectorParamsForTemplate(queryParam)
+        getSelectorParamsForTemplateOnDomainState(queryParam)
       );
 
       console.log("result", queryResult);
@@ -612,10 +612,10 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
         },
       };
 
-      // const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParamsForTemplate(queryParam));
+      // const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParamsForTemplateOnDomainState(queryParam));
       const queryResult: any = extractWithExtractorFromDomainStateForTemplate(
         domainState,
-        getSelectorParamsForTemplate(queryParam)
+        getSelectorParamsForTemplateOnDomainState(queryParam)
       );
 
       console.log("result", JSON.stringify(queryResult, undefined, 2));
@@ -691,10 +691,10 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
         },
       };
 
-      // const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParamsForTemplate(queryParam));
+      // const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParamsForTemplateOnDomainState(queryParam));
       const queryResult: any = extractWithExtractorFromDomainStateForTemplate(
         domainState,
-        getSelectorParamsForTemplate(queryParam)
+        getSelectorParamsForTemplateOnDomainState(queryParam)
       );
 
       // console.log("result", JSON.stringify(queryResult, undefined, 2));
@@ -753,10 +753,10 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
         },
       };
 
-      // const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParamsForTemplate(queryParam));
+      // const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParamsForTemplateOnDomainState(queryParam));
       const queryResult: any = extractWithExtractorFromDomainStateForTemplate(
         domainState,
-        getSelectorParamsForTemplate(queryParam)
+        getSelectorParamsForTemplateOnDomainState(queryParam)
       );
 
       console.log("result", JSON.stringify(queryResult, null, 2));

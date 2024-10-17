@@ -58,7 +58,7 @@ export const extractWithExtractorFromDomainStateForTemplate: SyncExtractorTempla
 // ################################################################################################
 // TODO: used in RestServer.ts (with commented out access in HomePage, to create bundle)
 //  provide a better interface?
-export const extractWithManyExtractorsFromDomainStateForTemplate: SyncExtractorTemplateRunner<
+export const extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT: SyncExtractorTemplateRunner<
   ExtractorTemplateForRecordOfExtractors,
   DomainState,
   DomainElementObject
@@ -76,12 +76,12 @@ export function getSelectorMapForTemplate(): SyncExtractorRunnerMap<DomainState>
     extractWithManyExtractors: extractWithManyExtractorsFromDomainState,
     extractWithExtractor: extractWithExtractor,
     // 
-    extractWithManyExtractorTemplates: extractWithManyExtractorsFromDomainStateForTemplate,
+    extractWithManyExtractorTemplates: extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT,
   };
 }
 
 // ################################################################################################
-export function getSelectorParamsForTemplate<ExtractorTemplateType extends ExtractorTemplateForDomainModel>(
+export function getSelectorParamsForTemplateOnDomainState<ExtractorTemplateType extends ExtractorTemplateForDomainModel>(
   query: ExtractorTemplateType,
   extractorRunnerMap?: SyncExtractorRunnerMap<DomainState>
 ): SyncExtractorTemplateRunnerParams<ExtractorTemplateType, DomainState> {

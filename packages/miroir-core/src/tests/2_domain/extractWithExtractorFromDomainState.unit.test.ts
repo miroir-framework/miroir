@@ -441,7 +441,7 @@ describe("extractWithExtractorFromDomainState.unit", () => {
         },
       };
 
-      // const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParamsForTemplate(queryParam));
+      // const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParamsForTemplateOnDomainState(queryParam));
       const queryResult: any = extractWithExtractorFromDomainState(
         domainState,
         getSelectorParams(queryParam)
@@ -517,7 +517,7 @@ describe("extractWithExtractorFromDomainState.unit", () => {
         },
       };
 
-      // const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParamsForTemplate(queryParam));
+      // const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParamsForTemplateOnDomainState(queryParam));
       const queryResult: any = extractWithExtractorFromDomainState(
         domainState,
         getSelectorParams(queryParam)
@@ -593,7 +593,7 @@ describe("extractWithExtractorFromDomainState.unit", () => {
         },
       };
 
-      // const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParamsForTemplate(queryParam));
+      // const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParamsForTemplateOnDomainState(queryParam));
       const queryResult: any = extractWithExtractorFromDomainState(
         domainState,
         getSelectorParams(queryParam)
@@ -652,7 +652,7 @@ describe("extractWithExtractorFromDomainState.unit", () => {
         },
       };
 
-      // const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParamsForTemplate(queryParam));
+      // const queryResult:any = extractWithExtractorFromDomainState(domainState, getSelectorParamsForTemplateOnDomainState(queryParam));
       const queryResult: any = extractWithExtractorFromDomainState(
         domainState,
         getSelectorParams(queryParam)

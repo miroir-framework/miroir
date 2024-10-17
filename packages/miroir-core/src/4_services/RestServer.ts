@@ -29,9 +29,12 @@ import { cleanLevel } from "./constants.js";
 import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface.js";
 import {
   extractWithExtractorFromDomainStateForTemplate,
-  extractWithManyExtractorsFromDomainStateForTemplate,
-  getSelectorParamsForTemplate,
+  extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT,
+  getSelectorParamsForTemplateOnDomainState,
+  getSelectorMapForTemplate
 } from "../2_domain/DomainStateQueryTemplateSelector.js";
+import { extractWithExtractorTemplate, handleQueryTemplateAction } from "../2_domain/QueryTemplateSelectors.js";
+import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RestServer");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -252,7 +255,7 @@ export async function restActionHandler(
 
 // ################################################################################################
 // USES LocalCache memoized reducers, shall go to miroir-server instead?
-export async function queryTemplateHandler(
+export async function queryTemplateActionHandler(
   useDomainControllerToHandleModelAndInstanceActions: boolean,
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
@@ -263,7 +266,7 @@ export async function queryTemplateHandler(
   body: HttpRequestBodyFormat,
   params: any,
 ):Promise<void> {
-  log.info("RestServer queryTemplateHandler params", params, "body", body);
+  log.info("RestServer queryTemplateActionHandler params", params, "body", body);
 
   /**
    * shall a query be executed based on the state of the localCache, or fetching state from a PersistenceStore?
@@ -293,45 +296,26 @@ export async function queryTemplateHandler(
     // switch (queryTemplateAction.deploymentUuid) {
     const result = await domainController.handleQueryTemplateForServerONLY(queryTemplateAction)
     log.info(
-      "RestServer queryTemplateHandler used adminConfigurationDeploymentMiroir domainController result=",
+      "RestServer queryTemplateActionHandler used adminConfigurationDeploymentMiroir domainController result=",
       JSON.stringify(result, undefined, 2)
     );
     return continuationFunction(response)(result)
   } else {
     // we're on the client, called by RestServerStub
     // uses the local cache, needs to have done a Model "rollback" action on the client//, or a Model "remoteLocalCacheRollback" action on the server
-    const domainState = localCache.getDomainState();
-    log.info("RestServer queryTemplateHandler queryTemplateAction=", JSON.stringify(queryTemplateAction, undefined, 2))
-    log.info("RestServer queryTemplateHandler domainState=", JSON.stringify(domainState, undefined, 2))
-    let queryResult: DomainElement
-    switch (queryTemplateAction.query.queryType) {
-      case "extractorTemplateForDomainModelObjects": {
-        queryResult = extractWithExtractorFromDomainStateForTemplate(
-          domainState,
-          getSelectorParamsForTemplate(queryTemplateAction.query)
-        );
-        break;
-      }
-      case "extractorTemplateForRecordOfExtractors": {
-        queryResult = extractWithManyExtractorsFromDomainStateForTemplate(
-          domainState,
-          getSelectorParamsForTemplate(queryTemplateAction.query)
-        );
-        break;
-      }
-      default: {
-        return continuationFunction(response)({
-          status: "error",
-          error: "RestServer queryTemplateHandler could not handle queryTemplateAction.query: " + queryTemplateAction.query,
-        })
-        break;
-      }
-    }
+    const domainState: DomainState = localCache.getDomainState();
+    const extractorRunnerMapOnDomainState = getSelectorMapForTemplate();
+    log.info("RestServer queryTemplateActionHandler queryTemplateAction=", JSON.stringify(queryTemplateAction, undefined, 2))
+    log.info("RestServer queryTemplateActionHandler domainState=", JSON.stringify(domainState, undefined, 2))
+    const queryResult: DomainElement = extractWithExtractorTemplate(
+      domainState,
+      getSelectorParamsForTemplateOnDomainState(queryTemplateAction.query, extractorRunnerMapOnDomainState)
+    )
     const result:ActionReturnType = {
       status: "ok",
       returnedDomainElement: queryResult
     }
-    log.info("RestServer queryTemplateHandler used local cache result=", JSON.stringify(result, undefined,2))
+    log.info("RestServer queryTemplateActionHandler used local cache result=", JSON.stringify(result, undefined,2))
 
     return continuationFunction(response)(result);
   }
@@ -368,6 +352,6 @@ export const restServerDefaultHandlers: RestServiceHandler[] = [
   {
     method: "post",
     url: "/queryTemplate",
-    handler: queryTemplateHandler
+    handler: queryTemplateActionHandler
   },
 ];
