@@ -1,11 +1,11 @@
-import { InstanceAction } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { EndpointInterface } from "../0_interfaces/3_controllers/EndpointInterface.js";
-import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface.js";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { MiroirLoggerFactory } from "../4_services/Logger.js";
-import { packageName } from "../constants.js";
-import { getLoggerName } from "../tools.js";
-import { cleanLevel } from "./constants.js";
+import { InstanceAction } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { EndpointInterface } from "../0_interfaces/3_controllers/EndpointInterface";
+import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { MiroirLoggerFactory } from "../4_services/Logger";
+import { packageName } from "../constants";
+import { getLoggerName } from "../tools";
+import { cleanLevel } from "./constants";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController");
 let log:LoggerInterface = console as any as LoggerInterface;

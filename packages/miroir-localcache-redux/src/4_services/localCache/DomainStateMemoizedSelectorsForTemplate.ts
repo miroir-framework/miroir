@@ -29,7 +29,7 @@ export function getMemoizedDeploymentEntityStateSelectorForTemplateMap(): SyncEx
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
       selectEntityInstanceUuidIndexFromDeploymentEntityState
     ),
-    extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: createSelector(
+    extractEntityInstanceUuidIndexWithObjectListExtractor: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
       extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
     ),

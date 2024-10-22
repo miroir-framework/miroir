@@ -1,6 +1,6 @@
-import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.js";
+import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 
-import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
+import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import {
   ApplicationSection,
   DomainElement,
@@ -18,21 +18,21 @@ import {
   ExtractorTemplateForRecordOfExtractors,
   JzodObject,
   QuerySelectObject
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   ExtractorRunnerMapForJzodSchema,
   ExtractorRunnerParamsForJzodSchema,
   SyncExtractorRunner,
   SyncExtractorRunnerMap,
   SyncExtractorRunnerParams
-} from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { MiroirLoggerFactory } from "../4_services/Logger.js";
+} from "../0_interfaces/2_domain/ExtractorRunnerInterface";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { MiroirLoggerFactory } from "../4_services/Logger";
 import entityEntityDefinition from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json";
-import { packageName } from "../constants.js";
-import { getLoggerName } from "../tools.js";
-import { cleanLevel } from "./constants.js";
-import { extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT } from "./DomainStateQueryTemplateSelector.js";
+import { packageName } from "../constants";
+import { getLoggerName } from "../tools";
+import { cleanLevel } from "./constants";
+import { extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT } from "./DomainStateQueryTemplateSelector";
 import {
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractFetchQueryJzodSchema,
@@ -41,8 +41,8 @@ import {
   extractWithManyExtractors,
   extractzodSchemaForSingleSelectQuery,
   innerSelectElementFromQuery,
-} from "./QuerySelectors.js";
-import { transformer_InnerReference_resolve } from "./Transformers.js";
+} from "./QuerySelectors";
+import { transformer_InnerReference_resolve } from "./Transformers";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "DomainStateQuerySelector");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -471,7 +471,7 @@ export function getSelectorMap(): SyncExtractorRunnerMap<DomainState> {
     extractorType: "sync",
     extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDomainState,
     extractEntityInstance: selectEntityInstanceFromObjectQueryAndDomainState,
-    extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: extractEntityInstanceListFromListQueryAndDomainState,
+    extractEntityInstanceUuidIndexWithObjectListExtractor: extractEntityInstanceListFromListQueryAndDomainState,
     extractWithManyExtractors: extractWithManyExtractorsFromDomainState,
     extractWithExtractor: extractWithExtractor,
     // 

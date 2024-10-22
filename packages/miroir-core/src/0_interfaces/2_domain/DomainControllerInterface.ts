@@ -12,8 +12,8 @@ import {
   ModelAction,
   QueryTemplateAction,
   TransactionalInstanceAction
-} from "../1_core/preprocessor-generated/miroirFundamentalType.js";
-import { PersistenceStoreLocalOrRemoteInterface } from "../4-services/PersistenceInterface.js";
+} from "../1_core/preprocessor-generated/miroirFundamentalType";
+import { PersistenceStoreLocalOrRemoteInterface } from "../4-services/PersistenceInterface";
 
 
 // #############################################################################################

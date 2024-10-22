@@ -1,6 +1,6 @@
 // ################################################################################################
 
-import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
+import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import {
   ApplicationSection,
   DomainElement,
@@ -13,19 +13,19 @@ import {
   ExtractorForSingleObjectList,
   MiroirQuery,
   QueryFailed
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   AsyncExtractorRunnerMap,
   AsyncExtractorRunnerParams
-} from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { MiroirLoggerFactory } from "../4_services/Logger.js";
-import { packageName } from "../constants.js";
-import { getLoggerName } from "../tools.js";
-import { cleanLevel } from "./constants.js";
-import { applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory, applyExtractorTransformerInMemory } from "./QuerySelectors.js";
-import { resolveQueryTemplate } from "./Templates.js";
-import { applyTransformer } from "./Transformers.js";
+} from "../0_interfaces/2_domain/ExtractorRunnerInterface";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { MiroirLoggerFactory } from "../4_services/Logger";
+import { packageName } from "../constants";
+import { getLoggerName } from "../tools";
+import { cleanLevel } from "./constants";
+import { applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory, applyExtractorTransformerInMemory } from "./QuerySelectors";
+import { resolveQueryTemplate } from "./Templates";
+import { applyTransformer } from "./Transformers";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"AsyncExtractorTemplateRunner");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -40,7 +40,7 @@ const emptyAsyncSelectorMap:AsyncExtractorRunnerMap = {
   extractWithExtractor: undefined as any, 
   extractWithManyExtractors: undefined as any, 
   extractEntityInstance: undefined as any,
-  extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: undefined as any,
+  extractEntityInstanceUuidIndexWithObjectListExtractor: undefined as any,
   extractEntityInstanceUuidIndex: undefined as any,
   applyExtractorTransformer: undefined as any,
   // ##############################################################################################
@@ -113,7 +113,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
     case "queryExtractObjectListByEntity":
     case "selectObjectListByRelation": 
     case "selectObjectListByManyToManyRelation": {
-      return extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractorInMemory({
+      return extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractor({
         extractorRunnerMap,
         extractor: {
           queryType: "extractorForDomainModelObjects",

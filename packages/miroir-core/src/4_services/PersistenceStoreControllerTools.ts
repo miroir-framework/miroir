@@ -1,5 +1,5 @@
-import { PersistenceStoreControllerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
-import { defaultMiroirMetaModel } from "../1_core/Model.js";
+import { PersistenceStoreControllerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
+import { defaultMiroirMetaModel } from "../1_core/Model";
 
 
 // ################################################################################################

@@ -22,13 +22,13 @@ import {
   ExtractorForRecordOfExtractors,
   QueryAction,
 } from "miroir-core";
-import { MixableSqlDbStoreSection, SqlDbStoreSection } from "./SqlDbStoreSection.js";
+import { MixableSqlDbStoreSection, SqlDbStoreSection } from "./SqlDbStoreSection";
 
-import { packageName } from "../constants.js";
-import { cleanLevel } from "./constants.js";
+import { packageName } from "../constants";
+import { cleanLevel } from "./constants";
 import { Op } from "sequelize";
-import { RecursiveStringRecords, SqlDbExtractTemplateRunner } from "./SqlDbExtractorTemplateRunner.js";
-import { SqlDbExtractRunner } from "./SqlDbExtractorRunner.js";
+import { RecursiveStringRecords, SqlDbExtractTemplateRunner } from "./SqlDbExtractorTemplateRunner";
+import { SqlDbExtractRunner } from "./SqlDbExtractorRunner";
 
 const consoleLog: any = console.log.bind(console, packageName, cleanLevel, "SqlDbInstanceStoreSectionMixin");
 const loggerName: string = getLoggerName(packageName, cleanLevel, "SqlDbInstanceStoreSectionMixin");
@@ -93,18 +93,6 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       // log.info(this.logHeader, "sqlForExtractor called with selectQuery", (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery);
       switch (extractor.queryType) {
         case "queryExtractObjectListByEntity": {
-          // const result = (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery(extractor.parentUuid
-          //   , {
-          // // const result = (this.sequelize as any).dialect.queryGenerator.selectQuery(extractor.parentUuid, {
-          //   attributes: ["*"],
-          // }
-          // );
-          // log.info(this.logHeader, "sqlForExtractor", "extractorTemplateForDomainModelObjects", result);
-          // if (extractor.parentUuid.queryTemplateType != "constantUuid") {
-          //   throw new Error(
-          //     "sqlForExtractor can not handle queryTemplateType for extractor" + JSON.stringify(extractor)
-          //   );
-          // }
           // TODO: use queryGenerator?
           return `SELECT * FROM "${this.schema}"."${extractor.parentName}"`;
           // return result;
@@ -128,7 +116,10 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           );
           break;
         }
-        case "selectObjectByDirectReference":
+        case "selectObjectByDirectReference": {
+          return `SELECT * FROM "${this.schema}"."${extractor.parentName}" WHERE "uuid" = '${extractor.instanceUuid}'`;
+          break;
+        }
         case "extractorWrapperReturningObject":
         case "extractorWrapperReturningList":
         default: {

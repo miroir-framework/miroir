@@ -1,10 +1,10 @@
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { MiroirLoggerFactory } from "../4_services/Logger.js";
-import { getLoggerName } from "../tools.js";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { MiroirLoggerFactory } from "../4_services/Logger";
+import { getLoggerName } from "../tools";
 
-import { packageName } from "../constants.js";
-import { cleanLevel } from "./constants.js";
-import { Report } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { packageName } from "../constants";
+import { cleanLevel } from "./constants";
+import { Report } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"Report");
 let log:LoggerInterface = console as any as LoggerInterface;

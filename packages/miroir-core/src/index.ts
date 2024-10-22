@@ -1,7 +1,7 @@
 export {
   miroirFundamentalJzodSchemaUuid,
   getMiroirFundamentalJzodSchema,
-} from "../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.js"
+} from "../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema"
 
 export {
   ActionError,
@@ -299,7 +299,7 @@ export {
   carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction,
 
 }
-from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js"
+from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType"
 
 export {
   InstanceDictionaryNum,
@@ -308,29 +308,29 @@ export {
   MetaEntity,
   UuidSchema,
   Uuid,
-} from './0_interfaces/1_core/EntityDefinition.js';
+} from './0_interfaces/1_core/EntityDefinition';
 export {
   ApplicationSectionOpposite,
   EntityInstanceWithNameSchema,
   EntityInstanceWithName,
-} from './0_interfaces/1_core/Instance.js';
+} from './0_interfaces/1_core/Instance';
 export {
   HttpMethod,
   HttpMethodsArray,
   HttpMethodsObject,
-} from './0_interfaces/1_core/Http.js';
+} from './0_interfaces/1_core/Http';
 export {
   JzodSchemaDefinition,
   jzodSchemaDefinitionSchema,
-} from './0_interfaces/1_core/JzodSchemaDefinition.js';
+} from './0_interfaces/1_core/JzodSchemaDefinition';
 export {
   DeploymentMode,
   // StoreBasedConfigurationSchema,
   // StoreBasedConfiguration,
-} from './0_interfaces/1_core/MiroirConfig.js';
+} from './0_interfaces/1_core/MiroirConfig';
 export {
   DeploymentUuidToReportsEntitiesDefinitionsMapping
-} from './0_interfaces/1_core/Model.js';
+} from './0_interfaces/1_core/Model';
 export {
   ClientFileStorage,
   ApplicationDeploymentSchema,
@@ -347,7 +347,7 @@ export {
   StorageLocation,
   StorageTypeSchema,
   ClientServerDistributionModeSchema,
-} from './0_interfaces/1_core/StorageConfiguration.js';
+} from './0_interfaces/1_core/StorageConfiguration';
 export {
   EntityDefinitionEntityDefinition,
   EntityDefinitionEntityDefinitionAttribute,
@@ -355,7 +355,7 @@ export {
   entityDefinitionEntityDefinitionAttributeNewSchema,
   entityDefinitionEntityDefinitionAttributeSchema,
   entityDefinitionEntityDefinitionSchema
-} from './0_interfaces/1_core/writtenByHandSchema.js';
+} from './0_interfaces/1_core/writtenByHandSchema';
 export {
   LocalCacheInfo,
   CRUDActionNameSchema,
@@ -375,11 +375,11 @@ export {
   CUDActionNameSchema,
   CUDActionName,
   CUDActionNamesArray,
-} from './0_interfaces/2_domain/DomainControllerInterface.js';
+} from './0_interfaces/2_domain/DomainControllerInterface';
 export {
   RecordOfJzodElement,
   RecordOfJzodObject,
-} from './0_interfaces/2_domain/DomainStateQuerySelectorInterface.js';
+} from './0_interfaces/2_domain/DomainStateQuerySelectorInterface';
 export {
   JzodSchemaQueryTemplateSelector,
   ExtractorTemplatePersistenceStoreRunner,
@@ -402,25 +402,25 @@ export {
   ExtractorRunner,
   ExtractorRunnerMap,
   ExtractorTemplateRunner,
-} from './0_interfaces/2_domain/ExtractorRunnerInterface.js';
+} from './0_interfaces/2_domain/ExtractorRunnerInterface';
 export {
   ZEntityState,
   ZEntityStateSchema,
   DeploymentEntityState,
-} from './0_interfaces/2_domain/DeploymentStateInterface.js';
+} from './0_interfaces/2_domain/DeploymentStateInterface';
 export {
   DataStoreApplicationTypeSchema,
   DataStoreApplicationType,
-} from './0_interfaces/3_controllers/ApplicationControllerInterface.js';
+} from './0_interfaces/3_controllers/ApplicationControllerInterface';
 export {
   EndpointInterface
-} from './0_interfaces/3_controllers/EndpointInterface.js';
+} from './0_interfaces/3_controllers/EndpointInterface';
 export {
   ErrorLogServiceInterface, MError
-} from './0_interfaces/3_controllers/ErrorLogServiceInterface.js';
+} from './0_interfaces/3_controllers/ErrorLogServiceInterface';
 export {
   MiroirContextInterface
-} from './0_interfaces/3_controllers/MiroirContextInterface.js';
+} from './0_interfaces/3_controllers/MiroirContextInterface';
 export {
   LoggerFactoryInterface,
   LoggerFactoryAsyncInterface,
@@ -428,13 +428,13 @@ export {
   LogLevelOptions,
   defaultLevels,
   SpecificLoggerOptionsMap,
-} from "./0_interfaces/4-services/LoggerInterface.js";
+} from "./0_interfaces/4-services/LoggerInterface";
 export {
   PersistenceStoreControllerManagerInterface
-} from "./0_interfaces/4-services/PersistenceStoreControllerManagerInterface.js";
+} from "./0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 export {
   LocalCacheInterface,
-} from './0_interfaces/4-services/LocalCacheInterface.js';
+} from './0_interfaces/4-services/LocalCacheInterface';
 export {
   HttpRequestBodyFormat,
   HttpResponseBodyFormat,
@@ -446,7 +446,7 @@ export {
   RestMethodHandler,
   RestServiceHandler,
   StoreInterface,
-} from "./0_interfaces/4-services/PersistenceInterface.js";
+} from "./0_interfaces/4-services/PersistenceInterface";
 export {
   PersistenceStoreAbstractInterface,
   PersistenceStoreAbstractSectionInterface,
@@ -463,18 +463,18 @@ export {
   PersistenceStoreControllerAction,
   PersistenceStoreSectionFactory,
   StoreSectionFactoryRegister,
-} from "./0_interfaces/4-services/PersistenceStoreControllerInterface.js";
+} from "./0_interfaces/4-services/PersistenceStoreControllerInterface";
 export {
   getApplicationSection
-} from './1_core/Application.js';
-export { } from './1_core/Report.js';
-export { ACTION_OK } from './1_core/constants.js';
-export { DomainController } from './3_controllers/DomainController.js';
-export { DomainInstanceUuidIndexToArray } from './1_core/DomainState.js';
+} from './1_core/Application';
+export { } from './1_core/Report';
+export { ACTION_OK } from './1_core/constants';
+export { DomainController } from './3_controllers/DomainController';
+export { DomainInstanceUuidIndexToArray } from './1_core/DomainState';
 export {
   getDefaultValueForJzodSchema,
   getDefaultValueForJzodSchemaWithResolution,
-} from './1_core/jzod/getDefaultValueForJzodSchema.js';
+} from './1_core/jzod/getDefaultValueForJzodSchema';
 export {
   // getReportSectionTargetEntityUuid,
   resolveJzodSchemaReference,
@@ -483,14 +483,14 @@ export {
   ResolvedJzodSchemaReturnType,
   ResolvedJzodSchemaReturnTypeError,
   ResolvedJzodSchemaReturnTypeOK,
-} from './1_core/jzod/JzodUnfoldSchemaForValue.js';
+} from './1_core/jzod/JzodUnfoldSchemaForValue';
 export {
   unfoldJzodSchemaOnce
-} from './1_core/jzod/JzodUnfoldSchemaOnce.js';
+} from './1_core/jzod/JzodUnfoldSchemaOnce';
 export {
   alterObjectAtPath,
   deleteObjectAtPath,
-} from './1_core/alterObjectAtPath.js';
+} from './1_core/alterObjectAtPath';
 export {
   applicationModelEntities,
   defaultMiroirMetaModel,
@@ -498,17 +498,17 @@ export {
   getReportsAndEntitiesDefinitionsForDeploymentUuid,
   metaModelEntities,
   miroirModelEntities,
-} from './1_core/Model.js';
+} from './1_core/Model';
 export {
   // getReportSectionTargetEntityUuid,
-} from './1_core/Report.js';
+} from './1_core/Report';
 export {
   selectEntityInstances,
   selectEntityInstancesFromJzodAttribute,
   selectEntityUuidFromJzodAttribute,
   selectCurrentDeploymentModel,
   selectReportDefinitionFromReportUuid,
-} from './2_domain/DomainDataAccess.js';
+} from './2_domain/DomainDataAccess';
 export {
   dummyDomainManyQueryWithDeploymentUuid,
   dummyDomainManyQueryTemplateWithDeploymentUuid,
@@ -525,7 +525,7 @@ export {
   extractEntityInstanceListFromListQueryAndDomainState,
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
-} from './2_domain/DomainStateQuerySelectors.js';
+} from './2_domain/DomainStateQuerySelectors';
 export {
   getSelectorParamsForTemplateOnDomainState,
   getSelectorMapForTemplate,
@@ -534,7 +534,7 @@ export {
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
   selectEntityJzodSchemaFromDomainStateNewForTemplate
-} from './2_domain/DomainStateQueryTemplateSelector.js';
+} from './2_domain/DomainStateQueryTemplateSelector';
 export {
   extractEntityJzodSchemaFromDeploymentEntityState,
   selectEntityInstanceFromDeploymentEntityState,
@@ -542,25 +542,25 @@ export {
   getDeploymentEntityStateJzodSchemaSelectorMap,
   getDeploymentEntityStateSelectorMap,
   getDeploymentEntityStateSelectorParams,
-} from './2_domain/DeploymentEntityStateQuerySelectors.js';
+} from './2_domain/DeploymentEntityStateQuerySelectors';
 export {
   getDeploymentEntityStateJzodSchemaSelectorTemplateMap,
   getDeploymentEntityStateSelectorTemplateMap,
   getDeploymentEntityStateSelectorTemplateParams,
-} from './2_domain/DeploymentEntityStateQueryTemplateSelectors.js';
+} from './2_domain/DeploymentEntityStateQueryTemplateSelectors';
 export {
   ExtractorTemplateRunnerInMemory
-} from './2_domain/ExtractorTemplateRunnerInMemory.js';
+} from './2_domain/ExtractorTemplateRunnerInMemory';
 export {
   ExtractorRunnerInMemory
-} from './2_domain/ExtractorRunnerInMemory.js';
+} from './2_domain/ExtractorRunnerInMemory';
 export {
   handleQueryTemplateAction,
   extractWithManyExtractorTemplates,
   extractWithExtractorTemplate,
   extractFetchQueryTemplateJzodSchema,
   extractJzodSchemaForDomainModelQueryTemplate,
-} from './2_domain/QueryTemplateSelectors.js';
+} from './2_domain/QueryTemplateSelectors';
 export {
   domainElementToPlainObject,
   plainObjectToDomainElement,
@@ -571,106 +571,106 @@ export {
   extractzodSchemaForSingleSelectQuery,
   extractWithManyExtractors,
   extractWithExtractor,
-} from './2_domain/QuerySelectors.js';
+} from './2_domain/QuerySelectors';
 // export {
 //   asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate,
 //   asyncExtractWithExtractorTemplate,
 //   asyncExtractWithManyExtractorTemplates,
 //   asyncApplyExtractorTemplateTransformerInMemory,
 //   asyncInnerSelectElementFromQueryTemplate
-// } from './2_domain/AsyncQueryTemplateSelectors.js';
+// } from './2_domain/AsyncQueryTemplateSelectors';
 export {
   asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   asyncExtractWithExtractor,
   asyncExtractWithManyExtractors,
   asyncInnerSelectElementFromQuery,
-} from './2_domain/AsyncQuerySelectors.js';
+} from './2_domain/AsyncQuerySelectors';
 export{
   getLocalCacheIndexDeploymentSection,
   getLocalCacheIndexDeploymentUuid,
   getLocalCacheIndexEntityUuid,
   getDeploymentEntityStateIndex,
-} from './2_domain/DeploymentEntityState.js';
+} from './2_domain/DeploymentEntityState';
 export {
   ModelEntityActionTransformer
-} from './2_domain/ModelEntityActionTransformer.js';
+} from './2_domain/ModelEntityActionTransformer';
 export { 
   ActionTemplate,
   transformer_apply,
   transformer_extended_apply,
   transformer_InnerReference_resolve,
-} from "./2_domain/Transformers.js";
+} from "./2_domain/Transformers";
 export {
   resolveQueryTemplate,
   resolveExtractorTemplateForRecordOfExtractors,
   resolveExtractorTemplateForDomainModelObjects,
   resolveQueryTemplateSelectExtractorWrapper,
-} from "./2_domain/Templates.js";
+} from "./2_domain/Templates";
 export {
   cacheFetchPolicy,
   cacheInvalidationPolicy,
   ConfigurationService,
   PackageConfiguration,
   undoRedoHistorization,
-} from "./3_controllers/ConfigurationService.js";
+} from "./3_controllers/ConfigurationService";
 export {
   Endpoint
-} from './3_controllers/Endpoint.js';
+} from './3_controllers/Endpoint';
 export {
   ErrorAdminStore
-} from './3_controllers/ErrorHandling/ErrorAdminStore.js';
+} from './3_controllers/ErrorHandling/ErrorAdminStore';
 export {
   ErrorDataStore
-} from './3_controllers/ErrorHandling/ErrorDataStore.js';
+} from './3_controllers/ErrorHandling/ErrorDataStore';
 export {
   ErrorModelStore
-} from './3_controllers/ErrorHandling/ErrorModelStore.js';
+} from './3_controllers/ErrorHandling/ErrorModelStore';
 export {
   resetAndInitMiroirAndApplicationDatabase,
-} from './3_controllers/resetApplicationDatabase.js';
+} from './3_controllers/resetApplicationDatabase';
 export {
   storeActionOrBundleActionStoreRunner,
   modelActionStoreRunnerNotUsed,
-} from './3_controllers/ActionRunner.js';
+} from './3_controllers/ActionRunner';
 export {
   modelInitialize,
-} from './3_controllers/ModelInitializer.js';
-export { ErrorLogService } from './3_controllers/ErrorHandling/ErrorLogService.js';
-export { CallUtils } from './3_controllers/ErrorHandling/CallUtils.js';
-export { MiroirContext } from './3_controllers/MiroirContext.js';
+} from './3_controllers/ModelInitializer';
+export { ErrorLogService } from './3_controllers/ErrorHandling/ErrorLogService';
+export { CallUtils } from './3_controllers/ErrorHandling/CallUtils';
+export { MiroirContext } from './3_controllers/MiroirContext';
 export {
   MiroirLoggerFactory,
   templateLoggerOptionsFactory,
   testLogger
-} from './4_services/Logger.js';
+} from './4_services/Logger';
 export {
   PersistenceStoreController,
   PersistenceStoreControllerFactoryReturnType,
-} from './4_services/PersistenceStoreController.js';
+} from './4_services/PersistenceStoreController';
 export {
   RestClient
-} from './4_services/RestClient.js';
+} from './4_services/RestClient';
 export {
   restServerDefaultHandlers
-} from './4_services/RestServer.js';
+} from './4_services/RestServer';
 export {
   // createPersistenceStoreControllers,
   startLocalPersistenceStoreControllers,
-} from './4_services/PersistenceStoreControllerTools.js';
+} from './4_services/PersistenceStoreControllerTools';
 export {
   PersistenceStoreControllerManager
-} from './4_services/PersistenceStoreControllerManager.js';
+} from './4_services/PersistenceStoreControllerManager';
 export {
   generateRestServiceResponse,
-} from './4_services/RestTools.js';
+} from './4_services/RestTools';
 export {
   ignorePostgresExtraAttributesOnList,
   ignorePostgresExtraAttributesOnObject,
   ignorePostgresExtraAttributesOnRecord,
-} from './4_services/otherTools.js';
-export { miroirCoreStartup } from './startup.js';
-export { stringTuple, circularReplacer, getLoggerName, getValue } from './tools.js';
+} from './4_services/otherTools';
+export { miroirCoreStartup } from './startup';
+export { stringTuple, circularReplacer, getLoggerName, getValue } from './tools';
 
 import entityEndpointVersion from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e4320b9e-ab45-4abe-85d8-359604b3c62f.json';
 import entityEntity from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
@@ -753,7 +753,8 @@ import jzodSchemajzodMiroirBootstrapSchema from "../src/assets/miroir_data/5e81e
 // import entityDefinitionEntity from "../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/381ab1be-337f-4198-b1d3-f686867fc1dd.json" assert { type: "json" };
 // import entityDefinitionMenu  from "../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/0f421b2f-2fdc-47ee-8232-62121ea46350.json" assert { type: "json" };
 
-import transformerMenuV1 from "../src/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json" assert { type: "json" };
+// import transformerMenuV1 from "../src/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json" assert { type: "json" };
+import transformerMenuV1 from "../src/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json";
 
 export {
 

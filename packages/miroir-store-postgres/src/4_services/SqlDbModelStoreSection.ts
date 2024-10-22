@@ -1,19 +1,17 @@
 import {
-  DataStoreApplicationType,
+  ActionEntityInstanceCollectionReturnType,
+  ApplicationSection,
   EntityInstanceCollection,
-  PersistenceStoreDataSectionInterface,
-  PersistenceStoreModelSectionInterface,
   LoggerInterface,
   MiroirLoggerFactory,
-  getLoggerName,
-  ActionReturnType,
-  ApplicationSection,
-  ActionEntityInstanceCollectionReturnType
+  PersistenceStoreDataSectionInterface,
+  PersistenceStoreModelSectionInterface,
+  getLoggerName
 } from "miroir-core";
-import { MixedSqlDbEntityAndInstanceStoreSection } from "./sqlDbEntityStoreSectionMixin.js";
+import { MixedSqlDbEntityAndInstanceStoreSection } from "./sqlDbEntityStoreSectionMixin";
 
-import { packageName } from "../constants.js";
-import { cleanLevel } from "./constants.js";
+import { packageName } from "../constants";
+import { cleanLevel } from "./constants";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"SqlDbModelSectionStore");
 let log:LoggerInterface = console as any as LoggerInterface;

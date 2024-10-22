@@ -1,4 +1,4 @@
-import { MetaEntity } from "../../0_interfaces/1_core/EntityDefinition.js";
+import { MetaEntity } from "../../0_interfaces/1_core/EntityDefinition";
 import {
   EntityInstanceCollection,
   EntityInstance,
@@ -10,8 +10,8 @@ import {
   ApplicationSection,
   QueryTemplateAction,
   QueryAction,
-} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { PersistenceStoreDataSectionInterface } from "../../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
+} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { PersistenceStoreDataSectionInterface } from "../../0_interfaces/4-services/PersistenceStoreControllerInterface";
 
 export class ErrorDataStore implements PersistenceStoreDataSectionInterface {
   constructor() {}

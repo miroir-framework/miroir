@@ -40,36 +40,40 @@ export default (path, options) =>({
   moduleFileExtensions:[
     "ts", "tsx", "js", "mjs", "cjs", "jsx", "json", "node"
   ],
-  preset:'ts-jest/presets/default-esm',
-  "transform": {
-  //   "^.+\\.tsx?$": [
-  //     "ts-jest",
-  //     {
-  //       // useESM:true,
-  //       // diagnostics: true,
-  //       // tsconfig: "../../tsconfig.json"
-  //       // tsconfig: 
-  //       // {
-  //       //   resolveJsonModule: true,
-  //       //   esModuleInterop: true,
-  //       //   allowSyntheticDefaultImports:true,
-  //       //   allowJs: true,
-  //       //   moduleResolution: "node",
-  //       //   module: "ESNext",
-  //       //   target: "ESNext",
-  //       //   traceResolution: true,
-  //       //   // module:"commonjs"
-  //       // },
-  //     }
-  //   ],
-    "^.+\\.js?$": ["babel-jest"],
-  },
-  // moduleNameMapper: {
-  //   "^miroir-fwk\/(.+)$": "<rootDir>/src/$1",
-  //   '\\.(css|scss|sass)$': 'identity-obj-proxy',
-  // },
-  "testPathIgnorePatterns": [
-    "./node_modules/",
-    "./.cache/"
+  presets: [
+    ['@babel/preset-env', {targets: {node: 'current'}}],
+    '@babel/preset-typescript',
   ],
+  // preset:'ts-jest/presets/default-esm',
+  // "transform": {
+  // //   "^.+\\.tsx?$": [
+  // //     "ts-jest",
+  // //     {
+  // //       // useESM:true,
+  // //       // diagnostics: true,
+  // //       // tsconfig: "../../tsconfig.json"
+  // //       // tsconfig: 
+  // //       // {
+  // //       //   resolveJsonModule: true,
+  // //       //   esModuleInterop: true,
+  // //       //   allowSyntheticDefaultImports:true,
+  // //       //   allowJs: true,
+  // //       //   moduleResolution: "node",
+  // //       //   module: "ESNext",
+  // //       //   target: "ESNext",
+  // //       //   traceResolution: true,
+  // //       //   // module:"commonjs"
+  // //       // },
+  // //     }
+  // //   ],
+  //   "^.+\\.js?$": ["babel-jest"],
+  // },
+  // // moduleNameMapper: {
+  // //   "^miroir-fwk\/(.+)$": "<rootDir>/src/$1",
+  // //   '\\.(css|scss|sass)$': 'identity-obj-proxy',
+  // // },
+  // "testPathIgnorePatterns": [
+  //   "./node_modules/",
+  //   "./.cache/"
+  // ],
 })

@@ -45,7 +45,7 @@ import applicationVersionInitialMiroirVersionCrossEntityDefinitionApplication fr
 import applicationVersionInitialMiroirVersionCrossEntityDefinitionReport from '../assets/miroir_data/8bec933d-6287-4de7-8a88-5c24216de9f4/ede7e794-5ae7-48a8-81c9-d1f82df11829.json';
 import selfApplicationVersionInitialMiroirVersion from '../assets/miroir_data/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json';
 
-import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
+import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import instanceConfigurationReference from '../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
 
 import adminConfigurationDeploymentMiroir from "../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
@@ -57,7 +57,7 @@ import {
   Menu,
   MetaModel,
   Report,
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 // TODO: REMOVE THIS!!!
 // FIRST: CENTRALIZE LOGIC TO DETERMINE MODEL ENTITIES

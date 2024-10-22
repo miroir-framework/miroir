@@ -7,10 +7,10 @@ import {
   Menu,
   MetaModel,
   Report,
-} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { MiroirModel } from '../../0_interfaces/1_core/Model.js';
+} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { MiroirModel } from '../../0_interfaces/1_core/Model';
 
-import { unfoldJzodSchemaOnce} from "../../1_core/jzod/JzodUnfoldSchemaOnce.js";
+import { unfoldJzodSchemaOnce} from "../../1_core/jzod/JzodUnfoldSchemaOnce";
 
 
 import entitySelfApplication from '../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a659d350-dd97-4da9-91de-524fa01745dc.json';
@@ -78,7 +78,7 @@ import transformerJzodSchema from "../../assets/miroir_data/5e81e1b9-38be-487c-b
 import instanceConfigurationReference from '../../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
 import menuDefaultMiroir from '../../assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/eaac459c-6c2b-475c-8ae4-c6c3032dae00.json';
 
-import { getMiroirFundamentalJzodSchema} from "../../0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.js"
+import { getMiroirFundamentalJzodSchema} from "../../0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema"
 
 import entityDefinitionBundleV1 from "../../assets/miroirAdmin/model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/01a051d8-d43c-430d-a98e-739048f54942.json";
 // import entityDefinitionCommit from "../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b17d5e9e-12f2-4ed8-abdb-2576c01514a4.json";
@@ -103,7 +103,7 @@ import entityDefinitionReportV1 from "../../assets/miroir_model/54b9c72f-d4f3-4d
 
 // import entityDefinitionDeployment from "../../src/assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c50240e7-c451-46c2-b60a-07b3172a5ef9.json" assert { type: "json" };
 import entityDefinitionDeployment from "../../assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c50240e7-c451-46c2-b60a-07b3172a5ef9.json";
-import { transformerMenuV1 } from "../../index.js";
+import { transformerMenuV1 } from "../../index";
 
 export const defaultMiroirMetaModel: MetaModel = {
   configuration: [instanceConfigurationReference],

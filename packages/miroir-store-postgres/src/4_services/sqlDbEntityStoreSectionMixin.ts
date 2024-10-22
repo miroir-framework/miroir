@@ -19,9 +19,9 @@ import {
   entityEntityDefinition,
   getLoggerName
 } from "miroir-core";
-import { EntityUuidIndexedSequelizeModel, fromMiroirEntityDefinitionToSequelizeEntityDefinition } from "../utils.js";
-import { SqlDbStoreSection } from "./SqlDbStoreSection.js";
-import { MixedSqlDbInstanceStoreSection, SqlDbInstanceStoreSectionMixin } from "./sqlDbInstanceStoreSectionMixin.js";
+import { EntityUuidIndexedSequelizeModel, fromMiroirEntityDefinitionToSequelizeEntityDefinition } from "../utils";
+import { SqlDbStoreSection } from "./SqlDbStoreSection";
+import { MixedSqlDbInstanceStoreSection, SqlDbInstanceStoreSectionMixin } from "./sqlDbInstanceStoreSectionMixin";
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";

@@ -1,35 +1,14 @@
 import { v4 as uuidv4 } from 'uuid';
 // import { describe, expect } from 'vitest';
 
-import { transformer_apply } from "../../2_domain/Transformers.js";
 import {
-  DomainAction,
-  StoreUnitConfiguration,
-  TransformerForBuild,
-  DomainElementObject,
-  TransformerForRuntime,
-  EntityInstance,
-  TransformerForRuntime_InnerReference,
-  ExtractorTemplateForRecordOfExtractors,
   ExtractorTemplateForDomainModelObjects,
-} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+  ExtractorTemplateForRecordOfExtractors
+} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { resolveExtractorTemplateForDomainModelObjects } from '../../2_domain/Templates';
 import {
-  book1,
-  book2,
-  book3,
-  book4,
-  book5,
-  book6,
-  Country1,
-  Country2,
-  Country3,
-  Country4,
-  ignorePostgresExtraAttributesOnList,
-  ignorePostgresExtraAttributesOnRecord,
-  resolveExtractorTemplateForRecordOfExtractors,
-} from "../../index.js";
-import { object } from 'zod';
-import { resolveExtractorTemplateForDomainModelObjects } from '../../2_domain/Templates.js';
+  resolveExtractorTemplateForRecordOfExtractors
+} from "../../index";
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
 

@@ -52,16 +52,16 @@ import modelEndpointV1 from '../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869
 import menuDefaultMiroir from '../assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/eaac459c-6c2b-475c-8ae4-c6c3032dae00.json';
 import miroirJzodSchemaBootstrap from '../assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json';
 
-import { MetaEntity } from "../0_interfaces/1_core/EntityDefinition.js";
-import { PersistenceStoreControllerInterface } from '../0_interfaces/4-services/PersistenceStoreControllerInterface.js';
-import { DataStoreApplicationType } from '../0_interfaces/3_controllers/ApplicationControllerInterface.js';
-import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface.js';
-import { MiroirLoggerFactory } from '../4_services/Logger.js';
-import { packageName } from '../constants.js';
-import { getLoggerName } from '../tools.js';
-import { cleanLevel } from './constants.js';
-import { Application, EntityDefinition, EntityInstance, MetaModel } from '../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
-import { menuDefaultLibrary } from '../index.js';
+import { MetaEntity } from "../0_interfaces/1_core/EntityDefinition";
+import { PersistenceStoreControllerInterface } from '../0_interfaces/4-services/PersistenceStoreControllerInterface';
+import { DataStoreApplicationType } from '../0_interfaces/3_controllers/ApplicationControllerInterface';
+import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface';
+import { MiroirLoggerFactory } from '../4_services/Logger';
+import { packageName } from '../constants';
+import { getLoggerName } from '../tools';
+import { cleanLevel } from './constants';
+import { Application, EntityDefinition, EntityInstance, MetaModel } from '../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
+import { menuDefaultLibrary } from '../index';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ModelInitializer");
 let log:LoggerInterface = console as any as LoggerInterface;

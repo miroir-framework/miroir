@@ -1,24 +1,20 @@
 import {
-  DataStoreApplicationType,
+  ACTION_OK,
+  ActionVoidReturnType,
   EntityDefinition,
-  PersistenceStoreAbstractSectionInterface,
-  StorageSpaceHandlerInterface,
+  getLoggerName,
   LoggerInterface,
   MetaEntity,
   MiroirLoggerFactory,
-  Uuid,
-  getLoggerName,
-  PersistenceStoreAbstractInterface,
-  ActionReturnType,
-  ActionVoidReturnType,
-  ACTION_OK,
+  PersistenceStoreAbstractSectionInterface,
+  StorageSpaceHandlerInterface,
+  Uuid
 } from "miroir-core";
-import { Sequelize } from "sequelize";
-import { EntityUuidIndexedSequelizeModel, fromMiroirEntityDefinitionToSequelizeEntityDefinition } from "../utils.js";
+import { EntityUuidIndexedSequelizeModel, fromMiroirEntityDefinitionToSequelizeEntityDefinition } from "../utils";
 
-import { packageName } from "../constants.js";
-import { cleanLevel } from "./constants.js";
-import { SqlDbStore } from "./SqlDbStore.js";
+import { packageName } from "../constants";
+import { cleanLevel } from "./constants";
+import { SqlDbStore } from "./SqlDbStore";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "SqlDbStoreSection");
 let log: LoggerInterface = console as any as LoggerInterface;

@@ -1,14 +1,14 @@
-import { HttpMethod } from "../1_core/Http.js";
+import { HttpMethod } from "../1_core/Http";
 import {
   ActionReturnType,
   ExtractorTemplateForRecordOfExtractors,
   EntityInstance,
   EntityInstanceCollection,
   PersistenceAction
-} from "../1_core/preprocessor-generated/miroirFundamentalType.js";
-import { MError } from "../3_controllers/ErrorLogServiceInterface.js";
-import { LocalCacheInterface } from "./LocalCacheInterface.js";
-import { PersistenceStoreControllerManagerInterface } from "./PersistenceStoreControllerManagerInterface.js";
+} from "../1_core/preprocessor-generated/miroirFundamentalType";
+import { MError } from "../3_controllers/ErrorLogServiceInterface";
+import { LocalCacheInterface } from "./LocalCacheInterface";
+import { PersistenceStoreControllerManagerInterface } from "./PersistenceStoreControllerManagerInterface";
 
 
 // ################################################################################################

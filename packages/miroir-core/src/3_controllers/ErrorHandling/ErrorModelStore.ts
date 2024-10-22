@@ -1,6 +1,6 @@
-import { MetaEntity } from "../../0_interfaces/1_core/EntityDefinition.js";
-import { EntityInstanceCollection, EntityInstance, EntityDefinition, ActionReturnType, ActionEntityInstanceCollectionReturnType, ActionEntityInstanceReturnType, ActionVoidReturnType, ModelActionRenameEntity, ModelActionAlterEntityAttribute, QueryTemplateAction, QueryAction } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { PersistenceStoreModelSectionInterface } from "../../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
+import { MetaEntity } from "../../0_interfaces/1_core/EntityDefinition";
+import { EntityInstanceCollection, EntityInstance, EntityDefinition, ActionReturnType, ActionEntityInstanceCollectionReturnType, ActionEntityInstanceReturnType, ActionVoidReturnType, ModelActionRenameEntity, ModelActionAlterEntityAttribute, QueryTemplateAction, QueryAction } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { PersistenceStoreModelSectionInterface } from "../../0_interfaces/4-services/PersistenceStoreControllerInterface";
 
 export class ErrorModelStore implements PersistenceStoreModelSectionInterface {
   constructor() {}

@@ -15,15 +15,15 @@ import { applyCarryOnSchema, applyCarryOnSchemaOnLevel, forgeCarryOnReferenceNam
 //   JzodUnion,
 //   miroirCrossJoinQuery,
 //   queryTemplateRecord,
-// } from "../preprocessor-generated/miroirFundamentalType.js";
-import { cleanLevel } from "../../../1_core/constants.js";
-import { MiroirLoggerFactory } from "../../../4_services/Logger.js";
-import { packageName } from "../../../constants.js";
-import { getLoggerName } from "../../../tools.js";
-import { LoggerInterface } from "../../4-services/LoggerInterface.js";
-import { JzodElement, transformerForBuild_list_pickElement, transformerForRuntime_list_pickElement } from "../preprocessor-generated/miroirFundamentalType.js";
+// } from "../preprocessor-generated/miroirFundamentalType";
+import { cleanLevel } from "../../../1_core/constants";
+import { MiroirLoggerFactory } from "../../../4_services/Logger";
+import { packageName } from "../../../constants";
+import { getLoggerName } from "../../../tools";
+import { LoggerInterface } from "../../4-services/LoggerInterface";
+import { JzodElement, transformerForBuild_list_pickElement, transformerForRuntime_list_pickElement } from "../preprocessor-generated/miroirFundamentalType";
 import { optional } from "zod";
-// import { Endpoint } from "../../../3_controllers/Endpoint.js";
+// import { Endpoint } from "../../../3_controllers/Endpoint";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "getMiroirFundamentalJzodSchema");
 let log: LoggerInterface = console as any as LoggerInterface;

@@ -1,5 +1,5 @@
 import { ZodType, ZodTypeAny, z } from "zod";
-import { JzodElement, JzodObject, jzodElement, jzodObject } from "./preprocessor-generated/miroirFundamentalType.js";
+import { JzodElement, JzodObject, jzodElement, jzodObject } from "./preprocessor-generated/miroirFundamentalType";
 
 // enum ConceptLevel {"MetaModel", "Model", "Data"};
 // type ConceptLevel = "MetaModel" | "Model" | "Data";

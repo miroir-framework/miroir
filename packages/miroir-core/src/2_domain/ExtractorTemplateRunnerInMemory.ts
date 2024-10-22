@@ -4,34 +4,34 @@ import {
   ExtractorForDomainModelObjects,
   ExtractorForRecordOfExtractors,
   QueryTemplateAction
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.js";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import {
   AsyncExtractorRunnerMap,
   ExtractorTemplatePersistenceStoreRunner,
   ExtractorTemplateRunnerMapForJzodSchema
-} from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { PersistenceStoreInstanceSectionAbstractInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
-import { MiroirLoggerFactory } from "../4_services/Logger.js";
-import { packageName } from "../constants.js";
-import { getLoggerName } from "../tools.js";
+} from "../0_interfaces/2_domain/ExtractorRunnerInterface";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { PersistenceStoreInstanceSectionAbstractInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
+import { MiroirLoggerFactory } from "../4_services/Logger";
+import { packageName } from "../constants";
+import { getLoggerName } from "../tools";
 import {
   asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   asyncExtractWithExtractor,
   asyncExtractWithManyExtractors,
-} from "./AsyncQuerySelectors.js";
-import { cleanLevel } from "./constants.js";
+} from "./AsyncQuerySelectors";
+import { cleanLevel } from "./constants";
 import {
   selectEntityJzodSchemaFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
-} from "./DomainStateQueryTemplateSelector.js";
-import { ExtractorRunnerInMemory } from "./ExtractorRunnerInMemory.js";
-import { handleQueryTemplateAction } from "./QueryTemplateSelectors.js";
-import { resolveExtractorTemplateForDomainModelObjects, resolveExtractorTemplateForRecordOfExtractors } from "./Templates.js";
+} from "./DomainStateQueryTemplateSelector";
+import { ExtractorRunnerInMemory } from "./ExtractorRunnerInMemory";
+import { handleQueryTemplateAction } from "./QueryTemplateSelectors";
+import { resolveExtractorTemplateForDomainModelObjects, resolveExtractorTemplateForRecordOfExtractors } from "./Templates";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "ExtractorTemplateRunnerInMemory");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -55,7 +55,7 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.extractorRunnerInMemory.extractEntityInstanceUuidIndex,
       extractEntityInstance: this.extractorRunnerInMemory.extractEntityInstance,
-      extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+      extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,

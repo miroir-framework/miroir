@@ -16,22 +16,22 @@ import {
   JzodObject,
   QueryTemplate,
   QueryTemplateAction
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   AsyncExtractorRunnerMap,
   ExtractorTemplateRunnerParamsForJzodSchema,
   RecordOfJzodElement,
   RecordOfJzodObject,
   SyncExtractorTemplateRunnerParams
-} from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { MiroirLoggerFactory } from "../4_services/Logger.js";
-import { packageName } from "../constants.js";
-import { getLoggerName } from "../tools.js";
-import { cleanLevel } from "./constants.js";
-import { handleQueryAction, extractWithExtractor, extractWithManyExtractors } from "./QuerySelectors.js";
-import { resolveExtractorTemplate, resolveExtractorTemplateForDomainModelObjects, resolveExtractorTemplateForRecordOfExtractors } from "./Templates.js";
-import { transformer_InnerReference_resolve } from "./Transformers.js";
+} from "../0_interfaces/2_domain/ExtractorRunnerInterface";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { MiroirLoggerFactory } from "../4_services/Logger";
+import { packageName } from "../constants";
+import { getLoggerName } from "../tools";
+import { cleanLevel } from "./constants";
+import { handleQueryAction, extractWithExtractor, extractWithManyExtractors } from "./QuerySelectors";
+import { resolveExtractorTemplate, resolveExtractorTemplateForDomainModelObjects, resolveExtractorTemplateForRecordOfExtractors } from "./Templates";
+import { transformer_InnerReference_resolve } from "./Transformers";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"SyncExtractorTemplateRunner");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -41,30 +41,30 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   }
 );
 
-  // ################################################################################################
-  export async function handleQueryTemplateAction(
-    origin: string,
-    queryTemplateAction: QueryTemplateAction, 
-    selectorMap: AsyncExtractorRunnerMap
-  ): Promise<ActionReturnType> {
-    log.info("handleQueryTemplateAction for ", origin, "queryTemplateAction", JSON.stringify(queryTemplateAction, null, 2));
-    const resolvedQuery = resolveExtractorTemplate(
-      queryTemplateAction.query
-    );
+// ################################################################################################
+export async function handleQueryTemplateAction(
+  origin: string,
+  queryTemplateAction: QueryTemplateAction, 
+  selectorMap: AsyncExtractorRunnerMap
+): Promise<ActionReturnType> {
+  log.info("handleQueryTemplateAction for ", origin, "queryTemplateAction", JSON.stringify(queryTemplateAction, null, 2));
+  const resolvedQuery = resolveExtractorTemplate(
+    queryTemplateAction.query
+  );
 
-    return handleQueryAction(
-      origin,
-      {
-        actionType: "queryAction",
-        actionName: queryTemplateAction.actionName,
-        deploymentUuid: queryTemplateAction.deploymentUuid,
-        endpoint: queryTemplateAction.endpoint,
-        applicationSection: queryTemplateAction.applicationSection,
-        query: resolvedQuery,
-      },
-      selectorMap
-    );
-  }
+  return handleQueryAction(
+    origin,
+    {
+      actionType: "queryAction",
+      actionName: queryTemplateAction.actionName,
+      deploymentUuid: queryTemplateAction.deploymentUuid,
+      endpoint: queryTemplateAction.endpoint,
+      applicationSection: queryTemplateAction.applicationSection,
+      query: resolvedQuery,
+    },
+    selectorMap
+  );
+}
 
 // ################################################################################################
 export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <StateType>(

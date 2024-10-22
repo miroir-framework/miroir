@@ -52,7 +52,7 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex,
       extractEntityInstance: this.extractEntityInstance,
-      extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+      extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,

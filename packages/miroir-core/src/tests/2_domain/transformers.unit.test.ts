@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import Mustache from "mustache";
 // import { describe, expect } from 'vitest';
 
-import { transformer_apply } from "../../2_domain/Transformers.js";
+import { transformer_apply } from "../../2_domain/Transformers";
 import {
   DomainAction,
   StoreUnitConfiguration,
@@ -13,8 +13,12 @@ import {
   TransformerForRuntime_InnerReference,
   ExtractorTemplateForRecordOfExtractors,
   DomainElement,
-} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
+  author1,
+  author2,
+  author3,
+  author4,
   book1,
   book2,
   book3,
@@ -28,7 +32,7 @@ import {
   ignorePostgresExtraAttributesOnList,
   ignorePostgresExtraAttributesOnRecord,
   resolveExtractorTemplateForRecordOfExtractors,
-} from "../../index.js";
+} from "../../index";
 import { object } from "zod";
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
@@ -316,58 +320,9 @@ describe("transformers.unit.test", () => {
     }
   );
 
-  // // ################################################################################################
-  // TODO: allow count for build transformers
-  // it("count books by author build template", async () => { // TODO: test failure cases!
-  //     // if (miroirConfig.client.emulateServer) {
-  //     console.log("count books by author runtime transformer START")
-  //     const newApplicationName = "test";
-
-  //     const uniqueRuntimeTemplate:TransformerForbuild = {
-  //       transformerType: "count",
-  //       interpolation: "runtime",
-  //       referencedExtractor: "books",
-  //       groupBy: "author",
-  //       orderBy: "author",
-  //     }
-
-  //     const testResult: string = transformer_apply(
-  //       "runtime",
-  //       "ROOT",
-  //       uniqueRuntimeTemplate,
-  //       { }, // queryParams
-  //       {
-  //         books: Object.fromEntries(
-  //           [
-  //             book1 as EntityInstance,
-  //             book2 as EntityInstance,
-  //             book3 as EntityInstance,
-  //             book4 as EntityInstance,
-  //             book5 as EntityInstance,
-  //             book6 as EntityInstance,
-  //           ].map((book: EntityInstance) => {
-  //             return [book.uuid, book];
-  //           })
-  //         ),
-  //       } // context
-  //       // undefined
-  //     ).elementValue as string;
-
-  //     console.log("################################ count books by author runtime transformer", testResult)
-  //     expect(testResult).toEqual(
-  //       [
-  //         { author: "4441169e-0c22-4fbc-81b2-28c87cf48ab2", count: 1 },
-  //         { author: "ce7b601d-be5f-4bc6-a5af-14091594046a", count: 2 },
-  //         { author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17", count: 2 },
-  //         { author: "e4376314-d197-457c-aa5e-d2da5f8d5977", count: 1 },
-  //       ]
-  //     );
-  //     console.log("convert mustache string END")
-  //   }
-  // );
-
   // ################################################################################################
-  it("count books by author runtime transformer", async () => { // TODO: test failure cases!
+  // TODO: allow count for build transformers
+  it("count books by author build template", async () => { // TODO: test failure cases!
       // if (miroirConfig.client.emulateServer) {
       console.log("count books by author runtime transformer START")
       const newApplicationName = "test";
@@ -409,6 +364,59 @@ describe("transformers.unit.test", () => {
           { author: "ce7b601d-be5f-4bc6-a5af-14091594046a", count: 2 },
           { author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17", count: 2 },
           { author: "e4376314-d197-457c-aa5e-d2da5f8d5977", count: 1 },
+        ]
+      );
+      console.log("convert mustache string END")
+    }
+  );
+
+  // ################################################################################################
+  it("count books by author runtime transformer", async () => { // TODO: test failure cases!
+      // if (miroirConfig.client.emulateServer) {
+      console.log("count books by author runtime transformer START")
+      const newApplicationName = "test";
+
+      const uniqueRuntimeTemplate:TransformerForRuntime = {
+        transformerType: "count",
+        interpolation: "runtime",
+        referencedExtractor: "books",
+        groupBy: "author",
+        orderBy: "author",
+      }
+
+      const testResult: string = transformer_apply(
+        "runtime",
+        "ROOT",
+        uniqueRuntimeTemplate,
+        { }, // queryParams
+        {
+          books: Object.fromEntries(
+            [
+              book1 as EntityInstance,
+              book2 as EntityInstance,
+              book3 as EntityInstance,
+              book4 as EntityInstance,
+              book5 as EntityInstance,
+              book6 as EntityInstance,
+            ].map((book: EntityInstance) => {
+              return [book.uuid, book];
+            })
+          ),
+        } // context
+        // undefined
+      ).elementValue as string;
+
+      console.log("################################ count books by author runtime transformer", testResult)
+      expect(testResult).toEqual(
+        [
+          { author: author1.uuid, count: 1 },
+          { author: author2.uuid, count: 2 },
+          { author: author3.uuid, count: 2 },
+          { author: author4.uuid, count: 1 },
+          // { author: "4441169e-0c22-4fbc-81b2-28c87cf48ab2", count: 1 },
+          // { author: "ce7b601d-be5f-4bc6-a5af-14091594046a", count: 2 },
+          // { author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17", count: 2 },
+          // { author: "e4376314-d197-457c-aa5e-d2da5f8d5977", count: 1 },
         ]
       );
       console.log("convert mustache string END")
@@ -559,36 +567,6 @@ describe("transformers.unit.test", () => {
         interpolation: "runtime",
         referencedExtractor: "countries",
         indexAttribute: "uuid",
-        // elementTransformer: {
-        //   transformerType: "fullObjectTemplate",
-        //   interpolation: "runtime",
-        //   referencedExtractor: "country",
-        //   definition: [
-        //     {
-        //       attributeKey: {
-        //         interpolation: "runtime",
-        //         transformerType: "constantUuid",
-        //         constantUuidValue: "uuid"
-        //       },
-        //       attributeValue: {
-        //         interpolation: "runtime",
-        //         transformerType: "newUuid",
-        //       }
-        //     },
-        //     {
-        //       attributeKey: {
-        //         interpolation: "runtime",
-        //         transformerType: "constantUuid",
-        //         constantUuidValue: "name"
-        //       },
-        //       attributeValue: {
-        //         transformerType: "mustacheStringTemplate",
-        //         interpolation: "runtime",
-        //         definition: "{{country.iso3166-1Alpha-2}}"
-        //       }
-        //     }
-        //   ]
-        // }
       }
 
       // const preTestResult: {[k: string]: {[l:string]: any}} = transformer_apply(

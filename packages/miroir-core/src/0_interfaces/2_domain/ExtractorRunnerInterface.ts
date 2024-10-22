@@ -22,7 +22,7 @@ import {
   JzodObject,
   QueryAction,
   QueryTemplateAction
-} from "../1_core/preprocessor-generated/miroirFundamentalType.js";
+} from "../1_core/preprocessor-generated/miroirFundamentalType";
 
 // ################################################################################################
 export type RecordOfJzodElement = Record<string, JzodElement | undefined>;
@@ -115,7 +115,7 @@ export type AsyncExtractorRunnerMap = {
     DomainElementInstanceUuidIndexOrFailed
   >;
   extractEntityInstance: AsyncExtractorRunner<ExtractorForSingleObject, DomainElementEntityInstanceOrFailed>;
-  extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: AsyncExtractorRunner<
+  extractEntityInstanceUuidIndexWithObjectListExtractor: AsyncExtractorRunner<
     ExtractorForSingleObjectList,
     DomainElementInstanceUuidIndexOrFailed
   >;
@@ -153,7 +153,7 @@ export type SyncExtractorRunnerMap<StateType> = {
     DomainElementInstanceUuidIndexOrFailed
   >;
   extractEntityInstance: SyncExtractorRunner<ExtractorForSingleObject, StateType, DomainElementEntityInstanceOrFailed>;
-  extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: SyncExtractorRunner<
+  extractEntityInstanceUuidIndexWithObjectListExtractor: SyncExtractorRunner<
     ExtractorForSingleObjectList,
     StateType,
     DomainElementInstanceUuidIndexOrFailed

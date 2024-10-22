@@ -3,13 +3,13 @@ import {
   CompositeActionTemplate,
   MetaModel,
   TransformerForBuild,
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { MiroirLoggerFactory } from "../4_services/Logger.js";
-import { packageName } from "../constants.js";
-import { getLoggerName } from "../tools.js";
-import { cleanLevel } from "./constants.js";
-import { transformer_apply } from "./Transformers.js";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { MiroirLoggerFactory } from "../4_services/Logger";
+import { packageName } from "../constants";
+import { getLoggerName } from "../tools";
+import { cleanLevel } from "./constants";
+import { transformer_apply, transformer_extended_apply } from "./Transformers";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"resolveCompositeActionTemplate");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -46,7 +46,7 @@ export function resolveCompositeActionTemplate(
     for (const t of Object.entries(localeCompositeAction.templates)) {
       const newLocalParameters: Record<string,any> = { ...localActionParams, ...resolvedCompositeActionTemplates };
       log.info("resolveCompositeActionTemplate resolving template", t[0], t[1], "newLocalParameters", newLocalParameters);
-      const resolvedTemplate = transformer_apply(
+      const resolvedTemplate = transformer_extended_apply(
         "build",
         t[0],
         t[1] as any,
@@ -63,7 +63,7 @@ export function resolveCompositeActionTemplate(
   }
 
   const actionParamsAndTemplates = { ...localActionParams, ...resolvedCompositeActionTemplates };
-  const resolvedCompositeActionDefinition: CompositeAction = transformer_apply(
+  const resolvedCompositeActionDefinition: CompositeAction = transformer_extended_apply(
     "build",
     "NO NAME",
     (compositeActionTemplate as any).definition as any as TransformerForBuild,

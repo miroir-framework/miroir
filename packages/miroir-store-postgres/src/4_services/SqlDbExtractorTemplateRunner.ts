@@ -17,11 +17,11 @@ import {
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate
 } from "miroir-core";
-import { packageName } from "../constants.js";
-import { cleanLevel } from "./constants.js";
-import { SqlDbDataStoreSection } from "./SqlDbDataStoreSection.js";
-import { SqlDbExtractRunner } from "./SqlDbExtractorRunner.js";
-import { SqlDbModelStoreSection } from "./SqlDbModelStoreSection.js";
+import { packageName } from "../constants";
+import { cleanLevel } from "./constants";
+import { SqlDbDataStoreSection } from "./SqlDbDataStoreSection";
+import { SqlDbExtractRunner } from "./SqlDbExtractorRunner";
+import { SqlDbModelStoreSection } from "./SqlDbModelStoreSection";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "PostgresExtractorRunner");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -47,7 +47,7 @@ export class SqlDbExtractTemplateRunner {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.sqlDbExtractorRunner.extractEntityInstanceUuidIndex.bind(this.sqlDbExtractorRunner),
       extractEntityInstance: this.sqlDbExtractorRunner.extractEntityInstance.bind(this.sqlDbExtractorRunner),
-      extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+      extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
@@ -58,7 +58,7 @@ export class SqlDbExtractTemplateRunner {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.sqlDbExtractorRunner.extractEntityInstanceUuidIndex.bind(this.sqlDbExtractorRunner),
       extractEntityInstance: this.sqlDbExtractorRunner.extractEntityInstance.bind(this.sqlDbExtractorRunner),
-      extractEntityInstanceUuidIndexWithObjectListExtractorInMemory:
+      extractEntityInstanceUuidIndexWithObjectListExtractor:
         this.sqlDbExtractorRunner.asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor.bind(this.sqlDbExtractorRunner),
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
@@ -67,8 +67,8 @@ export class SqlDbExtractTemplateRunner {
       extractWithManyExtractorTemplates: undefined as any,
     };
 
-    // this.extractorRunnerMap = dbImplementationExtractorRunnerMap;
-    this.extractorRunnerMap = InMemoryImplementationExtractorRunnerMap;
+    this.extractorRunnerMap = dbImplementationExtractorRunnerMap;
+    // this.extractorRunnerMap = InMemoryImplementationExtractorRunnerMap;
   }
 
   // ##############################################################################################

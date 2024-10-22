@@ -1,4 +1,4 @@
-import { HttpMethod } from "../0_interfaces/1_core/Http.js";
+import { HttpMethod } from "../0_interfaces/1_core/Http";
 import {
   ActionReturnType,
   ApplicationSection,
@@ -8,33 +8,33 @@ import {
   ModelAction,
   QueryTemplateAction,
   StoreOrBundleAction
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import {
   HttpRequestBodyFormat,
   HttpResponseBodyFormat,
   RestServiceHandler,
-} from "../0_interfaces/4-services/PersistenceInterface.js";
+} from "../0_interfaces/4-services/PersistenceInterface";
 import {
   storeActionOrBundleActionStoreRunner
-} from "../3_controllers/ActionRunner.js";
+} from "../3_controllers/ActionRunner";
 
-import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface.js";
-import { packageName } from "../constants.js";
-import { getLoggerName } from "../tools.js";
-import { MiroirLoggerFactory } from "./Logger.js";
-import { generateRestServiceResponse } from "./RestTools.js";
-import { cleanLevel } from "./constants.js";
+import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
+import { packageName } from "../constants";
+import { getLoggerName } from "../tools";
+import { MiroirLoggerFactory } from "./Logger";
+import { generateRestServiceResponse } from "./RestTools";
+import { cleanLevel } from "./constants";
 
-import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface.js";
+import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface";
 import {
   extractWithExtractorFromDomainStateForTemplate,
   extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT,
   getSelectorParamsForTemplateOnDomainState,
   getSelectorMapForTemplate
-} from "../2_domain/DomainStateQueryTemplateSelector.js";
-import { extractWithExtractorTemplate, handleQueryTemplateAction } from "../2_domain/QueryTemplateSelectors.js";
-import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.js";
+} from "../2_domain/DomainStateQueryTemplateSelector";
+import { extractWithExtractorTemplate, handleQueryTemplateAction } from "../2_domain/QueryTemplateSelectors";
+import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RestServer");
 let log:LoggerInterface = console as any as LoggerInterface;

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { EntityInstanceWithNameSchema } from "../../0_interfaces/1_core/Instance.js";
+import { EntityInstanceWithNameSchema } from "../../0_interfaces/1_core/Instance";
 
 // export const ApplicationSchema = EntityInstanceWithNameSchema.extend({
 //   defaultLabel: z.string(),

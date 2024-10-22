@@ -7,10 +7,10 @@ import {
   Menu,
   MetaModel,
   Report,
-} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { MiroirModel } from '../../0_interfaces/1_core/Model.js';
+} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { MiroirModel } from '../../0_interfaces/1_core/Model';
 
-import { alterObjectAtPath } from "../../1_core/alterObjectAtPath.js";
+import { alterObjectAtPath } from "../../1_core/alterObjectAtPath";
 
 
 import entitySelfApplication from '../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a659d350-dd97-4da9-91de-524fa01745dc.json';
@@ -206,7 +206,7 @@ interface testFormat {
 // ################################################################################################
 // ################################################################################################
 describe(
-  'alterObjectAtPath',
+  'alterObject',
   () => {
 
     // ###########################################################################################

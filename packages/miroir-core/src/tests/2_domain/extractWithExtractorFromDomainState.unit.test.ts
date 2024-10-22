@@ -1,12 +1,12 @@
 import adminConfigurationDeploymentLibrary from "../../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
 
-import { DomainState } from "../../0_interfaces/2_domain/DomainControllerInterface.js";
+import { DomainState } from "../../0_interfaces/2_domain/DomainControllerInterface";
 
 import {
   DomainElement,
   ExtractorForRecordOfExtractors
-} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { extractWithExtractorFromDomainState, getSelectorParams } from "../../2_domain/DomainStateQuerySelectors.js";
+} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { extractWithExtractorFromDomainState, getSelectorParams } from "../../2_domain/DomainStateQuerySelectors";
 import domainStateImport from "./domainState.json";
 
 const domainState: DomainState = domainStateImport as DomainState;

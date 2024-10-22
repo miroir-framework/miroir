@@ -556,15 +556,7 @@ export type TransformerForBuild_list_pickElement = {
 export type TransformerForBuild_objectValues = {
     orderBy?: string | undefined;
 };
-export type TransformerForBuild =
-  | Transformer_InnerReference
-  | TransformerForBuild_fullObjectTemplate
-  | TransformerForBuild_freeObjectTemplate
-  | TransformerForBuild_object_alter
-  | TransformerForBuild_list_pickElement
-  | TransformerForBuild_mapper_listToList
-  | TransformerForBuild_mapper_listToObject
-  | TransformerForBuild_mustacheStringTemplate;
+export type TransformerForBuild = Transformer_InnerReference | TransformerForBuild_fullObjectTemplate | TransformerForBuild_freeObjectTemplate | TransformerForBuild_object_alter | TransformerForBuild_list_pickElement | TransformerForBuild_mapper_listToList | TransformerForBuild_mapper_listToObject | TransformerForBuild_mustacheStringTemplate;
 export type TransformerForRuntime_Abstract = {
     interpolation: "runtime";
 };

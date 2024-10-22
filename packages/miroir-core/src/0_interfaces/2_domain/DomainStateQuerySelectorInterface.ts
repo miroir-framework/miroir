@@ -3,8 +3,8 @@ import {
   JzodElement,
   JzodObject,
   ExtractorTemplateForDomainModel
-} from "../1_core/preprocessor-generated/miroirFundamentalType.js";
-import { DomainState } from "./DomainControllerInterface.js";
+} from "../1_core/preprocessor-generated/miroirFundamentalType";
+import { DomainState } from "./DomainControllerInterface";
 
 // ################################################################################################
 export type RecordOfJzodElement = Record<string, JzodElement | undefined>;

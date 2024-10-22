@@ -1,17 +1,17 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { MetaEntity, Uuid } from '../0_interfaces/1_core/EntityDefinition.js';
+import { MetaEntity, Uuid } from '../0_interfaces/1_core/EntityDefinition';
 import {
   CRUDActionName,
   DomainControllerInterface,
   LocalCacheInfo
-} from "../0_interfaces/2_domain/DomainControllerInterface.js";
+} from "../0_interfaces/2_domain/DomainControllerInterface";
 
-import { MiroirContextInterface } from '../0_interfaces/3_controllers/MiroirContextInterface.js';
+import { MiroirContextInterface } from '../0_interfaces/3_controllers/MiroirContextInterface';
 import {
   LocalCacheInterface
-} from "../0_interfaces/4-services/LocalCacheInterface.js";
-import { PersistenceStoreLocalOrRemoteInterface } from '../0_interfaces/4-services/PersistenceInterface.js';
+} from "../0_interfaces/4-services/LocalCacheInterface";
+import { PersistenceStoreLocalOrRemoteInterface } from '../0_interfaces/4-services/PersistenceInterface';
 
 
 import adminConfigurationDeploymentMiroir from "../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
@@ -24,7 +24,6 @@ import {
   ActionVoidReturnType,
   ApplicationSection,
   ApplicationVersion,
-  CompositeAction,
   CompositeActionTemplate,
   DomainAction,
   EntityInstance,
@@ -38,24 +37,24 @@ import {
   TransformerForBuild,
   TransformerForRuntime,
   UndoRedoAction
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface.js';
-import { ACTION_OK } from '../1_core/constants.js';
-import { defaultMiroirMetaModel, metaModelEntities, miroirModelEntities } from '../1_core/Model.js';
-import { transformer_apply, transformer_extended_apply } from '../2_domain/Transformers.js';
-import { MiroirLoggerFactory } from '../4_services/Logger.js';
-import { packageName } from '../constants.js';
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface';
+import { ACTION_OK } from '../1_core/constants';
+import { defaultMiroirMetaModel, metaModelEntities, miroirModelEntities } from '../1_core/Model';
+import { transformer_apply, transformer_extended_apply } from '../2_domain/Transformers';
+import { MiroirLoggerFactory } from '../4_services/Logger';
+import { packageName } from '../constants';
 import {
   selfApplicationMiroir,
   selfApplicationModelBranchMiroirMasterBranch,
   selfApplicationStoreBasedConfigurationMiroir,
   selfApplicationVersionInitialMiroirVersion,
-} from "../index.js";
-import { getLoggerName } from '../tools.js';
-import { cleanLevel } from './constants.js';
-import { Endpoint } from './Endpoint.js';
-import { CallUtils } from './ErrorHandling/CallUtils.js';
-import { resolveCompositeActionTemplate } from '../2_domain/ResolveCompositeAction.js';
+} from "../index";
+import { getLoggerName } from '../tools';
+import { cleanLevel } from './constants';
+import { Endpoint } from './Endpoint';
+import { CallUtils } from './ErrorHandling/CallUtils';
+import { resolveCompositeActionTemplate } from '../2_domain/ResolveCompositeAction';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -731,7 +730,6 @@ export class DomainController implements DomainControllerInterface {
             "handleCompositeActionTemplate compositeInstanceAction action to resolve",
             JSON.stringify(currentAction.action, null, 2)
           );
-          // const resolvedActionTemplate: InstanceAction = transformer_apply(
           const resolvedActionTemplate: InstanceAction = transformer_extended_apply(
             "runtime",
             "NO NAME",

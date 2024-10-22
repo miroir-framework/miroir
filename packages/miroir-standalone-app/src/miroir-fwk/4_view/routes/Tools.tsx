@@ -2,18 +2,16 @@ import { Formik } from "formik";
 import _ from "lodash";
 // import { ReactCodeMirror } from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
-import { ChangeEvent, useCallback, useMemo, useState } from "react";
-import { v4 as uuidv4 } from 'uuid';
 import ReactCodeMirror from "@uiw/react-codemirror";
+import { ChangeEvent, useCallback, useMemo, useState } from "react";
 
 // const MyReactCodeMirror: React.Component = ReactCodeMirror
 const MyReactCodeMirror: any = ReactCodeMirror // TODO: solve the mystery: it was once well-typed, now the linter raises an error upon direct (default-typed) use!
 
 import {
   ActionHandler,
-  CompositeAction,
+  CompositeActionTemplate,
   DomainAction,
-  DomainController,
   DomainControllerInterface,
   JzodElement,
   JzodObject,
@@ -24,18 +22,12 @@ import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  compositeAction,
-  entitySelfApplication,
   entityApplicationForAdmin,
   entityDeployment,
   entityMenu,
+  entitySelfApplication,
   getLoggerName,
-  transformer_apply,
-  resolveReferencesForJzodSchemaAndValueObject,
-  DomainElementObject,
-  plainObjectToDomainElement,
-  CompositeActionTemplate,
-  CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration
+  resolveReferencesForJzodSchemaAndValueObject
 } from "miroir-core";
 
 import { packageName } from "../../../constants.js";
@@ -46,11 +38,10 @@ import {
   useMiroirContextService,
   useMiroirContextformHelperState,
 } from "../MiroirContextReactProvider.js";
+import { useCurrentModel } from "../ReduxHooks.js";
 import { JzodObjectEditor } from "../components/JzodObjectEditor.js";
 import { cleanLevel } from "../constants.js";
 import { adminConfigurationDeploymentParis, applicationParis } from './ReportPage.js';
-import { useCurrentModel } from "../ReduxHooks.js";
-import { elementType } from "prop-types";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ToolsPage");

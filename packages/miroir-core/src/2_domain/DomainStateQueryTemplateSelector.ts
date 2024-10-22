@@ -9,34 +9,34 @@ import {
   ExtractorTemplateForDomainModelObjects,
   ExtractorTemplateForRecordOfExtractors,
   JzodObject
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.js";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import {
   ExtractorTemplateRunnerParamsForJzodSchema,
   SyncExtractorRunnerMap,
   SyncExtractorTemplateRunner,
   SyncExtractorTemplateRunnerParams
-} from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { MiroirLoggerFactory } from "../4_services/Logger.js";
-import { packageName } from "../constants.js";
-import { entityEntityDefinition } from "../index.js";
-import { getLoggerName } from "../tools.js";
-import { cleanLevel } from "./constants.js";
+} from "../0_interfaces/2_domain/ExtractorRunnerInterface";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { MiroirLoggerFactory } from "../4_services/Logger";
+import { packageName } from "../constants";
+import { entityEntityDefinition } from "../index";
+import { getLoggerName } from "../tools";
+import { cleanLevel } from "./constants";
 import {
   extractEntityInstanceListFromListQueryAndDomainState,
   extractWithManyExtractorsFromDomainState,
   selectEntityInstanceFromObjectQueryAndDomainState,
   selectEntityInstanceUuidIndexFromDomainState,
-} from "./DomainStateQuerySelectors.js";
-import { extractWithExtractor } from "./QuerySelectors.js";
+} from "./DomainStateQuerySelectors";
+import { extractWithExtractor } from "./QuerySelectors";
 import {
   extractFetchQueryTemplateJzodSchema,
   extractJzodSchemaForDomainModelQueryTemplate,
   extractWithExtractorTemplate,
   extractWithManyExtractorTemplates,
   extractzodSchemaForSingleSelectQueryTemplate
-} from "./QueryTemplateSelectors.js";
+} from "./QueryTemplateSelectors";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "DomainStateQueryTemplateSelector");
@@ -72,7 +72,7 @@ export function getSelectorMapForTemplate(): SyncExtractorRunnerMap<DomainState>
     extractorType: "sync",
     extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDomainState,
     extractEntityInstance: selectEntityInstanceFromObjectQueryAndDomainState,
-    extractEntityInstanceUuidIndexWithObjectListExtractorInMemory: extractEntityInstanceListFromListQueryAndDomainState,
+    extractEntityInstanceUuidIndexWithObjectListExtractor: extractEntityInstanceListFromListQueryAndDomainState,
     extractWithManyExtractors: extractWithManyExtractorsFromDomainState,
     extractWithExtractor: extractWithExtractor,
     // 

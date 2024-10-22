@@ -2,7 +2,10 @@ import { describe } from 'vitest';
 
 // import { miroirFileSystemStoreSectionStartup } from "../dist/bundle";
 import {
+  ActionReturnType,
+  adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
+  ApplicationSection,
   author1,
   author2,
   author3,
@@ -10,34 +13,31 @@ import {
   book2,
   book3,
   book4,
-  ActionReturnType,
-  adminConfigurationDeploymentLibrary,
-  ApplicationSection,
+  book5,
+  book6,
   defaultLevels,
   DomainControllerInterface,
-  MiroirConfigClient,
-  MiroirLoggerFactory,
-  PersistenceStoreControllerInterface,
-  PersistenceStoreControllerManagerInterface,
   entityAuthor,
   entityBook,
   EntityDefinition,
   entityDefinitionAuthor,
   entityDefinitionBook,
+  entityEntity,
   EntityInstance,
-  MetaEntity,
-  reportBookList,
-  Report,
-  book5,
-  book6,
-  ignorePostgresExtraAttributesOnRecord,
+  entityMenu,
   ignorePostgresExtraAttributesOnList,
   ignorePostgresExtraAttributesOnObject,
-  entityMenu,
-  entityEntity
+  ignorePostgresExtraAttributesOnRecord,
+  MetaEntity,
+  MiroirConfigClient,
+  MiroirLoggerFactory,
+  PersistenceStoreControllerInterface,
+  Report,
+  reportBookList
 } from "miroir-core";
 
 
+import { LocalCache } from 'miroir-localcache-redux';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
@@ -51,12 +51,11 @@ import {
   miroirBeforeAll,
   miroirBeforeEach,
 } from "../utils/tests-utils.js";
-import { LocalCache } from 'miroir-localcache-redux';
 
 let localCache: LocalCache;
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
-let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface | undefined;
+// let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface | undefined;
 let domainController: DomainControllerInterface;
 
 const env:any = (import.meta as any).env
@@ -93,7 +92,7 @@ beforeAll(
           domainController = wrapped.domainController;
           localMiroirPersistenceStoreController = wrapped.localMiroirPersistenceStoreController;
           localAppPersistenceStoreController = wrapped.localAppPersistenceStoreController;
-          persistenceStoreControllerManager = wrapped.persistenceStoreControllerManager;
+          // persistenceStoreControllerManager = wrapped.persistenceStoreControllerManager;
         }
       } else {
         throw new Error("beforeAll failed initialization!");
@@ -168,6 +167,7 @@ afterAll(
 // ##############################################################################################
 // ##############################################################################################
 
+// TODO: duplicate test with ExtractorTemplatePersistenceStoreRunner.integ.test.tsx
 describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
 
   // ################################################################################################
@@ -793,11 +793,6 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
                 applicationSection: applicationSection,
                 parentName: "Book",
                 parentUuid: entityBook.uuid,
-                // parentUuid: {
-                //   transformerType: "constantUuid",
-                //   // constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                //   constantUuidValue: entityBook.uuid,
-                // },
               },
             },
             runtimeTransformers: {
@@ -954,9 +949,92 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
             pageParams: {},
             queryParams: {},
             contextResults: {},
-            // pageParams: { elementType: "object", elementValue: {} },
-            // queryParams: { elementType: "object", elementValue: {} },
-            // contextResults: { elementType: "object", elementValue: {} },
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+            extractors: {
+              book: {
+                queryType: "selectObjectByDirectReference",
+                applicationSection: applicationSection,
+                parentName: "Book",
+                parentUuid: entityBook.uuid,
+                instanceUuid: book2.uuid
+              },
+            },
+            runtimeTransformers: {
+              newBook: {
+                transformerType: "fullObjectTemplate",
+                interpolation: "runtime",
+                referencedExtractor: "book",
+                definition: [
+                  {
+                    attributeKey: {
+                      interpolation: "runtime",
+                      transformerType: "constantString",
+                      constantStringValue: "uuid",
+                    },
+                    attributeValue: {
+                      interpolation: "runtime",
+                      transformerType: "newUuid",
+                    },
+                  },
+                  {
+                    attributeKey: {
+                      interpolation: "runtime",
+                      transformerType: "constantString",
+                      constantStringValue: "name",
+                    },
+                    attributeValue: {
+                      interpolation: "runtime",
+                      transformerType: "mustacheStringTemplate",
+                      definition: "{{book.name}}",
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        });
+        console.log("queryResult", JSON.stringify(queryResult, null, 2));
+        return queryResult;
+      },
+      (a) =>
+        ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement.elementValue.newBook, [
+        // ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.countries.elementValue, [
+          "uuid",
+        ]),
+      // (a) =>
+      //   ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.countries.elementValue, [
+      //     "uuid",
+      //   ]).sort((a, b) =>
+      //     a["name"].localeCompare(b["name"], "en", {
+      //       sensitivity: "base",
+      //     })
+      //   ),
+      undefined, // name to give to result
+      "object", // must equal a.returnedDomainElement.elementType
+      {
+        name: book2.name,
+      },
+    );
+  });
+
+  // ################################################################################################
+  it("get country list with new uuids with actionRuntimeTransformer", async () => {
+    await chainVitestSteps(
+      "ExtractorPersistenceStoreRunner_selectUniqueEntityApplication",
+      {},
+      async () => {
+        const applicationSection: ApplicationSection = "data";
+        const queryResult = await localAppPersistenceStoreController.handleQueryAction({
+          actionType: "queryAction",
+          actionName: "runQuery",
+          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+          applicationSection: applicationSection,
+          query: {
+            queryType: "extractorForRecordOfExtractors",
+            pageParams: {},
+            queryParams: {},
+            contextResults: {},
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             extractors: {
               books: {
@@ -964,10 +1042,6 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
                 applicationSection: applicationSection,
                 parentName: "Book",
                 parentUuid: entityBook.uuid,
-                // parentUuid: {
-                //   transformerType: "constantUuid",
-                //   constantUuidValue: entityBook.uuid,
-                // },
               },
             },
             runtimeTransformers: {

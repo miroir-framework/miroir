@@ -1,10 +1,10 @@
-import { EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { HttpResponseBodyFormat } from "../0_interfaces/4-services/PersistenceInterface.js";
-import { packageName } from "../constants.js";
-import { getLoggerName } from "../tools.js";
-import { MiroirLoggerFactory } from "./Logger.js";
-import { cleanLevel } from "./constants.js";
+import { EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { HttpResponseBodyFormat } from "../0_interfaces/4-services/PersistenceInterface";
+import { packageName } from "../constants";
+import { getLoggerName } from "../tools";
+import { MiroirLoggerFactory } from "./Logger";
+import { cleanLevel } from "./constants";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RestTools");
 let log:LoggerInterface = console as any as LoggerInterface;
