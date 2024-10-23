@@ -42,6 +42,13 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
+
+const stringQuote = "'";
+const tokenQuote = '"';
+const tokenComma = ",";
+const tokenSeparatorForSelect = tokenComma + " ";
+const tokenSeparatorForWith = tokenComma + " ";
+
 export type RecursiveStringRecords = string | { [x: string]: RecursiveStringRecords };
 
 // ################################################################################################
@@ -57,8 +64,8 @@ export function getJzodSchemaSelectorMap(): ExtractorRunnerMapForJzodSchema<Doma
 // ################################################################################################
 export function extractorTransformerSql(
   actionRuntimeTransformer: TransformerForRuntime,
-  queryParams: DomainElementObject,
-  newFetchedData: DomainElementObject,
+  queryParams: Record<string, any>,
+  newFetchedData: Record<string, any>,
   extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>
 ): DomainElement {
   // log.info("SqlDbExtractRunner applyExtractorTransformerSql extractors", extractors);
@@ -91,14 +98,14 @@ export function extractorTransformerSql(
     case "constantUuid": {
       return {
         elementType: "string",
-        elementValue: `"${actionRuntimeTransformer.constantUuidValue}"`,
+        elementValue: `${actionRuntimeTransformer.constantUuidValue}`,
       }
       break;
     }
     case "constantString": {
       return {
         elementType: "string",
-        elementValue: `"${actionRuntimeTransformer.constantStringValue}"`,
+        elementValue: `${actionRuntimeTransformer.constantStringValue}`,
       }
       break;
     }
@@ -109,35 +116,29 @@ export function extractorTransformerSql(
       }
     }
     case "mustacheStringTemplate": {
+      const result = actionRuntimeTransformer.definition.replace(/{{/g, "\"").replace(/}}/g, "\"").replace(/\./g, '"."');
       return {
         elementType: "string",
-        elementValue: actionRuntimeTransformer.definition,
+        elementValue: result,
       }
     }
     case "fullObjectTemplate": {
-      const selectFields = actionRuntimeTransformer.definition
-        .map(
-          (f) =>
-            extractorTransformerSql(f.attributeValue, queryParams, newFetchedData, extractors).elementValue +
-            " AS " +
-            extractorTransformerSql(f.attributeKey, queryParams, newFetchedData, extractors).elementValue
-        )
-        .join(", ");
+      const selectFields =
+        actionRuntimeTransformer.definition
+          .map(
+            (f) =>
+              extractorTransformerSql(f.attributeValue, queryParams, newFetchedData, extractors).elementValue +
+              " AS " +
+              tokenQuote + extractorTransformerSql(f.attributeKey, queryParams, newFetchedData, extractors).elementValue + tokenQuote
+          )
+          .join(tokenSeparatorForSelect)
+        ;
       log.info("extractorTransformerSql fullObjectTemplate selectFields", selectFields);
 
-      
-      // const rawResult = await this.persistenceStoreController.executeRawQuery(aggregateRawQuery);
-      // log.info("applyExtractorTransformerSql fullObjectTemplate rawResult", JSON.stringify(rawResult));
-
-      // if (rawResult.status == "error") {
-      //   return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
-      // }
-
-      const sqlResult = `SELECT ${selectFields}
-        FROM "${referenceName}"
+      const sqlResult = `SELECT row_to_json(t) AS "fullObjectTemplate" FROM ( SELECT ${selectFields} FROM "${referenceName}" ) t
       ${orderBy}`;
       // log.info("applyExtractorTransformerSql fullObjectTemplate sqlResult", JSON.stringify(sqlResult));
-      return { elementType: "any", elementValue: sqlResult };
+      return { elementType: "string", elementValue: sqlResult };
       break;
     }
     case "constantObject":
@@ -439,11 +440,12 @@ export class SqlDbExtractRunner {
       },
     });
   }
+
   // ################################################################################################
   async applyExtractorTransformerSql(
     actionRuntimeTransformer: TransformerForRuntime,
-    queryParams: DomainElementObject,
-    newFetchedData: DomainElementObject,
+    queryParams: Record<string, any>,
+    newFetchedData: Record<string, any>,
     extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>
   ): Promise<DomainElement> {
     // log.info("SqlDbExtractRunner applyExtractorTransformerSql extractors", extractors);
@@ -508,9 +510,11 @@ export class SqlDbExtractRunner {
         log.info("applyExtractorTransformerSql fullObjectTemplate transformerQueries", transformerQueries);
         // const aggregateQueries = extractorRawQueries.concat(transformerQueries);
         const aggregateQueries = extractorRawQueries;
-        // const aggregateRawQuery = `WITH ${extractorRawQueries.map((q) => '"' + q[0] + '" AS (' + q[1] + " )").join(", ")}
+        const transformerName = "newBook";
         const aggregateRawQuery = `WITH ${aggregateQueries.map((q) => '"' + q[0] + '" AS (' + q[1] + " )").join(", ")}
-          SELECT * FROM "${referenceName}"
+          ${tokenSeparatorForWith}
+          "${transformerName}" AS (${transformerQueries})
+          SELECT * FROM "${transformerName}"
           ${orderBy}
         `;
         log.info("applyExtractorTransformerSql fullObjectTemplate aggregateRawQuery", aggregateRawQuery);
@@ -519,12 +523,13 @@ export class SqlDbExtractRunner {
         log.info("applyExtractorTransformerSql fullObjectTemplate rawResult", JSON.stringify(rawResult));
 
         if (rawResult.status == "error") {
+          log.error("applyExtractorTransformerSql fullObjectTemplate rawResult", JSON.stringify(rawResult));
           return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
         }
 
         const sqlResult = rawResult.returnedDomainElement.elementValue;
         log.info("applyExtractorTransformerSql fullObjectTemplate sqlResult", JSON.stringify(sqlResult));
-        return Promise.resolve({ elementType: "any", elementValue: sqlResult });
+        return Promise.resolve({ elementType: "any", elementValue: sqlResult["0"]["fullObjectTemplate"] });
         break;
       }
       case "mustacheStringTemplate":
