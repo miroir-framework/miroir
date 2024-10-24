@@ -182,7 +182,7 @@ describe("extractorTransformerSql.unit.test", () => {
 
       const expectedResult: DomainElement = {
         elementType: "string",
-        elementValue: `SELECT row_to_json(t) AS "myObject" 
+        elementValue: `SELECT row_to_json(t) AS "fullObjectTemplate" 
         FROM ( 
           SELECT gen_random_uuid() AS "uuid", "book"."name" AS "name" 
           FROM "book" 

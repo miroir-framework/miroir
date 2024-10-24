@@ -22,9 +22,11 @@ import {
   EntityDefinition,
   entityDefinitionAuthor,
   entityDefinitionBook,
+  entityDefinitionPublisher,
   entityEntity,
   EntityInstance,
   entityMenu,
+  entityPublisher,
   ignorePostgresExtraAttributesOnList,
   ignorePostgresExtraAttributesOnObject,
   ignorePostgresExtraAttributesOnRecord,
@@ -32,6 +34,9 @@ import {
   MiroirConfigClient,
   MiroirLoggerFactory,
   PersistenceStoreControllerInterface,
+  publisher1,
+  publisher2,
+  publisher3,
   Report,
   reportBookList
 } from "miroir-core";
@@ -133,6 +138,15 @@ beforeEach(
             book4 as EntityInstance,
             book5 as EntityInstance,
             book6 as EntityInstance,
+          ]
+        },
+        {
+          entity: entityPublisher as MetaEntity,
+          entityDefinition: entityDefinitionPublisher as EntityDefinition,
+          instances: [
+            publisher1 as EntityInstance,
+            publisher2 as EntityInstance,
+            publisher3 as EntityInstance,
           ]
         }
       ],
@@ -931,8 +945,85 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
   //   );
   // });
   
+  // // ################################################################################################
+  // it("build custom object with actionRuntimeTransformer using fullObjectTemplate", async () => {
+  //   await chainVitestSteps(
+  //     "ExtractorPersistenceStoreRunner_selectUniqueEntityApplication",
+  //     {},
+  //     async () => {
+  //       const applicationSection: ApplicationSection = "data";
+  //       const queryResult = await localAppPersistenceStoreController.handleQueryAction({
+  //         actionType: "queryAction",
+  //         actionName: "runQuery",
+  //         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+  //         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+  //         applicationSection: applicationSection,
+  //         query: {
+  //           queryType: "extractorForRecordOfExtractors",
+  //           pageParams: {},
+  //           queryParams: {},
+  //           contextResults: {},
+  //           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+  //           extractors: {
+  //             book: {
+  //               queryType: "selectObjectByDirectReference",
+  //               applicationSection: applicationSection,
+  //               parentName: "Book",
+  //               parentUuid: entityBook.uuid,
+  //               instanceUuid: book2.uuid
+  //             },
+  //           },
+  //           runtimeTransformers: {
+  //             newBook: {
+  //               transformerType: "fullObjectTemplate",
+  //               interpolation: "runtime",
+  //               referencedExtractor: "book",
+  //               definition: [
+  //                 {
+  //                   attributeKey: {
+  //                     interpolation: "runtime",
+  //                     transformerType: "constantString",
+  //                     constantStringValue: "uuid",
+  //                   },
+  //                   attributeValue: {
+  //                     interpolation: "runtime",
+  //                     transformerType: "newUuid",
+  //                   },
+  //                 },
+  //                 {
+  //                   attributeKey: {
+  //                     interpolation: "runtime",
+  //                     transformerType: "constantString",
+  //                     constantStringValue: "name",
+  //                   },
+  //                   attributeValue: {
+  //                     interpolation: "runtime",
+  //                     transformerType: "mustacheStringTemplate",
+  //                     definition: "{{book.name}}",
+  //                   },
+  //                 },
+  //               ],
+  //             },
+  //           },
+  //         },
+  //       });
+  //       console.log(expect.getState().currentTestName, "queryResult", JSON.stringify(queryResult, null, 2));
+  //       return queryResult;
+  //     },
+  //     (a) =>
+  //       ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement.elementValue.newBook, [
+  //         "uuid",
+  //       ]),
+  //     undefined, // name to give to result
+  //     "object", // must equal a.returnedDomainElement.elementType
+  //     {
+  //       name: book2.name,
+  //     },
+  //   );
+  // });
+
   // ################################################################################################
-  it("build custom object with actionRuntimeTransformer using fullObjectTemplate", async () => {
+  it("join with combiner", async () => {
     await chainVitestSteps(
       "ExtractorPersistenceStoreRunner_selectUniqueEntityApplication",
       {},
@@ -959,36 +1050,13 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
                 instanceUuid: book2.uuid
               },
             },
-            runtimeTransformers: {
-              newBook: {
-                transformerType: "fullObjectTemplate",
-                interpolation: "runtime",
-                referencedExtractor: "book",
-                definition: [
-                  {
-                    attributeKey: {
-                      interpolation: "runtime",
-                      transformerType: "constantString",
-                      constantStringValue: "uuid",
-                    },
-                    attributeValue: {
-                      interpolation: "runtime",
-                      transformerType: "newUuid",
-                    },
-                  },
-                  {
-                    attributeKey: {
-                      interpolation: "runtime",
-                      transformerType: "constantString",
-                      constantStringValue: "name",
-                    },
-                    attributeValue: {
-                      interpolation: "runtime",
-                      transformerType: "mustacheStringTemplate",
-                      definition: "{{book.name}}",
-                    },
-                  },
-                ],
+            combiners: {
+              publisher: {
+                queryType: "selectObjectByRelation",
+                parentName: "Publisher",
+                parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
+                objectReference: "book",
+                AttributeOfObjectToCompareToReferenceUuid: "publisher",
               },
             },
           },
@@ -997,14 +1065,14 @@ describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
         return queryResult;
       },
       (a) =>
-        ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement.elementValue.newBook, [
-          "uuid",
+        ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue, [
+          "conceptLevel", "createdAt", "icon", "updatedAt",
         ]),
       undefined, // name to give to result
       "object", // must equal a.returnedDomainElement.elementType
-      {
-        name: book2.name,
-      },
+      [
+        publisher3
+      ]
     );
   });
 

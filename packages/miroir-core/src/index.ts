@@ -297,6 +297,8 @@ export {
   carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration,
   CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction,
   carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction,
+  MiroirQuery,
+  miroirQuery,
 
 }
 from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType"

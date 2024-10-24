@@ -9,10 +9,12 @@ import {
   AsyncExtractorRunnerParams,
   asyncExtractWithExtractor,
   asyncExtractWithManyExtractors,
+  asyncInnerSelectElementFromQuery,
   DomainElement,
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
   DomainElementObject,
+  DomainElementObjectOrFailed,
   DomainState,
   ExtractorForRecordOfExtractors,
   ExtractorForSingleObject,
@@ -21,6 +23,7 @@ import {
   getLoggerName,
   LoggerInterface,
   MiroirLoggerFactory,
+  MiroirQuery,
   QueryAction,
   QuerySelectObject,
   selectEntityJzodSchemaFromDomainStateNew,
@@ -28,7 +31,8 @@ import {
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
   transformer_InnerReference_resolve,
-  TransformerForRuntime
+  TransformerForRuntime,
+  Uuid
 } from "miroir-core";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
@@ -245,7 +249,8 @@ export class SqlDbExtractRunner {
       extractEntityInstance: this.extractEntityInstance.bind(this),
       extractEntityInstanceUuidIndexWithObjectListExtractor:
         this.asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor.bind(this),
-      extractWithManyExtractors: asyncExtractWithManyExtractors,
+      // extractWithManyExtractors: asyncExtractWithManyExtractors,
+      extractWithManyExtractors: this.asyncExtractWithManyExtractorsForSql.bind(this),
       extractWithExtractor: asyncExtractWithExtractor,
       applyExtractorTransformer: this.applyExtractorTransformerSql.bind(this),
       // 
@@ -255,9 +260,210 @@ export class SqlDbExtractRunner {
     // TODO: design error: this has to be kept consistent with SqlDbExtractTemplateRunner
     // this.extractorRunnerMap = InMemoryImplementationExtractorRunnerMap;
     this.extractorRunnerMap = dbImplementationExtractorRunnerMap;
+  } // end constructor
+
+  // ################################################################################################
+  asyncInnerSelectElementSqlFromCombiner/*ExtractorTemplateRunner*/(
+    // newFetchedData: Record<string, any>,
+    // pageParams: Record<string, any>,
+    // queryParams: Record<string, any>,
+    // extractorRunnerMap:AsyncExtractorRunnerMap,
+    // deploymentUuid: Uuid,
+    // extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>,
+    query: MiroirQuery
+  ): DomainElement {
+    // TODO: fetch parentName from parentUuid in query!
+    switch (query.queryType) {
+      case "queryExtractObjectListByEntity":
+      case "selectObjectByDirectReference": {
+        throw new Error("asyncInnerSelectElementFromQuery queryType not implemented: " + JSON.stringify(query));
+        
+        // const result = this.persistenceStoreController.sqlForExtractor(query)
+        // return {
+        //   elementType: "any",
+        //   elementValue: result,
+        // }
+        break;
+      }
+      case "extractorWrapperReturningObject":
+      case "extractorWrapperReturningList":
+      case "wrapperReturningObject":
+      case "wrapperReturningList": {
+        throw new Error("asyncInnerSelectElementFromQuery queryType not implemented: " + JSON.stringify(query));
+      }
+      case "selectObjectByRelation": {
+        // TODO: deal with name clashes
+        const result = `
+          SELECT "${query.parentName}".* FROM "library"."${query.parentName}", "${query.objectReference}"
+          WHERE "${query.parentName}"."uuid" = "${query.objectReference}"."${query.AttributeOfObjectToCompareToReferenceUuid}"`;
+        return {
+          elementType: "string",
+          elementValue: result,
+        }
+      }
+      case "selectObjectListByRelation": {
+        const result = `
+        SELECT * FROM "${query.parentName}", "${query.objectReference}"
+        WHERE "${query.parentName}"."${query.AttributeOfListObjectToCompareToReferenceUuid}" = "${query.objectReference}"."uuid"`;
+        return {
+          elementType: "string",
+          elementValue: result,
+        }
+      }
+      case "selectObjectListByManyToManyRelation":
+      case "queryCombiner":
+      case "literal":
+      case "queryContextReference": {
+        throw new Error("asyncInnerSelectElementFromQuery queryType not implemented: " + JSON.stringify(query));
+      }
+      default: {
+        throw new Error("asyncInnerSelectElementFromQuery queryType not implemented: " + JSON.stringify(query));
+        break;
+      }
+    }
+    // return {
+    //   elementType: "string",
+    //   elementValue: "asyncInnerSelectElementFromQuery",
+    // }
   }
+  
+  // ################################################################################################
+  /**
+   * Apply extractor, combiners and transformers to the database using a single SQL query
+   * alternative to asyncExtractWithManyExtractors from AsyncQuerySelector.ts
+   * @param selectorParams 
+   * @returns 
+   */
+  asyncExtractWithManyExtractorsForSql = async (
+    // state: StateType,
+    selectorParams: AsyncExtractorRunnerParams<ExtractorForRecordOfExtractors>,
+  ): Promise<DomainElementObjectOrFailed> => {
+  
+    // log.info("########## asyncExtractWithManyExtractors begin, query", selectorParams);
+  
+  
+    // const context: DomainElementObject = {
+    //   elementType: "object",
+    //   elementValue: { ...selectorParams.extractor.contextResults.elementValue },
+    // };
+    const context: Record<string, any> = {
+      ...selectorParams.extractor.contextResults.elementValue ,
+    };
+    // log.info("########## DomainSelector asyncExtractWithManyExtractors will use context", context);
+    const localSelectorMap: AsyncExtractorRunnerMap = selectorParams?.extractorRunnerMap?? undefined as any;
 
+    const extractorRawQueries = Object.entries(selectorParams.extractor.extractors??{}).map(([key, value]) => {
+      return [key, this.persistenceStoreController.sqlForExtractor(value)];
+    });
 
+    const endResultName = "publisher";
+    log.info("applyExtractorTransformerSql extractorRawQueries", extractorRawQueries);
+
+    // const extractorsPromises = Object.entries(selectorParams.extractor.extractors ?? {}).map(
+    //   (query: [string, MiroirQuery]) => {
+    //     return asyncInnerSelectElementFromQuery(
+    //       context,
+    //       selectorParams.extractor.pageParams,
+    //       {
+    //         ...selectorParams.extractor.pageParams,
+    //         ...selectorParams.extractor.queryParams,
+    //       },
+    //       localSelectorMap as any,
+    //       selectorParams.extractor.deploymentUuid,
+    //       selectorParams.extractor.extractors ?? ({} as any),
+    //       query[1]
+    //     ).then((result): [string, DomainElement] => {
+    //       return [query[0], result.elementValue]; // TODO: check for failure!
+    //     });
+    //   }
+    // );
+  
+    // // TODO: remove await / side effect
+    // for (const promise of extractorsPromises) {
+    //   const result = await promise;
+    //   context[result[0]] = result[1]; // does side effect!
+    // }
+  
+    const combinerRawQueries = Object.entries(selectorParams.extractor.combiners ?? {}).map(([key, value]) => { 
+      return [key, this.asyncInnerSelectElementSqlFromCombiner(value).elementValue];
+    });
+    log.info("applyExtractorTransformerSql combinerRawQueries", combinerRawQueries);
+
+    // const combinerPromises = Object.entries(selectorParams.extractor.combiners ?? {})
+    // .map((query: [string, MiroirQuery]) => {
+    //   return asyncInnerSelectElementFromQuery(
+    //     context,
+    //     selectorParams.extractor.pageParams,
+    //     {
+    //       ...selectorParams.extractor.pageParams,
+    //       ...selectorParams.extractor.queryParams,
+    //     },
+    //     localSelectorMap as any,
+    //     selectorParams.extractor.deploymentUuid,
+    //     selectorParams.extractor.extractors ?? ({} as any),
+    //     query[1]
+    //   ).then((result): [string, DomainElement] => {
+    //     return [query[0], result.elementValue];
+    //   });
+    // });
+  
+    // for (const promise of combinerPromises) {
+    //   const result = await promise;
+    //   context[result[0]] = result[1]; // does side effect!
+    // }
+    
+    // "${transformerName}" AS (${transformerQueries})
+    // ${orderBy}
+    const query = `WITH ${extractorRawQueries.map((q) => '"' + q[0] + '" AS (' + q[1] + " )").join(", ")}
+      ${tokenSeparatorForWith}
+      ${combinerRawQueries.map((q) => '"' + q[0] + '" AS (' + q[1] + " )").join(", ")}
+      SELECT * FROM "${endResultName}"`;
+    log.info("applyExtractorTransformerSql fullObjectTemplate aggregateRawQuery", query);
+
+    const rawResult = await this.persistenceStoreController.executeRawQuery(query);
+    log.info("applyExtractorTransformerSql fullObjectTemplate rawResult", JSON.stringify(rawResult));
+
+    if (rawResult.status == "error") {
+      log.error("applyExtractorTransformerSql rawResult", JSON.stringify(rawResult));
+      return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
+    }
+
+    const sqlResult = rawResult.returnedDomainElement.elementValue;
+    log.info("applyExtractorTransformerSql sqlResult", JSON.stringify(sqlResult));
+    return Promise.resolve({ elementType: "object", elementValue: sqlResult });
+  
+    for (const transformer of Object.entries(selectorParams.extractor.runtimeTransformers ?? {})) {
+      // const result = await promise;
+      const result = await localSelectorMap.applyExtractorTransformer(transformer[1], {
+        elementType: "object",
+        elementValue: {
+          ...selectorParams.extractor.pageParams.elementValue,
+          ...selectorParams.extractor.queryParams.elementValue,
+        },
+      }, context, selectorParams.extractor.extractors ?? ({} as any)).then((result): [string, DomainElement] => {
+        return [transformer[0], result.elementValue]; // TODO: check for failure!
+      });
+      context[result[0]] = result[1]; // does side effect!
+      log.info(
+        "asyncExtractWithManyExtractor for result[0]",
+        result[0],
+        "context",
+        JSON.stringify(Object.keys(context))
+      );
+    }
+    // return context;
+    // log.info(
+    //   "extractWithManyExtractorTemplates",
+    //   "query",
+    //   selectorParams,
+    //   "domainState",
+    //   deploymentEntityState,
+    //   "newFetchedData",
+    //   context
+    // );
+    return { elementType: "object", elementValue: context};
+  };
+  
   // ################################################################################################
   async applyExtractorTransformerSqlBACKUP(
     actionRuntimeTransformer: TransformerForRuntime,
@@ -467,20 +673,6 @@ export class SqlDbExtractRunner {
 
     log.info("SqlDbExtractRunner applyExtractorTransformerSql resolvedReference", resolvedReference);
 
-    // for (const ex of Object.entries(extractors)) {
-    //   log.info("applyExtractorTransformerSql getting sqlForExtractor", ex[0], ex[1]);
-    //   const sqlQuery = this.persistenceStoreController.sqlForExtractor(ex[1])
-    //   log.info("applyExtractorTransformerSql sqlForExtractor", ex[0], sqlQuery);
-    //   // const rawResult = await this.persistenceStoreController.executeRawQuery(sqlQuery as any);
-    //   // log.info("applyExtractorTransformerSql rawResult", rawResult);
-    // }
-
-    const extractorRawQueries = Object.entries(extractors).map(([key, value]) => {
-      return [key, this.persistenceStoreController.sqlForExtractor(value)];
-    });
-
-    log.info("applyExtractorTransformerSql extractorRawQueries", extractorRawQueries);
-
     if (resolvedReference.elementType != "instanceUuidIndex" && resolvedReference.elementType != "object") {
       return Promise.resolve({
         elementType: "failure",
@@ -491,6 +683,13 @@ export class SqlDbExtractRunner {
       });
     }
 
+    const extractorRawQueries = Object.entries(extractors).map(([key, value]) => {
+      return [key, this.persistenceStoreController.sqlForExtractor(value)];
+    });
+
+    log.info("applyExtractorTransformerSql extractorRawQueries", extractorRawQueries);
+
+
     const orderBy = (actionRuntimeTransformer as any).orderBy
       ? `ORDER BY ${(actionRuntimeTransformer as any).orderBy}`
       : "";
@@ -500,26 +699,19 @@ export class SqlDbExtractRunner {
       case "fullObjectTemplate": {
         log.info("applyExtractorTransformerSql actionRuntimeTransformer", actionRuntimeTransformer.transformerType);
         const transformerQueries = extractorTransformerSql(actionRuntimeTransformer, queryParams, newFetchedData, extractors).elementValue
-        // const transformerQueries = actionRuntimeTransformer.definition.map((f) => {
-        //   return [ // TODO: resolve f.attributeKey properly
-        //     f.attributeKey.transformerType == "constantString" ? f.attributeKey.constantStringValue : JSON.stringify(f.attributeKey),
-        //     this.extractorTransformerSql(f.attributeValue, queryParams, newFetchedData, extractors).elementValue,
-        //   ];
-        // });
 
         log.info("applyExtractorTransformerSql fullObjectTemplate transformerQueries", transformerQueries);
-        // const aggregateQueries = extractorRawQueries.concat(transformerQueries);
-        const aggregateQueries = extractorRawQueries;
-        const transformerName = "newBook";
-        const aggregateRawQuery = `WITH ${aggregateQueries.map((q) => '"' + q[0] + '" AS (' + q[1] + " )").join(", ")}
+        const transformerName = "newBook"; // TODO: REMOVE!
+
+        const fullObjectTemplateQuery = `WITH ${extractorRawQueries.map((q) => '"' + q[0] + '" AS (' + q[1] + " )").join(", ")}
           ${tokenSeparatorForWith}
           "${transformerName}" AS (${transformerQueries})
           SELECT * FROM "${transformerName}"
           ${orderBy}
         `;
-        log.info("applyExtractorTransformerSql fullObjectTemplate aggregateRawQuery", aggregateRawQuery);
+        log.info("applyExtractorTransformerSql fullObjectTemplate aggregateRawQuery", fullObjectTemplateQuery);
 
-        const rawResult = await this.persistenceStoreController.executeRawQuery(aggregateRawQuery);
+        const rawResult = await this.persistenceStoreController.executeRawQuery(fullObjectTemplateQuery);
         log.info("applyExtractorTransformerSql fullObjectTemplate rawResult", JSON.stringify(rawResult));
 
         if (rawResult.status == "error") {
