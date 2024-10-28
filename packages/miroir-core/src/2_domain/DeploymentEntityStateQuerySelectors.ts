@@ -1,6 +1,7 @@
 import {
   ApplicationSection,
   DomainElementEntityInstanceOrFailed,
+  DomainElementInstanceArrayOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
   DomainModelGetEntityDefinitionExtractor,
   EntityDefinition,
@@ -26,6 +27,7 @@ import { getLoggerName } from "../tools";
 import { cleanLevel } from "./constants";
 import { getDeploymentEntityStateIndex } from "./DeploymentEntityState";
 import {
+  extractEntityInstanceListWithObjectListExtractorInMemory,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractFetchQueryJzodSchema,
   extractJzodSchemaForDomainModelQuery,
@@ -287,6 +289,70 @@ export const selectEntityInstanceUuidIndexFromDeploymentEntityState: SyncExtract
 };
 
 // ################################################################################################
+// ACCESSES deploymentEntityState
+export const selectEntityInstanceListFromDeploymentEntityState: SyncExtractorRunner<
+  ExtractorForSingleObjectList,
+  DeploymentEntityState,
+  DomainElementInstanceArrayOrFailed
+> = (
+  deploymentEntityState: DeploymentEntityState,
+  selectorParams: SyncExtractorRunnerParams<ExtractorForSingleObjectList, DeploymentEntityState>
+): DomainElementInstanceArrayOrFailed => {
+  const result = selectEntityInstanceUuidIndexFromDeploymentEntityState(deploymentEntityState, selectorParams);
+
+  if (result.elementType == "failure") {
+    return result;
+  }
+  // const deploymentUuid = selectorParams.extractor.deploymentUuid;
+  // const applicationSection = selectorParams.extractor.select.applicationSection ?? "data";
+
+  // const entityUuid = selectorParams.extractor.select.parentUuid;
+
+  // log.info(
+  //   "selectEntityInstanceUuidIndexFromDeploymentEntityState params",
+  //   selectorParams,
+  //   deploymentUuid,
+  //   applicationSection,
+  //   entityUuid
+  // );
+  // log.info("selectEntityInstanceUuidIndexFromDeploymentEntityState deploymentEntityState", deploymentEntityState);
+
+  // const deploymentEntityStateIndex = getDeploymentEntityStateIndex(
+  //   deploymentUuid,
+  //   applicationSection,
+  //   entityUuid
+  // );
+  // if (!deploymentEntityState[deploymentEntityStateIndex]) {
+  //   log.warn(
+  //     "selectEntityInstanceUuidIndexFromDeploymentEntityState could not find index",
+  //     deploymentEntityStateIndex,
+  //     "in deploymentEntityState",
+  //     deploymentEntityState
+  //   );
+  //   return {
+  //     elementType: "failure",
+  //     elementValue: {
+  //       queryFailure: "EntityNotFound",
+  //       deploymentUuid,
+  //       applicationSection,
+  //       entityUuid: entityUuid,
+  //     },
+  //   };
+  // }
+
+  // log.info(
+  //   "selectEntityInstanceUuidIndexFromDeploymentEntityState for",
+  //   deploymentEntityStateIndex,
+  //   "result",
+  //   deploymentEntityState[deploymentEntityStateIndex].entities
+  // );
+  return {
+    elementType: "instanceArray",
+    elementValue: Object.values(result.elementValue),
+  };
+};
+
+// ################################################################################################
 // ################################################################################################
 // JZOD SCHEMAs selectors
 // ################################################################################################
@@ -377,9 +443,12 @@ export function getDeploymentEntityStateSelectorMap(): SyncExtractorRunnerMap<De
   return {
     extractorType: "sync",
     extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDeploymentEntityState,
+    extractEntityInstanceList: selectEntityInstanceListFromDeploymentEntityState,
     extractEntityInstance: selectEntityInstanceFromDeploymentEntityState,
     extractEntityInstanceUuidIndexWithObjectListExtractor:
       extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
+    extractEntityInstanceListWithObjectListExtractor:
+      extractEntityInstanceListWithObjectListExtractorInMemory,
     extractWithManyExtractors: extractWithManyExtractors,
     extractWithExtractor: extractWithExtractor,
     // ############################################################################################

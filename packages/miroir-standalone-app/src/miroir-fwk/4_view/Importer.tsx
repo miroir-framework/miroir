@@ -1301,7 +1301,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                   interpolation: "runtime",
                   referencedExtractor: "uniqueSplittedEntityInstancesSplitAttributeValues",
                   elementTransformer: {
-                    transformerType: "fullObjectTemplate", // TODO: fullObjectTemplate is not needed, all attributeKeys are constantString, objectTemplate should be enough
+                    transformerType: "innerFullObjectTemplate", // TODO: innerFullObjectTemplate is not needed, all attributeKeys are constantString, objectTemplate should be enough
                     interpolation: "runtime",
                     referencedExtractor: "municipality",
                     definition: [
@@ -1362,7 +1362,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                   elementTransformer: {
                     transformerType: "objectAlter",
                     interpolation: "runtime",
-                    referencedExtractor: "objectAlterTmpReference",
+                    referenceToOuterObject: "objectAlterTmpReference",
                     definition: {
                       transformerType: "freeObjectTemplate",
                       interpolation: "runtime",

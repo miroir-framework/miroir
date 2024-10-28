@@ -2,6 +2,7 @@ import {
   ActionReturnType,
   DomainElement,
   DomainElementEntityInstanceOrFailed,
+  DomainElementInstanceArrayOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
   DomainElementObjectOrFailed,
   DomainModelGetEntityDefinitionExtractor,
@@ -114,10 +115,18 @@ export type AsyncExtractorRunnerMap = {
     ExtractorForSingleObjectList,
     DomainElementInstanceUuidIndexOrFailed
   >;
+  extractEntityInstanceList: AsyncExtractorRunner<
+    ExtractorForSingleObjectList,
+    DomainElementInstanceArrayOrFailed
+  >;
   extractEntityInstance: AsyncExtractorRunner<ExtractorForSingleObject, DomainElementEntityInstanceOrFailed>;
   extractEntityInstanceUuidIndexWithObjectListExtractor: AsyncExtractorRunner<
     ExtractorForSingleObjectList,
     DomainElementInstanceUuidIndexOrFailed
+  >;
+  extractEntityInstanceListWithObjectListExtractor: AsyncExtractorRunner<
+    ExtractorForSingleObjectList,
+    DomainElementInstanceArrayOrFailed
   >;
   // 
   // TODO: called in AsyncQuerySelector
@@ -152,11 +161,21 @@ export type SyncExtractorRunnerMap<StateType> = {
     StateType,
     DomainElementInstanceUuidIndexOrFailed
   >;
+  extractEntityInstanceList: SyncExtractorRunner<
+    ExtractorForSingleObjectList,
+    StateType,
+    DomainElementInstanceArrayOrFailed
+  >;
   extractEntityInstance: SyncExtractorRunner<ExtractorForSingleObject, StateType, DomainElementEntityInstanceOrFailed>;
   extractEntityInstanceUuidIndexWithObjectListExtractor: SyncExtractorRunner<
     ExtractorForSingleObjectList,
     StateType,
     DomainElementInstanceUuidIndexOrFailed
+  >;
+  extractEntityInstanceListWithObjectListExtractor: SyncExtractorRunner<
+    ExtractorForSingleObjectList,
+    StateType,
+    DomainElementInstanceArrayOrFailed
   >;
   // ################################################################################################
   // TODO: has direct call in ReportView, ReportSectionListDisplay, JzodObjectEditor

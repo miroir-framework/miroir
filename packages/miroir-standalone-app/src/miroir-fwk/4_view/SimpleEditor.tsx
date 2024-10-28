@@ -24,8 +24,8 @@ export default forwardRef((props:ICellEditorParams, ref) => {
       ref,
       () => {
         return {
-          getValue: () => {
-            log.info('SimpleEditor useImperativeHandle getValue', value);
+          resolvePathOnObject: () => {
+            log.info('SimpleEditor useImperativeHandle resolvePathOnObject', value);
             return value;
           },
           afterGuiAttached: () => {

@@ -58,7 +58,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       ...args: any[]
     ) {
       super(...args);
-      this.extractorRunner = new SqlDbExtractRunner(this as any /*SqlDbExtractRunner takes a concrete implementation*/);
+      this.extractorRunner = new SqlDbExtractRunner(this.schema, this as any /*SqlDbExtractRunner takes a concrete implementation*/);
       this.extractorTemplateRunner = new SqlDbExtractTemplateRunner(this as any /*SqlDbExtractTemplateRunner takes a concrete implementation*/, this.extractorRunner);
     }
 
@@ -94,7 +94,8 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       switch (extractor.queryType) {
         case "queryExtractObjectListByEntity": {
           // TODO: use queryGenerator?
-          return `SELECT * FROM "${this.schema}"."${extractor.parentName}"`;
+          // where: { [filter.attribute]: { [Op.like]: "%" + filter.value + "%" } },
+          return `SELECT * FROM "${this.schema}"."${extractor.parentName}"` + (extractor.filter ? ` WHERE ${extractor.filter.attributeName} LIKE '%${extractor.filter.value}%'`  : "");
           // return result;
           break;
         }
@@ -221,6 +222,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         if (this.sqlSchemaTableAccess && this.sqlSchemaTableAccess[parentUuid]) {
           const result: EntityInstance = (await this.sqlSchemaTableAccess[parentUuid].sequelizeModel.findByPk(uuid))
             ?.dataValues;
+          log.info(this.logHeader, "getInstance", "result", result);
           return Promise.resolve({
             status: "ok",
             returnedDomainElement: { elementType: "instance", elementValue: result },

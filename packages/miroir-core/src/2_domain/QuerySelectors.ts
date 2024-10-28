@@ -5,6 +5,8 @@ import {
   ActionReturnType,
   ApplicationSection,
   DomainElement,
+  DomainElementInstanceArray,
+  DomainElementInstanceArrayOrFailed,
   DomainElementInstanceUuidIndex,
   DomainElementInstanceUuidIndexOrFailed,
   DomainElementObject,
@@ -58,6 +60,8 @@ const emptySelectorMap:SyncExtractorRunnerMap<any> = {
   extractEntityInstance: undefined as any,
   extractEntityInstanceUuidIndexWithObjectListExtractor: undefined as any,
   extractEntityInstanceUuidIndex: undefined as any,
+  extractEntityInstanceListWithObjectListExtractor: undefined as any,
+  extractEntityInstanceList: undefined as any,
   // ##############################################################################################
   extractWithManyExtractorTemplates: undefined as any,
 }
@@ -69,6 +73,8 @@ const emptyAsyncSelectorMap:AsyncExtractorRunnerMap = {
   extractEntityInstance: undefined as any,
   extractEntityInstanceUuidIndexWithObjectListExtractor: undefined as any,
   extractEntityInstanceUuidIndex: undefined as any,
+  extractEntityInstanceListWithObjectListExtractor: undefined as any,
+  extractEntityInstanceList: undefined as any,
   applyExtractorTransformer: undefined as any,
   // ##############################################################################################
   extractWithManyExtractorTemplates: undefined as any,
@@ -252,6 +258,153 @@ export const resolveContextReference = (
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
+export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = (
+  selectedInstancesList: DomainElementInstanceArrayOrFailed,
+  extractor: ExtractorForSingleObjectList,
+) => {
+  if (selectedInstancesList.elementType == "failure") {
+    return selectedInstancesList;
+    // throw new Error("applyExtractorForSingleObjectListToSelectedInstancesListInMemory selectedInstancesList.elementValue is undefined")
+  }
+  switch (extractor.select.queryType) {
+    case "queryExtractObjectListByEntity": {
+      const localQuery: QueryExtractObjectListByEntity = extractor.select;
+      const filterTest = localQuery.filter
+        ? new RegExp(localQuery.filter.value??"", "i") // TODO: check for correct type
+        : undefined;
+      // log.info(
+      //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory filter",
+      //   JSON.stringify(localQuery.filter)
+      // );
+      const result:DomainElementInstanceArrayOrFailed = localQuery.filter
+        ? {
+            elementType: "instanceArray",
+            elementValue: 
+            // Object.fromEntries(
+              selectedInstancesList.elementValue.filter((i: EntityInstance) => {
+                const matchResult = filterTest?.test(
+                  (i as any)[localQuery.filter?.attributeName??""]
+                )
+                // log.info(
+                //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory filter",
+                //   JSON.stringify(i[1]),
+                //   "matchResult",
+                //   matchResult
+                // );
+                return matchResult
+              }
+              // )
+            )
+          }
+        : selectedInstancesList;
+      ;
+      // log.info(
+      //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory  result",
+      //   JSON.stringify(result, undefined, 2)
+      // );
+      return result;
+      break;
+    }
+    case "selectObjectListByRelation": {
+      const relationQuery: QuerySelectObjectListByRelation = extractor.select;
+
+      let otherIndex:string | undefined = undefined
+      if (
+        extractor.contextResults[relationQuery.objectReference]
+      ) {
+        otherIndex = ((extractor.contextResults[
+          relationQuery.objectReference
+        ] as any) ?? {})[relationQuery.objectReferenceAttribute ?? "uuid"];
+      // } else if (relationQuery.objectReference?.queryTemplateType == "constantUuid") {
+      } else {
+        log.error(
+          "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation could not find objectReference in contextResults, objectReference=",
+          relationQuery.objectReference,
+          "contextResults",
+          extractor.contextResults
+        );
+      }
+
+      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation", JSON.stringify(selectedInstances))
+      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation", selectedInstances)
+      return {
+        elementType: "instanceArray",
+        elementValue: 
+        // Object.fromEntries(
+          selectedInstancesList.elementValue.filter((i: EntityInstance) => {
+            const localIndex = relationQuery.AttributeOfListObjectToCompareToReferenceUuid ?? "dummy";
+
+            // TODO: allow for runtime reference, with runtime trnasformer reference
+            return (i as any)[localIndex] === otherIndex;
+          }
+        )
+        // ),
+      } as DomainElementInstanceArray;
+    }
+    case "selectObjectListByManyToManyRelation": {
+      const relationQuery: QuerySelectObjectListByManyToManyRelation = extractor.select;
+
+      // relationQuery.objectListReference is a queryContextReference
+      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation", selectedInstances)
+      let otherList: Record<string, any> | undefined = undefined
+      otherList = ((extractor.contextResults[
+        relationQuery.objectListReference
+      ]) ?? {});
+      if (otherList) {
+        return { 
+          // "elementType": "instanceUuidIndex", "elementValue": 
+          "elementType": "instanceArray", "elementValue": 
+          // Object.fromEntries(
+          selectedInstancesList.elementValue.filter(
+            (selectedInstance: EntityInstance) => {
+              // const localOtherList: DomainElement = otherList as DomainElement;
+              const otherListAttribute = relationQuery.objectListReferenceAttribute ?? "uuid";
+              const rootListAttribute = relationQuery.AttributeOfRootListObjectToCompareToListReferenceUuid ?? "uuid";
+  
+              if (typeof otherList == "object" && !Array.isArray(otherList)) {
+                // log.info(
+                //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation search otherList for attribute",
+                //   otherListAttribute,
+                //   "on object",
+                //   selectedInstancesEntry[1],
+                //   "uuidToFind",
+                //   (selectedInstancesEntry[1] as any)[rootListAttribute],
+                //   "otherList",
+                //   otherList
+                // );
+                const result =
+                Object.values(otherList).findIndex(
+                  (v: any) => v[otherListAttribute] == (selectedInstance as any)[rootListAttribute]
+                ) >= 0;
+                return result;
+              } else {
+                throw new Error(
+                  "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation can not use objectListReference, selectedInstances elementType=" +
+                  selectedInstancesList.elementType + " other list elementType=" + JSON.stringify(otherList,undefined,2)
+                );
+              }
+            }
+          )
+        // )
+        } as DomainElementInstanceArray;
+      } else {
+        throw new Error(
+          "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation could not find list for objectListReference, selectedInstances elementType=" +
+            selectedInstancesList.elementType
+        );
+      }
+    }
+    default: {
+      throw new Error(
+        "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory could not handle query, selectorParams=" +
+          JSON.stringify(extractor.select, undefined, 2)
+      );
+      break;
+    }
+  }
+};
+
+// ################################################################################################
 export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory = (
   selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed,
   extractor: ExtractorForSingleObjectList,
@@ -413,6 +566,31 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
   );
 
 };
+// ################################################################################################
+/**
+ * returns an Entity Instance List, from a ListQuery
+ * @param deploymentEntityState 
+ * @param selectorParams 
+ * @returns 
+ */
+export const extractEntityInstanceListWithObjectListExtractorInMemory
+= <StateType>(
+  deploymentEntityState: StateType,
+  selectorParams: SyncExtractorRunnerParams<ExtractorForSingleObjectList, StateType>
+): DomainElementInstanceArrayOrFailed => {
+  const selectedInstancesUuidIndex: DomainElementInstanceArrayOrFailed =
+    (selectorParams?.extractorRunnerMap ?? emptySelectorMap).extractEntityInstanceList(deploymentEntityState, selectorParams);
+
+  // log.info(
+  //   "extractEntityInstanceUuidIndexWithObjectListExtractorInMemory found selectedInstances", selectedInstancesUuidIndex
+  // );
+
+  return applyExtractorForSingleObjectListToSelectedInstancesListInMemory(
+    selectedInstancesUuidIndex,
+    selectorParams.extractor,
+  );
+
+};
 
 // ################################################################################################
 export const applyExtractorTransformerInMemory = (
@@ -493,7 +671,7 @@ export function innerSelectElementFromQuery/*ExtractorTemplateRunner*/<StateType
     case "selectObjectListByRelation": 
     case "selectObjectListByManyToManyRelation": {
       // return extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractorInMemory(state, {
-      return extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractor(state, {
+      return extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor(state, {
         extractorRunnerMap,
         extractor: {
           queryType: "extractorForDomainModelObjects",

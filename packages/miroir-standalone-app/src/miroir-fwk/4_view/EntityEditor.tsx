@@ -103,8 +103,8 @@ export default forwardRef((props:ICellEditorParams, ref) => {
     () => {
       log.info('EntityEditor useImperativeHandle called');
       return {
-        getValue: () => {
-          log.info('EntityEditor useImperativeHandle getValue', value);
+        resolvePathOnObject: () => {
+          log.info('EntityEditor useImperativeHandle resolvePathOnObject', value);
           return value;
         },
         // afterGuiAttached: () => {

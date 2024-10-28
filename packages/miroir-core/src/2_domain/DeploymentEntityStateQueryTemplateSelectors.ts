@@ -20,9 +20,11 @@ import { cleanLevel } from "./constants";
 import { getDeploymentEntityStateIndex } from "./DeploymentEntityState";
 import {
   selectEntityInstanceFromDeploymentEntityState,
+  selectEntityInstanceListFromDeploymentEntityState,
   selectEntityInstanceUuidIndexFromDeploymentEntityState,
 } from "./DeploymentEntityStateQuerySelectors";
 import {
+  extractEntityInstanceListWithObjectListExtractorInMemory,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractWithExtractor,
   extractWithManyExtractors,
@@ -47,9 +49,12 @@ export function getDeploymentEntityStateSelectorTemplateMap(): SyncExtractorRunn
   return {
     extractorType: "sync",
     extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDeploymentEntityState,
+    extractEntityInstanceList: selectEntityInstanceListFromDeploymentEntityState,
     extractEntityInstance: selectEntityInstanceFromDeploymentEntityState,
     extractEntityInstanceUuidIndexWithObjectListExtractor:
       extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
+    extractEntityInstanceListWithObjectListExtractor:
+      extractEntityInstanceListWithObjectListExtractorInMemory,
     extractWithManyExtractors: extractWithManyExtractors,
     extractWithExtractor: extractWithExtractor,
     // 

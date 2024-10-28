@@ -203,7 +203,7 @@ describe("transformers.unit.test", () => {
         actionName: "openStore",
         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         configuration: {
-          transformerType: "fullObjectTemplate",
+          transformerType: "innerFullObjectTemplate",
           definition: [
             {
               attributeKey: {
@@ -491,9 +491,9 @@ describe("transformers.unit.test", () => {
         interpolation: "runtime",
         referencedExtractor: "countries",
         elementTransformer: {
-          transformerType: "fullObjectTemplate",
+          transformerType: "innerFullObjectTemplate",
           interpolation: "runtime",
-          referencedExtractor: "country",
+          referenceToOuterObject: "country",
           definition: [
             {
               attributeKey: {
@@ -663,7 +663,7 @@ describe("transformers.unit.test", () => {
     const uniqueRuntimeTemplate:TransformerForRuntime = {
       transformerType: "objectAlter",
       interpolation: "runtime",
-      referencedExtractor: "country",
+      referenceToOuterObject: "country",
       definition: {
         transformerType: "freeObjectTemplate",
         interpolation: "runtime",
@@ -720,7 +720,7 @@ describe("transformers.unit.test", () => {
       elementTransformer: {
         transformerType: "objectAlter",
         interpolation: "runtime",
-        referencedExtractor: "country",
+        referenceToOuterObject: "country",
         definition: {
           transformerType: "freeObjectTemplate",
           interpolation: "runtime",
@@ -923,7 +923,7 @@ describe("transformers.unit.test", () => {
       elementTransformer: {
         transformerType: "objectAlter",
         interpolation: "runtime",
-        referencedExtractor: "fountain",
+        referenceToOuterObject: "fountain",
         definition: {
           transformerType: "freeObjectTemplate",
           interpolation: "runtime",

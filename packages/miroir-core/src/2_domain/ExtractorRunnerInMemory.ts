@@ -3,6 +3,7 @@ import {
   ActionReturnType,
   ApplicationSection,
   DomainElementEntityInstanceOrFailed,
+  DomainElementInstanceArrayOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
   ExtractorForSingleObject,
   ExtractorForSingleObjectList,
@@ -22,7 +23,13 @@ import { PersistenceStoreInstanceSectionAbstractInterface } from "../0_interface
 import { MiroirLoggerFactory } from "../4_services/Logger";
 import { packageName } from "../constants";
 import { getLoggerName } from "../tools";
-import { asyncApplyExtractorTransformerInMemory, asyncExtractEntityInstanceUuidIndexWithObjectListExtractor, asyncExtractWithExtractor, asyncExtractWithManyExtractors } from "./AsyncQuerySelectors";
+import {
+  asyncApplyExtractorTransformerInMemory,
+  asyncExtractEntityInstanceListWithObjectListExtractor,
+  asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+  asyncExtractWithExtractor,
+  asyncExtractWithManyExtractors,
+} from "./AsyncQuerySelectors";
 import { cleanLevel } from "./constants";
 import {
   selectEntityJzodSchemaFromDomainStateNew,
@@ -49,8 +56,10 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
     this.selectorMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex,
+      extractEntityInstanceList: this.extractEntityInstanceList,
       extractEntityInstance: this.extractEntityInstance,
       extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+      extractEntityInstanceListWithObjectListExtractor: asyncExtractEntityInstanceListWithObjectListExtractor,
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
@@ -270,6 +279,25 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
   > = async (
     extractorRunnerParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList>
   ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
+    return this.extractEntityInstanceList(extractorRunnerParams).then((result) => {
+      if (result.elementType == "failure") {
+        return result;
+      } 
+      const entityInstanceUuidIndex = Object.fromEntries(
+        result.elementValue.map((i: any) => [i.uuid, i])
+        );
+      return { elementType: "instanceUuidIndex", elementValue: entityInstanceUuidIndex };
+    });
+
+  };
+
+  // ##############################################################################################
+  public extractEntityInstanceList: AsyncExtractorRunner<
+    ExtractorForSingleObjectList,
+    DomainElementInstanceArrayOrFailed
+  > = async (
+    extractorRunnerParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList>
+  ): Promise<DomainElementInstanceArrayOrFailed> => {
     const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
 
@@ -285,7 +313,7 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
         elementValue: {
           queryFailure: "IncorrectParameters",
           queryContext:
-            "extractEntityInstanceUuidIndex wrong context as deploymentUuid, applicationSection, entityUuid not found, deploymentUuid=" +
+            "extractEntityInstanceList wrong context as deploymentUuid, applicationSection, entityUuid not found, deploymentUuid=" +
             deploymentUuid +
             ", applicationSection=" +
             applicationSection +
@@ -315,10 +343,10 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
         },
       };
     }
-    const entityInstanceUuidIndex = Object.fromEntries(
-      entityInstanceCollection.returnedDomainElement.elementValue.instances.map((i:any) => [i.uuid, i])
-    );
-    return { elementType: "instanceUuidIndex", elementValue: entityInstanceUuidIndex };
+    // const entityInstanceUuidIndex = Object.fromEntries(
+    //   entityInstanceCollection.returnedDomainElement.elementValue.instances.map((i:any) => [i.uuid, i])
+    // );
+    return { elementType: "instanceArray", elementValue: entityInstanceCollection.returnedDomainElement.elementValue.instances };
   };
 
   // ##############################################################################################

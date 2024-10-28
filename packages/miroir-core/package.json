@@ -15,7 +15,7 @@
     "build3": "npm run devBuild",
     "build4": "npm run devBuild",
     "build5": "npm run devBuild",
-    "devBuild": "npm run preBuild && npm run generate-ts-types && echo DONE BUILD && npm run build",
+    "devBuild": "npm run preBuild && npm run generate-ts-types && echo DONE PRE-BUILD && npm run build",
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
     "preBuild": "copyfiles -u 1 src/**/*.json tmp/ && tsc ./src/index.ts --rootDir . --baseUrl . --target ESNext --module esnext --strict --downlevelIteration --moduleResolution Node --allowSyntheticDefaultImports --resolveJsonModule --outdir ./tmp/ || npm run preBuildGenerateScript || npm run fixTmpImports",
     "preBuildGenerateScript": "tsc ./src/buildTools/generate-ts-types.ts --rootDir . --baseUrl . --target ESNext  --module esnext --strict --downlevelIteration --moduleResolution Node --allowSyntheticDefaultImports --resolveJsonModule --outdir ./tmp/",

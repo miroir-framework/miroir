@@ -1,7 +1,7 @@
 import Mustache from "mustache";
+import { v4 as uuidv4 } from 'uuid';
 import {
   DomainElement,
-  DomainElementObject,
   DomainElementObjectOrFailed,
   ExtendedTransformerForRuntime,
   Transformer,
@@ -9,28 +9,27 @@ import {
   Transformer_objectDynamicAccess,
   TransformerForBuild,
   TransformerForBuild_fullObjectTemplate,
+  TransformerForBuild_inner_object_alter,
+  TransformerForBuild_innerFullObjectTemplate,
   TransformerForBuild_mapper_listToList,
   TransformerForBuild_mapper_listToObject,
   TransformerForBuild_mustacheStringTemplate,
-  TransformerForBuild_object_alter,
-  transformerForRuntime,
   TransformerForRuntime,
   TransformerForRuntime_fullObjectTemplate,
+  TransformerForRuntime_innerFullObjectTemplate,
   TransformerForRuntime_InnerReference,
   TransformerForRuntime_mapper_listToList,
   TransformerForRuntime_mapper_listToObject,
   TransformerForRuntime_mustacheStringTemplate,
   TransformerForRuntime_object_alter,
-  TransformerForRuntime_objectDynamicAccess,
+  TransformerForRuntime_objectDynamicAccess
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { transformer_menu_AddItem } from "../1_core/Menu";
 import { MiroirLoggerFactory } from "../4_services/Logger";
 import { packageName } from "../constants";
-import { getLoggerName, getValue } from "../tools";
+import { getLoggerName, resolvePathOnObject } from "../tools";
 import { cleanLevel } from "./constants";
-import { domainElementToPlainObject } from "./QuerySelectors";
-import { v4 as uuidv4 } from 'uuid';
-import { transformer_menu_AddItem } from "../1_core/Menu";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"Transformer");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -88,7 +87,7 @@ function transformer_mapper_listToList_apply(
           queryParams,
           {
             ...contextResults,
-            [transformer.elementTransformer.referencedExtractor]: element,
+            [transformer.elementTransformer.referenceToOuterObject]: element,
           } // inefficient!
         ).elementValue
       ); // TODO: constrain type of transformer
@@ -100,7 +99,7 @@ function transformer_mapper_listToList_apply(
         resultArray.push(
           defaultTransformers.transformer_apply(step, element[0], transformer.elementTransformer as any, queryParams, {
               ...contextResults,
-              [transformer.elementTransformer.referencedExtractor]: element[1],
+              [transformer.elementTransformer.referenceToOuterObject]: element[1],
           }).elementValue
         ); // TODO: constrain type of transformer
       }
@@ -186,14 +185,18 @@ function transformer_mapper_listToObject_apply(
 function transformer_fullObjectTemplate(
   step: Step,
   objectName: string,
-  transformerForBuild: TransformerForBuild_fullObjectTemplate | TransformerForRuntime_fullObjectTemplate,
+  transformerForBuild:
+    | TransformerForBuild_fullObjectTemplate
+    | TransformerForRuntime_fullObjectTemplate
+    | TransformerForBuild_innerFullObjectTemplate
+    | TransformerForRuntime_innerFullObjectTemplate,
   queryParams: Record<string, any>,
-  contextResults?: Record<string, any>,
+  contextResults?: Record<string, any>
   // queryParams: DomainElementObject,
   // contextResults?: DomainElementObject,
 ): DomainElement {
   // log.info(
-  //   "transformer_apply fullObjectTemplate objectName=",
+  //   "transformer_apply innerFullObjectTemplate objectName=",
   //   objectName,
   //   "transformerForBuild=",
   //   // transformerForBuild,
@@ -209,9 +212,13 @@ function transformer_fullObjectTemplate(
       { rawLeftValue: DomainElement; finalLeftValue: DomainElement },
       { renderedRightValue: DomainElement; finalRightValue: DomainElement }
     ] => {
-
       const rawLeftValue: DomainElement = innerEntry.attributeKey.transformerType
-        ? defaultTransformers.transformer_InnerReference_resolve(step, innerEntry.attributeKey, queryParams, contextResults)
+        ? defaultTransformers.transformer_InnerReference_resolve(
+            step,
+            innerEntry.attributeKey,
+            queryParams,
+            contextResults
+          )
         : { elementType: "string", elementValue: innerEntry.attributeKey };
       const leftValue: { rawLeftValue: DomainElement; finalLeftValue: DomainElement } = {
         rawLeftValue,
@@ -226,7 +233,7 @@ function transformer_fullObjectTemplate(
             : rawLeftValue,
       };
       // log.info(
-      //   "transformer_apply fullObjectTemplate innerEntry.attributeKey",
+      //   "transformer_apply innerFullObjectTemplate innerEntry.attributeKey",
       //   innerEntry.attributeKey,
       //   "leftValue",
       //   leftValue
@@ -252,7 +259,7 @@ function transformer_fullObjectTemplate(
             : renderedRightValue,
       };
       log.info(
-        "transformer_apply fullObjectTemplate innerEntry.attributeKey",
+        "transformer_apply innerFullObjectTemplate innerEntry.attributeKey",
         innerEntry.attributeValue,
         "rightValue",
         JSON.stringify(rightValue, null, 2),
@@ -267,9 +274,10 @@ function transformer_fullObjectTemplate(
   const failureIndex = attributeEntries.findIndex(
     (e) => e[0].finalLeftValue.elementType == "failure" || e[1].finalRightValue.elementType == "failure"
   );
-  if (failureIndex == -1) { // no failure found
+  if (failureIndex == -1) {
+    // no failure found
     // log.info(
-    //   "transformer_apply fullObjectTemplate for",
+    //   "transformer_apply innerFullObjectTemplate for",
     //   transformerForBuild,
     //   "attributeEntries",
     //   JSON.stringify(attributeEntries, null, 2)
@@ -277,10 +285,11 @@ function transformer_fullObjectTemplate(
     const fullObjectResult = Object.fromEntries(
       attributeEntries.map((e) => [e[0].finalLeftValue.elementValue, e[1].finalRightValue.elementValue])
     );
-    // log.info("transformer_apply fullObjectTemplate for", transformerForBuild, "fullObjectResult", fullObjectResult);
+    // log.info("transformer_apply innerFullObjectTemplate for", transformerForBuild, "fullObjectResult", fullObjectResult);
     return {
-      elementType: "object",
-      elementValue: fullObjectResult,
+      elementType: "instanceArray",
+      elementValue:
+        transformerForBuild.transformerType == "innerFullObjectTemplate" ? fullObjectResult : [fullObjectResult],
     };
   } else {
     return {
@@ -288,7 +297,11 @@ function transformer_fullObjectTemplate(
       elementValue: {
         queryFailure: "ReferenceNotFound",
         failureOrigin: ["transformer_fullObjectTemplate"],
-        queryContext: "fullObjectTemplate error in " + objectName + " in " + JSON.stringify(attributeEntries[failureIndex], null, 2),
+        queryContext:
+          "innerFullObjectTemplate error in " +
+          objectName +
+          " in " +
+          JSON.stringify(attributeEntries[failureIndex], null, 2),
       },
     };
   }
@@ -298,7 +311,7 @@ function transformer_fullObjectTemplate(
 function transformer_objectAlter(
   step: Step,
   objectName: string,
-  transformer: TransformerForBuild_object_alter | TransformerForRuntime_object_alter,
+  transformer: TransformerForBuild_inner_object_alter | TransformerForRuntime_object_alter,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
   // queryParams: DomainElementObject,
@@ -306,7 +319,7 @@ function transformer_objectAlter(
 ): DomainElement {
   const resolvedReference = defaultTransformers.transformer_InnerReference_resolve(
     step,
-    { transformerType: "contextReference", referenceName:transformer.referencedExtractor },
+    { transformerType: "contextReference", referenceName:transformer.referenceToOuterObject },
     queryParams,
     contextResults
   );
@@ -340,7 +353,7 @@ function transformer_objectAlter(
   //     elementValue: {
   //       queryFailure: "ReferenceNotFound",
   //       failureOrigin: ["transformer_fullObjectTemplate"],
-  //       queryContext: "fullObjectTemplate error in " + objectName + " in " + JSON.stringify(attributeEntries[failureIndex], null, 2),
+  //       queryContext: "innerFullObjectTemplate error in " + objectName + " in " + JSON.stringify(attributeEntries[failureIndex], null, 2),
   //     },
   //   };
   // }
@@ -533,10 +546,10 @@ export function transformer_InnerReference_resolve  (
             elementValue: { queryFailure: "ReferenceFoundButUndefined", queryContext: JSON.stringify(localContextResults) },
           }
         : transformerInnerReference.referencePath
-        ? getValue(localContextResults, transformerInnerReference.referencePath) ?
+        ? resolvePathOnObject(localContextResults, transformerInnerReference.referencePath) ?
           {
-            elementType: typeof getValue(localContextResults, transformerInnerReference.referencePath) as any,
-            elementValue: getValue(localContextResults, transformerInnerReference.referencePath)
+            elementType: typeof resolvePathOnObject(localContextResults, transformerInnerReference.referencePath) as any,
+            elementValue: resolvePathOnObject(localContextResults, transformerInnerReference.referencePath)
           }:
           {
             elementType: "failure",
@@ -570,9 +583,9 @@ export function transformer_InnerReference_resolve  (
               elementValue: { queryFailure: "ReferenceFoundButUndefined", queryContext: JSON.stringify(queryParams) },
             }
         : transformerInnerReference.referencePath
-        ? getValue(localQueryParams, transformerInnerReference.referencePath) ? { // TODO: optimize calls to getValue
-            elementType: typeof getValue(localQueryParams, transformerInnerReference.referencePath),
-            elementValue: getValue(localQueryParams, transformerInnerReference.referencePath)
+        ? resolvePathOnObject(localQueryParams, transformerInnerReference.referencePath) ? { // TODO: optimize calls to resolvePathOnObject
+            elementType: typeof resolvePathOnObject(localQueryParams, transformerInnerReference.referencePath),
+            elementValue: resolvePathOnObject(localQueryParams, transformerInnerReference.referencePath)
         }: {
             elementType: "failure",
             elementValue: {
@@ -646,6 +659,7 @@ function mustacheStringTemplate_apply(
   return { elementType: "string", elementValue: result };
 }
 
+// ################################################################################################
 export function transformer_dynamicObjectAccess_apply(
   step: Step,
   objectName: string,
@@ -734,16 +748,24 @@ export function transformer_dynamicObjectAccess_apply(
 
 }
 // ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 // <A>[] -> <A>[]
 // object -> object
-// fullObjectTemplate { a: A, b: B } -> object 
+// innerFullObjectTemplate { a: A, b: B } -> object 
 // TODO: recursive calls could be to transformer_apply or to transformer_extended_apply!!
 export function innerTransformer_apply(
   step: Step,
   objectName: string,
-  transformer: TransformerForBuild | TransformerForRuntime,
+  transformer:
+    | TransformerForBuild
+    | TransformerForRuntime
+    | TransformerForBuild_innerFullObjectTemplate
+    | TransformerForRuntime_innerFullObjectTemplate,
   queryParams: Record<string, any>,
-  contextResults?: Record<string, any>,
+  contextResults?: Record<string, any>
 ): DomainElement {
   // log.info(
   //   "innerTransformer_apply called for object named",
@@ -765,11 +787,11 @@ export function innerTransformer_apply(
     case "count": {
       const resolvedReference = defaultTransformers.transformer_InnerReference_resolve(
         step,
-        { transformerType: "contextReference", referenceName:transformer.referencedExtractor }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
+        { transformerType: "contextReference", referenceName: transformer.referencedExtractor }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
         queryParams,
         contextResults
       );
-    
+
       if (!["instanceUuidIndex", "object"].includes(resolvedReference.elementType)) {
         log.error(
           "innerTransformer_apply extractorTransformer count can not apply to resolvedReference",
@@ -788,10 +810,11 @@ export function innerTransformer_apply(
 
       if (transformer.groupBy) {
         const result = new Map<string, number>();
-        for (const entry of Object.entries(resolvedReference.elementValue)) {
-          const key = (entry[1] as any)[transformer.groupBy];
+        // for (const entry of Object.entries(resolvedReference.elementValue)) {
+        for (const entry of resolvedReference.elementValue) {
+          const key = (entry as any)[transformer.groupBy];
           if (result.has(key)) {
-            result.set(key, (result.get(key)??0) + 1);
+            result.set(key, (result.get(key) ?? 0) + 1);
           } else {
             result.set(key, 1);
           }
@@ -803,9 +826,22 @@ export function innerTransformer_apply(
           ),
         };
       } else {
-        return { elementType: "any" /* TODO: number? */, elementValue: [{count: Object.keys(resolvedReference.elementValue).length}] };
+        log.info("innerTransformer_apply extractorTransformer count without groupBy resolvedReference", resolvedReference.elementValue.length);
+        return {
+          elementType: "any" /* TODO: number? */,
+          elementValue: [{ count: resolvedReference.elementValue.length }],
+        };
       }
       break;
+    }
+    case "innerFullObjectTemplate": {
+      return defaultTransformers.transformer_fullObjectTemplate(
+        step,
+        objectName,
+        transformer,
+        queryParams,
+        contextResults
+      );
     }
     case "fullObjectTemplate": {
       return defaultTransformers.transformer_fullObjectTemplate(
@@ -815,28 +851,16 @@ export function innerTransformer_apply(
         queryParams,
         contextResults
       );
-      // const result = Object.fromEntries(
-      // );
-      // return {};
       break;
     }
     case "objectAlter": {
-      return defaultTransformers.transformer_objectAlter(
-        step,
-        objectName,
-        transformer,
-        queryParams,
-        contextResults
-      );
-      // const result = Object.fromEntries(
-      // );
-      // return {};
+      return defaultTransformers.transformer_objectAlter(step, objectName, transformer, queryParams, contextResults);
       break;
     }
     case "objectValues": {
       const resolvedReference = defaultTransformers.transformer_InnerReference_resolve(
         step,
-        { transformerType: "contextReference", referenceName:transformer.referencedExtractor }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
+        { transformerType: "contextReference", referenceName: transformer.referencedExtractor }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
         queryParams,
         contextResults
       );
@@ -845,7 +869,7 @@ export function innerTransformer_apply(
       //   "transformer_apply extractorTransformer count referencedExtractor resolvedReference",
       //   resolvedReference
       // );
-    
+
       if (resolvedReference.elementType in ["instanceUuidIndex", "object"]) {
         log.error(
           "innerTransformer_apply extractorTransformer count referencedExtractor resolvedReference",
@@ -853,39 +877,32 @@ export function innerTransformer_apply(
         );
         return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
       }
-      return { elementType: "instanceArray", elementValue: Object.values(resolvedReference.elementValue)}
+      return { elementType: "instanceArray", elementValue: Object.values(resolvedReference.elementValue) };
     }
     case "mapperListToList": {
-      return defaultTransformers.transformer_mapper_listToList_apply(
-        step,
-        transformer,
-        queryParams,
-        contextResults,
-      );
+      return defaultTransformers.transformer_mapper_listToList_apply(step, transformer, queryParams, contextResults);
       break;
     }
     case "mapperListToObject": {
-      return defaultTransformers.transformer_mapper_listToObject_apply(
-        step,
-        transformer,
-        queryParams,
-        contextResults,
-      );
+      return defaultTransformers.transformer_mapper_listToObject_apply(step, transformer, queryParams, contextResults);
       break;
     }
     case "listPickElement": {
       const resolvedReference = defaultTransformers.transformer_InnerReference_resolve(
         step,
-        { transformerType: "contextReference", referenceName:transformer.referencedExtractor }, // TODO: there's a bug, this transformer can not be used at build time, although it should be usable at build time
+        { transformerType: "contextReference", referenceName: transformer.referencedExtractor }, // TODO: there's a bug, this transformer can not be used at build time, although it should be usable at build time
         queryParams,
         contextResults
       );
-    
+
       if (!["instanceUuidIndex", "object"].includes(resolvedReference.elementType)) {
-        log.error("innerTransformer_apply extractorTransformer listPickElement can not apply to resolvedReference", resolvedReference);
+        log.error(
+          "innerTransformer_apply extractorTransformer listPickElement can not apply to resolvedReference",
+          resolvedReference
+        );
         return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
       }
-    
+
       const result = resolvedReference.elementValue[transformer.index];
       log.info(
         "innerTransformer_apply extractorTransformer listPickElement resolvedReference",
@@ -1003,7 +1020,7 @@ export function innerTransformer_apply(
     case "unique": {
       const resolvedReference = defaultTransformers.transformer_InnerReference_resolve(
         step,
-        { transformerType: "contextReference", referenceName:transformer.referencedExtractor },  // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
+        { transformerType: "contextReference", referenceName: transformer.referencedExtractor }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
         queryParams,
         contextResults
       );
@@ -1012,12 +1029,15 @@ export function innerTransformer_apply(
       //   "transformer_apply extractorTransformer unique referencedExtractor resolvedReference",
       //   resolvedReference
       // );
-    
+
       if (!["instanceUuidIndex", "object"].includes(resolvedReference.elementType)) {
-        log.error("innerTransformer_apply extractorTransformer unique referencedExtractor can not apply to resolvedReference", resolvedReference);
+        log.error(
+          "innerTransformer_apply extractorTransformer unique referencedExtractor can not apply to resolvedReference",
+          resolvedReference
+        );
         return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
       }
-    
+
       const sortByAttribute = transformer.orderBy
         ? (a: any[]) =>
             a.sort((a, b) =>
@@ -1034,19 +1054,24 @@ export function innerTransformer_apply(
         elementType: "instanceArray",
         elementValue: sortByAttribute([...result].map((e) => ({ [transformer.attribute]: e }))),
       };
-      break;  
+      break;
     }
     case "freeObjectTemplate": {
       const result = Object.fromEntries(
         Object.entries(transformer.definition).map((objectTemplateEntry: [string, any]) => {
           return [
             objectTemplateEntry[0],
-            defaultTransformers.transformer_extended_apply(step, objectTemplateEntry[0], objectTemplateEntry[1], queryParams, contextResults)
-              .elementValue,
+            defaultTransformers.transformer_extended_apply(
+              step,
+              objectTemplateEntry[0],
+              objectTemplateEntry[1],
+              queryParams,
+              contextResults
+            ).elementValue,
           ];
         })
       );
-      return { elementType: "object", elementValue: result};
+      return { elementType: "object", elementValue: result };
       break;
     }
     case "constantObject": {
@@ -1061,10 +1086,15 @@ export function innerTransformer_apply(
     case "contextReference":
     case "parameterReference":
     default: {
-      const rawValue = defaultTransformers.transformer_InnerReference_resolve(step, transformer, queryParams, contextResults);
+      const rawValue = defaultTransformers.transformer_InnerReference_resolve(
+        step,
+        transformer,
+        queryParams,
+        contextResults
+      );
       const returnedValue: DomainElement =
         typeof transformer == "object" && (transformer as any).applyFunction
-          ? { elementType: "any", elementValue: (transformer as any).applyFunction(rawValue.elementValue)}
+          ? { elementType: "any", elementValue: (transformer as any).applyFunction(rawValue.elementValue) }
           : rawValue;
       // log.info("transformer_apply default case for", transformerForBuild, "rawvalue", rawValue, "value", value);
       // return { elementType: "any", elementValue: value};
@@ -1077,7 +1107,7 @@ export function innerTransformer_apply(
 // ################################################################################################
 // <A>[] -> <A>[]
 // object -> object
-// fullObjectTemplate { a: A, b: B } -> object 
+// innerFullObjectTemplate { a: A, b: B } -> object 
 export function innerTransformer_plainObject_apply(
   step: Step,
   objectName: string,
@@ -1152,7 +1182,7 @@ export function innerTransformer_plainObject_apply(
 // ################################################################################################
 // <A>[] -> <A>[]
 // object -> object
-// fullObjectTemplate { a: A, b: B } -> object 
+// innerFullObjectTemplate { a: A, b: B } -> object 
 export function innerTransformer_array_apply(
   step: Step,
   objectName: string,
@@ -1216,7 +1246,7 @@ export function innerTransformer_array_apply(
 // ################################################################################################
 // <A>[] -> <A>[]
 // object -> object
-// fullObjectTemplate { a: A, b: B } -> object 
+// innerFullObjectTemplate { a: A, b: B } -> object 
 export function transformer_apply(
   step: Step,
   objectName: string,
@@ -1258,7 +1288,7 @@ export function transformer_apply(
 // ################################################################################################
 // <A>[] -> <A>[]
 // object -> object
-// fullObjectTemplate { a: A, b: B } -> object 
+// innerFullObjectTemplate { a: A, b: B } -> object 
 export function transformer_extended_apply(
   step: Step,
   objectName: string,

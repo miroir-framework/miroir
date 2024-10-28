@@ -122,7 +122,7 @@ export const SelectEntityInstanceEditorNotUsed = memo(
 
     useImperativeHandle(ref, () => {
       return {
-        getValue() {
+        resolvePathOnObject() {
           return selectedElement ? selectedElement : '';
         },
       };

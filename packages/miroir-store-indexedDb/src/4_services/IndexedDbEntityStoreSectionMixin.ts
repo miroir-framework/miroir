@@ -131,7 +131,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
     async renameEntityClean(update: ModelActionRenameEntity): Promise<ActionVoidReturnType> {
       // TODO: identical to IndexedDbModelStoreSection implementation!
       log.info(this.logHeader, "renameEntityClean", update);
-      // const currentValue = await this.localUuidIndexedDb.getValue(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
+      // const currentValue = await this.localUuidIndexedDb.resolvePathOnObject(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
       const currentEntity: ActionEntityInstanceReturnType = await this.getInstance(
         entityEntity.uuid,
         update.entityUuid

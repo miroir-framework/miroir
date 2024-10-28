@@ -160,16 +160,16 @@ export class IndexedDb {
   }
 
   // #############################################################################################
-  public async getValue(parentUuid: string, instanceUuid: string): Promise<any> {
+  public async resolvePathOnObject(parentUuid: string, instanceUuid: string): Promise<any> {
     const table = this.subLevels.get(parentUuid)
-    log.debug(this.logHeader, 'getValue for entity',parentUuid,'instance uuid',instanceUuid,table);
+    log.debug(this.logHeader, 'resolvePathOnObject for entity',parentUuid,'instance uuid',instanceUuid,table);
     let result = {};
     if (table) {
       result = await table.get(instanceUuid, {valueEncoding: 'json'});
     } else {
-      log.error(this.logHeader, 'getValue table for parentUuid not found:',parentUuid);
+      log.error(this.logHeader, 'resolvePathOnObject table for parentUuid not found:',parentUuid);
     }
-    // log.info('IndexedDb getValue ', tableName, result);
+    // log.info('IndexedDb resolvePathOnObject ', tableName, result);
     return Promise.resolve(result);
   }
 

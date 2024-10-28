@@ -3,7 +3,7 @@
 // import { describe, expect } from 'vitest';
 
 import { DomainElement, entityBook } from "miroir-core";
-import { extractorTransformerSql } from "../src/4_services/SqlDbExtractorRunner";
+import { sqlStringForTransformer } from "../src/4_services/SqlDbExtractorRunner";
 // import {
 //   DomainAction,
 //   StoreUnitConfiguration,
@@ -86,30 +86,30 @@ describe("extractorTransformerSql.unit.test", () => {
   it("apply transformer mustacheStringTemplate", async () => { // TODO: test failure cases!
       console.log(expect.getState().currentTestName, "START")
 
-      const result: DomainElement = extractorTransformerSql(
+      const result: DomainElement = sqlStringForTransformer(
         {
           transformerType: "mustacheStringTemplate",
           interpolation: "runtime",
           definition: "{{book.name}}",
         },
-        {}, // queryParams
-        {}, // newFetchedData
-        {
-          book: {
-            queryType: "extractorForDomainModelObjects",
-            contextResults: {},
-            deploymentUuid: "deployment1",
-            pageParams: {},
-            queryParams: {},
-            select: {
-              queryType: "selectObjectByDirectReference",
-              applicationSection: "data",
-              parentName: "Book",
-              parentUuid: entityBook.uuid,
-              instanceUuid: book2.uuid
-            }
-          },
-        }, // extractors
+        // {}, // queryParams
+        // {}, // newFetchedData
+        // {
+        //   book: {
+        //     queryType: "extractorForDomainModelObjects",
+        //     contextResults: {},
+        //     deploymentUuid: "deployment1",
+        //     pageParams: {},
+        //     queryParams: {},
+        //     select: {
+        //       queryType: "selectObjectByDirectReference",
+        //       applicationSection: "data",
+        //       parentName: "Book",
+        //       parentUuid: entityBook.uuid,
+        //       instanceUuid: book2.uuid
+        //     }
+        //   },
+        // }, // extractors
       );
 
       const expectedResult: DomainElement = {
@@ -126,10 +126,10 @@ describe("extractorTransformerSql.unit.test", () => {
   );
 
   // ################################################################################################
-  it("apply transformer fullObjectTemplate", async () => { // TODO: test failure cases!
+  it("apply transformer innerFullObjectTemplate", async () => { // TODO: test failure cases!
       console.log(expect.getState().currentTestName, "START")
 
-      const result: DomainElement = extractorTransformerSql(
+      const result: DomainElement = sqlStringForTransformer(
         {
           transformerType: "fullObjectTemplate",
           interpolation: "runtime",
@@ -160,29 +160,29 @@ describe("extractorTransformerSql.unit.test", () => {
             },
           ]
         },
-        {}, // queryParams
-        {}, // newFetchedData
-        {
-          book: {
-            queryType: "extractorForDomainModelObjects",
-            contextResults: {},
-            deploymentUuid: "deployment1",
-            pageParams: {},
-            queryParams: {},
-            select: {
-              queryType: "selectObjectByDirectReference",
-              applicationSection: "data",
-              parentName: "Book",
-              parentUuid: entityBook.uuid,
-              instanceUuid: book2.uuid
-            }
-          },
-        }, // extractors
+        // {}, // queryParams
+        // {}, // newFetchedData
+        // {
+        //   book: {
+        //     queryType: "extractorForDomainModelObjects",
+        //     contextResults: {},
+        //     deploymentUuid: "deployment1",
+        //     pageParams: {},
+        //     queryParams: {},
+        //     select: {
+        //       queryType: "selectObjectByDirectReference",
+        //       applicationSection: "data",
+        //       parentName: "Book",
+        //       parentUuid: entityBook.uuid,
+        //       instanceUuid: book2.uuid
+        //     }
+        //   },
+        // }, // extractors
       );
 
       const expectedResult: DomainElement = {
         elementType: "string",
-        elementValue: `SELECT row_to_json(t) AS "fullObjectTemplate" 
+        elementValue: `SELECT row_to_json(t) AS "innerFullObjectTemplate" 
         FROM ( 
           SELECT gen_random_uuid() AS "uuid", "book"."name" AS "name" 
           FROM "book" 

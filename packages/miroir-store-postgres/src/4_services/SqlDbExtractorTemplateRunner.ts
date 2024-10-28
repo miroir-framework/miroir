@@ -15,7 +15,8 @@ import {
   selectEntityJzodSchemaFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
-  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate
+  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
+  asyncExtractEntityInstanceListWithObjectListExtractor
 } from "miroir-core";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
@@ -46,8 +47,10 @@ export class SqlDbExtractTemplateRunner {
     const InMemoryImplementationExtractorRunnerMap: AsyncExtractorRunnerMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.sqlDbExtractorRunner.extractEntityInstanceUuidIndex.bind(this.sqlDbExtractorRunner),
+      extractEntityInstanceList: this.sqlDbExtractorRunner.extractEntityInstanceList.bind(this.sqlDbExtractorRunner),
       extractEntityInstance: this.sqlDbExtractorRunner.extractEntityInstance.bind(this.sqlDbExtractorRunner),
       extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+      extractEntityInstanceListWithObjectListExtractor: asyncExtractEntityInstanceListWithObjectListExtractor,
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
@@ -57,12 +60,15 @@ export class SqlDbExtractTemplateRunner {
     const dbImplementationExtractorRunnerMap: AsyncExtractorRunnerMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.sqlDbExtractorRunner.extractEntityInstanceUuidIndex.bind(this.sqlDbExtractorRunner),
+      extractEntityInstanceList: this.sqlDbExtractorRunner.extractEntityInstanceList.bind(this.sqlDbExtractorRunner),
       extractEntityInstance: this.sqlDbExtractorRunner.extractEntityInstance.bind(this.sqlDbExtractorRunner),
       extractEntityInstanceUuidIndexWithObjectListExtractor:
         this.sqlDbExtractorRunner.asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor.bind(this.sqlDbExtractorRunner),
-      extractWithManyExtractors: asyncExtractWithManyExtractors,
+      extractEntityInstanceListWithObjectListExtractor:
+        this.sqlDbExtractorRunner.asyncSqlDbExtractEntityInstanceListWithObjectListExtractor.bind(this.sqlDbExtractorRunner),
+      extractWithManyExtractors: this.sqlDbExtractorRunner.asyncExtractWithQuery.bind(this.sqlDbExtractorRunner),
       extractWithExtractor: asyncExtractWithExtractor,
-      applyExtractorTransformer: this.sqlDbExtractorRunner.applyExtractorTransformerSql.bind(this.sqlDbExtractorRunner),
+      applyExtractorTransformer: undefined as any,
       // 
       extractWithManyExtractorTemplates: undefined as any,
     };

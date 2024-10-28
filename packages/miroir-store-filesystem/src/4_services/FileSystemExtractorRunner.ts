@@ -3,6 +3,7 @@ import {
   ActionReturnType,
   ApplicationSection,
   asyncApplyExtractorTransformerInMemory,
+  asyncExtractEntityInstanceListWithObjectListExtractor,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   AsyncExtractorRunner,
   AsyncExtractorRunnerMap,
@@ -11,6 +12,7 @@ import {
   asyncExtractWithManyExtractors,
   DomainElement,
   DomainElementEntityInstanceOrFailed,
+  DomainElementInstanceArrayOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
   DomainState,
   ExtractorForSingleObject,
@@ -31,7 +33,6 @@ import {
 } from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
-import { FileSystemExtractorTemplateRunner } from "./FileSystemExtractorTemplateRunner.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "FilesystemExtractorRunner");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -42,17 +43,17 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunner {
   private logHeader: string;
   private selectorMap: AsyncExtractorRunnerMap;
-  private fileSystemExtractorTemplateRunner: FileSystemExtractorTemplateRunner;
 
   // ################################################################################################
   constructor(private persistenceStoreController: PersistenceStoreInstanceSectionAbstractInterface) {
     this.logHeader = "PersistenceStoreController " + persistenceStoreController.getStoreName();
-    this.fileSystemExtractorTemplateRunner = new FileSystemExtractorTemplateRunner(persistenceStoreController, this);
     this.selectorMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex,
+      extractEntityInstanceList: this.extractEntityInstanceList,
       extractEntityInstance: this.extractEntityInstance,
       extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+      extractEntityInstanceListWithObjectListExtractor: asyncExtractEntityInstanceListWithObjectListExtractor,
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
@@ -131,27 +132,6 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
       applicationSection,
       entityUuidReference
     );
-
-    // log.info("extractEntityInstance found entityUuidReference", JSON.stringify(entityUuidReference))
-    // if (entityUuidReference.elementType != "string" && entityUuidReference.elementType != "instanceUuid") {
-    // if (entityUuidReference.elementType == "failure") {
-    //   return {
-    //     elementType: "failure",
-    //     elementValue: {
-    //       queryFailure: "IncorrectParameters",
-    //       failureMessage: "FileSystementityUuidReference is not a string or instanceUuid:" + JSON.stringify(entityUuidReference),
-    //       queryContext: JSON.stringify(selectorParams.extractor.contextResults),
-    //       queryReference: JSON.stringify(querySelectorParams.parentUuid),
-    //     },
-    //   };
-    // }
-
-    // const index = getDeploymentEntityStateIndex(
-    //   deploymentUuid,
-    //   applicationSection,
-    //   entityUuidReference.elementValue
-    // )
-
     switch (querySelectorParams?.queryType) {
       case "selectObjectByRelation": {
         // const referenceObject = querySelectorParams.objectReference;
@@ -222,46 +202,8 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
           JSON.stringify(instanceDomainElement)
         );
 
-        // if (instanceDomainElement.elementType == "instance") {
-        //   return instanceDomainElement; /* QueryResults, elementType == "failure" */
-        // }
-        // if (instanceDomainElement.elementType != "string" && instanceDomainElement.elementType != "instanceUuid") {
-        //   return {
-        //     elementType: "failure",
-        //     elementValue: {
-        //       queryFailure: "EntityNotFound",
-        //       deploymentUuid,
-        //       applicationSection,
-        //       entityUuid: entityUuidReference.elementValue,
-        //     },
-        //   };
-        // }
         log.info("extractEntityInstance resolved instanceUuid =", instanceDomainElement);
-        // if (!deploymentEntityState[index]) {
-        //   return {
-        //     elementType: "failure",
-        //     elementValue: {
-        //       queryFailure: "EntityNotFound",
-        //       deploymentUuid,
-        //       applicationSection,
-        //       entityUuid: entityUuidReference.elementValue,
-        //     },
-        //   };
-        // }
-        // if (!deploymentEntityState[index].entities[instanceDomainElement.elementValue]) {
-        //   return {
-        //     elementType: "failure",
-        //     elementValue: {
-        //       queryFailure: "InstanceNotFound",
-        //       deploymentUuid,
-        //       applicationSection,
-        //       entityUuid: entityUuidReference.elementValue,
-        //       instanceUuid: instanceDomainElement.elementValue,
-        //     },
-        //   };
-        // }
         const result = await this.persistenceStoreController.getInstance(
-          // applicationSection,
           entityUuidReference,
           instanceDomainElement
         );
@@ -314,13 +256,31 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
   > = async (
     extractorRunnerParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList>
   ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
+    return this.extractEntityInstanceList(extractorRunnerParams).then((result) => {
+      if (result.elementType == "failure") {
+        return result;
+      }
+      const entityInstanceUuidIndex = Object.fromEntries(
+        result.elementValue.map((i: any) => [i.uuid, i])
+      );
+      return { elementType: "instanceUuidIndex", elementValue: entityInstanceUuidIndex };
+    });
+  }
+
+  // ##############################################################################################
+  public extractEntityInstanceList: AsyncExtractorRunner<
+    ExtractorForSingleObjectList,
+    DomainElementInstanceArrayOrFailed
+  > = async (
+    extractorRunnerParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList>
+  ): Promise<DomainElementInstanceArrayOrFailed> => {
     const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
     const entityUuid = extractorRunnerParams.extractor.select.parentUuid
-
+  
     // log.info("extractEntityInstanceUuidIndex params", selectorParams, deploymentUuid, applicationSection, entityUuid);
     // log.info("extractEntityInstanceUuidIndex domainState", domainState);
-
+  
     if (!deploymentUuid || !applicationSection || !entityUuid) {
       return {
         // new object
@@ -332,10 +292,10 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
       };
       // resolving by fetchDataReference, fetchDataReferenceAttribute
     }
-
+  
     const entityInstanceCollection: ActionEntityInstanceCollectionReturnType =
       await this.persistenceStoreController.getInstances(/*applicationSection, */ entityUuid);
-
+  
     if (entityInstanceCollection.status == "error") {
       // return data;
       return {
@@ -348,16 +308,19 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
         },
       };
     }
-    const entityInstanceUuidIndex = Object.fromEntries(
-      entityInstanceCollection.returnedDomainElement.elementValue.instances.map((i:any) => [i.uuid, i])
-    );
-    return { elementType: "instanceUuidIndex", elementValue: entityInstanceUuidIndex };
+    // const entityInstanceUuidIndex = Object.fromEntries(
+    //   entityInstanceCollection.returnedDomainElement.elementValue.instances.map((i:any) => [i.uuid, i])
+    // );
+    return { elementType: "instanceArray", elementValue: entityInstanceCollection.returnedDomainElement.elementValue.instances };
   };
 
+  // ##############################################################################################
   public getSelectorMap(): AsyncExtractorRunnerMap {
     return this.selectorMap;
   }
 }
+
+
 
 export function getJzodSchemaSelectorMap(): ExtractorRunnerMapForJzodSchema<DomainState> {
   return {

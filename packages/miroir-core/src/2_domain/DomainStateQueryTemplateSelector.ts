@@ -25,8 +25,10 @@ import { getLoggerName } from "../tools";
 import { cleanLevel } from "./constants";
 import {
   extractEntityInstanceListFromListQueryAndDomainState,
+  extractEntityInstanceUuidIndexFromListQueryAndDomainState,
   extractWithManyExtractorsFromDomainState,
   selectEntityInstanceFromObjectQueryAndDomainState,
+  selectEntityInstanceListFromDomainState,
   selectEntityInstanceUuidIndexFromDomainState,
 } from "./DomainStateQuerySelectors";
 import { extractWithExtractor } from "./QuerySelectors";
@@ -71,8 +73,10 @@ export function getSelectorMapForTemplate(): SyncExtractorRunnerMap<DomainState>
   return {
     extractorType: "sync",
     extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDomainState,
+    extractEntityInstanceList: selectEntityInstanceListFromDomainState,
     extractEntityInstance: selectEntityInstanceFromObjectQueryAndDomainState,
-    extractEntityInstanceUuidIndexWithObjectListExtractor: extractEntityInstanceListFromListQueryAndDomainState,
+    extractEntityInstanceUuidIndexWithObjectListExtractor: extractEntityInstanceUuidIndexFromListQueryAndDomainState,
+    extractEntityInstanceListWithObjectListExtractor: extractEntityInstanceListFromListQueryAndDomainState,
     extractWithManyExtractors: extractWithManyExtractorsFromDomainState,
     extractWithExtractor: extractWithExtractor,
     // 

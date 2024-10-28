@@ -18,6 +18,7 @@ import { packageName } from "../constants";
 import { getLoggerName } from "../tools";
 import {
   asyncApplyExtractorTransformerInMemory,
+  asyncExtractEntityInstanceListWithObjectListExtractor,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   asyncExtractWithExtractor,
   asyncExtractWithManyExtractors,
@@ -54,8 +55,10 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
     this.selectorMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.extractorRunnerInMemory.extractEntityInstanceUuidIndex,
+      extractEntityInstanceList: this.extractorRunnerInMemory.extractEntityInstanceList,
       extractEntityInstance: this.extractorRunnerInMemory.extractEntityInstance,
       extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+      extractEntityInstanceListWithObjectListExtractor: asyncExtractEntityInstanceListWithObjectListExtractor,
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,

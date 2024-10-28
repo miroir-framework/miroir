@@ -4,6 +4,7 @@ import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import {
   ApplicationSection,
   DomainElement,
+  DomainElementInstanceArrayOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
   DomainElementObject,
   EntityInstance,
@@ -23,7 +24,7 @@ import { MiroirLoggerFactory } from "../4_services/Logger";
 import { packageName } from "../constants";
 import { getLoggerName } from "../tools";
 import { cleanLevel } from "./constants";
-import { applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory, applyExtractorTransformerInMemory } from "./QuerySelectors";
+import { applyExtractorForSingleObjectListToSelectedInstancesListInMemory, applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory, applyExtractorTransformerInMemory } from "./QuerySelectors";
 import { resolveQueryTemplate } from "./Templates";
 import { applyTransformer } from "./Transformers";
 
@@ -42,6 +43,8 @@ const emptyAsyncSelectorMap:AsyncExtractorRunnerMap = {
   extractEntityInstance: undefined as any,
   extractEntityInstanceUuidIndexWithObjectListExtractor: undefined as any,
   extractEntityInstanceUuidIndex: undefined as any,
+  extractEntityInstanceListWithObjectListExtractor: undefined as any,
+  extractEntityInstanceList: undefined as any,
   applyExtractorTransformer: undefined as any,
   // ##############################################################################################
   extractWithManyExtractorTemplates: undefined as any,
@@ -79,15 +82,40 @@ export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
 
   return result;
 };
+// ################################################################################################
+/**
+ * returns an Entity Instance List, from a ListQuery
+ * @param deploymentEntityState 
+ * @param selectorParams 
+ * @returns 
+ */
+export const asyncExtractEntityInstanceListWithObjectListExtractor
+= (
+  selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList>
+): Promise<DomainElementInstanceArrayOrFailed> => {
+  const result: Promise<DomainElementInstanceArrayOrFailed> =
+    (selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap).extractEntityInstanceList(selectorParams)
+    .then((selectedInstancesUuidIndex: DomainElementInstanceArrayOrFailed) => {
+      log.info(
+        "asyncExtractEntityInstanceUuidIndexWithObjectListExtractor found selectedInstances",
+        selectedInstancesUuidIndex
+      );
+
+      return applyExtractorForSingleObjectListToSelectedInstancesListInMemory(
+        selectedInstancesUuidIndex,
+        selectorParams.extractor,
+      );
+    });
+  ;
+
+  return result;
+};
 
 // ################################################################################################
 export async function asyncApplyExtractorTransformerInMemory(
-  // actionRuntimeTransformer: TransformerForRuntime,
   actionRuntimeTransformer: ExtendedTransformerForRuntime,
   queryParams: Record<string, any>,
   newFetchedData: Record<string, any>,
-  // queryParams: DomainElementObject,
-  // newFetchedData: DomainElementObject,
   extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>,
 ): Promise<DomainElement> {
   return Promise.resolve(applyExtractorTransformerInMemory(actionRuntimeTransformer, queryParams, newFetchedData));
@@ -113,7 +141,8 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
     case "queryExtractObjectListByEntity":
     case "selectObjectListByRelation": 
     case "selectObjectListByManyToManyRelation": {
-      return extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractor({
+      // return extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractor({
+      return extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor({
         extractorRunnerMap,
         extractor: {
           queryType: "extractorForDomainModelObjects",

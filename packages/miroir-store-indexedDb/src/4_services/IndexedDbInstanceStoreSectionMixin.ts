@@ -67,7 +67,7 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
     // #############################################################################################
     async getInstance(parentUuid: string, uuid: string): Promise<ActionEntityInstanceReturnType> {
       try {
-        const result = await this.localUuidIndexedDb.getValue(parentUuid, uuid);
+        const result = await this.localUuidIndexedDb.resolvePathOnObject(parentUuid, uuid);
         return Promise.resolve({
           status: "ok",
           returnedDomainElement: { elementType: "instance", elementValue: result },

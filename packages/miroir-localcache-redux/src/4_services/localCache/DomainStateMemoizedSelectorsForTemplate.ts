@@ -3,6 +3,7 @@ import {
   DeploymentEntityState,
   ExtractorTemplateRunnerMapForJzodSchema,
   SyncExtractorRunnerMap,
+  extractEntityInstanceListWithObjectListExtractorInMemory,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractEntityJzodSchemaFromDeploymentEntityState,
   extractFetchQueryJzodSchema,
@@ -12,6 +13,7 @@ import {
   extractWithManyExtractors,
   extractzodSchemaForSingleSelectQuery,
   selectEntityInstanceFromDeploymentEntityState,
+  selectEntityInstanceListFromDeploymentEntityState,
   selectEntityInstanceUuidIndexFromDeploymentEntityState
 } from "miroir-core";
 
@@ -29,9 +31,17 @@ export function getMemoizedDeploymentEntityStateSelectorForTemplateMap(): SyncEx
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
       selectEntityInstanceUuidIndexFromDeploymentEntityState
     ),
+    extractEntityInstanceList: createSelector(
+      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
+      selectEntityInstanceListFromDeploymentEntityState
+    ),
     extractEntityInstanceUuidIndexWithObjectListExtractor: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
       extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
+    ),
+    extractEntityInstanceListWithObjectListExtractor: createSelector(
+      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
+      extractEntityInstanceListWithObjectListExtractorInMemory
     ),
     extractWithManyExtractors: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],

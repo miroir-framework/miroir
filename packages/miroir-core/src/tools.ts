@@ -27,12 +27,12 @@ export function getLoggerName(
 
 
 // ################################################################################################
-export function getValue(valueObject:any, path: string[]) {
-  // log.info("getValue called with", valueObject, "path", path)
+export function resolvePathOnObject(valueObject:any, path: string[]) {
+  // console.info("resolvePathOnObject called with", valueObject, "path", path)
   return path.reduce((acc, curr, index) => {
     if (index == path.length && (acc == undefined || acc[curr] == undefined)) {
       throw new Error(
-        "getValue value object=" +
+        "resolvePathOnObject value object=" +
           valueObject +
           ", path=" +
           path +
@@ -44,6 +44,7 @@ export function getValue(valueObject:any, path: string[]) {
           curr[acc]
       );
     } else {
+      console.info("resolvePathOnObject called with", valueObject, "path", path, "result", acc[curr])
       return acc[curr];
     }
   }, valueObject);

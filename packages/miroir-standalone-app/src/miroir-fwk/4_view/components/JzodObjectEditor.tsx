@@ -41,7 +41,7 @@ import {
   getDefaultValueForJzodSchemaWithResolution,
   getDeploymentEntityStateSelectorParams,
   getLoggerName,
-  getValue,
+  resolvePathOnObject,
   resolveReferencesForJzodSchemaAndValueObject,
   unfoldJzodSchemaOnce
 } from "miroir-core";
@@ -280,7 +280,7 @@ export const JzodObjectEditor = (
   //   props
   // );
 
-  const currentValue = getValue(props.formState,props.rootLesslistKeyArray);
+  const currentValue = resolvePathOnObject(props.formState,props.rootLesslistKeyArray);
   // log.info("#####################################################################################");
   // log.info("JzodObjectEditor", props.listKey, "count", count, "currentValue", currentValue);
   // log.info("JzodObjectEditor", props.listKey, "count", count, "resolvedJzodSchema", props.resolvedJzodSchema);
@@ -587,7 +587,7 @@ export const JzodObjectEditor = (
           "props.resolvedJzodSchema",
           props.resolvedJzodSchema,
         );
-        const subObject = getValue(props.formik.values,localAttributeRootLessListKeyArray);
+        const subObject = resolvePathOnObject(props.formik.values,localAttributeRootLessListKeyArray);
         const newFormState1: any = deleteObjectAtPath(props.formik.values, localAttributeRootLessListKeyArray);
         log.info("handleAttributeNameChange newFormState1",newFormState1, localAttributeRootLessListKeyArray)
         // const newPath = attributeRootLessListKeyArray.slice(0,attributeRootLessListKeyArray.length-1);
@@ -632,7 +632,7 @@ export const JzodObjectEditor = (
         //   "handleAttributeNameChange new parent object items order",
         //   parentItemsOrder,
         // );
-        // const currentParentValue = getValue(newFormState2,parentPath);
+        // const currentParentValue = resolvePathOnObject(newFormState2,parentPath);
     };
     //   [props.formik.values, props.setFormState ]
     // )
@@ -730,7 +730,7 @@ export const JzodObjectEditor = (
         newFormState
       );
       props.setFormState(newFormState);
-      const currentParentValue = getValue(newFormState,parentPath);
+      const currentParentValue = resolvePathOnObject(newFormState,parentPath);
       log.info(
         "handleSelectLiteralChange props.resolvedJzodSchema",
         props.resolvedJzodSchema,
@@ -808,7 +808,7 @@ export const JzodObjectEditor = (
               miroirMetaModel
             );
 
-            const currentValue = getValue(props.formik.values,props.rootLesslistKeyArray);
+            const currentValue = resolvePathOnObject(props.formik.values,props.rootLesslistKeyArray);
             const newValue: any =
                 { ["NEWATTRIBUTE"]: newAttributeValue, ...currentValue };
             log.info("addMissingRecordAttribute", "newValue", newValue)
@@ -849,7 +849,7 @@ export const JzodObjectEditor = (
                 ? { ...props.formik.values, [undefinedOptionalAttributes[0]]: "test!" }
                 : props.formik.values;
             props.setFormState(newFormState);
-            const currentValue = getValue(newFormState,props.rootLesslistKeyArray);
+            const currentValue = resolvePathOnObject(newFormState,props.rootLesslistKeyArray);
             setItemsOrder(getItemsOrder(currentValue, props.resolvedJzodSchema))
             // await props.setFormState({"deploymentUuid2": "test!"});
             // await props.formik.setFieldValue("deploymentUuid2", "test!");
@@ -881,7 +881,7 @@ export const JzodObjectEditor = (
             const newFormState: any = {...props.formik.values};
             delete newFormState[listKey]
             props.setFormState(newFormState);
-            const currentValue = getValue(newFormState,props.rootLesslistKeyArray);
+            const currentValue = resolvePathOnObject(newFormState,props.rootLesslistKeyArray);
             setItemsOrder(getItemsOrder(currentValue, props.resolvedJzodSchema))
             // // await props.setFormState({"deploymentUuid2": "test!"});
             // // await props.formik.setFieldValue("deploymentUuid2", "test!");
@@ -1286,7 +1286,7 @@ export const JzodObjectEditor = (
           // "currentAttributeRawDefinition",
           // currentAttributeRawDefinition.element
         );
-        const arrayValueObject = getValue(props.formik.values,props.rootLesslistKeyArray);
+        const arrayValueObject = resolvePathOnObject(props.formik.values,props.rootLesslistKeyArray);
         // log.info("array",arrayValueObject, "resolvedJzodSchema",props.resolvedJzodSchema);
 
         
@@ -1587,7 +1587,7 @@ export const JzodObjectEditor = (
 
           // log.info("handleSelectEnumChange called with event", event)
           const parentPath = props.rootLesslistKeyArray.slice(0,props.rootLesslistKeyArray.length - 1)
-          // const currentParentValue = getValue(props.formik.values,parentPath);
+          // const currentParentValue = resolvePathOnObject(props.formik.values,parentPath);
 
           if (
             props.unionInformation?.discriminator &&

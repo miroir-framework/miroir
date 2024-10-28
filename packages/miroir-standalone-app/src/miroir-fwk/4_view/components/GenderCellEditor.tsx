@@ -78,7 +78,7 @@ export const GenderCellEditor = memo(
 
     useImperativeHandle(ref, () => {
       return {
-        getValue() {
+        resolvePathOnObject() {
           return female ? 'Female' : 'Male';
         },
       };

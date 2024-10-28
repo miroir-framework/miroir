@@ -5,6 +5,7 @@ import {
   ApplicationSection,
   DomainElement,
   DomainElementEntityInstanceOrFailed,
+  DomainElementInstanceArrayOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
   DomainElementObject,
   DomainModelGetEntityDefinitionExtractor,
@@ -34,6 +35,7 @@ import { getLoggerName } from "../tools";
 import { cleanLevel } from "./constants";
 import { extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT } from "./DomainStateQueryTemplateSelector";
 import {
+  extractEntityInstanceListWithObjectListExtractorInMemory,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractFetchQueryJzodSchema,
   extractJzodSchemaForDomainModelQuery,
@@ -160,6 +162,80 @@ export const selectEntityInstanceUuidIndexFromDomainState: SyncExtractorRunner<
         elementType: "instanceUuidIndex",
         elementValue: domainState[deploymentUuid][applicationSection][entityUuid],
       };
+};
+
+// ################################################################################################
+// ACCESSES DOMAIN STATE
+export const selectEntityInstanceListFromDomainState: SyncExtractorRunner<
+  ExtractorForSingleObjectList,
+  DomainState,
+  DomainElementInstanceArrayOrFailed
+> = (
+  domainState: DomainState,
+  selectorParams: SyncExtractorRunnerParams<ExtractorForSingleObjectList, DomainState>
+): DomainElementInstanceArrayOrFailed => {
+  const result = selectEntityInstanceUuidIndexFromDomainState(domainState, selectorParams);
+
+  if (result.elementType == "failure") {
+    return result;
+  }
+  // const deploymentUuid = selectorParams.extractor.deploymentUuid;
+  // const applicationSection = selectorParams.extractor.select.applicationSection ?? "data";
+
+  // const entityUuid: Uuid = selectorParams.extractor.select.parentUuid;
+
+  // // log.info("selectEntityInstanceUuidIndexFromDomainState params", selectorParams, deploymentUuid, applicationSection, entityUuid);
+  // // log.info("selectEntityInstanceUuidIndexFromDomainState domainState", domainState);
+
+  // if (!deploymentUuid || !applicationSection || !entityUuid) {
+  //   return {
+  //     // new object
+  //     elementType: "failure",
+  //     elementValue: {
+  //       queryFailure: "IncorrectParameters",
+  //       queryContext:
+  //         "deploymentUuid=" +
+  //         deploymentUuid +
+  //         ", applicationSection=" +
+  //         applicationSection +
+  //         ", entityUuid=" +
+  //         JSON.stringify(entityUuid),
+  //       queryParameters: JSON.stringify(selectorParams),
+  //     },
+  //   };
+  //   // resolving by fetchDataReference, fetchDataReferenceAttribute
+  // }
+  // if (!domainState) {
+  //   return { elementType: "failure", elementValue: { queryFailure: "DomainStateNotLoaded" } };
+  // }
+  // if (!domainState[deploymentUuid]) {
+  //   return { elementType: "failure", elementValue: { queryFailure: "DeploymentNotFound", deploymentUuid } };
+  // }
+  // if (!domainState[deploymentUuid][applicationSection]) {
+  //   return {
+  //     elementType: "failure",
+  //     elementValue: { queryFailure: "ApplicationSectionNotFound", deploymentUuid, applicationSection },
+  //   };
+  // }
+  // // switch (entityUuid.elementType) {
+  // //   case "string":
+  // //   case "instanceUuid": {
+  //     if (!domainState[deploymentUuid][applicationSection][entityUuid]) {
+  //       return {
+  //         elementType: "failure",
+  //         elementValue: {
+  //           queryFailure: "EntityNotFound",
+  //           deploymentUuid,
+  //           applicationSection,
+  //           entityUuid: entityUuid,
+  //         },
+  //       };
+  //     }
+
+  return {
+    elementType: "instanceArray",
+    elementValue: Object.values(result.elementValue),
+  };
 };
 
 // ################################################################################################
@@ -385,11 +461,24 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
  * @param selectorParams
  * @returns
  */
-export const extractEntityInstanceListFromListQueryAndDomainState: SyncExtractorRunner<
+export const extractEntityInstanceUuidIndexFromListQueryAndDomainState: SyncExtractorRunner<
   ExtractorForSingleObjectList,
   DomainState,
   DomainElementInstanceUuidIndexOrFailed
 > = extractEntityInstanceUuidIndexWithObjectListExtractorInMemory<DomainState>;
+
+// ################################################################################################
+/**
+ * returns an Entity Instance List, from a ListQuery
+ * @param domainState
+ * @param selectorParams
+ * @returns
+ */
+export const extractEntityInstanceListFromListQueryAndDomainState: SyncExtractorRunner<
+  ExtractorForSingleObjectList,
+  DomainState,
+  DomainElementInstanceArrayOrFailed
+> = extractEntityInstanceListWithObjectListExtractorInMemory<DomainState>;
 
 // ################################################################################################
 export const innerSelectElementFromQueryAndDomainState = innerSelectElementFromQuery<DomainState>;
@@ -470,8 +559,10 @@ export function getSelectorMap(): SyncExtractorRunnerMap<DomainState> {
   return {
     extractorType: "sync",
     extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDomainState,
+    extractEntityInstanceList: selectEntityInstanceListFromDomainState,
     extractEntityInstance: selectEntityInstanceFromObjectQueryAndDomainState,
-    extractEntityInstanceUuidIndexWithObjectListExtractor: extractEntityInstanceListFromListQueryAndDomainState,
+    extractEntityInstanceUuidIndexWithObjectListExtractor: extractEntityInstanceUuidIndexFromListQueryAndDomainState,
+    extractEntityInstanceListWithObjectListExtractor: extractEntityInstanceListFromListQueryAndDomainState,
     extractWithManyExtractors: extractWithManyExtractorsFromDomainState,
     extractWithExtractor: extractWithExtractor,
     // 

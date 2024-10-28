@@ -287,6 +287,8 @@ export {
   queryTemplateSelectExtractorWrapperReturningList,
   QueryTemplateSelectExtractorWrapperReturningObject,
   queryTemplateSelectExtractorWrapperReturningObject,
+  TransformerForRuntime_innerFullObjectTemplate,
+  transformerForRuntime_innerFullObjectTemplate,
   TransformerForRuntime,
   transformerForRuntime,
   CarryOnObject,
@@ -523,7 +525,9 @@ export {
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectEntityJzodSchemaFromDomainStateNew,
   selectEntityInstanceUuidIndexFromDomainState,
+  selectEntityInstanceListFromDomainState,
   selectEntityInstanceFromObjectQueryAndDomainState,
+  extractEntityInstanceUuidIndexFromListQueryAndDomainState,
   extractEntityInstanceListFromListQueryAndDomainState,
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
@@ -541,6 +545,7 @@ export {
   extractEntityJzodSchemaFromDeploymentEntityState,
   selectEntityInstanceFromDeploymentEntityState,
   selectEntityInstanceUuidIndexFromDeploymentEntityState,
+  selectEntityInstanceListFromDeploymentEntityState,
   getDeploymentEntityStateJzodSchemaSelectorMap,
   getDeploymentEntityStateSelectorMap,
   getDeploymentEntityStateSelectorParams,
@@ -568,6 +573,7 @@ export {
   plainObjectToDomainElement,
   resolveContextReference,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
+  extractEntityInstanceListWithObjectListExtractorInMemory,
   extractFetchQueryJzodSchema,
   extractJzodSchemaForDomainModelQuery,
   extractzodSchemaForSingleSelectQuery,
@@ -584,6 +590,7 @@ export {
 export {
   asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+  asyncExtractEntityInstanceListWithObjectListExtractor,
   asyncExtractWithExtractor,
   asyncExtractWithManyExtractors,
   asyncInnerSelectElementFromQuery,
@@ -672,7 +679,7 @@ export {
   ignorePostgresExtraAttributesOnRecord,
 } from './4_services/otherTools';
 export { miroirCoreStartup } from './startup';
-export { stringTuple, circularReplacer, getLoggerName, getValue } from './tools';
+export { stringTuple, circularReplacer, getLoggerName, resolvePathOnObject } from './tools';
 
 import entityEndpointVersion from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e4320b9e-ab45-4abe-85d8-359604b3c62f.json';
 import entityEntity from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';

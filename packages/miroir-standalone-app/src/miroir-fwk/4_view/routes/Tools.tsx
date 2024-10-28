@@ -402,7 +402,7 @@ export const ToolsPage: React.FC<any> = (
         //   actionName: "openStore",
         //   endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         //   configuration: {
-        //     transformerType: "fullObjectTemplate",
+        //     transformerType: "innerFullObjectTemplate",
         //     definition: [
         //       {
         //         attibuteKey: {
@@ -583,7 +583,7 @@ export const ToolsPage: React.FC<any> = (
           //     actionName: "openStore",
           //     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           //     configuration: {
-          //       transformerType: "fullObjectTemplate",
+          //       transformerType: "innerFullObjectTemplate",
           //       definition: [
           //         {
           //           attributeKey: {
