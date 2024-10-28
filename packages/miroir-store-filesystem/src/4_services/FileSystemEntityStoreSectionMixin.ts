@@ -214,8 +214,16 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
       if (currentEntityDefinition.status != "ok") {
         return currentEntityDefinition
       }
-      const modifiedEntity:EntityInstanceWithName = Object.assign({},currentEntity.returnedDomainElement.elementValue,{name:update.targetValue});
-      const modifiedEntityDefinition:EntityDefinition = Object.assign({},currentEntityDefinition.returnedDomainElement.elementValue as EntityDefinition,{name:update.targetValue});
+      const modifiedEntity: EntityInstanceWithName = Object.assign(
+        {},
+        currentEntity.returnedDomainElement.elementValue,
+        { name: update.targetValue }
+      );
+      const modifiedEntityDefinition: EntityDefinition = Object.assign(
+        {},
+        currentEntityDefinition.returnedDomainElement.elementValue as EntityDefinition,
+        { name: update.targetValue }
+      );
 
       await this.upsertInstance(entityEntity.uuid, modifiedEntity);
       await this.upsertInstance(entityEntityDefinition.uuid, modifiedEntityDefinition);
@@ -239,12 +247,16 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
       if (currentEntityDefinition.status != "ok") {
         return currentEntityDefinition
       }
-      const localEntityDefinition: EntityDefinition = currentEntityDefinition.returnedDomainElement.elementValue as EntityDefinition;
-      const localEntityJzodSchemaDefinition = update.removeColumns != undefined && Array.isArray(update.removeColumns)?
-        Object.fromEntries(
-          Object.entries(localEntityDefinition.jzodSchema.definition).filter((i) => update.removeColumns??([] as string[]).includes(i[0]))
-        )
-        : localEntityDefinition.jzodSchema.definition;
+      const localEntityDefinition: EntityDefinition = currentEntityDefinition.returnedDomainElement
+        .elementValue as EntityDefinition;
+      const localEntityJzodSchemaDefinition =
+        update.removeColumns != undefined && Array.isArray(update.removeColumns)
+          ? Object.fromEntries(
+              Object.entries(localEntityDefinition.jzodSchema.definition).filter(
+                (i) => update.removeColumns ?? ([] as string[]).includes(i[0])
+              )
+            )
+          : localEntityDefinition.jzodSchema.definition;
       const modifiedEntityDefinition: EntityDefinition = Object.assign(
         {},
         localEntityDefinition,

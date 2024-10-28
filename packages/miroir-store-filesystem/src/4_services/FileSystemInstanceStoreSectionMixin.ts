@@ -84,7 +84,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     getInstance(entityUuid: string, uuid: string): Promise<ActionEntityInstanceReturnType> {
       const entityInstancePath = path.join(this.directory, entityUuid, fullName(uuid));
       try {
-        const fileContents = fs.readFileSync(entityInstancePath).toString();
+        const fileContents = fs.readFileSync(entityInstancePath, { encoding: "utf-8"}).toString();
         return Promise.resolve({
           status: "ok",
           returnedDomainElement: { elementType: "instance", elementValue: JSON.parse(fileContents) },
@@ -151,7 +151,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
         parentUuid: entityUuid,
         applicationSection: this.applicationSection,
         instances: entityInstancesUuid.map((e) =>
-          JSON.parse(fs.readFileSync(path.join(entityInstancesPath, e)).toString())
+          JSON.parse(fs.readFileSync(path.join(entityInstancesPath, e),{encoding: "utf-8"}).toString())
         ),
       };
       log.debug(
@@ -177,7 +177,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     // #########################################################################################
     upsertInstance(entityUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
       const filePath = path.join(this.directory, entityUuid, fullName(instance.uuid));
-      fs.writeFileSync(filePath, JSON.stringify(instance, undefined, 2));
+      fs.writeFileSync(filePath, JSON.stringify(instance, undefined, 2), { encoding: "utf-8" });
 
       return Promise.resolve(ACTION_OK);
     }

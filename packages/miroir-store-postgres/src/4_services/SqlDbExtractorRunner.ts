@@ -196,7 +196,6 @@ export function sqlStringForTransformer(
           tokenQuote + sqlStringForTransformer(f.attributeKey).elementValue.sqlStringOrObject + tokenQuote
       ).join(tokenSeparatorForSelect);
 
-      // const sqlResult = `SELECT "${subQueryColumnName}" FROM "${innerQueryName}"`
       const sqlResult = `SELECT ${resultColumns} FROM "${innerQueryName}"`
       return {
         elementType: "any",
@@ -440,11 +439,6 @@ export class SqlDbExtractRunner {
   ): Promise<DomainElementObjectOrFailed> => {
     // log.info("########## asyncExtractWithManyExtractors begin, query", selectorParams);
   
-    // const context: Record<string, any> = {
-    //   ...selectorParams.extractor.contextResults.elementValue ,
-    // };
-    // const localSelectorMap: AsyncExtractorRunnerMap = selectorParams?.extractorRunnerMap?? undefined as any;
-
     const extractorRawQueries = Object.entries(selectorParams.extractor.extractors??{}).map(([key, value]) => {
       return [key, this.persistenceStoreController.sqlForExtractor(value)];
     });
@@ -457,24 +451,22 @@ export class SqlDbExtractRunner {
     });
     log.info("applyExtractorTransformerSql combinerRawQueries", combinerRawQueries);
 
-    // "${transformerName}" AS (${transformerQueries})
-    // ${orderBy}
-
     const transformerRawQueries = Object.entries(selectorParams.extractor.runtimeTransformers ?? {}).map(([key, value]) => { 
       return [key, sqlStringForTransformer(value as TransformerForRuntime).elementValue]; // TODO: handle ExtendedExtractorForRuntime?
-      // return [key, extractorTransformerSql(value, queryParams, newFetchedData, extractors).elementValue];
     });
     log.info("applyExtractorTransformerSql transformerRawQueries", JSON.stringify(transformerRawQueries, null, 2));
     
     const combinerRawQueriesObject = Object.fromEntries(combinerRawQueries);
     const transformerRawQueriesObject = Object.fromEntries(transformerRawQueries);
+    const lastEntryIndex = selectorParams.extractor.runtimeTransformers ? transformerRawQueries.length - 1 : 
+    selectorParams.extractor.combiners? combinerRawQueries.length - 1 : extractorRawQueries.length - 1;
     const endResultName =
       Object.keys(
         selectorParams.extractor.runtimeTransformers ??
           selectorParams.extractor.combiners ??
           selectorParams.extractor.extractors ??
           {}
-      )[0] ?? "endResultNotFound";
+      )[lastEntryIndex] ?? "endResultNotFound";
 
     const query =
       `WITH
@@ -490,7 +482,7 @@ export class SqlDbExtractRunner {
             .flatMap((q) => (typeof q[1] == "string")?
                 '"' + q[0] + '" AS (' + q[1] + " )"
               :
-                q[1].extraWith.map((s:any) => '"' +  s.name + '" AS (' +  s.sql + " )").join(tokenSeparatorForWith) + tokenSeparatorForWith  +
+                (q[1].extraWith?q[1].extraWith.map((s:any) => '"' +  s.name + '" AS (' +  s.sql + " )").join(tokenSeparatorForWith) + tokenSeparatorForWith : "")  +
                 '"' + q[0] + '" AS (' + q[1].sqlStringOrObject + " )"
               )
             .join(tokenSeparatorForWith)
@@ -531,369 +523,6 @@ export class SqlDbExtractRunner {
     return Promise.resolve({ elementType: "object", elementValue: {[endResultName]:sqlResult} });
   };
   
-  // // ################################################################################################
-  // async applyExtractorTransformerSqlBACKUP(
-  //   actionRuntimeTransformer: TransformerForRuntime,
-  //   queryParams: DomainElementObject,
-  //   newFetchedData: DomainElementObject,
-  //   extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>
-  // ): Promise<DomainElement> {
-  //   // log.info("SqlDbExtractRunner applyExtractorTransformerSql extractors", extractors);
-  //   log.info("SqlDbExtractRunner applyExtractorTransformerSql actionRuntimeTransformer", JSON.stringify(actionRuntimeTransformer, null, 2));
-
-  //   if (!(actionRuntimeTransformer as any).referencedExtractor) {
-  //     throw new Error("applyExtractorTransformerSql missing referencedExtractor");
-  //   }
-    
-  //   const referenceName:string = (actionRuntimeTransformer as any).referencedExtractor;
-
-  //   // const resolvedReference = resolveContextReferenceDEFUNCT( // TODO: REMOVE resolveContextReferenceDEFUNCT!!
-  //   const resolvedReference = transformer_InnerReference_resolve( // TODO: REMOVE resolveContextReferenceDEFUNCT!!
-  //     "build",
-  //     { transformerType: "contextReference", referenceName },
-  //     queryParams,
-  //     newFetchedData
-  //   );
-
-  //   log.info("SqlDbExtractRunner applyExtractorTransformerSql resolvedReference", resolvedReference);
-
-  //   // for (const ex of Object.entries(extractors)) {
-  //   //   log.info("applyExtractorTransformerSql getting sqlForExtractor", ex[0], ex[1]);
-  //   //   const sqlQuery = this.persistenceStoreController.sqlForExtractor(ex[1])
-  //   //   log.info("applyExtractorTransformerSql sqlForExtractor", ex[0], sqlQuery);
-  //   //   // const rawResult = await this.persistenceStoreController.executeRawQuery(sqlQuery as any);
-  //   //   // log.info("applyExtractorTransformerSql rawResult", rawResult);
-  //   // }
-
-  //   const extractorRawQueries = Object.entries(extractors).map(([key, value]) => {
-  //     return [key, this.persistenceStoreController.sqlForExtractor(value)];
-  //   });
-
-  //   log.info("applyExtractorTransformerSql extractorRawQueries", extractorRawQueries);
-
-  //   if (resolvedReference.elementType != "instanceUuidIndex" && resolvedReference.elementType != "object") {
-  //     return Promise.resolve({
-  //       elementType: "failure",
-  //       elementValue: {
-  //         queryFailure: "QueryNotExecutable",
-  //         failureMessage: "could not handle extractor result, result type is not an object: " + resolvedReference.elementType,
-  //       },
-  //     });
-  //   }
-
-  //   const orderBy = (actionRuntimeTransformer as any).orderBy
-  //     ? `ORDER BY ${(actionRuntimeTransformer as any).orderBy}`
-  //     : "";
-
-  //   log.info("applyExtractorTransformerSql treating actionRuntimeTransformer to be converted to queries", actionRuntimeTransformer);
-  //   switch (actionRuntimeTransformer.transformerType) {
-  //     case "innerFullObjectTemplate": {
-  //       throw new Error("applyExtractorTransformerSql innerFullObjectTemplate not implemented");
-  //       log.info("applyExtractorTransformerSql actionRuntimeTransformer", actionRuntimeTransformer.transformerType);
-  //       // const transformerQueries = actionRuntimeTransformer.definition.map((f) => {
-  //       //   return [
-  //       //     f.attributeKey,
-  //       //     this.extractorTransformerSql(f.attributeValue, queryParams, newFetchedData, extractors).elementValue,
-  //       //   ];
-  //       // });
-
-  //       // log.info("applyExtractorTransformerSql innerFullObjectTemplate transformerQueries", transformerQueries);
-  //       // const aggregateQueries = extractorRawQueries.concat(transformerQueries);
-  //       // // const aggregateRawQuery = `WITH ${extractorRawQueries.map((q) => '"' + q[0] + '" AS (' + q[1] + " )").join(", ")}
-  //       // const aggregateRawQuery = `WITH ${aggregateQueries.map((q) => '"' + q[0] + '" AS (' + q[1] + " )").join(", ")}
-  //       //   SELECT * FROM "${referenceName}"
-  //       //   ${orderBy}
-  //       // `;
-  //       // log.info("applyExtractorTransformerSql innerFullObjectTemplate aggregateRawQuery", aggregateRawQuery);
-
-  //       // const rawResult = await this.persistenceStoreController.executeRawQuery(aggregateRawQuery);
-  //       // log.info("applyExtractorTransformerSql innerFullObjectTemplate rawResult", JSON.stringify(rawResult));
-
-  //       // if (rawResult.status == "error") {
-  //       //   return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
-  //       // }
-
-  //       // const sqlResult = rawResult.returnedDomainElement.elementValue;
-  //       // log.info("applyExtractorTransformerSql innerFullObjectTemplate sqlResult", JSON.stringify(sqlResult));
-  //       // return Promise.resolve({ elementType: "any", elementValue: sqlResult });
-  //       break;
-  //     }
-  //     case "mustacheStringTemplate":
-  //     case "constantUuid":
-  //     case "constantObject":
-  //     case "constantString":
-  //     case "newUuid":
-  //     case "contextReference":
-  //     case "parameterReference":
-  //     case "objectDynamicAccess":
-  //     case "freeObjectTemplate":
-  //     case "objectAlter":
-  //     case "listPickElement":
-  //     case "mapperListToList":
-  //     case "mapperListToObject":
-  //     case "objectValues": {
-  //       return Promise.resolve({
-  //         elementType: "failure",
-  //         elementValue: {
-  //           queryFailure: "QueryNotExecutable",
-  //           query: JSON.stringify(actionRuntimeTransformer),
-  //           failureMessage:
-  //             "applyExtractorTransformerSql transformerType not implemented: " +
-  //             actionRuntimeTransformer.transformerType,
-  //         },
-  //       });
-  //       break;
-  //     }
-  //     case "unique": {
-  //       log.info("applyExtractorTransformerSql actionRuntimeTransformer.attribute", actionRuntimeTransformer.attribute);
-  //       // TODO: resolve query.referencedExtractor.referenceName properly
-  //       const aggregateRawQuery = `
-  //         WITH ${extractorRawQueries.map((q) => '"' + q[0] + '" AS (' + q[1] + " )").join(", ")}
-  //         SELECT DISTINCT ON ("${actionRuntimeTransformer.attribute}") "${
-  //         actionRuntimeTransformer.attribute
-  //       }" FROM "${referenceName}"
-  //         ${orderBy}
-  //       `;
-  //       log.info("applyExtractorTransformerSql unique aggregateRawQuery", aggregateRawQuery);
-
-  //       const rawResult = await this.persistenceStoreController.executeRawQuery(aggregateRawQuery);
-  //       log.info("applyExtractorTransformerSql unique rawResult", JSON.stringify(rawResult));
-
-  //       if (rawResult.status == "error") {
-  //         return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
-  //       }
-
-  //       const sqlResult = rawResult.returnedDomainElement.elementValue;
-  //       log.info("applyExtractorTransformerSql unique sqlResult", JSON.stringify(sqlResult));
-  //       return Promise.resolve({ elementType: "any", elementValue: sqlResult });
-  //       break;
-  //     }
-  //     case "count": {
-  //       log.info("applyExtractorTransformerSql count actionRuntimeTransformer.groupBy", actionRuntimeTransformer.groupBy);
-  //       // TODO: resolve query.referencedExtractor.referenceName properly
-  //       const aggregateRawQuery = actionRuntimeTransformer.groupBy
-  //         ? `WITH ${extractorRawQueries.map((q) => '"' + q[0] + '" AS (' + q[1] + " )").join(", ")}
-  //         SELECT "${actionRuntimeTransformer.groupBy}", COUNT("uuid")::int FROM ${referenceName}
-  //         GROUP BY "${actionRuntimeTransformer.groupBy}"
-  //         ${orderBy}
-  //       `
-  //         : `WITH ${extractorRawQueries.map((q) => '"' + q[0] + '" AS (' + q[1] + " )").join(", ")}
-  //         SELECT COUNT("uuid")::int FROM "${referenceName}"
-  //         ${orderBy}
-  //       `;
-  //       log.info("applyExtractorTransformerSql count aggregateRawQuery", aggregateRawQuery);
-
-  //       const rawResult = await this.persistenceStoreController.executeRawQuery(aggregateRawQuery);
-  //       log.info("applyExtractorTransformerSql count rawResult", JSON.stringify(rawResult));
-
-  //       if (rawResult.status == "error") {
-  //         return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
-  //       }
-
-  //       const sqlResult = rawResult.returnedDomainElement.elementValue.map((e: Record<string, any>) => ({
-  //         ...e,
-  //         count: Number(e.count),
-  //       }));
-  //       // log.info("applyExtractorTransformerSql count sqlResult", JSON.stringify(sqlResult));
-  //       log.info("applyExtractorTransformerSql count sqlResult", sqlResult);
-  //       return Promise.resolve({ elementType: "any", elementValue: sqlResult });
-  //       break;
-  //     }
-  //     default:
-  //       break;
-  //   }
-
-  //   return Promise.resolve({
-  //     elementType: "failure",
-  //     elementValue: {
-  //       queryFailure: "QueryNotExecutable",
-  //       failureOrigin: ["applyExtractorTransformerSql"],
-  //       query: actionRuntimeTransformer,
-  //       failureMessage: "could not handle transformer",
-  //     },
-  //   });
-  // }
-
-  // // ################################################################################################
-  // async applyExtractorTransformerSqlDEFUNCT(
-  //   actionRuntimeTransformer: TransformerForRuntime,
-  //   queryParams: Record<string, any>,
-  //   newFetchedData: Record<string, any>,
-  //   extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>
-  // ): Promise<DomainElement> {
-  //   // log.info("SqlDbExtractRunner applyExtractorTransformerSql extractors", extractors);
-  //   log.info("SqlDbExtractRunner applyExtractorTransformerSql actionRuntimeTransformer", JSON.stringify(actionRuntimeTransformer, null, 2));
-
-  //   if (!(actionRuntimeTransformer as any).referencedExtractor) {
-  //     throw new Error("applyExtractorTransformerSql missing referencedExtractor");
-  //   }
-    
-  //   const referenceName:string = (actionRuntimeTransformer as any).referencedExtractor;
-
-  //   // const resolvedReference = resolveContextReferenceDEFUNCT( // TODO: REMOVE resolveContextReferenceDEFUNCT!!
-  //   const resolvedReference = transformer_InnerReference_resolve( // TODO: REMOVE resolveContextReferenceDEFUNCT!!
-  //     "build",
-  //     { transformerType: "contextReference", referenceName },
-  //     queryParams,
-  //     newFetchedData
-  //   );
-
-  //   log.info("SqlDbExtractRunner applyExtractorTransformerSql resolvedReference", resolvedReference);
-
-  //   if (resolvedReference.elementType != "instanceUuidIndex" && resolvedReference.elementType != "object") {
-  //     return Promise.resolve({
-  //       elementType: "failure",
-  //       elementValue: {
-  //         queryFailure: "QueryNotExecutable",
-  //         failureMessage: "could not handle extractor result, result type is not an object: " + resolvedReference.elementType,
-  //       },
-  //     });
-  //   }
-
-  //   const extractorRawQueries = Object.entries(extractors).map(([key, value]) => {
-  //     return [key, this.persistenceStoreController.sqlForExtractor(value)];
-  //   });
-
-  //   log.info("applyExtractorTransformerSql extractorRawQueries", extractorRawQueries);
-
-
-  //   const orderBy = (actionRuntimeTransformer as any).orderBy
-  //     ? `ORDER BY ${(actionRuntimeTransformer as any).orderBy}`
-  //     : "";
-
-  //   log.info("applyExtractorTransformerSql actionRuntimeTransformer", actionRuntimeTransformer);
-  //   switch (actionRuntimeTransformer.transformerType) {
-  //     case "innerFullObjectTemplate": {
-  //       log.info("applyExtractorTransformerSql actionRuntimeTransformer", actionRuntimeTransformer.transformerType);
-  //       const transformerQueries = sqlStringForTransformer(actionRuntimeTransformer).elementValue
-  //       // const transformerQueries = extractorTransformerSql(actionRuntimeTransformer, queryParams, newFetchedData, extractors).elementValue
-
-  //       log.info("applyExtractorTransformerSql innerFullObjectTemplate transformerQueries", transformerQueries);
-  //       const transformerName = "newBook"; // TODO: REMOVE!
-
-  //       const fullObjectTemplateQuery = `WITH ${extractorRawQueries.map((q) => '"' + q[0] + '" AS (' + q[1] + " )").join(", ")}
-  //         ${tokenSeparatorForWith}
-  //         "${transformerName}" AS (${transformerQueries})
-  //         SELECT * FROM "${transformerName}"
-  //         ${orderBy}
-  //       `;
-  //       log.info("applyExtractorTransformerSql innerFullObjectTemplate aggregateRawQuery", fullObjectTemplateQuery);
-
-  //       const rawResult = await this.persistenceStoreController.executeRawQuery(fullObjectTemplateQuery);
-  //       log.info("applyExtractorTransformerSql innerFullObjectTemplate rawResult", JSON.stringify(rawResult));
-
-  //       if (rawResult.status == "error") {
-  //         log.error("applyExtractorTransformerSql innerFullObjectTemplate rawResult", JSON.stringify(rawResult));
-  //         return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
-  //       }
-
-  //       const sqlResult = rawResult.returnedDomainElement.elementValue;
-  //       log.info("applyExtractorTransformerSql innerFullObjectTemplate sqlResult", JSON.stringify(sqlResult));
-  //       return Promise.resolve({ elementType: "any", elementValue: sqlResult["0"]["innerFullObjectTemplate"] });
-  //       break;
-  //     }
-  //     case "mustacheStringTemplate":
-  //     case "constantUuid":
-  //     case "constantString": {
-  //     }
-  //     case "constantObject":
-  //     case "newUuid":
-  //     case "contextReference":
-  //     case "parameterReference":
-  //     case "objectDynamicAccess":
-  //     case "freeObjectTemplate":
-  //     case "objectAlter":
-  //     case "listPickElement":
-  //     case "mapperListToList":
-  //     case "mapperListToObject":
-  //     case "objectValues": {
-  //       return Promise.resolve({
-  //         elementType: "failure",
-  //         elementValue: {
-  //           queryFailure: "QueryNotExecutable",
-  //           query: JSON.stringify(actionRuntimeTransformer),
-  //           failureMessage:
-  //             "applyExtractorTransformerSql transformerType not implemented: " +
-  //             actionRuntimeTransformer.transformerType,
-  //         },
-  //       });
-  //       break;
-  //     }
-  //     case "unique": {
-  //       log.info("applyExtractorTransformerSql actionRuntimeTransformer.attribute", actionRuntimeTransformer.attribute);
-  //       // TODO: resolve query.referencedExtractor.referenceName properly
-  //       const sqlSubQuery = sqlStringForTransformer(actionRuntimeTransformer);
-  //       // const sqlSubQuery = extractorTransformerSql(actionRuntimeTransformer, queryParams, newFetchedData, extractors);
-  //       log.info("applyExtractorTransformerSql unique sqlSubQuery", sqlSubQuery);
-
-  //     //   SELECT DISTINCT ON ("${actionRuntimeTransformer.attribute}") "${
-  //     //   actionRuntimeTransformer.attribute
-  //     // }" FROM "${referenceName}"
-  //     //   ${orderBy}
-  //       const aggregateRawQuery = `
-  //         WITH ${extractorRawQueries.map((q) => '"' + q[0] + '" AS (' + q[1] + " )").join(", ")}
-  //         ${sqlSubQuery.elementValue}
-  //       `;
-  //       log.info("applyExtractorTransformerSql unique aggregateRawQuery", aggregateRawQuery);
-
-  //       const rawResult = await this.persistenceStoreController.executeRawQuery(aggregateRawQuery);
-  //       log.info("applyExtractorTransformerSql unique rawResult", JSON.stringify(rawResult));
-
-  //       if (rawResult.status == "error") {
-  //         return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
-  //       }
-
-  //       const sqlResult = rawResult.returnedDomainElement.elementValue;
-  //       log.info("applyExtractorTransformerSql unique sqlResult", JSON.stringify(sqlResult));
-  //       return Promise.resolve({ elementType: "any", elementValue: sqlResult });
-  //       break;
-  //     }
-  //     case "count": {
-  //       log.info("applyExtractorTransformerSql count actionRuntimeTransformer.groupBy", actionRuntimeTransformer.groupBy);
-  //       // TODO: resolve query.referencedExtractor.referenceName properly
-  //       const sqlSubQuery = sqlStringForTransformer(actionRuntimeTransformer);
-  //       // const sqlSubQuery = extractorTransformerSql(actionRuntimeTransformer, queryParams, newFetchedData, extractors);
-  //       log.info("applyExtractorTransformerSql count sqlSubQuery", sqlSubQuery);
-
-  //       const aggregateRawQuery = actionRuntimeTransformer.groupBy
-  //         ? `WITH ${extractorRawQueries.map((q) => '"' + q[0] + '" AS (' + q[1] + " )").join(", ")}
-  //         ${sqlSubQuery.elementValue}`
-  //         : `WITH ${extractorRawQueries.map((q) => '"' + q[0] + '" AS (' + q[1] + " )").join(", ")}
-  //         ${sqlSubQuery.elementValue}`
-  //       ;
-  //       log.info("applyExtractorTransformerSql count aggregateRawQuery", aggregateRawQuery);
-
-  //       const rawResult = await this.persistenceStoreController.executeRawQuery(aggregateRawQuery);
-  //       log.info("applyExtractorTransformerSql count rawResult", JSON.stringify(rawResult));
-
-  //       if (rawResult.status == "error") {
-  //         return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
-  //       }
-
-  //       const sqlResult = rawResult.returnedDomainElement.elementValue.map((e: Record<string, any>) => ({
-  //         ...e,
-  //         count: Number(e.count),
-  //       }));
-  //       // log.info("applyExtractorTransformerSql count sqlResult", JSON.stringify(sqlResult));
-  //       log.info("applyExtractorTransformerSql count sqlResult", sqlResult);
-  //       return Promise.resolve({ elementType: "any", elementValue: sqlResult });
-  //       break;
-  //     }
-  //     default:
-  //       break;
-  //   }
-
-  //   return Promise.resolve({
-  //     elementType: "failure",
-  //     elementValue: {
-  //       queryFailure: "QueryNotExecutable",
-  //       failureOrigin: ["applyExtractorTransformerSql"],
-  //       query: actionRuntimeTransformer,
-  //       failureMessage: "could not handle transformer",
-  //     },
-  //   });
-  // }
-
   // ################################################################################################
   /**
    * returns an Entity Instance List, from a ListQuery
