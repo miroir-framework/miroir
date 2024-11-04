@@ -21,7 +21,7 @@ import {
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { SqlDbDataStoreSection } from "./SqlDbDataStoreSection";
-import { SqlDbExtractRunner } from "./SqlDbExtractorRunner";
+import { SqlDbQueryRunner } from "./SqlDbQueryRunner";
 import { SqlDbModelStoreSection } from "./SqlDbModelStoreSection";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "PostgresExtractorRunner");
@@ -40,7 +40,7 @@ export class SqlDbExtractTemplateRunner {
     private persistenceStoreController:
       | SqlDbDataStoreSection
       | SqlDbModelStoreSection, /* concrete types for MixedSqlDbInstanceStoreSection */
-    private sqlDbExtractorRunner: SqlDbExtractRunner
+    private sqlDbExtractorRunner: SqlDbQueryRunner
   ) // private persistenceStoreController: typeof MixedSqlDbInstanceStoreSection // does not work
   {
     this.logHeader = "SqlDbExtractTemplateRunner " + persistenceStoreController.getStoreName();

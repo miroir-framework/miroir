@@ -310,7 +310,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           definition: {
             extractors: {
               instanceList: {
-                queryType: "queryExtractObjectListByEntity",
+                queryType: "extractorForObjectListByEntity",
                 parentName: {
                   transformerType: "parameterReference",
                   referenceName: "newEntityName",
@@ -367,7 +367,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           definition: {
             extractorTemplates: {
               elementToDisplay: {
-                queryType: "selectObjectByDirectReference",
+                queryType: "extractorForObjectByDirectReference",
                 parentName: {
                   transformerType: "parameterReference",
                   referenceName: "newEntityName",
@@ -522,8 +522,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               queryParams: {},
               contextResults: {},
               extractorTemplates: {
-                menuUuidIndex: {
-                  queryType: "queryTemplateExtractObjectListByEntity",
+                menuList: {
+                  queryType: "extractorTemplateForObjectListByEntity",
                   applicationSection: "model",
                   parentName: "Menu",
                   parentUuid: {
@@ -542,11 +542,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                 },
               },
               runtimeTransformers: {
-                menuList: {
-                  transformerType: "objectValues",
-                  interpolation: "runtime",
-                  referencedExtractor: "menuUuidIndex",
-                },
+                // menuList: {
+                //   transformerType: "objectValues",
+                //   interpolation: "runtime",
+                //   referencedExtractor: "menuUuidIndex",
+                // },
                 menu: {
                   transformerType: "listPickElement",
                   interpolation: "runtime",
@@ -554,6 +554,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                   index: 1
                 },
                 menuItem: {
+                  transformerType: "freeObjectTemplate",
                   "label": "List of " + newEntityName,
                   "section": "data",
                   application: adminConfigurationDeploymentParis.uuid, // TODO: replace with application uuid, this is a deployment at the moment
@@ -831,7 +832,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           definition: {
             extractors: {
               listReportSectionElements: {
-                queryType: "queryExtractObjectListByEntity",
+                queryType: "extractorForObjectListByEntity",
                 parentName: {
                   transformerType: "parameterReference",
                   referenceName: "newEntityName",
@@ -876,7 +877,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           definition: {
             extractors: {
               elementToDisplay: {
-                queryType: "selectObjectByDirectReference",
+                queryType: "extractorForObjectByDirectReference",
                 parentName: newEntityName,
                 parentUuid: {
                   transformerType: "constantUuid",
@@ -891,7 +892,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                 },
               },
               fountainsOfMunicipality: {
-                queryType: "selectObjectListByRelation",
+                queryType: "combinerForObjectListByRelation",
                 parentName: "Fountain",
                 parentUuid: {
                   transformerType: "constantUuid",
@@ -1134,7 +1135,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               contextResults: { },
               extractorTemplates: {
                 menuUuidIndex: {
-                  queryType: "queryTemplateExtractObjectListByEntity",
+                  queryType: "extractorTemplateForObjectListByEntity",
                   applicationSection: "model",
                   parentName: "Menu",
                   parentUuid: {
@@ -1263,7 +1264,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               contextResults: { },
               extractorTemplates: {
                 [splittedEntityName + "UuidIndex"]: {
-                  queryType: "queryTemplateExtractObjectListByEntity",
+                  queryType: "extractorTemplateForObjectListByEntity",
                   applicationSection: "data",
                   parentName: {
                     transformerType: "parameterReference",

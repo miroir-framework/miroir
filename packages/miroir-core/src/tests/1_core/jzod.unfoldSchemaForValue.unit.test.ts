@@ -1487,7 +1487,7 @@ describe("jzod.unfoldSchemaForValue", () => {
               definition: {
                 queryType: {
                   type: "literal",
-                  definition: "selectObjectByDirectReference",
+                  definition: "extractorForObjectByDirectReference",
                 },
                 instanceUuid: {
                   type: "schemaReference",
@@ -1498,7 +1498,7 @@ describe("jzod.unfoldSchemaForValue", () => {
                 },
               },
             },
-            queryTemplateExtractObjectListByEntity: {
+            extractorTemplateForObjectListByEntity: {
               type: "object",
               extend: {
                 type: "schemaReference",
@@ -1510,7 +1510,7 @@ describe("jzod.unfoldSchemaForValue", () => {
               definition: {
                 queryType: {
                   type: "literal",
-                  definition: "queryTemplateExtractObjectListByEntity",
+                  definition: "extractorTemplateForObjectListByEntity",
                 },
                 filter: {
                   type: "object",
@@ -1566,7 +1566,7 @@ describe("jzod.unfoldSchemaForValue", () => {
                 {
                   type: "schemaReference",
                   definition: {
-                    relativePath: "queryTemplateExtractObjectListByEntity",
+                    relativePath: "extractorTemplateForObjectListByEntity",
                   },
                 },
                 {
@@ -1617,7 +1617,7 @@ describe("jzod.unfoldSchemaForValue", () => {
           definition: {
             queryType: {
               type: "literal",
-              definition: "selectObjectByDirectReference",
+              definition: "extractorForObjectByDirectReference",
             },
             parentName: {
               type: "string",
@@ -1658,7 +1658,7 @@ describe("jzod.unfoldSchemaForValue", () => {
           },
         },
         testValueObject: {
-          queryType: "selectObjectByDirectReference",
+          queryType: "extractorForObjectByDirectReference",
           parentName: "Report",
           parentUuid: {
             transformerType: "constantUuid",

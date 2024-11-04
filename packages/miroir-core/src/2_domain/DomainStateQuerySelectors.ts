@@ -18,7 +18,7 @@ import {
   ExtractorForSingleObjectList,
   ExtractorTemplateForRecordOfExtractors,
   JzodObject,
-  QuerySelectObject
+  ExtractorForObject
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   ExtractorRunnerMapForJzodSchema,
@@ -254,7 +254,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
   domainState: DomainState,
   selectorParams: SyncExtractorRunnerParams<ExtractorForSingleObject, DomainState>
 ): DomainElementEntityInstanceOrFailed => {
-  const querySelectorParams: QuerySelectObject = selectorParams.extractor.select as QuerySelectObject;
+  const querySelectorParams: ExtractorForObject = selectorParams.extractor.select as ExtractorForObject;
   const deploymentUuid = selectorParams.extractor.deploymentUuid;
   const applicationSection: ApplicationSection =
     selectorParams.extractor.select.applicationSection ??
@@ -285,7 +285,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
   // }
 
   switch (querySelectorParams?.queryType) {
-    case "selectObjectByRelation": {
+    case "combinerForObjectByRelation": {
       const referenceObject = transformer_InnerReference_resolve(
         "build",
         { transformerType: "contextReference", referenceName: querySelectorParams.objectReference },
@@ -304,7 +304,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
             queryFailure: "IncorrectParameters",
             queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
             queryContext:
-              "DomainStateQuerySelectors selectObjectByRelation did not find AttributeOfObjectToCompareToReferenceUuid in " +
+              "DomainStateQuerySelectors combinerForObjectByRelation did not find AttributeOfObjectToCompareToReferenceUuid in " +
               JSON.stringify(querySelectorParams),
           },
         };
@@ -335,7 +335,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
       }
 
       // log.info(
-      //   "selectEntityInstanceFromObjectQueryAndDomainState selectObjectByRelation, ############# reference",
+      //   "selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation, ############# reference",
       //   querySelectorParams,
       //   "######### context entityUuid",
       //   entityUuidReference,
@@ -355,7 +355,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
       };
       break;
     }
-    case "selectObjectByDirectReference": {
+    case "extractorForObjectByDirectReference": {
       const instanceUuidDomainElement = querySelectorParams.instanceUuid;
 
       log.info(
@@ -422,7 +422,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
         };
       }
 
-      // log.info("selectEntityInstanceFromObjectQueryAndDomainState selectObjectByDirectReference, ############# reference",
+      // log.info("selectEntityInstanceFromObjectQueryAndDomainState extractorForObjectByDirectReference, ############# reference",
       //   querySelectorParams,
       //   "entityUuidReference",
       //   entityUuidReference,

@@ -26,7 +26,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
         queryParams: {},
         extractorTemplates: {
           book: {
-            queryType: "selectObjectByDirectReference",
+            queryType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
               transformerType: "constantUuid",
@@ -72,7 +72,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
         queryParams: { },
         extractorTemplates: {
           book: {
-            queryType: "selectObjectByDirectReference",
+            queryType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
               "transformerType": "constantUuid",
@@ -116,7 +116,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
         queryParams: { },
         "extractorTemplates": {
           "book": {
-            queryType: "selectObjectByDirectReference",
+            queryType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
               transformerType: "constantUuid",
@@ -162,7 +162,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
         queryParams: {},
         extractorTemplates: {
           book: {
-            queryType: "selectObjectByDirectReference",
+            queryType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
               transformerType: "constantUuid",
@@ -195,7 +195,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
         queryParams: { },
         extractorTemplates: {
           book: {
-            queryType: "selectObjectByDirectReference",
+            queryType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
               transformerType: "constantUuid",
@@ -234,7 +234,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
         // queryParams: { elementType: "object", elementValue: { wantedBookUuid: { elementType: "instanceUuid", elementValue:"caef8a59-39eb-48b5-ad59-a7642d3a1e8f" } } },
         extractorTemplates: {
           book: {
-            queryType: "selectObjectByDirectReference",
+            queryType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
               transformerType: "constantUuid",
@@ -273,7 +273,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
         queryParams: { },
         extractorTemplates: {
           book: {
-            queryType: "selectObjectByDirectReference",
+            queryType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
               transformerType: "constantUuid",
@@ -287,7 +287,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
         },
         combinerTemplates: {
           publisher: {
-            queryType: "selectObjectByRelation",
+            queryType: "combinerForObjectByRelation",
             parentName: "Publisher",
             parentUuid: {
               transformerType: "constantUuid",
@@ -339,7 +339,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
         queryParams: { },
         extractorTemplates: {
           authors: {
-            queryType: "queryTemplateExtractObjectListByEntity",
+            queryType: "extractorTemplateForObjectListByEntity",
             parentName: "Author",
             parentUuid: {
               transformerType: "constantUuid",
@@ -406,7 +406,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
         queryParams: { },
         extractorTemplates: {
           authors: {
-            queryType: "queryTemplateExtractObjectListByEntity",
+            queryType: "extractorTemplateForObjectListByEntity",
             parentName: "Author",
             parentUuid: {
               transformerType: "constantUuid",
@@ -470,7 +470,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
         queryParams: { },
         extractorTemplates: {
           book: {
-            queryType: "selectObjectByDirectReference",
+            queryType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
               transformerType: "constantUuid",
@@ -484,7 +484,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
         },
         combinerTemplates: {
           publisher: {
-            queryType: "selectObjectByRelation",
+            queryType: "combinerForObjectByRelation",
             parentName: "Publisher",
             parentUuid: {
               transformerType: "constantUuid",
@@ -498,7 +498,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
             AttributeOfObjectToCompareToReferenceUuid: "publisher",
           },
           booksOfPublisher: { //join with only constant references
-            queryType: "selectObjectListByRelation",
+            queryType: "combinerForObjectListByRelation",
             parentName: "Book",
             parentUuid: {
               transformerType: "constantUuid",
@@ -552,7 +552,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
         queryParams: { },
         extractorTemplates: {
           book: {
-            queryType: "selectObjectByDirectReference",
+            queryType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
               transformerType: "constantUuid",
@@ -566,7 +566,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
         },
         combinerTemplates: {
           publisher: {
-            queryType: "selectObjectByRelation",
+            queryType: "combinerForObjectByRelation",
             parentName: "Publisher",
             parentUuid: {
               transformerType: "constantUuid",
@@ -580,7 +580,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
             AttributeOfObjectToCompareToReferenceUuid: "publisher",
           },
           booksOfPublisher: {
-            queryType: "selectObjectListByRelation",
+            queryType: "combinerForObjectListByRelation",
             parentName: "Book",
             parentUuid: {
               transformerType: "constantUuid",
@@ -653,7 +653,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
         queryParams: { },
         extractorTemplates: {
           entities: {
-            queryType: "queryTemplateExtractObjectListByEntity",
+            queryType: "extractorTemplateForObjectListByEntity",
             applicationSection: "model",
             parentName: "Entity",
             parentUuid: {
@@ -665,13 +665,13 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
         combinerTemplates: {
           instancesOfEntities: {
             queryType: "queryCombiner", // heteronomous many-to-many join, not possible with SQL
-            rootQuery: {
+            rootExtractorOrReference: {
               queryType: "queryContextReference",
               queryReference: "entities",
             },
             subQueryTemplate: {
               query: {
-                queryType: "queryTemplateExtractObjectListByEntity",
+                queryType: "extractorTemplateForObjectListByEntity",
                 parentUuid: {
                   transformerType: "parameterReference",
                   referenceName: "uuid",
@@ -735,7 +735,7 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
         queryParams: { },
         extractorTemplates: {
           books: {
-            queryType: "queryTemplateExtractObjectListByEntity",
+            queryType: "extractorTemplateForObjectListByEntity",
             parentName: "Book",
             parentUuid: {
               transformerType: "constantUuid",

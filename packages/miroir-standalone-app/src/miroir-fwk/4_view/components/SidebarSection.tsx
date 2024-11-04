@@ -159,7 +159,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
       contextResults: {},
       extractors: {
         menus: {
-          queryType: "selectObjectByDirectReference",
+          queryType: "extractorForObjectByDirectReference",
           parentName: "Menu",
           applicationSection: getApplicationSection(props.deploymentUuid,entityMenu.uuid),
           parentUuid: entityMenu.uuid,

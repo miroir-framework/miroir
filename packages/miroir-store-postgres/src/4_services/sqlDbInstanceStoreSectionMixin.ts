@@ -27,8 +27,8 @@ import { MixableSqlDbStoreSection, SqlDbStoreSection } from "./SqlDbStoreSection
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { Op } from "sequelize";
-import { RecursiveStringRecords, SqlDbExtractTemplateRunner } from "./SqlDbExtractorTemplateRunner";
-import { SqlDbExtractRunner } from "./SqlDbExtractorRunner";
+import { RecursiveStringRecords, SqlDbExtractTemplateRunner } from "./SqlDbQueryTemplateRunner";
+import { SqlDbQueryRunner } from "./SqlDbQueryRunner";
 
 const consoleLog: any = console.log.bind(console, packageName, cleanLevel, "SqlDbInstanceStoreSectionMixin");
 const loggerName: string = getLoggerName(packageName, cleanLevel, "SqlDbInstanceStoreSectionMixin");
@@ -45,7 +45,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     implements PersistenceStoreInstanceSectionAbstractInterface
   {
     public extractorTemplateRunner: SqlDbExtractTemplateRunner;
-    public extractorRunner: SqlDbExtractRunner;
+    public extractorRunner: SqlDbQueryRunner;
 
     // ##############################################################################################
     constructor(
@@ -58,7 +58,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       ...args: any[]
     ) {
       super(...args);
-      this.extractorRunner = new SqlDbExtractRunner(this.schema, this as any /*SqlDbExtractRunner takes a concrete implementation*/);
+      this.extractorRunner = new SqlDbQueryRunner(this.schema, this as any /*SqlDbQueryRunner takes a concrete implementation*/);
       this.extractorTemplateRunner = new SqlDbExtractTemplateRunner(this as any /*SqlDbExtractTemplateRunner takes a concrete implementation*/, this.extractorRunner);
     }
 
@@ -92,7 +92,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       // // log.info(this.logHeader, "sqlForExtractor called with queryGenerator", this.sequelize.getQueryInterface().queryGenerator);
       // log.info(this.logHeader, "sqlForExtractor called with selectQuery", (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery);
       switch (extractor.queryType) {
-        case "queryExtractObjectListByEntity": {
+        case "extractorForObjectListByEntity": {
           // TODO: use queryGenerator?
           // where: { [filter.attribute]: { [Op.like]: "%" + filter.value + "%" } },
           return `SELECT * FROM "${this.schema}"."${extractor.parentName}"` + (extractor.filter ? ` WHERE ${extractor.filter.attributeName} LIKE '%${extractor.filter.value}%'`  : "");
@@ -117,7 +117,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           );
           break;
         }
-        case "selectObjectByDirectReference": {
+        case "extractorForObjectByDirectReference": {
           return `SELECT * FROM "${this.schema}"."${extractor.parentName}" WHERE "uuid" = '${extractor.instanceUuid}'`;
           break;
         }
@@ -149,7 +149,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       // // log.info(this.logHeader, "sqlForExtractor called with queryGenerator", this.sequelize.getQueryInterface().queryGenerator);
       // log.info(this.logHeader, "sqlForExtractor called with selectQuery", (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery);
       switch (extractor.queryType) {
-        case "queryTemplateExtractObjectListByEntity": {
+        case "extractorTemplateForObjectListByEntity": {
           // const result = (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery(extractor.parentUuid
           //   , {
           // // const result = (this.sequelize as any).dialect.queryGenerator.selectQuery(extractor.parentUuid, {
@@ -185,7 +185,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           );
           break;
         }
-        case "selectObjectByDirectReference":
+        case "extractorForObjectByDirectReference":
         case "extractorWrapperReturningObject":
         case "extractorWrapperReturningList":
         default: {

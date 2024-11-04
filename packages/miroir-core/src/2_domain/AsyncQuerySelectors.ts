@@ -138,9 +138,9 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
     }
     // ############################################################################################
     // Impure Monads
-    case "queryExtractObjectListByEntity":
-    case "selectObjectListByRelation": 
-    case "selectObjectListByManyToManyRelation": {
+    case "extractorForObjectListByEntity":
+    case "combinerForObjectListByRelation": 
+    case "combinerForObjectListByManyToManyRelation": {
       // return extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractor({
       return extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor({
         extractorRunnerMap,
@@ -161,8 +161,8 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
       });
       break;
     }
-    case "selectObjectByRelation":
-    case "selectObjectByDirectReference": {
+    case "combinerForObjectByRelation":
+    case "extractorForObjectByDirectReference": {
       return extractorRunnerMap.extractEntityInstance({
         extractorRunnerMap,
         extractor: {
@@ -235,7 +235,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
         extractorRunnerMap,
         deploymentUuid,
         extractors,
-        query.rootQuery
+        query.rootExtractorOrReference
       );
       return rootQueryResults.then((rootQueryResults) => {
         if (rootQueryResults.elementType == "instanceUuidIndex") {
@@ -289,7 +289,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
             };
           });
         } else {
-          return { elementType: "failure", elementValue: { queryFailure: "IncorrectParameters", query: JSON.stringify(query.rootQuery) } }
+          return { elementType: "failure", elementValue: { queryFailure: "IncorrectParameters", query: JSON.stringify(query.rootExtractorOrReference) } }
         }
       });
 

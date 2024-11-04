@@ -18,7 +18,7 @@
         "definition": {
           "type": { "queryType": "literal", "definition": "runtime" },
           "applicationVersion": {
-            "queryType": "selectObjectByDirectReference",
+            "queryType": "extractorForObjectByDirectReference",
             "parentName": "ApplicationVersion",
             "parentUuid": {
               "transformerType": "constantUuid",
@@ -30,7 +30,7 @@
             }
           },
           "entities": {
-            "queryType": "queryTemplateExtractObjectListByEntity",
+            "queryType": "extractorTemplateForObjectListByEntity",
             "applicationSection": "model",
             "parentName": "Entity",
             "parentUuid": {
@@ -39,7 +39,7 @@
             }
           },
           "entityDefinitions": {
-            "queryType": "queryTemplateExtractObjectListByEntity",
+            "queryType": "extractorTemplateForObjectListByEntity",
             "applicationSection": "model",
             "parentName": "Entity",
             "parentUuid": {
@@ -48,7 +48,7 @@
             }
           },
           "reports": {
-            "queryType": "queryTemplateExtractObjectListByEntity",
+            "queryType": "extractorTemplateForObjectListByEntity",
             "parentName": "Report",
             "parentUuid": {
               "transformerType": "constantUuid",
@@ -56,7 +56,7 @@
             }
           },
           "queries": {
-            "queryType": "queryTemplateExtractObjectListByEntity",
+            "queryType": "extractorTemplateForObjectListByEntity",
             "parentName": "Query",
             "parentUuid": {
               "transformerType": "constantUuid",
@@ -64,7 +64,7 @@
             }
           },
           "endpoints": {
-            "queryType": "queryTemplateExtractObjectListByEntity",
+            "queryType": "extractorTemplateForObjectListByEntity",
             "parentName": "Query",
             "parentUuid": {
               "transformerType": "constantUuid",
@@ -73,18 +73,15 @@
           },
           "instancesOfEntities": {
             "queryType": "queryCombiner",
-            "rootQuery": {
-              "queryType": "queryTemplateExtractObjectListByEntity",
+            "rootExtractorOrReference": {
+              "queryType": "extractorForObjectListByEntity",
               "applicationSection": "model",
               "parentName": "Entity",
-              "parentUuid": {
-                "transformerType": "constantUuid",
-                "constantUuidValue": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
-              }
+              "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
             },
             "subQueryTemplate": {
               "query": {
-                "queryType":"queryTemplateExtractObjectListByEntity",
+                "queryType":"extractorTemplateForObjectListByEntity",
                 "parentUuid": {
                   "transformerType": "parameterReference",
                   "referenceName": "uuid"

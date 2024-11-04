@@ -25,7 +25,7 @@ describe("extractWithExtractorFromDomainState.unit", () => {
         // queryParams: { },
         extractors: {
           book: {
-            queryType: "selectObjectByDirectReference",
+            queryType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: "XXXXXX",
             instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
@@ -62,7 +62,7 @@ describe("extractWithExtractorFromDomainState.unit", () => {
         queryParams: { },
         extractors: {
           book: {
-            queryType: "selectObjectByDirectReference",
+            queryType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: "XXXXXX",
             instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
@@ -100,7 +100,7 @@ describe("extractWithExtractorFromDomainState.unit", () => {
         queryParams: { },
         "extractors": {
           "book": {
-            queryType: "selectObjectByDirectReference",
+            queryType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             instanceUuid: "XXXXXXXXX"
@@ -140,7 +140,7 @@ describe("extractWithExtractorFromDomainState.unit", () => {
         queryParams: {},
         extractors: {
           book: {
-            queryType: "selectObjectByDirectReference",
+            queryType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
@@ -171,7 +171,7 @@ describe("extractWithExtractorFromDomainState.unit", () => {
         queryParams: { },
         extractors: {
           book: {
-            queryType: "selectObjectByDirectReference",
+            queryType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
@@ -204,7 +204,7 @@ describe("extractWithExtractorFromDomainState.unit", () => {
         // queryParams: { elementType: "object", elementValue: { wantedBookUuid: { elementType: "instanceUuid", elementValue:"caef8a59-39eb-48b5-ad59-a7642d3a1e8f" } } },
         extractors: {
           book: {
-            queryType: "selectObjectByDirectReference",
+            queryType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
@@ -241,7 +241,7 @@ describe("extractWithExtractorFromDomainState.unit", () => {
         queryParams: {},
         extractors: {
           book: {
-            queryType: "selectObjectByDirectReference",
+            queryType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
@@ -249,7 +249,7 @@ describe("extractWithExtractorFromDomainState.unit", () => {
         },
         combiners: {
           publisher: {
-            queryType: "selectObjectByRelation",
+            queryType: "combinerForObjectByRelation",
             parentName: "Publisher",
             parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
             objectReference: "book",
@@ -294,7 +294,7 @@ describe("extractWithExtractorFromDomainState.unit", () => {
         queryParams: { },
         extractors: {
           authors: {
-            queryType: "queryExtractObjectListByEntity",
+            queryType: "extractorForObjectListByEntity",
             parentName: "Author",
             parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
           },
@@ -358,7 +358,7 @@ describe("extractWithExtractorFromDomainState.unit", () => {
         queryParams: { },
         extractors: {
           authors: {
-            queryType: "queryExtractObjectListByEntity",
+            queryType: "extractorForObjectListByEntity",
             parentName: "Author",
             parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
             filter: {
@@ -415,7 +415,7 @@ describe("extractWithExtractorFromDomainState.unit", () => {
         queryParams: { },
         extractors: {
           book: {
-            queryType: "selectObjectByDirectReference",
+            queryType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
@@ -423,14 +423,14 @@ describe("extractWithExtractorFromDomainState.unit", () => {
         },
         combiners: {
           publisher: {
-            queryType: "selectObjectByRelation",
+            queryType: "combinerForObjectByRelation",
             parentName: "Publisher",
             parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
             objectReference: "book",
             AttributeOfObjectToCompareToReferenceUuid: "publisher",
           },
           booksOfPublisher: { //join with only constant references
-            queryType: "selectObjectListByRelation",
+            queryType: "combinerForObjectListByRelation",
             parentName: "Book",
             parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             objectReference: "publisher",
@@ -477,7 +477,7 @@ describe("extractWithExtractorFromDomainState.unit", () => {
         queryParams: { },
         extractors: {
           book: {
-            queryType: "selectObjectByDirectReference",
+            queryType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
@@ -485,14 +485,14 @@ describe("extractWithExtractorFromDomainState.unit", () => {
         },
         combiners: {
           publisher: {
-            queryType: "selectObjectByRelation",
+            queryType: "combinerForObjectByRelation",
             parentName: "Publisher",
             parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
             objectReference: "book",
             AttributeOfObjectToCompareToReferenceUuid: "publisher",
           },
           booksOfPublisher: {
-            queryType: "selectObjectListByRelation",
+            queryType: "combinerForObjectListByRelation",
             parentName: "Book",
             parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             objectReference: "publisher",
@@ -558,7 +558,7 @@ describe("extractWithExtractorFromDomainState.unit", () => {
         queryParams: { },
         extractors: {
           entities: {
-            queryType: "queryExtractObjectListByEntity",
+            queryType: "extractorForObjectListByEntity",
             applicationSection: "model",
             parentName: "Entity",
             parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -567,13 +567,13 @@ describe("extractWithExtractorFromDomainState.unit", () => {
         combiners: {
           instancesOfEntities: {
             queryType: "queryCombiner", // heteronomous many-to-many join, possible but akward with SQL (huge "select" clause, dealing with homonym attributes)
-            rootQuery: {
+            rootExtractorOrReference: {
               queryType: "queryContextReference",
               queryReference: "entities",
             },
             subQueryTemplate: {
               query: {
-                queryType: "queryTemplateExtractObjectListByEntity",
+                queryType: "extractorTemplateForObjectListByEntity",
                 parentUuid: {
                   transformerType: "parameterReference",
                   referenceName: "uuid",
@@ -637,7 +637,7 @@ describe("extractWithExtractorFromDomainState.unit", () => {
         queryParams: { },
         extractors: {
           books: {
-            queryType: "queryExtractObjectListByEntity",
+            queryType: "extractorForObjectListByEntity",
             parentName: "Book",
             parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },

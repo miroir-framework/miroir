@@ -11,7 +11,7 @@
     "reportParameters": {},
     "extractorTemplates": {
       "tests": {
-        "queryType": "queryTemplateExtractObjectListByEntity",
+        "queryType": "extractorTemplateForObjectListByEntity",
         "parentName": "Test",
         "parentUuid": {
           "transformerType": "constantUuid",

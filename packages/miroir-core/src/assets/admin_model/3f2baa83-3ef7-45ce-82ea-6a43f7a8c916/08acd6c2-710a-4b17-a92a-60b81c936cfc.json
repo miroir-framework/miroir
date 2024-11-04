@@ -9,7 +9,7 @@
   "definition": {
     "extractorTemplates": {
       "deployment": {
-        "queryType": "selectObjectByDirectReference",
+        "queryType": "extractorForObjectByDirectReference",
         "parentName": "Deployment",
         "parentUuid": {
           "transformerType": "constantUuid",

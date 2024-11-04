@@ -24,7 +24,7 @@ import {
   MiroirLoggerFactory,
   PersistenceStoreInstanceSectionAbstractInterface,
   QueryAction,
-  QuerySelectObject,
+  ExtractorForObject,
   selectEntityJzodSchemaFromDomainStateNew,
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
@@ -115,7 +115,7 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
   > = async (
     selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObject>
   ): Promise<DomainElementEntityInstanceOrFailed> => {
-    const querySelectorParams: QuerySelectObject = selectorParams.extractor.select as QuerySelectObject;
+    const querySelectorParams: ExtractorForObject = selectorParams.extractor.select as ExtractorForObject;
     const deploymentUuid = selectorParams.extractor.deploymentUuid;
     const applicationSection: ApplicationSection =
       selectorParams.extractor.select.applicationSection ??
@@ -133,7 +133,7 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
       entityUuidReference
     );
     switch (querySelectorParams?.queryType) {
-      case "selectObjectByRelation": {
+      case "combinerForObjectByRelation": {
         // const referenceObject = querySelectorParams.objectReference;
         const referenceObject = transformer_InnerReference_resolve(
           "build",
@@ -151,7 +151,7 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
             elementType: "failure",
             elementValue: {
               queryFailure: "IncorrectParameters",
-              failureOrigin: ["FileSystemExtractorRunner", "selectObjectByRelation"],
+              failureOrigin: ["FileSystemExtractorRunner", "combinerForObjectByRelation"],
               queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
               queryContext: JSON.stringify(selectorParams.extractor.contextResults),
             },
@@ -176,7 +176,7 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
           };
         }
         // log.info(
-        //   "extractEntityInstance selectObjectByRelation, ############# reference",
+        //   "extractEntityInstance combinerForObjectByRelation, ############# reference",
         //   querySelectorParams,
         //   "######### context entityUuid",
         //   entityUuidReference,
@@ -193,9 +193,9 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
         };
         break;
       }
-      case "selectObjectByDirectReference": {
+      case "extractorForObjectByDirectReference": {
         const instanceDomainElement = querySelectorParams.instanceUuid;
-        // log.info("extractEntityInstance selectObjectByDirectReference found domainState", JSON.stringify(domainState))
+        // log.info("extractEntityInstance extractorForObjectByDirectReference found domainState", JSON.stringify(domainState))
 
         log.info(
           "extractEntityInstance found instanceUuid",
@@ -221,7 +221,7 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
           };
         }
         log.info(
-          "extractEntityInstance selectObjectByDirectReference, ############# reference",
+          "extractEntityInstance extractorForObjectByDirectReference, ############# reference",
           querySelectorParams,
           "entityUuidReference",
           entityUuidReference,

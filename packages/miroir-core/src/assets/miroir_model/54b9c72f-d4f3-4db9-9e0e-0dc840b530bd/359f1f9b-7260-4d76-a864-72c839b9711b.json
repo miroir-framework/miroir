@@ -164,6 +164,18 @@
               }
             ]
           },
+          "queryContextReference": {
+            "type": "object",
+            "definition": {
+              "queryType": {
+                "type": "literal",
+                "definition": "queryContextReference"
+              },
+              "queryReference": {
+                "type": "string"
+              }
+            }
+          },
           "queryTemplateContextReference": {
             "type": "object",
             "definition": {
@@ -274,7 +286,7 @@
             "definition": {
               "queryType": {
                 "type": "literal",
-                "definition": "selectObjectByRelation"
+                "definition": "combinerForObjectByRelation"
               },
               "objectReference": {
                 "type": "schemaReference",
@@ -300,7 +312,7 @@
             "definition": {
               "queryType": {
                 "type": "literal",
-                "definition": "selectObjectByDirectReference"
+                "definition": "extractorForObjectByDirectReference"
               },
               "instanceUuid": {
                 "type": "schemaReference",
@@ -329,7 +341,7 @@
               }
             ]
           },
-          "queryTemplateExtractObjectListByEntity": {
+          "extractorTemplateForObjectListByEntity": {
             "type": "object",
             "extend": {
               "type": "schemaReference",
@@ -341,7 +353,7 @@
             "definition": {
               "queryType": {
                 "type": "literal",
-                "definition": "queryTemplateExtractObjectListByEntity"
+                "definition": "extractorTemplateForObjectListByEntity"
               },
               "filter": {
                 "type": "object",
@@ -373,7 +385,7 @@
             "definition": {
               "queryType": {
                 "type": "literal",
-                "definition": "selectObjectListByRelation"
+                "definition": "combinerForObjectListByRelation"
               },
               "objectReference": {
                 "type": "schemaReference",
@@ -403,7 +415,7 @@
             "definition": {
               "queryType": {
                 "type": "literal",
-                "definition": "selectObjectListByManyToManyRelation"
+                "definition": "combinerForObjectListByManyToManyRelation"
               },
               "objectListReference": {
                 "type": "schemaReference",
@@ -429,7 +441,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "queryTemplateExtractObjectListByEntity"
+                  "relativePath": "extractorTemplateForObjectListByEntity"
                 }
               },
               {
@@ -453,7 +465,7 @@
                 "type": "literal",
                 "definition": "queryCombiner"
               },
-              "rootQuery": {
+              "rootExtractorOrReference": {
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -518,7 +530,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "queryTemplateExtractObjectListByEntity"
+                  "relativePath": "extractorTemplateForObjectListByEntity"
                 }
               },
               {
@@ -649,16 +661,10 @@
                 }
               },
               {
-                "type": "object",
-                "definition": {
-                  "queryType": {
-                    "type": "literal",
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "definition": "queryContextReference"
-                  },
-                  "queryReference": {
-                    "type": "string"
-                  }
+                "type": "schemaReference",
+                "definition":{
+                  "absolutePath":"fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath":"queryContextReference"
                 }
               }
             ]
@@ -700,7 +706,7 @@
               }
             }
           },
-          "querySelectObjectByRelation": {
+          "combinerForObjectByRelation": {
             "type": "object",
             "extend": {
               "type": "schemaReference",
@@ -712,7 +718,7 @@
             "definition": {
               "queryType": {
                 "type": "literal",
-                "definition": "selectObjectByRelation"
+                "definition": "combinerForObjectByRelation"
               },
               "objectReference": {
                 "type": "string"
@@ -722,7 +728,7 @@
               }
             }
           },
-          "queryExtractObjectByDirectReference": {
+          "extractorForObjectByDirectReference": {
             "type": "object",
             "extend": {
               "type": "schemaReference",
@@ -734,32 +740,32 @@
             "definition": {
               "queryType": {
                 "type": "literal",
-                "definition": "selectObjectByDirectReference"
+                "definition": "extractorForObjectByDirectReference"
               },
               "instanceUuid": {
                 "type": "uuid"
               }
             }
           },
-          "querySelectObject": {
+          "extractorForObject": {
             "type": "union",
             "discriminator": "queryType",
             "definition": [
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "querySelectObjectByRelation"
+                  "relativePath": "combinerForObjectByRelation"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "queryExtractObjectByDirectReference"
+                  "relativePath": "extractorForObjectByDirectReference"
                 }
               }
             ]
           },
-          "queryExtractObjectListByEntity": {
+          "extractorForObjectListByEntity": {
             "type": "object",
             "extend": {
               "type": "schemaReference",
@@ -771,7 +777,7 @@
             "definition": {
               "queryType": {
                 "type": "literal",
-                "definition": "queryExtractObjectListByEntity"
+                "definition": "extractorForObjectListByEntity"
               },
               "filter": {
                 "type": "object",
@@ -787,7 +793,25 @@
               }
             }
           },
-          "querySelectObjectListByRelation": {
+          "extractor": {
+            "type": "union",
+            "discriminator": "queryType",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "extractorForObject"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "extractorForObjectListByEntity"
+                }
+              }
+            ]
+          },
+          "combinerForObjectListByRelation": {
             "type": "object",
             "extend": {
               "type": "schemaReference",
@@ -799,7 +823,7 @@
             "definition": {
               "queryType": {
                 "type": "literal",
-                "definition": "selectObjectListByRelation"
+                "definition": "combinerForObjectListByRelation"
               },
               "objectReference": {
                 "type": "string"
@@ -813,7 +837,7 @@
               }
             }
           },
-          "querySelectObjectListByManyToManyRelation": {
+          "combinerForObjectListByManyToManyRelation": {
             "type": "object",
             "extend": {
               "type": "schemaReference",
@@ -825,7 +849,7 @@
             "definition": {
               "queryType": {
                 "type": "literal",
-                "definition": "selectObjectListByManyToManyRelation"
+                "definition": "combinerForObjectListByManyToManyRelation"
               },
               "objectListReference": {
                 "type": "string"
@@ -840,43 +864,55 @@
               }
             }
           },
-          "querySelectObjectList": {
+          "extractorOrCombinerForObjectList": {
             "type": "union",
             "discriminator": "queryType",
             "definition": [
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "queryExtractObjectListByEntity"
+                  "relativePath": "extractorForObjectListByEntity"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "querySelectObjectListByRelation"
+                  "relativePath": "combinerForObjectListByRelation"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "querySelectObjectListByManyToManyRelation"
+                  "relativePath": "combinerForObjectListByManyToManyRelation"
                 }
               }
             ]
           },
-          "querySelectByQueryCombiner": {
+          "queryCombiner": {
             "type": "object",
             "definition": {
               "queryType": {
                 "type": "literal",
                 "definition": "queryCombiner"
               },
-              "rootQuery": {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "miroirQuery"
-                }
+              "rootExtractorOrReference": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "extractor"
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "queryContextReference"
+                    }
+                  }
+                ]
               },
               "subQueryTemplate": {
                 "type": "object",
@@ -906,7 +942,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "queryExtractObjectByDirectReference"
+                  "relativePath": "extractorForObjectByDirectReference"
                 }
               },
               {
@@ -936,7 +972,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "queryExtractObjectListByEntity"
+                  "relativePath": "extractorForObjectListByEntity"
                 }
               },
               {
@@ -1026,37 +1062,25 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "queryExtractObjectByDirectReference"
+                  "relativePath": "extractorForObjectByDirectReference"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "querySelectObjectList"
+                  "relativePath": "combinerForObjectByRelation"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "querySelectObjectByRelation"
+                  "relativePath": "extractorOrCombinerForObjectList"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "querySelectObjectListByRelation"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "querySelectObjectListByManyToManyRelation"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "querySelectByQueryCombiner"
+                  "relativePath": "queryCombiner"
                 }
               },
               {
@@ -1067,18 +1091,13 @@
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "queryType": {
-                    "type": "literal",
-                    "definition": "queryContextReference"
-                  },
-                  "queryReference": {
-                    "type": "string"
-                  }
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "queryContextReference"
                 }
               }
-            ]
+          ]
           },
           "queryRecord": {
             "type": "record",

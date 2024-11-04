@@ -9,7 +9,7 @@
   "definition": {
     "extractorTemplates": {
       "report": {
-        "queryType": "selectObjectByDirectReference",
+        "queryType": "extractorForObjectByDirectReference",
         "applicationSection": "model",
         "parentName": "Report",
         "parentUuid": {

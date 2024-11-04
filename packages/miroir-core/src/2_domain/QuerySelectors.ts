@@ -23,11 +23,12 @@ import {
   JzodObject,
   MiroirQuery,
   QueryAction,
-  QueryExtractObjectListByEntity,
+  ExtractorForObjectListByEntity,
   QueryFailed,
-  QuerySelectObjectListByManyToManyRelation,
-  QuerySelectObjectListByRelation,
-  QueryTemplateConstantOrAnyReference
+  CombinerForObjectListByManyToManyRelation,
+  CombinerForObjectListByRelation,
+  QueryTemplateConstantOrAnyReference,
+  DomainElementFailed
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   AsyncExtractorRunnerMap,
@@ -267,8 +268,8 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
     // throw new Error("applyExtractorForSingleObjectListToSelectedInstancesListInMemory selectedInstancesList.elementValue is undefined")
   }
   switch (extractor.select.queryType) {
-    case "queryExtractObjectListByEntity": {
-      const localQuery: QueryExtractObjectListByEntity = extractor.select;
+    case "extractorForObjectListByEntity": {
+      const localQuery: ExtractorForObjectListByEntity = extractor.select;
       const filterTest = localQuery.filter
         ? new RegExp(localQuery.filter.value??"", "i") // TODO: check for correct type
         : undefined;
@@ -305,8 +306,8 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
       return result;
       break;
     }
-    case "selectObjectListByRelation": {
-      const relationQuery: QuerySelectObjectListByRelation = extractor.select;
+    case "combinerForObjectListByRelation": {
+      const relationQuery: CombinerForObjectListByRelation = extractor.select;
 
       let otherIndex:string | undefined = undefined
       if (
@@ -318,15 +319,15 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
       // } else if (relationQuery.objectReference?.queryTemplateType == "constantUuid") {
       } else {
         log.error(
-          "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation could not find objectReference in contextResults, objectReference=",
+          "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerForObjectListByRelation could not find objectReference in contextResults, objectReference=",
           relationQuery.objectReference,
           "contextResults",
           extractor.contextResults
         );
       }
 
-      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation", JSON.stringify(selectedInstances))
-      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation", selectedInstances)
+      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerForObjectListByRelation", JSON.stringify(selectedInstances))
+      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerForObjectListByRelation", selectedInstances)
       return {
         elementType: "instanceArray",
         elementValue: 
@@ -341,11 +342,11 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
         // ),
       } as DomainElementInstanceArray;
     }
-    case "selectObjectListByManyToManyRelation": {
-      const relationQuery: QuerySelectObjectListByManyToManyRelation = extractor.select;
+    case "combinerForObjectListByManyToManyRelation": {
+      const relationQuery: CombinerForObjectListByManyToManyRelation = extractor.select;
 
       // relationQuery.objectListReference is a queryContextReference
-      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation", selectedInstances)
+      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerForObjectListByManyToManyRelation", selectedInstances)
       let otherList: Record<string, any> | undefined = undefined
       otherList = ((extractor.contextResults[
         relationQuery.objectListReference
@@ -363,7 +364,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
   
               if (typeof otherList == "object" && !Array.isArray(otherList)) {
                 // log.info(
-                //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation search otherList for attribute",
+                //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerForObjectListByManyToManyRelation search otherList for attribute",
                 //   otherListAttribute,
                 //   "on object",
                 //   selectedInstancesEntry[1],
@@ -379,7 +380,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
                 return result;
               } else {
                 throw new Error(
-                  "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation can not use objectListReference, selectedInstances elementType=" +
+                  "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerForObjectListByManyToManyRelation can not use objectListReference, selectedInstances elementType=" +
                   selectedInstancesList.elementType + " other list elementType=" + JSON.stringify(otherList,undefined,2)
                 );
               }
@@ -389,7 +390,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
         } as DomainElementInstanceArray;
       } else {
         throw new Error(
-          "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation could not find list for objectListReference, selectedInstances elementType=" +
+          "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerForObjectListByManyToManyRelation could not find list for objectListReference, selectedInstances elementType=" +
             selectedInstancesList.elementType
         );
       }
@@ -410,8 +411,8 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
   extractor: ExtractorForSingleObjectList,
 ) => {
   switch (extractor.select.queryType) {
-    case "queryExtractObjectListByEntity": {
-      const localQuery: QueryExtractObjectListByEntity = extractor.select;
+    case "extractorForObjectListByEntity": {
+      const localQuery: ExtractorForObjectListByEntity = extractor.select;
       const filterTest = localQuery.filter
         ? new RegExp(localQuery.filter.value??"", "i") // TODO: check for correct type
         : undefined;
@@ -447,8 +448,8 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
       return result;
       break;
     }
-    case "selectObjectListByRelation": {
-      const relationQuery: QuerySelectObjectListByRelation = extractor.select;
+    case "combinerForObjectListByRelation": {
+      const relationQuery: CombinerForObjectListByRelation = extractor.select;
 
       let otherIndex:string | undefined = undefined
       if (
@@ -460,15 +461,15 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
       // } else if (relationQuery.objectReference?.queryTemplateType == "constantUuid") {
       } else {
         log.error(
-          "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation could not find objectReference in contextResults, objectReference=",
+          "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerForObjectListByRelation could not find objectReference in contextResults, objectReference=",
           relationQuery.objectReference,
           "contextResults",
           extractor.contextResults
         );
       }
 
-      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation", JSON.stringify(selectedInstances))
-      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByRelation", selectedInstances)
+      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerForObjectListByRelation", JSON.stringify(selectedInstances))
+      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerForObjectListByRelation", selectedInstances)
       return { "elementType": "instanceUuidIndex", "elementValue": Object.fromEntries(
         Object.entries(selectedInstancesUuidIndex.elementValue ?? {}).filter(
           (i: [string, EntityInstance]) => {
@@ -481,11 +482,11 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
         )
       )} as DomainElementInstanceUuidIndex;
     }
-    case "selectObjectListByManyToManyRelation": {
-      const relationQuery: QuerySelectObjectListByManyToManyRelation = extractor.select;
+    case "combinerForObjectListByManyToManyRelation": {
+      const relationQuery: CombinerForObjectListByManyToManyRelation = extractor.select;
 
       // relationQuery.objectListReference is a queryContextReference
-      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation", selectedInstances)
+      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerForObjectListByManyToManyRelation", selectedInstances)
       let otherList: Record<string, any> | undefined = undefined
       otherList = ((extractor.contextResults[
         relationQuery.objectListReference
@@ -500,7 +501,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
   
               if (typeof otherList == "object" && !Array.isArray(otherList)) {
                 // log.info(
-                //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation search otherList for attribute",
+                //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerForObjectListByManyToManyRelation search otherList for attribute",
                 //   otherListAttribute,
                 //   "on object",
                 //   selectedInstancesEntry[1],
@@ -516,7 +517,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
                 return result;
               } else {
                 throw new Error(
-                  "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation can not use objectListReference, selectedInstances elementType=" +
+                  "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerForObjectListByManyToManyRelation can not use objectListReference, selectedInstances elementType=" +
                   selectedInstancesUuidIndex.elementType + " other list elementType=" + JSON.stringify(otherList,undefined,2)
                 );
               }
@@ -525,7 +526,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
         )} as DomainElementInstanceUuidIndex;
       } else {
         throw new Error(
-          "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory selectObjectListByManyToManyRelation could not find list for objectListReference, selectedInstances elementType=" +
+          "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerForObjectListByManyToManyRelation could not find list for objectListReference, selectedInstances elementType=" +
             selectedInstancesUuidIndex.elementType
         );
       }
@@ -659,7 +660,7 @@ export function innerSelectElementFromQuery/*ExtractorTemplateRunner*/<StateType
   extractorRunnerMap:SyncExtractorRunnerMap<StateType>,
   deploymentUuid: Uuid,
   query: MiroirQuery
-): DomainElement {
+): DomainElement | DomainElementFailed {
   switch (query.queryType) {
     case "literal": {
       return { elementType: "string", elementValue: query.definition };
@@ -667,9 +668,9 @@ export function innerSelectElementFromQuery/*ExtractorTemplateRunner*/<StateType
     }
     // ############################################################################################
     // Impure Monads
-    case "queryExtractObjectListByEntity":
-    case "selectObjectListByRelation": 
-    case "selectObjectListByManyToManyRelation": {
+    case "extractorForObjectListByEntity":
+    case "combinerForObjectListByRelation": 
+    case "combinerForObjectListByManyToManyRelation": {
       // return extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractorInMemory(state, {
       return extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor(state, {
         extractorRunnerMap,
@@ -690,8 +691,8 @@ export function innerSelectElementFromQuery/*ExtractorTemplateRunner*/<StateType
       });
       break;
     }
-    case "selectObjectByRelation":
-    case "selectObjectByDirectReference": {
+    // case "combinerForObjectByRelation":
+    case "extractorForObjectByDirectReference": {
       return extractorRunnerMap.extractEntityInstance(state, {
         extractorRunnerMap,
         extractor: {
@@ -758,7 +759,7 @@ export function innerSelectElementFromQuery/*ExtractorTemplateRunner*/<StateType
         queryParams,
         extractorRunnerMap,
         deploymentUuid,
-        query.rootQuery
+        query.rootExtractorOrReference
       );
       if (["instanceUuidIndex", "object", "any"].includes(rootQueryResults.elementType)) {
         const result: DomainElementObject = {
@@ -804,8 +805,8 @@ export function innerSelectElementFromQuery/*ExtractorTemplateRunner*/<StateType
           elementType: "failure",
           elementValue: {
             queryFailure: "IncorrectParameters",
-            query: JSON.stringify(query.rootQuery),
-            queryContext: "innerSelectElementFromQuery for queryCombiner, rootQuery is not instanceUuidIndex, rootQuery=" + JSON.stringify(rootQueryResults,null,2),
+            query: JSON.stringify(query.rootExtractorOrReference),
+            queryContext: "innerSelectElementFromQuery for queryCombiner, rootExtractorOrReference is not instanceUuidIndex, rootExtractorOrReference=" + JSON.stringify(rootQueryResults,null,2),
           },
         };
       }
@@ -840,7 +841,7 @@ export function innerSelectElementFromQuery/*ExtractorTemplateRunner*/<StateType
       break;
     }
     default: {
-      return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable", query } };
+      return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable", query: JSON.stringify(query) } } as DomainElementFailed;
       break;
     }
   }

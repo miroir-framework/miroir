@@ -9,7 +9,7 @@ import {
   ExtractorForSingleObject,
   ExtractorForSingleObjectList,
   JzodObject,
-  QuerySelectObject
+  ExtractorForObject
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface";
 import {
@@ -62,7 +62,7 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorRunner<
   deploymentEntityState: DeploymentEntityState,
   selectorParams: SyncExtractorRunnerParams<ExtractorForSingleObject, DeploymentEntityState>
 ): DomainElementEntityInstanceOrFailed => {
-  const querySelectorParams = selectorParams.extractor.select as QuerySelectObject;
+  const querySelectorParams = selectorParams.extractor.select as ExtractorForObject;
   const deploymentUuid = selectorParams.extractor.deploymentUuid;
   const applicationSection: ApplicationSection =
     selectorParams.extractor.select.applicationSection ??
@@ -95,7 +95,7 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorRunner<
   const index = getDeploymentEntityStateIndex(deploymentUuid, applicationSection, entityUuidReference);
 
   switch (querySelectorParams?.queryType) {
-    case "selectObjectByRelation": {
+    case "combinerForObjectByRelation": {
       // TODO: reference object is implicitly a contextReference here, should be made explicit?!
       const referenceObject = transformer_InnerReference_resolve(
         "runtime",
@@ -108,7 +108,7 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorRunner<
         !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
       ) {
         log.error(
-          "selectEntityInstanceFromDeploymentEntityState selectObjectByRelation, querySelectorParams",
+          "selectEntityInstanceFromDeploymentEntityState combinerForObjectByRelation, querySelectorParams",
           querySelectorParams,
           "entityUuid",
           entityUuidReference,
@@ -144,7 +144,7 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorRunner<
       }
 
       // log.info(
-      //   "selectEntityInstanceFromDeploymentEntityState selectObjectByRelation, ############# reference",
+      //   "selectEntityInstanceFromDeploymentEntityState combinerForObjectByRelation, ############# reference",
       //   querySelectorParams,
       //   "######### context entityUuid",
       //   entityUuidReference,
@@ -164,10 +164,10 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorRunner<
       };
       break;
     }
-    case "selectObjectByDirectReference": {
+    case "extractorForObjectByDirectReference": {
       // TODO: instanceUuid is implicitly a constant here, should be made explicit?!
       const instanceDomainElement = querySelectorParams.instanceUuid;
-      // log.info("selectEntityInstanceFromDeploymentEntityState selectObjectByDirectReference found domainState", JSON.stringify(domainState))
+      // log.info("selectEntityInstanceFromDeploymentEntityState extractorForObjectByDirectReference found domainState", JSON.stringify(domainState))
 
       log.info(
         "selectEntityInstanceFromDeploymentEntityState found instanceUuid",
@@ -200,7 +200,7 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorRunner<
       }
 
       log.info(
-        "selectEntityInstanceFromDeploymentEntityState selectObjectByDirectReference, ############# reference",
+        "selectEntityInstanceFromDeploymentEntityState extractorForObjectByDirectReference, ############# reference",
         querySelectorParams,
         "entityUuidReference",
         entityUuidReference,

@@ -301,7 +301,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         contextResults: {},
                         extractorTemplates: {
                           [subQueryName]: {
-                            queryType: "queryTemplateExtractObjectListByEntity",
+                            queryType: "extractorTemplateForObjectListByEntity",
                             applicationSection: "data",
                             parentName: "Deployment",
                             parentUuid: {
@@ -557,7 +557,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         extractorTemplates: {
                           "select": {
                             "authors": {
-                              "queryType": "queryTemplateExtractObjectListByEntity",
+                              "queryType": "extractorTemplateForObjectListByEntity",
                               "parentName": "Author",
                               "parentUuid": {
                                 "transformerType": "constantUuid",

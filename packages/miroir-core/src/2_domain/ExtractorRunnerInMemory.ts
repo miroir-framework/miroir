@@ -8,7 +8,7 @@ import {
   ExtractorForSingleObject,
   ExtractorForSingleObjectList,
   QueryAction,
-  QuerySelectObject
+  ExtractorForObject
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import {
@@ -80,7 +80,7 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
   > = async (
     selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObject>
   ): Promise<DomainElementEntityInstanceOrFailed> => {
-    const querySelectorParams: QuerySelectObject = selectorParams.extractor.select as QuerySelectObject;
+    const querySelectorParams: ExtractorForObject = selectorParams.extractor.select as ExtractorForObject;
     const deploymentUuid = selectorParams.extractor.deploymentUuid;
     const applicationSection: ApplicationSection =
       selectorParams.extractor.select.applicationSection ??
@@ -114,7 +114,7 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
     // )
 
     switch (querySelectorParams?.queryType) {
-      case "selectObjectByRelation": {
+      case "combinerForObjectByRelation": {
         // TODO: we assume this ia a constant, get rid of resolution altogether (push it up)
         const referenceObject = transformer_InnerReference_resolve(
           "build",
@@ -156,7 +156,7 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
           };
         }
         // log.info(
-        //   "extractEntityInstance selectObjectByRelation, ############# reference",
+        //   "extractEntityInstance combinerForObjectByRelation, ############# reference",
         //   querySelectorParams,
         //   "######### context entityUuid",
         //   entityUuidReference,
@@ -178,9 +178,9 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
         };
         break;
       }
-      case "selectObjectByDirectReference": {
+      case "extractorForObjectByDirectReference": {
         const instanceUuid = querySelectorParams.instanceUuid;
-        // log.info("extractEntityInstance selectObjectByDirectReference found domainState", JSON.stringify(domainState))
+        // log.info("extractEntityInstance extractorForObjectByDirectReference found domainState", JSON.stringify(domainState))
 
         log.info(
           "extractEntityInstance found instanceUuid",
@@ -244,7 +244,7 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
           };
         }
         log.info(
-          "extractEntityInstance selectObjectByDirectReference, ############# reference",
+          "extractEntityInstance extractorForObjectByDirectReference, ############# reference",
           querySelectorParams,
           "entityUuidReference",
           entityUuidReference,

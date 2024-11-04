@@ -903,10 +903,23 @@ export function innerTransformer_apply(
         return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
       }
 
-      const result = resolvedReference.elementValue[transformer.index];
+      const orderByAttribute = transformer.orderBy??"";
+      const sortByAttribute = transformer.orderBy
+      ? (a: any[]) =>
+          a.sort((a, b) =>
+            a[orderByAttribute].localeCompare(b[orderByAttribute], "en", {
+              sensitivity: "base",
+            })
+          )
+      : (a: any[]) => a;
+
+      const sortedResultArray = sortByAttribute(resolvedReference.elementValue);
+      const result = sortedResultArray[transformer.index];
       log.info(
-        "innerTransformer_apply extractorTransformer listPickElement resolvedReference",
-        resolvedReference,
+        "innerTransformer_apply extractorTransformer listPickElement sorted resolvedReference",
+        sortedResultArray,
+        // "innerTransformer_apply extractorTransformer listPickElement resolvedReference",
+        // resolvedReference,
         "index",
         transformer.index,
         "result",

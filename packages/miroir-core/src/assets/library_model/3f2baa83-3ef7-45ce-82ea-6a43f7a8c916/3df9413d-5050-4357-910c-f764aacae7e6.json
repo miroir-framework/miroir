@@ -10,7 +10,7 @@
     "reportParameters": {},
     "extractorTemplates": {
       "users": {
-        "queryType": "queryTemplateExtractObjectListByEntity",
+        "queryType": "extractorTemplateForObjectListByEntity",
         "parentName": "User",
         "parentUuid": {
           "transformerType": "constantUuid",

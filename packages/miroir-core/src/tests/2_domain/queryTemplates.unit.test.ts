@@ -35,7 +35,7 @@ describe("queryTemplates.unit.test", () => {
         contextResults: {},
         extractorTemplates: {
           book: {
-            queryType: "selectObjectByDirectReference",
+            queryType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
               transformerType: "constantUuid",
@@ -47,7 +47,7 @@ describe("queryTemplates.unit.test", () => {
             },
           },
           fountain: {
-            queryType: "selectObjectByDirectReference",
+            queryType: "extractorForObjectByDirectReference",
             parentName: "Fountain",
             parentUuid: {
               transformerType: "parameterReference",
@@ -65,7 +65,7 @@ describe("queryTemplates.unit.test", () => {
         },
         combinerTemplates: {
           publisher: {
-            queryType: "selectObjectByRelation",
+            queryType: "combinerForObjectByRelation",
             parentName: "Publisher",
             parentUuid: {
               transformerType: "constantUuid",
@@ -79,7 +79,7 @@ describe("queryTemplates.unit.test", () => {
             AttributeOfObjectToCompareToReferenceUuid: "publisher",
           },
           booksOfPublisher: {
-            queryType: "selectObjectListByRelation",
+            queryType: "combinerForObjectListByRelation",
             parentName: "Book",
             parentUuid: {
               transformerType: "constantUuid",
@@ -93,7 +93,7 @@ describe("queryTemplates.unit.test", () => {
             AttributeOfListObjectToCompareToReferenceUuid: "publisher",
           },
           booksOfAuthor: {
-            queryType: "selectObjectListByRelation",
+            queryType: "combinerForObjectListByRelation",
             parentName: "Book",
             parentUuid: {
               transformerType: "constantUuid",
@@ -107,7 +107,7 @@ describe("queryTemplates.unit.test", () => {
             AttributeOfListObjectToCompareToReferenceUuid: "author",
           },
           publishersOfBooks: {
-            queryType: "selectObjectListByManyToManyRelation",
+            queryType: "combinerForObjectListByManyToManyRelation",
             parentName: "Publisher",
             parentUuid: {
               transformerType: "constantUuid",
@@ -139,13 +139,13 @@ describe("queryTemplates.unit.test", () => {
         queryType: "extractorForRecordOfExtractors",
         extractors: {
           book: {
-            queryType: "selectObjectByDirectReference",
+            queryType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             instanceUuid: "xxxxx",
           },
           fountain: {
-            queryType: "selectObjectByDirectReference",
+            queryType: "extractorForObjectByDirectReference",
             parentName: "Fountain",
             parentUuid: "yyyyy",
             instanceUuid: {
@@ -157,28 +157,28 @@ describe("queryTemplates.unit.test", () => {
         },
         combiners: {
           publisher: {
-            queryType: "selectObjectByRelation",
+            queryType: "combinerForObjectByRelation",
             parentName: "Publisher",
             parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
             objectReference: "book",
             AttributeOfObjectToCompareToReferenceUuid: "publisher",
           },
           booksOfPublisher: {
-            queryType: "selectObjectListByRelation",
+            queryType: "combinerForObjectListByRelation",
             parentName: "Book",
             parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             objectReference: "publisher",
             AttributeOfListObjectToCompareToReferenceUuid: "publisher",
           },
           booksOfAuthor: {
-            queryType: "selectObjectListByRelation",
+            queryType: "combinerForObjectListByRelation",
             parentName: "Book",
             parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             objectReference: "author",
             AttributeOfListObjectToCompareToReferenceUuid: "author",
           },
           publishersOfBooks: {
-            queryType: "selectObjectListByManyToManyRelation",
+            queryType: "combinerForObjectListByManyToManyRelation",
             parentName: "Publisher",
             parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
             objectListReference: "booksOfAuthor",
@@ -207,7 +207,7 @@ describe("queryTemplates.unit.test", () => {
         },
         contextResults: {},
         select: {
-            queryType: "selectObjectByDirectReference",
+            queryType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
               transformerType: "constantUuid",
@@ -236,7 +236,7 @@ describe("queryTemplates.unit.test", () => {
         deploymentUuid: "xxxxx",
         queryType: "extractorForDomainModelObjects",
         select: {
-          queryType: "selectObjectByDirectReference",
+          queryType: "extractorForObjectByDirectReference",
           parentName: "Book",
           parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           instanceUuid: "xxxxx",
