@@ -799,6 +799,8 @@ export function innerTransformer_apply(
         );
         return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
       }
+      const elementValueArray = resolvedReference.elementValue instanceof Array ? resolvedReference.elementValue : Object.entries(resolvedReference.elementValue);
+      log.info("innerTransformer_apply extractorTransformer count resolvedReference", resolvedReference.elementValue.length);
       const sortByAttribute = transformer.orderBy
         ? (a: any[]) =>
             a.sort((a, b) =>

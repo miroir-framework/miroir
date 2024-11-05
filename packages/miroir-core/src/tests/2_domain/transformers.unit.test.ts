@@ -1,19 +1,15 @@
 import { v4 as uuidv4 } from "uuid";
-import Mustache from "mustache";
 // import { describe, expect } from 'vitest';
 
-import { transformer_apply } from "../../2_domain/Transformers";
 import {
   DomainAction,
+  DomainElement,
+  EntityInstance,
   StoreUnitConfiguration,
   TransformerForBuild,
-  DomainElementObject,
-  TransformerForRuntime,
-  EntityInstance,
-  TransformerForRuntime_InnerReference,
-  ExtractorTemplateForRecordOfExtractors,
-  DomainElement,
+  TransformerForRuntime
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { transformer_apply } from "../../2_domain/Transformers";
 import {
   author1,
   author2,
@@ -29,11 +25,8 @@ import {
   Country2,
   Country3,
   Country4,
-  ignorePostgresExtraAttributesOnList,
-  ignorePostgresExtraAttributesOnRecord,
-  resolveExtractorTemplateForRecordOfExtractors,
+  ignorePostgresExtraAttributesOnList
 } from "../../index";
-import { object } from "zod";
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
@@ -324,7 +317,7 @@ describe("transformers.unit.test", () => {
   // TODO: allow count for build transformers
   it("count books by author build template", async () => { // TODO: test failure cases!
       // if (miroirConfig.client.emulateServer) {
-      console.log("count books by author runtime transformer START")
+      console.log(expect.getState().currentTestName, "START")
       const newApplicationName = "test";
 
       const uniqueRuntimeTemplate:TransformerForRuntime = {
@@ -341,18 +334,26 @@ describe("transformers.unit.test", () => {
         uniqueRuntimeTemplate,
         { }, // queryParams
         {
-          books: Object.fromEntries(
-            [
-              book1 as EntityInstance,
-              book2 as EntityInstance,
-              book3 as EntityInstance,
-              book4 as EntityInstance,
-              book5 as EntityInstance,
-              book6 as EntityInstance,
-            ].map((book: EntityInstance) => {
-              return [book.uuid, book];
-            })
-          ),
+          books: [
+            book1 as EntityInstance,
+            book2 as EntityInstance,
+            book3 as EntityInstance,
+            book4 as EntityInstance,
+            book5 as EntityInstance,
+            book6 as EntityInstance,
+          ]
+          // books: Object.fromEntries(
+          //   [
+          //     book1 as EntityInstance,
+          //     book2 as EntityInstance,
+          //     book3 as EntityInstance,
+          //     book4 as EntityInstance,
+          //     book5 as EntityInstance,
+          //     book6 as EntityInstance,
+          //   ].map((book: EntityInstance) => {
+          //     return [book.uuid, book];
+          //   })
+          // ),
         } // context
         // undefined
       ).elementValue as string;
@@ -366,7 +367,8 @@ describe("transformers.unit.test", () => {
           { author: "e4376314-d197-457c-aa5e-d2da5f8d5977", count: 1 },
         ]
       );
-      console.log("convert mustache string END")
+      console.log(expect.getState().currentTestName, "END")
+      // console.log("convert mustache string END")
     }
   );
 
@@ -390,18 +392,26 @@ describe("transformers.unit.test", () => {
         uniqueRuntimeTemplate,
         { }, // queryParams
         {
-          books: Object.fromEntries(
-            [
-              book1 as EntityInstance,
-              book2 as EntityInstance,
-              book3 as EntityInstance,
-              book4 as EntityInstance,
-              book5 as EntityInstance,
-              book6 as EntityInstance,
-            ].map((book: EntityInstance) => {
-              return [book.uuid, book];
-            })
-          ),
+          books: [
+            book1 as EntityInstance,
+            book2 as EntityInstance,
+            book3 as EntityInstance,
+            book4 as EntityInstance,
+            book5 as EntityInstance,
+            book6 as EntityInstance,
+          ],
+          // books: Object.fromEntries(
+          //   [
+          //     book1 as EntityInstance,
+          //     book2 as EntityInstance,
+          //     book3 as EntityInstance,
+          //     book4 as EntityInstance,
+          //     book5 as EntityInstance,
+          //     book6 as EntityInstance,
+          //   ].map((book: EntityInstance) => {
+          //     return [book.uuid, book];
+          //   })
+          // ),
         } // context
         // undefined
       ).elementValue as string;
@@ -424,9 +434,11 @@ describe("transformers.unit.test", () => {
   );
 
   // ################################################################################################
-  it("built custom object with runtime transformer", async () => { // TODO: test failure cases!
+  it("built custom object with runtime transformer fullObjectTemplate", async () => { // TODO: test failure cases!
       // if (miroirConfig.client.emulateServer) {
-      console.log("built custom object with runtime transformer START")
+      // console.log("built custom object with runtime transformer START")
+      console.log(expect.getState().currentTestName, "START")
+
       const newApplicationName = "test";
       const newUuid = uuidv4();
 
@@ -474,9 +486,11 @@ describe("transformers.unit.test", () => {
 
       console.log("################################ count books by author runtime transformer", testResult)
       expect(testResult).toEqual(
-        { uuid: newUuid, name: "US"  },
+        [{ uuid: newUuid, name: "US"  }],
       );
-      console.log("convert mustache string END")
+      console.log(expect.getState().currentTestName, "END")
+
+      // console.log("convert mustache string END")
     }
   );
 
@@ -1428,6 +1442,9 @@ describe("transformers.unit.test", () => {
     console.log("list - pick item with runtime transformer END")
   }
   );
+
+
+
 
   // // ################################################################################################
   // // ################################################################################################

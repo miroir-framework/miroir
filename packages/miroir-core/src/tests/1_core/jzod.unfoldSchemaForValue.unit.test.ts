@@ -162,33 +162,14 @@ export const defaultMiroirMetaModel: MetaModel = {
 // ################################################################################################
 // ################################################################################################
 
-const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
-  entityDefinitionBundleV1 as EntityDefinition,
-  entityDefinitionCommit as EntityDefinition,
-  modelEndpointV1,
-  storeManagementEndpoint,
-  instanceEndpointVersionV1,
-  undoRedoEndpointVersionV1,
-  localCacheEndpointVersionV1,
-  domainEndpointVersionV1,
-  queryEndpointVersionV1,
-  persistenceEndpointVersionV1,
-  jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
-  transformerJzodSchema as JzodSchema,
-  [transformerMenuV1],
-  entityDefinitionSelfApplication as EntityDefinition,
-  entityDefinitionSelfApplicationVersion as EntityDefinition,
-  entityDefinitionDeployment as EntityDefinition,
-  entityDefinitionEntity as EntityDefinition,
-  entityDefinitionEntityDefinition as EntityDefinition,
-  entityDefinitionJzodSchema as EntityDefinition,
-  entityDefinitionMenu as EntityDefinition,
-  entityDefinitionQueryVersionV1 as EntityDefinition,
-  entityDefinitionReport as EntityDefinition
-  // jzodSchemajzodMiroirBootstrapSchema as any,
-);
 
-function testResolve(testId: string, testSchema: JzodElement, testValueObject: any, expectedResult: JzodElement) {
+function testResolve(
+  testId: string,
+  miroirFundamentalJzodSchema: JzodSchema,
+  testSchema: JzodElement,
+  testValueObject: any,
+  expectedResult: JzodElement
+) {
   console.log("######################################### running test", testId, "...");
   const testResult = resolveReferencesForJzodSchemaAndValueObject(
     miroirFundamentalJzodSchema,
@@ -210,6 +191,7 @@ function testResolve(testId: string, testSchema: JzodElement, testValueObject: a
 
 interface testFormat {
   // testId: string,
+  miroirFundamentalJzodSchema: JzodSchema,
   testSchema: JzodElement;
   testValueObject: any;
   expectedResult: JzodElement;
@@ -223,9 +205,37 @@ interface testFormat {
 describe("jzod.unfoldSchemaForValue", () => {
   // ###########################################################################################
   it("miroir entity definition object format", () => {
+    const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
+      entityDefinitionBundleV1 as EntityDefinition,
+      entityDefinitionCommit as EntityDefinition,
+      modelEndpointV1,
+      storeManagementEndpoint,
+      instanceEndpointVersionV1,
+      undoRedoEndpointVersionV1,
+      localCacheEndpointVersionV1,
+      domainEndpointVersionV1,
+      queryEndpointVersionV1,
+      persistenceEndpointVersionV1,
+      jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
+      transformerJzodSchema as JzodSchema,
+      [transformerMenuV1],
+      entityDefinitionSelfApplication as EntityDefinition,
+      entityDefinitionSelfApplicationVersion as EntityDefinition,
+      entityDefinitionDeployment as EntityDefinition,
+      entityDefinitionEntity as EntityDefinition,
+      entityDefinitionEntityDefinition as EntityDefinition,
+      entityDefinitionJzodSchema as EntityDefinition,
+      entityDefinitionMenu as EntityDefinition,
+      entityDefinitionQueryVersionV1 as EntityDefinition,
+      entityDefinitionReport as EntityDefinition
+      // jzodSchemajzodMiroirBootstrapSchema as any,
+    );
+    console.log(expect.getState().currentTestName, "called getMiroirFundamentalJzodSchema");
+
     const tests: { [k: string]: testFormat } = {
       // plain literal!
       test010: {
+        miroirFundamentalJzodSchema,
         testSchema: {
           type: "literal",
           definition: "myLiteral",
@@ -238,6 +248,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // simpleType
       test020: {
+        miroirFundamentalJzodSchema,
         testSchema: {
           type: "string",
         },
@@ -248,6 +259,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // schemaReference (plain, simpleType, non-recursive)
       test030: {
+        miroirFundamentalJzodSchema,
         testSchema: {
           type: "schemaReference",
           context: {
@@ -266,6 +278,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // schemaReference: object, recursive, 1-level valueObject
       test040: {
+        miroirFundamentalJzodSchema,
         testSchema: {
           type: "schemaReference",
           context: {
@@ -301,6 +314,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // schemaReference: object, recursive, 2-level valueObject
       test050: {
+        miroirFundamentalJzodSchema,
         testSchema: {
           type: "schemaReference",
           context: {
@@ -342,6 +356,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // schemaReference: object, recursive, 3-level valueObject
       test060: {
+        miroirFundamentalJzodSchema,
         testSchema: {
           type: "schemaReference",
           context: {
@@ -387,6 +402,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // schemaReference: record of recursive object, with 2-level valueObject
       test070: {
+        miroirFundamentalJzodSchema,
         testSchema: {
           type: "schemaReference",
           context: {
@@ -447,6 +463,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // result must be identical to test70, but this time the schemaReference is places inside the record, not the other way around
       test080: {
+        miroirFundamentalJzodSchema,
         testSchema: {
           type: "record",
           definition: {
@@ -503,6 +520,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // array of simpleType
       test090: {
+        miroirFundamentalJzodSchema,
         testSchema: {
           type: "array",
           definition: {
@@ -519,6 +537,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // array of schemaReference / object
       test100: {
+        miroirFundamentalJzodSchema,
         testSchema: {
           type: "array",
           definition: {
@@ -584,6 +603,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       // TODO: array of union Type
       // array of schemaReference / object
       test120: {
+        miroirFundamentalJzodSchema,
         testSchema: {
           type: "schemaReference",
           context: {
@@ -627,6 +647,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // JzodSchema: literal
       test500: {
+        miroirFundamentalJzodSchema,
         testSchema: {
           type: "schemaReference",
           definition: {
@@ -650,6 +671,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // JzodSchema: string
       test510: {
+        miroirFundamentalJzodSchema,
         testSchema: {
           type: "schemaReference",
           definition: {
@@ -670,6 +692,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // JzodSchema: object, simpleType attributes
       test520: {
+        miroirFundamentalJzodSchema,
         testSchema: {
           type: "schemaReference",
           definition: {
@@ -704,6 +727,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // JzodSchema: schema reference with simple attribute
       test530: {
+        miroirFundamentalJzodSchema,
         testSchema: {
           type: "schemaReference",
           definition: {
@@ -740,6 +764,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // JzodSchema: schema reference for object with extend clause
       test540: {
+        miroirFundamentalJzodSchema,
         testSchema: {
           type: "schemaReference",
           definition: {
@@ -794,6 +819,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       //
       // based on "real" cases
       test900: {
+        miroirFundamentalJzodSchema,
         testSchema: {
           type: "object",
           definition: {
@@ -985,6 +1011,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // based on "real" cases
       test910: {
+        miroirFundamentalJzodSchema,
         testSchema: {
           type: "schemaReference",
           context: {
@@ -1307,6 +1334,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // based on "real" cases
       test920: {
+        miroirFundamentalJzodSchema,
         testSchema: {
           type: "schemaReference",
           context: {
@@ -1674,6 +1702,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       // based on "real" cases: bootstrap EntityDefinitionEntityDefinition
       //  TODO: resolve resolution issue for "JzodObject": resolveJzodSchemaReferenceInContext could not resolve reference {"relativePath":"jzodObject"} absoluteReferences keys [miroirFundamentalJzodSchemaUuid,"1e8dab4b-65a3-4686-922e-ce89a2d62aa9","1e8dab4b-65a3-4686-922e-ce89a2d62aa9"] current Model configuration,entities,entityDefinitions,jzodSchemas,menus,applicationVersions,reports,applicationVersionCrossEntityDefinition relativeReferenceJzodContext keys {}
       // test990: {
+      // miroirFundamentalJzodSchema,
       //   testSchema: entityDefinitionEntityDefinition.jzodSchema as JzodElement,
       //   expectedResult: {
       //     type: "object",
@@ -2159,7 +2188,13 @@ describe("jzod.unfoldSchemaForValue", () => {
     };
 
     for (const test of Object.entries(tests)) {
-      testResolve(test[0], test[1].testSchema, test[1].testValueObject, test[1].expectedResult);
+      testResolve(
+        test[0],
+        test[1].miroirFundamentalJzodSchema,
+        test[1].testSchema,
+        test[1].testValueObject,
+        test[1].expectedResult
+      );
     }
   });
 });

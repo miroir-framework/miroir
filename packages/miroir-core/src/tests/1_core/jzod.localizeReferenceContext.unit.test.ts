@@ -172,34 +172,10 @@ export const defaultMiroirMetaModel: MetaModel = {
 // ################################################################################################
 // ################################################################################################
 
-const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
-  entityDefinitionBundleV1 as EntityDefinition,
-  entityDefinitionCommit as EntityDefinition,
-  modelEndpointV1,
-  storeManagementEndpoint,
-  instanceEndpointVersionV1,
-  undoRedoEndpointVersionV1,
-  localCacheEndpointVersionV1,
-  domainEndpointVersionV1,
-  queryEndpointVersionV1,
-  persistenceEndpointVersionV1,
-  jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
-  transformerJzodSchema as JzodSchema, 
-  [transformerMenuV1], 
-  entityDefinitionSelfApplication as EntityDefinition,
-  entityDefinitionSelfApplicationVersion as EntityDefinition,
-  entityDefinitionDeployment as EntityDefinition,
-  entityDefinitionEntity as EntityDefinition,
-  entityDefinitionEntityDefinition as EntityDefinition,
-  entityDefinitionJzodSchema as EntityDefinition,
-  entityDefinitionMenu  as EntityDefinition,
-  entityDefinitionQueryVersionV1 as EntityDefinition,
-  entityDefinitionReport as EntityDefinition,
-  // jzodSchemajzodMiroirBootstrapSchema as any,
-);
 
 function testLocalizeReferenceContext(
   testId: string,
+  miroirFundamentalJzodSchema: JzodSchema,
   testSchema: JzodReference,
   // testValueObject: any,
   expectedResult: JzodElement,
@@ -226,6 +202,7 @@ function testLocalizeReferenceContext(
 interface testFormat {
   // testId: string,
   // testSchema: JzodElement,
+  miroirFundamentalJzodSchema: JzodSchema,
   testSchema: JzodReference,
   // testValueObject: any,
   expectedResult: JzodElement,
@@ -244,7 +221,33 @@ describe(
     it(
       'miroir entity definition object format',
       () => {
-
+        const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
+          entityDefinitionBundleV1 as EntityDefinition,
+          entityDefinitionCommit as EntityDefinition,
+          modelEndpointV1,
+          storeManagementEndpoint,
+          instanceEndpointVersionV1,
+          undoRedoEndpointVersionV1,
+          localCacheEndpointVersionV1,
+          domainEndpointVersionV1,
+          queryEndpointVersionV1,
+          persistenceEndpointVersionV1,
+          jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
+          transformerJzodSchema as JzodSchema, 
+          [transformerMenuV1], 
+          entityDefinitionSelfApplication as EntityDefinition,
+          entityDefinitionSelfApplicationVersion as EntityDefinition,
+          entityDefinitionDeployment as EntityDefinition,
+          entityDefinitionEntity as EntityDefinition,
+          entityDefinitionEntityDefinition as EntityDefinition,
+          entityDefinitionJzodSchema as EntityDefinition,
+          entityDefinitionMenu  as EntityDefinition,
+          entityDefinitionQueryVersionV1 as EntityDefinition,
+          entityDefinitionReport as EntityDefinition,
+          // jzodSchemajzodMiroirBootstrapSchema as any,
+        );
+        console.log(expect.getState().currentTestName, "called getMiroirFundamentalJzodSchema");
+    
         const tests: { [k: string]: testFormat } = {
           // // plain literal!
           // test010: {
@@ -289,6 +292,7 @@ describe(
           // },
           // schemaReference: object, recursive, 1-level valueObject
           test040: {
+            miroirFundamentalJzodSchema,
             testSchema: {
               type: "schemaReference",
               context: {
@@ -2040,7 +2044,7 @@ describe(
         };
 
         for (const test of Object.entries(tests)) {
-          testLocalizeReferenceContext(test[0], test[1].testSchema, test[1].expectedResult)
+          testLocalizeReferenceContext(test[0], test[1].miroirFundamentalJzodSchema, test[1].testSchema, test[1].expectedResult)
           
         }
       }
