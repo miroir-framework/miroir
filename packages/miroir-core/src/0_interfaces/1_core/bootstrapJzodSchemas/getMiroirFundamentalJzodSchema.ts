@@ -1512,6 +1512,10 @@ export function getMiroirFundamentalJzodSchema(
               type: "literal",
               definition: "extractorForRecordOfExtractors",
             },
+            runAsSql: {
+              type: "boolean",
+              optional: true,
+            },
             extractors: {
               type: "record",
               optional: true,
@@ -1627,6 +1631,10 @@ export function getMiroirFundamentalJzodSchema(
             queryType: {
               type: "literal",
               definition: "extractorTemplateForRecordOfExtractors",
+            },
+            runAsSql: {
+              type: "boolean",
+              optional: true,
             },
             extractorTemplates: {
               type: "record",

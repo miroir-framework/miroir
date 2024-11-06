@@ -233,8 +233,7 @@ describe(
           //     type: "schemaReference",
           //     context: {
           //       a: {
-          //         type: "simpleType",
-          //         definition: "string"
+          //         type: "string",
           //       }
           //     },
           //     definition: {
@@ -242,11 +241,10 @@ describe(
           //     }
           //   },
           //   expectedResult: {
-          //     type: "simpleType",
-          //     definition: "string"
+          //     type: "string",
           //   },
           // },
-          // schemaReference: object, recursive, 1-level valueObject
+          // // schemaReference: object, recursive, 1-level valueObject
           // test040: {
           //   testSchema: {
           //     type: "schemaReference",
@@ -258,8 +256,7 @@ describe(
           //             type: "union",
           //             definition: [
           //               {
-          //                 type: "simpleType",
-          //                 definition: "string",
+          //                 type: "string",
           //               },
           //               {
           //                 type: "schemaReference",
@@ -279,8 +276,7 @@ describe(
           //         type: "union",
           //         definition: [
           //           {
-          //             type: "simpleType",
-          //             definition: "string",
+          //             type: "string",
           //           },
           //           {
           //             type: "schemaReference",
@@ -292,8 +288,7 @@ describe(
           //                     type: "union",
           //                     definition: [
           //                       {
-          //                         type: "simpleType",
-          //                         definition: "string",
+          //                         type: "string",
           //                       },
           //                       {
           //                         type: "schemaReference",

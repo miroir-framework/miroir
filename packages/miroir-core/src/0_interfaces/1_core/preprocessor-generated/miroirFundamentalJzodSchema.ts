@@ -7378,6 +7378,10 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "extractorForRecordOfExtractors"
           },
+          "runAsSql": {
+            "type": "boolean",
+            "optional": true
+          },
           "extractors": {
             "type": "record",
             "optional": true,
@@ -7492,6 +7496,10 @@ export const miroirFundamentalJzodSchema = {
           "queryType": {
             "type": "literal",
             "definition": "extractorTemplateForRecordOfExtractors"
+          },
+          "runAsSql": {
+            "type": "boolean",
+            "optional": true
           },
           "extractorTemplates": {
             "type": "record",
@@ -29608,6 +29616,22 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "literal",
                     "definition": "extractorTemplateForRecordOfExtractors"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "runAsSql": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "boolean",
+                    "optional": true
                   },
                   {
                     "type": "schemaReference",

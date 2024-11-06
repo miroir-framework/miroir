@@ -518,6 +518,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                 transformerType: "parameterReference",
                 referenceName: "currentDeploymentUuid",
               },
+              // runAsSql: true,
               pageParams: {},
               queryParams: {},
               contextResults: {},
@@ -554,12 +555,15 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                   index: 1
                 },
                 menuItem: {
-                  transformerType: "freeObjectTemplate",
-                  "label": "List of " + newEntityName,
-                  "section": "data",
-                  application: adminConfigurationDeploymentParis.uuid, // TODO: replace with application uuid, this is a deployment at the moment
-                  "reportUuid": actionEffectiveParamsCreateEntity.newEntityListReportUuid,
-                  "icon": "local_drink"
+                  transformerType: "constantObject",
+                  interpolation: "runtime",
+                  constantObjectValue: {
+                    "label": "List of " + newEntityName,
+                    "section": "data",
+                    application: adminConfigurationDeploymentParis.uuid, // TODO: replace with application uuid, this is a deployment at the moment
+                    "reportUuid": actionEffectiveParamsCreateEntity.newEntityListReportUuid,
+                    "icon": "local_drink"
+                  }
                 },
                 updatedMenu:{
                   transformerType: "transformer_menu_addItem",

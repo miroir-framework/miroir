@@ -245,7 +245,18 @@ export function sqlStringForTransformer(
       };
       break;
     }
-    case "constantObject":
+    case "constantObject": {
+      const result = "SELECT '" +
+        JSON.stringify(actionRuntimeTransformer.constantObjectValue).replace(/\\"/g,'"') +
+        "'::jsonb FROM generate_series(1,1)";
+      ;
+      log.info("applyExtractorTransformerSql constantObject", actionRuntimeTransformer.constantObjectValue, "result", result);
+      return {
+        elementType: "any",
+        elementValue: { sqlStringOrObject: result, resultAccessPath: [0] },
+      };
+      break;
+    }
     case "contextReference":
     case "parameterReference":
     case "objectDynamicAccess":
@@ -322,7 +333,9 @@ export function sqlStringForTransformer(
 // ################################################################################################
 export class SqlDbQueryRunner {
   private logHeader: string;
-  private extractorRunnerMap: AsyncExtractorRunnerMap;
+  // private extractorRunnerMap: AsyncExtractorRunnerMap;
+  private dbImplementationExtractorRunnerMap: AsyncExtractorRunnerMap;
+  private inMemoryImplementationExtractorRunnerMap: AsyncExtractorRunnerMap;
   private sqlDbExtractTemplateRunner: SqlDbExtractTemplateRunner;
 
   constructor(
@@ -334,7 +347,7 @@ export class SqlDbQueryRunner {
   {
     this.logHeader = "PersistenceStoreController " + persistenceStoreController.getStoreName();
     this.sqlDbExtractTemplateRunner = new SqlDbExtractTemplateRunner(persistenceStoreController, this);
-    const InMemoryImplementationExtractorRunnerMap: AsyncExtractorRunnerMap = {
+    this.inMemoryImplementationExtractorRunnerMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex.bind(this),
       extractEntityInstanceList: this.extractEntityInstanceList.bind(this),
@@ -348,7 +361,8 @@ export class SqlDbQueryRunner {
       extractWithManyExtractorTemplates: undefined as any,
 
     };
-    const dbImplementationExtractorRunnerMap: AsyncExtractorRunnerMap = {
+    // const dbImplementationExtractorRunnerMap: AsyncExtractorRunnerMap = {
+    this.dbImplementationExtractorRunnerMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex.bind(this),
       extractEntityInstanceList: this.extractEntityInstanceList.bind(this),
@@ -365,7 +379,7 @@ export class SqlDbQueryRunner {
     };
 
     // TODO: design error: this has to be kept consistent with SqlDbExtractTemplateRunner
-    this.extractorRunnerMap = dbImplementationExtractorRunnerMap;
+    // this.extractorRunnerMap = dbImplementationExtractorRunnerMap;
     // this.extractorRunnerMap = InMemoryImplementationExtractorRunnerMap;
   } // end constructor
 
@@ -562,9 +576,13 @@ export class SqlDbQueryRunner {
       }
       case "combinerForObjectListByRelation":
       case "combinerForObjectListByManyToManyRelation": {
-        // return this.extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractorInMemory({ // this is actually a recursive call
-        return this.extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor({ // this is actually a recursive call
-          extractorRunnerMap: this.extractorRunnerMap,
+        // return this.extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor({ // this is actually a recursive call
+        //   extractorRunnerMap: this.extractorRunnerMap,
+        if (!selectorParams.extractorRunnerMap) {
+          throw new Error("extractEntityInstanceListWithObjectListExtractor missing extractorRunnerMap");
+        }
+        return selectorParams.extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor({ // this is actually a recursive call
+          extractorRunnerMap: selectorParams.extractorRunnerMap,
           extractor: {
             queryType: "extractorForDomainModelObjects",
             deploymentUuid: selectorParams.extractor.deploymentUuid,
@@ -617,9 +635,13 @@ export class SqlDbQueryRunner {
       }
       case "combinerForObjectListByRelation":
       case "combinerForObjectListByManyToManyRelation": {
-        // return this.extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractorInMemory({ // this is actually a recursive call
-        return this.extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractor({ // this is actually a recursive call
-          extractorRunnerMap: this.extractorRunnerMap,
+        // return this.extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractor({ // this is actually a recursive call
+        //   extractorRunnerMap: this.extractorRunnerMap,
+        if (!selectorParams.extractorRunnerMap) {
+          throw new Error("extractEntityInstanceListWithObjectListExtractor missing extractorRunnerMap");
+        }
+        return selectorParams.extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractor({ // this is actually a recursive call
+          extractorRunnerMap: selectorParams.extractorRunnerMap,
           extractor: {
             queryType: "extractorForDomainModelObjects",
             deploymentUuid: selectorParams.extractor.deploymentUuid,
@@ -657,17 +679,24 @@ export class SqlDbQueryRunner {
     let queryResult: DomainElement;
     switch (queryAction.query.queryType) {
       case "extractorForDomainModelObjects": {
-        queryResult = await this.extractorRunnerMap.extractWithExtractor({
+        queryResult = await this.inMemoryImplementationExtractorRunnerMap.extractWithExtractor({
           extractor: queryAction.query,
-          extractorRunnerMap: this.extractorRunnerMap,
+          extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
         });
         break;
       }
       case "extractorForRecordOfExtractors": {
-        queryResult = await this.extractorRunnerMap.extractWithManyExtractors({
-          extractor: queryAction.query,
-          extractorRunnerMap: this.extractorRunnerMap,
-        });
+        if (queryAction.query.runAsSql) {
+          queryResult = await this.dbImplementationExtractorRunnerMap.extractWithManyExtractors({
+            extractor: queryAction.query,
+            extractorRunnerMap: this.dbImplementationExtractorRunnerMap,
+          });
+        } else {
+          queryResult = await this.inMemoryImplementationExtractorRunnerMap.extractWithManyExtractors({
+            extractor: queryAction.query,
+            extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
+          });
+        }
         break;
       }
       default: {
@@ -968,7 +997,8 @@ export class SqlDbQueryRunner {
 
   // ##############################################################################################
   public getSelectorMap(): AsyncExtractorRunnerMap {
-    return this.extractorRunnerMap;
+    // return this.extractorRunnerMap;
+    return undefined as any;
   }
 } // end class SqlDbQueryRunner
 
