@@ -143,25 +143,22 @@ export const selectEntityInstanceUuidIndexFromDomainState: SyncExtractorRunner<
       elementValue: { queryFailure: "ApplicationSectionNotFound", deploymentUuid, applicationSection },
     };
   }
-  // switch (entityUuid.elementType) {
-  //   case "string":
-  //   case "instanceUuid": {
-      if (!domainState[deploymentUuid][applicationSection][entityUuid]) {
-        return {
-          elementType: "failure",
-          elementValue: {
-            queryFailure: "EntityNotFound",
-            deploymentUuid,
-            applicationSection,
-            entityUuid: entityUuid,
-          },
-        };
-      }
+  if (!domainState[deploymentUuid][applicationSection][entityUuid]) {
+    return {
+      elementType: "failure",
+      elementValue: {
+        queryFailure: "EntityNotFound",
+        deploymentUuid,
+        applicationSection,
+        entityUuid: entityUuid,
+      },
+    };
+  }
 
-      return {
-        elementType: "instanceUuidIndex",
-        elementValue: domainState[deploymentUuid][applicationSection][entityUuid],
-      };
+  return {
+    elementType: "instanceUuidIndex",
+    elementValue: domainState[deploymentUuid][applicationSection][entityUuid],
+  };
 };
 
 // ################################################################################################
@@ -179,59 +176,6 @@ export const selectEntityInstanceListFromDomainState: SyncExtractorRunner<
   if (result.elementType == "failure") {
     return result;
   }
-  // const deploymentUuid = selectorParams.extractor.deploymentUuid;
-  // const applicationSection = selectorParams.extractor.select.applicationSection ?? "data";
-
-  // const entityUuid: Uuid = selectorParams.extractor.select.parentUuid;
-
-  // // log.info("selectEntityInstanceUuidIndexFromDomainState params", selectorParams, deploymentUuid, applicationSection, entityUuid);
-  // // log.info("selectEntityInstanceUuidIndexFromDomainState domainState", domainState);
-
-  // if (!deploymentUuid || !applicationSection || !entityUuid) {
-  //   return {
-  //     // new object
-  //     elementType: "failure",
-  //     elementValue: {
-  //       queryFailure: "IncorrectParameters",
-  //       queryContext:
-  //         "deploymentUuid=" +
-  //         deploymentUuid +
-  //         ", applicationSection=" +
-  //         applicationSection +
-  //         ", entityUuid=" +
-  //         JSON.stringify(entityUuid),
-  //       queryParameters: JSON.stringify(selectorParams),
-  //     },
-  //   };
-  //   // resolving by fetchDataReference, fetchDataReferenceAttribute
-  // }
-  // if (!domainState) {
-  //   return { elementType: "failure", elementValue: { queryFailure: "DomainStateNotLoaded" } };
-  // }
-  // if (!domainState[deploymentUuid]) {
-  //   return { elementType: "failure", elementValue: { queryFailure: "DeploymentNotFound", deploymentUuid } };
-  // }
-  // if (!domainState[deploymentUuid][applicationSection]) {
-  //   return {
-  //     elementType: "failure",
-  //     elementValue: { queryFailure: "ApplicationSectionNotFound", deploymentUuid, applicationSection },
-  //   };
-  // }
-  // // switch (entityUuid.elementType) {
-  // //   case "string":
-  // //   case "instanceUuid": {
-  //     if (!domainState[deploymentUuid][applicationSection][entityUuid]) {
-  //       return {
-  //         elementType: "failure",
-  //         elementValue: {
-  //           queryFailure: "EntityNotFound",
-  //           deploymentUuid,
-  //           applicationSection,
-  //           entityUuid: entityUuid,
-  //         },
-  //       };
-  //     }
-
   return {
     elementType: "instanceArray",
     elementValue: Object.values(result.elementValue),

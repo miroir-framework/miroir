@@ -19,7 +19,8 @@ import {
   RestClientCallReturnType,
   RestPersistenceClientAndRestClientInterface,
   getLoggerName,
-  storeActionOrBundleActionStoreRunner
+  storeActionOrBundleActionStoreRunner,
+  PersistenceStoreControllerInterface
 } from "miroir-core";
 import { handlePromiseActionForSaga } from 'src/sagaTools.js';
 import { packageName } from '../../constants.js';
@@ -37,7 +38,10 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 
 // export type PersistenceReduxSagaReturnType = RemoteStoreActionReturnType | RestClientCallReturnType;
-export type PersistenceReduxSagaReturnType = ActionReturnType | CallEffect<ActionReturnType> | CallEffect<RestClientCallReturnType>;
+export type PersistenceReduxSagaReturnType =
+  | ActionReturnType
+  | CallEffect<ActionReturnType>
+  | CallEffect<RestClientCallReturnType>;
 
 export type PersistenceSagaGenReturnType = Effect | Generator<PersistenceReduxSagaReturnType>;
 
@@ -143,7 +147,10 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         try {
           if (this.params.persistenceStoreAccessMode == "local") {
             // direct access to store controller, action is executed locally
-            const localParams = this.params as { persistenceStoreAccessMode: "local"; localPersistenceStoreControllerManager: PersistenceStoreControllerManagerInterface };
+            const localParams = this.params as {
+              persistenceStoreAccessMode: "local";
+              localPersistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
+            };
             switch (action.actionType) {
               case "storeManagementAction":
               case "bundleAction": {
@@ -221,6 +228,21 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                 return yield localStoreResult;
                 break;
               }
+              case "queryAction": {
+                const localPersistenceStoreController: PersistenceStoreControllerInterface | undefined =
+                  localParams.localPersistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
+
+                if (!localPersistenceStoreController) {
+                  throw new Error(
+                    "restMethodGetHandler could not find controller for deployment: " + action.deploymentUuid
+                  );
+                }
+                const localStoreResult =
+                  yield * call(() => localPersistenceStoreController.handleQueryAction(action));
+                return  yield localStoreResult;
+                break;
+
+              }
               case "queryTemplateAction": {
                 const localPersistenceStoreController =
                   localParams.localPersistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
@@ -230,7 +252,8 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                     "restMethodGetHandler could not find controller for deployment: " + action.deploymentUuid
                   );
                 }
-                const localStoreResult = yield* call(() => localPersistenceStoreController.handleQueryTemplateForServerONLY(action));
+                const localStoreResult =
+                  yield * call(() => localPersistenceStoreController.handleQueryTemplateForServerONLY(action));
                 return  yield localStoreResult;
                 break;
 
@@ -249,7 +272,10 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
 
           // if this.access == "local" then function has returned already
           if (this.params.persistenceStoreAccessMode == "remote") {
-            const localParams = this.params as { persistenceStoreAccessMode: "remote"; remotePersistenceStoreRestClient: RestPersistenceClientAndRestClientInterface };
+            const localParams = this.params as {
+              persistenceStoreAccessMode: "remote";
+              remotePersistenceStoreRestClient: RestPersistenceClientAndRestClientInterface;
+            };
             // indirect access to a remote storeController through the network
             // log.info("handlePersistenceAction calling remoteStoreNetworkClient on action",JSON.stringify(action));
             const clientResult: RestClientCallReturnType = yield* call(() =>
@@ -276,17 +302,16 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                 return yield result;
                 break;
               }
-              case "queryTemplateAction": {
-                // log.info("handlePersistenceAction calling remoteStoreNetworkClient on action",JSON.stringify(action));
-                // const clientResult: RestClientCallReturnType = yield* call(() =>
-                //   (
-                //     this.remoteStoreNetworkClient as RestPersistenceClientAndRestClientInterface
-                //   ).handleNetworkPersistenceAction(action)
-                // );
-                log.info("handlePersistenceAction received from remoteStoreNetworkClient clientResult", clientResult);
-                log.debug("handlePersistenceAction remoteStoreNetworkClient received result", clientResult.status);
+              case "queryAction": {
+                log.info("handlePersistenceAction queryAction received from remoteStoreNetworkClient clientResult", clientResult);
+                log.debug("handlePersistenceAction queryAction remoteStoreNetworkClient received result", clientResult.status);
                 return yield clientResult.data;
-
+                break;
+              }
+              case "queryTemplateAction": {
+                log.info("handlePersistenceAction queryTemplateAction received from remoteStoreNetworkClient clientResult", clientResult);
+                log.debug("handlePersistenceAction queryTemplateAction remoteStoreNetworkClient received result", clientResult.status);
+                return yield clientResult.data;
                 break;
               }
               case "bundleAction":

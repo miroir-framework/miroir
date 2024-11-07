@@ -6,6 +6,7 @@ import {
   EntityInstance,
   InstanceAction,
   ModelAction,
+  QueryAction,
   QueryTemplateAction,
   StoreOrBundleAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -35,6 +36,8 @@ import {
 } from "../2_domain/DomainStateQueryTemplateSelector";
 import { extractWithExtractorTemplate, handleQueryTemplateAction } from "../2_domain/QueryTemplateSelectors";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
+import { getSelectorMap, getSelectorParams } from "../2_domain/DomainStateQuerySelectors";
+import { extractWithExtractor } from "../2_domain/QuerySelectors";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RestServer");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -255,6 +258,73 @@ export async function restActionHandler(
 
 // ################################################################################################
 // USES LocalCache memoized reducers, shall go to miroir-server instead?
+export async function queryActionHandler(
+  useDomainControllerToHandleModelAndInstanceActions: boolean,
+  continuationFunction: (response:any) =>(arg0: any) => any,
+  response: any,
+  persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
+  localCache: LocalCacheInterface,
+  method: HttpMethod,
+  effectiveUrl: string, // log only, to remove?
+  body: HttpRequestBodyFormat,
+  params: any,
+):Promise<void> {
+  log.info("RestServer queryActionHandler params", params, "body", body);
+
+  /**
+   * shall a query be executed based on the state of the localCache, or fetching state from a PersistenceStore?
+   * 
+   * go through the DomainController? (would be better, wouldn't it?)
+   * 
+   * when the implementation accesses the localCache, the implementation is based on selectors
+   * 
+   * when the implementation uses the persistenceStore, it could:
+   * - load the required data in the localCache (select) then execute in the localCache (filter, aggregation)
+   * - execute on the persistent store (sql)
+   * 
+   */
+  const queryAction: QueryAction = body as QueryAction;
+
+  const deploymentUuid = queryAction.deploymentUuid
+  const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
+    deploymentUuid
+  );
+  const domainController = persistenceStoreControllerManager.getServerDomainController();
+  if (!localPersistenceStoreController) {
+    throw new Error("RestServer could not find controller for deployment:" + deploymentUuid);
+  }
+  if (useDomainControllerToHandleModelAndInstanceActions) {
+    // we are on the server, the action has been received from remote client
+    // switch (queryTemplateAction.deploymentUuid) {
+    const result = await domainController.handleQueryForServerONLY(queryAction)
+    log.info(
+      "RestServer queryActionHandler used adminConfigurationDeploymentMiroir domainController result=",
+      JSON.stringify(result, undefined, 2)
+    );
+    return continuationFunction(response)(result)
+  } else {
+    // we're on the client, called by RestServerStub
+    // uses the local cache, needs to have done a Model "rollback" action on the client//, or a Model "remoteLocalCacheRollback" action on the server
+    const domainState: DomainState = localCache.getDomainState();
+    const extractorRunnerMapOnDomainState = getSelectorMap();
+    log.info("RestServer queryActionHandler queryAction=", JSON.stringify(queryAction, undefined, 2))
+    log.info("RestServer queryActionHandler domainState=", JSON.stringify(domainState, undefined, 2))
+    const queryResult: DomainElement = extractWithExtractor(
+      domainState,
+      getSelectorParams(queryAction.query, extractorRunnerMapOnDomainState)
+    )
+    const result:ActionReturnType = {
+      status: "ok",
+      returnedDomainElement: queryResult
+    }
+    log.info("RestServer queryActionHandler used local cache result=", JSON.stringify(result, undefined,2))
+
+    return continuationFunction(response)(result);
+  }
+}
+
+// ################################################################################################
+// USES LocalCache memoized reducers, shall go to miroir-server instead?
 export async function queryTemplateActionHandler(
   useDomainControllerToHandleModelAndInstanceActions: boolean,
   continuationFunction: (response:any) =>(arg0: any) => any,
@@ -353,5 +423,10 @@ export const restServerDefaultHandlers: RestServiceHandler[] = [
     method: "post",
     url: "/queryTemplate",
     handler: queryTemplateActionHandler
+  },
+  {
+    method: "post",
+    url: "/query",
+    handler: queryActionHandler
   },
 ];

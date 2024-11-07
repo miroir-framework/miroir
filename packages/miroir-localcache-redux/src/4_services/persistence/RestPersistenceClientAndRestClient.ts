@@ -127,6 +127,14 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
         return result;
         break;
       }
+      case "queryAction": {
+        const callParams = this.getRestCallParams(action, this.rootApiUrl + "/query");
+        log.debug("handleNetworkPersistenceAction", action, "callParams", callParams);
+        const result = await callParams.operation(callParams.url, callParams.args);
+        log.info("handleNetworkPersistenceAction", action, "result", result);
+        return result;
+        break;
+      }
       case "queryTemplateAction": {
         const callParams = this.getRestCallParams(action, this.rootApiUrl + "/queryTemplate");
         log.debug("handleNetworkPersistenceAction", action, "callParams", callParams);

@@ -32,17 +32,18 @@ import {
   InstanceAction,
   MetaModel,
   ModelAction,
+  QueryAction,
   QueryTemplateAction,
   RestPersistenceAction,
   TransactionalInstanceAction,
-  TransformerForBuild,
   TransformerForRuntime,
   UndoRedoAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface';
 import { ACTION_OK } from '../1_core/constants';
 import { defaultMiroirMetaModel, metaModelEntities, miroirModelEntities } from '../1_core/Model';
-import { transformer_apply, transformer_extended_apply } from '../2_domain/Transformers';
+import { resolveCompositeActionTemplate } from '../2_domain/ResolveCompositeAction';
+import { transformer_extended_apply } from '../2_domain/Transformers';
 import { MiroirLoggerFactory } from '../4_services/Logger';
 import { packageName } from '../constants';
 import {
@@ -55,7 +56,6 @@ import { getLoggerName } from '../tools';
 import { cleanLevel } from './constants';
 import { Endpoint } from './Endpoint';
 import { CallUtils } from './ErrorHandling/CallUtils';
-import { resolveCompositeActionTemplate } from '../2_domain/ResolveCompositeAction';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -638,6 +638,61 @@ export class DomainController implements DomainControllerInterface {
       log.warn("DomainController loadConfigurationFromRemoteDataStore caught error:", error);
     }
     return Promise.resolve(ACTION_OK);
+  }
+
+  // ##############################################################################################
+  // called only in server.ts to handle queries on the server side
+  // used in RootComponent to fetch data from the server
+  // used in Importer.tsx
+  // used in scripts.ts
+  // used in tests
+  async handleQueryForServerONLY(queryAction: QueryAction): Promise<ActionReturnType> {
+    // let entityDomainAction:DomainAction | undefined = undefined;
+    log.info(
+      "handleQueryTemplateForServerONLY",
+      "deploymentUuid",
+      queryAction.deploymentUuid,
+      "actionName",
+      (queryAction as any).actionName,
+      "actionType",
+      queryAction?.actionType,
+      "objects",
+      JSON.stringify((queryAction as any)["objects"], null, 2)
+    );
+
+    if (this.domainControllerIsDeployedOn == "server") {
+      /**
+       * we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
+       */
+
+      const result: ActionReturnType = await this.persistenceStore.handlePersistenceAction(queryAction);
+      log.info("DomainController handleQueryForServerONLY queryAction callPersistenceAction Result=", result);
+      return result;
+    } else {
+      // we're on the client, the query is sent to the server for execution.
+      // is it right? We're limiting querying for script execution to remote queries right there!
+      // principle: the scripts using transactional (thus Model) actions are limited to localCache access
+      // while non-transactional accesses are limited to persistence store access (does this make sense?)
+      // in both cases this enforces only the most up-to-date data is accessed.
+      log.info(
+        "DomainController handleQueryForServerONLY queryAction sending query to server for execution",
+        // JSON.stringify(queryTemplateAction)
+        queryAction
+      );
+      const result = await this.callUtil.callPersistenceAction(
+        // what if it is a REAL persistence store?? exception?
+        {}, // context
+        {
+          addResultToContextAsName: "dataEntitiesFromModelSection",
+          expectedDomainElementType: "entityInstanceCollection",
+        }, // continuation
+        queryAction
+      );
+      log.info("handleQueryForServerONLY queryAction callPersistenceAction Result=", result);
+      return result["dataEntitiesFromModelSection"];
+    }
+
+    return ACTION_OK;
   }
 
   // ##############################################################################################

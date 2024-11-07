@@ -4,12 +4,12 @@ import {
   ActionReturnType,
   ActionVoidReturnType,
   CompositeActionTemplate,
-  CompositeInstanceActionTemplate,
   DomainAction,
   EntityInstance,
   EntityInstancesUuidIndex,
   MetaModel,
   ModelAction,
+  QueryAction,
   QueryTemplateAction,
   TransactionalInstanceAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
@@ -76,6 +76,7 @@ export type EntityInstancesUuidIndexEntityInstanceArraySelector = (entityInstanc
 // ###################################################################################
 export interface DomainControllerInterface {
   // handleAction(deploymentUuid: Uuid, action: DomainAction, currentModel?: MetaModel): Promise<void>;
+  handleQueryForServerONLY(action: QueryAction, currentModel?: MetaModel): Promise<ActionReturnType>;
   handleQueryTemplateForServerONLY(action: QueryTemplateAction, currentModel?: MetaModel): Promise<ActionReturnType>;
   // handleCompositeActionTemplate(action: CompositeInstanceActionTemplate, actionParamValues: any, currentModel?: MetaModel): Promise<ActionVoidReturnType>;
   handleCompositeActionTemplate(action: CompositeActionTemplate, actionParamValues: any, currentModel?: MetaModel): Promise<ActionVoidReturnType>;
