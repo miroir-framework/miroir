@@ -23,6 +23,7 @@ import { getLoggerName } from "../../../tools";
 import { LoggerInterface } from "../../4-services/LoggerInterface";
 import {
   extractorForObject,
+  extractorForRecordOfExtractors,
   JzodElement,
   transformerForBuild_list_pickElement,
   transformerForRuntime_list_pickElement,
@@ -2504,10 +2505,15 @@ export function getMiroirFundamentalJzodSchema(
         querySelectExtractorWrapperReturningObject: (miroirFundamentalJzodSchema as any).definition.context.querySelectExtractorWrapperReturningObject,
         extractorForObject: (miroirFundamentalJzodSchema as any).definition.context.extractorForObject,
         extractor: (miroirFundamentalJzodSchema as any).definition.context.extractor,
+        extractorForSingleObject: (miroirFundamentalJzodSchema as any).definition.context.extractorForSingleObject,
+        extractorForSingleObjectList: (miroirFundamentalJzodSchema as any).definition.context.extractorForSingleObjectList,
+        extractorForRecordOfExtractors: (miroirFundamentalJzodSchema as any).definition.context.extractorForRecordOfExtractors,
+        extractorForDomainModelObjects: (miroirFundamentalJzodSchema as any).definition.context.extractorForDomainModelObjects,
         extractorForObjectListByEntity: (miroirFundamentalJzodSchema as any).definition.context.extractorForObjectListByEntity,
         extractorForObjectByDirectReference: (miroirFundamentalJzodSchema as any).definition.context.extractorForObjectByDirectReference,
         querySelectExtractorWrapper: (miroirFundamentalJzodSchema as any).definition.context.querySelectExtractorWrapper,
         queryRoot: (miroirFundamentalJzodSchema as any).definition.context.queryRoot,
+        queryAction: (miroirFundamentalJzodSchema as any).definition.context.queryAction,
         extractorOrCombinerForObjectList: (miroirFundamentalJzodSchema as any).definition.context.extractorOrCombinerForObjectList,
         combinerForObjectByRelation: (miroirFundamentalJzodSchema as any).definition.context.combinerForObjectByRelation,
         combinerForObjectListByRelation: (miroirFundamentalJzodSchema as any).definition.context.combinerForObjectListByRelation,
@@ -2739,7 +2745,7 @@ export function getMiroirFundamentalJzodSchema(
         ...((miroirFundamentalJzodSchema.definition as any)?.context ?? {}),
         // ...((miroirFundamentalJzodSchema.definition as JzodReference)?.context ?? {}),
         ...localizedInnerResolutionStoreReferences,
-        compositeInstanceActionTemplate: {
+        compositeInstanceActionTemplate: { // see 1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5.json for compositeAction definition
           type: "object",
           definition: {
             actionType: {
@@ -2762,6 +2768,7 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 type: "union",
                 definition: [
+                  // action: domainAction (now InstanceAction only). TODO: Why only instanceAction?
                   {
                     type: "object",
                     definition: {
@@ -2778,10 +2785,28 @@ export function getMiroirFundamentalJzodSchema(
                       },
                     },
                   },
+                  // compositeAction
                   {
                     type: "object",
                     definition: {
-                      compositeActionType: { type: "literal", definition: "queryTemplateAction" },
+                      compositeActionType: { type: "literal", definition: "compositeAction" },
+                      compositeActionStepName: { type: "string", optional: true },
+                      action: {
+                        type: "schemaReference",
+                        definition: {
+                          relativePath: forgeCarryOnReferenceName(
+                            miroirFundamentalJzodSchemaUuid,
+                            "compositeAction"
+                          ),
+                        },
+                      },
+                    },
+                  },
+                  // queryTemplateAction. TODO: why not queryAction?
+                  {
+                    type: "object",
+                    definition: {
+                      compositeActionType: { type: "literal", definition: "query" },
                       compositeActionStepName: { type: "string", optional: true },
                       nameGivenToResult: { type: "string" },
                       queryTemplateAction: {
@@ -2789,7 +2814,8 @@ export function getMiroirFundamentalJzodSchema(
                         definition: {
                           relativePath: forgeCarryOnReferenceName(
                             miroirFundamentalJzodSchemaUuid,
-                            "queryTemplateAction"
+                            "queryAction"
+                            // "queryTemplateAction"
                           ),
                         },
                       },

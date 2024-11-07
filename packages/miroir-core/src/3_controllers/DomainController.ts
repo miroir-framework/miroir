@@ -24,6 +24,7 @@ import {
   ActionVoidReturnType,
   ApplicationSection,
   ApplicationVersion,
+  CompositeAction,
   CompositeActionTemplate,
   DomainAction,
   EntityInstance,
@@ -695,6 +696,125 @@ export class DomainController implements DomainControllerInterface {
   }
 
   // ##############################################################################################
+  // TODO: not used, not tested!
+  async handleCompositeAction(
+    compositeAction: CompositeAction,
+    actionParamValues: Record<string, any>,
+    currentModel: MetaModel
+  ): Promise<ActionVoidReturnType> {
+    const localActionParams = { ...actionParamValues };
+    let localContext: Record<string, any> = { ...actionParamValues }; 
+
+    log.info("handleCompositeAction compositeAction",compositeAction,"localActionParams", localActionParams);
+    // const resolved: any = resolveCompositeActionTemplate(compositeAction, localActionParams, currentModel);
+
+    log.info("handleCompositeAction compositeInstanceAction localActionParams", localActionParams);
+    // log.info(
+    //   "handleCompositeAction compositeInstanceAction resolvedCompositeActionDefinition",
+    //   JSON.stringify(resolved.resolvedCompositeActionDefinition, null, 2)
+    // );
+
+    for (const currentAction of compositeAction.definition) {
+      log.info(
+        "handleCompositeAction compositeInstanceAction currentAction",
+        // JSON.stringify(currentAction, null, 2),
+        currentAction,
+        "localContext keys",
+        Object.keys(localContext),
+        "localContext",
+        localContext
+      );
+      switch (currentAction.compositeActionType) {
+        case 'compositeAction': {
+          log.info(
+            "handleCompositeActionTemplate compositeInstanceAction action to resolve",
+            JSON.stringify(currentAction.action, null, 2)
+          );
+          const actionResult = await this.handleCompositeAction(currentAction.action, actionParamValues, currentModel);
+          break;
+        }
+        case 'action': {
+          log.info(
+            "handleCompositeActionTemplate compositeInstanceAction action to resolve",
+            JSON.stringify(currentAction.action, null, 2)
+          );
+          // const resolvedActionTemplate: InstanceAction = transformer_extended_apply(
+          //   "runtime",
+          //   "NO NAME",
+          //   currentAction.action as TransformerForRuntime,
+          //   resolved.actionParamsAndTemplates,
+          //   localContext
+          // ).elementValue as InstanceAction;
+          // log.info(
+          //   "handleCompositeActionTemplate compositeInstanceAction resolved action",
+          //   JSON.stringify(resolvedActionTemplate, null, 2)
+          // );
+          // log.info("handleCompositeActionTemplate compositeInstanceAction current model", currentModel);
+          
+          // switch (resolvedActionTemplate.actionType) {
+          //   case "compositeAction": {
+          //     const actionResult = await this.handleCompositeActionTemplate(resolvedActionTemplate, currentModel);
+          //     if (actionResult?.status != "ok") {
+          //       log.error("Error on action", JSON.stringify(actionResult, null, 2));
+          //     }
+          //     break;
+          //   }
+          //   default: {
+          const actionResult = await this.handleAction(currentAction.action, currentModel);
+          if (actionResult?.status != "ok") {
+            log.error("Error on action", JSON.stringify(actionResult, null, 2));
+          }
+            //   break;
+            // }
+          // }
+          // const actionResult = await this.handleAction(currentAction.action, currentModel);
+          break;
+        }
+        case 'queryTemplate': {
+          log.info(
+            "handleCompositeActionTemplate resolved queryTemplate action",
+            currentAction,
+            "with actionParamValues",
+            actionParamValues
+          );
+  
+          const actionResult = await this.handleQueryTemplateForServerONLY(currentAction.query);
+          if (actionResult?.status != "ok") {
+            log.error("Error on query", JSON.stringify(actionResult, null, 2));
+          } else {
+            log.info("handleCompositeActionTemplate queryTemplate adding result to context as", currentAction.nameGivenToResult, "value", actionResult);
+            localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement.elementValue;
+          }
+          break;
+        }
+        case 'query': {
+          throw new Error("handleCompositeActionTemplate can not handle query actions: " + JSON.stringify(currentAction));
+          
+          // log.info(
+          //   "handleCompositeActionTemplate resolved query action",
+          //   currentAction,
+          //   "with actionParamValues",
+          //   actionParamValues
+          // );
+  
+          // const actionResult = await this.handleQueryTemplateForServerONLY(currentAction.query as any as QueryTemplateAction);
+          // if (actionResult?.status != "ok") {
+          //   log.error("Error on query", JSON.stringify(actionResult, null, 2));
+          // } else {
+          //   log.info("handleCompositeActionTemplate query adding result to context as", currentAction.nameGivenToResult, "value", actionResult);
+          //   localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement.elementValue;
+          // }
+          break;
+        }
+        default: {
+          log.error("handleCompositeActionTemplate unknown compositeActionType", currentAction);
+          break;
+        }
+      }
+    }
+    return Promise.resolve(ACTION_OK);
+  }
+  // ##############################################################################################
   async handleCompositeActionTemplate(
     compositeAction: CompositeActionTemplate,
     actionParamValues: Record<string, any>,
@@ -742,11 +862,24 @@ export class DomainController implements DomainControllerInterface {
             JSON.stringify(resolvedActionTemplate, null, 2)
           );
           // log.info("handleCompositeActionTemplate compositeInstanceAction current model", currentModel);
+          
+          // switch (resolvedActionTemplate.actionType) {
+          //   case "compositeAction": {
+          //     const actionResult = await this.handleCompositeActionTemplate(resolvedActionTemplate, currentModel);
+          //     if (actionResult?.status != "ok") {
+          //       log.error("Error on action", JSON.stringify(actionResult, null, 2));
+          //     }
+          //     break;
+          //   }
+          //   default: {
           const actionResult = await this.handleAction(resolvedActionTemplate, currentModel);
-          // const actionResult = await this.handleAction(currentAction.action, currentModel);
           if (actionResult?.status != "ok") {
             log.error("Error on action", JSON.stringify(actionResult, null, 2));
           }
+            //   break;
+            // }
+          // }
+          // const actionResult = await this.handleAction(currentAction.action, currentModel);
           break;
         }
         case 'query': {

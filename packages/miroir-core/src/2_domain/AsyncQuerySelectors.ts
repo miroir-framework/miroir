@@ -297,8 +297,6 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
     }
     case "queryContextReference": {
       return newFetchedData &&
-        // newFetchedData.elementType == "object" &&
-        // newFetchedData.elementValue[query.queryReference]
         newFetchedData[query.queryReference]
         ? Promise.resolve(newFetchedData[query.queryReference])
         : Promise.resolve({
