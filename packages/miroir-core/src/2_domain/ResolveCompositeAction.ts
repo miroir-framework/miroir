@@ -1,5 +1,6 @@
 import {
   CompositeAction,
+  CompositeActionDefinition,
   CompositeActionTemplate,
   MetaModel,
   TransformerForBuild,
@@ -25,8 +26,8 @@ export function resolveCompositeActionTemplate(
   currentModel: MetaModel
 // ): CompositeAction {
 ): {
-  resolvedCompositeActionDefinition: any,
-  resolvedCompositeActionTemplates: any  
+  resolvedCompositeActionDefinition: CompositeActionDefinition,
+  resolvedCompositeActionTemplates: Record<string,any>
 } {
   const localActionParams = { ...actionParamValues };
   let localContext: Record<string, any> = { ...actionParamValues }; 
@@ -63,7 +64,7 @@ export function resolveCompositeActionTemplate(
   }
 
   const actionParamsAndTemplates = { ...localActionParams, ...resolvedCompositeActionTemplates };
-  const resolvedCompositeActionDefinition: CompositeAction = transformer_extended_apply(
+  const resolvedCompositeActionDefinition: CompositeActionDefinition = transformer_extended_apply(
     "build",
     "NO NAME",
     (compositeActionTemplate as any).definition as any as TransformerForBuild,

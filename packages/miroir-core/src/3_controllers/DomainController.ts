@@ -25,6 +25,7 @@ import {
   ApplicationSection,
   ApplicationVersion,
   CompositeAction,
+  CompositeActionDefinition,
   CompositeActionTemplate,
   DomainAction,
   EntityInstance,
@@ -646,12 +647,12 @@ export class DomainController implements DomainControllerInterface {
   // used in Importer.tsx
   // used in scripts.ts
   // used in tests
-  async handleQueryForServerONLY(queryAction: QueryAction): Promise<ActionReturnType> {
+  async handleQueryActionForServerONLY(queryAction: QueryAction): Promise<ActionReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     log.info(
       "handleQueryTemplateForServerONLY",
-      "deploymentUuid",
-      queryAction.deploymentUuid,
+      // "deploymentUuid",
+      // queryAction.deploymentUuid,
       "actionName",
       (queryAction as any).actionName,
       "actionType",
@@ -666,7 +667,7 @@ export class DomainController implements DomainControllerInterface {
        */
 
       const result: ActionReturnType = await this.persistenceStore.handlePersistenceAction(queryAction);
-      log.info("DomainController handleQueryForServerONLY queryAction callPersistenceAction Result=", result);
+      log.info("DomainController handleQueryActionForServerONLY queryAction callPersistenceAction Result=", result);
       return result;
     } else {
       // we're on the client, the query is sent to the server for execution.
@@ -675,7 +676,7 @@ export class DomainController implements DomainControllerInterface {
       // while non-transactional accesses are limited to persistence store access (does this make sense?)
       // in both cases this enforces only the most up-to-date data is accessed.
       log.info(
-        "DomainController handleQueryForServerONLY queryAction sending query to server for execution",
+        "DomainController handleQueryActionForServerONLY queryAction sending query to server for execution",
         // JSON.stringify(queryTemplateAction)
         queryAction
       );
@@ -688,7 +689,7 @@ export class DomainController implements DomainControllerInterface {
         }, // continuation
         queryAction
       );
-      log.info("handleQueryForServerONLY queryAction callPersistenceAction Result=", result);
+      log.info("handleQueryActionForServerONLY queryAction callPersistenceAction Result=", result);
       return result["dataEntitiesFromModelSection"];
     }
 
@@ -705,8 +706,8 @@ export class DomainController implements DomainControllerInterface {
     // let entityDomainAction:DomainAction | undefined = undefined;
     log.info(
       "handleQueryTemplateForServerONLY",
-      "deploymentUuid",
-      queryTemplateAction.deploymentUuid,
+      // "deploymentUuid",
+      // queryTemplateAction.deploymentUuid,
       "actionName",
       (queryTemplateAction as any).actionName,
       "actionType",
@@ -833,7 +834,7 @@ export class DomainController implements DomainControllerInterface {
             actionParamValues
           );
   
-          const actionResult = await this.handleQueryTemplateForServerONLY(currentAction.query);
+          const actionResult = await this.handleQueryTemplateForServerONLY(currentAction.queryTemplate);
           if (actionResult?.status != "ok") {
             log.error("Error on query", JSON.stringify(actionResult, null, 2));
           } else {
@@ -879,7 +880,10 @@ export class DomainController implements DomainControllerInterface {
     let localContext: Record<string, any> = { ...actionParamValues }; 
 
     log.info("handleCompositeActionTemplate compositeAction",compositeAction,"localActionParams", localActionParams);
-    const resolved: any = resolveCompositeActionTemplate(compositeAction, localActionParams, currentModel);
+    const resolved: {
+      resolvedCompositeActionDefinition: CompositeActionDefinition;
+      resolvedCompositeActionTemplates: Record<string, any>;
+    } = resolveCompositeActionTemplate(compositeAction, localActionParams, currentModel);
 
     log.info("handleCompositeActionTemplate compositeInstanceAction localActionParams", localActionParams);
     log.info(
@@ -892,8 +896,8 @@ export class DomainController implements DomainControllerInterface {
         "handleCompositeActionTemplate compositeInstanceAction currentAction",
         // JSON.stringify(currentAction, null, 2),
         currentAction,
-        "actionParamsAndTemplates",
-        resolved.actionParamsAndTemplates,
+        // "actionParamsAndTemplates",
+        // resolved.actionParamsAndTemplates,
         "localContext keys",
         Object.keys(localContext),
         "localContext",
@@ -908,8 +912,9 @@ export class DomainController implements DomainControllerInterface {
           const resolvedActionTemplate: InstanceAction = transformer_extended_apply(
             "runtime",
             "NO NAME",
-            currentAction.action as TransformerForRuntime,
-            resolved.actionParamsAndTemplates,
+            currentAction.action as any as TransformerForRuntime, // TODO: correct type
+            // resolved.actionParamsAndTemplates,
+            localActionParams,
             localContext
           ).elementValue as InstanceAction;
           log.info(
@@ -937,7 +942,7 @@ export class DomainController implements DomainControllerInterface {
           // const actionResult = await this.handleAction(currentAction.action, currentModel);
           break;
         }
-        case 'query': {
+        case 'queryTemplate': {
           log.info(
             "handleCompositeActionTemplate resolved query action",
             currentAction,
@@ -945,7 +950,7 @@ export class DomainController implements DomainControllerInterface {
             actionParamValues
           );
   
-          const actionResult = await this.handleQueryTemplateForServerONLY(currentAction.queryTemplateAction);
+          const actionResult = await this.handleQueryTemplateForServerONLY(currentAction.queryTemplate);
           if (actionResult?.status != "ok") {
             log.error("Error on query", JSON.stringify(actionResult, null, 2));
           } else {
@@ -956,6 +961,7 @@ export class DomainController implements DomainControllerInterface {
         }
         default: {
           log.error("handleCompositeActionTemplate unknown compositeActionType", currentAction);
+          throw new Error("handleCompositeActionTemplate unknown compositeActionType: " +  currentAction.compositeActionType);
           break;
         }
       }

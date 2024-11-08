@@ -2183,6 +2183,9 @@ export function getMiroirFundamentalJzodSchema(
         restPersistenceAction: persistenceEndpointVersionV1.definition.actions[1].actionParameters,
         queryTemplateAction: queryEndpointVersionV1.definition.actions[0].actionParameters,
         queryAction: queryEndpointVersionV1.definition.actions[1].actionParameters,
+        compositeActionDefinition: domainEndpointVersionV1.definition.actions.find(
+          (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
+        )?.actionParameters.definition.definition,
         compositeAction: domainEndpointVersionV1.definition.actions.find(
           (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
         )?.actionParameters,
@@ -2494,6 +2497,9 @@ export function getMiroirFundamentalJzodSchema(
           type: "union",
           definition: domainEndpointVersionV1.definition.actions.map((e: any) => e.actionParameters),
         },
+        compositeActionDefinition: domainEndpointVersionV1.definition.actions.find(
+          (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
+        )?.actionParameters.definition.definition,
         compositeAction: domainEndpointVersionV1.definition.actions.find(
           (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
         )?.actionParameters,
@@ -2745,87 +2751,105 @@ export function getMiroirFundamentalJzodSchema(
         ...((miroirFundamentalJzodSchema.definition as any)?.context ?? {}),
         // ...((miroirFundamentalJzodSchema.definition as JzodReference)?.context ?? {}),
         ...localizedInnerResolutionStoreReferences,
-        compositeInstanceActionTemplate: { // see 1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5.json for compositeAction definition
-          type: "object",
-          definition: {
-            actionType: {
-              type: "literal",
-              definition: "compositeInstanceAction",
-            },
-            actionName: {
-              type: "literal",
-              definition: "instanceActionSequence",
-            },
-            // templates: {
-            //   type: "record",
-            //   optional: true,
-            //   definition: {
-            //     type: "any",
-            //   },
-            // },
-            definition: {
-              type: "array",
-              definition: {
-                type: "union",
-                definition: [
-                  // action: domainAction (now InstanceAction only). TODO: Why only instanceAction?
-                  {
-                    type: "object",
-                    definition: {
-                      compositeActionType: { type: "literal", definition: "action" },
-                      compositeActionStepName: { type: "string", optional: true },
-                      action: {
-                        type: "schemaReference",
-                        definition: {
-                          relativePath: forgeCarryOnReferenceName(
-                            miroirFundamentalJzodSchemaUuid,
-                            "instanceAction"
-                          ),
-                        },
-                      },
-                    },
-                  },
-                  // compositeAction
-                  {
-                    type: "object",
-                    definition: {
-                      compositeActionType: { type: "literal", definition: "compositeAction" },
-                      compositeActionStepName: { type: "string", optional: true },
-                      action: {
-                        type: "schemaReference",
-                        definition: {
-                          relativePath: forgeCarryOnReferenceName(
-                            miroirFundamentalJzodSchemaUuid,
-                            "compositeAction"
-                          ),
-                        },
-                      },
-                    },
-                  },
-                  // queryTemplateAction. TODO: why not queryAction?
-                  {
-                    type: "object",
-                    definition: {
-                      compositeActionType: { type: "literal", definition: "query" },
-                      compositeActionStepName: { type: "string", optional: true },
-                      nameGivenToResult: { type: "string" },
-                      queryTemplateAction: {
-                        type: "schemaReference",
-                        definition: {
-                          relativePath: forgeCarryOnReferenceName(
-                            miroirFundamentalJzodSchemaUuid,
-                            "queryAction"
-                            // "queryTemplateAction"
-                          ),
-                        },
-                      },
-                    },
-                  },
-                ],
-              },
-            },
-          },
-        },
+        // compositeInstanceActionTemplate: { // see 1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5.json for compositeAction definition. is this used?
+        //   type: "object",
+        //   definition: {
+        //     actionType: {
+        //       type: "literal",
+        //       definition: "compositeInstanceAction",
+        //     },
+        //     actionName: {
+        //       type: "literal",
+        //       definition: "instanceActionSequence",
+        //     },
+        //     // templates: {
+        //     //   type: "record",
+        //     //   optional: true,
+        //     //   definition: {
+        //     //     type: "any",
+        //     //   },
+        //     // },
+        //     definition: {
+        //       type: "array",
+        //       definition: {
+        //         type: "union",
+        //         definition: [
+        //           // action: domainAction (now InstanceAction only). TODO: Why only instanceAction?
+        //           {
+        //             type: "object",
+        //             definition: {
+        //               compositeActionType: { type: "literal", definition: "action" },
+        //               compositeActionStepName: { type: "string", optional: true },
+        //               action: {
+        //                 type: "schemaReference",
+        //                 definition: {
+        //                   relativePath: forgeCarryOnReferenceName(
+        //                     miroirFundamentalJzodSchemaUuid,
+        //                     "instanceAction"
+        //                   ),
+        //                 },
+        //               },
+        //             },
+        //           },
+        //           // compositeAction
+        //           {
+        //             type: "object",
+        //             definition: {
+        //               compositeActionType: { type: "literal", definition: "compositeAction" },
+        //               compositeActionStepName: { type: "string", optional: true },
+        //               action: {
+        //                 type: "schemaReference",
+        //                 definition: {
+        //                   relativePath: forgeCarryOnReferenceName(
+        //                     miroirFundamentalJzodSchemaUuid,
+        //                     "compositeAction"
+        //                   ),
+        //                 },
+        //               },
+        //             },
+        //           },
+        //           // queryTemplateAction. TODO: why not queryAction?
+        //           {
+        //             type: "object",
+        //             definition: {
+        //               compositeActionType: { type: "literal", definition: "queryTemplate" },
+        //               compositeActionStepName: { type: "string", optional: true },
+        //               nameGivenToResult: { type: "string" },
+        //               queryTemplateAction: {
+        //                 type: "schemaReference",
+        //                 definition: {
+        //                   relativePath: forgeCarryOnReferenceName(
+        //                     miroirFundamentalJzodSchemaUuid,
+        //                     // "queryAction"
+        //                     "queryTemplateAction"
+        //                   ),
+        //                 },
+        //               },
+        //             },
+        //           },
+        //           {
+        //             type: "object",
+        //             definition: {
+        //               compositeActionType: { type: "literal", definition: "query" },
+        //               compositeActionStepName: { type: "string", optional: true },
+        //               nameGivenToResult: { type: "string" },
+        //               queryAction: {
+        //                 type: "schemaReference",
+        //                 definition: {
+        //                   relativePath: forgeCarryOnReferenceName(
+        //                     miroirFundamentalJzodSchemaUuid,
+        //                     "queryAction"
+        //                     // "queryTemplateAction"
+        //                   ),
+        //                 },
+        //               },
+        //             },
+        //           },
+        //         ],
+        //       },
+        //     },
+        //   },
+        // },
         carryOnObject: carryOnSchema,
         ...(() => {
           // defining a function, which is called immediately (just one time)

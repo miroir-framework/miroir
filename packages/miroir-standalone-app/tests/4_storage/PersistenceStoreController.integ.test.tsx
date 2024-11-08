@@ -141,9 +141,19 @@ const chainVitestSteps = async (
   expectedDomainElementType?: DomainElementType,
   expectedValue?: any,
 ): Promise<{[k:string]: any}> => {
-  console.log("########################################### chainTestAsyncDomainCalls", stepName, "previousResult:", JSON.stringify(context,undefined, 2));
+  console.log(
+    "########################################### chainTestAsyncDomainCalls",
+    stepName,
+    "previousResult:",
+    JSON.stringify(context, undefined, 2)
+  );
   const domainElement = await functionCallingActionToTest();
-  console.log("########################################### chainTestAsyncDomainCalls", stepName, "result:", JSON.stringify(domainElement,undefined, 2));
+  console.log(
+    "########################################### chainTestAsyncDomainCalls",
+    stepName,
+    "result:",
+    JSON.stringify(domainElement, undefined, 2)
+  );
   let testResult
   if (domainElement.status == "ok") {
     testResult = resultTransformation
@@ -320,25 +330,30 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
   // ################################################################################################
   it("create Author Entity", async () => {
 
-    await chainVitestSteps( // setup
+    await chainVitestSteps(
+      // setup
       "setup_createEntity",
       {},
-      async () => localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition),
+      async () =>
+        localAppPersistenceStoreController.createEntity(
+          entityAuthor as MetaEntity,
+          entityDefinitionAuthor as EntityDefinition
+        ),
       undefined,
       undefined, // name to give to result
       undefined, // expected result.elementType
-      undefined, // expected result.elementValue
-    )
+      undefined // expected result.elementValue
+    );
 
     await chainVitestSteps(
       "actualTest_getInstancesAndCheckResult",
       {},
-      async () => localAppPersistenceStoreController.getInstances("model",entityEntity.uuid),
+      async () => localAppPersistenceStoreController.getInstances("model", entityEntity.uuid),
       (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances, ["author"]),
       undefined, // name to give to result
       "entityInstanceCollection",
       [entityAuthor]
-    )
+    );
   });
 
   // ################################################################################################

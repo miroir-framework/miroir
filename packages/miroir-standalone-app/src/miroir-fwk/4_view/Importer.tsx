@@ -1,55 +1,43 @@
 import { Button } from "@mui/material";
-import { ChangeEvent, FC, ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, FC, useCallback, useEffect, useMemo, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
-import { transformer, z } from "zod";
+import { z } from "zod";
 // import * as XLSX from 'xlsx/xlsx.mjs';
+import { AddBox } from "@mui/icons-material";
+import { Formik } from "formik";
 import {
-  ActionReturnType,
-  DomainAction,
-  DomainControllerInterface,
-  DomainElementObject,
-  ExtractorTemplateForRecordOfExtractors,
-  EntityDefinition,
-  EntityInstance,
-  InstanceAction,
-  JzodObject,
-  LoggerInterface,
-  Menu,
-  MetaEntity,
-  MiroirLoggerFactory,
-  Report,
-  entityEntity,
-  entityEntityDefinition,
-  entityReport,
-  entityMenu,
-  getLoggerName,
-  metaModel,
-  JzodPlainAttribute,
-  JzodAttributePlainStringWithValidations,
   ActionHandler,
-  CompositeInstanceActionTemplate,
-  DomainElement,
-  compositeAction,
   CompositeActionTemplate,
-  CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction,
+  DomainControllerInterface,
+  EntityInstance,
+  JzodAttributePlainStringWithValidations,
   JzodElement,
-  resolveReferencesForJzodSchemaAndValueObject,
+  JzodObject,
+  JzodPlainAttribute,
+  LoggerInterface,
+  MetaEntity,
   MetaModel,
+  MiroirLoggerFactory,
+  adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentMiroir,
   entityApplicationForAdmin,
+  entityDeployment,
+  entityEntity,
+  entityEntityDefinition,
+  entityMenu,
+  entityReport,
   entitySelfApplication,
-  adminConfigurationDeploymentAdmin,
-  entityDeployment
+  getLoggerName,
+  metaModel,
+  resolveReferencesForJzodSchemaAndValueObject
 } from "miroir-core";
 import * as XLSX from 'xlsx';
-import { useDomainControllerService, useErrorLogService, useMiroirContextService } from "./MiroirContextReactProvider.js";
 import { packageName } from "../../constants.js";
-import { cleanLevel } from "./constants.js";
-import { AddBox } from "@mui/icons-material";
-import { adminConfigurationDeploymentParis, applicationParis } from "./routes/ReportPage.js";
-import { useCurrentModel } from "./ReduxHooks.js";
-import { Formik } from "formik";
 import { JzodObjectEditor } from "./components/JzodObjectEditor.js";
+import { cleanLevel } from "./constants.js";
+import { useDomainControllerService, useErrorLogService, useMiroirContextService } from "./MiroirContextReactProvider.js";
+import { useCurrentModel } from "./ReduxHooks.js";
+import { adminConfigurationDeploymentParis, applicationParis } from "./routes/ReportPage.js";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"importer");
@@ -653,9 +641,9 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         },
         // instances for new Entity, put in "menuUpdateQueryResult"
         {
-          compositeActionType: "query",
+          compositeActionType: "queryTemplate",
           nameGivenToResult: "menuUpdateQueryResult",
-          queryTemplateAction: {
+          queryTemplate: {
             actionType: "queryTemplateAction",
             actionName: "runQuery",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -665,7 +653,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               referenceName: "currentDeploymentUuid"
             },
             query: {
-              queryType: "extractorTemplateForRecordOfExtractors",
+              queryType: "extractorForRecordOfExtractors",
               deploymentUuid: {
                 transformerType: "parameterReference",
                 referenceName: "currentDeploymentUuid",
@@ -1280,9 +1268,9 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       definition: [
         // found unique municipalities from fountains
         {
-          compositeActionType: "query",
+          compositeActionType: "queryTemplate",
           nameGivenToResult: newEntityName,
-          queryTemplateAction: {
+          queryTemplate: {
             actionType: "queryTemplateAction",
             actionName: "runQuery",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -1409,9 +1397,9 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         },
         // update splitted entity instances with foreign key of instances of new entity
         {
-          compositeActionType: "query",
+          compositeActionType: "queryTemplate",
           nameGivenToResult: newEntityName,
-          queryTemplateAction: {
+          queryTemplate: {
             actionType: "queryTemplateAction",
             actionName: "runQuery",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -1472,7 +1460,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                   elementTransformer: {
                     transformerType: "innerFullObjectTemplate", // TODO: innerFullObjectTemplate is not needed, all attributeKeys are constantString, objectTemplate should be enough
                     interpolation: "runtime",
-                    referencedExtractor: "municipality",
+                    referenceToOuterObject: "municipality",
                     definition: [
                       {
                         attributeKey: {

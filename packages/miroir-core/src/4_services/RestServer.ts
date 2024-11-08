@@ -296,7 +296,7 @@ export async function queryActionHandler(
   if (useDomainControllerToHandleModelAndInstanceActions) {
     // we are on the server, the action has been received from remote client
     // switch (queryTemplateAction.deploymentUuid) {
-    const result = await domainController.handleQueryForServerONLY(queryAction)
+    const result = await domainController.handleQueryActionForServerONLY(queryAction)
     log.info(
       "RestServer queryActionHandler used adminConfigurationDeploymentMiroir domainController result=",
       JSON.stringify(result, undefined, 2)

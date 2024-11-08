@@ -157,7 +157,7 @@
                       "compositeActionType": { "type": "literal", "definition": "queryTemplate" },
                       "compositeActionStepName": { "type": "string", "optional": true },
                       "nameGivenToResult": { "type": "string" },
-                      "query": {
+                      "queryTemplate": {
                         "type": "schemaReference",
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
