@@ -11,6 +11,10 @@
         "type": "literal",
         "definition": "transformer_menu_addItem"
       },
+      "interpolation": {
+        "type": "literal",
+        "definition": "runtime"
+      },
       "transformerDefinition": {
         "type": "object",
         "definition": {

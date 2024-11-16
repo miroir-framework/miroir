@@ -34,6 +34,34 @@ import {
 
 // describe.sequential("templatesDEFUNCT.unit.test", () => {
 describe("transformers.unit.test", () => {
+  // TODO: test failure cases!
+  // ################################################################################################
+  it("resolve basic transformer constantUuid", async () => {
+    console.log("resolve basic transformer constantUuid START");
+
+    const result: DomainElement = transformer_apply(
+      "runtime",
+      "ROOT",
+      {
+        transformerType: "constantUuid",
+        constantUuidValue: "test",
+      },
+      {},
+      undefined
+    );
+
+    const expectedResult: DomainElement = {
+      elementType: "string",
+      elementValue: "test",
+    };
+
+    console.log("################################ result", JSON.stringify(result, null, 2));
+    console.log("################################ expectedResult", JSON.stringify(expectedResult, null, 2));
+    expect(result).toEqual(expectedResult);
+
+    console.log("resolve basic transformer constantUuid END");
+  });
+
   // ################################################################################################
   it("resolve basic transformer path reference for string", async () => { // TODO: test failure cases!
       console.log("resolve basic transformer path reference for string START")
@@ -722,7 +750,7 @@ describe("transformers.unit.test", () => {
   );
 
   // ################################################################################################
-  it("alter existing object list with mapperListToList-objectAlter runtime transformer", async () => { // TODO: test failure cases!
+  it("mapperListToList / objectAlter: alter existing object list with mapperListToList-objectAlter runtime transformer", async () => { // TODO: test failure cases!
     console.log("alter existing object list with mapperListToList-objectAlter runtime transformer START")
     const newApplicationName = "test";
     const newUuid = uuidv4();
@@ -797,7 +825,7 @@ describe("transformers.unit.test", () => {
   );
 
   // ################################################################################################
-  it("object dynamic access runtime transformer", async () => {
+  it("objectDynamicAccess: object dynamic access runtime transformer", async () => {
     // TODO: test failure cases!
     console.log("object dynamic access runtime transformer START");
     const newApplicationName = "test";
@@ -924,7 +952,7 @@ describe("transformers.unit.test", () => {
   });
 
   // ################################################################################################
-  it("alter existing object list with mapperListToList-objectAlter with object dynamic access runtime transformer", async () => {
+  it("mapperListToList / objectAlter: alter existing object list with mapperListToList-objectAlter with object dynamic access runtime transformer", async () => {
     // TODO: test failure cases!
     console.log(
       "alter existing object list with mapperListToList-objectAlter with object dynamic access runtime transformer START"
@@ -1099,7 +1127,7 @@ describe("transformers.unit.test", () => {
   });
 
   // ################################################################################################
-  it("extract object attribute values to list with runtime transformer", async () => { // TODO: test failure cases!
+  it("objectValues - extract object attribute values to list with runtime transformer", async () => { // TODO: test failure cases!
     console.log("extract object attribute values to list with runtime transformer START")
     const newApplicationName = "test";
     const newUuid = uuidv4();
@@ -1303,7 +1331,7 @@ describe("transformers.unit.test", () => {
   );
 
   // ################################################################################################
-  it("list - pick item with runtime transformer", async () => { // TODO: test failure cases!
+  it("listPickElement - pick item with runtime transformer", async () => { // TODO: test failure cases!
     console.log("list - pick item with runtime transformer START")
     const newApplicationName = "test";
     const newUuid = uuidv4();

@@ -451,6 +451,7 @@ export function transformer_InnerReference_resolve  (
       transformerInnerReference.transformerType == "contextReference"
         // ? JSON.stringify(Object.keys(contextResults ?? {}))
         ? (localContextResults)
+        // ? (Object.keys(localContextResults))
         // : Object.keys(queryParams)
         : Object.keys(localQueryParams)
     );
@@ -460,15 +461,16 @@ export function transformer_InnerReference_resolve  (
         queryFailure: "ReferenceNotFound",
         failureOrigin: ["transformer_InnerReference_resolve"],
         queryReference: transformerInnerReference.referenceName,
-        queryContext:
+        failureMessage:
           "no referenceName" +
             transformerInnerReference.referenceName +
             " or referencePath " +
             transformerInnerReference.referencePath +
             " from " +
-            transformerInnerReference.transformerType ==
+            transformerInnerReference.transformerType,
+        queryContext: transformerInnerReference.transformerType ==
           "contextReference"
-            ? JSON.stringify(localContextResults)
+            ? JSON.stringify(Object.keys(localContextResults))
             : JSON.stringify(Object.keys(localQueryParams)),
       },
     };
@@ -1067,13 +1069,21 @@ export function innerTransformer_plainObject_apply(
   //   "contextResults elements",
   //   JSON.stringify(Object.keys(contextResults??{}), null, 2)
   // );
-  const attributeEntries:[string, DomainElement][] = Object.entries(transformer).map((objectTemplateEntry: [string, any]) => {
-    // log.info("transformer_apply converting attribute",JSON.stringify(objectTemplateEntry, null, 2));
-    return [
-      objectTemplateEntry[0],
-      defaultTransformers.transformer_extended_apply(step, objectTemplateEntry[0], objectTemplateEntry[1], queryParams, contextResults),
-    ];
-  });
+  const attributeEntries: [string, DomainElement][] = Object.entries(transformer).map(
+    (objectTemplateEntry: [string, any]) => {
+      // log.info("transformer_apply converting attribute",JSON.stringify(objectTemplateEntry, null, 2));
+      return [
+        objectTemplateEntry[0],
+        defaultTransformers.transformer_extended_apply(
+          step,
+          objectTemplateEntry[0],
+          objectTemplateEntry[1],
+          queryParams,
+          contextResults
+        ),
+      ];
+    }
+  );
   // log.info("transformer_apply converting plain object", transformer, "with params", JSON.stringify(queryParams, null, 2));
   log.info(
     "innerTransformer_plainObject_apply converting plain object",

@@ -111,9 +111,9 @@
                   {
                     "type": "object",
                     "definition": {
-                      "compositeActionType": { "type": "literal", "definition": "action" },
+                      "compositeActionType": { "type": "literal", "definition": "domainAction" },
                       "compositeActionStepName": { "type": "string", "optional": true },
-                      "action": {
+                      "domainAction": {
                         "type": "schemaReference",
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -127,7 +127,7 @@
                     "definition": {
                       "compositeActionType": { "type": "literal", "definition": "compositeAction" },
                       "compositeActionStepName": { "type": "string", "optional": true },
-                      "action": {
+                      "compositeActionTemplate": {
                         "type": "schemaReference",
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",

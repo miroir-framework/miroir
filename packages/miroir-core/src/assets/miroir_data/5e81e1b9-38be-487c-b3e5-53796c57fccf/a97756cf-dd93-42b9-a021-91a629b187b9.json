@@ -1219,6 +1219,24 @@
           }
         ]
       },
+      "transformerForBuildOrRuntime": {
+        "type": "union",
+        "discriminator": "transformerType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuild"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForRuntime"
+            }
+          }
+        ]
+      },
       "actionHandler": {
         "type": "object",
         "definition": {

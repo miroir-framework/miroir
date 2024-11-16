@@ -784,15 +784,15 @@ export class DomainController implements DomainControllerInterface {
         case 'compositeAction': {
           log.info(
             "handleCompositeActionTemplate compositeInstanceAction action to resolve",
-            JSON.stringify(currentAction.action, null, 2)
+            JSON.stringify(currentAction.compositeActionTemplate, null, 2)
           );
-          const actionResult = await this.handleCompositeAction(currentAction.action, actionParamValues, currentModel);
+          const actionResult = await this.handleCompositeAction(currentAction.compositeActionTemplate, actionParamValues, currentModel);
           break;
         }
-        case 'action': {
+        case 'domainAction': {
           log.info(
             "handleCompositeActionTemplate compositeInstanceAction action to resolve",
-            JSON.stringify(currentAction.action, null, 2)
+            JSON.stringify(currentAction.domainAction, null, 2)
           );
           // const resolvedActionTemplate: InstanceAction = transformer_extended_apply(
           //   "runtime",
@@ -816,7 +816,7 @@ export class DomainController implements DomainControllerInterface {
           //     break;
           //   }
           //   default: {
-          const actionResult = await this.handleAction(currentAction.action, currentModel);
+          const actionResult = await this.handleAction(currentAction.domainAction, currentModel);
           if (actionResult?.status != "ok") {
             log.error("Error on action", JSON.stringify(actionResult, null, 2));
           }
@@ -904,21 +904,21 @@ export class DomainController implements DomainControllerInterface {
         localContext
       );
       switch (currentAction.compositeActionType) {
-        case 'action': {
+        case 'domainAction': {
           log.info(
             "handleCompositeActionTemplate compositeInstanceAction action to resolve",
-            JSON.stringify(currentAction.action, null, 2)
+            JSON.stringify(currentAction.domainAction, null, 2)
           );
           const resolvedActionTemplate: InstanceAction = transformer_extended_apply(
             "runtime",
             "NO NAME",
-            currentAction.action as any as TransformerForRuntime, // TODO: correct type
+            currentAction.domainAction as any as TransformerForRuntime, // TODO: correct type
             // resolved.actionParamsAndTemplates,
             localActionParams,
             localContext
           ).elementValue as InstanceAction;
           log.info(
-            "handleCompositeActionTemplate compositeInstanceAction resolved action",
+            "handleCompositeActionTemplate compositeInstanceAction resolved action Template",
             JSON.stringify(resolvedActionTemplate, null, 2)
           );
           // log.info("handleCompositeActionTemplate compositeInstanceAction current model", currentModel);

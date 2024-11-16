@@ -2189,6 +2189,9 @@ export function getMiroirFundamentalJzodSchema(
         compositeAction: domainEndpointVersionV1.definition.actions.find(
           (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
         )?.actionParameters,
+        // extendedCompositeAction: domainEndpointVersionV1.definition.actions.find(
+        //   (a: any) => a.actionParameters?.definition?.actionType?.definition == "extendedCompositeAction"
+        // )?.actionParameters,
         domainAction: {
           type: "union",
           definition: domainEndpointVersionV1.definition.actions.map((e: any) => e.actionParameters),
@@ -2503,6 +2506,9 @@ export function getMiroirFundamentalJzodSchema(
         compositeAction: domainEndpointVersionV1.definition.actions.find(
           (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
         )?.actionParameters,
+        // extendedCompositeAction: domainEndpointVersionV1.definition.actions.find(
+        //   (a: any) => a.actionParameters?.definition?.actionType?.definition == "extendedCompositeAction"
+        // )?.actionParameters,
         // domain elements
         // domainElementObject: (miroirFundamentalJzodSchema as any).definition.context.domainElementObject,
         // root elements
@@ -2603,6 +2609,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForRuntime_object_alter: (transformerJzodSchema as any).definition.context.transformerForRuntime_object_alter,
         transformerForRuntime: (transformerJzodSchema as any).definition.context.transformerForRuntime,
         transformer_menu_addItem: (miroirFundamentalJzodSchema as any).definition.context.transformer_menu_addItem,
+        transformerForBuildOrRuntime: (transformerJzodSchema as any).definition.context.transformerForBuildOrRuntime,
         extendedTransformerForRuntime: (miroirFundamentalJzodSchema as any).definition.context.extendedTransformerForRuntime,
         extractorTemplateForSingleObject: (miroirFundamentalJzodSchema as any).definition.context.extractorTemplateForSingleObject,
         extractorTemplateForSingleObjectList: (miroirFundamentalJzodSchema as any).definition.context.extractorTemplateForSingleObjectList,
@@ -2632,7 +2639,8 @@ export function getMiroirFundamentalJzodSchema(
 
   // log.info("localizedResolutionStore", JSON.stringify(localizedResolutionStore, null, 2));
 
-  const carryOnSchema: any = transformerJzodSchema.definition.context.transformerForBuild as any;
+  // const carryOnSchema: any = transformerJzodSchema.definition.context.transformerForBuild as any;
+  const carryOnSchema: any = transformerJzodSchema.definition.context.transformerForBuildOrRuntime as any;
 
   // const carryOnSchemaReference: JzodReference = {
   const carryOnSchemaReference: any = {
@@ -2853,7 +2861,7 @@ export function getMiroirFundamentalJzodSchema(
         carryOnObject: carryOnSchema,
         ...(() => {
           // defining a function, which is called immediately (just one time)
-          const conversionResult = applyCarryOnSchema(
+          const compositeActionSchemaBuilder = applyCarryOnSchema(
             {
               type: "schemaReference",
               definition: {
@@ -2864,11 +2872,23 @@ export function getMiroirFundamentalJzodSchema(
             undefined,
             resolveReferencesWithCarryOn
           );
+          // const extendedCompositeActionSchemaBuilder = applyCarryOnSchema(
+          //   {
+          //     type: "schemaReference",
+          //     definition: {
+          //       relativePath: forgeCarryOnReferenceName(miroirFundamentalJzodSchemaUuid, "extendedCompositeAction"),
+          //     },
+          //   },
+          //   carryOnSchemaReference as any,
+          //   undefined,
+          //   resolveReferencesWithCarryOn
+          // );
           return {
-            ...conversionResult.resolvedReferences,
+            ...compositeActionSchemaBuilder.resolvedReferences,
             // TODO: use / define replayableActionTemplate (ModelAction + InstanceCUDAction) & Non-transactionalActionTemplate
             // non-transactional action templates can be used wich queries, they do not need to be replayable post-mortem.
-            compositeActionTemplate: conversionResult.resultSchema, // compositeActionTemplate: THAT's THE RESULT OF THE WHOLE MOVEMENT!
+            compositeActionTemplate: compositeActionSchemaBuilder.resultSchema, // compositeActionTemplate: THAT's THE RESULT OF THE WHOLE MOVEMENT!
+            // extendedCompositeActionTemplate: extendedCompositeActionSchemaBuilder.resultSchema, // compositeActionTemplate: THAT's THE RESULT OF THE WHOLE MOVEMENT!
           };
         })(),
       } as Record<string, any /**JzodElement */>,
