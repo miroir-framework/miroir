@@ -484,7 +484,7 @@ export const ToolsPage: React.FC<any> = (
       // openStoreAction
       {
         compositeActionType: "action",
-        compositeActionStepName: "openStoreAction",
+        compositeActionStepLabel: "openStoreAction",
         action: {
           actionType: "storeManagementAction",
           actionName: "openStore",
@@ -514,7 +514,7 @@ export const ToolsPage: React.FC<any> = (
       // createStoreAction
       {
         compositeActionType: "action",
-        compositeActionStepName: "createStoreAction",
+        compositeActionStepLabel: "createStoreAction",
         action: {
           actionType: "storeManagementAction",
           actionName: "createStore",
@@ -536,7 +536,7 @@ export const ToolsPage: React.FC<any> = (
       // resetAndInitAction
       {
         compositeActionType: "action",
-        compositeActionStepName: "resetAndInitAction",
+        compositeActionStepLabel: "resetAndInitAction",
         action: {
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           actionType: "storeManagementAction",
@@ -557,7 +557,7 @@ export const ToolsPage: React.FC<any> = (
       // createSelfApplicationAction
       {
         compositeActionType: "action",
-        compositeActionStepName: "createSelfApplicationAction",
+        compositeActionStepLabel: "createSelfApplicationAction",
         action: {
           actionType: "instanceAction",
           actionName: "createInstance",
@@ -595,7 +595,7 @@ export const ToolsPage: React.FC<any> = (
       // createApplicationForAdminAction
       {
         compositeActionType: "action",
-        compositeActionStepName: "createApplicationForAdminAction",
+        compositeActionStepLabel: "createApplicationForAdminAction",
         action: {
           actionType: "instanceAction",
           actionName: "createInstance",
@@ -633,7 +633,7 @@ export const ToolsPage: React.FC<any> = (
       // createAdminDeploymentAction
       {
         compositeActionType: "action",
-        compositeActionStepName: "createAdminDeploymentAction",
+        compositeActionStepLabel: "createAdminDeploymentAction",
         action: {
           actionType: "instanceAction",
           actionName: "createInstance",
@@ -671,7 +671,7 @@ export const ToolsPage: React.FC<any> = (
       // createNewApplicationMenuAction
       {
         compositeActionType: "action",
-        compositeActionStepName: "createNewApplicationMenuAction",
+        compositeActionStepLabel: "createNewApplicationMenuAction",
         action: {
           actionType: "instanceAction",
           actionName: "createInstance",
@@ -709,7 +709,7 @@ export const ToolsPage: React.FC<any> = (
       // commitAction
       {
         compositeActionType: "action",
-        compositeActionStepName: "commitAction",
+        compositeActionStepLabel: "commitAction",
         action: {
           actionName: "commit",
           actionType: "modelAction",

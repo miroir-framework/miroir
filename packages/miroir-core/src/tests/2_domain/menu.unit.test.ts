@@ -22,6 +22,7 @@ describe("menu.unit.test", () => {
         "ROOT",
         {
           transformerType: "transformer_menu_addItem",
+          interpolation: "runtime",
           transformerDefinition: {
             menuItemReference: "menuItem",
             menuReference: {

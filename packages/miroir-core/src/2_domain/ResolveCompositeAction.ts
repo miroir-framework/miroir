@@ -31,22 +31,41 @@ export function resolveCompositeActionTemplate(
 } {
   const localActionParams = { ...actionParamValues };
   let localContext: Record<string, any> = { ...actionParamValues }; 
+  const compositeActionLabel = (compositeActionTemplate as any).label??"NO_ACTION_LABEL";
 
-  log.info("resolveCompositeActionTemplate compositeActionTemplate",compositeActionTemplate,"localActionParams", localActionParams);
+  log.info(
+    "resolveCompositeActionTemplate compositeActionTemplate",
+    compositeActionLabel,
+    compositeActionTemplate,
+    "localActionParams",
+    localActionParams
+  );
   if ((compositeActionTemplate as any).transformerType) {
-    throw new Error("resolveCompositeActionTemplate can not deal with compositeActionTemplate as whole tranformer");
+    throw new Error(
+      "resolveCompositeActionTemplate can not deal with compositeActionTemplate " +
+        compositeActionLabel +
+        " as whole tranformer"
+    );
   }
   // const localeCompositeAction = compositeActionTemplate as CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction;
-  const localeCompositeAction = compositeActionTemplate as any;
+  const localCompositeAction = compositeActionTemplate as any;
 
 
   const resolvedCompositeActionTemplates: any = {}
   // going imperatively to handle inner references
-  if (localeCompositeAction.templates) {
-    log.info("resolveCompositeActionTemplate resolving templates", localeCompositeAction.templates);
-    for (const t of Object.entries(localeCompositeAction.templates)) {
+  if (localCompositeAction.templates) {
+    log.info("resolveCompositeActionTemplate resolving templates", localCompositeAction.templates);
+    for (const t of Object.entries(localCompositeAction.templates)) {
       const newLocalParameters: Record<string,any> = { ...localActionParams, ...resolvedCompositeActionTemplates };
-      log.info("resolveCompositeActionTemplate resolving template", t[0], t[1], "newLocalParameters", newLocalParameters);
+      log.info(
+        "resolveCompositeActionTemplate",
+        compositeActionLabel,
+        "resolving template",
+        t[0],
+        t[1],
+        "newLocalParameters",
+        newLocalParameters
+      );
       const resolvedTemplate = transformer_extended_apply(
         "build",
         t[0],
@@ -54,7 +73,7 @@ export function resolveCompositeActionTemplate(
         newLocalParameters,
         undefined
       );
-      log.info("resolveCompositeActionTemplate resolved template", t[0], resolvedTemplate)
+      log.info("resolveCompositeActionTemplate", compositeActionLabel, "resolved template", t[0], resolvedTemplate);
       if (resolvedTemplate.elementType == "failure") {
         log.error("resolveCompositeActionTemplate resolved template error", resolvedTemplate);
       } else {
@@ -66,15 +85,16 @@ export function resolveCompositeActionTemplate(
   const actionParamsAndTemplates = { ...localActionParams, ...resolvedCompositeActionTemplates };
   const resolvedCompositeActionDefinition: CompositeActionDefinition = transformer_extended_apply(
     "build",
-    "NO NAME",
+    compositeActionLabel,
     (compositeActionTemplate as any).definition as any as TransformerForBuild,
     actionParamsAndTemplates,
     localContext
   ).elementValue;
 
-  log.info("resolveCompositeActionTemplate compositeInstanceAction localActionParams", localActionParams);
+  // log.info("resolveCompositeActionTemplate", compositeActionLabel, "localActionParams", Object.keys(localActionParams));
   log.info(
-    "resolveCompositeActionTemplate compositeInstanceAction resolvedCompositeActionDefinition",
+    "resolveCompositeActionTemplate", compositeActionLabel, "resolvedCompositeActionDefinition",
+    // resolvedCompositeActionDefinition
     JSON.stringify(resolvedCompositeActionDefinition, null, 2)
   );
   return {

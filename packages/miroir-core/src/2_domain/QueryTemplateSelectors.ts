@@ -30,7 +30,11 @@ import { packageName } from "../constants";
 import { getLoggerName } from "../tools";
 import { cleanLevel } from "./constants";
 import { handleQueryAction, extractWithExtractor, extractWithManyExtractors } from "./QuerySelectors";
-import { resolveExtractorTemplate, resolveExtractorTemplateForDomainModelObjects, resolveExtractorTemplateForRecordOfExtractors } from "./Templates";
+import {
+  resolveExtractorTemplate,
+  resolveExtractorTemplateForDomainModelObjects,
+  resolveExtractorTemplateForRecordOfExtractors,
+} from "./Templates";
 import { transformer_InnerReference_resolve } from "./Transformers";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"SyncExtractorTemplateRunner");
@@ -178,7 +182,7 @@ export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
     );
   }
 
-  const entityUuidDomainElement = transformer_InnerReference_resolve(
+  const entityUuidDomainElement = typeof selectorParams.query.select.parentUuid == "string"?selectorParams.query.select.parentUuid:transformer_InnerReference_resolve(
     "build",
     selectorParams.query.select.parentUuid,
     selectorParams.query.queryParams,

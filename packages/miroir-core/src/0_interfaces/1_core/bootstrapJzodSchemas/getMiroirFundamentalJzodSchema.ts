@@ -2787,7 +2787,7 @@ export function getMiroirFundamentalJzodSchema(
         //             type: "object",
         //             definition: {
         //               compositeActionType: { type: "literal", definition: "action" },
-        //               compositeActionStepName: { type: "string", optional: true },
+        //               compositeActionStepLabel: { type: "string", optional: true },
         //               action: {
         //                 type: "schemaReference",
         //                 definition: {
@@ -2804,7 +2804,7 @@ export function getMiroirFundamentalJzodSchema(
         //             type: "object",
         //             definition: {
         //               compositeActionType: { type: "literal", definition: "compositeAction" },
-        //               compositeActionStepName: { type: "string", optional: true },
+        //               compositeActionStepLabel: { type: "string", optional: true },
         //               action: {
         //                 type: "schemaReference",
         //                 definition: {
@@ -2821,7 +2821,7 @@ export function getMiroirFundamentalJzodSchema(
         //             type: "object",
         //             definition: {
         //               compositeActionType: { type: "literal", definition: "queryTemplate" },
-        //               compositeActionStepName: { type: "string", optional: true },
+        //               compositeActionStepLabel: { type: "string", optional: true },
         //               nameGivenToResult: { type: "string" },
         //               queryTemplateAction: {
         //                 type: "schemaReference",
@@ -2839,7 +2839,7 @@ export function getMiroirFundamentalJzodSchema(
         //             type: "object",
         //             definition: {
         //               compositeActionType: { type: "literal", definition: "query" },
-        //               compositeActionStepName: { type: "string", optional: true },
+        //               compositeActionStepLabel: { type: "string", optional: true },
         //               nameGivenToResult: { type: "string" },
         //               queryAction: {
         //                 type: "schemaReference",

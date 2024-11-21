@@ -462,7 +462,7 @@ export function transformer_InnerReference_resolve  (
         failureOrigin: ["transformer_InnerReference_resolve"],
         queryReference: transformerInnerReference.referenceName,
         failureMessage:
-          "no referenceName" +
+          "no referenceName " +
             transformerInnerReference.referenceName +
             " or referencePath " +
             transformerInnerReference.referencePath +
@@ -759,7 +759,7 @@ export function transformer_dynamicObjectAccess_apply(
 // TODO: recursive calls could be to transformer_apply or to transformer_extended_apply!!
 export function innerTransformer_apply(
   step: Step,
-  objectName: string,
+  label: string,
   transformer:
     | TransformerForBuild
     | TransformerForRuntime
@@ -800,7 +800,10 @@ export function innerTransformer_apply(
         );
         return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
       }
-      const elementValueArray = resolvedReference.elementValue instanceof Array ? resolvedReference.elementValue : Object.entries(resolvedReference.elementValue);
+      // const elementValueArray =
+      //   resolvedReference.elementValue instanceof Array
+      //     ? resolvedReference.elementValue
+      //     : Object.entries(resolvedReference.elementValue);
       log.info("innerTransformer_apply extractorTransformer count resolvedReference", resolvedReference.elementValue.length);
       const sortByAttribute = transformer.orderBy
         ? (a: any[]) =>
@@ -840,7 +843,7 @@ export function innerTransformer_apply(
     case "innerFullObjectTemplate": {
       return defaultTransformers.transformer_fullObjectTemplate(
         step,
-        objectName,
+        label,
         transformer,
         queryParams,
         contextResults
@@ -849,7 +852,7 @@ export function innerTransformer_apply(
     case "fullObjectTemplate": {
       return defaultTransformers.transformer_fullObjectTemplate(
         step,
-        objectName,
+        label,
         transformer,
         queryParams,
         contextResults
@@ -857,7 +860,7 @@ export function innerTransformer_apply(
       break;
     }
     case "objectAlter": {
-      return defaultTransformers.transformer_objectAlter(step, objectName, transformer, queryParams, contextResults);
+      return defaultTransformers.transformer_objectAlter(step, label, transformer, queryParams, contextResults);
       break;
     }
     case "objectValues": {
@@ -944,7 +947,7 @@ export function innerTransformer_apply(
     case "objectDynamicAccess": {
       return defaultTransformers.transformer_dynamicObjectAccess_apply(
         step,
-        objectName,
+        label,
         transformer,
         queryParams,
         contextResults
@@ -962,10 +965,10 @@ export function innerTransformer_apply(
         contextResults
       );
 
-      // log.info(
-      //   "transformer_apply extractorTransformer unique referencedExtractor resolvedReference",
-      //   resolvedReference
-      // );
+      log.info(
+        "transformer_apply extractorTransformer unique", label, "resolvedReference",
+        resolvedReference
+      );
 
       if (!["instanceUuidIndex", "object"].includes(resolvedReference.elementType)) {
         log.error(
@@ -987,13 +990,19 @@ export function innerTransformer_apply(
       for (const entry of Object.entries(resolvedReference.elementValue)) {
         result.add((entry[1] as any)[transformer.attribute]);
       }
-      return {
+      const resultDomainElement: DomainElement = {
         elementType: "instanceArray",
         elementValue: sortByAttribute([...result].map((e) => ({ [transformer.attribute]: e }))),
-      };
+      }
+      log.info(
+        "innerTransformer_apply extractorTransformer unique", label, "result",
+        resultDomainElement
+      );
+      return resultDomainElement;
       break;
     }
     case "freeObjectTemplate": {
+      // log.info("innerTransformer_apply freeObjectTemplate", JSON.stringify(transformer, null, 2));
       const result = Object.fromEntries(
         Object.entries(transformer.definition).map((objectTemplateEntry: [string, any]) => {
           return [
@@ -1008,18 +1017,31 @@ export function innerTransformer_apply(
           ];
         })
       );
+      log.info(
+        "innerTransformer_apply freeObjectTemplate for",
+        label,
+        "step",
+        step,
+        "result",
+        JSON.stringify(transformer, null, 2)
+      );
       return { elementType: "object", elementValue: result };
       break;
     }
     case "constantObject": {
       log.info("innerTransformer_apply constantObject", transformer.constantObjectValue);
+      log.error("innerTransformer_apply called with constantObject", transformer.constantObjectValue);
       return { elementType: "object", elementValue: transformer.constantObjectValue };
       break;
     }
 
+    case "constantString": {
+      return { elementType: "string", elementValue: transformer.constantStringValue };
+    }
+    case "constantUuid": {
+      return { elementType: "instanceUuid", elementValue: transformer.constantUuidValue };
+    }
     case "newUuid":
-    case "constantString":
-    case "constantUuid":
     case "contextReference":
     case "parameterReference":
     default: {
@@ -1047,7 +1069,7 @@ export function innerTransformer_apply(
 // innerFullObjectTemplate { a: A, b: B } -> object 
 export function innerTransformer_plainObject_apply(
   step: Step,
-  objectName: string,
+  label: string,
   // transformer: TransformerForBuild | TransformerForRuntime,
   transformer: Record<string, any>,
   queryParams: Record<string, any>,
@@ -1085,18 +1107,29 @@ export function innerTransformer_plainObject_apply(
     }
   );
   // log.info("transformer_apply converting plain object", transformer, "with params", JSON.stringify(queryParams, null, 2));
-  log.info(
-    "innerTransformer_plainObject_apply converting plain object",
-    transformer,
-    "converted attributes",
-    JSON.stringify(attributeEntries, null, 2)
-  );
+  // log.info(
+  //   "innerTransformer_plainObject_apply converting plain object",
+  //   transformer,
+  //   "converted attributes",
+  //   attributeEntries
+  //   // JSON.stringify(attributeEntries, null, 2)
+  // );
   const failureIndex = attributeEntries.findIndex((e) => e[1].elementType == "failure");
   if (failureIndex == -1) {
     const result = Object.fromEntries(
       attributeEntries.map((e) => [e[0], e[1].elementValue])
     )
-    log.info("transformer_apply converted plain object", transformer, "converted object", JSON.stringify(result, null, 2));
+    log.info(
+      "innerTransformer_plainObject_apply on",
+      label,
+      "step",
+      step,
+      "object",
+      transformer,
+      "result converted object",
+      JSON.stringify(result, null, 2)
+    );
+    // log.info("transformer_apply converted plain object", transformer, "converted object", result);
 
     return {
       elementType: "object",
@@ -1109,7 +1142,7 @@ export function innerTransformer_plainObject_apply(
       "with params",
       queryParams,
       "error in",
-      objectName,
+      label,
       "in",
       JSON.stringify(attributeEntries[failureIndex], null, 2)
     );
@@ -1118,7 +1151,7 @@ export function innerTransformer_plainObject_apply(
       elementValue: {
         queryFailure: "ReferenceNotFound",
         failureOrigin: ["innerTransformer_plainObject_apply"],
-        queryContext: "error in " + objectName + " in " + JSON.stringify(attributeEntries[failureIndex]),
+        queryContext: "error in " + label + " in " + JSON.stringify(attributeEntries[failureIndex]),
       },
     };
   }
@@ -1194,55 +1227,13 @@ export function innerTransformer_array_apply(
 // innerFullObjectTemplate { a: A, b: B } -> object 
 export function transformer_apply(
   step: Step,
-  objectName: string,
+  label: string,
   transformer: TransformerForBuild | TransformerForRuntime,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): DomainElement {
-  log.info(
-    "transformer_apply called for object named",
-    objectName,
-    "step:",
-    step,
-    "transformer.interpolation:",
-    (transformer as any)?.interpolation??"build",
-    "transformer",
-    JSON.stringify(transformer, null, 2),
-    "queryParams elements",
-    JSON.stringify(Object.keys(queryParams??{}), null, 2),
-    "contextResults elements",
-    JSON.stringify(Object.keys(contextResults??{}), null, 2)
-  );
-  if (typeof transformer == "object") {
-    if (transformer instanceof Array) {
-      return innerTransformer_array_apply(step, objectName, transformer, queryParams, contextResults);
-    } else {
-      // TODO: improve test, refuse interpretation of build transformer in runtime step
-      if (transformer.transformerType && (((transformer as any)?.interpolation??"build") == step)) {
-        return innerTransformer_apply(step, objectName, transformer, queryParams, contextResults);
-      } else {
-        return innerTransformer_plainObject_apply(step, objectName, transformer, queryParams, contextResults);
-      }
-    }
-  } else {
-    // plain value
-    return { elementType: "any", elementValue: transformer};
-  }
-}
-
-// ################################################################################################
-// <A>[] -> <A>[]
-// object -> object
-// innerFullObjectTemplate { a: A, b: B } -> object 
-export function transformer_extended_apply(
-  step: Step,
-  objectName: string,
-  transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime,
-  queryParams: Record<string, any>,
-  contextResults?: Record<string, any>,
-): DomainElement {
   // log.info(
-  //   "transformer_extended_apply called for object named",
+  //   "transformer_apply called for object named",
   //   objectName,
   //   "step:",
   //   step,
@@ -1257,27 +1248,113 @@ export function transformer_extended_apply(
   // );
   if (typeof transformer == "object") {
     if (transformer instanceof Array) {
-      return innerTransformer_array_apply(step, objectName, transformer, queryParams, contextResults);
+      return innerTransformer_array_apply(step, label, transformer, queryParams, contextResults);
     } else {
       // TODO: improve test, refuse interpretation of build transformer in runtime step
       if (transformer.transformerType && (((transformer as any)?.interpolation??"build") == step)) {
-        switch (transformer.transformerType) {
-          case "transformer_menu_addItem": {
-            return defaultTransformers.transformer_menu_AddItem(defaultTransformers, step, objectName, transformer, queryParams, contextResults);
-            break;
-          }
-          default: {
-            return innerTransformer_apply(step, objectName, transformer, queryParams, contextResults);
-          }
-        }
+        return innerTransformer_apply(step, label, transformer, queryParams, contextResults);
       } else {
-        return innerTransformer_plainObject_apply(step, objectName, transformer, queryParams, contextResults);
+        return innerTransformer_plainObject_apply(step, label, transformer, queryParams, contextResults);
       }
     }
   } else {
     // plain value
     return { elementType: "any", elementValue: transformer};
   }
+}
+
+// ################################################################################################
+// <A>[] -> <A>[]
+// object -> object
+// innerFullObjectTemplate { a: A, b: B } -> object 
+export function transformer_extended_apply(
+  step: Step,
+  label: string,
+  transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+): DomainElement {
+  // log.info(
+  //   "transformer_extended_apply called for",
+  //   label,
+  //   "step:",
+  //   step,
+  //   "transformer.interpolation:",
+  //   (transformer as any)?.interpolation??"build",
+  //   ((transformer as any)?.interpolation??"build") == step,
+  //   typeof transformer,
+  //   "transformer",
+  //   JSON.stringify(transformer, null, 2),
+  //   // "queryParams elements",
+  //   // Object.keys(queryParams??{}),
+  //   // // JSON.stringify(Object.keys(queryParams??{}), null, 2),
+  //   // "contextResults elements",
+  //   // Object.keys(contextResults??{})
+  //   // // JSON.stringify(Object.keys(contextResults??{}), null, 2)
+  // );
+  let result: DomainElement = undefined as any;
+
+  if (typeof transformer == "object") {
+    if (transformer instanceof Array) {
+      result = innerTransformer_array_apply(step, label, transformer, queryParams, contextResults);
+    } else {
+      // TODO: improve test, refuse interpretation of build transformer in runtime step
+      if (transformer["transformerType"] != undefined) {
+        if ((((transformer as any)?.interpolation??"build") == step)) {
+          // log.info("HERE");
+          switch (transformer.transformerType) {
+            case "transformer_menu_addItem": {
+              result = defaultTransformers.transformer_menu_AddItem(
+                defaultTransformers,
+                step,
+                label,
+                transformer,
+                queryParams,
+                contextResults
+              );
+              break;
+            }
+            default: {
+              result = innerTransformer_apply(step, label, transformer, queryParams, contextResults);
+            }
+          }
+        } else {
+          // log.info("THERE");
+          // result = { elementType: "any", elementValue: transformer};
+          result = innerTransformer_plainObject_apply(step, label, transformer, queryParams, contextResults);
+        }
+      } else {
+        // log.info("THERE2");
+        result = innerTransformer_plainObject_apply(step, label, transformer, queryParams, contextResults);
+      }
+    }
+  } else {
+    // plain value
+    result = { elementType: "any", elementValue: transformer};
+  }
+
+  log.info(
+    "transformer_extended_apply called for",
+    label,
+    "step:",
+    step,
+    "transformer.interpolation:",
+    (transformer as any)?.interpolation??"build",
+    ((transformer as any)?.interpolation??"build") == step,
+    typeof transformer,
+    "transformer",
+    JSON.stringify(transformer, null, 2),
+    "result",
+    JSON.stringify(result, null, 2),
+    // "queryParams elements",
+    // Object.keys(queryParams??{}),
+    // // JSON.stringify(Object.keys(queryParams??{}), null, 2),
+    // "contextResults elements",
+    // Object.keys(contextResults??{})
+    // // JSON.stringify(Object.keys(contextResults??{}), null, 2)
+  );
+  return result;
+
 }
 
 // ################################################################################################

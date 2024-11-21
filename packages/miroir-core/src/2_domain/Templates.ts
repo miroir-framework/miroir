@@ -41,32 +41,25 @@ export function resolveQueryTemplate(
         return {
           ...queryTemplate,
           queryType: "extractorForObjectListByEntity",
-          parentUuid: transformer_InnerReference_resolve(
-            "build",
-            queryTemplate.parentUuid,
-            queryParams,
-            contextResults
-          ).elementValue, // TODO: check for failure!
+          parentUuid:
+            typeof queryTemplate.parentUuid == "string"
+              ? queryTemplate.parentUuid
+              : transformer_InnerReference_resolve("build", queryTemplate.parentUuid, queryParams, contextResults)
+                  .elementValue, // TODO: check for failure!
           filter: {
             attributeName: queryTemplate.filter.attributeName,
-            value: transformer_InnerReference_resolve(
-              "build",
-              queryTemplate.filter.value,
-              queryParams,
-              contextResults
-            ).elementValue, // TODO: check for failure!
+            value: transformer_InnerReference_resolve("build", queryTemplate.filter.value, queryParams, contextResults)
+              .elementValue, // TODO: check for failure!
           },
         };
       } else {
         return {
           ...queryTemplate,
           queryType: "extractorForObjectListByEntity",
-          parentUuid: transformer_InnerReference_resolve(
-            "build",
-            queryTemplate.parentUuid,
-            queryParams,
-            contextResults
-          ).elementValue, // TODO: check for failure!
+          parentUuid: typeof queryTemplate.parentUuid == "string"
+          ? queryTemplate.parentUuid
+          : transformer_InnerReference_resolve("build", queryTemplate.parentUuid, queryParams, contextResults)
+            .elementValue, // TODO: check for failure!
         };
       }
       break;
@@ -75,12 +68,11 @@ export function resolveQueryTemplate(
       return {
         ...queryTemplate,
         queryType: "extractorForObjectByDirectReference",
-        parentUuid: transformer_InnerReference_resolve(
-          "build",
-          queryTemplate.parentUuid,
-          queryParams,
-          contextResults
-        ).elementValue, // TODO: check for failure!
+        parentUuid:
+          typeof queryTemplate.parentUuid == "string"
+            ? queryTemplate.parentUuid
+            : transformer_InnerReference_resolve("build", queryTemplate.parentUuid, queryParams, contextResults)
+                .elementValue, // TODO: check for failure!
         instanceUuid: transformer_InnerReference_resolve(
           "build",
           queryTemplate.instanceUuid,
@@ -140,12 +132,11 @@ export function resolveQueryTemplate(
     case "combinerForObjectListByRelation": {
       return {
         ...queryTemplate,
-        parentUuid: transformer_InnerReference_resolve(
-          "build",
-          queryTemplate.parentUuid,
-          queryParams,
-          contextResults
-        ).elementValue, // TODO: check for failure!
+        parentUuid:
+          typeof queryTemplate.parentUuid == "string"
+            ? queryTemplate.parentUuid
+            : transformer_InnerReference_resolve("build", queryTemplate.parentUuid, queryParams, contextResults)
+                .elementValue, // TODO: check for failure!
         objectReference:
           queryTemplate.objectReference.transformerType == "contextReference"
             ? queryTemplate.objectReference.referenceName ??
@@ -157,12 +148,11 @@ export function resolveQueryTemplate(
     case "combinerForObjectListByManyToManyRelation": {
       return {
         ...queryTemplate,
-        parentUuid: transformer_InnerReference_resolve(
-          "build",
-          queryTemplate.parentUuid,
-          queryParams,
-          contextResults
-        ).elementValue, // TODO: check for failure!
+        parentUuid:
+          typeof queryTemplate.parentUuid == "string"
+            ? queryTemplate.parentUuid
+            : transformer_InnerReference_resolve("build", queryTemplate.parentUuid, queryParams, contextResults)
+                .elementValue, // TODO: check for failure!
         objectListReference:
           queryTemplate.objectListReference.transformerType == "contextReference"
             ? queryTemplate.objectListReference.referenceName ??
@@ -174,8 +164,11 @@ export function resolveQueryTemplate(
     case "combinerForObjectByRelation": {
       return {
         ...queryTemplate,
-        parentUuid: transformer_InnerReference_resolve("build", queryTemplate.parentUuid, queryParams, contextResults)
-          .elementValue, // TODO: check for failure!
+        parentUuid:
+          typeof queryTemplate.parentUuid == "string"
+            ? queryTemplate.parentUuid
+            : transformer_InnerReference_resolve("build", queryTemplate.parentUuid, queryParams, contextResults)
+                .elementValue, // TODO: check for failure!
         objectReference:
           queryTemplate.objectReference.transformerType == "contextReference"
             ? queryTemplate.objectReference.referenceName ??
@@ -187,7 +180,11 @@ export function resolveQueryTemplate(
     case "queryCombiner": {
       return {
         ...queryTemplate,
-        rootExtractorOrReference: resolveQueryTemplate(queryTemplate.rootExtractorOrReference, queryParams, contextResults) as Extractor | QueryContextReference, // TODO: check for failure!
+        rootExtractorOrReference: resolveQueryTemplate(
+          queryTemplate.rootExtractorOrReference,
+          queryParams,
+          contextResults
+        ) as Extractor | QueryContextReference, // TODO: check for failure!
       };
       break;
     }
@@ -226,7 +223,10 @@ export function resolveExtractorTemplateForRecordOfExtractors(
 
   const params = { ...recordOfExtractorTemplate.pageParams, ...recordOfExtractorTemplate.queryParams };
 
-  log.info("resolveExtractorTemplateForRecordOfExtractors converting extractorTemplates:", recordOfExtractorTemplate.extractorTemplates);
+  log.info(
+    "resolveExtractorTemplateForRecordOfExtractors converting extractorTemplates:",
+    recordOfExtractorTemplate.extractorTemplates
+  );
   
   const queries = Object.fromEntries(
     Object.entries(recordOfExtractorTemplate.extractorTemplates ?? {}).map(
@@ -238,7 +238,10 @@ export function resolveExtractorTemplateForRecordOfExtractors(
   );
   log.info("resolveExtractorTemplateForRecordOfExtractors converted extractorTemplates, result:", queries);
   
-  log.info("resolveExtractorTemplateForRecordOfExtractors converting combinerTemplates:", recordOfExtractorTemplate.combinerTemplates);
+  log.info(
+    "resolveExtractorTemplateForRecordOfExtractors converting combinerTemplates:",
+    recordOfExtractorTemplate.combinerTemplates
+  );
   const combiners = Object.fromEntries(
     Object.entries(recordOfExtractorTemplate.combinerTemplates ?? {}).map((e: [string, QueryTemplate]) => [
       e[0],

@@ -19,6 +19,7 @@ import {
   MetaEntity,
   MetaModel,
   MiroirLoggerFactory,
+  TransformerForRuntime,
   Transformer_menu_addItem,
   Uuid,
   adminConfigurationDeploymentAdmin,
@@ -265,6 +266,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     newEntityUuid: Uuid,
     newEntityName: string,
     createEntity_newEntityDescription: string,
+    newEntityDefinitionUuid: Uuid,
   ) => {
     // const newEntityName = "Fountain";
     // const newEntityDescription = "Drinking Fountains of Paris";
@@ -334,7 +336,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       createEntity_newEntityName: newEntityName,
       createEntity_newEntityDescription: createEntity_newEntityDescription,
       createEntity_newEntityUuid: newEntityUuid,
-      createEntity_newEntityDefinitionUuid: uuidv4(),
+      createEntity_newEntityDefinitionUuid: newEntityDefinitionUuid,
+      // createEntity_newEntityDefinitionUuid: uuidv4(),
       createEntity_newEntityDetailsReportUuid: uuidv4(),
       createEntity_newEntityListReportUuid: uuidv4(),
       adminConfigurationDeploymentParis,
@@ -565,7 +568,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         // createEntity
         {
           compositeActionType: "domainAction",
-          compositeActionStepName: "createEntity",
+          compositeActionStepLabel: "createEntity",
           domainAction: {
             actionType: "modelAction",
             actionName: "createEntity",
@@ -591,7 +594,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         // createReports
         {
           compositeActionType: "domainAction",
-          compositeActionStepName: "createReports",
+          compositeActionStepLabel: "createReports",
           domainAction: {
             actionType: "transactionalInstanceAction",
             instanceAction: {
@@ -632,7 +635,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         // commit
         {
           compositeActionType: "domainAction",
-          compositeActionStepName: "commit",
+          compositeActionStepLabel: "commit",
           domainAction: {
             actionName: "commit",
             actionType: "modelAction",
@@ -650,6 +653,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         // instances for new Entity, put in "menuUpdateQueryResult"
         {
           compositeActionType: "queryTemplate",
+          
           nameGivenToResult: "menuUpdateQueryResult",
           queryTemplate: {
             actionType: "queryTemplateAction",
@@ -744,7 +748,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         },
         {
           compositeActionType: "domainAction",
-          compositeActionStepName: "updateMenu",
+          compositeActionStepLabel: "updateMenu",
           domainAction: {
             actionType: "transactionalInstanceAction",
             instanceAction: {
@@ -783,7 +787,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         // commit
         {
           compositeActionType: "domainAction",
-          compositeActionStepName: "commit",
+          compositeActionStepLabel: "commit",
           domainAction: {
             actionName: "commit",
             actionType: "modelAction",
@@ -825,7 +829,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         // rollback / refresh
         {
           compositeActionType: "domainAction",
-          compositeActionStepName: "rollback",
+          compositeActionStepLabel: "rollback",
           domainAction: {
             actionName: "rollback",
             actionType: "modelAction",
@@ -863,6 +867,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     splittedEntityUuid: Uuid,
     splittedEntityName: string,
     splittedEntityAttribute: string,
+    splittedEntityDefinitionUuid: Uuid,
     newEntityUuid: Uuid,
     newEntityName: string,
   ):{
@@ -1025,7 +1030,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                   transformerType: "mustacheStringTemplate",
                   definition: "{{splitEntity_newEntityName}}(ies)",
                 },
-                "parentName": "Municipality",
+                parentName: "Municipality",
                 parentUuid: {
                   transformerType: "mustacheStringTemplate",
                   definition: "{{splitEntity_newEntity.uuid}}",
@@ -1043,38 +1048,53 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             referenceName: "currentApplicationUuid",
           },
           parentName: "Report",
-          parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+          parentUuid: entityReport.uuid,
+          // parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
           conceptLevel: "Model",
           name: newEntityName + "Details",
           defaultLabel: "Details of " + newEntityDescription,
           definition: {
-            extractors: {
+            extractorTemplates: {
               elementToDisplay: {
                 queryType: "extractorForObjectByDirectReference",
                 parentName: newEntityName,
                 parentUuid: {
-                  transformerType: "constantUuid",
-                  constantUuidValue: {
-                    transformerType: "mustacheStringTemplate",
-                    definition: "{{splitEntity_newEntity.uuid}}",
-                  },
+                  transformerType: "parameterReference",
+                  referenceName: "splitEntity_newEntityUuid",
                 },
                 instanceUuid: {
-                  queryTemplateType: "queryParameterReference",
-                  referenceName: "instanceUuid",
+                  transformerType: "constantObject",
+                  constantObjectValue: {
+                    transformerType: "constantObject",
+                    interpolation: "runtime",
+                    constantObjectValue: {
+                      transformerType: "parameterReference",
+                      referenceName: "instanceUuid",
+                    }
+                  }
                 },
               },
               fountainsOfMunicipality: {
                 queryType: "combinerForObjectListByRelation",
                 parentName: "Fountain",
                 parentUuid: {
-                  transformerType: "constantUuid",
-                  constantUuidValue: splittedEntityUuid,
-                  // constantUuidValue: splittedEntityDefinition.entityUuid,
+                  transformerType: "constantObject",
+                  constantObjectValue: {
+                    transformerType: "constantUuid",
+                    constantUuidValue: splittedEntityUuid,
+                  }
                 },
                 objectReference: {
-                  referenceName: "elementToDisplay",
-                  queryTemplateType: "queryContextReference",
+                  transformerType: "constantObject",
+                  constantObjectValue: {
+                    transformerType: "constantObject",
+                    interpolation: "runtime",
+                    constantObjectValue: {
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referenceName: "elementToDisplay",
+                    },
+                  }
                 },
                 AttributeOfListObjectToCompareToReferenceUuid: newEntityName,
               },
@@ -1087,8 +1107,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                   definition: {
                     label: "My " + newEntityName,
                     parentUuid: {
-                      transformerType: "mustacheStringTemplate",
-                      definition: "{{splitEntity_newEntity.uuid}}",
+                      transformerType: "parameterReference",
+                      referenceName: "splitEntity_newEntityUuid",
                     },
                     fetchedDataReference: "elementToDisplay",
                   },
@@ -1099,7 +1119,6 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                     label: newEntityName + "'s (${elementToDisplay.name}) " + splittedEntityName + "s",
                     parentName: splittedEntityName,
                     parentUuid: splittedEntityUuid,
-                    // parentUuid: splittedEntityDefinition.entityUuid,
                     fetchedDataReference: "fountainsOfMunicipality",
                     sortByAttribute: "name",
                   },
@@ -1113,7 +1132,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         // createEntity
         {
           compositeActionType: "domainAction",
-          compositeActionStepName: "splitEntity_createEntity",
+          compositeActionStepLabel: "splitEntity_createEntity",
           domainAction: {
             actionType: "modelAction",
             actionName: "createEntity",
@@ -1139,7 +1158,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         // updateSplittedEntityAction
         {
           compositeActionType: "domainAction",
-          compositeActionStepName: "splitEntity_updateSplittedEntityAction",
+          compositeActionStepLabel: "splitEntity_updateSplittedEntityAction",
           domainAction: {
             actionType: "modelAction",
             actionName: "alterEntityAttribute",
@@ -1152,14 +1171,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               transformerType: "parameterReference",
               referenceName: "splittedEntityName",
             },
-            entityUuid: {
-              transformerType: "mustacheStringTemplate",
-              definition: "{{splittedEntityDefinition.entityUuid}}",
-            },
-            entityDefinitionUuid: {
-              transformerType: "mustacheStringTemplate",
-              definition: "{{splittedEntityDefinition.uuid}}",
-            },
+            entityUuid: splittedEntityUuid,
+            entityDefinitionUuid: splittedEntityDefinitionUuid,
             addColumns: [
               {
                 name: {
@@ -1176,8 +1189,6 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                       targetEntity: {
                         transformerType: "contextReference",
                         referenceName: "splitEntity_newEntityUuid",
-                        // transformerType: "mustacheStringTemplate",
-                        // definition: "{{splitEntity_newEntity.uuid}}",
                       },
                     },
                   },
@@ -1197,7 +1208,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               transformerType: "parameterReference",
               referenceName: "currentDeploymentUuid",
             },
-          }
+          },
         },
         // insert createEntity_newEntity "List" and "Details" Reports
         {
@@ -1223,7 +1234,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                     transformerType: "mustacheStringTemplate",
                     definition: "{{splitEntity_newEntityListReport.parentUuid}}",
                   },
-                  applicationSection:'model',
+                  applicationSection: "model",
                   instances: [
                     {
                       transformerType: "parameterReference",
@@ -1233,11 +1244,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                       transformerType: "parameterReference",
                       referenceName: "splitEntity_newEntityDetailsReport",
                     },
-                  ]
-                }
+                  ],
+                },
               ],
-            }
-          }
+            },
+          },
         },
         // commit
         {
@@ -1250,7 +1261,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               transformerType: "parameterReference",
               referenceName: "currentDeploymentUuid",
             },
-          }
+          },
         },
         // refresh / rollback
         {
@@ -1263,10 +1274,10 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               transformerType: "parameterReference",
               referenceName: "currentDeploymentUuid",
             },
-          }
+          },
         },
-      ]
-    }
+      ],
+    };
 
     // const splitFountainEntityResult = await domainController.handleCompositeActionTemplate(
     //   splitFountainEntity,
@@ -1288,6 +1299,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
 
     const actionInsertMunicipalities: CompositeActionTemplate = {
       actionType: "compositeAction",
+      actionLabel: "insertMunicipalities",
       actionName: "sequence",
       definition: [
         // found unique municipalities from fountains
@@ -1374,7 +1386,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         // update Menu
         {
           compositeActionType: "domainAction",
-          compositeActionStepName: "updateMenu",
+          compositeActionStepLabel: "updateMenu",
           domainAction: {
             actionType: "transactionalInstanceAction",
             instanceAction: {
@@ -1413,6 +1425,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         // commit
         {
           compositeActionType: "domainAction",
+          compositeActionStepLabel: "insertMunicipalities_commitForUpdateMenu",
           domainAction: {
             actionName: "commit",
             actionType: "modelAction",
@@ -1426,6 +1439,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         // update splitted entity instances with foreign key of instances of new entity
         {
           compositeActionType: "queryTemplate",
+          compositeActionStepLabel: "calculateEntityInstances",
           nameGivenToResult: newEntityName,
           queryTemplate: {
             actionType: "queryTemplateAction",
@@ -1469,63 +1483,72 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               },
               runtimeTransformers: {
                 uniqueSplittedEntityInstancesSplitAttributeValues: {
-                  transformerType: "unique",
-                  interpolation: "runtime",
-                  referencedExtractor: splittedEntityName + "UuidIndex",
-                  attribute: {
-                    transformerType: "parameterReference",
-                    referenceName: "splittedEntityAttribute",
-                  },
-                },
+                  transformerType: "freeObjectTemplate",
+                  definition: {
+                    transformerType: "unique",
+                    interpolation: "runtime",
+                    referencedExtractor: splittedEntityName + "UuidIndex",
+                    attribute: {
+                      transformerType: "parameterReference",
+                      referenceName: "splittedEntityAttribute",
+                    }, // TODO: allow transformer inside freeObjectTemplate!
+                  }
+                } as any as TransformerForRuntime,
                 [splittedEntityName]: {
                   transformerType: "objectValues",
                   interpolation: "runtime",
                   referencedExtractor: splittedEntityName + "UuidIndex",
                 },
                 municipalities: {
-                  transformerType: "mapperListToList",
-                  interpolation: "runtime",
-                  referencedExtractor: "uniqueSplittedEntityInstancesSplitAttributeValues",
-                  elementTransformer: {
-                    transformerType: "innerFullObjectTemplate", // TODO: innerFullObjectTemplate is not needed, all attributeKeys are constantString, objectTemplate should be enough
+                  transformerType: "freeObjectTemplate",
+                  definition: {
+                    transformerType: "mapperListToList",
                     interpolation: "runtime",
-                    referenceToOuterObject: "municipality",
-                    definition: [
-                      {
-                        attributeKey: {
-                          interpolation: "runtime",
-                          transformerType: "constantString",
-                          constantStringValue: "parentUuid"
-                        },
-                        attributeValue: {
-                          transformerType: "parameterReference",
-                          referenceName: "splitEntity_newEntityUuid",
-                        }
-                      },
-                      {
-                        attributeKey: {
-                          interpolation: "runtime",
-                          transformerType: "constantString",
-                          constantStringValue: "uuid"
-                        },
-                        attributeValue: {
-                          interpolation: "runtime",
-                          transformerType: "newUuid",
-                        }
-                      },
-                      {
-                        attributeKey: {
-                          interpolation: "runtime",
-                          transformerType: "constantString",
-                          constantStringValue: "name"
-                        },
-                        attributeValue: {
-                          interpolation: "runtime",
-                          transformerType: "mustacheStringTemplate",
-                          definition: "{{municipality.Commune}}" // TODO: correct attribute name!
-                        }
+                    referencedExtractor: "uniqueSplittedEntityInstancesSplitAttributeValues",
+                    elementTransformer: {
+                      transformerType: "freeObjectTemplate",
+                      definition: {
+                        transformerType: "innerFullObjectTemplate", // TODO: innerFullObjectTemplate is not needed, all attributeKeys are constantString, objectTemplate should be enough
+                        interpolation: "runtime",
+                        referenceToOuterObject: "municipality",
+                        definition: [
+                          {
+                            attributeKey: {
+                              interpolation: "runtime",
+                              transformerType: "constantString",
+                              constantStringValue: "parentUuid"
+                            },
+                            attributeValue: {
+                              transformerType: "parameterReference",
+                              referenceName: "splitEntity_newEntityUuid",
+                            }
+                          },
+                          {
+                            attributeKey: {
+                              interpolation: "runtime",
+                              transformerType: "constantString",
+                              constantStringValue: "uuid"
+                            },
+                            attributeValue: {
+                              interpolation: "runtime",
+                              transformerType: "newUuid",
+                            }
+                          },
+                          {
+                            attributeKey: {
+                              interpolation: "runtime",
+                              transformerType: "constantString",
+                              constantStringValue: "name"
+                            },
+                            attributeValue: {
+                              interpolation: "runtime",
+                              transformerType: "mustacheStringTemplate",
+                              definition: "{{municipality.Commune}}" // TODO: correct attribute name!
+                            }
+                          }
+                        ]
                       }
-                    ]
+                    }
                   }
                 },
                 municipalitiesIndexedByUuid: {
@@ -1584,7 +1607,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                     }
                   }
                 },
-              },
+              } as any,
             }
           }
         },
@@ -1592,7 +1615,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         // insert new Entity instance with new uuid for each
         {
           compositeActionType: "domainAction",
-          compositeActionStepName: "insert municipalities",
+          compositeActionStepLabel: "insertMunicipalities",
           domainAction: {
             actionType: "instanceAction",
             actionName: "createInstance",
@@ -1616,19 +1639,16 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                 instances: {
                   transformerType: "contextReference",
                   interpolation: "runtime",
-                  // referenceName: "municipalities"
                   referencePath: ["Municipality", "municipalities"]
-                  // referencePath: ["Municipality"]
                 },
               }
             ]
           },
-        // // },// as CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction, // TODO: why is type inferrence failing?
         },
         // update SplittedEntity with new FK attribute
         {
           compositeActionType: "domainAction",
-          compositeActionStepName: "update fountains",
+          compositeActionStepLabel: "updateFountains",
           domainAction: {
             actionType: 'instanceAction',
             actionName: "updateInstance",
@@ -1920,7 +1940,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       // openStoreAction
       {
         compositeActionType: "domainAction",
-        compositeActionStepName: "openStoreAction",
+        compositeActionStepLabel: "openStoreAction",
         domainAction: {
           actionType: "storeManagementAction",
           actionName: "openStore",
@@ -1950,7 +1970,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       // createStoreAction
       {
         compositeActionType: "domainAction",
-        compositeActionStepName: "createStoreAction",
+        compositeActionStepLabel: "createStoreAction",
         domainAction: {
           actionType: "storeManagementAction",
           actionName: "createStore",
@@ -1972,7 +1992,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       // resetAndInitAction
       {
         compositeActionType: "domainAction",
-        compositeActionStepName: "resetAndInitAction",
+        compositeActionStepLabel: "resetAndInitAction",
         domainAction: {
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           actionType: "storeManagementAction",
@@ -1993,7 +2013,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       // createSelfApplicationAction
       {
         compositeActionType: "domainAction",
-        compositeActionStepName: "createSelfApplicationAction",
+        compositeActionStepLabel: "createSelfApplicationAction",
         domainAction: {
           actionType: "instanceAction",
           actionName: "createInstance",
@@ -2027,7 +2047,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       // createApplicationForAdminAction
       {
         compositeActionType: "domainAction",
-        compositeActionStepName: "createApplicationForAdminAction",
+        compositeActionStepLabel: "createApplicationForAdminAction",
         domainAction: {
           actionType: "instanceAction",
           actionName: "createInstance",
@@ -2065,7 +2085,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       // createAdminDeploymentAction
       {
         compositeActionType: "domainAction",
-        compositeActionStepName: "createAdminDeploymentAction",
+        compositeActionStepLabel: "createAdminDeploymentAction",
         domainAction: {
           actionType: "instanceAction",
           actionName: "createInstance",
@@ -2103,7 +2123,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       // createNewApplicationMenuAction
       {
         compositeActionType: "domainAction",
-        compositeActionStepName: "createNewApplicationMenuAction",
+        compositeActionStepLabel: "createNewApplicationMenuAction",
         domainAction: {
           actionType: "instanceAction",
           actionName: "createInstance",
@@ -2141,7 +2161,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       // commitAction
       {
         compositeActionType: "domainAction",
-        compositeActionStepName: "commitAction",
+        compositeActionStepLabel: "commitAction",
         domainAction: {
           actionName: "commit",
           actionType: "modelAction",
@@ -2213,13 +2233,24 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         const entityFountainUuid = uuidv4();
         const entityFountainName = "Fountain";
         const entityFountainDescription = "Drinking Fountains of Paris";
+        const entityFountainDefinitionUuid = uuidv4();
         const entityMunicipalityUuid = uuidv4();
         const entityMunicipalityName = "Municipality";
 
-        const {
-          actionHandlerCreateFountainEntity,
-          actionEffectiveParamsCreateEntity,
-        } = createEntity(entityFountainUuid, entityFountainName, entityFountainDescription);
+        const { actionHandlerCreateFountainEntity, actionEffectiveParamsCreateEntity: actionCreateEntityParams } = createEntity(
+          entityFountainUuid,
+          entityFountainName,
+          entityFountainDescription,
+          entityFountainDefinitionUuid
+        );
+
+        // const splittedEntityDefinition = props.currentModel.entityDefinitions.find(e=>e.name == entityFountainName)
+
+        // log.info("splitEntity going on for", entityFountainName, splittedEntityDefinition, "props", props)
+
+        // if (!splittedEntityDefinition?.entityUuid) {
+        //   throw new Error("splitEntity found definition with undefined entityUuid " + JSON.stringify(splittedEntityDefinition));
+        // }
 
         const {
           actionSplitFountainEntity,
@@ -2228,6 +2259,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           entityFountainUuid,
           entityFountainName,
           "Commune",
+          entityFountainDefinitionUuid,
           entityMunicipalityUuid,
           entityMunicipalityName,
         );
@@ -2238,9 +2270,10 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         //   props.currentModel
         // );
     
-        const createApplicationAndCreateEntity: CompositeActionTemplate = {
+        const createApplicationAndCreateEntityAndSplitEntity: CompositeActionTemplate = {
           actionType: "compositeAction",
           actionName: "sequence",
+          actionLabel: "createApplicationAndCreateEntityAndSplitEntity",
           templates: {
             ...createNewApplication.templates,
             ...actionHandlerCreateFountainEntity.templates,
@@ -2253,13 +2286,13 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           ]
         }
 
-        log.info("createApplicationAndCreateEntity", createApplicationAndCreateEntity)
+        log.info("createApplicationAndCreateEntityAndSplitEntity", createApplicationAndCreateEntityAndSplitEntity)
 
         const createApplicationAndCreateEntityResult = await domainController.handleCompositeActionTemplate(
-          createApplicationAndCreateEntity,
+          createApplicationAndCreateEntityAndSplitEntity,
           {
             ...paramsForTemplates,
-            ...actionEffectiveParamsCreateEntity,
+            ...actionCreateEntityParams,
             ...actionSplitFountainEntityParams,
           },
           props.currentModel

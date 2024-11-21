@@ -187,46 +187,7 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
           JSON.stringify(instanceUuid)
         );
 
-        // if (instanceDomainElement.elementType == "instance") {
-        //   return instanceDomainElement; /* QueryResults, elementType == "failure" */
-        // }
-        // if (instanceDomainElement.elementType != "string" && instanceDomainElement.elementType != "instanceUuid") {
-        //   return {
-        //     elementType: "failure",
-        //     elementValue: {
-        //       queryFailure: "EntityNotFound",
-        //       deploymentUuid,
-        //       applicationSection,
-        //       entityUuid: entityUuidReference.elementValue,
-        //     },
-        //   };
-        // }
-        // log.info("extractEntityInstance resolved instanceUuid =", instanceUuid);
-        // if (!deploymentEntityState[index]) {
-        //   return {
-        //     elementType: "failure",
-        //     elementValue: {
-        //       queryFailure: "EntityNotFound",
-        //       deploymentUuid,
-        //       applicationSection,
-        //       entityUuid: entityUuidReference.elementValue,
-        //     },
-        //   };
-        // }
-        // if (!deploymentEntityState[index].entities[instanceDomainElement.elementValue]) {
-        //   return {
-        //     elementType: "failure",
-        //     elementValue: {
-        //       queryFailure: "InstanceNotFound",
-        //       deploymentUuid,
-        //       applicationSection,
-        //       entityUuid: entityUuidReference.elementValue,
-        //       instanceUuid: instanceDomainElement.elementValue,
-        //     },
-        //   };
-        // }
         const result = await this.persistenceStoreController.getInstance(
-          // applicationSection,
           entityUuidReference,
           instanceUuid
         );

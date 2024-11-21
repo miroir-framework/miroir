@@ -786,7 +786,11 @@ export class DomainController implements DomainControllerInterface {
             "handleCompositeActionTemplate compositeInstanceAction action to resolve",
             JSON.stringify(currentAction.compositeActionTemplate, null, 2)
           );
-          const actionResult = await this.handleCompositeAction(currentAction.compositeActionTemplate, actionParamValues, currentModel);
+          const actionResult = await this.handleCompositeAction(
+            currentAction.compositeActionTemplate,
+            actionParamValues,
+            currentModel
+          );
           break;
         }
         case 'domainAction': {
@@ -878,23 +882,31 @@ export class DomainController implements DomainControllerInterface {
   ): Promise<ActionVoidReturnType> {
     const localActionParams = { ...actionParamValues };
     let localContext: Record<string, any> = { ...actionParamValues }; 
-
-    log.info("handleCompositeActionTemplate compositeAction",compositeAction,"localActionParams", localActionParams);
+    const actionLabel = (compositeAction as any).actionLabel??"no action label";
+    log.info(
+      "handleCompositeActionTemplate compositeAction",
+      actionLabel,
+      compositeAction,
+      "localActionParams",
+      localActionParams
+    );
     const resolved: {
       resolvedCompositeActionDefinition: CompositeActionDefinition;
       resolvedCompositeActionTemplates: Record<string, any>;
     } = resolveCompositeActionTemplate(compositeAction, localActionParams, currentModel);
 
-    log.info("handleCompositeActionTemplate compositeInstanceAction localActionParams", localActionParams);
+    log.info("handleCompositeActionTemplate", actionLabel, "localActionParams", localActionParams);
     log.info(
-      "handleCompositeActionTemplate compositeInstanceAction resolvedCompositeActionDefinition",
-      JSON.stringify(resolved.resolvedCompositeActionDefinition, null, 2)
+      "handleCompositeActionTemplate", actionLabel, "resolvedCompositeActionDefinition",
+      resolved.resolvedCompositeActionDefinition
+      // JSON.stringify(resolved.resolvedCompositeActionDefinition, null, 2)
     );
 
     for (const currentAction of resolved.resolvedCompositeActionDefinition) {
       log.info(
-        "handleCompositeActionTemplate compositeInstanceAction currentAction",
+        "handleCompositeActionTemplate", actionLabel, "currentAction",
         // JSON.stringify(currentAction, null, 2),
+        currentAction.compositeActionStepLabel,
         currentAction,
         // "actionParamsAndTemplates",
         // resolved.actionParamsAndTemplates,
@@ -905,20 +917,22 @@ export class DomainController implements DomainControllerInterface {
       );
       switch (currentAction.compositeActionType) {
         case 'domainAction': {
-          log.info(
-            "handleCompositeActionTemplate compositeInstanceAction action to resolve",
-            JSON.stringify(currentAction.domainAction, null, 2)
-          );
+          // log.info(
+          //   "handleCompositeActionTemplate compositeInstanceAction action to resolve",
+          //   JSON.stringify(currentAction.domainAction, null, 2)
+          // );
           const resolvedActionTemplate: InstanceAction = transformer_extended_apply(
             "runtime",
-            "NO NAME",
+            currentAction.compositeActionStepLabel??"NO NAME",
             currentAction.domainAction as any as TransformerForRuntime, // TODO: correct type
             // resolved.actionParamsAndTemplates,
             localActionParams,
             localContext
           ).elementValue as InstanceAction;
           log.info(
-            "handleCompositeActionTemplate compositeInstanceAction resolved action Template",
+            "handleCompositeActionTemplate compositeInstanceAction",
+            currentAction.compositeActionStepLabel ?? "without step name",
+            "resolved action Template",
             JSON.stringify(resolvedActionTemplate, null, 2)
           );
           // log.info("handleCompositeActionTemplate compositeInstanceAction current model", currentModel);
@@ -944,7 +958,7 @@ export class DomainController implements DomainControllerInterface {
         }
         case 'queryTemplate': {
           log.info(
-            "handleCompositeActionTemplate resolved query action",
+            "handleCompositeActionTemplate", actionLabel, "resolved query action",
             currentAction,
             "with actionParamValues",
             actionParamValues
@@ -954,14 +968,23 @@ export class DomainController implements DomainControllerInterface {
           if (actionResult?.status != "ok") {
             log.error("Error on query", JSON.stringify(actionResult, null, 2));
           } else {
-            log.info("handleCompositeActionTemplate query adding result to context as", currentAction.nameGivenToResult, "value", actionResult);
+            log.info("handleCompositeActionTemplate", actionLabel, "query adding result to context as", currentAction.nameGivenToResult, "value", actionResult);
             localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement.elementValue;
           }
           break;
         }
         default: {
-          log.error("handleCompositeActionTemplate unknown compositeActionType", currentAction);
-          throw new Error("handleCompositeActionTemplate unknown compositeActionType: " +  currentAction.compositeActionType);
+          log.error(
+            "handleCompositeActionTemplate",
+            actionLabel,
+            "unknown compositeActionType",
+            currentAction
+          );
+          throw new Error(
+            "handleCompositeActionTemplate " +
+            actionLabel +
+            " unknown compositeActionType: " + currentAction.compositeActionType
+          );
           break;
         }
       }

@@ -101,9 +101,19 @@ export class ModelEntityActionTransformer{
         const modifiedEntity:EntityInstanceWithName = Object.assign({},currentEntity,{name:modelAction.targetValue});
         const modifiedEntityDefinition:EntityInstanceWithName = Object.assign({},currentEntityDefinition,{name:modelAction.targetValue});
         if (currentEntity && currentEntityDefinition) {
-          const objects:EntityInstanceCollection[] = [
-            {parentName:currentEntity.parentName, parentUuid:currentEntity.parentUuid, applicationSection:'model', instances:[modifiedEntity]},
-            {parentName:currentEntityDefinition.parentName, parentUuid:currentEntityDefinition.parentUuid, applicationSection:'model', instances:[modifiedEntityDefinition]},
+          const objects: EntityInstanceCollection[] = [
+            {
+              parentName: currentEntity.parentName,
+              parentUuid: currentEntity.parentUuid,
+              applicationSection: "model",
+              instances: [modifiedEntity],
+            },
+            {
+              parentName: currentEntityDefinition.parentName,
+              parentUuid: currentEntityDefinition.parentUuid,
+              applicationSection: "model",
+              instances: [modifiedEntityDefinition],
+            },
           ];
           const result: InstanceAction[] = [
             {
@@ -132,28 +142,34 @@ export class ModelEntityActionTransformer{
         log.info("modelActionToLocalCacheInstanceAction alterEntityAttribute found currentEntity ", currentEntity, "currentEntityDefinition", currentEntityDefinition);
         if (currentEntity && currentEntityDefinition) {
           // const localEntityDefinition: EntityDefinition = currentEntityDefinition.returnedDomainElement.elementValue as EntityDefinition;
-          const localEntityJzodSchemaDefinition = modelAction.removeColumns != undefined && Array.isArray(modelAction.removeColumns)?
-            Object.fromEntries(
-              Object.entries(currentEntityDefinition.jzodSchema.definition).filter((i) => modelAction.removeColumns??([] as string[]).includes(i[0]))
-            )
-            : currentEntityDefinition.jzodSchema.definition;
-          const modifiedEntityDefinition: EntityDefinition = Object.assign(
-            {},
-            currentEntityDefinition,
-            {
-              jzodSchema: {
-                type: "object",
-                definition: {
-                  ...localEntityJzodSchemaDefinition,
-                  ...(modelAction.addColumns?Object.fromEntries(modelAction.addColumns.map(c=>[c.name, c.definition])):{})
-                },
+          const localEntityJzodSchemaDefinition =
+            modelAction.removeColumns != undefined && Array.isArray(modelAction.removeColumns)
+              ? Object.fromEntries(
+                  Object.entries(currentEntityDefinition.jzodSchema.definition).filter(
+                    (i) => modelAction.removeColumns ?? ([] as string[]).includes(i[0])
+                  )
+                )
+              : currentEntityDefinition.jzodSchema.definition;
+          const modifiedEntityDefinition: EntityDefinition = Object.assign({}, currentEntityDefinition, {
+            jzodSchema: {
+              type: "object",
+              definition: {
+                ...localEntityJzodSchemaDefinition,
+                ...(modelAction.addColumns
+                  ? Object.fromEntries(modelAction.addColumns.map((c) => [c.name, c.definition]))
+                  : {}),
               },
-            }
-          );
+            },
+          });
     
-          const objects:EntityInstanceCollection[] = [
+          const objects: EntityInstanceCollection[] = [
             // {parentName:currentEntity.parentName, parentUuid:currentEntity.parentUuid, applicationSection:'model', instances:[modifiedEntity]},
-            {parentName:currentEntityDefinition.parentName, parentUuid:currentEntityDefinition.parentUuid, applicationSection:'model', instances:[modifiedEntityDefinition]},
+            {
+              parentName: currentEntityDefinition.parentName,
+              parentUuid: currentEntityDefinition.parentUuid,
+              applicationSection: "model",
+              instances: [modifiedEntityDefinition],
+            },
           ];
           const result: InstanceAction[] = [
             {
