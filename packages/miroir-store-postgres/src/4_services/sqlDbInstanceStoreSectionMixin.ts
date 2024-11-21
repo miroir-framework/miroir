@@ -157,11 +157,12 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           // }
           // );
           // log.info(this.logHeader, "sqlForExtractor", "extractorTemplateForDomainModelObjects", result);
-          if (extractor.parentUuid.transformerType != "constantUuid") {
+          if (extractor.parentName == undefined) {
             throw new Error(
               "sqlForExtractor can not handle queryTemplateType for extractor" + JSON.stringify(extractor)
             );
           }
+          // const parentUuid = 
           // TODO: use queryGenerator?
           return `SELECT * FROM "${this.schema}"."${extractor.parentName}"`;
           // return result;
