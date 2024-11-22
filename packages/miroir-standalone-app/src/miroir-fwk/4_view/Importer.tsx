@@ -323,12 +323,6 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     };
 
     // ############################################################################################
-    // beginning of composite action
-    // create new Entity
-    // const newEntityDefinitionUuid: string = uuidv4();
-    // const newEntityDetailsReportUuid: string = uuidv4();
-    // const newEntityListReportUuid: string = uuidv4();
-
     const actionEffectiveParamsCreateEntity /** parsed by actionHandlerCreateEntity.interface.actionJzodObjectSchema */ = {
       currentApplicationName: "Paris",
       currentApplicationUuid: props.currentApplicationUuid,
@@ -337,7 +331,6 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       createEntity_newEntityDescription: createEntity_newEntityDescription,
       createEntity_newEntityUuid: newEntityUuid,
       createEntity_newEntityDefinitionUuid: newEntityDefinitionUuid,
-      // createEntity_newEntityDefinitionUuid: uuidv4(),
       createEntity_newEntityDetailsReportUuid: uuidv4(),
       createEntity_newEntityListReportUuid: uuidv4(),
       adminConfigurationDeploymentParis,
@@ -847,14 +840,6 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       actionHandlerCreateFountainEntity,
       actionEffectiveParamsCreateEntity,
     }
-    // const createFountainEntityResult = await domainController.handleCompositeActionTemplate(
-    //   actionHandlerCreateFountainEntity,
-    //   actionEffectiveParamsCreateEntity,
-    //   props.currentModel
-    // );
-
-    log.info('createEntity DONE adding instances');
-    log.info("createEntity updated miroirMenu DONE");
   }
 
   // ##############################################################################################
@@ -874,37 +859,16 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     actionSplitFountainEntity: CompositeActionTemplate,
     actionSplitFountainEntityParams: Record<string, any>,
   } => {
-    // const splittedEntityName = "Fountain"
-    // const splittedEntityAttribute = "Commune"
-    // const newEntityUuid = "f6de3d66-37ee-42ac-bb81-72973222f006";
-    // const newEntityName = "Municipality";
     const newEntityDescription = "Municipalities";
-    // const newEntityUuid = uuidv4();
-    const currentApplicationUuid = props.currentApplicationUuid;
+    // const currentApplicationUuid = props.currentApplicationUuid;
     const currentDeploymentUuid = props.currentDeploymentUuid;
     const splitEntity_newEntityDetailsReportUuid: string = uuidv4();
-    // const menuUuid: string = "eaac459c-6c2b-475c-8ae4-c6c3032dae00";
-    const menuUuid: string = "dd168e5a-2a21-4d2d-a443-032c6d15eb22";
-
-    // const splittedEntityDefinition = props.currentModel.entityDefinitions.find(e=>e.name == splittedEntityName)
-
-    // log.info("splitEntity started for", splittedEntityName, splittedEntityDefinition, "props", props)
-
-    // if (!splittedEntityDefinition?.entityUuid) {
-    //   throw new Error("splitEntity found definition with undefined entityUuid " + JSON.stringify(splittedEntityDefinition));
-    // }
+    // const menuUuid: string = "dd168e5a-2a21-4d2d-a443-032c6d15eb22";
 
     const pageParams = {
       deploymentUuid: currentDeploymentUuid,
       applicationSection: "data",
     };
-    // const pageParams: DomainElementObject = {
-    //   elementType: "object",
-    //   elementValue: {
-    //     deploymentUuid: { elementType: "string", elementValue: currentDeploymentUuid },
-    //     applicationSection: { elementType: "string", elementValue: "data" },
-    //   },
-    // };
 
     const actionSplitFountainEntityParams = {
       currentApplicationUuid: props.currentApplicationUuid,
@@ -1334,12 +1298,6 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         },
       ],
     };
-
-    // const splitFountainEntityResult = await domainController.handleCompositeActionTemplate(
-    //   splitFountainEntity,
-    //   actionSplitFountainEntityParams,
-    //   props.currentModel
-    // );
 
     const actionInsertMunicipalitiesParams: Record<string, any> = {
       currentApplicationUuid: props.currentApplicationUuid,
@@ -1790,18 +1748,6 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         currentModel: props.currentModel,
       }
     }
-    // const actionInsertMunicipalitiesResult = await domainController.handleCompositeActionTemplate(
-    //   actionInsertMunicipalities,
-    //   actionInsertMunicipalitiesParams,
-    //   props.currentModel
-    // );
-    // log.info("#################################### splitEntity DONE");
-
-    // if (actionInsertMunicipalitiesResult.status != "ok") {
-    //   throw new Error("splitEntity found actionInsertMunicipalities with error " + actionInsertMunicipalitiesResult.error);
-    // }
-    // log.info("splitEntity updated miroirMenu DONE");
-    
   } // end splitEntity
 
   // ##############################################################################################
@@ -2293,15 +2239,6 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           actionCreateSchemaParamValues.newAdminAppApplicationUuid,
         );
 
-        // const paramsAsDomainElementObject:DomainElementObject = plainObjectToDomainElement(actionCreateSchemaParamValues) as DomainElementObject;
-
-        // const paramsWithTemplates: DomainElementObject = {
-        //   elementType: "object",
-        //   elementValue: {
-        //     ...paramsAsDomainElementObject.elementValue,
-        //     ...Object.fromEntries(Object.entries(actionHandlerCreateApplication.implementation.templates as any).map((e => [e[0],{elementType: "object", elementValue: e[1]}] )) as any),
-        //   }
-        // }
         const paramsForTemplates = { 
           ...actionCreateSchemaParamValues,
           entityApplicationForAdmin,
@@ -2317,14 +2254,6 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           paramsForTemplates
         );
 
-        // const createNewApplicationResult = await domainController.handleCompositeActionTemplate(
-        //   createNewApplication,
-        //   paramsForTemplates,
-        //   currentModel
-        // );
-        // log.info("store opened with uuid", actionCreateSchemaParamValues.newDeploymentUuid)
-
-        // log.info("created Deployment instance in Admin App deployment")
         const entityFountainUuid = uuidv4();
         const entityFountainName = "Fountain";
         const entityFountainDescription = "Drinking Fountains of Paris";
@@ -2339,14 +2268,6 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           entityFountainDefinitionUuid
         );
 
-        // const splittedEntityDefinition = props.currentModel.entityDefinitions.find(e=>e.name == entityFountainName)
-
-        // log.info("splitEntity going on for", entityFountainName, splittedEntityDefinition, "props", props)
-
-        // if (!splittedEntityDefinition?.entityUuid) {
-        //   throw new Error("splitEntity found definition with undefined entityUuid " + JSON.stringify(splittedEntityDefinition));
-        // }
-
         const {
           actionSplitFountainEntity,
           actionSplitFountainEntityParams,
@@ -2359,12 +2280,6 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           entityMunicipalityName,
         );
 
-        // const createFountainEntityResult = await domainController.handleCompositeActionTemplate(
-        //   actionHandlerCreateFountainEntity,
-        //   actionEffectiveParamsCreateEntity,
-        //   props.currentModel
-        // );
-    
         const createApplicationAndCreateEntityAndSplitEntity: CompositeActionTemplate = {
           actionType: "compositeAction",
           actionName: "sequence",
@@ -2394,8 +2309,6 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         );
 
         log.info("created Entity instance in Admin App deployment")
-
-
       } catch (e) {
         log.error(e)
         //  Map and show the errors in your form

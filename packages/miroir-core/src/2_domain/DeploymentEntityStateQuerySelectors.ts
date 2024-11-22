@@ -103,10 +103,18 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorRunner<
         selectorParams.extractor.queryParams,
         selectorParams.extractor.contextResults
       );
-    
-      if (
-        !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
-      ) {
+
+      if (referenceObject.elementType == "failure") {
+        return {
+          elementType: "failure",
+          elementValue: {
+            queryFailure: "ReferenceNotFound",
+            queryContext: "selectEntityInstanceFromDeploymentEntityState combinerForObjectByRelation " + JSON.stringify(referenceObject),
+          },
+        };
+        
+      }
+      if (!querySelectorParams.AttributeOfObjectToCompareToReferenceUuid) {
         log.error(
           "selectEntityInstanceFromDeploymentEntityState combinerForObjectByRelation, querySelectorParams",
           querySelectorParams,
@@ -303,49 +311,6 @@ export const selectEntityInstanceListFromDeploymentEntityState: SyncExtractorRun
   if (result.elementType == "failure") {
     return result;
   }
-  // const deploymentUuid = selectorParams.extractor.deploymentUuid;
-  // const applicationSection = selectorParams.extractor.select.applicationSection ?? "data";
-
-  // const entityUuid = selectorParams.extractor.select.parentUuid;
-
-  // log.info(
-  //   "selectEntityInstanceUuidIndexFromDeploymentEntityState params",
-  //   selectorParams,
-  //   deploymentUuid,
-  //   applicationSection,
-  //   entityUuid
-  // );
-  // log.info("selectEntityInstanceUuidIndexFromDeploymentEntityState deploymentEntityState", deploymentEntityState);
-
-  // const deploymentEntityStateIndex = getDeploymentEntityStateIndex(
-  //   deploymentUuid,
-  //   applicationSection,
-  //   entityUuid
-  // );
-  // if (!deploymentEntityState[deploymentEntityStateIndex]) {
-  //   log.warn(
-  //     "selectEntityInstanceUuidIndexFromDeploymentEntityState could not find index",
-  //     deploymentEntityStateIndex,
-  //     "in deploymentEntityState",
-  //     deploymentEntityState
-  //   );
-  //   return {
-  //     elementType: "failure",
-  //     elementValue: {
-  //       queryFailure: "EntityNotFound",
-  //       deploymentUuid,
-  //       applicationSection,
-  //       entityUuid: entityUuid,
-  //     },
-  //   };
-  // }
-
-  // log.info(
-  //   "selectEntityInstanceUuidIndexFromDeploymentEntityState for",
-  //   deploymentEntityStateIndex,
-  //   "result",
-  //   deploymentEntityState[deploymentEntityStateIndex].entities
-  // );
   return {
     elementType: "instanceArray",
     elementValue: Object.values(result.elementValue),

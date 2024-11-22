@@ -91,7 +91,8 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams<Tabl
         // Object.keys(props.data?.foreignKeyObjects??{})
         JSON.stringify(props.data?.foreignKeyObjects??{}) +
         " entity definition " + 
-        JSON.stringify(props.colDef?.cellRendererParams.entityDefinition, null, 2)
+        JSON.stringify(props.colDef?.cellRendererParams.entityDefinition, null, 2) +
+        " deploymentUuid " + props.data?.deploymentUuid
     ); 
   }
   
@@ -100,7 +101,8 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams<Tabl
       "EntityInstanceCellRenderer no foreign key uuid found for attribute '" +
         attributeName +
         "' on raw value " +
-        JSON.stringify(props.data?.rawValue)
+        JSON.stringify(props.data?.rawValue) +
+        " deploymentUuid " + props.data?.deploymentUuid
     ); 
   }
 
@@ -111,7 +113,10 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams<Tabl
         " on raw value " +
         JSON.stringify(props.data?.rawValue) +
         " target entity uuid " + entityUuid + 
-        " target object uuid " + (props.data?.rawValue as any)[attributeName]
+        " target object uuid " + (props.data?.rawValue as any)[attributeName] +
+        " deploymentUuid " + props.data?.deploymentUuid +
+        " foreign key instances " +
+        Object.keys(props.data?.foreignKeyObjects[entityUuid]??{})
     ); 
   }
 

@@ -270,9 +270,9 @@ export const ReportView = (props: ReportViewProps) => {
     "props.reportSection?.combinerTemplates",
     props.reportDefinition?.combinerTemplates,
     "props.reportSection?.runtimeTransformers",
-    props.reportDefinition?.runtimeTransformers
-    // "props.deploymentEntityStateQueryResults",
-    // deploymentEntityStateQueryTemplateResults,
+    props.reportDefinition?.runtimeTransformers,
+    "deploymentEntityStateQueryResults",
+    deploymentEntityStateQueryResults,
   );
   log.info("ReportView props.reportSection", props.reportDefinition);
 

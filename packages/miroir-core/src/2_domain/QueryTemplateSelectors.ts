@@ -115,7 +115,14 @@ export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <
       break;
     }
     default: {
-      return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } };
+      return {
+        elementType: "failure",
+        elementValue: {
+          queryFailure: "QueryNotExecutable",
+          failureMessage:
+            "extractWithExtractorTemplate could not handle queryType of template: " + selectorParams.extractorTemplate,
+        },
+      }; 
       break;
     }
   }

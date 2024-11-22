@@ -271,6 +271,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const tableColumnDefs: { columnDefs: ColDef<any>[] } = useMemo(
     () => ({
       columnDefs: getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(
+        props.deploymentUuid,
         instancesToDisplayJzodSchema??{type:"object", definition:{}},
         instancesToDisplayViewAttributes,
         currentReportTargetEntityDefinition
@@ -327,15 +328,41 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           contextResults: {},
           extractors: Object.fromEntries(
             foreignKeyObjectsAttributeDefinition.map((e) => [
-              e[1].tag?.value?.targetEntity,
+              e[1].tag?.value?.targetEntity + "_extractor",
               {
                 queryType: "extractorForObjectListByEntity",
-                applicationSection: getApplicationSection(props.deploymentUuid,e[1].tag?.value?.targetEntity??"undefined"),
+                applicationSection: getApplicationSection(
+                  props.deploymentUuid,
+                  e[1].tag?.value?.targetEntity ?? "undefined"
+                ),
                 parentName: "",
-                parentUuid: e[1].tag?.value?.targetEntity
+                parentUuid: e[1].tag?.value?.targetEntity,
               },
             ])
           ) as any,
+          runtimeTransformers: {
+            ...Object.fromEntries(
+              foreignKeyObjectsAttributeDefinition.map((e) => [
+                e[1].tag?.value?.targetEntity + "_array",
+                {
+                  transformerType: "objectValues",
+                  interpolation: "runtime",
+                  referencedExtractor: e[1].tag?.value?.targetEntity + "_extractor",
+                },
+              ])
+            ),
+            ...Object.fromEntries(
+              foreignKeyObjectsAttributeDefinition.map((e) => [
+                e[1].tag?.value?.targetEntity,
+                {
+                  transformerType: "mapperListToObject",
+                  interpolation: "runtime",
+                  referencedExtractor: e[1].tag?.value?.targetEntity + "_array",
+                  indexAttribute: "uuid"
+                },
+              ])
+            ),
+          } as any,
         },
         deploymentEntityStateSelectorMap
       ),
@@ -347,6 +374,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       props.tableComponentReportType,
     ]
   );
+  log.info("ReportSectionListDisplay foreignKeyObjectsFetchQueryParams", JSON.stringify(foreignKeyObjectsFetchQueryParams, null, 2));
 
   const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
   useDeploymentEntityStateQuerySelectorForCleanedResult(

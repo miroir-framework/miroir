@@ -39,10 +39,7 @@
       "author": {
         "queryType": "combinerForObjectByRelation",
         "parentName": "Author",
-        "parentUuid": {
-          "transformerType": "constantUuid",
-          "constantUuidValue": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
-        },
+        "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
         "objectReference": {
           "transformerType": "contextReference",
           "interpolation": "runtime",

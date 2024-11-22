@@ -94,6 +94,7 @@ export const MTableComponent = (props: TableComponentProps) => {
             : 0
         )
         .map((i: EntityInstance) => ({
+          deploymentUuid: contextDeploymentUuid,
           rawValue: i,
           foreignKeyObjects: props.foreignKeyObjects,
           jzodSchema:

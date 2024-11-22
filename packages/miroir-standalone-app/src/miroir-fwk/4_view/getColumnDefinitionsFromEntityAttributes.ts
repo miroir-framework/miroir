@@ -4,22 +4,19 @@ import { ColDef } from "ag-grid-community";
 import {
   EntityDefinition,
   JzodElement,
-  JzodObject,
   LoggerInterface,
   MiroirLoggerFactory,
-  entityAuthor,
-  entityPublisher,
-  getLoggerName,
+  getLoggerName
 } from "miroir-core";
 
+import { packageName } from "../../constants.js";
+import { EntityInstanceCellRenderer } from "./components/EntityInstanceCellRenderer.js";
 import { GenderCellEditor } from "./components/GenderCellEditor.js";
+import GenderCellRenderer from "./components/GenderCellRenderer.js";
 import {
   DefaultCellRenderer,
 } from "./components/SelectEntityInstanceEditor.js";
-import GenderCellRenderer from "./components/GenderCellRenderer.js";
-import { packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
-import { EntityInstanceCellRenderer } from "./components/EntityInstanceCellRenderer.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"getColumnDefinitionsFromEntityDefinitionAttribute");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -29,6 +26,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 // ################################################################################################
 export function getColumnDefinitionsFromEntityDefinitionAttribute(
+  deploymentUuid: string, // prop drilling
   name: string,
   jzodSchema: JzodElement,
   // jzodObjectSchema?: JzodObject,
@@ -48,6 +46,7 @@ export function getColumnDefinitionsFromEntityDefinitionAttribute(
       //   entityUuid: jzodSchema?.tag?.value?.targetEntity,
       // },
       cellRendererParams: {
+        deploymentUuid,
         isFK: true,
         entityUuid: jzodSchema?.tag?.value?.targetEntity,
         entityDefinition
@@ -94,6 +93,7 @@ export function getColumnDefinitionsFromEntityDefinitionAttribute(
         //   entityUuid: entityDefinition?.uuid??"",
         // },
         cellRendererParams: {
+          deploymentUuid,
           entityUuid: entityDefinition?.entityUuid??"",
           entityDefinition
         },
@@ -123,6 +123,7 @@ export function getColumnDefinitionsFromEntityDefinitionAttribute(
         field: name,
         cellRenderer: DefaultCellRenderer,
         cellRendererParams: {
+          deploymentUuid,
           columnName: name,
         },
         headerName: jzodSchema.tag?.value?.defaultLabel ? jzodSchema.tag?.value?.defaultLabel : name,
@@ -135,6 +136,7 @@ export function getColumnDefinitionsFromEntityDefinitionAttribute(
 
 // ################################################################################################
 export function getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(
+  deploymentUuid: string,
   jzodSchema: JzodElement | undefined,
   viewAttributes?: string[],
   entityDefinition?: EntityDefinition | undefined
@@ -148,18 +150,17 @@ export function getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(
             .filter((a: string) => [a, schemaKeys.find((b) => b == a)])
             .map((a: string) =>
               getColumnDefinitionsFromEntityDefinitionAttribute(
+                deploymentUuid,
                 a,
                 jzodSchema.definition[a],
-                // jzodSchema as JzodObject,
                 entityDefinition
               )
             );
         } else {
           return (
             Object.entries(jzodSchema.definition ? jzodSchema.definition : {})
-              // ?.filter((e: [string, any]) => viewAttributes == undefined || viewAttributes.includes(e[0]))
               .map((e: [string, any]) =>
-                getColumnDefinitionsFromEntityDefinitionAttribute(e[0], e[1], entityDefinition)
+                getColumnDefinitionsFromEntityDefinitionAttribute(deploymentUuid, e[0], e[1], entityDefinition)
               )
           );
         }

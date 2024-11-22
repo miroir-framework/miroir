@@ -77,7 +77,13 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
 
   switch (props.resolvedElementJzodSchema.type) {
     case "array": {
-      const columnDefs:any[]=[getColumnDefinitionsFromEntityDefinitionAttribute(props.name,props.resolvedElementJzodSchema.definition)];
+      const columnDefs: any[] = [
+        getColumnDefinitionsFromEntityDefinitionAttribute(
+          props.deploymentUuid??"",
+          props.name,
+          props.resolvedElementJzodSchema.definition
+        ),
+      ];
       log.info("JzodElementDisplay array","targetJzodSchema",targetJzodSchema,"columnDefs",columnDefs,"props.element",props.element);
       
       return (

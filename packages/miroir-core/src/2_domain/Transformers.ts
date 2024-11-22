@@ -883,6 +883,10 @@ export function innerTransformer_apply(
         );
         return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
       }
+      log.info(
+        "innerTransformer_apply extractorTransformer objectValues resolvedReference",
+        resolvedReference
+      );
       return { elementType: "instanceArray", elementValue: Object.values(resolvedReference.elementValue) };
     }
     case "mapperListToList": {

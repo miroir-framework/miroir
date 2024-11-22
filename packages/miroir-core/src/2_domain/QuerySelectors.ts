@@ -346,7 +346,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
       const relationQuery: CombinerForObjectListByManyToManyRelation = extractor.select;
 
       // relationQuery.objectListReference is a queryContextReference
-      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerForObjectListByManyToManyRelation", selectedInstances)
+      // log.info("applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerForObjectListByManyToManyRelation", selectedInstances)
       let otherList: Record<string, any> | undefined = undefined
       otherList = ((extractor.contextResults[
         relationQuery.objectListReference
@@ -362,9 +362,9 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
               const otherListAttribute = relationQuery.objectListReferenceAttribute ?? "uuid";
               const rootListAttribute = relationQuery.AttributeOfRootListObjectToCompareToListReferenceUuid ?? "uuid";
   
-              if (typeof otherList == "object" && !Array.isArray(otherList)) {
+              if (typeof otherList == "object") {
                 // log.info(
-                //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerForObjectListByManyToManyRelation search otherList for attribute",
+                //   "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerForObjectListByManyToManyRelation search otherList for attribute",
                 //   otherListAttribute,
                 //   "on object",
                 //   selectedInstancesEntry[1],
@@ -373,15 +373,27 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
                 //   "otherList",
                 //   otherList
                 // );
-                const result =
-                Object.values(otherList).findIndex(
-                  (v: any) => v[otherListAttribute] == (selectedInstance as any)[rootListAttribute]
-                ) >= 0;
-                return result;
+                if (!Array.isArray(otherList)) {
+                  const result =
+                    Object.values(otherList).findIndex(
+                      (v: any) => v[otherListAttribute] == (selectedInstance as any)[rootListAttribute]
+                    ) >= 0;
+                  return result;
+                } else {
+                  const result =
+                    otherList.findIndex(
+                      (v: any) => v[otherListAttribute] == (selectedInstance as any)[rootListAttribute]
+                    ) >= 0;
+                  return result;
+                }
               } else {
                 throw new Error(
-                  "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerForObjectListByManyToManyRelation can not use objectListReference, selectedInstances elementType=" +
-                  selectedInstancesList.elementType + " other list elementType=" + JSON.stringify(otherList,undefined,2)
+                  "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerForObjectListByManyToManyRelation can not use objectListReference, selectedInstances elementType=" +
+                    selectedInstancesList.elementType +
+                    " typeof otherList=" +
+                    typeof otherList +
+                    " other list=" +
+                    JSON.stringify(otherList, undefined, 2)
                 );
               }
             }
@@ -390,14 +402,14 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
         } as DomainElementInstanceArray;
       } else {
         throw new Error(
-          "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerForObjectListByManyToManyRelation could not find list for objectListReference, selectedInstances elementType=" +
+          "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerForObjectListByManyToManyRelation could not find list for objectListReference, selectedInstances elementType=" +
             selectedInstancesList.elementType
         );
       }
     }
     default: {
       throw new Error(
-        "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory could not handle query, selectorParams=" +
+        "applyExtractorForSingleObjectListToSelectedInstancesListInMemory could not handle query, selectorParams=" +
           JSON.stringify(extractor.select, undefined, 2)
       );
       break;
@@ -518,7 +530,13 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
               } else {
                 throw new Error(
                   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerForObjectListByManyToManyRelation can not use objectListReference, selectedInstances elementType=" +
-                  selectedInstancesUuidIndex.elementType + " other list elementType=" + JSON.stringify(otherList,undefined,2)
+                    selectedInstancesUuidIndex.elementType +
+                    " typeof otherList=" +
+                    typeof otherList +
+                    " otherList is array " +
+                    Array.isArray(otherList) +
+                    " other list=" +
+                    JSON.stringify(otherList, undefined, 2)
                 );
               }
             }
@@ -691,7 +709,7 @@ export function innerSelectElementFromQuery/*ExtractorTemplateRunner*/<StateType
       });
       break;
     }
-    // case "combinerForObjectByRelation":
+    case "combinerForObjectByRelation":
     case "extractorForObjectByDirectReference": {
       return extractorRunnerMap.extractEntityInstance(state, {
         extractorRunnerMap,
@@ -841,7 +859,14 @@ export function innerSelectElementFromQuery/*ExtractorTemplateRunner*/<StateType
       break;
     }
     default: {
-      return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable", query: JSON.stringify(query) } } as DomainElementFailed;
+      return {
+        elementType: "failure",
+        elementValue: {
+          queryFailure: "QueryNotExecutable",
+          query: JSON.stringify(query),
+          failureMessage: "unsupported queryType for query: " + query,
+        },
+      } as DomainElementFailed;
       break;
     }
   }
@@ -987,7 +1012,14 @@ export const extractWithManyExtractors = <StateType>(
     }
     context[transformerForRuntime[0]] = result.elementValue; // does side effect!
     // context.elementValue[transformerForRuntime[0]] = result; // does side effect!
-    // log.info("extractWithManyExtractors done for entry", entry[0], "query", entry[1], "result=", result);
+    log.info(
+      "extractWithManyExtractors done for transformerForRuntime",
+      transformerForRuntime[0],
+      "transformerForRuntime",
+      transformerForRuntime[1],
+      "result=",
+      result
+    );
   }
 
   // log.info(

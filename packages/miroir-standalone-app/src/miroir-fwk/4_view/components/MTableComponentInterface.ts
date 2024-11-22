@@ -65,6 +65,7 @@ export type TableComponentProps = z.infer<typeof TableComponentPropsSchema>;
 
 export const tableComponentRowSchema = z.object({
   displayedValue: z.any(),
+  deploymentUuid: z.string().uuid(),
   rawValue: entityInstance,
   jzodSchema: z.record(jzodElement),
   foreignKeyObjects: z.record(entityInstancesUuidIndex)

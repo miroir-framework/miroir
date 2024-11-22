@@ -97,22 +97,6 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
       entityUuidReference
     );
 
-    // if (entityUuidReference.elementType != "string" && entityUuidReference.elementType != "instanceUuid") {
-    //   return {
-    //     elementType: "failure",
-    //     elementValue: {
-    //       queryFailure: "IncorrectParameters",
-    //       queryReference: JSON.stringify(querySelectorParams.parentUuid),
-    //     },
-    //   };
-    // }
-
-    // const index = getDeploymentEntityStateIndex(
-    //   deploymentUuid,
-    //   applicationSection,
-    //   entityUuidReference.elementValue
-    // )
-
     switch (querySelectorParams?.queryType) {
       case "combinerForObjectByRelation": {
         // TODO: we assume this ia a constant, get rid of resolution altogether (push it up)
@@ -125,8 +109,6 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
   
         if (
           !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
-          // ||
-          // referenceObject.elementType != "instance"
         ) {
           return {
             elementType: "failure",
@@ -139,7 +121,6 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
         }
 
         const result = await this.persistenceStoreController.getInstance(
-          // applicationSection,
           entityUuidReference,
           (referenceObject.elementValue as any)[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
         );
