@@ -3,11 +3,17 @@ import adminConfigurationDeploymentLibrary from "../../assets/admin_data/7959d81
 import { DomainState } from "../../0_interfaces/2_domain/DomainControllerInterface";
 
 import {
+  DomainElement,
+  ExtractorForDomainModelObjects,
+  ExtractorForRecordOfExtractors,
   ExtractorTemplateForRecordOfExtractors
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { SyncExtractorRunner } from "../../0_interfaces/2_domain/ExtractorRunnerInterface";
+import { extractWithExtractorFromDomainState, getSelectorParams } from "../../2_domain/DomainStateQuerySelectors";
 import {
+  ExtractWithExtractorFromDomainStateForTemplate,
   extractWithExtractorFromDomainStateForTemplate,
-  getSelectorParamsForTemplateOnDomainState,
+  getSelectorParamsForTemplateOnDomainState
 } from "../../2_domain/DomainStateQueryTemplateSelector";
 import { resolvePathOnObject } from "../../tools";
 import domainStateImport from "./domainState.json";
@@ -15,17 +21,34 @@ import domainStateImport from "./domainState.json";
 const domainState: DomainState = domainStateImport as DomainState;
 
 export interface TestExtractorParams {
-  queryParam: ExtractorTemplateForRecordOfExtractors,
-  testsOnResult: Record<string, {
-    resultAccessPath?: string[],
-    expectedResult: any,
-  }>,
+  queryTemplateParam?: ExtractorTemplateForRecordOfExtractors;
+  queryTemplateFunction?: ExtractWithExtractorFromDomainStateForTemplate;
+  queryParam?: ExtractorForRecordOfExtractors;
+  queryFunction?: SyncExtractorRunner<
+    ExtractorForDomainModelObjects | ExtractorForRecordOfExtractors,
+    DomainState,
+    DomainElement
+  >;
+  // queryFunction?: (
+  //   domainState: DomainState,
+  //   extractorAndParams: SyncExtractorRunnerParams<
+  //     ExtractorForRecordOfExtractors | ExtractorForDomainModelObjects,
+  //     DomainState
+  //   >
+  // ) => DomainElement;
+  testsOnResult: Record<
+    string,
+    {
+      resultAccessPath?: string[];
+      expectedResult: any;
+    }
+  >;
 }
 
 const testExtractorParams: Record<string, TestExtractorParams> = {
   // ###########################################################################################
   "error on non-existing Entity: EntityNotFound": {
-    queryParam: {
+    queryTemplateParam: {
       queryType: "extractorTemplateForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -46,6 +69,23 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
+    queryTemplateFunction: extractWithExtractorFromDomainStateForTemplate,
+    queryParam:{
+      queryType: "extractorForRecordOfExtractors",
+      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      contextResults: {},
+      pageParams: { },
+      queryParams: { },
+      extractors: {
+        book: {
+          queryType: "extractorForObjectByDirectReference",
+          parentName: "Book",
+          parentUuid: "XXXXXX",
+          instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+        },
+      },
+    },
+    queryFunction: extractWithExtractorFromDomainState,
     testsOnResult: {
       "test1": {
         expectedResult: {
@@ -66,7 +106,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     }
   },
   "error on non-existing object uuid: InstanceNotFound": {
-    queryParam: {
+    queryTemplateParam: {
       queryType: "extractorTemplateForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -87,6 +127,23 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
+    queryTemplateFunction: extractWithExtractorFromDomainStateForTemplate,
+    queryParam: {
+      queryType: "extractorForRecordOfExtractors",
+      "deploymentUuid": adminConfigurationDeploymentLibrary.uuid,
+      contextResults: {},
+      pageParams: { },
+      queryParams: { },
+      "extractors": {
+        "book": {
+          queryType: "extractorForObjectByDirectReference",
+          parentName: "Book",
+          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          instanceUuid: "XXXXXXXXX"
+        }
+      }
+    },
+    queryFunction: extractWithExtractorFromDomainState,
     testsOnResult: {
       "test1": {
         expectedResult: {
@@ -108,7 +165,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     }
   },
   "select 1 object from Domain State": {
-    queryParam: {
+    queryTemplateParam: {
       queryType: "extractorTemplateForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -129,6 +186,23 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
+    queryTemplateFunction: extractWithExtractorFromDomainStateForTemplate,
+    queryParam: {
+      queryType: "extractorForRecordOfExtractors",
+      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      contextResults: {},
+      pageParams: {},
+      queryParams: {},
+      extractors: {
+        book: {
+          queryType: "extractorForObjectByDirectReference",
+          parentName: "Book",
+          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+        },
+      },
+    },
+    queryFunction: extractWithExtractorFromDomainState,
     testsOnResult: {
       "test1": {
         expectedResult: {
@@ -143,7 +217,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     }
   },
   "select 1 object from Domain State using context reference": {
-    queryParam: {
+    queryTemplateParam: {
       queryType: "extractorTemplateForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -170,6 +244,29 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
+    queryTemplateFunction: extractWithExtractorFromDomainStateForTemplate,
+    queryParam: {
+      queryType: "extractorForRecordOfExtractors",
+      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      contextResults: {},
+      pageParams: { },
+      queryParams: { },
+      extractors: {
+        book: {
+          queryType: "extractorForObjectByDirectReference",
+          parentName: "Book",
+          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+        },
+      },
+      combiners: {
+        book2: {
+          queryType: "queryContextReference",
+          queryReference: "book",
+        },
+      },
+    },
+    queryFunction: extractWithExtractorFromDomainState,
     testsOnResult: {
       "test1": {
         expectedResult:
@@ -179,9 +276,9 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         resultAccessPath: ["elementValue", "book2"],
       }
     }
-  } as any, // TODO: correct type of the expected result
+  },
   "select 1 object from Domain State using direct query parameter reference": {
-    queryParam: {
+    queryTemplateParam: {
       queryType: "extractorTemplateForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -202,6 +299,25 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
+    queryTemplateFunction: extractWithExtractorFromDomainStateForTemplate,
+    queryParam: {
+      queryType: "extractorForRecordOfExtractors",
+      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      contextResults: { },
+      pageParams: { },
+      queryParams: { wantedBookUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f" },
+      extractors: {
+        book: {
+          queryType: "extractorForObjectByDirectReference",
+          parentName: "Book",
+          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+        }
+      },
+      runtimeTransformers: {
+      },
+    },
+    queryFunction: extractWithExtractorFromDomainState,
     testsOnResult: {
       "test1": {
         expectedResult: 
@@ -211,9 +327,9 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         resultAccessPath: ["elementValue", "book"],
       }
     }
-  } as any, // TODO: correct type of the expected result
+  },
   "select 1 object from the uuid found in an attribute of another object from Domain State": {
-    queryParam: {
+    queryTemplateParam: {
       queryType: "extractorTemplateForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -250,6 +366,34 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
+    queryTemplateFunction: extractWithExtractorFromDomainStateForTemplate,
+    queryParam: {
+      queryType: "extractorForRecordOfExtractors",
+      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      contextResults: {},
+      pageParams: {},
+      queryParams: {},
+      extractors: {
+        book: {
+          queryType: "extractorForObjectByDirectReference",
+          parentName: "Book",
+          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+        },
+      },
+      combiners: {
+        publisher: {
+          queryType: "combinerForObjectByRelation",
+          parentName: "Publisher",
+          parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
+          objectReference: "book",
+          AttributeOfObjectToCompareToReferenceUuid: "publisher",
+        },
+      },
+      runtimeTransformers: {
+      },
+    },
+    queryFunction: extractWithExtractorFromDomainState,
     testsOnResult: {
       "test1": {
         expectedResult:
@@ -259,9 +403,9 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         resultAccessPath: ["elementValue", "publisher"],
       }
     }
-  } as any, // TODO: correct type of the expected result
+  },
   "select Authors": {
-    queryParam: {
+    queryTemplateParam: {
       queryType: "extractorTemplateForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -287,6 +431,32 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
       runtimeTransformers: {},
     },
+    queryTemplateFunction: extractWithExtractorFromDomainStateForTemplate,
+    queryParam: {
+      queryType: "extractorForRecordOfExtractors",
+      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      contextResults: {},
+      pageParams: {
+        elementType: "object",
+        elementValue: {
+          applicationSection: {
+            elementType: "string",
+            elementValue: "data",
+          },
+        },
+      },
+      queryParams: { },
+      extractors: {
+        authors: {
+          queryType: "extractorForObjectListByEntity",
+          parentName: "Author",
+          parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+        },
+      },
+      runtimeTransformers: {
+      },
+    },
+    queryFunction: extractWithExtractorFromDomainState,
     testsOnResult: {
       "test1": {
         expectedResult: Object.values({
@@ -322,7 +492,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     }
   },
   "select Authors with filter": {
-    queryParam: {
+    queryTemplateParam: {
       queryType: "extractorTemplateForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -354,6 +524,34 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
+    queryTemplateFunction: extractWithExtractorFromDomainStateForTemplate,
+    queryParam: {
+      queryType: "extractorForRecordOfExtractors",
+      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      contextResults: {},
+      pageParams: {
+        elementType: "object",
+        elementValue: {
+          applicationSection: {
+            elementType: "string",
+            elementValue: "data",
+          },
+        },
+      },
+      queryParams: { },
+      extractors: {
+        authors: {
+          queryType: "extractorForObjectListByEntity",
+          parentName: "Author",
+          parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+          filter: {
+            attributeName: "name",
+            value: "or",
+          },
+        },
+      },
+    },
+    queryFunction: extractWithExtractorFromDomainState,
     testsOnResult: {
       "test1": {
         expectedResult: Object.values({
@@ -376,7 +574,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     }
   },
   "select Books of Publisher of given Book from Domain State": {
-    queryParam: {
+    queryTemplateParam: {
       queryType: "extractorTemplateForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -437,6 +635,49 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       runtimeTransformers: {
       },
     },
+    queryTemplateFunction: extractWithExtractorFromDomainStateForTemplate,
+    queryParam: {
+      queryType: "extractorForRecordOfExtractors",
+      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      contextResults: {},
+      pageParams: {
+        elementType: "object",
+        elementValue: {
+          applicationSection: {
+            elementType: "string",
+            elementValue: "data",
+          },
+        },
+      },
+      queryParams: { },
+      extractors: {
+        book: {
+          queryType: "extractorForObjectByDirectReference",
+          parentName: "Book",
+          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+        },
+      },
+      combiners: {
+        publisher: {
+          queryType: "combinerForObjectByRelation",
+          parentName: "Publisher",
+          parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
+          objectReference: "book",
+          AttributeOfObjectToCompareToReferenceUuid: "publisher",
+        },
+        booksOfPublisher: { //join with only constant references
+          queryType: "combinerForObjectListByRelation",
+          parentName: "Book",
+          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          objectReference: "publisher",
+          AttributeOfListObjectToCompareToReferenceUuid: "publisher",
+        },
+      },
+      runtimeTransformers: {
+      },
+    },
+    queryFunction: extractWithExtractorFromDomainState,
     testsOnResult: {
       "test1": {
         expectedResult: Object.values({
@@ -449,7 +690,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     }
   },
   "select custom-built result: Books of Publisher of given Book from Domain State": {
-    queryParam: {
+    queryTemplateParam: {
       queryType: "extractorTemplateForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -524,6 +765,63 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
+    queryTemplateFunction: extractWithExtractorFromDomainStateForTemplate,
+    queryParam: {
+      queryType: "extractorForRecordOfExtractors",
+      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      contextResults: {},
+      pageParams: {
+        elementType: "object",
+        elementValue: {
+          applicationSection: {
+            elementType: "string",
+            elementValue: "data",
+          },
+        },
+      },
+      queryParams: { },
+      extractors: {
+        book: {
+          queryType: "extractorForObjectByDirectReference",
+          parentName: "Book",
+          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+        },
+      },
+      combiners: {
+        publisher: {
+          queryType: "combinerForObjectByRelation",
+          parentName: "Publisher",
+          parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
+          objectReference: "book",
+          AttributeOfObjectToCompareToReferenceUuid: "publisher",
+        },
+        booksOfPublisher: {
+          queryType: "combinerForObjectListByRelation",
+          parentName: "Book",
+          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          objectReference: "publisher",
+          AttributeOfListObjectToCompareToReferenceUuid: "publisher",
+        },
+        result1: {
+          queryType: "wrapperReturningObject",
+          definition: {
+            "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": {
+              queryType: "queryContextReference",
+              queryReference: "booksOfPublisher",
+            },
+          },
+        },
+        result2: {
+          queryType: "wrapperReturningList",
+          definition: [
+            { queryType: "queryContextReference", queryReference: "booksOfPublisher" },
+            { queryType: "queryContextReference", queryReference: "booksOfPublisher" },
+          ],
+        },
+      },
+    },
+    queryFunction: extractWithExtractorFromDomainState,
     testsOnResult: {
       "test1": {
         expectedResult: Object.values({
@@ -554,7 +852,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     }
   },
   "select custom-built result with queryCombiner: instances of all Entites from Domain State, indexed by Entity Uuid": {
-    queryParam: {
+    queryTemplateParam: {
       queryType: "extractorTemplateForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -607,6 +905,58 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
+    queryTemplateFunction: extractWithExtractorFromDomainStateForTemplate,
+    queryParam: {
+      queryType: "extractorForRecordOfExtractors",
+      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      contextResults: {},
+      pageParams: {
+        elementType: "object",
+        elementValue: {
+          applicationSection: {
+            elementType: "string",
+            elementValue: "data",
+          },
+        },
+      },
+      queryParams: { },
+      extractors: {
+        entities: {
+          queryType: "extractorForObjectListByEntity",
+          applicationSection: "model",
+          parentName: "Entity",
+          parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+        },
+      },
+      combiners: {
+        instancesOfEntities: {
+          queryType: "queryCombiner", // heteronomous many-to-many join, possible but akward with SQL (huge "select" clause, dealing with homonym attributes)
+          rootExtractorOrReference: {
+            queryType: "queryContextReference",
+            queryReference: "entities",
+          },
+          subQueryTemplate: {
+            query: {
+              queryType: "extractorTemplateForObjectListByEntity",
+              parentUuid: {
+                transformerType: "parameterReference",
+                referenceName: "uuid",
+              },
+            },
+            rootQueryObjectTransformer: {
+              transformerType: "recordOfTransformers",
+              definition: {
+                uuid: {
+                  transformerType: "objectTransformer",
+                  attributeName: "uuid",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    queryFunction: extractWithExtractorFromDomainState,
     testsOnResult: {
       "test1": {
         // expectedResult: domainState[adminConfigurationDeploymentLibrary.uuid]["data"],
@@ -623,7 +973,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     }
   },
   "select Unique Publisher Uuids of Books": {
-    queryParam: {
+    queryTemplateParam: {
       queryType: "extractorTemplateForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -656,6 +1006,38 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
+    queryTemplateFunction: extractWithExtractorFromDomainStateForTemplate,
+    queryParam: {
+      queryType: "extractorForRecordOfExtractors",
+      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      contextResults: {},
+      pageParams: {
+        elementType: "object",
+        elementValue: {
+          applicationSection: {
+            elementType: "string",
+            elementValue: "data",
+          },
+        },
+      },
+      queryParams: { },
+      extractors: {
+        books: {
+          queryType: "extractorForObjectListByEntity",
+          parentName: "Book",
+          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+        },
+      },
+      runtimeTransformers: {
+        publishers: {
+          transformerType: "unique",
+          interpolation: "runtime",
+          referencedExtractor: "books",
+          attribute: "publisher",
+        },
+      },
+    },
+    queryFunction: extractWithExtractorFromDomainState,
     testsOnResult: {
       "test1": {
         expectedResult: [
@@ -676,19 +1058,41 @@ describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
     console.info("STARTING test:", currentTestName);
     expect(currentTestName != undefined).toBeTruthy();
     expect(testExtractorParams[currentTestName] !== undefined).toBeTruthy();
-    expect(testExtractorParams[currentTestName].queryParam).toBeDefined();
+    expect(testExtractorParams[currentTestName].queryTemplateParam).toBeDefined();
     expect(testExtractorParams[currentTestName].testsOnResult).toBeDefined();
-    const queryParam: ExtractorTemplateForRecordOfExtractors = testParams.queryParam;
-    const preResult = extractWithExtractorFromDomainStateForTemplate(
-      domainState,
-      getSelectorParamsForTemplateOnDomainState(queryParam)
-    );
-    for (const [testName, testParams] of Object.entries(testExtractorParams[currentTestName].testsOnResult)) {
-      console.info(`running test named: ${currentTestName} ${testName}`);
-      const result = resolvePathOnObject(preResult, testParams.resultAccessPath ?? []);
-      // console.info(`For test named ${currentTestName} ${testName} result: `, result);
-      // console.info(`For test named ${currentTestName} ${testName} expected result: `, testParams.expectedResult);
-      expect(result).toEqual(testParams.expectedResult);
+    if (testExtractorParams[currentTestName].queryTemplateParam && testExtractorParams[currentTestName].queryTemplateFunction) {
+      const queryTemplateParam: ExtractorTemplateForRecordOfExtractors = testParams.queryTemplateParam as any;
+      const queryTemplateFunction: ExtractWithExtractorFromDomainStateForTemplate = testParams.queryTemplateFunction as any;
+      const preTemplateResult = queryTemplateFunction(
+        domainState,
+        getSelectorParamsForTemplateOnDomainState(queryTemplateParam)
+      ) as any;
+      for (const [testName, testParams] of Object.entries(testExtractorParams[currentTestName].testsOnResult)) {
+        console.info(`running extractor Template test named: ${currentTestName} ${testName}`);
+        const result = resolvePathOnObject(preTemplateResult, testParams.resultAccessPath ?? []);
+        // console.info(`For test named ${currentTestName} ${testName} Template result: `, result);
+        // console.info(`For test named ${currentTestName} ${testName} expected Template result: `, testParams.expectedResult);
+        expect(result).toEqual(testParams.expectedResult);
+      }
+    }
+
+    if (testExtractorParams[currentTestName].queryParam && testExtractorParams[currentTestName].queryFunction) {
+      const queryParam: ExtractorForRecordOfExtractors = testParams.queryParam as any;
+      const queryFunction: SyncExtractorRunner<
+      ExtractorForDomainModelObjects | ExtractorForRecordOfExtractors,
+      DomainState,
+      DomainElement > = testParams.queryFunction as any;
+      const preResult = queryFunction(
+        domainState,
+        getSelectorParams(queryParam)
+      );
+      for (const [testName, testParams] of Object.entries(testExtractorParams[currentTestName].testsOnResult)) {
+        console.info(`running extractor test named: ${currentTestName} ${testName}`);
+        const result = resolvePathOnObject(preResult, testParams.resultAccessPath ?? []);
+        // console.info(`For test named ${currentTestName} ${testName} result: `, result);
+        // console.info(`For test named ${currentTestName} ${testName} expected result: `, testParams.expectedResult);
+        expect(result).toEqual(testParams.expectedResult);
+      }
     }
   });
 });
