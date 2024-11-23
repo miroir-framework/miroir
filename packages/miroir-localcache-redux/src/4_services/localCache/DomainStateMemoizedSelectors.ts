@@ -17,8 +17,8 @@ import {
   selectEntityInstanceUuidIndexFromDeploymentEntityState
 } from "miroir-core";
 
-const deploymentEntityStateSelector = (domainState: DeploymentEntityState, params: any) => domainState;
-const deploymentEntityStateSelectorParams = (domainState: DeploymentEntityState, params: any) => params;
+const deploymentEntityStateSelector = (deploymentEntityState: DeploymentEntityState, params: any) => deploymentEntityState;
+const deploymentEntityStateSelectorParams = (deploymentEntityState: DeploymentEntityState, params: any) => params;
 
 export function getMemoizedDeploymentEntityStateSelectorMap(): SyncExtractorRunnerMap<DeploymentEntityState> {
   return {
