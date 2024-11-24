@@ -19,7 +19,7 @@ import {
   Entity,
   EntityDefinition,
   EntityInstancesUuidIndex,
-  ExtractorForRecordOfExtractors,
+  QueryWithExtractorCombinerTransformer,
   getApplicationSection,
   getExtractorRunnerParamsForDeploymentEntityState,
   getLoggerName,
@@ -315,13 +315,13 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   );
 
   const foreignKeyObjectsFetchQueryParams: SyncExtractorRunnerParams<
-    ExtractorForRecordOfExtractors,
+    QueryWithExtractorCombinerTransformer,
     DeploymentEntityState
   > = useMemo(
     () =>
-      getExtractorRunnerParamsForDeploymentEntityState<ExtractorForRecordOfExtractors>(
+      getExtractorRunnerParamsForDeploymentEntityState<QueryWithExtractorCombinerTransformer>(
         {
-          queryType: "extractorForRecordOfExtractors",
+          queryType: "queryWithExtractorCombinerTransformer",
           deploymentUuid: props.deploymentUuid,
           pageParams: props.paramsAsdomainElements,
           queryParams: {},
@@ -382,7 +382,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
   useDeploymentEntityStateQuerySelectorForCleanedResult(
     deploymentEntityStateSelectorMap.extractWithManyExtractors as SyncExtractorRunner<
-      ExtractorForRecordOfExtractors,
+      QueryWithExtractorCombinerTransformer,
       DeploymentEntityState,
       DomainElement
     >,

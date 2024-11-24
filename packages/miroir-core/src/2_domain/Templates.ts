@@ -1,6 +1,6 @@
 import {
   ExtractorForDomainModelObjects,
-  ExtractorForRecordOfExtractors,
+  QueryWithExtractorCombinerTransformer,
   ExtractorTemplateForDomainModelObjects,
   ExtractorTemplateForRecordOfExtractors,
   MiroirQuery,
@@ -218,7 +218,7 @@ export function resolveQueryTemplateSelectExtractorWrapper(
 // ################################################################################################
 export function resolveExtractorTemplateForRecordOfExtractors(
   recordOfExtractorTemplate: ExtractorTemplateForRecordOfExtractors,
-): ExtractorForRecordOfExtractors {
+): QueryWithExtractorCombinerTransformer {
 
   const params = { ...recordOfExtractorTemplate.pageParams, ...recordOfExtractorTemplate.queryParams };
 
@@ -259,7 +259,7 @@ export function resolveExtractorTemplateForRecordOfExtractors(
     queryParams: recordOfExtractorTemplate.queryParams,
     contextResults: recordOfExtractorTemplate.contextResults,
     deploymentUuid: recordOfExtractorTemplate.deploymentUuid,
-    queryType: "extractorForRecordOfExtractors",
+    queryType: "queryWithExtractorCombinerTransformer",
     extractors: queries,
     combiners: combiners as Record<string, MiroirQuery>,
     runtimeTransformers: recordOfExtractorTemplate.runtimeTransformers,
@@ -295,7 +295,7 @@ export function resolveExtractorTemplateForDomainModelObjects(
 // ################################################################################################
 export function resolveExtractorTemplate(
   extractorTemplate: ExtractorTemplateForDomainModelObjects | ExtractorTemplateForRecordOfExtractors
-): ExtractorForDomainModelObjects | ExtractorForRecordOfExtractors {
+): ExtractorForDomainModelObjects | QueryWithExtractorCombinerTransformer {
   if ('select' in extractorTemplate) { // TODO: implementation-specific, to be improved!
     return resolveExtractorTemplateForDomainModelObjects(extractorTemplate);
   } else {

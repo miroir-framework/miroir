@@ -18,7 +18,7 @@ import {
   DeploymentEntityState,
   DomainElementObjectOrFailed,
   entityMenu,
-  ExtractorForRecordOfExtractors,
+  QueryWithExtractorCombinerTransformer,
   getApplicationSection,
   getExtractorRunnerParamsForDeploymentEntityState,
   getLoggerName,
@@ -149,10 +149,10 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
     []
   )
 
-  const fetchDeploymentMenusQueryParams: SyncExtractorRunnerParams<ExtractorForRecordOfExtractors, DeploymentEntityState> = useMemo(
+  const fetchDeploymentMenusQueryParams: SyncExtractorRunnerParams<QueryWithExtractorCombinerTransformer, DeploymentEntityState> = useMemo(
     () => 
-    getExtractorRunnerParamsForDeploymentEntityState<ExtractorForRecordOfExtractors>({
-      queryType: "extractorForRecordOfExtractors",
+    getExtractorRunnerParamsForDeploymentEntityState<QueryWithExtractorCombinerTransformer>({
+      queryType: "queryWithExtractorCombinerTransformer",
       deploymentUuid: props.deploymentUuid,
       pageParams: {},
       queryParams: {},

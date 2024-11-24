@@ -9,7 +9,7 @@ import {
   DomainElementObject,
   EntityInstance,
   ExtendedTransformerForRuntime,
-  ExtractorForRecordOfExtractors,
+  QueryWithExtractorCombinerTransformer,
   ExtractorForSingleObject,
   ExtractorForSingleObjectList,
   MiroirQuery,
@@ -116,7 +116,7 @@ export async function asyncApplyExtractorTransformerInMemory(
   actionRuntimeTransformer: ExtendedTransformerForRuntime,
   queryParams: Record<string, any>,
   newFetchedData: Record<string, any>,
-  extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>,
+  extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | QueryWithExtractorCombinerTransformer>,
 ): Promise<DomainElement> {
   return Promise.resolve(applyExtractorTransformerInMemory(actionRuntimeTransformer, queryParams, newFetchedData));
 }
@@ -128,7 +128,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
   queryParams: Record<string, any>,
   extractorRunnerMap:AsyncExtractorRunnerMap,
   deploymentUuid: Uuid,
-  extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | ExtractorForRecordOfExtractors>,
+  extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | QueryWithExtractorCombinerTransformer>,
   query: MiroirQuery
 ): Promise<DomainElement> {
   switch (query.queryType) {
@@ -336,16 +336,16 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
 export const asyncExtractWithExtractor /**: SyncExtractorTemplateRunner */= (
   // selectorParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForRecordOfExtractors, DeploymentEntityState>,
   selectorParams: AsyncExtractorRunnerParams<
-    ExtractorForSingleObject | ExtractorForSingleObjectList | ExtractorForRecordOfExtractors
+    ExtractorForSingleObject | ExtractorForSingleObjectList | QueryWithExtractorCombinerTransformer
   >
 ): Promise<DomainElement> => {
   // log.info("########## extractExtractor begin, query", selectorParams);
   const localSelectorMap: AsyncExtractorRunnerMap = selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
 
   switch (selectorParams.extractor.queryType) {
-    case "extractorForRecordOfExtractors": {
+    case "queryWithExtractorCombinerTransformer": {
       return asyncExtractWithManyExtractors(
-        selectorParams as AsyncExtractorRunnerParams<ExtractorForRecordOfExtractors>
+        selectorParams as AsyncExtractorRunnerParams<QueryWithExtractorCombinerTransformer>
       );
       break;
     }
@@ -395,7 +395,7 @@ export const asyncExtractWithExtractor /**: SyncExtractorTemplateRunner */= (
 
 export const asyncExtractWithManyExtractors = async (
   // state: StateType,
-  selectorParams: AsyncExtractorRunnerParams<ExtractorForRecordOfExtractors>,
+  selectorParams: AsyncExtractorRunnerParams<QueryWithExtractorCombinerTransformer>,
 ): Promise<DomainElementObject> => {
 
   // log.info("########## asyncExtractWithManyExtractors begin, query", selectorParams);

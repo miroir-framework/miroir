@@ -17,7 +17,7 @@ import {
   EntityInstance,
   EntityInstanceWithName,
   EntityInstancesUuidIndex,
-  ExtractorForRecordOfExtractors,
+  QueryWithExtractorCombinerTransformer,
   JzodArray,
   JzodElement,
   JzodEnum,
@@ -446,17 +446,17 @@ export const JzodObjectEditor = (
     }
 
     const foreignKeyObjectsFetchQueryParams: SyncExtractorRunnerParams<
-    ExtractorForRecordOfExtractors,
+    QueryWithExtractorCombinerTransformer,
     DeploymentEntityState
   > = useMemo(
     () =>
-      getExtractorRunnerParamsForDeploymentEntityState<ExtractorForRecordOfExtractors>(
+      getExtractorRunnerParamsForDeploymentEntityState<QueryWithExtractorCombinerTransformer>(
         props.currentDeploymentUuid &&
         unfoldedRawSchema.type == "uuid" &&
         unfoldedRawSchema.tag?.value?.targetEntity
         ?
         {
-          queryType: "extractorForRecordOfExtractors",
+          queryType: "queryWithExtractorCombinerTransformer",
           deploymentUuid: props.currentDeploymentUuid,
           pageParams: {},
           queryParams: {},
@@ -485,7 +485,7 @@ export const JzodObjectEditor = (
   const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
   useDeploymentEntityStateQuerySelectorForCleanedResult(
     deploymentEntityStateSelectorMap.extractWithManyExtractors as SyncExtractorRunner<
-      ExtractorForRecordOfExtractors,
+      QueryWithExtractorCombinerTransformer,
       DeploymentEntityState,
       DomainElement
     >,

@@ -3,13 +3,14 @@ import {
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceArrayOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
-  DomainModelGetEntityDefinitionExtractor,
+  // ExtractorByEntityUuidGetEntityDefinition,
   EntityDefinition,
-  ExtractorForDomainModel,
+  ExtractorForDomainModelDEFUNCT,
   ExtractorForSingleObject,
   ExtractorForSingleObjectList,
   JzodObject,
-  ExtractorOrCombinerReturningObject
+  ExtractorOrCombinerReturningObject,
+  ExtractorByEntityUuidGetEntityDefinition
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface";
 import {
@@ -326,9 +327,9 @@ export const selectEntityInstanceListFromDeploymentEntityState: SyncExtractorRun
 // ACCESSES deploymentEntityState
 export const extractEntityJzodSchemaFromDeploymentEntityState = (
   deploymentEntityState: DeploymentEntityState,
-  selectorParams: ExtractorRunnerParamsForJzodSchema<DomainModelGetEntityDefinitionExtractor, DeploymentEntityState>
+  selectorParams: ExtractorRunnerParamsForJzodSchema<ExtractorByEntityUuidGetEntityDefinition, DeploymentEntityState>
 ): JzodObject | undefined => {
-  const localQuery: DomainModelGetEntityDefinitionExtractor = selectorParams.query;
+  const localQuery: ExtractorByEntityUuidGetEntityDefinition = selectorParams.query;
 
   const deploymentEntityStateIndex = getDeploymentEntityStateIndex(
     localQuery.deploymentUuid,
@@ -432,12 +433,12 @@ export function getDeploymentEntityStateJzodSchemaSelectorMap(): ExtractorRunner
 }
 
 // ################################################################################################
-export type GetExtractorRunnerParamsForDeploymentEntityState = <QueryType extends ExtractorForDomainModel>(
+export type GetExtractorRunnerParamsForDeploymentEntityState = <QueryType extends ExtractorForDomainModelDEFUNCT>(
   query: QueryType,
   extractorRunnerMap?: SyncExtractorRunnerMap<DeploymentEntityState>
 ) => SyncExtractorRunnerParams<QueryType, DeploymentEntityState>;
 
-export const getExtractorRunnerParamsForDeploymentEntityState = <QueryType extends ExtractorForDomainModel>(
+export const getExtractorRunnerParamsForDeploymentEntityState = <QueryType extends ExtractorForDomainModelDEFUNCT>(
   query: QueryType,
   extractorRunnerMap?: SyncExtractorRunnerMap<DeploymentEntityState>
 ): SyncExtractorRunnerParams<QueryType, DeploymentEntityState> =>{

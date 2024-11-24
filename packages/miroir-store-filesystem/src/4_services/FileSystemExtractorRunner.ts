@@ -76,7 +76,7 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
         );
         break;
       }
-      case "extractorForRecordOfExtractors": {
+      case "queryWithExtractorCombinerTransformer": {
         queryResult = await this.selectorMap.extractWithManyExtractors(
           {
             extractor: queryAction.query,

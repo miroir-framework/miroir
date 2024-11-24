@@ -23,7 +23,7 @@ import { getLoggerName } from "../../../tools";
 import { LoggerInterface } from "../../4-services/LoggerInterface";
 import {
   extractorOrCombinerReturningObject,
-  extractorForRecordOfExtractors,
+  queryWithExtractorCombinerTransformer,
   JzodElement,
   transformerForBuild_list_pickElement,
   transformerForRuntime_list_pickElement,
@@ -1388,7 +1388,7 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        domainModelRootExtractor: {
+        extractorRoot: {
           type: "object",
           definition: {
             deploymentUuid: {
@@ -1430,14 +1430,14 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        extractorForSingleObject: {
+        extractorForSingleObject: { // NOT USED
           type: "object",
           extend: {
             type: "schemaReference",
             definition: {
               eager: true,
               absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "domainModelRootExtractor",
+              relativePath: "extractorRoot",
             },
           },
           definition: {
@@ -1461,7 +1461,7 @@ export function getMiroirFundamentalJzodSchema(
             definition: {
               eager: true,
               absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "domainModelRootExtractor",
+              relativePath: "extractorRoot",
             },
           },
           definition: {
@@ -1498,20 +1498,20 @@ export function getMiroirFundamentalJzodSchema(
             },
           ],
         },
-        extractorForRecordOfExtractors: {
+        queryWithExtractorCombinerTransformer: {
           type: "object",
           extend: {
             type: "schemaReference",
             definition: {
               eager: true,
               absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "domainModelRootExtractor",
+              relativePath: "extractorRoot",
             },
           },
           definition: {
             queryType: {
               type: "literal",
-              definition: "extractorForRecordOfExtractors",
+              definition: "queryWithExtractorCombinerTransformer",
             },
             runAsSql: {
               type: "boolean",
@@ -1557,7 +1557,7 @@ export function getMiroirFundamentalJzodSchema(
             definition: {
               eager: true,
               absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "domainModelRootExtractor",
+              relativePath: "extractorRoot",
             },
           },
           definition: {
@@ -1581,7 +1581,7 @@ export function getMiroirFundamentalJzodSchema(
             definition: {
               eager: true,
               absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "domainModelRootExtractor",
+              relativePath: "extractorRoot",
             },
           },
           definition: {
@@ -1625,7 +1625,7 @@ export function getMiroirFundamentalJzodSchema(
             definition: {
               eager: true,
               absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "domainModelRootExtractor",
+              relativePath: "extractorRoot",
             },
           },
           definition: {
@@ -1671,14 +1671,14 @@ export function getMiroirFundamentalJzodSchema(
           },
         },
         // JzodSchema queries  ##############################################################
-        domainModelGetEntityDefinitionExtractor: {
+        extractorByEntityUuidGetEntityDefinition: {
           type: "object",
           extend: {
             type: "schemaReference",
             definition: {
               eager: true,
               absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "domainModelRootExtractor",
+              relativePath: "extractorRoot",
             },
           },
           definition: {
@@ -1696,20 +1696,20 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        domainModelGetFetchParamJzodSchemaForExtractorTemplate: {
+        extractorByTemplateGetParamJzodSchema: {
           type: "object",
           extend: {
             type: "schemaReference",
             definition: {
               eager: true,
               absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "domainModelRootExtractor",
+              relativePath: "extractorRoot",
             },
           },
           definition: {
             queryType: {
               type: "literal",
-              definition: "getFetchParamsJzodSchema",
+              definition: "extractorByTemplateGetParamJzodSchema",
             },
             fetchParams: {
               type: "schemaReference",
@@ -1720,38 +1720,38 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        domainModelGetFetchParamJzodSchemaForExtractor: {
+        extractorByExtractorGetParamJzodSchema: {
           type: "object",
           extend: {
             type: "schemaReference",
             definition: {
               eager: true,
               absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "domainModelRootExtractor",
+              relativePath: "extractorRoot",
             },
           },
           definition: {
             queryType: {
               type: "literal",
-              definition: "getFetchParamsJzodSchema",
+              definition: "extractorByTemplateGetParamJzodSchema", // TODO: CORRECT!!!
             },
             fetchParams: {
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorForRecordOfExtractors",
+                relativePath: "queryWithExtractorCombinerTransformer",
               },
             },
           },
         },
-        domainModelGetSingleSelectQueryJzodSchemaForExtractorTemplate: {
+        extractorByQueryTemplateGetParamJzodSchema: {
           type: "object",
           extend: {
             type: "schemaReference",
             definition: {
               eager: true,
               absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "domainModelRootExtractor",
+              relativePath: "extractorRoot",
             },
           },
           definition: {
@@ -1768,20 +1768,20 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        domainModelGetSingleSelectQueryJzodSchemaForExtractor: {
+        extractorByQueryGetParamJzodSchema: {
           type: "object",
           extend: {
             type: "schemaReference",
             definition: {
               eager: true,
               absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "domainModelRootExtractor",
+              relativePath: "extractorRoot",
             },
           },
           definition: {
             queryType: {
               type: "literal",
-              definition: "getQueryJzodSchema",
+              definition: "getQueryJzodSchema", // TODO: CORRECT!!!
             },
             select: {
               type: "schemaReference",
@@ -1801,21 +1801,21 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "domainModelGetEntityDefinitionExtractor",
+                relativePath: "extractorByEntityUuidGetEntityDefinition",
               },
             },
             {
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "domainModelGetFetchParamJzodSchemaForExtractorTemplate",
+                relativePath: "extractorByTemplateGetParamJzodSchema",
               },
             },
             {
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "domainModelGetSingleSelectQueryJzodSchemaForExtractorTemplate",
+                relativePath: "extractorByQueryTemplateGetParamJzodSchema",
               },
             },
           ],
@@ -1828,26 +1828,26 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "domainModelGetEntityDefinitionExtractor",
+                relativePath: "extractorByEntityUuidGetEntityDefinition",
               },
             },
             {
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "domainModelGetFetchParamJzodSchemaForExtractor",
+                relativePath: "extractorByExtractorGetParamJzodSchema",
               },
             },
             {
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "domainModelGetSingleSelectQueryJzodSchemaForExtractor",
+                relativePath: "extractorByQueryGetParamJzodSchema",
               },
             },
           ],
         },
-        extractorTemplateForDomainModel: {
+        extractorTemplateForDomainModelDEFUNCT: {
           type: "union",
           discriminator: "queryType",
           definition: [
@@ -1889,26 +1889,26 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "domainModelGetEntityDefinitionExtractor",
+                relativePath: "extractorByEntityUuidGetEntityDefinition",
               },
             },
             {
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "domainModelGetFetchParamJzodSchemaForExtractorTemplate",
+                relativePath: "extractorByTemplateGetParamJzodSchema",
               },
             },
             {
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "domainModelGetSingleSelectQueryJzodSchemaForExtractorTemplate",
+                relativePath: "extractorByQueryTemplateGetParamJzodSchema",
               },
             },
           ],
         },
-        extractorForDomainModel: {
+        extractorForDomainModelDEFUNCT: {
           type: "union",
           discriminator: "queryType",
           definition: [
@@ -1923,7 +1923,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorForRecordOfExtractors",
+                relativePath: "queryWithExtractorCombinerTransformer",
               },
             },
             {
@@ -1950,21 +1950,21 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "domainModelGetEntityDefinitionExtractor",
+                relativePath: "extractorByEntityUuidGetEntityDefinition",
               },
             },
             {
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "domainModelGetFetchParamJzodSchemaForExtractor",
+                relativePath: "extractorByExtractorGetParamJzodSchema",
               },
             },
             {
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "domainModelGetSingleSelectQueryJzodSchemaForExtractor",
+                relativePath: "extractorByQueryGetParamJzodSchema",
               },
             },
           ],
@@ -2512,14 +2512,14 @@ export function getMiroirFundamentalJzodSchema(
         // domain elements
         // domainElementObject: (miroirFundamentalJzodSchema as any).definition.context.domainElementObject,
         // root elements
-        domainModelRootExtractor: (miroirFundamentalJzodSchema as any).definition.context.domainModelRootExtractor,
+        extractorRoot: (miroirFundamentalJzodSchema as any).definition.context.extractorRoot,
         extractorWrapperReturningList: (miroirFundamentalJzodSchema as any).definition.context.extractorWrapperReturningList,
         extractorWrapperReturningObject: (miroirFundamentalJzodSchema as any).definition.context.extractorWrapperReturningObject,
         extractorOrCombinerReturningObject: (miroirFundamentalJzodSchema as any).definition.context.extractorOrCombinerReturningObject,
         extractor: (miroirFundamentalJzodSchema as any).definition.context.extractor,
         extractorForSingleObject: (miroirFundamentalJzodSchema as any).definition.context.extractorForSingleObject,
         extractorForSingleObjectList: (miroirFundamentalJzodSchema as any).definition.context.extractorForSingleObjectList,
-        extractorForRecordOfExtractors: (miroirFundamentalJzodSchema as any).definition.context.extractorForRecordOfExtractors,
+        queryWithExtractorCombinerTransformer: (miroirFundamentalJzodSchema as any).definition.context.queryWithExtractorCombinerTransformer,
         extractorForDomainModelObjects: (miroirFundamentalJzodSchema as any).definition.context.extractorForDomainModelObjects,
         extractorByEntityReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.extractorByEntityReturningObjectList,
         extractorForObjectByDirectReference: (miroirFundamentalJzodSchema as any).definition.context.extractorForObjectByDirectReference,
@@ -2691,7 +2691,7 @@ export function getMiroirFundamentalJzodSchema(
   // const localizedInnerResolutionStoreReferences: Record<string, JzodReference> = Object.fromEntries(
   const extendedSchemas = [
     "jzodBaseObject",
-    "domainModelRootExtractor",
+    "extractorRoot",
     "queryTemplateRoot",
     "queryRoot",
     "transformer_Abstract",

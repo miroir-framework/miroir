@@ -4,12 +4,12 @@ import {
   ActionReturnType,
   DomainElement,
   DomainElementObject,
-  DomainModelGetEntityDefinitionExtractor,
-  DomainModelGetFetchParamJzodSchemaForExtractorTemplate,
-  DomainModelGetSingleSelectQueryJzodSchemaForExtractorTemplate,
+  ExtractorByEntityUuidGetEntityDefinition,
+  ExtractorByTemplateGetParamJzodSchema,
+  ExtractorByQueryTemplateGetParamJzodSchema,
   DomainModelQueryTemplateJzodSchemaParams,
   ExtractorForDomainModelObjects,
-  ExtractorForRecordOfExtractors,
+  QueryWithExtractorCombinerTransformer,
   ExtractorTemplateForDomainModelObjects,
   ExtractorTemplateForRecordOfExtractors,
   JzodElement,
@@ -85,7 +85,7 @@ export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <
 
   switch (selectorParams.extractorTemplate.queryType) {
     case "extractorTemplateForRecordOfExtractors": {
-      const resolvedExtractor: ExtractorForRecordOfExtractors = resolveExtractorTemplateForRecordOfExtractors(
+      const resolvedExtractor: QueryWithExtractorCombinerTransformer = resolveExtractorTemplateForRecordOfExtractors(
         selectorParams.extractorTemplate
       ); 
 
@@ -152,7 +152,7 @@ export const extractWithManyExtractorTemplates = <StateType>(
   selectorParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForRecordOfExtractors, StateType>,
 ): DomainElementObject => { 
 
-  const resolvedExtractor: ExtractorForRecordOfExtractors = resolveExtractorTemplateForRecordOfExtractors(
+  const resolvedExtractor: QueryWithExtractorCombinerTransformer = resolveExtractorTemplateForRecordOfExtractors(
     selectorParams.extractorTemplate
   ); 
 
@@ -172,7 +172,7 @@ export const extractWithManyExtractorTemplates = <StateType>(
 // ################################################################################################
 export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
   deploymentEntityState: StateType,
-  selectorParams: ExtractorTemplateRunnerParamsForJzodSchema<DomainModelGetSingleSelectQueryJzodSchemaForExtractorTemplate, StateType>
+  selectorParams: ExtractorTemplateRunnerParamsForJzodSchema<ExtractorByQueryTemplateGetParamJzodSchema, StateType>
 ): JzodObject | undefined => {
   if (
     selectorParams.query.select.queryType=="literal" ||
@@ -217,7 +217,7 @@ export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
       deploymentUuid: selectorParams.query.deploymentUuid ?? "",
       entityUuid: entityUuidDomainElement.elementValue,
     },
-  } as ExtractorTemplateRunnerParamsForJzodSchema<DomainModelGetEntityDefinitionExtractor,StateType>) as JzodObject | undefined
+  } as ExtractorTemplateRunnerParamsForJzodSchema<ExtractorByEntityUuidGetEntityDefinition,StateType>) as JzodObject | undefined
 
   return result;
 }
@@ -231,21 +231,21 @@ export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
 //     case "getEntityDefinition":{ 
 //       return selectorParams.extractorRunnerMap.extractEntityJzodSchema(
 //         deploymentEntityState,
-//         selectorParams as ExtractorTemplateRunnerParamsForJzodSchema<DomainModelGetEntityDefinitionExtractor, StateType>
+//         selectorParams as ExtractorTemplateRunnerParamsForJzodSchema<ExtractorByEntityUuidGetEntityDefinition, StateType>
 //       );
 //       break;
 //     }
-//     case "getFetchParamsJzodSchema": {
+//     case "extractorByTemplateGetParamJzodSchema": {
 //       return selectorParams.extractorRunnerMap.extractFetchQueryJzodSchema(
 //         deploymentEntityState,
-//         selectorParams as ExtractorTemplateRunnerParamsForJzodSchema<DomainModelGetFetchParamJzodSchemaForExtractorTemplate, StateType>
+//         selectorParams as ExtractorTemplateRunnerParamsForJzodSchema<ExtractorByTemplateGetParamJzodSchema, StateType>
 //       );
 //       break;
 //     }
 //     case "getQueryJzodSchema": {
 //       return selectorParams.extractorRunnerMap.extractzodSchemaForSingleSelectQuery(
 //         deploymentEntityState,
-//         selectorParams as ExtractorTemplateRunnerParamsForJzodSchema<DomainModelGetSingleSelectQueryJzodSchemaForExtractorTemplate, StateType>
+//         selectorParams as ExtractorTemplateRunnerParamsForJzodSchema<ExtractorByQueryTemplateGetParamJzodSchema, StateType>
 //       );
 //       break;
 //     }
@@ -264,21 +264,21 @@ export const extractJzodSchemaForDomainModelQueryTemplate = <StateType>(
     case "getEntityDefinition":{ 
       return selectorParams.extractorRunnerMap.extractEntityJzodSchema(
         deploymentEntityState,
-        selectorParams as ExtractorTemplateRunnerParamsForJzodSchema<DomainModelGetEntityDefinitionExtractor, StateType>
+        selectorParams as ExtractorTemplateRunnerParamsForJzodSchema<ExtractorByEntityUuidGetEntityDefinition, StateType>
       );
       break;
     }
-    case "getFetchParamsJzodSchema": {
+    case "extractorByTemplateGetParamJzodSchema": {
       return selectorParams.extractorRunnerMap.extractFetchQueryJzodSchema(
         deploymentEntityState,
-        selectorParams as ExtractorTemplateRunnerParamsForJzodSchema<DomainModelGetFetchParamJzodSchemaForExtractorTemplate, StateType>
+        selectorParams as ExtractorTemplateRunnerParamsForJzodSchema<ExtractorByTemplateGetParamJzodSchema, StateType>
       );
       break;
     }
     case "getQueryJzodSchema": {
       return selectorParams.extractorRunnerMap.extractzodSchemaForSingleSelectQuery(
         deploymentEntityState,
-        selectorParams as ExtractorTemplateRunnerParamsForJzodSchema<DomainModelGetSingleSelectQueryJzodSchemaForExtractorTemplate, StateType>
+        selectorParams as ExtractorTemplateRunnerParamsForJzodSchema<ExtractorByQueryTemplateGetParamJzodSchema, StateType>
       );
       break;
     }
@@ -298,7 +298,7 @@ export const extractJzodSchemaForDomainModelQueryTemplate = <StateType>(
 //  */
 export const extractFetchQueryTemplateJzodSchema = <StateType>(
   deploymentEntityState: StateType,
-  selectorParams: ExtractorTemplateRunnerParamsForJzodSchema<DomainModelGetFetchParamJzodSchemaForExtractorTemplate, StateType>
+  selectorParams: ExtractorTemplateRunnerParamsForJzodSchema<ExtractorByTemplateGetParamJzodSchema, StateType>
 ):  RecordOfJzodObject | undefined => {
   const localFetchParams: ExtractorTemplateForRecordOfExtractors = selectorParams.query.fetchParams
   // log.info("selectFetchQueryJzodSchemaFromDomainState called", selectorParams.query);
@@ -317,7 +317,7 @@ export const extractFetchQueryTemplateJzodSchema = <StateType>(
           queryParams: selectorParams.query.queryParams,
           select: entry[1],
         },
-      } as ExtractorTemplateRunnerParamsForJzodSchema<DomainModelGetSingleSelectQueryJzodSchemaForExtractorTemplate, StateType>),
+      } as ExtractorTemplateRunnerParamsForJzodSchema<ExtractorByQueryTemplateGetParamJzodSchema, StateType>),
     ])
   ) as RecordOfJzodObject;
 

@@ -19,7 +19,7 @@ import {
   ExtractorForSingleObjectList,
   ExtractorForSingleObject,
   ExtractorWrapper,
-  ExtractorForRecordOfExtractors,
+  QueryWithExtractorCombinerTransformer,
   QueryAction,
 } from "miroir-core";
 import { MixableSqlDbStoreSection, SqlDbStoreSection } from "./SqlDbStoreSection";
@@ -80,7 +80,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         | ExtractorForSingleObjectList
         | ExtractorForSingleObject
         | ExtractorWrapper
-        | ExtractorForRecordOfExtractors
+        | QueryWithExtractorCombinerTransformer
     ): RecursiveStringRecords {
       // log.info(this.logHeader, "sqlForExtractor called with parameter", "extractor", extractor);
       // log.info(this.logHeader, "sqlForExtractor called with sequelize", this.sequelize);
@@ -111,7 +111,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           return result;
           break;
         }
-        case "extractorForRecordOfExtractors": {
+        case "queryWithExtractorCombinerTransformer": {
           return Object.fromEntries(
             Object.entries(extractor.extractors ?? {}).map((e) => [e[0], this.sqlForExtractor(e[1])])
           );

@@ -18,7 +18,7 @@ import {
   DomainElementObject,
   DomainElementObjectOrFailed,
   DomainState,
-  ExtractorForRecordOfExtractors,
+  QueryWithExtractorCombinerTransformer,
   ExtractorForSingleObject,
   ExtractorForSingleObjectList,
   ExtractorRunnerMapForJzodSchema,
@@ -455,7 +455,7 @@ export class SqlDbQueryRunner {
    * @returns 
    */
   asyncExtractWithQuery = async (
-    selectorParams: AsyncExtractorRunnerParams<ExtractorForRecordOfExtractors>,
+    selectorParams: AsyncExtractorRunnerParams<QueryWithExtractorCombinerTransformer>,
   ): Promise<DomainElementObjectOrFailed> => {
     // log.info("########## asyncExtractWithManyExtractors begin, query", selectorParams);
   
@@ -685,7 +685,7 @@ export class SqlDbQueryRunner {
         });
         break;
       }
-      case "extractorForRecordOfExtractors": {
+      case "queryWithExtractorCombinerTransformer": {
         if (queryAction.query.runAsSql) {
           queryResult = await this.dbImplementationExtractorRunnerMap.extractWithManyExtractors({
             extractor: queryAction.query,

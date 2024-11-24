@@ -6,8 +6,8 @@ import {
   DeploymentEntityState,
   DomainElementObject,
   DomainElementObjectOrFailed,
-  DomainModelGetFetchParamJzodSchemaForExtractor,
-  ExtractorForRecordOfExtractors,
+  ExtractorByExtractorGetParamJzodSchema,
+  QueryWithExtractorCombinerTransformer,
   ExtractorRunnerMapForJzodSchema,
   ExtractorRunnerParamsForJzodSchema,
   ExtractorTemplateForRecordOfExtractors,
@@ -117,7 +117,7 @@ export const ReportView = (props: ReportViewProps) => {
 
   log.info("################################################################ resolving query Template");
 
-  const resolvedTemplateQuery: ExtractorForRecordOfExtractors = useMemo(
+  const resolvedTemplateQuery: QueryWithExtractorCombinerTransformer = useMemo(
     () =>
       resolveExtractorTemplateForRecordOfExtractors(
         deploymentEntityStateFetchQueryTemplate
@@ -128,12 +128,12 @@ export const ReportView = (props: ReportViewProps) => {
   log.info("resolvedQuery", resolvedTemplateQuery);
   log.info("################################################################ resolved query Template DONE");
 
-  const usedQuery: ExtractorForRecordOfExtractors = useMemo(
+  const usedQuery: QueryWithExtractorCombinerTransformer = useMemo(
     () =>
     props.pageParams.deploymentUuid && props.pageParams.applicationSection && props.pageParams.reportUuid
       ? props.reportDefinition.extractors
         ? {
-            queryType: "extractorForRecordOfExtractors",
+            queryType: "queryWithExtractorCombinerTransformer",
             deploymentUuid: props.pageParams.deploymentUuid,
             pageParams: props.pageParams,
             queryParams: {},
@@ -145,7 +145,7 @@ export const ReportView = (props: ReportViewProps) => {
           }
         : resolvedTemplateQuery
       : {
-          queryType: "extractorForRecordOfExtractors",
+          queryType: "queryWithExtractorCombinerTransformer",
           deploymentUuid: "",
           pageParams: paramsAsdomainElements,
           queryParams: {},
@@ -156,11 +156,11 @@ export const ReportView = (props: ReportViewProps) => {
   );
   resolvedTemplateQuery;
   const deploymentEntityStateFetchQueryParams: SyncExtractorRunnerParams<
-    ExtractorForRecordOfExtractors,
+    QueryWithExtractorCombinerTransformer,
     DeploymentEntityState
   > = useMemo(
     () =>
-      getExtractorRunnerParamsForDeploymentEntityState<ExtractorForRecordOfExtractors>(
+      getExtractorRunnerParamsForDeploymentEntityState<QueryWithExtractorCombinerTransformer>(
         usedQuery,
         deploymentEntityStateSelectorMap
       ),
@@ -208,7 +208,7 @@ export const ReportView = (props: ReportViewProps) => {
   log.info("################################################################ Fecth NON-Template report schema");
 
   const fetchedDataJzodSchemaParams: ExtractorRunnerParamsForJzodSchema<
-    DomainModelGetFetchParamJzodSchemaForExtractor,
+    ExtractorByExtractorGetParamJzodSchema,
     DeploymentEntityState
   > = useMemo(
     () => ({
@@ -219,7 +219,7 @@ export const ReportView = (props: ReportViewProps) => {
         props.pageParams.reportUuid &&
         props.reportDefinition.extractors
           ? {
-              queryType: "getFetchParamsJzodSchema",
+              queryType: "extractorByTemplateGetParamJzodSchema",
               deploymentUuid: props.pageParams.deploymentUuid,
               pageParams: {
                 applicationSection: props.pageParams.applicationSection,
@@ -232,7 +232,7 @@ export const ReportView = (props: ReportViewProps) => {
             }
           : // dummy query
             {
-              queryType: "getFetchParamsJzodSchema",
+              queryType: "extractorByTemplateGetParamJzodSchema",
               deploymentUuid: "DUMMY",
               pageParams: {
                 applicationSection: "data",
@@ -242,14 +242,14 @@ export const ReportView = (props: ReportViewProps) => {
               queryParams: {},
               contextResults: {},
               fetchParams: {
-                queryType: "extractorForRecordOfExtractors",
+                queryType: "queryWithExtractorCombinerTransformer",
                 deploymentUuid: "DUMMY",
                 pageParams: paramsAsdomainElements,
                 queryParams: {},
                 contextResults: {},
                 // extractorTemplates: {},
                 extractors: {},
-              } as ExtractorForRecordOfExtractors,
+              } as QueryWithExtractorCombinerTransformer,
             },
     }),
     [jzodSchemaSelectorMap, props.pageParams, props.reportDefinition]

@@ -15,10 +15,10 @@ import {
 // console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 // describe.sequential("templatesDEFUNCT.unit.test", () => {
-describe("queryTemplates.unit.test", () => {
+describe("extractorTemplates.unit.test", () => {
 
   // ################################################################################################
-  it("convert queryTemplate to query with resolveExtractorTemplateForRecordOfExtractors", async () => { // TODO: test failure cases!
+  it("convert extractorTemplate to query with resolveExtractorTemplateForRecordOfExtractors", async () => { // TODO: test failure cases!
       console.log("convert queryTemplate to query with resolveExtractorTemplateForRecordOfExtractors START")
       const newApplicationName = "test";
       const newUuid = uuidv4();
@@ -124,7 +124,7 @@ describe("queryTemplates.unit.test", () => {
 
       const testResult = resolveExtractorTemplateForRecordOfExtractors(uniqueRuntimeTemplate); // uuid value is ignored
       console.log(
-        "################################ converted queryTemplate to query with resolveExtractorTemplateForRecordOfExtractors testResults",
+        "################################ converted extractorTemplate to query with resolveExtractorTemplateForRecordOfExtractors testResults",
         JSON.stringify(testResult, null, 2)
       );
       expect(testResult).toEqual({
@@ -136,7 +136,7 @@ describe("queryTemplates.unit.test", () => {
         },
         contextResults: {},
         deploymentUuid: "xxxxx",
-        queryType: "extractorForRecordOfExtractors",
+        queryType: "queryWithExtractorCombinerTransformer",
         extractors: {
           book: {
             queryType: "extractorForObjectByDirectReference",
@@ -191,8 +191,8 @@ describe("queryTemplates.unit.test", () => {
   );
 
   // ################################################################################################
-  it("convert queryTemplate to query with resolveExtractorTemplateForDomainModelObjects", async () => { // TODO: test failure cases!
-      console.log("convert queryTemplate to query with resolveExtractorTemplateForDomainModelObjects START")
+  it("convert extractorTemplate to query with resolveExtractorTemplateForDomainModelObjects", async () => { // TODO: test failure cases!
+      console.log("convert extractorTemplate to query with resolveExtractorTemplateForDomainModelObjects START")
       const newApplicationName = "test";
       const newUuid = uuidv4();
 
@@ -242,7 +242,7 @@ describe("queryTemplates.unit.test", () => {
           instanceUuid: "xxxxx",
         },
       });
-      console.log("convert queryTemplate to query with resolveExtractorTemplateForDomainModelObjects END")
+      console.log("convert extractorTemplate to query with resolveExtractorTemplateForDomainModelObjects END")
     }
   );
 

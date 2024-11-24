@@ -8,12 +8,12 @@ import {
   DomainElementInstanceArrayOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
   DomainElementObject,
-  DomainModelGetEntityDefinitionExtractor,
-  DomainModelGetFetchParamJzodSchemaForExtractorTemplate,
+  ExtractorByEntityUuidGetEntityDefinition,
+  ExtractorByTemplateGetParamJzodSchema,
   EntityDefinition,
-  ExtractorForDomainModel,
+  ExtractorForDomainModelDEFUNCT,
   ExtractorForDomainModelObjects,
-  ExtractorForRecordOfExtractors,
+  QueryWithExtractorCombinerTransformer,
   ExtractorForSingleObject,
   ExtractorForSingleObjectList,
   ExtractorTemplateForRecordOfExtractors,
@@ -54,8 +54,8 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 const emptyDomainObject: DomainElementObject = { elementType: "object", elementValue: {} };
 
-export const dummyDomainManyQueryWithDeploymentUuid: ExtractorForRecordOfExtractors = {
-  queryType: "extractorForRecordOfExtractors",
+export const dummyDomainManyQueryWithDeploymentUuid: QueryWithExtractorCombinerTransformer = {
+  queryType: "queryWithExtractorCombinerTransformer",
   deploymentUuid: "",
   pageParams: {},
   queryParams: {},
@@ -72,8 +72,8 @@ export const dummyDomainManyQueryTemplateWithDeploymentUuid: ExtractorTemplateFo
   runtimeTransformers: {},
 };
 
-export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: DomainModelGetFetchParamJzodSchemaForExtractorTemplate = {
-  queryType: "getFetchParamsJzodSchema",
+export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: ExtractorByTemplateGetParamJzodSchema = {
+  queryType: "extractorByTemplateGetParamJzodSchema",
   deploymentUuid: "",
   pageParams: {
     elementType: "object",
@@ -429,14 +429,14 @@ export const innerSelectElementFromQueryAndDomainState = innerSelectElementFromQ
 
 // ################################################################################################
 export const extractWithManyExtractorsFromDomainState: SyncExtractorRunner<
-  ExtractorForRecordOfExtractors,
+  QueryWithExtractorCombinerTransformer,
   DomainState,
   DomainElementObject
 > = extractWithManyExtractors<DomainState>;
 
 // ################################################################################################
 export const extractWithExtractorFromDomainState: SyncExtractorRunner<
-  ExtractorForDomainModelObjects | ExtractorForRecordOfExtractors,
+  ExtractorForDomainModelObjects | QueryWithExtractorCombinerTransformer,
   DomainState,
   DomainElement
 > = extractWithExtractor<DomainState>;
@@ -451,9 +451,9 @@ export const selectJzodSchemaBySingleSelectQueryFromDomainStateNew = extractzodS
 // ACCESSES DOMAIN STATE
 export const selectEntityJzodSchemaFromDomainStateNew = (
   domainState: DomainState,
-  selectorParams: ExtractorRunnerParamsForJzodSchema<DomainModelGetEntityDefinitionExtractor, DomainState>
+  selectorParams: ExtractorRunnerParamsForJzodSchema<ExtractorByEntityUuidGetEntityDefinition, DomainState>
 ): JzodObject | undefined => {
-  const localQuery: DomainModelGetEntityDefinitionExtractor = selectorParams.query;
+  const localQuery: ExtractorByEntityUuidGetEntityDefinition = selectorParams.query;
   if (
     domainState &&
     domainState[localQuery.deploymentUuid] &&
@@ -524,13 +524,13 @@ export function getDomainStateJzodSchemaExtractorRunnerMap(): ExtractorRunnerMap
 }
 
 // ################################################################################################
-export type GetExtractorRunnerParamsForDomainState = <ExtractorType extends ExtractorForDomainModel>(
+export type GetExtractorRunnerParamsForDomainState = <ExtractorType extends ExtractorForDomainModelDEFUNCT>(
   query: ExtractorType,
   extractorRunnerMap?: SyncExtractorRunnerMap<DomainState>
 ) => SyncExtractorRunnerParams<ExtractorType, DomainState>;
 
 export const getExtractorRunnerParamsForDomainState: GetExtractorRunnerParamsForDomainState = <
-  ExtractorType extends ExtractorForDomainModel
+  ExtractorType extends ExtractorForDomainModelDEFUNCT
 >(
   query: ExtractorType,
   extractorRunnerMap?: SyncExtractorRunnerMap<DomainState>

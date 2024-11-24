@@ -3,9 +3,9 @@
 import {
   DomainElement,
   DomainElementObject,
-  DomainModelGetEntityDefinitionExtractor,
+  ExtractorByEntityUuidGetEntityDefinition,
   EntityDefinition,
-  ExtractorTemplateForDomainModel,
+  ExtractorTemplateForDomainModelDEFUNCT,
   ExtractorTemplateForDomainModelObjects,
   ExtractorTemplateForRecordOfExtractors,
   JzodObject
@@ -88,13 +88,13 @@ export function getSelectorMapForTemplate(): SyncExtractorRunnerMap<DomainState>
 }
 
 // ################################################################################################
-export type GetSelectorParamsForTemplateOnDomainStateType=<ExtractorTemplateType extends ExtractorTemplateForDomainModel>(
+export type GetSelectorParamsForTemplateOnDomainStateType=<ExtractorTemplateType extends ExtractorTemplateForDomainModelDEFUNCT>(
   query: ExtractorTemplateType,
   extractorRunnerMap?: SyncExtractorRunnerMap<DomainState>
 )=> SyncExtractorTemplateRunnerParams<ExtractorTemplateType, DomainState>;
 
 export const getExtractorTemplateRunnerParamsForDomainState: GetSelectorParamsForTemplateOnDomainStateType =
-<ExtractorTemplateType extends ExtractorTemplateForDomainModel>(
+<ExtractorTemplateType extends ExtractorTemplateForDomainModelDEFUNCT>(
     query: ExtractorTemplateType,
     extractorRunnerMap?: SyncExtractorRunnerMap<DomainState>
   ) =>
@@ -117,9 +117,9 @@ export const selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate = 
 // ACCESSES DOMAIN STATE
 export const selectEntityJzodSchemaFromDomainStateNewForTemplate = (
   domainState: DomainState,
-  selectorParams: ExtractorTemplateRunnerParamsForJzodSchema<DomainModelGetEntityDefinitionExtractor, DomainState>
+  selectorParams: ExtractorTemplateRunnerParamsForJzodSchema<ExtractorByEntityUuidGetEntityDefinition, DomainState>
 ): JzodObject | undefined => {
-  const localQuery: DomainModelGetEntityDefinitionExtractor = selectorParams.query;
+  const localQuery: ExtractorByEntityUuidGetEntityDefinition = selectorParams.query;
   if (
     domainState &&
     domainState[localQuery.deploymentUuid] &&

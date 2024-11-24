@@ -5,7 +5,7 @@ import { DomainState } from "../../0_interfaces/2_domain/DomainControllerInterfa
 import {
   DomainElement,
   ExtractorForDomainModelObjects,
-  ExtractorForRecordOfExtractors,
+  QueryWithExtractorCombinerTransformer,
   ExtractorTemplateForDomainModelObjects,
   ExtractorTemplateForRecordOfExtractors
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -40,10 +40,10 @@ const deploymentEntityState: DeploymentEntityState = domainStateToDeploymentEnti
 
 export interface TestExtractorParams {
   extractorTemplate?: ExtractorTemplateForRecordOfExtractors;
-  extractor?: ExtractorForRecordOfExtractors;
+  extractor?: QueryWithExtractorCombinerTransformer;
   // Domain State
   extractorRunnerForDomainState?: SyncExtractorRunner<
-    ExtractorForDomainModelObjects | ExtractorForRecordOfExtractors,
+    ExtractorForDomainModelObjects | QueryWithExtractorCombinerTransformer,
     DomainState,
     DomainElement
   >;
@@ -106,7 +106,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   //     },
   //   },
   //   extractor:{
-  //     queryType: "extractorForRecordOfExtractors",
+  //     queryType: "queryWithExtractorCombinerTransformer",
   //     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
   //     contextResults: {},
   //     pageParams: { },
@@ -163,7 +163,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   //     },
   //   },
   //   extractor: {
-  //     queryType: "extractorForRecordOfExtractors",
+  //     queryType: "queryWithExtractorCombinerTransformer",
   //     "deploymentUuid": adminConfigurationDeploymentLibrary.uuid,
   //     contextResults: {},
   //     pageParams: { },
@@ -221,7 +221,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   //     },
   //   },
   //   extractor: {
-  //     queryType: "extractorForRecordOfExtractors",
+  //     queryType: "queryWithExtractorCombinerTransformer",
   //     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
   //     contextResults: {},
   //     pageParams: {},
@@ -278,7 +278,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   // //     },
   // //   },
   // //   extractor: {
-  // //     queryType: "extractorForRecordOfExtractors",
+  // //     queryType: "queryWithExtractorCombinerTransformer",
   // //     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
   // //     contextResults: {},
   // //     pageParams: { },
@@ -332,7 +332,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   //     },
   //   },
   //   extractor: {
-  //     queryType: "extractorForRecordOfExtractors",
+  //     queryType: "queryWithExtractorCombinerTransformer",
   //     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
   //     contextResults: { },
   //     pageParams: { },
@@ -398,7 +398,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   //     },
   //   },
   //   extractor: {
-  //     queryType: "extractorForRecordOfExtractors",
+  //     queryType: "queryWithExtractorCombinerTransformer",
   //     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
   //     contextResults: {},
   //     pageParams: {},
@@ -462,7 +462,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   //     runtimeTransformers: {},
   //   },
   //   extractor: {
-  //     queryType: "extractorForRecordOfExtractors",
+  //     queryType: "queryWithExtractorCombinerTransformer",
   //     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
   //     contextResults: {},
   //     pageParams: {
@@ -554,7 +554,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   //     },
   //   },
   //   extractor: {
-  //     queryType: "extractorForRecordOfExtractors",
+  //     queryType: "queryWithExtractorCombinerTransformer",
   //     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
   //     contextResults: {},
   //     pageParams: {
@@ -664,7 +664,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   //     },
   //   },
   //   extractor: {
-  //     queryType: "extractorForRecordOfExtractors",
+  //     queryType: "queryWithExtractorCombinerTransformer",
   //     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
   //     contextResults: {},
   //     pageParams: {
@@ -793,7 +793,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
     },
     extractor: {
-      queryType: "extractorForRecordOfExtractors",
+      queryType: "queryWithExtractorCombinerTransformer",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {
@@ -929,7 +929,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   //     },
   //   },
   //   extractor: {
-  //     queryType: "extractorForRecordOfExtractors",
+  //     queryType: "queryWithExtractorCombinerTransformer",
   //     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
   //     contextResults: {},
   //     pageParams: {
@@ -1026,7 +1026,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   //     },
   //   },
   //   extractor: {
-  //     queryType: "extractorForRecordOfExtractors",
+  //     queryType: "queryWithExtractorCombinerTransformer",
   //     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
   //     contextResults: {},
   //     pageParams: {

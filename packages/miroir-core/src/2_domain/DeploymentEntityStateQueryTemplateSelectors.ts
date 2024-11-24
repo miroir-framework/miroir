@@ -1,7 +1,7 @@
 import {
-  DomainModelGetEntityDefinitionExtractor,
+  ExtractorByEntityUuidGetEntityDefinition,
   EntityDefinition,
-  ExtractorTemplateForDomainModel,
+  ExtractorTemplateForDomainModelDEFUNCT,
   JzodObject
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface";
@@ -73,12 +73,12 @@ export function getDeploymentEntityStateJzodSchemaSelectorTemplateMap(): Extract
 }
 
 // ################################################################################################
-export type GetExtractorTemplateRunnerParamsForDeploymentEntityState = <QueryType extends ExtractorTemplateForDomainModel>(
+export type GetExtractorTemplateRunnerParamsForDeploymentEntityState = <QueryType extends ExtractorTemplateForDomainModelDEFUNCT>(
   query: QueryType,
   extractorRunnerMap?: SyncExtractorRunnerMap<DeploymentEntityState>
 ) => SyncExtractorTemplateRunnerParams<QueryType, DeploymentEntityState>;
 
-export function getExtractorTemplateRunnerParamsForDeploymentEntityState<QueryType extends ExtractorTemplateForDomainModel>(
+export function getExtractorTemplateRunnerParamsForDeploymentEntityState<QueryType extends ExtractorTemplateForDomainModelDEFUNCT>(
   query: QueryType,
   extractorRunnerMap?: SyncExtractorRunnerMap<DeploymentEntityState>
 ): SyncExtractorTemplateRunnerParams<QueryType, DeploymentEntityState> {
@@ -95,9 +95,9 @@ export function getExtractorTemplateRunnerParamsForDeploymentEntityState<QueryTy
 // ACCESSES deploymentEntityState
 export const extractEntityJzodSchemaFromDeploymentEntityStateForTemplate = (
   deploymentEntityState: DeploymentEntityState,
-  selectorParams: ExtractorTemplateRunnerParamsForJzodSchema<DomainModelGetEntityDefinitionExtractor, DeploymentEntityState>
+  selectorParams: ExtractorTemplateRunnerParamsForJzodSchema<ExtractorByEntityUuidGetEntityDefinition, DeploymentEntityState>
 ): JzodObject | undefined => {
-  const localQuery: DomainModelGetEntityDefinitionExtractor = selectorParams.query;
+  const localQuery: ExtractorByEntityUuidGetEntityDefinition = selectorParams.query;
 
   const deploymentEntityStateIndex = getDeploymentEntityStateIndex(
     localQuery.deploymentUuid,

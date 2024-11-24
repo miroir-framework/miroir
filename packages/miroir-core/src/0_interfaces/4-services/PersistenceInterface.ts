@@ -5,7 +5,7 @@ import {
   EntityInstance,
   EntityInstanceCollection,
   PersistenceAction,
-  ExtractorForRecordOfExtractors
+  QueryWithExtractorCombinerTransformer
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 import { MError } from "../3_controllers/ErrorLogServiceInterface";
 import { LocalCacheInterface } from "./LocalCacheInterface";
@@ -17,7 +17,7 @@ export interface HttpRequestBodyFormat {
   instances?: EntityInstance[];
   crudInstances?: EntityInstance[];
   modelUpdate?: any;
-  query?: ExtractorTemplateForRecordOfExtractors | ExtractorForRecordOfExtractors;
+  query?: ExtractorTemplateForRecordOfExtractors | QueryWithExtractorCombinerTransformer;
   // queryTemplate?: ExtractorTemplateForRecordOfExtractors;
   other?: any;
 };

@@ -2,7 +2,7 @@ import {
   ActionReturnType,
   DomainElement,
   ExtractorForDomainModelObjects,
-  ExtractorForRecordOfExtractors,
+  QueryWithExtractorCombinerTransformer,
   QueryTemplateAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
