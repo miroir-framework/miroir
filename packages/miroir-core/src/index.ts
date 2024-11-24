@@ -521,9 +521,9 @@ export {
   dummyDomainManyQueryWithDeploymentUuid,
   dummyDomainManyQueryTemplateWithDeploymentUuid,
   dummyDomainModelGetFetchParamJzodSchemaQueryParams,
-  getJzodSchemaSelectorMap,
-  getSelectorMap,
-  getSelectorParams,
+  getDomainStateJzodSchemaExtractorRunnerMap,
+  getDomainStateExtractorRunnerMap,
+  getExtractorRunnerParamsForDomainState,
   extractWithExtractorFromDomainState,
   innerSelectElementFromQueryAndDomainState,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
@@ -537,7 +537,7 @@ export {
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
 } from './2_domain/DomainStateQuerySelectors';
 export {
-  getSelectorParamsForTemplateOnDomainState,
+  getExtractorTemplateRunnerParamsForDomainState,
   getSelectorMapForTemplate,
   extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
@@ -552,12 +552,12 @@ export {
   selectEntityInstanceListFromDeploymentEntityState,
   getDeploymentEntityStateJzodSchemaSelectorMap,
   getDeploymentEntityStateSelectorMap,
-  getDeploymentEntityStateSelectorParams,
+  getExtractorRunnerParamsForDeploymentEntityState,
 } from './2_domain/DeploymentEntityStateQuerySelectors';
 export {
   getDeploymentEntityStateJzodSchemaSelectorTemplateMap,
   getDeploymentEntityStateSelectorTemplateMap,
-  getDeploymentEntityStateSelectorTemplateParams,
+  getExtractorTemplateRunnerParamsForDeploymentEntityState,
 } from './2_domain/DeploymentEntityStateQueryTemplateSelectors';
 export {
   ExtractorTemplateRunnerInMemory

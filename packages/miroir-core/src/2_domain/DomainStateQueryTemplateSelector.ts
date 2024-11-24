@@ -49,14 +49,15 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 
 // ################################################################################################
-// TODO: used in extractWithExtractorFromDomainStateForTemplate.unit.test and RestServer.ts, provide a better interface?
-export type ExtractWithExtractorFromDomainStateForTemplate = SyncExtractorTemplateRunner<
+// TODO: used in extractorTemplateRunnerForDomainState.unit.test and RestServer.ts, provide a better interface?
+export type ExtractorTemplateRunnerForDomainState = SyncExtractorTemplateRunner<
   ExtractorTemplateForDomainModelObjects | ExtractorTemplateForRecordOfExtractors,
   DomainState,
   DomainElement
 >;
 
-export const extractWithExtractorFromDomainStateForTemplate: ExtractWithExtractorFromDomainStateForTemplate = extractWithExtractorTemplate<DomainState>;
+export const extractorTemplateRunnerForDomainState: ExtractorTemplateRunnerForDomainState =
+  extractWithExtractorTemplate<DomainState>;
 
 
 // ################################################################################################
@@ -92,7 +93,7 @@ export type GetSelectorParamsForTemplateOnDomainStateType=<ExtractorTemplateType
   extractorRunnerMap?: SyncExtractorRunnerMap<DomainState>
 )=> SyncExtractorTemplateRunnerParams<ExtractorTemplateType, DomainState>;
 
-export const getSelectorParamsForTemplateOnDomainState: GetSelectorParamsForTemplateOnDomainStateType =
+export const getExtractorTemplateRunnerParamsForDomainState: GetSelectorParamsForTemplateOnDomainStateType =
 <ExtractorTemplateType extends ExtractorTemplateForDomainModel>(
     query: ExtractorTemplateType,
     extractorRunnerMap?: SyncExtractorRunnerMap<DomainState>

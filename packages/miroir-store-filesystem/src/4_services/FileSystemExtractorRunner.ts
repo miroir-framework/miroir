@@ -315,14 +315,14 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
   };
 
   // ##############################################################################################
-  public getSelectorMap(): AsyncExtractorRunnerMap {
+  public getDomainStateExtractorRunnerMap(): AsyncExtractorRunnerMap {
     return this.selectorMap;
   }
 }
 
 
 
-export function getJzodSchemaSelectorMap(): ExtractorRunnerMapForJzodSchema<DomainState> {
+export function getDomainStateJzodSchemaExtractorRunnerMap(): ExtractorRunnerMapForJzodSchema<DomainState> {
   return {
     extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNew,
     extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNew,

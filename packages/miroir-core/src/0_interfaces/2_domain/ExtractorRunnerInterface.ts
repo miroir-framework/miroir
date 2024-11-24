@@ -31,7 +31,7 @@ export type RecordOfJzodObject = Record<string, JzodObject | undefined>;
 
 // ################################################################################################
 // ################################################################################################
-// ################################################################################################
+// TEMPLATES         ##############################################################################
 export interface SyncExtractorTemplateRunnerParams<ExtractorTemplateDomainModelType extends ExtractorTemplateForDomainModel, StateType> {
   extractorRunnerMap?: SyncExtractorRunnerMap<StateType>
   extractorTemplate: ExtractorTemplateDomainModelType
@@ -44,7 +44,7 @@ export interface AsyncExtractorTemplateRunnerParams<ExtractorTemplateDomainModel
 }
 // ################################################################################################
 export type SyncExtractorTemplateRunner<QueryType extends ExtractorTemplateForDomainModel, StateType, ResultType> = (
-  domainState: StateType,
+  state: StateType,
   extractorAndParams: SyncExtractorTemplateRunnerParams<QueryType, StateType>
 ) => ResultType;
 
@@ -68,15 +68,7 @@ export interface ExtractorTemplatePersistenceStoreRunner {
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
+// EXTRACTORS  ####################################################################################
 export interface SyncExtractorRunnerParams<ExtractorDomainModelType extends ExtractorForDomainModel, StateType> {
   extractorRunnerMap?: SyncExtractorRunnerMap<StateType>
   extractor: ExtractorDomainModelType

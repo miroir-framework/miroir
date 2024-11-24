@@ -236,7 +236,7 @@ export const HomePage = (props: RootComponentProps) => {
     // }),[miroirMetaModel])
   
     // const producedBundle : DomainElement = useDomainStateCleanSelector(extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT, bundleProducerQuery);
-    // // const producedBundle : any = useDomainStateCleanSelector(extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT, getSelectorParams<ExtractorTemplateForRecordOfExtractors>(bundleProducerQuery));
+    // // const producedBundle : any = useDomainStateCleanSelector(extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT, getExtractorRunnerParamsForDomainState<ExtractorTemplateForRecordOfExtractors>(bundleProducerQuery));
   
     // log.info("producedBundle1",producedBundle)
   

@@ -499,7 +499,7 @@ export const selectJzodSchemaByDomainModelQueryFromDomainStateNew = extractJzodS
 // DEPENDENT ON RESELECT / REDUX. TO MOVE TO miroir-localCache-redux!
 // ################################################################################################
 
-export function getSelectorMap(): SyncExtractorRunnerMap<DomainState> {
+export function getDomainStateExtractorRunnerMap(): SyncExtractorRunnerMap<DomainState> {
   return {
     extractorType: "sync",
     extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDomainState,
@@ -514,7 +514,7 @@ export function getSelectorMap(): SyncExtractorRunnerMap<DomainState> {
   };
 }
 
-export function getJzodSchemaSelectorMap(): ExtractorRunnerMapForJzodSchema<DomainState> {
+export function getDomainStateJzodSchemaExtractorRunnerMap(): ExtractorRunnerMapForJzodSchema<DomainState> {
   return {
     extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNew,
     extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNew,
@@ -524,12 +524,19 @@ export function getJzodSchemaSelectorMap(): ExtractorRunnerMapForJzodSchema<Doma
 }
 
 // ################################################################################################
-export function getSelectorParams<ExtractorType extends ExtractorForDomainModel>(
+export type GetExtractorRunnerParamsForDomainState = <ExtractorType extends ExtractorForDomainModel>(
   query: ExtractorType,
   extractorRunnerMap?: SyncExtractorRunnerMap<DomainState>
-): SyncExtractorRunnerParams<ExtractorType, DomainState> {
+) => SyncExtractorRunnerParams<ExtractorType, DomainState>;
+
+export const getExtractorRunnerParamsForDomainState: GetExtractorRunnerParamsForDomainState = <
+  ExtractorType extends ExtractorForDomainModel
+>(
+  query: ExtractorType,
+  extractorRunnerMap?: SyncExtractorRunnerMap<DomainState>
+): SyncExtractorRunnerParams<ExtractorType, DomainState> => {
   return {
     extractor: query,
-    extractorRunnerMap: extractorRunnerMap ?? getSelectorMap(),
+    extractorRunnerMap: extractorRunnerMap ?? getDomainStateExtractorRunnerMap(),
   };
-}
+};

@@ -39,7 +39,7 @@ import {
   dummyDomainManyQueryWithDeploymentUuid,
   getApplicationSection,
   getDefaultValueForJzodSchemaWithResolution,
-  getDeploymentEntityStateSelectorParams,
+  getExtractorRunnerParamsForDeploymentEntityState,
   getLoggerName,
   resolvePathOnObject,
   resolveReferencesForJzodSchemaAndValueObject,
@@ -450,7 +450,7 @@ export const JzodObjectEditor = (
     DeploymentEntityState
   > = useMemo(
     () =>
-      getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>(
+      getExtractorRunnerParamsForDeploymentEntityState<ExtractorForRecordOfExtractors>(
         props.currentDeploymentUuid &&
         unfoldedRawSchema.type == "uuid" &&
         unfoldedRawSchema.tag?.value?.targetEntity

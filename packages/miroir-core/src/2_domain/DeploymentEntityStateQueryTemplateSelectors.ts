@@ -73,7 +73,12 @@ export function getDeploymentEntityStateJzodSchemaSelectorTemplateMap(): Extract
 }
 
 // ################################################################################################
-export function getDeploymentEntityStateSelectorTemplateParams<QueryType extends ExtractorTemplateForDomainModel>(
+export type GetExtractorTemplateRunnerParamsForDeploymentEntityState = <QueryType extends ExtractorTemplateForDomainModel>(
+  query: QueryType,
+  extractorRunnerMap?: SyncExtractorRunnerMap<DeploymentEntityState>
+) => SyncExtractorTemplateRunnerParams<QueryType, DeploymentEntityState>;
+
+export function getExtractorTemplateRunnerParamsForDeploymentEntityState<QueryType extends ExtractorTemplateForDomainModel>(
   query: QueryType,
   extractorRunnerMap?: SyncExtractorRunnerMap<DeploymentEntityState>
 ): SyncExtractorTemplateRunnerParams<QueryType, DeploymentEntityState> {

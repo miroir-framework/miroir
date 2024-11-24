@@ -20,7 +20,7 @@ import {
   entityMenu,
   ExtractorForRecordOfExtractors,
   getApplicationSection,
-  getDeploymentEntityStateSelectorParams,
+  getExtractorRunnerParamsForDeploymentEntityState,
   getLoggerName,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -151,7 +151,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
 
   const fetchDeploymentMenusQueryParams: SyncExtractorRunnerParams<ExtractorForRecordOfExtractors, DeploymentEntityState> = useMemo(
     () => 
-    getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>({
+    getExtractorRunnerParamsForDeploymentEntityState<ExtractorForRecordOfExtractors>({
       queryType: "extractorForRecordOfExtractors",
       deploymentUuid: props.deploymentUuid,
       pageParams: {},

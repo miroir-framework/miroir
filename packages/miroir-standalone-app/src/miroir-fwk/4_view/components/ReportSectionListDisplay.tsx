@@ -21,7 +21,7 @@ import {
   EntityInstancesUuidIndex,
   ExtractorForRecordOfExtractors,
   getApplicationSection,
-  getDeploymentEntityStateSelectorParams,
+  getExtractorRunnerParamsForDeploymentEntityState,
   getLoggerName,
   InstanceAction,
   JzodElement,
@@ -319,7 +319,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     DeploymentEntityState
   > = useMemo(
     () =>
-      getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>(
+      getExtractorRunnerParamsForDeploymentEntityState<ExtractorForRecordOfExtractors>(
         {
           queryType: "extractorForRecordOfExtractors",
           deploymentUuid: props.deploymentUuid,
@@ -374,7 +374,10 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       props.tableComponentReportType,
     ]
   );
-  log.info("ReportSectionListDisplay foreignKeyObjectsFetchQueryParams", JSON.stringify(foreignKeyObjectsFetchQueryParams, null, 2));
+  log.info(
+    "ReportSectionListDisplay foreignKeyObjectsFetchQueryParams",
+    JSON.stringify(foreignKeyObjectsFetchQueryParams, null, 2)
+  );
 
   const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
   useDeploymentEntityStateQuerySelectorForCleanedResult(

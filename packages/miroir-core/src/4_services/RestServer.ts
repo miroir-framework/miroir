@@ -27,17 +27,15 @@ import { MiroirLoggerFactory } from "./Logger";
 import { generateRestServiceResponse } from "./RestTools";
 import { cleanLevel } from "./constants";
 
+import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface";
+import { getDomainStateExtractorRunnerMap, getExtractorRunnerParamsForDomainState } from "../2_domain/DomainStateQuerySelectors";
 import {
-  extractWithExtractorFromDomainStateForTemplate,
-  extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT,
-  getSelectorParamsForTemplateOnDomainState,
+  getExtractorTemplateRunnerParamsForDomainState,
   getSelectorMapForTemplate
 } from "../2_domain/DomainStateQueryTemplateSelector";
-import { extractWithExtractorTemplate, handleQueryTemplateAction } from "../2_domain/QueryTemplateSelectors";
-import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
-import { getSelectorMap, getSelectorParams } from "../2_domain/DomainStateQuerySelectors";
 import { extractWithExtractor } from "../2_domain/QuerySelectors";
+import { extractWithExtractorTemplate } from "../2_domain/QueryTemplateSelectors";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RestServer");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -306,12 +304,12 @@ export async function queryActionHandler(
     // we're on the client, called by RestServerStub
     // uses the local cache, needs to have done a Model "rollback" action on the client//, or a Model "remoteLocalCacheRollback" action on the server
     const domainState: DomainState = localCache.getDomainState();
-    const extractorRunnerMapOnDomainState = getSelectorMap();
+    const extractorRunnerMapOnDomainState = getDomainStateExtractorRunnerMap();
     log.info("RestServer queryActionHandler queryAction=", JSON.stringify(queryAction, undefined, 2))
     log.info("RestServer queryActionHandler domainState=", JSON.stringify(domainState, undefined, 2))
     const queryResult: DomainElement = extractWithExtractor(
       domainState,
-      getSelectorParams(queryAction.query, extractorRunnerMapOnDomainState)
+      getExtractorRunnerParamsForDomainState(queryAction.query, extractorRunnerMapOnDomainState)
     )
     const result:ActionReturnType = {
       status: "ok",
@@ -379,7 +377,7 @@ export async function queryTemplateActionHandler(
     log.info("RestServer queryTemplateActionHandler domainState=", JSON.stringify(domainState, undefined, 2))
     const queryResult: DomainElement = extractWithExtractorTemplate(
       domainState,
-      getSelectorParamsForTemplateOnDomainState(queryTemplateAction.query, extractorRunnerMapOnDomainState)
+      getExtractorTemplateRunnerParamsForDomainState(queryTemplateAction.query, extractorRunnerMapOnDomainState)
     )
     const result:ActionReturnType = {
       status: "ok",

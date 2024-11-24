@@ -1,6 +1,7 @@
 import {
   ActionReturnType,
   asyncApplyExtractorTransformerInMemory,
+  asyncExtractEntityInstanceListWithObjectListExtractor,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   AsyncExtractorRunnerMap,
   asyncExtractWithExtractor,
@@ -42,8 +43,10 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
     this.selectorMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.fileSystemExtractorRunner.extractEntityInstanceUuidIndex,
+      extractEntityInstanceList: this.fileSystemExtractorRunner.extractEntityInstanceList,
       extractEntityInstance: this.fileSystemExtractorRunner.extractEntityInstance,
       extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+      extractEntityInstanceListWithObjectListExtractor: asyncExtractEntityInstanceListWithObjectListExtractor,
       extractWithManyExtractors: asyncExtractWithManyExtractors,
       extractWithExtractor: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
@@ -60,7 +63,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
 
 }
 
-export function getJzodSchemaSelectorMap(): ExtractorTemplateRunnerMapForJzodSchema<DomainState> {
+export function getDomainStateJzodSchemaExtractorRunnerMap(): ExtractorTemplateRunnerMapForJzodSchema<DomainState> {
   return {
     extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
     extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNewForTemplate,

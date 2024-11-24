@@ -4,7 +4,10 @@ import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import {
   ActionReturnType,
   ApplicationSection,
+  CombinerForObjectListByManyToManyRelation,
+  CombinerForObjectListByRelation,
   DomainElement,
+  DomainElementFailed,
   DomainElementInstanceArray,
   DomainElementInstanceArrayOrFailed,
   DomainElementInstanceUuidIndex,
@@ -17,24 +20,22 @@ import {
   EntityInstance,
   ExtendedTransformerForRuntime,
   ExtractorForDomainModelObjects,
+  ExtractorForObjectListByEntity,
   ExtractorForRecordOfExtractors,
   ExtractorForSingleObjectList,
   JzodElement,
   JzodObject,
   MiroirQuery,
   QueryAction,
-  ExtractorForObjectListByEntity,
   QueryFailed,
-  CombinerForObjectListByManyToManyRelation,
-  CombinerForObjectListByRelation,
-  QueryTemplateConstantOrAnyReference,
-  DomainElementFailed
+  QueryTemplateConstantOrAnyReference
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   AsyncExtractorRunnerMap,
   ExtractorRunnerParamsForJzodSchema,
   RecordOfJzodElement,
   RecordOfJzodObject,
+  SyncExtractorRunner,
   SyncExtractorRunnerMap,
   SyncExtractorRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
@@ -873,7 +874,13 @@ export function innerSelectElementFromQuery/*ExtractorTemplateRunner*/<StateType
 }
 
 // ################################################################################################
-export const extractWithExtractor /**: SyncExtractorTemplateRunner */= <StateType>(
+// export const extractWithExtractor: <StateType>SyncExtractorRunner<StateType,ExtractorForDomainModelObjects | ExtractorForRecordOfExtractors, DomainElement> = <StateType>(
+export type ExtractWithExtractorType<StateType> = SyncExtractorRunner<
+  ExtractorForDomainModelObjects | ExtractorForRecordOfExtractors,
+  StateType,
+  DomainElement
+>;
+export const extractWithExtractor /*: ExtractWithExtractorType*/ = <StateType>(
   state: StateType,
   selectorParams: SyncExtractorRunnerParams<
   ExtractorForDomainModelObjects | ExtractorForRecordOfExtractors,

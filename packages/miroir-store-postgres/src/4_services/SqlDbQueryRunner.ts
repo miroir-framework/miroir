@@ -60,7 +60,7 @@ const tokenSeparatorForWith = tokenComma + " ";
 export type RecursiveStringRecords = string | { [x: string]: RecursiveStringRecords };
 
 // ################################################################################################
-export function getJzodSchemaSelectorMap(): ExtractorRunnerMapForJzodSchema<DomainState> {
+export function getDomainStateJzodSchemaExtractorRunnerMap(): ExtractorRunnerMapForJzodSchema<DomainState> {
   return {
     extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNew,
     extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNew,
@@ -996,7 +996,7 @@ export class SqlDbQueryRunner {
   };
 
   // ##############################################################################################
-  public getSelectorMap(): AsyncExtractorRunnerMap {
+  public getDomainStateExtractorRunnerMap(): AsyncExtractorRunnerMap {
     // return this.extractorRunnerMap;
     return undefined as any;
   }

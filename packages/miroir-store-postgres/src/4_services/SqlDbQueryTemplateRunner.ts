@@ -85,7 +85,7 @@ export class SqlDbExtractTemplateRunner {
 
 }
 
-export function getJzodSchemaSelectorMap(): ExtractorTemplateRunnerMapForJzodSchema<DomainState> {
+export function getDomainStateJzodSchemaExtractorRunnerMap(): ExtractorTemplateRunnerMapForJzodSchema<DomainState> {
   return {
     extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
     extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNewForTemplate,

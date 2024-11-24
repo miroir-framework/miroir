@@ -292,7 +292,7 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
   };
 
   // ##############################################################################################
-  public getSelectorMap(): AsyncExtractorRunnerMap {
+  public getDomainStateExtractorRunnerMap(): AsyncExtractorRunnerMap {
     return this.selectorMap;
   }
 } // end of class ExtractorRunnerInMemory
@@ -300,7 +300,7 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
 // ##############################################################################################
 // ##############################################################################################
 // ##############################################################################################
-export function getJzodSchemaSelectorMap(): ExtractorRunnerMapForJzodSchema<DomainState> {
+export function getDomainStateJzodSchemaExtractorRunnerMap(): ExtractorRunnerMapForJzodSchema<DomainState> {
   return {
     extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNew,
     extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNew,

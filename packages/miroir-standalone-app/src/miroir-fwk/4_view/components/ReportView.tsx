@@ -18,7 +18,7 @@ import {
   SyncExtractorRunnerMap,
   SyncExtractorRunnerParams,
   Uuid,
-  getDeploymentEntityStateSelectorParams,
+  getExtractorRunnerParamsForDeploymentEntityState,
   getLoggerName,
   resolveExtractorTemplateForRecordOfExtractors
 } from "miroir-core";
@@ -160,7 +160,7 @@ export const ReportView = (props: ReportViewProps) => {
     DeploymentEntityState
   > = useMemo(
     () =>
-      getDeploymentEntityStateSelectorParams<ExtractorForRecordOfExtractors>(
+      getExtractorRunnerParamsForDeploymentEntityState<ExtractorForRecordOfExtractors>(
         usedQuery,
         deploymentEntityStateSelectorMap
       ),

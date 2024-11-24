@@ -6,37 +6,78 @@ import {
   DomainElement,
   ExtractorForDomainModelObjects,
   ExtractorForRecordOfExtractors,
+  ExtractorTemplateForDomainModelObjects,
   ExtractorTemplateForRecordOfExtractors
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { SyncExtractorRunner } from "../../0_interfaces/2_domain/ExtractorRunnerInterface";
-import { extractWithExtractorFromDomainState, getSelectorParams } from "../../2_domain/DomainStateQuerySelectors";
+import { DeploymentEntityState } from "../../0_interfaces/2_domain/DeploymentStateInterface";
+import { SyncExtractorRunner, SyncExtractorTemplateRunner } from "../../0_interfaces/2_domain/ExtractorRunnerInterface";
 import {
-  ExtractWithExtractorFromDomainStateForTemplate,
-  extractWithExtractorFromDomainStateForTemplate,
-  getSelectorParamsForTemplateOnDomainState
+  getExtractorRunnerParamsForDeploymentEntityState,
+  GetExtractorRunnerParamsForDeploymentEntityState,
+} from "../../2_domain/DeploymentEntityStateQuerySelectors";
+import {
+  getExtractorTemplateRunnerParamsForDeploymentEntityState,
+  GetExtractorTemplateRunnerParamsForDeploymentEntityState,
+} from "../../2_domain/DeploymentEntityStateQueryTemplateSelectors";
+import {
+  extractWithExtractorFromDomainState,
+  getExtractorRunnerParamsForDomainState,
+  GetExtractorRunnerParamsForDomainState,
+} from "../../2_domain/DomainStateQuerySelectors";
+import {
+  ExtractorTemplateRunnerForDomainState,
+  extractorTemplateRunnerForDomainState,
+  getExtractorTemplateRunnerParamsForDomainState,
+  GetSelectorParamsForTemplateOnDomainStateType
 } from "../../2_domain/DomainStateQueryTemplateSelector";
-import { resolvePathOnObject } from "../../tools";
+import { extractWithExtractor, ExtractWithExtractorType } from "../../2_domain/QuerySelectors";
+import { extractWithExtractorTemplate } from "../../2_domain/QueryTemplateSelectors";
+import { domainStateToDeploymentEntityState, resolvePathOnObject } from "../../tools";
 import domainStateImport from "./domainState.json";
 
 const domainState: DomainState = domainStateImport as DomainState;
+const deploymentEntityState: DeploymentEntityState = domainStateToDeploymentEntityState(domainState);
+
+// deploymentEntityStateQuerySelector: SyncExtractorRunner<QueryType, DeploymentEntityState, DomainElement>,
+
+// const deploymentEntityStateSelectorForTemplateMap = getDeploymentEntityStateSelectorTemplateMap();
+// const deploymentEntityStateSelectorMap = getDeploymentEntityStateSelectorMap();
+
+// const deploymentEntityStateSelectorMap: SyncExtractorRunnerMap<DeploymentEntityState> = useMemo(
+  //   () => getMemoizedDeploymentEntityStateSelectorForTemplateMap(),
+  //   []
+  // )
+  
+//   const partial: DomainElement = deploymentEntityStateQuerySelector(deploymentEntityState, params);
+// getExtractorRunnerParamsForDeploymentEntityState<ExtractorForRecordOfExtractors>(
+//   ,
+//   deploymentEntityStateSelectorMap
+// ),
+
 
 export interface TestExtractorParams {
-  queryTemplateParam?: ExtractorTemplateForRecordOfExtractors;
-  queryTemplateFunction?: ExtractWithExtractorFromDomainStateForTemplate;
-  queryParam?: ExtractorForRecordOfExtractors;
-  queryFunction?: SyncExtractorRunner<
+  extractorTemplate?: ExtractorTemplateForRecordOfExtractors;
+  extractor?: ExtractorForRecordOfExtractors;
+  // Domain State
+  extractorRunnerForDomainState?: SyncExtractorRunner<
     ExtractorForDomainModelObjects | ExtractorForRecordOfExtractors,
     DomainState,
     DomainElement
   >;
-  // queryFunction?: (
-  //   domainState: DomainState,
-  //   extractorAndParams: SyncExtractorRunnerParams<
-  //     ExtractorForRecordOfExtractors | ExtractorForDomainModelObjects,
-  //     DomainState
-  //   >
-  // ) => DomainElement;
-  testsOnResult: Record<
+  getExtractorRunnerParamsForDomainState?: GetExtractorRunnerParamsForDomainState;
+  extractorTemplateRunnerForDomainState?: ExtractorTemplateRunnerForDomainState;
+  getExtractorTemplateRunnerParamsForDomainState?: GetSelectorParamsForTemplateOnDomainStateType;
+  // Deployment Entity State
+  extractorRunnerForDeploymentEntityState?: ExtractWithExtractorType<DeploymentEntityState>;
+  getExtractorRunnerParamsForDeploymentEntityState?: GetExtractorRunnerParamsForDeploymentEntityState;
+  extractorTemplateRunnerForDeploymentEntityState?: SyncExtractorTemplateRunner<
+    ExtractorTemplateForDomainModelObjects | ExtractorTemplateForRecordOfExtractors,
+    DeploymentEntityState,
+    DomainElement
+  >;
+  getExtractorTemplateRunnerParamsForDeploymentEntityState?: GetExtractorTemplateRunnerParamsForDeploymentEntityState
+  //
+  testAssertions: Record<
     string,
     {
       resultAccessPath?: string[];
@@ -45,10 +86,22 @@ export interface TestExtractorParams {
   >;
 }
 
+const testExtractorTools = {
+    // Domain State
+    extractorRunnerForDomainState: extractWithExtractorFromDomainState,
+    getExtractorRunnerParamsForDomainState: getExtractorRunnerParamsForDomainState,
+    extractorTemplateRunnerForDomainState: extractorTemplateRunnerForDomainState,
+    getExtractorTemplateRunnerParamsForDomainState: getExtractorTemplateRunnerParamsForDomainState,
+    // Deployment Entity State
+    extractorRunnerForDeploymentEntityState: extractWithExtractor<DeploymentEntityState>,
+    getExtractorRunnerParamsForDeploymentEntityState: getExtractorRunnerParamsForDeploymentEntityState,
+    extractorTemplateRunnerForDeploymentEntityState: extractWithExtractorTemplate<DeploymentEntityState>,
+    getExtractorTemplateRunnerParamsForDeploymentEntityState: getExtractorTemplateRunnerParamsForDeploymentEntityState,
+}
 const testExtractorParams: Record<string, TestExtractorParams> = {
   // ###########################################################################################
   "error on non-existing Entity: EntityNotFound": {
-    queryTemplateParam: {
+    extractorTemplate: {
       queryType: "extractorTemplateForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -69,8 +122,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
-    queryTemplateFunction: extractWithExtractorFromDomainStateForTemplate,
-    queryParam:{
+    extractor:{
       queryType: "extractorForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -85,8 +137,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
-    queryFunction: extractWithExtractorFromDomainState,
-    testsOnResult: {
+    ...testExtractorTools,
+    testAssertions: {
       "test1": {
         expectedResult: {
           elementType: "object",
@@ -106,7 +158,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     }
   },
   "error on non-existing object uuid: InstanceNotFound": {
-    queryTemplateParam: {
+    extractorTemplate: {
       queryType: "extractorTemplateForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -127,8 +179,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
-    queryTemplateFunction: extractWithExtractorFromDomainStateForTemplate,
-    queryParam: {
+    extractor: {
       queryType: "extractorForRecordOfExtractors",
       "deploymentUuid": adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -143,8 +194,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         }
       }
     },
-    queryFunction: extractWithExtractorFromDomainState,
-    testsOnResult: {
+    ...testExtractorTools,
+    testAssertions: {
       "test1": {
         expectedResult: {
           elementType: "object",
@@ -165,7 +216,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     }
   },
   "select 1 object from Domain State": {
-    queryTemplateParam: {
+    extractorTemplate: {
       queryType: "extractorTemplateForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -186,8 +237,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
-    queryTemplateFunction: extractWithExtractorFromDomainStateForTemplate,
-    queryParam: {
+    extractor: {
       queryType: "extractorForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -202,8 +252,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
-    queryFunction: extractWithExtractorFromDomainState,
-    testsOnResult: {
+    ...testExtractorTools,
+    testAssertions: {
       "test1": {
         expectedResult: {
           elementType: "object",
@@ -217,7 +267,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     }
   },
   "select 1 object from Domain State using context reference": {
-    queryTemplateParam: {
+    extractorTemplate: {
       queryType: "extractorTemplateForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -244,8 +294,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
-    queryTemplateFunction: extractWithExtractorFromDomainStateForTemplate,
-    queryParam: {
+    extractor: {
       queryType: "extractorForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -266,8 +315,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
-    queryFunction: extractWithExtractorFromDomainState,
-    testsOnResult: {
+    ...testExtractorTools,
+    testAssertions: {
       "test1": {
         expectedResult:
         domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"][
@@ -278,7 +327,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     }
   },
   "select 1 object from Domain State using direct query parameter reference": {
-    queryTemplateParam: {
+    extractorTemplate: {
       queryType: "extractorTemplateForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -299,8 +348,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
-    queryTemplateFunction: extractWithExtractorFromDomainStateForTemplate,
-    queryParam: {
+    extractor: {
       queryType: "extractorForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: { },
@@ -317,8 +365,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       runtimeTransformers: {
       },
     },
-    queryFunction: extractWithExtractorFromDomainState,
-    testsOnResult: {
+    ...testExtractorTools,
+    testAssertions: {
       "test1": {
         expectedResult: 
         domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"][
@@ -329,7 +377,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     }
   },
   "select 1 object from the uuid found in an attribute of another object from Domain State": {
-    queryTemplateParam: {
+    extractorTemplate: {
       queryType: "extractorTemplateForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -366,8 +414,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
-    queryTemplateFunction: extractWithExtractorFromDomainStateForTemplate,
-    queryParam: {
+    extractor: {
       queryType: "extractorForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -393,8 +440,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       runtimeTransformers: {
       },
     },
-    queryFunction: extractWithExtractorFromDomainState,
-    testsOnResult: {
+    ...testExtractorTools,
+    testAssertions: {
       "test1": {
         expectedResult:
         domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["a027c379-8468-43a5-ba4d-bf618be25cab"][
@@ -405,7 +452,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     }
   },
   "select Authors": {
-    queryTemplateParam: {
+    extractorTemplate: {
       queryType: "extractorTemplateForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -431,8 +478,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
       runtimeTransformers: {},
     },
-    queryTemplateFunction: extractWithExtractorFromDomainStateForTemplate,
-    queryParam: {
+    extractor: {
       queryType: "extractorForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -456,8 +502,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       runtimeTransformers: {
       },
     },
-    queryFunction: extractWithExtractorFromDomainState,
-    testsOnResult: {
+    ...testExtractorTools,
+    testAssertions: {
       "test1": {
         expectedResult: Object.values({
           '4441169e-0c22-4fbc-81b2-28c87cf48ab2': {
@@ -492,7 +538,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     }
   },
   "select Authors with filter": {
-    queryTemplateParam: {
+    extractorTemplate: {
       queryType: "extractorTemplateForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -524,8 +570,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
-    queryTemplateFunction: extractWithExtractorFromDomainStateForTemplate,
-    queryParam: {
+    extractor: {
       queryType: "extractorForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -551,8 +596,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
-    queryFunction: extractWithExtractorFromDomainState,
-    testsOnResult: {
+    ...testExtractorTools,
+    testAssertions: {
       "test1": {
         expectedResult: Object.values({
           '4441169e-0c22-4fbc-81b2-28c87cf48ab2': {
@@ -574,7 +619,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     }
   },
   "select Books of Publisher of given Book from Domain State": {
-    queryTemplateParam: {
+    extractorTemplate: {
       queryType: "extractorTemplateForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -635,8 +680,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       runtimeTransformers: {
       },
     },
-    queryTemplateFunction: extractWithExtractorFromDomainStateForTemplate,
-    queryParam: {
+    extractor: {
       queryType: "extractorForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -677,8 +721,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       runtimeTransformers: {
       },
     },
-    queryFunction: extractWithExtractorFromDomainState,
-    testsOnResult: {
+    ...testExtractorTools,
+    testAssertions: {
       "test1": {
         expectedResult: Object.values({
           "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7": domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
@@ -690,7 +734,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     }
   },
   "select custom-built result: Books of Publisher of given Book from Domain State": {
-    queryTemplateParam: {
+    extractorTemplate: {
       queryType: "extractorTemplateForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -765,8 +809,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
-    queryTemplateFunction: extractWithExtractorFromDomainStateForTemplate,
-    queryParam: {
+    extractor: {
       queryType: "extractorForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -821,8 +864,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
-    queryFunction: extractWithExtractorFromDomainState,
-    testsOnResult: {
+    ...testExtractorTools,
+    testAssertions: {
       "test1": {
         expectedResult: Object.values({
           "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7": domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
@@ -852,7 +895,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     }
   },
   "select custom-built result with queryCombiner: instances of all Entites from Domain State, indexed by Entity Uuid": {
-    queryTemplateParam: {
+    extractorTemplate: {
       queryType: "extractorTemplateForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -905,8 +948,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
-    queryTemplateFunction: extractWithExtractorFromDomainStateForTemplate,
-    queryParam: {
+    extractor: {
       queryType: "extractorForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -956,8 +998,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
-    queryFunction: extractWithExtractorFromDomainState,
-    testsOnResult: {
+    ...testExtractorTools,
+    testAssertions: {
       "test1": {
         // expectedResult: domainState[adminConfigurationDeploymentLibrary.uuid]["data"],
         expectedResult: 
@@ -973,7 +1015,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     }
   },
   "select Unique Publisher Uuids of Books": {
-    queryTemplateParam: {
+    extractorTemplate: {
       queryType: "extractorTemplateForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -1006,8 +1048,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
-    queryTemplateFunction: extractWithExtractorFromDomainStateForTemplate,
-    queryParam: {
+    extractor: {
       queryType: "extractorForRecordOfExtractors",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
@@ -1037,8 +1078,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
-    queryFunction: extractWithExtractorFromDomainState,
-    testsOnResult: {
+    ...testExtractorTools,
+    testAssertions: {
       "test1": {
         expectedResult: [
           { publisher: "516a7366-39e7-4998-82cb-80199a7fa667" },
@@ -1052,47 +1093,81 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
 };
 
 
-describe("extractWithExtractorFromDomainStateForTemplate.unit", () => {
+describe("extractors.unit", () => {
   // ###########################################################################################
   it.each(Object.entries(testExtractorParams))('test %s', (currentTestName, testParams:TestExtractorParams) => {
     console.info("STARTING test:", currentTestName);
     expect(currentTestName != undefined).toBeTruthy();
-    expect(testExtractorParams[currentTestName] !== undefined).toBeTruthy();
-    expect(testExtractorParams[currentTestName].queryTemplateParam).toBeDefined();
-    expect(testExtractorParams[currentTestName].testsOnResult).toBeDefined();
-    if (testExtractorParams[currentTestName].queryTemplateParam && testExtractorParams[currentTestName].queryTemplateFunction) {
-      const queryTemplateParam: ExtractorTemplateForRecordOfExtractors = testParams.queryTemplateParam as any;
-      const queryTemplateFunction: ExtractWithExtractorFromDomainStateForTemplate = testParams.queryTemplateFunction as any;
-      const preTemplateResult = queryTemplateFunction(
-        domainState,
-        getSelectorParamsForTemplateOnDomainState(queryTemplateParam)
-      ) as any;
-      for (const [testName, testParams] of Object.entries(testExtractorParams[currentTestName].testsOnResult)) {
-        console.info(`running extractor Template test named: ${currentTestName} ${testName}`);
-        const result = resolvePathOnObject(preTemplateResult, testParams.resultAccessPath ?? []);
-        // console.info(`For test named ${currentTestName} ${testName} Template result: `, result);
-        // console.info(`For test named ${currentTestName} ${testName} expected Template result: `, testParams.expectedResult);
-        expect(result).toEqual(testParams.expectedResult);
+    expect(testParams.testAssertions).toBeDefined();
+    // Testing Extractors
+    if (testParams.extractor) {
+      // Domain State
+      if (testParams.extractorRunnerForDomainState && testParams.getExtractorRunnerParamsForDomainState) {
+        const preResult = testParams.extractorRunnerForDomainState(
+          domainState,
+          getExtractorRunnerParamsForDomainState(testParams.extractor)
+        );
+        for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
+          console.info(`running extractor for Domain State test assertion: ${currentTestName} ${testAssertionName}`);
+          const result = resolvePathOnObject(preResult, testAssertionParams.resultAccessPath ?? []);
+          // console.info(`For test named ${currentTestName} ${testName} result: `, result);
+          // console.info(`For test named ${currentTestName} ${testName} expected result: `, testParams.expectedResult);
+          expect(result).toEqual(testAssertionParams.expectedResult);
+        }
+      }
+      // Deployment Entity State
+      if (testParams.extractorRunnerForDeploymentEntityState && testParams.getExtractorRunnerParamsForDeploymentEntityState) {
+        const preResult = testParams.extractorRunnerForDeploymentEntityState(
+          deploymentEntityState,
+          getExtractorRunnerParamsForDeploymentEntityState(testParams.extractor)
+        );
+        for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
+          console.info(`running extractor for DeploymentEntityState test assertion: ${currentTestName} ${testAssertionName}`);
+          const result = resolvePathOnObject(preResult, testAssertionParams.resultAccessPath ?? []);
+          // console.info(`For test named ${currentTestName} ${testName} result: `, result);
+          // console.info(`For test named ${currentTestName} ${testName} expected result: `, testParams.expectedResult);
+          expect(result).toEqual(testAssertionParams.expectedResult);
+        }
+      }
+    }
+    // ################################################################################################
+    // Testing Extractor Templates
+    if (testParams.extractorTemplate) {
+      // Domain State
+      if (
+        testParams.extractorTemplateRunnerForDomainState &&
+        testParams.getExtractorTemplateRunnerParamsForDomainState
+      ) {
+        const preTemplateResult = testParams.extractorTemplateRunnerForDomainState(
+          domainState,
+          testParams.getExtractorTemplateRunnerParamsForDomainState(testParams.extractorTemplate)
+        ) as any;
+        for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
+          console.info(`running extractor Template for DomainState test assertion: ${currentTestName} ${testAssertionName}`);
+          const result = resolvePathOnObject(preTemplateResult, testAssertionParams.resultAccessPath ?? []);
+          // console.info(`For test named ${currentTestName} ${testName} Template result: `, result);
+          // console.info(`For test named ${currentTestName} ${testName} expected Template result: `, testParams.expectedResult);
+          expect(result).toEqual(testAssertionParams.expectedResult);
+        }
+      }
+      // Deployment Entity State
+      if (
+        testParams.extractorTemplateRunnerForDeploymentEntityState &&
+        testParams.getExtractorTemplateRunnerParamsForDeploymentEntityState
+      ) {
+        const preTemplateResult = testParams.extractorTemplateRunnerForDeploymentEntityState(
+          deploymentEntityState,
+          testParams.getExtractorTemplateRunnerParamsForDeploymentEntityState(testParams.extractorTemplate)
+        ) as any;
+        for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
+          console.info(`running extractor Template for DeploymentEntityState test assertion: ${currentTestName} ${testAssertionName}`);
+          const result = resolvePathOnObject(preTemplateResult, testAssertionParams.resultAccessPath ?? []);
+          // console.info(`For test named ${currentTestName} ${testName} Template result: `, result);
+          // console.info(`For test named ${currentTestName} ${testName} expected Template result: `, testParams.expectedResult);
+          expect(result).toEqual(testAssertionParams.expectedResult);
+        }
       }
     }
 
-    if (testExtractorParams[currentTestName].queryParam && testExtractorParams[currentTestName].queryFunction) {
-      const queryParam: ExtractorForRecordOfExtractors = testParams.queryParam as any;
-      const queryFunction: SyncExtractorRunner<
-      ExtractorForDomainModelObjects | ExtractorForRecordOfExtractors,
-      DomainState,
-      DomainElement > = testParams.queryFunction as any;
-      const preResult = queryFunction(
-        domainState,
-        getSelectorParams(queryParam)
-      );
-      for (const [testName, testParams] of Object.entries(testExtractorParams[currentTestName].testsOnResult)) {
-        console.info(`running extractor test named: ${currentTestName} ${testName}`);
-        const result = resolvePathOnObject(preResult, testParams.resultAccessPath ?? []);
-        // console.info(`For test named ${currentTestName} ${testName} result: `, result);
-        // console.info(`For test named ${currentTestName} ${testName} expected result: `, testParams.expectedResult);
-        expect(result).toEqual(testParams.expectedResult);
-      }
-    }
   });
 });
