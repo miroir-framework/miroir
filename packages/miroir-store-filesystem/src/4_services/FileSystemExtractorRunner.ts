@@ -24,7 +24,7 @@ import {
   MiroirLoggerFactory,
   PersistenceStoreInstanceSectionAbstractInterface,
   QueryAction,
-  ExtractorForObject,
+  ExtractorOrCombinerReturningObject,
   selectEntityJzodSchemaFromDomainStateNew,
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
@@ -115,7 +115,7 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
   > = async (
     selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObject>
   ): Promise<DomainElementEntityInstanceOrFailed> => {
-    const querySelectorParams: ExtractorForObject = selectorParams.extractor.select as ExtractorForObject;
+    const querySelectorParams: ExtractorOrCombinerReturningObject = selectorParams.extractor.select as ExtractorOrCombinerReturningObject;
     const deploymentUuid = selectorParams.extractor.deploymentUuid;
     const applicationSection: ApplicationSection =
       selectorParams.extractor.select.applicationSection ??
@@ -133,7 +133,7 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
       entityUuidReference
     );
     switch (querySelectorParams?.queryType) {
-      case "combinerForObjectByRelation": {
+      case "extractorCombinerForObjectByRelation": {
         // const referenceObject = querySelectorParams.objectReference;
         const referenceObject = transformer_InnerReference_resolve(
           "build",
@@ -151,7 +151,7 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
             elementType: "failure",
             elementValue: {
               queryFailure: "IncorrectParameters",
-              failureOrigin: ["FileSystemExtractorRunner", "combinerForObjectByRelation"],
+              failureOrigin: ["FileSystemExtractorRunner", "extractorCombinerForObjectByRelation"],
               queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
               queryContext: JSON.stringify(selectorParams.extractor.contextResults),
             },
@@ -176,7 +176,7 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
           };
         }
         // log.info(
-        //   "extractEntityInstance combinerForObjectByRelation, ############# reference",
+        //   "extractEntityInstance extractorCombinerForObjectByRelation, ############# reference",
         //   querySelectorParams,
         //   "######### context entityUuid",
         //   entityUuidReference,

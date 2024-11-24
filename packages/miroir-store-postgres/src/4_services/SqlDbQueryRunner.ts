@@ -28,7 +28,7 @@ import {
   MiroirLoggerFactory,
   MiroirQuery,
   QueryAction,
-  ExtractorForObject,
+  ExtractorOrCombinerReturningObject,
   selectEntityJzodSchemaFromDomainStateNew,
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
@@ -389,7 +389,7 @@ export class SqlDbQueryRunner {
   ): DomainElement {
     // TODO: fetch parentName from parentUuid in query!
     switch (query.queryType) {
-      case "extractorForObjectListByEntity":
+      case "extractorByEntityReturningObjectList":
       case "extractorForObjectByDirectReference": {
         throw new Error("asyncInnerSelectElementFromQuery queryType not implemented: " + JSON.stringify(query));
         // const result = this.persistenceStoreController.sqlForExtractor(query)
@@ -405,7 +405,7 @@ export class SqlDbQueryRunner {
       case "wrapperReturningList": {
         throw new Error("asyncInnerSelectElementFromQuery queryType not implemented: " + JSON.stringify(query));
       }
-      case "combinerForObjectByRelation": {
+      case "extractorCombinerForObjectByRelation": {
         // TODO: deal with name clashes
         const result = `
           SELECT "${query.parentName}".* FROM "${this.schema}"."${query.parentName}", "${query.objectReference}"
@@ -418,7 +418,7 @@ export class SqlDbQueryRunner {
           },
         }
       }
-      case "combinerForObjectListByRelation": {
+      case "combinerByRelationReturningObjectList": {
         const result = `
         SELECT "${query.parentName}".* FROM "${this.schema}"."${query.parentName}", "${query.objectReference}"
         WHERE "${query.parentName}"."${query.AttributeOfListObjectToCompareToReferenceUuid}" = "${query.objectReference}"."uuid"`;
@@ -430,8 +430,8 @@ export class SqlDbQueryRunner {
           },
         }
       }
-      case "combinerForObjectListByManyToManyRelation":
-      case "queryCombiner":
+      case "combinerByManyToManyRelationReturningObjectList":
+      case "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList":
       case "literal":
       case "queryContextReference": {
         throw new Error("asyncInnerSelectElementFromQuery queryType not implemented: " + JSON.stringify(query));
@@ -571,11 +571,11 @@ export class SqlDbQueryRunner {
     // ): Promise<DomainElementInstanceUuidIndexOrFailed> {
     let result: Promise<DomainElementInstanceArrayOrFailed>;
     switch (selectorParams.extractor.select.queryType) {
-      case "extractorForObjectListByEntity": {
+      case "extractorByEntityReturningObjectList": {
         return this.extractEntityInstanceListWithFilter(selectorParams);
       }
-      case "combinerForObjectListByRelation":
-      case "combinerForObjectListByManyToManyRelation": {
+      case "combinerByRelationReturningObjectList":
+      case "combinerByManyToManyRelationReturningObjectList": {
         // return this.extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor({ // this is actually a recursive call
         //   extractorRunnerMap: this.extractorRunnerMap,
         if (!selectorParams.extractorRunnerMap) {
@@ -630,11 +630,11 @@ export class SqlDbQueryRunner {
     // ): Promise<DomainElementInstanceUuidIndexOrFailed> {
     let result: Promise<DomainElementInstanceUuidIndexOrFailed>;
     switch (selectorParams.extractor.select.queryType) {
-      case "extractorForObjectListByEntity": {
+      case "extractorByEntityReturningObjectList": {
         return this.extractEntityInstanceUuidIndexWithFilter(selectorParams);
       }
-      case "combinerForObjectListByRelation":
-      case "combinerForObjectListByManyToManyRelation": {
+      case "combinerByRelationReturningObjectList":
+      case "combinerByManyToManyRelationReturningObjectList": {
         // return this.extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractor({ // this is actually a recursive call
         //   extractorRunnerMap: this.extractorRunnerMap,
         if (!selectorParams.extractorRunnerMap) {
@@ -726,7 +726,7 @@ export class SqlDbQueryRunner {
   > = async (
     selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObject>
   ): Promise<DomainElementEntityInstanceOrFailed> => {
-    const querySelectorParams: ExtractorForObject = selectorParams.extractor.select as ExtractorForObject;
+    const querySelectorParams: ExtractorOrCombinerReturningObject = selectorParams.extractor.select as ExtractorOrCombinerReturningObject;
     const deploymentUuid = selectorParams.extractor.deploymentUuid;
     const applicationSection: ApplicationSection =
       selectorParams.extractor.select.applicationSection ??
@@ -744,7 +744,7 @@ export class SqlDbQueryRunner {
     );
 
     switch (querySelectorParams?.queryType) {
-      case "combinerForObjectByRelation": {
+      case "extractorCombinerForObjectByRelation": {
         const referenceObject = transformer_InnerReference_resolve(
           "build",
           { transformerType: "contextReference", referenceName: querySelectorParams.objectReference },
@@ -762,7 +762,7 @@ export class SqlDbQueryRunner {
             elementValue: {
               queryFailure: "IncorrectParameters",
               failureMessage:
-                "sqlDbExtractorRunner combinerForObjectByRelation objectReference not found:" +
+                "sqlDbExtractorRunner extractorCombinerForObjectByRelation objectReference not found:" +
                 JSON.stringify(querySelectorParams.objectReference),
               query: JSON.stringify(querySelectorParams),
               queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
@@ -788,7 +788,7 @@ export class SqlDbQueryRunner {
           };
         }
         // log.info(
-        //   "extractEntityInstance combinerForObjectByRelation, ############# reference",
+        //   "extractEntityInstance extractorCombinerForObjectByRelation, ############# reference",
         //   querySelectorParams,
         //   "######### context entityUuid",
         //   entityUuidReference,
@@ -962,7 +962,7 @@ export class SqlDbQueryRunner {
 
     let entityInstanceCollection: ActionEntityInstanceCollectionReturnType;
     if (
-      extractorRunnerParams.extractor.select.queryType == "extractorForObjectListByEntity" &&
+      extractorRunnerParams.extractor.select.queryType == "extractorByEntityReturningObjectList" &&
       extractorRunnerParams.extractor.select.filter
     ) {
       entityInstanceCollection = await this.persistenceStoreController.getInstancesWithFilter(

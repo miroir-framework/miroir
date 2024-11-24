@@ -139,7 +139,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
           definition: {
             extractors: {
               instanceList: {
-                queryType: "extractorForObjectListByEntity",
+                queryType: "extractorByEntityReturningObjectList",
                 parentName: {
                   transformerType: "parameterReference",
                   referenceName: "createEntity_newEntityName",
@@ -683,7 +683,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
                     definition: {
                       extractors: {
                         instanceList: {
-                          queryType: "extractorForObjectListByEntity",
+                          queryType: "extractorByEntityReturningObjectList",
                           parentName: "newEntityName",
                           parentUuid: "c4b3b3b3-7b3b-4b3b-8b3b-3b3b3b3b3b3b",
                         },

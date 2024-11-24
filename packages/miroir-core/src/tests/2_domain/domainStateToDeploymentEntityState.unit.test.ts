@@ -947,7 +947,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                         definition: {
                           type: {
                             type: "literal",
-                            definition: "combinerForObjectListByRelation",
+                            definition: "combinerByRelationReturningObjectList",
                           },
                           label: {
                             type: "simpleType",
@@ -3855,7 +3855,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                 parameters: {},
                 selectData: {
                   books: {
-                    type: "combinerForObjectListByRelation",
+                    type: "combinerByRelationReturningObjectList",
                     parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
                   },
                 },
@@ -3931,7 +3931,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                     fetchedDataReferenceAttribute: "publisher",
                   },
                   booksOfPublisher: {
-                    type: "combinerForObjectListByRelation",
+                    type: "combinerByRelationReturningObjectList",
                     parentName: "Book",
                     parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
                     entityUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",

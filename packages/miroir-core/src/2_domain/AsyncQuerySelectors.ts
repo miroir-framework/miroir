@@ -138,9 +138,9 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
     }
     // ############################################################################################
     // Impure Monads
-    case "extractorForObjectListByEntity":
-    case "combinerForObjectListByRelation": 
-    case "combinerForObjectListByManyToManyRelation": {
+    case "extractorByEntityReturningObjectList":
+    case "combinerByRelationReturningObjectList": 
+    case "combinerByManyToManyRelationReturningObjectList": {
       // return extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractor({
       return extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor({
         extractorRunnerMap,
@@ -161,7 +161,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
       });
       break;
     }
-    case "combinerForObjectByRelation":
+    case "extractorCombinerForObjectByRelation":
     case "extractorForObjectByDirectReference": {
       return extractorRunnerMap.extractEntityInstance({
         extractorRunnerMap,
@@ -227,16 +227,30 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
       });
       break;
     }
-    case "queryCombiner": { // join
-      const rootQueryResults = asyncInnerSelectElementFromQuery(
-        newFetchedData,
-        pageParams,
-        queryParams,
-        extractorRunnerMap,
-        deploymentUuid,
-        extractors,
-        query.rootExtractorOrReference
-      );
+    case "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList": { // join
+      const rootQueryResults =
+        typeof query.rootExtractorOrReference == "string"
+          ? asyncInnerSelectElementFromQuery(
+              newFetchedData,
+              pageParams,
+              queryParams,
+              extractorRunnerMap,
+              deploymentUuid,
+              extractors,
+              {
+                queryType: "queryContextReference",
+                queryReference: query.rootExtractorOrReference,
+              }
+            )
+          : asyncInnerSelectElementFromQuery(
+              newFetchedData,
+              pageParams,
+              queryParams,
+              extractorRunnerMap,
+              deploymentUuid,
+              extractors,
+              query.rootExtractorOrReference
+            );
       return rootQueryResults.then((rootQueryResults) => {
         if (rootQueryResults.elementType == "instanceUuidIndex") {
           const entries = Object.entries(rootQueryResults.elementValue);

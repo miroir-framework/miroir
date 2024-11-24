@@ -23,7 +23,7 @@
     },
     "combinerTemplates": {
       "booksOfPublisher": {
-        "queryType": "combinerForObjectListByRelation",
+        "queryType": "combinerByRelationReturningObjectList",
         "parentName": "Book",
         "parentUuid": {
           "transformerType": "constantUuid",

@@ -18,7 +18,7 @@ import {
   ExtractorForSingleObjectList,
   ExtractorTemplateForRecordOfExtractors,
   JzodObject,
-  ExtractorForObject
+  ExtractorOrCombinerReturningObject
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   ExtractorRunnerMapForJzodSchema,
@@ -198,7 +198,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
   domainState: DomainState,
   selectorParams: SyncExtractorRunnerParams<ExtractorForSingleObject, DomainState>
 ): DomainElementEntityInstanceOrFailed => {
-  const querySelectorParams: ExtractorForObject = selectorParams.extractor.select as ExtractorForObject;
+  const querySelectorParams: ExtractorOrCombinerReturningObject = selectorParams.extractor.select as ExtractorOrCombinerReturningObject;
   const deploymentUuid = selectorParams.extractor.deploymentUuid;
   const applicationSection: ApplicationSection =
     selectorParams.extractor.select.applicationSection ??
@@ -229,7 +229,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
   // }
 
   switch (querySelectorParams?.queryType) {
-    case "combinerForObjectByRelation": {
+    case "extractorCombinerForObjectByRelation": {
       const referenceObject = transformer_InnerReference_resolve(
         "build",
         { transformerType: "contextReference", referenceName: querySelectorParams.objectReference },
@@ -248,7 +248,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
             queryFailure: "IncorrectParameters",
             queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
             queryContext:
-              "DomainStateQuerySelectors combinerForObjectByRelation did not find AttributeOfObjectToCompareToReferenceUuid in " +
+              "DomainStateQuerySelectors extractorCombinerForObjectByRelation did not find AttributeOfObjectToCompareToReferenceUuid in " +
               JSON.stringify(querySelectorParams),
           },
         };
@@ -279,7 +279,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
       }
 
       // log.info(
-      //   "selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation, ############# reference",
+      //   "selectEntityInstanceFromObjectQueryAndDomainState extractorCombinerForObjectByRelation, ############# reference",
       //   querySelectorParams,
       //   "######### context entityUuid",
       //   entityUuidReference,

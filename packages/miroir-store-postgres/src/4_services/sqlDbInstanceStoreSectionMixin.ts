@@ -18,7 +18,7 @@ import {
   QueryTemplateSelectExtractorWrapper,
   ExtractorForSingleObjectList,
   ExtractorForSingleObject,
-  QuerySelectExtractorWrapper,
+  ExtractorWrapper,
   ExtractorForRecordOfExtractors,
   QueryAction,
 } from "miroir-core";
@@ -79,7 +79,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       extractor:
         | ExtractorForSingleObjectList
         | ExtractorForSingleObject
-        | QuerySelectExtractorWrapper
+        | ExtractorWrapper
         | ExtractorForRecordOfExtractors
     ): RecursiveStringRecords {
       // log.info(this.logHeader, "sqlForExtractor called with parameter", "extractor", extractor);
@@ -92,7 +92,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       // // log.info(this.logHeader, "sqlForExtractor called with queryGenerator", this.sequelize.getQueryInterface().queryGenerator);
       // log.info(this.logHeader, "sqlForExtractor called with selectQuery", (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery);
       switch (extractor.queryType) {
-        case "extractorForObjectListByEntity": {
+        case "extractorByEntityReturningObjectList": {
           // TODO: use queryGenerator?
           // where: { [filter.attribute]: { [Op.like]: "%" + filter.value + "%" } },
           return `SELECT * FROM "${this.schema}"."${extractor.parentName}"` + (extractor.filter ? ` WHERE ${extractor.filter.attributeName} LIKE '%${extractor.filter.value}%'`  : "");

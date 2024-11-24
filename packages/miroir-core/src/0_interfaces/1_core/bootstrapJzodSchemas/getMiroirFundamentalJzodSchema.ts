@@ -22,7 +22,7 @@ import { packageName } from "../../../constants";
 import { getLoggerName } from "../../../tools";
 import { LoggerInterface } from "../../4-services/LoggerInterface";
 import {
-  extractorForObject,
+  extractorOrCombinerReturningObject,
   extractorForRecordOfExtractors,
   JzodElement,
   transformerForBuild_list_pickElement,
@@ -1449,7 +1449,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorForObject", // TODO: is this still an extractor, while it includes queryTemplateSelectObjectByRelation?
+                relativePath: "extractorOrCombinerReturningObject", // TODO: is this still an extractor, while it includes queryTemplateSelectObjectByRelation?
               },
             },
           },
@@ -1473,7 +1473,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorOrCombinerForObjectList",
+                relativePath: "extractorOrExtractorCombinerReturningObjectList",
               },
             },
           },
@@ -1524,7 +1524,7 @@ export function getMiroirFundamentalJzodSchema(
                 type: "schemaReference",
                 definition: {
                   absolutePath: miroirFundamentalJzodSchemaUuid,
-                  relativePath: "querySelectExtractorWrapper",
+                  relativePath: "extractorWrapper",
                 },
               },
             },
@@ -1757,7 +1757,7 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             queryType: {
               type: "literal",
-              definition: "getSingleSelectQueryJzodSchema",
+              definition: "getQueryJzodSchema",
             },
             select: {
               type: "schemaReference",
@@ -1781,7 +1781,7 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             queryType: {
               type: "literal",
-              definition: "getSingleSelectQueryJzodSchema",
+              definition: "getQueryJzodSchema",
             },
             select: {
               type: "schemaReference",
@@ -2513,24 +2513,24 @@ export function getMiroirFundamentalJzodSchema(
         // domainElementObject: (miroirFundamentalJzodSchema as any).definition.context.domainElementObject,
         // root elements
         domainModelRootExtractor: (miroirFundamentalJzodSchema as any).definition.context.domainModelRootExtractor,
-        querySelectExtractorWrapperReturningList: (miroirFundamentalJzodSchema as any).definition.context.querySelectExtractorWrapperReturningList,
-        querySelectExtractorWrapperReturningObject: (miroirFundamentalJzodSchema as any).definition.context.querySelectExtractorWrapperReturningObject,
-        extractorForObject: (miroirFundamentalJzodSchema as any).definition.context.extractorForObject,
+        extractorWrapperReturningList: (miroirFundamentalJzodSchema as any).definition.context.extractorWrapperReturningList,
+        extractorWrapperReturningObject: (miroirFundamentalJzodSchema as any).definition.context.extractorWrapperReturningObject,
+        extractorOrCombinerReturningObject: (miroirFundamentalJzodSchema as any).definition.context.extractorOrCombinerReturningObject,
         extractor: (miroirFundamentalJzodSchema as any).definition.context.extractor,
         extractorForSingleObject: (miroirFundamentalJzodSchema as any).definition.context.extractorForSingleObject,
         extractorForSingleObjectList: (miroirFundamentalJzodSchema as any).definition.context.extractorForSingleObjectList,
         extractorForRecordOfExtractors: (miroirFundamentalJzodSchema as any).definition.context.extractorForRecordOfExtractors,
         extractorForDomainModelObjects: (miroirFundamentalJzodSchema as any).definition.context.extractorForDomainModelObjects,
-        extractorForObjectListByEntity: (miroirFundamentalJzodSchema as any).definition.context.extractorForObjectListByEntity,
+        extractorByEntityReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.extractorByEntityReturningObjectList,
         extractorForObjectByDirectReference: (miroirFundamentalJzodSchema as any).definition.context.extractorForObjectByDirectReference,
-        querySelectExtractorWrapper: (miroirFundamentalJzodSchema as any).definition.context.querySelectExtractorWrapper,
+        extractorWrapper: (miroirFundamentalJzodSchema as any).definition.context.extractorWrapper,
         queryRoot: (miroirFundamentalJzodSchema as any).definition.context.queryRoot,
         queryAction: (miroirFundamentalJzodSchema as any).definition.context.queryAction,
-        extractorOrCombinerForObjectList: (miroirFundamentalJzodSchema as any).definition.context.extractorOrCombinerForObjectList,
-        combinerForObjectByRelation: (miroirFundamentalJzodSchema as any).definition.context.combinerForObjectByRelation,
-        combinerForObjectListByRelation: (miroirFundamentalJzodSchema as any).definition.context.combinerForObjectListByRelation,
-        combinerForObjectListByManyToManyRelation: (miroirFundamentalJzodSchema as any).definition.context.combinerForObjectListByManyToManyRelation,
-        queryCombiner: (miroirFundamentalJzodSchema as any).definition.context.queryCombiner,
+        extractorOrExtractorCombinerReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.extractorOrExtractorCombinerReturningObjectList,
+        extractorCombinerForObjectByRelation: (miroirFundamentalJzodSchema as any).definition.context.extractorCombinerForObjectByRelation,
+        combinerByRelationReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.combinerByRelationReturningObjectList,
+        combinerByManyToManyRelationReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.combinerByManyToManyRelationReturningObjectList,
+        extractorCombinerByHeteronomousManyToManyReturningListOfObjectList: (miroirFundamentalJzodSchema as any).definition.context.extractorCombinerByHeteronomousManyToManyReturningListOfObjectList,
         // queryContextReference: (miroirFundamentalJzodSchema as any).definition.context.queryContextReference,
         miroirQuery: (miroirFundamentalJzodSchema as any).definition.context.miroirQuery,
         queryRecord: (miroirFundamentalJzodSchema as any).definition.context.queryRecord,

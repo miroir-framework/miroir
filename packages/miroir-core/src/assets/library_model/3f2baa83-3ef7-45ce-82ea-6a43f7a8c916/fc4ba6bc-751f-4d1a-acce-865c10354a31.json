@@ -23,7 +23,7 @@
     },
     "combinerTemplates": {
       "publishersOfCountry": {
-        "queryType": "combinerForObjectListByRelation",
+        "queryType": "combinerByRelationReturningObjectList",
         "parentName": "Publisher",
         "parentUuid": {
           "transformerType": "constantUuid",

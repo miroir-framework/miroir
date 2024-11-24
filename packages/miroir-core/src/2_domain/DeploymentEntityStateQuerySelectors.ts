@@ -9,7 +9,7 @@ import {
   ExtractorForSingleObject,
   ExtractorForSingleObjectList,
   JzodObject,
-  ExtractorForObject
+  ExtractorOrCombinerReturningObject
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface";
 import {
@@ -62,7 +62,7 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorRunner<
   deploymentEntityState: DeploymentEntityState,
   selectorParams: SyncExtractorRunnerParams<ExtractorForSingleObject, DeploymentEntityState>
 ): DomainElementEntityInstanceOrFailed => {
-  const querySelectorParams = selectorParams.extractor.select as ExtractorForObject;
+  const querySelectorParams = selectorParams.extractor.select as ExtractorOrCombinerReturningObject;
   const deploymentUuid = selectorParams.extractor.deploymentUuid;
   const applicationSection: ApplicationSection =
     selectorParams.extractor.select.applicationSection ??
@@ -95,7 +95,7 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorRunner<
   const index = getDeploymentEntityStateIndex(deploymentUuid, applicationSection, entityUuidReference);
 
   switch (querySelectorParams?.queryType) {
-    case "combinerForObjectByRelation": {
+    case "extractorCombinerForObjectByRelation": {
       // TODO: reference object is implicitly a contextReference here, should be made explicit?!
       const referenceObject = transformer_InnerReference_resolve(
         "runtime",
@@ -109,14 +109,14 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorRunner<
           elementType: "failure",
           elementValue: {
             queryFailure: "ReferenceNotFound",
-            queryContext: "selectEntityInstanceFromDeploymentEntityState combinerForObjectByRelation " + JSON.stringify(referenceObject),
+            queryContext: "selectEntityInstanceFromDeploymentEntityState extractorCombinerForObjectByRelation " + JSON.stringify(referenceObject),
           },
         };
         
       }
       if (!querySelectorParams.AttributeOfObjectToCompareToReferenceUuid) {
         log.error(
-          "selectEntityInstanceFromDeploymentEntityState combinerForObjectByRelation, querySelectorParams",
+          "selectEntityInstanceFromDeploymentEntityState extractorCombinerForObjectByRelation, querySelectorParams",
           querySelectorParams,
           "entityUuid",
           entityUuidReference,
@@ -152,7 +152,7 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorRunner<
       }
 
       // log.info(
-      //   "selectEntityInstanceFromDeploymentEntityState combinerForObjectByRelation, ############# reference",
+      //   "selectEntityInstanceFromDeploymentEntityState extractorCombinerForObjectByRelation, ############# reference",
       //   querySelectorParams,
       //   "######### context entityUuid",
       //   entityUuidReference,

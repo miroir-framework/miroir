@@ -20,7 +20,7 @@
     },
     "combinerTemplates": {
       "booksOfAuthor": {
-        "queryType": "combinerForObjectListByRelation",
+        "queryType": "combinerByRelationReturningObjectList",
         "parentName": "Book",
         "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
         "objectReference": {
@@ -30,7 +30,7 @@
         "AttributeOfListObjectToCompareToReferenceUuid": "author"
       },
       "publishersOfBooks": {
-        "queryType": "combinerForObjectListByManyToManyRelation",
+        "queryType": "combinerByManyToManyRelationReturningObjectList",
         "parentName": "Publisher",
         "parentUuid": {
           "transformerType": "constantUuid",
@@ -43,7 +43,7 @@
         "objectListReferenceAttribute": "publisher"
       },
       "BooksOfPublishers": {
-        "queryType": "combinerForObjectListByManyToManyRelation",
+        "queryType": "combinerByManyToManyRelationReturningObjectList",
         "parentName": "Book",
         "parentUuid": {
           "transformerType": "constantUuid",

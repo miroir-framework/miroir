@@ -6,8 +6,8 @@ import {
   MiroirQuery,
   ExtractorForObjectByDirectReference,
   QueryFailed,
-  QuerySelectExtractorWrapper,
-  QuerySelectExtractorWrapperReturningList,
+  ExtractorWrapper,
+  ExtractorWrapperReturningList,
   QueryTemplate,
   QueryTemplateSelectExtractorWrapper,
   QueryContextReference,
@@ -40,7 +40,7 @@ export function resolveQueryTemplate(
       if (queryTemplate.filter) {
         return {
           ...queryTemplate,
-          queryType: "extractorForObjectListByEntity",
+          queryType: "extractorByEntityReturningObjectList",
           parentUuid:
             typeof queryTemplate.parentUuid == "string"
               ? queryTemplate.parentUuid
@@ -55,7 +55,7 @@ export function resolveQueryTemplate(
       } else {
         return {
           ...queryTemplate,
-          queryType: "extractorForObjectListByEntity",
+          queryType: "extractorByEntityReturningObjectList",
           parentUuid: typeof queryTemplate.parentUuid == "string"
           ? queryTemplate.parentUuid
           : transformer_InnerReference_resolve("build", queryTemplate.parentUuid, queryParams, contextResults)
@@ -101,7 +101,7 @@ export function resolveQueryTemplate(
         queryType: "extractorWrapperReturningList",
         definition: queryTemplate.definition.map(
           (e: QueryTemplate) =>
-            resolveQueryTemplate(e, queryParams, contextResults) as QuerySelectExtractorWrapperReturningList
+            resolveQueryTemplate(e, queryParams, contextResults) as ExtractorWrapperReturningList
         ),
       };
       break;
@@ -129,7 +129,7 @@ export function resolveQueryTemplate(
       };
       break;
     }
-    case "combinerForObjectListByRelation": {
+    case "combinerByRelationReturningObjectList": {
       return {
         ...queryTemplate,
         parentUuid:
@@ -140,12 +140,12 @@ export function resolveQueryTemplate(
         objectReference:
           queryTemplate.objectReference.transformerType == "contextReference"
             ? queryTemplate.objectReference.referenceName ??
-              "ERROR CONVERTING OBJECT REFERENCE FOR combinerForObjectListByRelation query template: no referenceName"
-            : "ERROR CONVERTING OBJECT REFERENCE FOR combinerForObjectListByRelation query template: objectReference is not a contextReference",
+              "ERROR CONVERTING OBJECT REFERENCE FOR combinerByRelationReturningObjectList query template: no referenceName"
+            : "ERROR CONVERTING OBJECT REFERENCE FOR combinerByRelationReturningObjectList query template: objectReference is not a contextReference",
       };
       break;
     }
-    case "combinerForObjectListByManyToManyRelation": {
+    case "combinerByManyToManyRelationReturningObjectList": {
       return {
         ...queryTemplate,
         parentUuid:
@@ -156,12 +156,12 @@ export function resolveQueryTemplate(
         objectListReference:
           queryTemplate.objectListReference.transformerType == "contextReference"
             ? queryTemplate.objectListReference.referenceName ??
-              "ERROR CONVERTING OBJECT REFERENCE FOR combinerForObjectListByRelation query template: no referenceName"
-            : "ERROR CONVERTING OBJECT REFERENCE FOR combinerForObjectListByRelation query template: objectReference is not a contextReference",
+              "ERROR CONVERTING OBJECT REFERENCE FOR combinerByRelationReturningObjectList query template: no referenceName"
+            : "ERROR CONVERTING OBJECT REFERENCE FOR combinerByRelationReturningObjectList query template: objectReference is not a contextReference",
       };
       break;
     }
-    case "combinerForObjectByRelation": {
+    case "extractorCombinerForObjectByRelation": {
       return {
         ...queryTemplate,
         parentUuid:
@@ -172,19 +172,18 @@ export function resolveQueryTemplate(
         objectReference:
           queryTemplate.objectReference.transformerType == "contextReference"
             ? queryTemplate.objectReference.referenceName ??
-              "ERROR CONVERTING OBJECT REFERENCE FOR combinerForObjectByRelation query template: no referenceName"
-            : "ERROR CONVERTING OBJECT REFERENCE FOR combinerForObjectByRelation query template: objectReference is not a contextReference",
+              "ERROR CONVERTING OBJECT REFERENCE FOR extractorCombinerForObjectByRelation query template: no referenceName"
+            : "ERROR CONVERTING OBJECT REFERENCE FOR extractorCombinerForObjectByRelation query template: objectReference is not a contextReference",
       };
       break;
     }
-    case "queryCombiner": {
+    case "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList": {
       return {
         ...queryTemplate,
-        rootExtractorOrReference: resolveQueryTemplate(
-          queryTemplate.rootExtractorOrReference,
-          queryParams,
-          contextResults
-        ) as Extractor | QueryContextReference, // TODO: check for failure!
+        rootExtractorOrReference:
+          typeof queryTemplate.rootExtractorOrReference == "string"
+            ? queryTemplate.rootExtractorOrReference
+            : (resolveQueryTemplate(queryTemplate.rootExtractorOrReference, queryParams, contextResults) as Extractor), // TODO: check for failure!
       };
       break;
     }
@@ -208,12 +207,12 @@ export function resolveQueryTemplateSelectExtractorWrapper(
   queryTemplate: QueryTemplateSelectExtractorWrapper,
   queryParams: Record<string, any>,
   contextResults: Record<string, any>
-): QuerySelectExtractorWrapper {
+): ExtractorWrapper {
   const result = resolveQueryTemplate(queryTemplate, queryParams, contextResults);
   if ((result as any).queryFailure) {
     throw new Error("QueryNotExecutable");
   }
-  return result as QuerySelectExtractorWrapper;
+  return result as ExtractorWrapper;
 }
 
 // ################################################################################################

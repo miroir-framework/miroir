@@ -181,7 +181,7 @@ export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
     selectorParams.query.select.queryType=="wrapperReturningObject" ||
     selectorParams.query.select.queryType=="extractorWrapperReturningList" ||
     selectorParams.query.select.queryType=="wrapperReturningList" ||
-    selectorParams.query.select.queryType=="queryCombiner" 
+    selectorParams.query.select.queryType=="extractorCombinerByHeteronomousManyToManyReturningListOfObjectList" 
   ) {
     throw new Error(
       "extractzodSchemaForSingleSelectQuery can not deal with context reference: query=" +
@@ -242,7 +242,7 @@ export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
 //       );
 //       break;
 //     }
-//     case "getSingleSelectQueryJzodSchema": {
+//     case "getQueryJzodSchema": {
 //       return selectorParams.extractorRunnerMap.extractzodSchemaForSingleSelectQuery(
 //         deploymentEntityState,
 //         selectorParams as ExtractorTemplateRunnerParamsForJzodSchema<DomainModelGetSingleSelectQueryJzodSchemaForExtractorTemplate, StateType>
@@ -275,7 +275,7 @@ export const extractJzodSchemaForDomainModelQueryTemplate = <StateType>(
       );
       break;
     }
-    case "getSingleSelectQueryJzodSchema": {
+    case "getQueryJzodSchema": {
       return selectorParams.extractorRunnerMap.extractzodSchemaForSingleSelectQuery(
         deploymentEntityState,
         selectorParams as ExtractorTemplateRunnerParamsForJzodSchema<DomainModelGetSingleSelectQueryJzodSchemaForExtractorTemplate, StateType>
@@ -310,7 +310,7 @@ export const extractFetchQueryTemplateJzodSchema = <StateType>(
       selectorParams.extractorRunnerMap.extractzodSchemaForSingleSelectQuery(deploymentEntityState, {
         extractorRunnerMap:selectorParams.extractorRunnerMap,
         query: {
-          queryType: "getSingleSelectQueryJzodSchema",
+          queryType: "getQueryJzodSchema",
           deploymentUuid: localFetchParams.deploymentUuid,
           contextResults: { },
           pageParams: selectorParams.query.pageParams,

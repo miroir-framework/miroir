@@ -454,7 +454,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           definition: {
             extractors: {
               instanceList: {
-                queryType: "extractorForObjectListByEntity",
+                queryType: "extractorByEntityReturningObjectList",
                 parentName: {
                   transformerType: "parameterReference",
                   referenceName: "createEntity_newEntityName",
@@ -992,7 +992,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           definition: {
             extractors: {
               listReportSectionElements: {
-                queryType: "extractorForObjectListByEntity",
+                queryType: "extractorByEntityReturningObjectList",
                 parentName: {
                   transformerType: "parameterReference",
                   referenceName: "splitEntity_newEntityName",
@@ -1069,7 +1069,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                 },
               },
               fountainsOfMunicipality: {
-                queryType: "combinerForObjectListByRelation",
+                queryType: "combinerByRelationReturningObjectList",
                 parentName: "Fountain",
                 parentUuid: {
                   transformerType: "parameterReference",

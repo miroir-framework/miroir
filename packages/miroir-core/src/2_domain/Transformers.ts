@@ -1255,8 +1255,12 @@ export function transformer_apply(
       return innerTransformer_array_apply(step, label, transformer, queryParams, contextResults);
     } else {
       // TODO: improve test, refuse interpretation of build transformer in runtime step
-      if (transformer.transformerType && (((transformer as any)?.interpolation??"build") == step)) {
-        return innerTransformer_apply(step, label, transformer, queryParams, contextResults);
+      if (transformer.transformerType != undefined) {
+        if ((transformer as any)?.interpolation??"build" == step) {
+          return innerTransformer_apply(step, label, transformer, queryParams, contextResults);
+        } else {
+          return innerTransformer_plainObject_apply(step, label, transformer, queryParams, contextResults);
+        }
       } else {
         return innerTransformer_plainObject_apply(step, label, transformer, queryParams, contextResults);
       }

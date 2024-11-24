@@ -65,7 +65,7 @@ describe("queryTemplates.unit.test", () => {
         },
         combinerTemplates: {
           publisher: {
-            queryType: "combinerForObjectByRelation",
+            queryType: "extractorCombinerForObjectByRelation",
             parentName: "Publisher",
             parentUuid: {
               transformerType: "constantUuid",
@@ -79,7 +79,7 @@ describe("queryTemplates.unit.test", () => {
             AttributeOfObjectToCompareToReferenceUuid: "publisher",
           },
           booksOfPublisher: {
-            queryType: "combinerForObjectListByRelation",
+            queryType: "combinerByRelationReturningObjectList",
             parentName: "Book",
             parentUuid: {
               transformerType: "constantUuid",
@@ -93,7 +93,7 @@ describe("queryTemplates.unit.test", () => {
             AttributeOfListObjectToCompareToReferenceUuid: "publisher",
           },
           booksOfAuthor: {
-            queryType: "combinerForObjectListByRelation",
+            queryType: "combinerByRelationReturningObjectList",
             parentName: "Book",
             parentUuid: {
               transformerType: "constantUuid",
@@ -107,7 +107,7 @@ describe("queryTemplates.unit.test", () => {
             AttributeOfListObjectToCompareToReferenceUuid: "author",
           },
           publishersOfBooks: {
-            queryType: "combinerForObjectListByManyToManyRelation",
+            queryType: "combinerByManyToManyRelationReturningObjectList",
             parentName: "Publisher",
             parentUuid: {
               transformerType: "constantUuid",
@@ -157,28 +157,28 @@ describe("queryTemplates.unit.test", () => {
         },
         combiners: {
           publisher: {
-            queryType: "combinerForObjectByRelation",
+            queryType: "extractorCombinerForObjectByRelation",
             parentName: "Publisher",
             parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
             objectReference: "book",
             AttributeOfObjectToCompareToReferenceUuid: "publisher",
           },
           booksOfPublisher: {
-            queryType: "combinerForObjectListByRelation",
+            queryType: "combinerByRelationReturningObjectList",
             parentName: "Book",
             parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             objectReference: "publisher",
             AttributeOfListObjectToCompareToReferenceUuid: "publisher",
           },
           booksOfAuthor: {
-            queryType: "combinerForObjectListByRelation",
+            queryType: "combinerByRelationReturningObjectList",
             parentName: "Book",
             parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             objectReference: "author",
             AttributeOfListObjectToCompareToReferenceUuid: "author",
           },
           publishersOfBooks: {
-            queryType: "combinerForObjectListByManyToManyRelation",
+            queryType: "combinerByManyToManyRelationReturningObjectList",
             parentName: "Publisher",
             parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
             objectListReference: "booksOfAuthor",

@@ -10,7 +10,7 @@
     "reportParameters": {},
     "extractors": {
       "authors": {
-        "queryType": "extractorForObjectListByEntity",
+        "queryType": "extractorByEntityReturningObjectList",
         "parentName": "Author",
         "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
       }
