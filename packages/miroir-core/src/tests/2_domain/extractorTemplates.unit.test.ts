@@ -18,6 +18,62 @@ import {
 describe("extractorTemplates.unit.test", () => {
 
   // ################################################################################################
+  it("convert extractorTemplate to query with resolveExtractorTemplateForDomainModelObjects", async () => { // TODO: test failure cases!
+    console.log("convert extractorTemplate to query with resolveExtractorTemplateForDomainModelObjects START")
+    const newApplicationName = "test";
+    const newUuid = uuidv4();
+
+    const uniqueRuntimeTemplate: ExtractorTemplateForDomainModelObjects = {
+      queryType: "extractorTemplateForDomainModelObjects",
+      deploymentUuid: "xxxxx",
+      pageParams: {
+        instanceUuid: "xxxxx",
+      },
+      queryParams: {
+        parentUuid: "yyyyy",
+      },
+      contextResults: {},
+      select: {
+          queryType: "extractorForObjectByDirectReference",
+          parentName: "Book",
+          parentUuid: {
+            transformerType: "constantUuid",
+            constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          },
+          instanceUuid: {
+            transformerType: "parameterReference",
+            referenceName: "instanceUuid",
+          },
+      },
+    };
+
+    const testResult = resolveExtractorTemplateForDomainModelObjects(uniqueRuntimeTemplate); // uuid value is ignored
+    console.log(
+      "################################ converted queryTemplate to query with resolveExtractorTemplateForDomainModelObjects testResults",
+      JSON.stringify(testResult, null, 2)
+    );
+    expect(testResult).toEqual({
+      pageParams: {
+        instanceUuid: "xxxxx",
+      },
+      queryParams: {
+        parentUuid: "yyyyy",
+      },
+      contextResults: {},
+      deploymentUuid: "xxxxx",
+      queryType: "queryForExtractorOrCombinerReturningObjectList",
+      select: {
+        extractorOrCombinerType: "extractorForObjectByDirectReference",
+        parentName: "Book",
+        parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+        instanceUuid: "xxxxx",
+      },
+    });
+    console.log("convert extractorTemplate to query with resolveExtractorTemplateForDomainModelObjects END")
+  }
+  );
+
+  // ################################################################################################
   it("convert extractorTemplate to query with resolveExtractorTemplateForRecordOfExtractors", async () => { // TODO: test failure cases!
       console.log("convert queryTemplate to query with resolveExtractorTemplateForRecordOfExtractors START")
       const newApplicationName = "test";
@@ -65,7 +121,7 @@ describe("extractorTemplates.unit.test", () => {
         },
         combinerTemplates: {
           publisher: {
-            queryType: "extractorCombinerForObjectByRelation",
+            queryType: "combinerForObjectByRelation",
             parentName: "Publisher",
             parentUuid: {
               transformerType: "constantUuid",
@@ -139,13 +195,13 @@ describe("extractorTemplates.unit.test", () => {
         queryType: "queryWithExtractorCombinerTransformer",
         extractors: {
           book: {
-            queryType: "extractorForObjectByDirectReference",
+            extractorOrCombinerType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             instanceUuid: "xxxxx",
           },
           fountain: {
-            queryType: "extractorForObjectByDirectReference",
+            extractorOrCombinerType: "extractorForObjectByDirectReference",
             parentName: "Fountain",
             parentUuid: "yyyyy",
             instanceUuid: {
@@ -157,28 +213,28 @@ describe("extractorTemplates.unit.test", () => {
         },
         combiners: {
           publisher: {
-            queryType: "extractorCombinerForObjectByRelation",
+            extractorOrCombinerType: "combinerForObjectByRelation",
             parentName: "Publisher",
             parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
             objectReference: "book",
             AttributeOfObjectToCompareToReferenceUuid: "publisher",
           },
           booksOfPublisher: {
-            queryType: "combinerByRelationReturningObjectList",
+            extractorOrCombinerType: "combinerByRelationReturningObjectList",
             parentName: "Book",
             parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             objectReference: "publisher",
             AttributeOfListObjectToCompareToReferenceUuid: "publisher",
           },
           booksOfAuthor: {
-            queryType: "combinerByRelationReturningObjectList",
+            extractorOrCombinerType: "combinerByRelationReturningObjectList",
             parentName: "Book",
             parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             objectReference: "author",
             AttributeOfListObjectToCompareToReferenceUuid: "author",
           },
           publishersOfBooks: {
-            queryType: "combinerByManyToManyRelationReturningObjectList",
+            extractorOrCombinerType: "combinerByManyToManyRelationReturningObjectList",
             parentName: "Publisher",
             parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
             objectListReference: "booksOfAuthor",
@@ -190,60 +246,5 @@ describe("extractorTemplates.unit.test", () => {
     }
   );
 
-  // ################################################################################################
-  it("convert extractorTemplate to query with resolveExtractorTemplateForDomainModelObjects", async () => { // TODO: test failure cases!
-      console.log("convert extractorTemplate to query with resolveExtractorTemplateForDomainModelObjects START")
-      const newApplicationName = "test";
-      const newUuid = uuidv4();
-
-      const uniqueRuntimeTemplate: ExtractorTemplateForDomainModelObjects = {
-        queryType: "extractorTemplateForDomainModelObjects",
-        deploymentUuid: "xxxxx",
-        pageParams: {
-          instanceUuid: "xxxxx",
-        },
-        queryParams: {
-          parentUuid: "yyyyy",
-        },
-        contextResults: {},
-        select: {
-            queryType: "extractorForObjectByDirectReference",
-            parentName: "Book",
-            parentUuid: {
-              transformerType: "constantUuid",
-              constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-            },
-            instanceUuid: {
-              transformerType: "parameterReference",
-              referenceName: "instanceUuid",
-            },
-        },
-      };
-
-      const testResult = resolveExtractorTemplateForDomainModelObjects(uniqueRuntimeTemplate); // uuid value is ignored
-      console.log(
-        "################################ converted queryTemplate to query with resolveExtractorTemplateForDomainModelObjects testResults",
-        JSON.stringify(testResult, null, 2)
-      );
-      expect(testResult).toEqual({
-        pageParams: {
-          instanceUuid: "xxxxx",
-        },
-        queryParams: {
-          parentUuid: "yyyyy",
-        },
-        contextResults: {},
-        deploymentUuid: "xxxxx",
-        queryType: "queryForExtractorOrCombinerReturningObjectOrObjectList",
-        select: {
-          queryType: "extractorForObjectByDirectReference",
-          parentName: "Book",
-          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-          instanceUuid: "xxxxx",
-        },
-      });
-      console.log("convert extractorTemplate to query with resolveExtractorTemplateForDomainModelObjects END")
-    }
-  );
 
 });

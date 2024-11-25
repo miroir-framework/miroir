@@ -67,7 +67,8 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
     log.info(this.logHeader, "handleQueryAction", "queryTemplateAction", JSON.stringify(queryAction, null, 2));
     let queryResult: DomainElement;
     switch (queryAction.query.queryType) {
-      case "queryForExtractorOrCombinerReturningObjectOrObjectList": {
+      case "queryForExtractorOrCombinerReturningObject":
+      case "queryForExtractorOrCombinerReturningObjectList": {
         queryResult = await this.selectorMap.extractWithExtractor(
           {
             extractor: queryAction.query,
@@ -132,8 +133,8 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
       applicationSection,
       entityUuidReference
     );
-    switch (querySelectorParams?.queryType) {
-      case "extractorCombinerForObjectByRelation": {
+    switch (querySelectorParams?.extractorOrCombinerType) {
+      case "combinerForObjectByRelation": {
         // const referenceObject = querySelectorParams.objectReference;
         const referenceObject = transformer_InnerReference_resolve(
           "build",
@@ -151,7 +152,7 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
             elementType: "failure",
             elementValue: {
               queryFailure: "IncorrectParameters",
-              failureOrigin: ["FileSystemExtractorRunner", "extractorCombinerForObjectByRelation"],
+              failureOrigin: ["FileSystemExtractorRunner", "combinerForObjectByRelation"],
               queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
               queryContext: JSON.stringify(selectorParams.extractor.contextResults),
             },
@@ -176,7 +177,7 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
           };
         }
         // log.info(
-        //   "extractEntityInstance extractorCombinerForObjectByRelation, ############# reference",
+        //   "extractEntityInstance combinerForObjectByRelation, ############# reference",
         //   querySelectorParams,
         //   "######### context entityUuid",
         //   entityUuidReference,
@@ -242,7 +243,7 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
       default: {
         throw new Error(
           "extractEntityInstance can not handle QueryTemplateSelectObject query with queryType=" +
-            selectorParams.extractor.select.queryType
+            selectorParams.extractor.select.extractorOrCombinerType
         );
         break;
       }

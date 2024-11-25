@@ -34,13 +34,17 @@ export function resolveQueryTemplate(
 ): ExtractorOrCombiner | QueryFailed {
   switch (queryTemplate.queryType) {
     case "literal": {
-      return queryTemplate;
+      return {
+        extractorOrCombinerType: "literal",
+        definition: queryTemplate.definition,
+      };
     }
     case "extractorTemplateForObjectListByEntity": {
       if (queryTemplate.filter) {
         return {
-          ...queryTemplate,
-          queryType: "extractorByEntityReturningObjectList",
+          // ...queryTemplate,
+          extractorOrCombinerType: "extractorByEntityReturningObjectList",
+          parentName: queryTemplate.parentName,
           parentUuid:
             typeof queryTemplate.parentUuid == "string"
               ? queryTemplate.parentUuid
@@ -54,8 +58,9 @@ export function resolveQueryTemplate(
         };
       } else {
         return {
-          ...queryTemplate,
-          queryType: "extractorByEntityReturningObjectList",
+          // ...queryTemplate,
+          extractorOrCombinerType: "extractorByEntityReturningObjectList",
+          parentName: queryTemplate.parentName,
           parentUuid: typeof queryTemplate.parentUuid == "string"
           ? queryTemplate.parentUuid
           : transformer_InnerReference_resolve("build", queryTemplate.parentUuid, queryParams, contextResults)
@@ -66,8 +71,9 @@ export function resolveQueryTemplate(
     }
     case "extractorForObjectByDirectReference": {
       return {
-        ...queryTemplate,
-        queryType: "extractorForObjectByDirectReference",
+        // ...queryTemplate,
+        extractorOrCombinerType: "extractorForObjectByDirectReference",
+        parentName: queryTemplate.parentName,
         parentUuid:
           typeof queryTemplate.parentUuid == "string"
             ? queryTemplate.parentUuid
@@ -84,8 +90,8 @@ export function resolveQueryTemplate(
     }
     case "extractorWrapperReturningObject": {
       return {
-        ...queryTemplate,
-        queryType: "extractorWrapperReturningObject",
+        // ...queryTemplate,
+        extractorOrCombinerType: "extractorWrapperReturningObject",
         definition: Object.fromEntries(
           Object.entries(queryTemplate.definition).map((e: [string, QueryTemplate]) => [
             e[0],
@@ -97,8 +103,8 @@ export function resolveQueryTemplate(
     }
     case "extractorWrapperReturningList": {
       return {
-        ...queryTemplate,
-        queryType: "extractorWrapperReturningList",
+        // ...queryTemplate,
+        extractorOrCombinerType: "extractorWrapperReturningList",
         definition: queryTemplate.definition.map(
           (e: QueryTemplate) =>
             resolveQueryTemplate(e, queryParams, contextResults) as ExtractorWrapperReturningList
@@ -108,8 +114,9 @@ export function resolveQueryTemplate(
     }
     case "combiner_wrapperReturningObject": {
       return {
-        ...queryTemplate,
+        // ...queryTemplate,
         // queryType: "combiner_wrapperReturningObject",
+        extractorOrCombinerType: queryTemplate.queryType,
         definition: Object.fromEntries(
           Object.entries(queryTemplate.definition).map((e: [string, QueryTemplate]) => [
             e[0],
@@ -121,8 +128,9 @@ export function resolveQueryTemplate(
     }
     case "combiner_wrapperReturningList": {
       return {
-        ...queryTemplate,
+        // ...queryTemplate,
         // queryType: "extractorWrapperReturningList",
+        extractorOrCombinerType: queryTemplate.queryType,
         definition: queryTemplate.definition.map(
           (e: QueryTemplate) => resolveQueryTemplate(e, queryParams, contextResults) as ExtractorOrCombiner
         ),
@@ -131,7 +139,10 @@ export function resolveQueryTemplate(
     }
     case "combinerByRelationReturningObjectList": {
       return {
-        ...queryTemplate,
+        // ...queryTemplate,
+        extractorOrCombinerType: queryTemplate.queryType,
+        AttributeOfListObjectToCompareToReferenceUuid: queryTemplate.AttributeOfListObjectToCompareToReferenceUuid,
+        parentName: queryTemplate.parentName,
         parentUuid:
           typeof queryTemplate.parentUuid == "string"
             ? queryTemplate.parentUuid
@@ -147,12 +158,15 @@ export function resolveQueryTemplate(
     }
     case "combinerByManyToManyRelationReturningObjectList": {
       return {
-        ...queryTemplate,
+        // ...queryTemplate,
+        extractorOrCombinerType: queryTemplate.queryType,
+        parentName: queryTemplate.parentName,
         parentUuid:
           typeof queryTemplate.parentUuid == "string"
             ? queryTemplate.parentUuid
             : transformer_InnerReference_resolve("build", queryTemplate.parentUuid, queryParams, contextResults)
                 .elementValue, // TODO: check for failure!
+        objectListReferenceAttribute: queryTemplate.objectListReferenceAttribute,
         objectListReference:
           queryTemplate.objectListReference.transformerType == "contextReference"
             ? queryTemplate.objectListReference.referenceName ??
@@ -161,9 +175,12 @@ export function resolveQueryTemplate(
       };
       break;
     }
-    case "extractorCombinerForObjectByRelation": {
+    case "combinerForObjectByRelation": {
       return {
-        ...queryTemplate,
+        // ...queryTemplate,
+        extractorOrCombinerType: queryTemplate.queryType,
+        AttributeOfObjectToCompareToReferenceUuid: queryTemplate.AttributeOfObjectToCompareToReferenceUuid,
+        parentName: queryTemplate.parentName,
         parentUuid:
           typeof queryTemplate.parentUuid == "string"
             ? queryTemplate.parentUuid
@@ -172,14 +189,16 @@ export function resolveQueryTemplate(
         objectReference:
           queryTemplate.objectReference.transformerType == "contextReference"
             ? queryTemplate.objectReference.referenceName ??
-              "ERROR CONVERTING OBJECT REFERENCE FOR extractorCombinerForObjectByRelation query template: no referenceName"
-            : "ERROR CONVERTING OBJECT REFERENCE FOR extractorCombinerForObjectByRelation query template: objectReference is not a contextReference",
+              "ERROR CONVERTING OBJECT REFERENCE FOR combinerForObjectByRelation query template: no referenceName"
+            : "ERROR CONVERTING OBJECT REFERENCE FOR combinerForObjectByRelation query template: objectReference is not a contextReference",
       };
       break;
     }
     case "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList": {
       return {
-        ...queryTemplate,
+        // ...queryTemplate,
+        extractorOrCombinerType: queryTemplate.queryType,
+        subQueryTemplate: queryTemplate.subQueryTemplate,
         rootExtractorOrReference:
           typeof queryTemplate.rootExtractorOrReference == "string"
             ? queryTemplate.rootExtractorOrReference
@@ -188,7 +207,13 @@ export function resolveQueryTemplate(
       break;
     }
     case "queryContextReference": {
-      return queryTemplate;
+      throw new Error("resolveQueryTemplate cannot resolve queryContextReference to extractorOrCombiner");
+      
+      // return {
+      //   extractorOrCombinerType: "extractorOrCombinerContextReference",
+      //   extractorOrCombinerContextReference: queryTemplate.referenceName,
+      // }
+      // return queryTemplate;
       break;
     }
     default: {
@@ -286,7 +311,7 @@ export function resolveExtractorTemplateForDomainModelObjects(
     queryParams: extractorTemplateForDomainModelObjects.queryParams,
     contextResults: extractorTemplateForDomainModelObjects.contextResults,
     deploymentUuid: extractorTemplateForDomainModelObjects.deploymentUuid,
-    queryType: "queryForExtractorOrCombinerReturningObjectOrObjectList",
+    queryType: "queryForExtractorOrCombinerReturningObjectList",
     select: select,
     // runtimeTransformers: extractorTemplateForDomainModelObjects.runtimeTransformers,
   }

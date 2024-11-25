@@ -295,7 +295,7 @@
             "definition": {
               "queryType": {
                 "type": "literal",
-                "definition": "extractorCombinerForObjectByRelation"
+                "definition": "combinerForObjectByRelation"
               },
               "objectReference": {
                 "type": "schemaReference",
@@ -695,7 +695,7 @@
               }
             }
           },
-          "queryRoot": {
+          "extractorOrCombinerRoot": {
             "type": "object",
             "definition": {
               "label": {
@@ -723,19 +723,31 @@
               }
             }
           },
-          "extractorCombinerForObjectByRelation": {
+          "extractorOrCombinerContextReference": {
+            "type": "object",
+            "definition": {
+              "extractorOrCombinerType": {
+                "type": "literal",
+                "definition": "extractorOrCombinerContextReference"
+              },
+              "extractorOrCombinerContextReference": {
+                "type": "string"
+              }
+            }
+          },
+          "combinerForObjectByRelation": {
             "type": "object",
             "extend": {
               "type": "schemaReference",
               "definition": {
                 "eager": true,
-                "relativePath": "queryRoot"
+                "relativePath": "extractorOrCombinerRoot"
               }
             },
             "definition": {
-              "queryType": {
+              "extractorOrCombinerType": {
                 "type": "literal",
-                "definition": "extractorCombinerForObjectByRelation"
+                "definition": "combinerForObjectByRelation"
               },
               "objectReference": {
                 "type": "string"
@@ -751,11 +763,11 @@
               "type": "schemaReference",
               "definition": {
                 "eager": true,
-                "relativePath": "queryRoot"
+                "relativePath": "extractorOrCombinerRoot"
               }
             },
             "definition": {
-              "queryType": {
+              "extractorOrCombinerType": {
                 "type": "literal",
                 "definition": "extractorForObjectByDirectReference"
               },
@@ -766,12 +778,12 @@
           },
           "extractorOrCombinerReturningObject": {
             "type": "union",
-            "discriminator": "queryType",
+            "discriminator": "extractorOrCombinerType",
             "definition": [
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "extractorCombinerForObjectByRelation"
+                  "relativePath": "combinerForObjectByRelation"
                 }
               },
               {
@@ -788,11 +800,11 @@
               "type": "schemaReference",
               "definition": {
                 "eager": true,
-                "relativePath": "queryRoot"
+                "relativePath": "extractorOrCombinerRoot"
               }
             },
             "definition": {
-              "queryType": {
+              "extractorOrCombinerType": {
                 "type": "literal",
                 "definition": "extractorByEntityReturningObjectList"
               },
@@ -812,7 +824,7 @@
           },
           "extractor": {
             "type": "union",
-            "discriminator": "queryType",
+            "discriminator": "extractorOrCombinerType",
             "definition": [
               {
                 "type": "schemaReference",
@@ -834,11 +846,11 @@
               "type": "schemaReference",
               "definition": {
                 "eager": true,
-                "relativePath": "queryRoot"
+                "relativePath": "extractorOrCombinerRoot"
               }
             },
             "definition": {
-              "queryType": {
+              "extractorOrCombinerType": {
                 "type": "literal",
                 "definition": "combinerByRelationReturningObjectList"
               },
@@ -860,11 +872,11 @@
               "type": "schemaReference",
               "definition": {
                 "eager": true,
-                "relativePath": "queryRoot"
+                "relativePath": "extractorOrCombinerRoot"
               }
             },
             "definition": {
-              "queryType": {
+              "extractorOrCombinerType": {
                 "type": "literal",
                 "definition": "combinerByManyToManyRelationReturningObjectList"
               },
@@ -883,7 +895,7 @@
           },
           "extractorOrCombinerReturningObjectList": {
             "type": "union",
-            "discriminator": "queryType",
+            "discriminator": "extractorOrCombinerType",
             "definition": [
               {
                 "type": "schemaReference",
@@ -908,7 +920,7 @@
           "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList": {
             "type": "object",
             "definition": {
-              "queryType": {
+              "extractorOrCombinerType": {
                 "type": "literal",
                 "definition": "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList"
               },
@@ -950,7 +962,7 @@
           },
           "extractorWrapperReturningObject": {
             "type": "union",
-            "discriminator": "queryType",
+            "discriminator": "extractorOrCombinerType",
             "definition": [
               {
                 "type": "schemaReference",
@@ -961,7 +973,7 @@
               {
                 "type": "object",
                 "definition": {
-                  "queryType": {
+                  "extractorOrCombinerType": {
                     "type": "literal",
                     "definition": "extractorWrapperReturningObject"
                   },
@@ -980,7 +992,7 @@
           },
           "extractorWrapperReturningList": {
             "type": "union",
-            "discriminator": "queryType",
+            "discriminator": "extractorOrCombinerType",
             "definition": [
               {
                 "type": "schemaReference",
@@ -991,7 +1003,7 @@
               {
                 "type": "object",
                 "definition": {
-                  "queryType": {
+                  "extractorOrCombinerType": {
                     "type": "literal",
                     "definition": "extractorWrapperReturningList"
                   },
@@ -1010,7 +1022,7 @@
           },
           "extractorWrapper": {
             "type": "union",
-            "discriminator": "queryType",
+            "discriminator": "extractorOrCombinerType",
             "definition": [
               {
                 "type": "schemaReference",
@@ -1028,7 +1040,7 @@
           },
           "extractorOrCombiner": {
             "type": "union",
-            "discriminator": "queryType",
+            "discriminator": "extractorOrCombinerType",
             "definition": [
               {
                 "type": "schemaReference",
@@ -1040,13 +1052,13 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "queryContextReference"
+                  "relativePath": "extractorOrCombinerContextReference"
                 }
               },
               {
                 "type": "object",
                 "definition": {
-                  "queryType": {
+                  "extractorOrCombinerType": {
                     "type": "literal",
                     "definition": "combiner_wrapperReturningObject"
                   },
@@ -1064,7 +1076,7 @@
               {
                 "type": "object",
                 "definition": {
-                  "queryType": {
+                  "extractorOrCombinerType": {
                     "type": "literal",
                     "definition": "combiner_wrapperReturningList"
                   },
@@ -1088,7 +1100,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "extractorCombinerForObjectByRelation"
+                  "relativePath": "combinerForObjectByRelation"
                 }
               },
               {
@@ -1106,7 +1118,7 @@
               {
                 "type": "object",
                 "definition": {
-                  "queryType": { "type": "literal", "definition": "literal" },
+                  "extractorOrCombinerType": { "type": "literal", "definition": "literal" },
                   "definition": { "type": "string" }
                 }
               }

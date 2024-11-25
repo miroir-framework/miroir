@@ -129,11 +129,11 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
   extractorRunnerMap:AsyncExtractorRunnerMap,
   deploymentUuid: Uuid,
   extractors: Record<string, QueryForExtractorOrCombinerReturningObjectList | QueryForExtractorOrCombinerReturningObject | QueryWithExtractorCombinerTransformer>,
-  query: ExtractorOrCombiner
+  extractorOrCombiner: ExtractorOrCombiner
 ): Promise<DomainElement> {
-  switch (query.queryType) {
+  switch (extractorOrCombiner.extractorOrCombinerType) {
     case "literal": {
-      return Promise.resolve({ elementType: "string", elementValue: query.definition });
+      return Promise.resolve({ elementType: "string", elementValue: extractorOrCombiner.definition });
       break;
     }
     // ############################################################################################
@@ -145,15 +145,15 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
       return extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor({
         extractorRunnerMap,
         extractor: {
-          queryType: "queryForExtractorOrCombinerReturningObjectOrObjectList",
+          queryType: "queryForExtractorOrCombinerReturningObjectList",
           deploymentUuid: deploymentUuid,
           contextResults: newFetchedData,
           pageParams: pageParams,
           queryParams,
-          select: query.applicationSection
-          ? query
+          select: extractorOrCombiner.applicationSection
+          ? extractorOrCombiner
           : {
-              ...query,
+              ...extractorOrCombiner,
               applicationSection: pageParams.applicationSection as ApplicationSection,
               // applicationSection: pageParams.elementValue.applicationSection.elementValue as ApplicationSection,
             },
@@ -161,7 +161,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
       });
       break;
     }
-    case "extractorCombinerForObjectByRelation":
+    case "combinerForObjectByRelation":
     case "extractorForObjectByDirectReference": {
       return extractorRunnerMap.extractEntityInstance({
         extractorRunnerMap,
@@ -171,10 +171,10 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
           contextResults: newFetchedData,
           pageParams,
           queryParams,
-          select: query.applicationSection // TODO: UGLY!!! WHERE IS THE APPLICATION SECTION PLACED?
-          ? query
+          select: extractorOrCombiner.applicationSection // TODO: UGLY!!! WHERE IS THE APPLICATION SECTION PLACED?
+          ? extractorOrCombiner
           : {
-              ...query,
+              ...extractorOrCombiner,
               applicationSection: pageParams?.elementValue?.applicationSection?.elementValue as ApplicationSection,
             },
         }
@@ -184,7 +184,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
     // ############################################################################################
     case "extractorWrapperReturningObject":
     case "combiner_wrapperReturningObject": { // build object
-      const entries = Object.entries(query.definition);
+      const entries = Object.entries(extractorOrCombiner.definition);
       const promises = entries.map((e: [string, ExtractorOrCombiner]) => {
         return asyncInnerSelectElementFromQuery(
           newFetchedData,
@@ -208,7 +208,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
     }
     case "extractorWrapperReturningList":
     case "combiner_wrapperReturningList": { // List map
-      const promises = query.definition.map((e) =>{
+      const promises = extractorOrCombiner.definition.map((e) =>{
         return asyncInnerSelectElementFromQuery(
           newFetchedData,
           pageParams ?? {},
@@ -229,7 +229,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
     }
     case "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList": { // join
       const rootQueryResults =
-        typeof query.rootExtractorOrReference == "string"
+        typeof extractorOrCombiner.rootExtractorOrReference == "string"
           ? asyncInnerSelectElementFromQuery(
               newFetchedData,
               pageParams,
@@ -238,8 +238,8 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
               deploymentUuid,
               extractors,
               {
-                queryType: "queryContextReference",
-                queryReference: query.rootExtractorOrReference,
+                extractorOrCombinerType: "extractorOrCombinerContextReference",
+                extractorOrCombinerContextReference: extractorOrCombiner.rootExtractorOrReference,
               }
             )
           : asyncInnerSelectElementFromQuery(
@@ -249,7 +249,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
               extractorRunnerMap,
               deploymentUuid,
               extractors,
-              query.rootExtractorOrReference
+              extractorOrCombiner.rootExtractorOrReference
             );
       return rootQueryResults.then((rootQueryResults) => {
         if (rootQueryResults.elementType == "instanceUuidIndex") {
@@ -258,12 +258,12 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
             const innerQueryParams =                 {
               ...queryParams.elementValue,
               ...Object.fromEntries(
-                Object.entries(applyTransformer(query.subQueryTemplate.rootQueryObjectTransformer, entry[1]))
+                Object.entries(applyTransformer(extractorOrCombiner.subQueryTemplate.rootQueryObjectTransformer, entry[1]))
               ),
             };
 
             // TODO: faking context results here! Should we send empty contextResults instead?
-            const resolvedQuery: ExtractorOrCombiner | QueryFailed = resolveQueryTemplate(query.subQueryTemplate.query,innerQueryParams, innerQueryParams); 
+            const resolvedQuery: ExtractorOrCombiner | QueryFailed = resolveQueryTemplate(extractorOrCombiner.subQueryTemplate.query,innerQueryParams, innerQueryParams); 
             if ("QueryFailure" in resolvedQuery) {
               return [
                 (entry[1] as any).uuid??"no uuid found for entry " + entry[0],
@@ -303,30 +303,30 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
             };
           });
         } else {
-          return { elementType: "failure", elementValue: { queryFailure: "IncorrectParameters", query: JSON.stringify(query.rootExtractorOrReference) } }
+          return { elementType: "failure", elementValue: { queryFailure: "IncorrectParameters", query: JSON.stringify(extractorOrCombiner.rootExtractorOrReference) } }
         }
       });
 
       break;
     }
-    case "queryContextReference": {
+    case "extractorOrCombinerContextReference": {
       return newFetchedData &&
-        newFetchedData[query.queryReference]
-        ? Promise.resolve(newFetchedData[query.queryReference])
+        newFetchedData[extractorOrCombiner.extractorOrCombinerContextReference]
+        ? Promise.resolve(newFetchedData[extractorOrCombiner.extractorOrCombinerContextReference])
         : Promise.resolve({
             elementType: "failure",
             elementValue: { 
               queryFailure: "ReferenceNotFound", 
               failureOrigin: ["AsyncQuerySelectors", "asyncInnerSelectElementFromQuery"],
-              failureMessage: "could not find reference " + query.queryReference + " in context" + JSON.stringify(Object.keys(newFetchedData)),
+              failureMessage: "could not find extractorOrCombinerContextReference " + extractorOrCombiner.extractorOrCombinerContextReference + " in context" + JSON.stringify(Object.keys(newFetchedData)),
               queryContext: JSON.stringify(newFetchedData),
-              query: JSON.stringify(query) 
+              query: JSON.stringify(extractorOrCombiner) 
             },
           });
       break;
     }
     default: {
-      return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable", query } });
+      return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable", query: extractorOrCombiner } });
       break;
     }
   }
@@ -349,7 +349,8 @@ export const asyncExtractWithExtractor /**: SyncExtractorTemplateRunner */= (
       );
       break;
     }
-    case "queryForExtractorOrCombinerReturningObjectOrObjectList": {
+    case "queryForExtractorOrCombinerReturningObject":
+    case "queryForExtractorOrCombinerReturningObjectList": {
       const result = asyncInnerSelectElementFromQuery(
         selectorParams.extractor.contextResults,
         selectorParams.extractor.pageParams,

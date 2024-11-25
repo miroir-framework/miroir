@@ -42,7 +42,7 @@ import {
   extractWithExtractor,
   extractWithManyExtractors,
   extractzodSchemaForSingleSelectQuery,
-  innerSelectElementFromQuery,
+  innerSelectDomainElementFromExtractorOrCombiner,
 } from "./QuerySelectors";
 import { transformer_InnerReference_resolve } from "./Transformers";
 
@@ -228,8 +228,8 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
   //   };
   // }
 
-  switch (querySelectorParams?.queryType) {
-    case "extractorCombinerForObjectByRelation": {
+  switch (querySelectorParams?.extractorOrCombinerType) {
+    case "combinerForObjectByRelation": {
       const referenceObject = transformer_InnerReference_resolve(
         "build",
         { transformerType: "contextReference", referenceName: querySelectorParams.objectReference },
@@ -248,7 +248,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
             queryFailure: "IncorrectParameters",
             queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
             queryContext:
-              "DomainStateQuerySelectors extractorCombinerForObjectByRelation did not find AttributeOfObjectToCompareToReferenceUuid in " +
+              "DomainStateQuerySelectors combinerForObjectByRelation did not find AttributeOfObjectToCompareToReferenceUuid in " +
               JSON.stringify(querySelectorParams),
           },
         };
@@ -279,7 +279,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
       }
 
       // log.info(
-      //   "selectEntityInstanceFromObjectQueryAndDomainState extractorCombinerForObjectByRelation, ############# reference",
+      //   "selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation, ############# reference",
       //   querySelectorParams,
       //   "######### context entityUuid",
       //   entityUuidReference,
@@ -390,8 +390,8 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
     }
     default: {
       throw new Error(
-        "selectEntityInstanceFromObjectQueryAndDomainState can not handle QueryTemplateSelectObject query with queryType=" +
-          selectorParams.extractor.select.queryType
+        "selectEntityInstanceFromObjectQueryAndDomainState can not handle QueryTemplateSelectObject query with extractorOrCombinerType=" +
+          selectorParams.extractor.select.extractorOrCombinerType
       );
       break;
     }
@@ -425,7 +425,7 @@ export const extractEntityInstanceListFromListQueryAndDomainState: SyncExtractor
 > = extractEntityInstanceListWithObjectListExtractorInMemory<DomainState>;
 
 // ################################################################################################
-export const innerSelectElementFromQueryAndDomainState = innerSelectElementFromQuery<DomainState>;
+export const innerSelectElementFromQueryAndDomainState = innerSelectDomainElementFromExtractorOrCombiner<DomainState>;
 
 // ################################################################################################
 export const extractWithManyExtractorsFromDomainState: SyncExtractorRunner<

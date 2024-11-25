@@ -97,8 +97,8 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
       entityUuidReference
     );
 
-    switch (querySelectorParams?.queryType) {
-      case "extractorCombinerForObjectByRelation": {
+    switch (querySelectorParams?.extractorOrCombinerType) {
+      case "combinerForObjectByRelation": {
         // TODO: we assume this ia a constant, get rid of resolution altogether (push it up)
         const referenceObject = transformer_InnerReference_resolve(
           "build",
@@ -137,7 +137,7 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
           };
         }
         // log.info(
-        //   "extractEntityInstance extractorCombinerForObjectByRelation, ############# reference",
+        //   "extractEntityInstance combinerForObjectByRelation, ############# reference",
         //   querySelectorParams,
         //   "######### context entityUuid",
         //   entityUuidReference,
@@ -206,8 +206,8 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
       }
       default: {
         throw new Error(
-          "extractEntityInstance can not handle QueryTemplateSelectObject query with queryType=" +
-            selectorParams.extractor.select.queryType
+          "extractEntityInstance can not handle QueryTemplateSelectObject query with extractorOrCombinerType=" +
+            selectorParams.extractor.select.extractorOrCombinerType
         );
         break;
       }

@@ -5,24 +5,25 @@ import {
   DomainElementInstanceArrayOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
   DomainElementObjectOrFailed,
-  ExtractorByEntityUuidGetEntityDefinition,
-  ExtractorByQuery2GetParamJzodSchema,
-  ExtractorByTemplateGetParamJzodSchema,
-  ExtractorByQueryGetParamJzodSchema,
-  ExtractorByQueryTemplateGetParamJzodSchema,
   DomainModelQueryJzodSchemaParams,
   DomainModelQueryTemplateJzodSchemaParams,
   ExtendedTransformerForRuntime,
+  ExtractorByEntityUuidGetEntityDefinition,
+  ExtractorByQuery2GetParamJzodSchema,
+  ExtractorByQueryGetParamJzodSchema,
+  ExtractorByQueryTemplateGetParamJzodSchema,
+  ExtractorByTemplateGetParamJzodSchema,
   ExtractorForDomainModelDEFUNCT,
-  QueryWithExtractorCombinerTransformer,
-  QueryForExtractorOrCombinerReturningObject,
-  QueryForExtractorOrCombinerReturningObjectList,
   ExtractorTemplateForDomainModelDEFUNCT,
-  QueryTemplateWithExtractorCombinerTransformer,
   JzodElement,
   JzodObject,
   QueryAction,
-  QueryTemplateAction
+  QueryForExtractorOrCombinerReturningObject,
+  QueryForExtractorOrCombinerReturningObjectList,
+  QueryForExtractorOrCombinerReturningObjectOrObjectList,
+  QueryTemplateAction,
+  QueryTemplateWithExtractorCombinerTransformer,
+  QueryWithExtractorCombinerTransformer
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 
 // ################################################################################################
@@ -99,7 +100,7 @@ export type ExtractorRunner<QueryType extends ExtractorForDomainModelDEFUNCT, St
 export type AsyncExtractorRunnerMap = {
   extractorType: "async";
   extractWithExtractor: AsyncExtractorRunner<
-    QueryForExtractorOrCombinerReturningObject | QueryForExtractorOrCombinerReturningObjectList | QueryWithExtractorCombinerTransformer,
+    QueryForExtractorOrCombinerReturningObjectOrObjectList | QueryWithExtractorCombinerTransformer,
     DomainElement
   >;
   extractWithManyExtractors: AsyncExtractorRunner<QueryWithExtractorCombinerTransformer, DomainElementObjectOrFailed>;

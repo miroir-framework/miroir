@@ -800,7 +800,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
             },
             combinerTemplates: {
               author: {
-                queryType: "extractorCombinerForObjectByRelation",
+                queryType: "combinerForObjectByRelation",
                 parentName: "Author",
                 parentUuid: {
                   transformerType: "constantUuid",

@@ -21,6 +21,10 @@ import {
   ExtractorWrapper,
   QueryWithExtractorCombinerTransformer,
   QueryAction,
+  QueryForExtractorOrCombinerReturningObjectOrObjectList,
+  ExtractorOrCombinerReturningObject,
+  ExtractorOrCombinerReturningObjectList,
+  Extractor,
 } from "miroir-core";
 import { MixableSqlDbStoreSection, SqlDbStoreSection } from "./SqlDbStoreSection";
 
@@ -77,9 +81,46 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     // ##############################################################################################
     sqlForExtractor(
       extractor:
-        | QueryForExtractorOrCombinerReturningObjectList
-        | QueryForExtractorOrCombinerReturningObject
+        Extractor
+        | ExtractorOrCombinerReturningObject
+        | ExtractorOrCombinerReturningObjectList
+        // | CombinerByManyToManyRelationReturningObjectList
+        // | ExtractorOrCombinerReturningObject
+        // | ExtractorOrCombinerReturningObjectList
         | ExtractorWrapper
+        // | ExtractorForObjectByDirectReference
+        // | QueryWithExtractorCombinerTransformer
+    ): RecursiveStringRecords {
+      switch (extractor.extractorOrCombinerType) {
+        case "extractorForObjectByDirectReference": {
+          return `SELECT * FROM "${this.schema}"."${extractor.parentName}" WHERE "uuid" = '${extractor.instanceUuid}'`;
+          break;
+        }
+        case "combinerForObjectByRelation": {
+          throw new Error("sqlForExtractor combinerForObjectByRelation not implemented");
+          break;
+        }
+        case "extractorWrapperReturningObject":
+        case "extractorWrapperReturningList":
+        case "combinerByRelationReturningObjectList":
+        case "combinerByManyToManyRelationReturningObjectList":
+        case "extractorByEntityReturningObjectList": {
+          throw new Error("sqlForExtractor not implemented for extractorOrCombinerType: " + extractor.extractorOrCombinerType);
+          break;
+        }
+        default: {
+          throw new Error("sqlForExtractor not implemented for extractorOrCombinerType of extractor: " + extractor);
+          break;
+        }
+      }
+    }
+    // ##############################################################################################
+    sqlForQuery(
+      query:
+        | QueryForExtractorOrCombinerReturningObjectOrObjectList
+        // | QueryForExtractorOrCombinerReturningObjectList
+        // | QueryForExtractorOrCombinerReturningObject
+        // | ExtractorWrapper
         | QueryWithExtractorCombinerTransformer
     ): RecursiveStringRecords {
       // log.info(this.logHeader, "sqlForExtractor called with parameter", "extractor", extractor);
@@ -91,17 +132,36 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       // // log.info(this.logHeader, "sqlForExtractor called with dialect", (this.sequelize.getQueryInterface().queryGenerator as any).dialect);
       // // log.info(this.logHeader, "sqlForExtractor called with queryGenerator", this.sequelize.getQueryInterface().queryGenerator);
       // log.info(this.logHeader, "sqlForExtractor called with selectQuery", (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery);
-      switch (extractor.queryType) {
-        case "extractorByEntityReturningObjectList": {
+      switch (query.queryType) {
+        case "queryForExtractorOrCombinerReturningObjectList": {
           // TODO: use queryGenerator?
           // where: { [filter.attribute]: { [Op.like]: "%" + filter.value + "%" } },
-          return `SELECT * FROM "${this.schema}"."${extractor.parentName}"` + (extractor.filter ? ` WHERE ${extractor.filter.attributeName} LIKE '%${extractor.filter.value}%'`  : "");
+          switch (query.select.extractorOrCombinerType) {
+            case "extractorByEntityReturningObjectList":{
+              return (
+                `SELECT * FROM "${this.schema}"."${query.select.parentName}"` +
+                (query.select.filter ? ` WHERE ${query.select.filter.attributeName} LIKE '%${query.select.filter.value}%'` : "")
+              );
+              break;
+            }
+            case "combinerByRelationReturningObjectList":{
+              throw new Error("sqlForQuery combinerByRelationReturningObjectList not implemented");
+              
+            }
+            case "combinerByManyToManyRelationReturningObjectList":{
+              throw new Error("sqlForQuery combinerByManyToManyRelationReturningObjectList not implemented");
+              
+              break;
+            }
+            default:
+              break;
+          }
           // return result;
           break;
         }
-        case "queryForExtractorOrCombinerReturningObjectOrObjectList": {
+        case "queryForExtractorOrCombinerReturningObjectList": {
           const result: string = (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery(
-            extractor.select.parentUuid,
+            query.select.parentUuid,
             {
               attributes: ["*"],
             }
@@ -113,18 +173,35 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         }
         case "queryWithExtractorCombinerTransformer": {
           return Object.fromEntries(
-            Object.entries(extractor.extractors ?? {}).map((e) => [e[0], this.sqlForExtractor(e[1])])
+            Object.entries(query.extractors ?? {}).map((e) => [e[0], this.sqlForExtractor(e[1])])
           );
           break;
         }
-        case "extractorForObjectByDirectReference": {
-          return `SELECT * FROM "${this.schema}"."${extractor.parentName}" WHERE "uuid" = '${extractor.instanceUuid}'`;
+        case "queryForExtractorOrCombinerReturningObject": {
+          switch (query.select.extractorOrCombinerType) {
+            case "extractorForObjectByDirectReference": {
+              return `SELECT * FROM "${this.schema}"."${query.select.parentName}" WHERE "uuid" = '${query.select.instanceUuid}'`;
+              break;
+            }
+            case "combinerForObjectByRelation": {
+              throw new Error("sqlForQuery combinerForObjectByRelation not implemented");
+              
+            }
+            default: {
+              throw new Error(
+                "sqlForQuery queryForExtractorOrCombinerReturningObject not implemented for extractorOrCombinerType of select: " +
+                  query.select
+              );
+              break;
+            }
+          }
+          // return `SELECT * FROM "${this.schema}"."${query.parentName}" WHERE "uuid" = '${query.instanceUuid}'`;
           break;
         }
-        case "extractorWrapperReturningObject":
-        case "extractorWrapperReturningList":
+        // case "extractorWrapperReturningObject":
+        // case "extractorWrapperReturningList":
         default: {
-          return "SQL for extractor could not handle queryType for extractor" + extractor;
+          return "SQL for extractor could not handle queryType for extractor" + query;
           break;
         }
       }

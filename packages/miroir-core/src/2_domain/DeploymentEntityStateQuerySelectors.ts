@@ -95,8 +95,8 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorRunner<
 
   const index = getDeploymentEntityStateIndex(deploymentUuid, applicationSection, entityUuidReference);
 
-  switch (querySelectorParams?.queryType) {
-    case "extractorCombinerForObjectByRelation": {
+  switch (querySelectorParams?.extractorOrCombinerType) {
+    case "combinerForObjectByRelation": {
       // TODO: reference object is implicitly a contextReference here, should be made explicit?!
       const referenceObject = transformer_InnerReference_resolve(
         "runtime",
@@ -110,14 +110,14 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorRunner<
           elementType: "failure",
           elementValue: {
             queryFailure: "ReferenceNotFound",
-            queryContext: "selectEntityInstanceFromDeploymentEntityState extractorCombinerForObjectByRelation " + JSON.stringify(referenceObject),
+            queryContext: "selectEntityInstanceFromDeploymentEntityState combinerForObjectByRelation " + JSON.stringify(referenceObject),
           },
         };
         
       }
       if (!querySelectorParams.AttributeOfObjectToCompareToReferenceUuid) {
         log.error(
-          "selectEntityInstanceFromDeploymentEntityState extractorCombinerForObjectByRelation, querySelectorParams",
+          "selectEntityInstanceFromDeploymentEntityState combinerForObjectByRelation, querySelectorParams",
           querySelectorParams,
           "entityUuid",
           entityUuidReference,
@@ -153,7 +153,7 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorRunner<
       }
 
       // log.info(
-      //   "selectEntityInstanceFromDeploymentEntityState extractorCombinerForObjectByRelation, ############# reference",
+      //   "selectEntityInstanceFromDeploymentEntityState combinerForObjectByRelation, ############# reference",
       //   querySelectorParams,
       //   "######### context entityUuid",
       //   entityUuidReference,
@@ -230,8 +230,8 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorRunner<
     }
     default: {
       throw new Error(
-        "selectEntityInstanceFromDeploymentEntityState can not handle QueryTemplateSelectObject query with queryType=" +
-          selectorParams.extractor.select.queryType
+        "selectEntityInstanceFromDeploymentEntityState can not handle QueryTemplateSelectObject query with extractorOrCombinerType=" +
+          selectorParams.extractor.select.extractorOrCombinerType
       );
       break;
     }
