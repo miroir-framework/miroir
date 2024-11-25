@@ -1,9 +1,9 @@
 import {
-  ExtractorForDomainModelObjects,
+  QueryForExtractorOrCombinerReturningObjectOrObjectList,
   QueryWithExtractorCombinerTransformer,
   ExtractorTemplateForDomainModelObjects,
-  ExtractorTemplateForRecordOfExtractors,
-  MiroirQuery,
+  QueryTemplateWithExtractorCombinerTransformer,
+  ExtractorOrCombiner,
   ExtractorForObjectByDirectReference,
   QueryFailed,
   ExtractorWrapper,
@@ -31,7 +31,7 @@ export function resolveQueryTemplate(
   queryTemplate: QueryTemplate,
   queryParams: Record<string, any>,
   contextResults: Record<string, any>
-): MiroirQuery | QueryFailed {
+): ExtractorOrCombiner | QueryFailed {
   switch (queryTemplate.queryType) {
     case "literal": {
       return queryTemplate;
@@ -89,7 +89,7 @@ export function resolveQueryTemplate(
         definition: Object.fromEntries(
           Object.entries(queryTemplate.definition).map((e: [string, QueryTemplate]) => [
             e[0],
-            resolveQueryTemplate(e[1], queryParams, contextResults) as ExtractorForObjectByDirectReference, // TODO: generalize to MiroirQuery & check for failure!
+            resolveQueryTemplate(e[1], queryParams, contextResults) as ExtractorForObjectByDirectReference, // TODO: generalize to ExtractorOrCombiner & check for failure!
           ])
         ),
       };
@@ -106,25 +106,25 @@ export function resolveQueryTemplate(
       };
       break;
     }
-    case "wrapperReturningObject": {
+    case "combiner_wrapperReturningObject": {
       return {
         ...queryTemplate,
-        // queryType: "wrapperReturningObject",
+        // queryType: "combiner_wrapperReturningObject",
         definition: Object.fromEntries(
           Object.entries(queryTemplate.definition).map((e: [string, QueryTemplate]) => [
             e[0],
-            resolveQueryTemplate(e[1], queryParams, contextResults) as MiroirQuery, // TODO: generalize to MiroirQuery & check for failure!
+            resolveQueryTemplate(e[1], queryParams, contextResults) as ExtractorOrCombiner, // TODO: generalize to ExtractorOrCombiner & check for failure!
           ])
         ),
       };
       break;
     }
-    case "wrapperReturningList": {
+    case "combiner_wrapperReturningList": {
       return {
         ...queryTemplate,
         // queryType: "extractorWrapperReturningList",
         definition: queryTemplate.definition.map(
-          (e: QueryTemplate) => resolveQueryTemplate(e, queryParams, contextResults) as MiroirQuery
+          (e: QueryTemplate) => resolveQueryTemplate(e, queryParams, contextResults) as ExtractorOrCombiner
         ),
       };
       break;
@@ -217,7 +217,7 @@ export function resolveQueryTemplateSelectExtractorWrapper(
 
 // ################################################################################################
 export function resolveExtractorTemplateForRecordOfExtractors(
-  recordOfExtractorTemplate: ExtractorTemplateForRecordOfExtractors,
+  recordOfExtractorTemplate: QueryTemplateWithExtractorCombinerTransformer,
 ): QueryWithExtractorCombinerTransformer {
 
   const params = { ...recordOfExtractorTemplate.pageParams, ...recordOfExtractorTemplate.queryParams };
@@ -231,7 +231,7 @@ export function resolveExtractorTemplateForRecordOfExtractors(
     Object.entries(recordOfExtractorTemplate.extractorTemplates ?? {}).map(
       (e: [string, QueryTemplateSelectExtractorWrapper]) => [
         e[0],
-        resolveQueryTemplateSelectExtractorWrapper(e[1], params, recordOfExtractorTemplate.contextResults), // TODO: generalize to MiroirQuery & check for failure!
+        resolveQueryTemplateSelectExtractorWrapper(e[1], params, recordOfExtractorTemplate.contextResults), // TODO: generalize to ExtractorOrCombiner & check for failure!
       ]
     )
   );
@@ -244,7 +244,7 @@ export function resolveExtractorTemplateForRecordOfExtractors(
   const combiners = Object.fromEntries(
     Object.entries(recordOfExtractorTemplate.combinerTemplates ?? {}).map((e: [string, QueryTemplate]) => [
       e[0],
-      resolveQueryTemplate(e[1], params, recordOfExtractorTemplate.contextResults), // TODO: generalize to MiroirQuery & check for failure!
+      resolveQueryTemplate(e[1], params, recordOfExtractorTemplate.contextResults), // TODO: generalize to ExtractorOrCombiner & check for failure!
     ])
   );
 
@@ -261,7 +261,7 @@ export function resolveExtractorTemplateForRecordOfExtractors(
     deploymentUuid: recordOfExtractorTemplate.deploymentUuid,
     queryType: "queryWithExtractorCombinerTransformer",
     extractors: queries,
-    combiners: combiners as Record<string, MiroirQuery>,
+    combiners: combiners as Record<string, ExtractorOrCombiner>,
     runtimeTransformers: recordOfExtractorTemplate.runtimeTransformers,
   };
 }
@@ -269,7 +269,7 @@ export function resolveExtractorTemplateForRecordOfExtractors(
 // ################################################################################################
 export function resolveExtractorTemplateForDomainModelObjects(
   extractorTemplateForDomainModelObjects: ExtractorTemplateForDomainModelObjects,
-): ExtractorForDomainModelObjects {
+): QueryForExtractorOrCombinerReturningObjectOrObjectList {
 
   const params = { ...extractorTemplateForDomainModelObjects.pageParams, ...extractorTemplateForDomainModelObjects.queryParams };
 
@@ -286,7 +286,7 @@ export function resolveExtractorTemplateForDomainModelObjects(
     queryParams: extractorTemplateForDomainModelObjects.queryParams,
     contextResults: extractorTemplateForDomainModelObjects.contextResults,
     deploymentUuid: extractorTemplateForDomainModelObjects.deploymentUuid,
-    queryType: "extractorForDomainModelObjects",
+    queryType: "queryForExtractorOrCombinerReturningObjectOrObjectList",
     select: select,
     // runtimeTransformers: extractorTemplateForDomainModelObjects.runtimeTransformers,
   }
@@ -294,8 +294,8 @@ export function resolveExtractorTemplateForDomainModelObjects(
 
 // ################################################################################################
 export function resolveExtractorTemplate(
-  extractorTemplate: ExtractorTemplateForDomainModelObjects | ExtractorTemplateForRecordOfExtractors
-): ExtractorForDomainModelObjects | QueryWithExtractorCombinerTransformer {
+  extractorTemplate: ExtractorTemplateForDomainModelObjects | QueryTemplateWithExtractorCombinerTransformer
+): QueryForExtractorOrCombinerReturningObjectOrObjectList | QueryWithExtractorCombinerTransformer {
   if ('select' in extractorTemplate) { // TODO: implementation-specific, to be improved!
     return resolveExtractorTemplateForDomainModelObjects(extractorTemplate);
   } else {

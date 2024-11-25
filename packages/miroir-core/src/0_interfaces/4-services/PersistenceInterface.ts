@@ -1,7 +1,7 @@
 import { HttpMethod } from "../1_core/Http";
 import {
   ActionReturnType,
-  ExtractorTemplateForRecordOfExtractors,
+  QueryTemplateWithExtractorCombinerTransformer,
   EntityInstance,
   EntityInstanceCollection,
   PersistenceAction,
@@ -17,8 +17,8 @@ export interface HttpRequestBodyFormat {
   instances?: EntityInstance[];
   crudInstances?: EntityInstance[];
   modelUpdate?: any;
-  query?: ExtractorTemplateForRecordOfExtractors | QueryWithExtractorCombinerTransformer;
-  // queryTemplate?: ExtractorTemplateForRecordOfExtractors;
+  query?: QueryTemplateWithExtractorCombinerTransformer | QueryWithExtractorCombinerTransformer;
+  // queryTemplate?: QueryTemplateWithExtractorCombinerTransformer;
   other?: any;
 };
 

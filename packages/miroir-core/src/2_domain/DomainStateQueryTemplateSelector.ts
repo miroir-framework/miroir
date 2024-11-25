@@ -7,7 +7,7 @@ import {
   EntityDefinition,
   ExtractorTemplateForDomainModelDEFUNCT,
   ExtractorTemplateForDomainModelObjects,
-  ExtractorTemplateForRecordOfExtractors,
+  QueryTemplateWithExtractorCombinerTransformer,
   JzodObject
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
@@ -51,7 +51,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 // ################################################################################################
 // TODO: used in extractorTemplateRunnerForDomainState.unit.test and RestServer.ts, provide a better interface?
 export type ExtractorTemplateRunnerForDomainState = SyncExtractorTemplateRunner<
-  ExtractorTemplateForDomainModelObjects | ExtractorTemplateForRecordOfExtractors,
+  ExtractorTemplateForDomainModelObjects | QueryTemplateWithExtractorCombinerTransformer,
   DomainState,
   DomainElement
 >;
@@ -64,7 +64,7 @@ export const extractorTemplateRunnerForDomainState: ExtractorTemplateRunnerForDo
 // TODO: used in RestServer.ts (with commented out access in HomePage, to create bundle)
 //  provide a better interface?
 export const extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT: SyncExtractorTemplateRunner<
-  ExtractorTemplateForRecordOfExtractors,
+  QueryTemplateWithExtractorCombinerTransformer,
   DomainState,
   DomainElementObject
 > = extractWithManyExtractorTemplates<DomainState>;

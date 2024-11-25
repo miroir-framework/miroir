@@ -5,8 +5,8 @@ import {
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceArrayOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
-  ExtractorForSingleObject,
-  ExtractorForSingleObjectList,
+  QueryForExtractorOrCombinerReturningObject,
+  QueryForExtractorOrCombinerReturningObjectList,
   QueryAction,
   ExtractorOrCombinerReturningObject
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -75,12 +75,12 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
 
   // ################################################################################################
   public extractEntityInstance: AsyncExtractorRunner<
-    ExtractorForSingleObject,
+    QueryForExtractorOrCombinerReturningObject,
     DomainElementEntityInstanceOrFailed
   > = async (
-    selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObject>
+    selectorParams: AsyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObject>
   ): Promise<DomainElementEntityInstanceOrFailed> => {
-    const querySelectorParams: ExtractorOrCombinerReturningObject = selectorParams.extractor.select as ExtractorOrCombinerReturningObject;
+    const querySelectorParams: ExtractorOrCombinerReturningObject = selectorParams.extractor.select;
     const deploymentUuid = selectorParams.extractor.deploymentUuid;
     const applicationSection: ApplicationSection =
       selectorParams.extractor.select.applicationSection ??
@@ -216,10 +216,10 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
 
   // ##############################################################################################
   public extractEntityInstanceUuidIndex: AsyncExtractorRunner<
-    ExtractorForSingleObjectList,
+    QueryForExtractorOrCombinerReturningObjectList,
     DomainElementInstanceUuidIndexOrFailed
   > = async (
-    extractorRunnerParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList>
+    extractorRunnerParams: AsyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList>
   ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
     return this.extractEntityInstanceList(extractorRunnerParams).then((result) => {
       if (result.elementType == "failure") {
@@ -235,10 +235,10 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
 
   // ##############################################################################################
   public extractEntityInstanceList: AsyncExtractorRunner<
-    ExtractorForSingleObjectList,
+    QueryForExtractorOrCombinerReturningObjectList,
     DomainElementInstanceArrayOrFailed
   > = async (
-    extractorRunnerParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList>
+    extractorRunnerParams: AsyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList>
   ): Promise<DomainElementInstanceArrayOrFailed> => {
     const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";

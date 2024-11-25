@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import {
   ExtractorTemplateForDomainModelObjects,
-  ExtractorTemplateForRecordOfExtractors
+  QueryTemplateWithExtractorCombinerTransformer
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { resolveExtractorTemplateForDomainModelObjects } from '../../2_domain/Templates';
 import {
@@ -23,8 +23,8 @@ describe("extractorTemplates.unit.test", () => {
       const newApplicationName = "test";
       const newUuid = uuidv4();
 
-      const uniqueRuntimeTemplate: ExtractorTemplateForRecordOfExtractors = {
-        queryType: "extractorTemplateForRecordOfExtractors",
+      const uniqueRuntimeTemplate: QueryTemplateWithExtractorCombinerTransformer = {
+        queryType: "queryTemplateWithExtractorCombinerTransformer",
         deploymentUuid: "xxxxx",
         pageParams: {
           instanceUuid: "xxxxx",
@@ -234,7 +234,7 @@ describe("extractorTemplates.unit.test", () => {
         },
         contextResults: {},
         deploymentUuid: "xxxxx",
-        queryType: "extractorForDomainModelObjects",
+        queryType: "queryForExtractorOrCombinerReturningObjectOrObjectList",
         select: {
           queryType: "extractorForObjectByDirectReference",
           parentName: "Book",

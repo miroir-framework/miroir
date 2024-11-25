@@ -14,7 +14,7 @@
     },
     "select": {
       "result": {
-        "queryType": "wrapperReturningObject",
+        "queryType": "combiner_wrapperReturningObject",
         "definition": {
           "type": { "queryType": "literal", "definition": "runtime" },
           "applicationVersion": {

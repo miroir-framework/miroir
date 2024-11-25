@@ -8,10 +8,10 @@ import {
   ExtractorByTemplateGetParamJzodSchema,
   ExtractorByQueryTemplateGetParamJzodSchema,
   DomainModelQueryTemplateJzodSchemaParams,
-  ExtractorForDomainModelObjects,
+  QueryForExtractorOrCombinerReturningObjectOrObjectList,
   QueryWithExtractorCombinerTransformer,
   ExtractorTemplateForDomainModelObjects,
-  ExtractorTemplateForRecordOfExtractors,
+  QueryTemplateWithExtractorCombinerTransformer,
   JzodElement,
   JzodObject,
   QueryTemplate,
@@ -74,7 +74,7 @@ export async function handleQueryTemplateAction(
 export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <StateType>(
   state: StateType,
   selectorParams: SyncExtractorTemplateRunnerParams<
-  ExtractorTemplateForDomainModelObjects | ExtractorTemplateForRecordOfExtractors,
+  ExtractorTemplateForDomainModelObjects | QueryTemplateWithExtractorCombinerTransformer,
     StateType
   >
 ): DomainElement => {
@@ -84,7 +84,7 @@ export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <
   }
 
   switch (selectorParams.extractorTemplate.queryType) {
-    case "extractorTemplateForRecordOfExtractors": {
+    case "queryTemplateWithExtractorCombinerTransformer": {
       const resolvedExtractor: QueryWithExtractorCombinerTransformer = resolveExtractorTemplateForRecordOfExtractors(
         selectorParams.extractorTemplate
       ); 
@@ -99,7 +99,7 @@ export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <
       break;
     }
     case "extractorTemplateForDomainModelObjects": {
-      const resolvedExtractor: ExtractorForDomainModelObjects = resolveExtractorTemplateForDomainModelObjects(
+      const resolvedExtractor: QueryForExtractorOrCombinerReturningObjectOrObjectList = resolveExtractorTemplateForDomainModelObjects(
         selectorParams.extractorTemplate
       ); 
 
@@ -149,7 +149,7 @@ export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <
  */
 export const extractWithManyExtractorTemplates = <StateType>(
   state: StateType,
-  selectorParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForRecordOfExtractors, StateType>,
+  selectorParams: SyncExtractorTemplateRunnerParams<QueryTemplateWithExtractorCombinerTransformer, StateType>,
 ): DomainElementObject => { 
 
   const resolvedExtractor: QueryWithExtractorCombinerTransformer = resolveExtractorTemplateForRecordOfExtractors(
@@ -178,9 +178,9 @@ export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
     selectorParams.query.select.queryType=="literal" ||
     selectorParams.query.select.queryType=="queryContextReference" ||
     selectorParams.query.select.queryType=="extractorWrapperReturningObject" ||
-    selectorParams.query.select.queryType=="wrapperReturningObject" ||
+    selectorParams.query.select.queryType=="combiner_wrapperReturningObject" ||
     selectorParams.query.select.queryType=="extractorWrapperReturningList" ||
-    selectorParams.query.select.queryType=="wrapperReturningList" ||
+    selectorParams.query.select.queryType=="combiner_wrapperReturningList" ||
     selectorParams.query.select.queryType=="extractorCombinerByHeteronomousManyToManyReturningListOfObjectList" 
   ) {
     throw new Error(
@@ -300,7 +300,7 @@ export const extractFetchQueryTemplateJzodSchema = <StateType>(
   deploymentEntityState: StateType,
   selectorParams: ExtractorTemplateRunnerParamsForJzodSchema<ExtractorByTemplateGetParamJzodSchema, StateType>
 ):  RecordOfJzodObject | undefined => {
-  const localFetchParams: ExtractorTemplateForRecordOfExtractors = selectorParams.query.fetchParams
+  const localFetchParams: QueryTemplateWithExtractorCombinerTransformer = selectorParams.query.fetchParams
   // log.info("selectFetchQueryJzodSchemaFromDomainState called", selectorParams.query);
   
   const fetchQueryJzodSchema = Object.fromEntries(

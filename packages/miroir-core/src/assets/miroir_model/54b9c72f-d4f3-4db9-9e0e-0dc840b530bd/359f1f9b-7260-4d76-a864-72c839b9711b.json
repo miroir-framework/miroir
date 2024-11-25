@@ -599,11 +599,18 @@
                 }
               },
               {
+                "type": "schemaReference",
+                "definition":{
+                  "absolutePath":"fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath":"queryContextReference"
+                }
+              },
+              {
                 "type": "object",
                 "definition": {
                   "queryType": {
                     "type": "literal",
-                    "definition": "wrapperReturningObject"
+                    "definition": "combiner_wrapperReturningObject"
                   },
                   "definition": {
                     "type": "record",
@@ -621,7 +628,7 @@
                 "definition": {
                   "queryType": {
                     "type": "literal",
-                    "definition": "wrapperReturningList"
+                    "definition": "combiner_wrapperReturningList"
                   },
                   "definition": {
                     "type": "array",
@@ -675,13 +682,6 @@
                 "definition": {
                   "queryType": { "type": "literal", "definition": "literal" },
                   "definition": { "type": "string" }
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition":{
-                  "absolutePath":"fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath":"queryContextReference"
                 }
               }
             ]
@@ -881,7 +881,7 @@
               }
             }
           },
-          "extractorOrExtractorCombinerReturningObjectList": {
+          "extractorOrCombinerReturningObjectList": {
             "type": "union",
             "discriminator": "queryType",
             "definition": [
@@ -1026,7 +1026,7 @@
               }
             ]
           },
-          "miroirQuery": {
+          "extractorOrCombiner": {
             "type": "union",
             "discriminator": "queryType",
             "definition": [
@@ -1048,14 +1048,14 @@
                 "definition": {
                   "queryType": {
                     "type": "literal",
-                    "definition": "wrapperReturningObject"
+                    "definition": "combiner_wrapperReturningObject"
                   },
                   "definition": {
                     "type": "record",
                     "definition": {
                       "type": "schemaReference",
                       "definition": {
-                        "relativePath": "miroirQuery"
+                        "relativePath": "extractorOrCombiner"
                       }
                     }
                   }
@@ -1066,14 +1066,14 @@
                 "definition": {
                   "queryType": {
                     "type": "literal",
-                    "definition": "wrapperReturningList"
+                    "definition": "combiner_wrapperReturningList"
                   },
                   "definition": {
                     "type": "array",
                     "definition": {
                       "type": "schemaReference",
                       "definition": {
-                        "relativePath": "miroirQuery"
+                        "relativePath": "extractorOrCombiner"
                       }
                     }
                   }
@@ -1094,7 +1094,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "extractorOrExtractorCombinerReturningObjectList"
+                  "relativePath": "extractorOrCombinerReturningObjectList"
                 }
               },
               {
@@ -1117,7 +1117,7 @@
             "definition": {
               "type": "schemaReference",
               "definition": {
-                "relativePath": "miroirQuery"
+                "relativePath": "extractorOrCombiner"
               }
             }
           }

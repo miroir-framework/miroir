@@ -1026,7 +1026,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
         //       referenceName: "currentDeploymentUuid"
         //     },
         //     query: {
-        //       queryType: "extractorTemplateForRecordOfExtractors",
+        //       queryType: "queryTemplateWithExtractorCombinerTransformer",
         //       deploymentUuid: {
         //         transformerType: "parameterReference",
         //         referenceName: "currentDeploymentUuid",
@@ -1160,7 +1160,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
               referenceName: "currentDeploymentUuid"
             },
             query: {
-              queryType: "extractorTemplateForRecordOfExtractors",
+              queryType: "queryTemplateWithExtractorCombinerTransformer",
               deploymentUuid: {
                 transformerType: "parameterReference",
                 referenceName: "currentDeploymentUuid",
@@ -1400,7 +1400,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
       //     applicationSection: "model",
       //     deploymentUuid: "54b3b3b3-7b3b-4b3b-8b3b-3b3b3b3b3b3b",
       //     query: {
-      //       queryType: "extractorTemplateForRecordOfExtractors",
+      //       queryType: "queryTemplateWithExtractorCombinerTransformer",
       //       deploymentUuid: "54b3b3b3-7b3b-4b3b-8b3b-3b3b3b3b3b3b",
       //       pageParams: {
       //         deploymentUuid: "54b3b3b3-7b3b-4b3b-8b3b-3b3b3b3b3b3b",
@@ -1514,7 +1514,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
           applicationSection: "data",
           deploymentUuid: "54b3b3b3-7b3b-4b3b-8b3b-3b3b3b3b3b3b",
           query: {
-            queryType: "extractorTemplateForRecordOfExtractors",
+            queryType: "queryTemplateWithExtractorCombinerTransformer",
             deploymentUuid: "54b3b3b3-7b3b-4b3b-8b3b-3b3b3b3b3b3b",
             pageParams: {
               deploymentUuid: "54b3b3b3-7b3b-4b3b-8b3b-3b3b3b3b3b3b",

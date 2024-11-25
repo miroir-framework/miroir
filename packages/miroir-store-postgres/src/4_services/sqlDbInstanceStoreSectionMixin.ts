@@ -13,11 +13,11 @@ import {
   ACTION_OK,
   QueryTemplateAction,
   ExtractorTemplateForSingleObjectList,
-  ExtractorTemplateForRecordOfExtractors,
+  QueryTemplateWithExtractorCombinerTransformer,
   ExtractorTemplateForSingleObject,
   QueryTemplateSelectExtractorWrapper,
-  ExtractorForSingleObjectList,
-  ExtractorForSingleObject,
+  QueryForExtractorOrCombinerReturningObjectList,
+  QueryForExtractorOrCombinerReturningObject,
   ExtractorWrapper,
   QueryWithExtractorCombinerTransformer,
   QueryAction,
@@ -77,8 +77,8 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     // ##############################################################################################
     sqlForExtractor(
       extractor:
-        | ExtractorForSingleObjectList
-        | ExtractorForSingleObject
+        | QueryForExtractorOrCombinerReturningObjectList
+        | QueryForExtractorOrCombinerReturningObject
         | ExtractorWrapper
         | QueryWithExtractorCombinerTransformer
     ): RecursiveStringRecords {
@@ -99,7 +99,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           // return result;
           break;
         }
-        case "extractorForDomainModelObjects": {
+        case "queryForExtractorOrCombinerReturningObjectOrObjectList": {
           const result: string = (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery(
             extractor.select.parentUuid,
             {
@@ -137,7 +137,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         | ExtractorTemplateForSingleObjectList
         | ExtractorTemplateForSingleObject
         | QueryTemplateSelectExtractorWrapper
-        | ExtractorTemplateForRecordOfExtractors
+        | QueryTemplateWithExtractorCombinerTransformer
     ): RecursiveStringRecords {
       // log.info(this.logHeader, "sqlForExtractor called with parameter", "extractor", extractor);
       // log.info(this.logHeader, "sqlForExtractor called with sequelize", this.sequelize);
@@ -180,7 +180,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           return result;
           break;
         }
-        case "extractorTemplateForRecordOfExtractors": {
+        case "queryTemplateWithExtractorCombinerTransformer": {
           return Object.fromEntries(
             Object.entries(extractor.extractorTemplates ?? {}).map((e) => [e[0], this.sqlForExtractorTemplate(e[1])])
           );

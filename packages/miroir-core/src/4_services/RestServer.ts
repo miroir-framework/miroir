@@ -348,7 +348,7 @@ export async function queryTemplateActionHandler(
    * - execute on the persistent store (sql)
    * 
    */
-  // const query: ExtractorTemplateForRecordOfExtractors = body.query as ExtractorTemplateForRecordOfExtractors ;
+  // const query: QueryTemplateWithExtractorCombinerTransformer = body.query as QueryTemplateWithExtractorCombinerTransformer ;
   const queryTemplateAction: QueryTemplateAction = body as QueryTemplateAction ;
 
   const deploymentUuid = queryTemplateAction.deploymentUuid

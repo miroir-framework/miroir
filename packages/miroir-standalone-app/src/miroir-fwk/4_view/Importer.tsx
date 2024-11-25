@@ -1334,7 +1334,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               referenceName: "currentDeploymentUuid"
             },
             query: {
-              queryType: "extractorTemplateForRecordOfExtractors",
+              queryType: "queryTemplateWithExtractorCombinerTransformer",
               deploymentUuid: {
                 transformerType: "parameterReference",
                 referenceName: "currentDeploymentUuid",
@@ -1491,7 +1491,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               referenceName: "currentDeploymentUuid"
             },
             query: {
-              queryType: "extractorTemplateForRecordOfExtractors",
+              queryType: "queryTemplateWithExtractorCombinerTransformer",
               deploymentUuid: {
                 transformerType: "parameterReference",
                 referenceName: "currentDeploymentUuid",

@@ -14,18 +14,18 @@ import {
   DomainElementInstanceUuidIndexOrFailed,
   DomainElementObject,
   ExtractorByEntityUuidGetEntityDefinition,
-  ExtractorByExtractorGetParamJzodSchema,
+  ExtractorByQuery2GetParamJzodSchema,
   ExtractorByQueryGetParamJzodSchema,
   DomainModelQueryJzodSchemaParams,
   EntityInstance,
   ExtendedTransformerForRuntime,
-  ExtractorForDomainModelObjects,
+  QueryForExtractorOrCombinerReturningObjectOrObjectList,
   ExtractorByEntityReturningObjectList,
   QueryWithExtractorCombinerTransformer,
-  ExtractorForSingleObjectList,
+  QueryForExtractorOrCombinerReturningObjectList,
   JzodElement,
   JzodObject,
-  MiroirQuery,
+  ExtractorOrCombiner,
   QueryAction,
   QueryFailed,
   QueryTemplateConstantOrAnyReference
@@ -179,7 +179,7 @@ export function plainObjectToDomainElement(r:any): DomainElement {
 // ################################################################################################
 export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = (
   selectedInstancesList: DomainElementInstanceArrayOrFailed,
-  extractor: ExtractorForSingleObjectList,
+  extractor: QueryForExtractorOrCombinerReturningObjectList,
 ) => {
   if (selectedInstancesList.elementType == "failure") {
     return selectedInstancesList;
@@ -338,7 +338,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
 // ################################################################################################
 export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory = (
   selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed,
-  extractor: ExtractorForSingleObjectList,
+  extractor: QueryForExtractorOrCombinerReturningObjectList,
 ) => {
   switch (extractor.select.queryType) {
     case "extractorByEntityReturningObjectList": {
@@ -488,7 +488,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
 export const extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
 = <StateType>(
   deploymentEntityState: StateType,
-  selectorParams: SyncExtractorRunnerParams<ExtractorForSingleObjectList, StateType>
+  selectorParams: SyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList, StateType>
 ): DomainElementInstanceUuidIndexOrFailed => {
   const selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed =
     (selectorParams?.extractorRunnerMap ?? emptySelectorMap).extractEntityInstanceUuidIndex(deploymentEntityState, selectorParams);
@@ -513,7 +513,7 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
 export const extractEntityInstanceListWithObjectListExtractorInMemory
 = <StateType>(
   deploymentEntityState: StateType,
-  selectorParams: SyncExtractorRunnerParams<ExtractorForSingleObjectList, StateType>
+  selectorParams: SyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList, StateType>
 ): DomainElementInstanceArrayOrFailed => {
   const selectedInstancesUuidIndex: DomainElementInstanceArrayOrFailed =
     (selectorParams?.extractorRunnerMap ?? emptySelectorMap).extractEntityInstanceList(deploymentEntityState, selectorParams);
@@ -548,7 +548,7 @@ export async function handleQueryAction(
   log.info("handleQueryAction for", origin, "start", "queryAction", JSON.stringify(queryAction, null, 2));
   let queryResult: DomainElement;
   switch (queryAction.query.queryType) {
-    case "extractorForDomainModelObjects": {
+    case "queryForExtractorOrCombinerReturningObjectOrObjectList": {
       queryResult = await selectorMap.extractWithExtractor(
         {
           extractor: queryAction.query,
@@ -595,7 +595,7 @@ export function innerSelectElementFromQuery/*ExtractorTemplateRunner*/<StateType
   queryParams: Record<string, any>,
   extractorRunnerMap:SyncExtractorRunnerMap<StateType>,
   deploymentUuid: Uuid,
-  query: MiroirQuery
+  query: ExtractorOrCombiner
 ): DomainElement | DomainElementFailed {
   switch (query.queryType) {
     case "literal": {
@@ -611,7 +611,7 @@ export function innerSelectElementFromQuery/*ExtractorTemplateRunner*/<StateType
       return extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor(state, {
         extractorRunnerMap,
         extractor: {
-          queryType: "extractorForDomainModelObjects",
+          queryType: "queryForExtractorOrCombinerReturningObjectOrObjectList",
           deploymentUuid: deploymentUuid,
           contextResults: context,
           pageParams: pageParams,
@@ -632,7 +632,7 @@ export function innerSelectElementFromQuery/*ExtractorTemplateRunner*/<StateType
       return extractorRunnerMap.extractEntityInstance(state, {
         extractorRunnerMap,
         extractor: {
-          queryType: "extractorForDomainModelObjects",
+          queryType: "queryForExtractorOrCombinerReturningObject",
           deploymentUuid: deploymentUuid,
           contextResults: context,
           pageParams,
@@ -649,11 +649,11 @@ export function innerSelectElementFromQuery/*ExtractorTemplateRunner*/<StateType
     }
     // ############################################################################################
     case "extractorWrapperReturningObject":
-    case "wrapperReturningObject": { // build object
+    case "combiner_wrapperReturningObject": { // build object
       return {
         elementType: "object",
         elementValue: Object.fromEntries(
-          Object.entries(query.definition).map((e: [string, MiroirQuery]) => [
+          Object.entries(query.definition).map((e: [string, ExtractorOrCombiner]) => [
             e[0],
             innerSelectElementFromQuery( // recursive call
               state,
@@ -670,7 +670,7 @@ export function innerSelectElementFromQuery/*ExtractorTemplateRunner*/<StateType
       break;
     }
     case "extractorWrapperReturningList":
-    case "wrapperReturningList": { // List map
+    case "combiner_wrapperReturningList": { // List map
       return {
         elementType: "array",
         elementValue: query.definition.map((e) =>
@@ -717,7 +717,7 @@ export function innerSelectElementFromQuery/*ExtractorTemplateRunner*/<StateType
               };
 
               // TODO: faking context results here! Should we send empty contextResults instead?
-              const resolvedQuery: MiroirQuery | QueryFailed = resolveQueryTemplate(query.subQueryTemplate.query,innerQueryParams, innerQueryParams); 
+              const resolvedQuery: ExtractorOrCombiner | QueryFailed = resolveQueryTemplate(query.subQueryTemplate.query,innerQueryParams, innerQueryParams); 
         
               if ("QueryFailure" in resolvedQuery) {
                 return [
@@ -732,7 +732,7 @@ export function innerSelectElementFromQuery/*ExtractorTemplateRunner*/<StateType
                 innerQueryParams,
                 extractorRunnerMap,
                 deploymentUuid,
-                resolvedQuery as MiroirQuery,
+                resolvedQuery as ExtractorOrCombiner,
               ).elementValue; // TODO: check for error!
               return [
                 (entry[1] as any).uuid??"no uuid found for entry " + entry[0],
@@ -797,16 +797,16 @@ export function innerSelectElementFromQuery/*ExtractorTemplateRunner*/<StateType
 }
 
 // ################################################################################################
-// export const extractWithExtractor: <StateType>SyncExtractorRunner<StateType,ExtractorForDomainModelObjects | QueryWithExtractorCombinerTransformer, DomainElement> = <StateType>(
+// export const extractWithExtractor: <StateType>SyncExtractorRunner<StateType,QueryForExtractorOrCombinerReturningObjectOrObjectList | QueryWithExtractorCombinerTransformer, DomainElement> = <StateType>(
 export type ExtractWithExtractorType<StateType> = SyncExtractorRunner<
-  ExtractorForDomainModelObjects | QueryWithExtractorCombinerTransformer,
+  QueryForExtractorOrCombinerReturningObjectOrObjectList | QueryWithExtractorCombinerTransformer,
   StateType,
   DomainElement
 >;
 export const extractWithExtractor /*: ExtractWithExtractorType*/ = <StateType>(
   state: StateType,
   selectorParams: SyncExtractorRunnerParams<
-  ExtractorForDomainModelObjects | QueryWithExtractorCombinerTransformer,
+  QueryForExtractorOrCombinerReturningObjectOrObjectList | QueryWithExtractorCombinerTransformer,
     StateType
   >
 ): DomainElement => {
@@ -821,7 +821,7 @@ export const extractWithExtractor /*: ExtractWithExtractorType*/ = <StateType>(
       );
       break;
     }
-    case "extractorForDomainModelObjects": {
+    case "queryForExtractorOrCombinerReturningObjectOrObjectList": {
       const result = innerSelectElementFromQuery(
         state,
         selectorParams.extractor.contextResults,
@@ -978,9 +978,9 @@ export const extractzodSchemaForSingleSelectQuery = <StateType>(
     selectorParams.query.select.queryType=="literal" ||
     selectorParams.query.select.queryType=="queryContextReference" ||
     selectorParams.query.select.queryType=="extractorWrapperReturningObject" ||
-    selectorParams.query.select.queryType=="wrapperReturningObject" ||
+    selectorParams.query.select.queryType=="combiner_wrapperReturningObject" ||
     selectorParams.query.select.queryType=="extractorWrapperReturningList" ||
-    selectorParams.query.select.queryType=="wrapperReturningList" ||
+    selectorParams.query.select.queryType=="combiner_wrapperReturningList" ||
     selectorParams.query.select.queryType=="extractorCombinerByHeteronomousManyToManyReturningListOfObjectList" 
   ) {
     throw new Error(
@@ -1032,7 +1032,7 @@ export const extractJzodSchemaForDomainModelQuery = <StateType>(
     case "extractorByTemplateGetParamJzodSchema": {
       return selectorParams.extractorRunnerMap.extractFetchQueryJzodSchema(
         deploymentEntityState,
-        selectorParams as ExtractorRunnerParamsForJzodSchema<ExtractorByExtractorGetParamJzodSchema, StateType>
+        selectorParams as ExtractorRunnerParamsForJzodSchema<ExtractorByQuery2GetParamJzodSchema, StateType>
       );
       break;
     }
@@ -1059,14 +1059,14 @@ export const extractJzodSchemaForDomainModelQuery = <StateType>(
  */
 export const extractFetchQueryJzodSchema = <StateType>(
   deploymentEntityState: StateType,
-  selectorParams: ExtractorRunnerParamsForJzodSchema<ExtractorByExtractorGetParamJzodSchema, StateType>
+  selectorParams: ExtractorRunnerParamsForJzodSchema<ExtractorByQuery2GetParamJzodSchema, StateType>
 ):  RecordOfJzodObject | undefined => {
   const localFetchParams: QueryWithExtractorCombinerTransformer = selectorParams.query.fetchParams
   // log.info("selectFetchQueryJzodSchemaFromDomainState called", selectorParams.query);
   
   const fetchQueryJzodSchema = Object.fromEntries(
     Object.entries(localFetchParams?.combiners??{})
-    .map((entry: [string, MiroirQuery]) => [
+    .map((entry: [string, ExtractorOrCombiner]) => [
       entry[0],
       selectorParams.extractorRunnerMap.extractzodSchemaForSingleSelectQuery(deploymentEntityState, {
         extractorRunnerMap:selectorParams.extractorRunnerMap,

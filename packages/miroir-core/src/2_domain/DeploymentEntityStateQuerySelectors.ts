@@ -6,8 +6,8 @@ import {
   // ExtractorByEntityUuidGetEntityDefinition,
   EntityDefinition,
   ExtractorForDomainModelDEFUNCT,
-  ExtractorForSingleObject,
-  ExtractorForSingleObjectList,
+  QueryForExtractorOrCombinerReturningObject,
+  QueryForExtractorOrCombinerReturningObjectList,
   JzodObject,
   ExtractorOrCombinerReturningObject,
   ExtractorByEntityUuidGetEntityDefinition
@@ -56,12 +56,12 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
  * @returns
  */
 export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorRunner<
-  ExtractorForSingleObject,
+  QueryForExtractorOrCombinerReturningObject,
   DeploymentEntityState,
   DomainElementEntityInstanceOrFailed
 > = (
   deploymentEntityState: DeploymentEntityState,
-  selectorParams: SyncExtractorRunnerParams<ExtractorForSingleObject, DeploymentEntityState>
+  selectorParams: SyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObject, DeploymentEntityState>
 ): DomainElementEntityInstanceOrFailed => {
   const querySelectorParams = selectorParams.extractor.select as ExtractorOrCombinerReturningObject;
   const deploymentUuid = selectorParams.extractor.deploymentUuid;
@@ -241,12 +241,12 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorRunner<
 // ################################################################################################
 // ACCESSES deploymentEntityState
 export const selectEntityInstanceUuidIndexFromDeploymentEntityState: SyncExtractorRunner<
-  ExtractorForSingleObjectList,
+  QueryForExtractorOrCombinerReturningObjectList,
   DeploymentEntityState,
   DomainElementInstanceUuidIndexOrFailed
 > = (
   deploymentEntityState: DeploymentEntityState,
-  selectorParams: SyncExtractorRunnerParams<ExtractorForSingleObjectList, DeploymentEntityState>
+  selectorParams: SyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList, DeploymentEntityState>
 ): DomainElementInstanceUuidIndexOrFailed => {
   const deploymentUuid = selectorParams.extractor.deploymentUuid;
   const applicationSection = selectorParams.extractor.select.applicationSection ?? "data";
@@ -300,12 +300,12 @@ export const selectEntityInstanceUuidIndexFromDeploymentEntityState: SyncExtract
 // ################################################################################################
 // ACCESSES deploymentEntityState
 export const selectEntityInstanceListFromDeploymentEntityState: SyncExtractorRunner<
-  ExtractorForSingleObjectList,
+  QueryForExtractorOrCombinerReturningObjectList,
   DeploymentEntityState,
   DomainElementInstanceArrayOrFailed
 > = (
   deploymentEntityState: DeploymentEntityState,
-  selectorParams: SyncExtractorRunnerParams<ExtractorForSingleObjectList, DeploymentEntityState>
+  selectorParams: SyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList, DeploymentEntityState>
 ): DomainElementInstanceArrayOrFailed => {
   const result = selectEntityInstanceUuidIndexFromDeploymentEntityState(deploymentEntityState, selectorParams);
 

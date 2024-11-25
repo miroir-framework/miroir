@@ -61,7 +61,7 @@ describe("extractorTransformerSql.unit.test", () => {
         // {}, // newFetchedData
         // {
         //   book: {
-        //     queryType: "extractorForDomainModelObjects",
+        //     queryType: "queryForExtractorOrCombinerReturningObjectOrObjectList",
         //     contextResults: {},
         //     deploymentUuid: "deployment1",
         //     pageParams: {},
@@ -131,7 +131,7 @@ describe("extractorTransformerSql.unit.test", () => {
   //       // {}, // newFetchedData
   //       // {
   //       //   book: {
-  //       //     queryType: "extractorForDomainModelObjects",
+  //       //     queryType: "queryForExtractorOrCombinerReturningObjectOrObjectList",
   //       //     contextResults: {},
   //       //     deploymentUuid: "deployment1",
   //       //     pageParams: {},

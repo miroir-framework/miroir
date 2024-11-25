@@ -10,9 +10,9 @@ import {
   EntityInstance,
   ExtendedTransformerForRuntime,
   QueryWithExtractorCombinerTransformer,
-  ExtractorForSingleObject,
-  ExtractorForSingleObjectList,
-  MiroirQuery,
+  QueryForExtractorOrCombinerReturningObject,
+  QueryForExtractorOrCombinerReturningObjectList,
+  ExtractorOrCombiner,
   QueryFailed
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
@@ -63,7 +63,7 @@ const emptyAsyncSelectorMap:AsyncExtractorRunnerMap = {
  */
 export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
 = (
-  selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList>
+  selectorParams: AsyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList>
 ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
   const result: Promise<DomainElementInstanceUuidIndexOrFailed> =
     (selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap).extractEntityInstanceUuidIndex(selectorParams)
@@ -91,7 +91,7 @@ export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
  */
 export const asyncExtractEntityInstanceListWithObjectListExtractor
 = (
-  selectorParams: AsyncExtractorRunnerParams<ExtractorForSingleObjectList>
+  selectorParams: AsyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList>
 ): Promise<DomainElementInstanceArrayOrFailed> => {
   const result: Promise<DomainElementInstanceArrayOrFailed> =
     (selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap).extractEntityInstanceList(selectorParams)
@@ -116,7 +116,7 @@ export async function asyncApplyExtractorTransformerInMemory(
   actionRuntimeTransformer: ExtendedTransformerForRuntime,
   queryParams: Record<string, any>,
   newFetchedData: Record<string, any>,
-  extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | QueryWithExtractorCombinerTransformer>,
+  extractors: Record<string, QueryForExtractorOrCombinerReturningObjectList | QueryForExtractorOrCombinerReturningObject | QueryWithExtractorCombinerTransformer>,
 ): Promise<DomainElement> {
   return Promise.resolve(applyExtractorTransformerInMemory(actionRuntimeTransformer, queryParams, newFetchedData));
 }
@@ -128,8 +128,8 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
   queryParams: Record<string, any>,
   extractorRunnerMap:AsyncExtractorRunnerMap,
   deploymentUuid: Uuid,
-  extractors: Record<string, ExtractorForSingleObjectList | ExtractorForSingleObject | QueryWithExtractorCombinerTransformer>,
-  query: MiroirQuery
+  extractors: Record<string, QueryForExtractorOrCombinerReturningObjectList | QueryForExtractorOrCombinerReturningObject | QueryWithExtractorCombinerTransformer>,
+  query: ExtractorOrCombiner
 ): Promise<DomainElement> {
   switch (query.queryType) {
     case "literal": {
@@ -145,7 +145,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
       return extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor({
         extractorRunnerMap,
         extractor: {
-          queryType: "extractorForDomainModelObjects",
+          queryType: "queryForExtractorOrCombinerReturningObjectOrObjectList",
           deploymentUuid: deploymentUuid,
           contextResults: newFetchedData,
           pageParams: pageParams,
@@ -166,7 +166,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
       return extractorRunnerMap.extractEntityInstance({
         extractorRunnerMap,
         extractor: {
-          queryType: "extractorForDomainModelObjects",
+          queryType: "queryForExtractorOrCombinerReturningObject",
           deploymentUuid: deploymentUuid,
           contextResults: newFetchedData,
           pageParams,
@@ -183,9 +183,9 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
     }
     // ############################################################################################
     case "extractorWrapperReturningObject":
-    case "wrapperReturningObject": { // build object
+    case "combiner_wrapperReturningObject": { // build object
       const entries = Object.entries(query.definition);
-      const promises = entries.map((e: [string, MiroirQuery]) => {
+      const promises = entries.map((e: [string, ExtractorOrCombiner]) => {
         return asyncInnerSelectElementFromQuery(
           newFetchedData,
           pageParams ?? {},
@@ -207,7 +207,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
       break;
     }
     case "extractorWrapperReturningList":
-    case "wrapperReturningList": { // List map
+    case "combiner_wrapperReturningList": { // List map
       const promises = query.definition.map((e) =>{
         return asyncInnerSelectElementFromQuery(
           newFetchedData,
@@ -263,7 +263,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
             };
 
             // TODO: faking context results here! Should we send empty contextResults instead?
-            const resolvedQuery: MiroirQuery | QueryFailed = resolveQueryTemplate(query.subQueryTemplate.query,innerQueryParams, innerQueryParams); 
+            const resolvedQuery: ExtractorOrCombiner | QueryFailed = resolveQueryTemplate(query.subQueryTemplate.query,innerQueryParams, innerQueryParams); 
             if ("QueryFailure" in resolvedQuery) {
               return [
                 (entry[1] as any).uuid??"no uuid found for entry " + entry[0],
@@ -289,7 +289,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
               extractorRunnerMap,
               deploymentUuid,
               extractors,
-              resolvedQuery as MiroirQuery,
+              resolvedQuery as ExtractorOrCombiner,
               // query.subQueryTemplate.query
             ).then((result) => {
               return [entry[1].uuid, result];
@@ -334,9 +334,9 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
 
 // ################################################################################################
 export const asyncExtractWithExtractor /**: SyncExtractorTemplateRunner */= (
-  // selectorParams: SyncExtractorTemplateRunnerParams<ExtractorTemplateForRecordOfExtractors, DeploymentEntityState>,
+  // selectorParams: SyncExtractorTemplateRunnerParams<QueryTemplateWithExtractorCombinerTransformer, DeploymentEntityState>,
   selectorParams: AsyncExtractorRunnerParams<
-    ExtractorForSingleObject | ExtractorForSingleObjectList | QueryWithExtractorCombinerTransformer
+    QueryForExtractorOrCombinerReturningObject | QueryForExtractorOrCombinerReturningObjectList | QueryWithExtractorCombinerTransformer
   >
 ): Promise<DomainElement> => {
   // log.info("########## extractExtractor begin, query", selectorParams);
@@ -349,7 +349,7 @@ export const asyncExtractWithExtractor /**: SyncExtractorTemplateRunner */= (
       );
       break;
     }
-    case "extractorForDomainModelObjects": {
+    case "queryForExtractorOrCombinerReturningObjectOrObjectList": {
       const result = asyncInnerSelectElementFromQuery(
         selectorParams.extractor.contextResults,
         selectorParams.extractor.pageParams,
@@ -413,7 +413,7 @@ export const asyncExtractWithManyExtractors = async (
     selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
 
   const extractorsPromises = Object.entries(selectorParams.extractor.extractors ?? {}).map(
-    (query: [string, MiroirQuery]) => {
+    (query: [string, ExtractorOrCombiner]) => {
       return asyncInnerSelectElementFromQuery(
         context,
         selectorParams.extractor.pageParams,
@@ -445,7 +445,7 @@ export const asyncExtractWithManyExtractors = async (
   // });
 
   const combinerPromises = Object.entries(selectorParams.extractor.combiners ?? {})
-  .map((query: [string, MiroirQuery]) => {
+  .map((query: [string, ExtractorOrCombiner]) => {
     return asyncInnerSelectElementFromQuery(
       context,
       selectorParams.extractor.pageParams,

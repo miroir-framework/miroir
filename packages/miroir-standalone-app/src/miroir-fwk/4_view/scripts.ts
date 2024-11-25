@@ -3,7 +3,7 @@ import {
   ApplicationSection,
   DomainControllerInterface,
   DomainElementObject,
-  ExtractorTemplateForRecordOfExtractors,
+  QueryTemplateWithExtractorCombinerTransformer,
   EntityDefinition,
   EntityInstance,
   InstanceAction,
@@ -107,8 +107,8 @@ export const deleteCascade = async (p: {
       },
     };
   
-    const foreignKeyObjectsFetchQuery: ExtractorTemplateForRecordOfExtractors = {
-      queryType: "extractorTemplateForRecordOfExtractors",
+    const foreignKeyObjectsFetchQuery: QueryTemplateWithExtractorCombinerTransformer = {
+      queryType: "queryTemplateWithExtractorCombinerTransformer",
       deploymentUuid: p.deploymentUuid,
       pageParams,
       queryParams: {},
