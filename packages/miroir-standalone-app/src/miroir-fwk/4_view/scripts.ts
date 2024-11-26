@@ -119,7 +119,7 @@ export const deleteCascade = async (p: {
         Object.keys(foreignKeysPointingToEntity).map((entityUuid) => [
           entityUuid,
           {
-            queryType: "extractorTemplateForObjectListByEntity",
+            extractorOrCombinerType: "extractorTemplateForObjectListByEntity",
             applicationSection: p.applicationSection,
             parentName: "",
             parentUuid: {

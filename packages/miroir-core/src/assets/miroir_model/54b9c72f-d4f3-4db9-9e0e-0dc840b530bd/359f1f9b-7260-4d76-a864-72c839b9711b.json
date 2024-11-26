@@ -253,7 +253,7 @@
               "applicationSection": {
                 "type": "schemaReference",
                 "optional": true,
-                "tag": { "value": {  "id":2, "defaultLabel": "Parent Uuid", "editable": false }},
+                "tag": { "value": {  "id":2, "defaultLabel": "Application Section", "editable": false }},
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "applicationSection"
@@ -265,21 +265,12 @@
                 "tag": { "value": {  "id":3, "defaultLabel": "Parent Name", "editable": false }}
               },
               "parentUuid": {
-                "type":  "union",
-                "definition": [
-                  {
-                    "type": "string",
-                    "tag": { "value": {  "id":4, "defaultLabel": "Parent Uuid", "editable": false }}
-                  },
-                  {
-                    "type": "schemaReference",
-                    "tag": { "value": {  "id":4, "defaultLabel": "Parent Uuid", "editable": false }},
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "transformer_InnerReference"
-                    }
-                  }
-                ]
+                "type": "schemaReference",
+                "tag": { "value": {  "id":4, "defaultLabel": "Parent Uuid", "editable": false }},
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformer_InnerReference"
+                }
               }
             }
           },
@@ -706,7 +697,7 @@
               "applicationSection": {
                 "type": "schemaReference",
                 "optional": true,
-                "tag": { "value": {  "id":2, "defaultLabel": "Parent Uuid", "editable": false }},
+                "tag": { "value": {  "id":2, "defaultLabel": "Application Section", "editable": false }},
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "applicationSection"

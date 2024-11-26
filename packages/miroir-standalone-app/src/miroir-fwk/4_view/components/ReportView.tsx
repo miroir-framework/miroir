@@ -219,7 +219,7 @@ export const ReportView = (props: ReportViewProps) => {
         props.pageParams.reportUuid &&
         props.reportDefinition.extractors
           ? {
-              queryType: "extractorByTemplateGetParamJzodSchema",
+            queryType: "extractorByTemplateGetParamJzodSchema",
               deploymentUuid: props.pageParams.deploymentUuid,
               pageParams: {
                 applicationSection: props.pageParams.applicationSection,

@@ -2246,6 +2246,7 @@ export function getMiroirFundamentalJzodSchema(
         // },
         bundleAction: {
           type: "union",
+          discriminator: "actionType",
           definition: [
             {
               type: "object",

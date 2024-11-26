@@ -89,6 +89,7 @@ export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <
         selectorParams.extractorTemplate
       ); 
 
+      log.info("extractWithExtractorTemplate found", "resolvedExtractor", JSON.stringify(resolvedExtractor, null, 2));
       return extractWithManyExtractors(
         state,
         {
@@ -102,6 +103,8 @@ export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <
       const resolvedExtractor: QueryForExtractorOrCombinerReturningObjectOrObjectList = resolveExtractorTemplateForDomainModelObjects(
         selectorParams.extractorTemplate
       ); 
+
+      log.info("extractWithExtractorTemplate found", "resolvedExtractor", JSON.stringify(resolvedExtractor, null, 2));
 
       return extractWithExtractor(
         state,

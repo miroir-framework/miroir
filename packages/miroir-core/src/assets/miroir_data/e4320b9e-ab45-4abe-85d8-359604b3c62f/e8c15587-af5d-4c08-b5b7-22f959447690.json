@@ -18,7 +18,7 @@
         "definition": {
           "type": { "queryType": "literal", "definition": "runtime" },
           "applicationVersion": {
-            "queryType": "extractorForObjectByDirectReference",
+            "extractorOrCombinerType": "extractorForObjectByDirectReference",
             "parentName": "ApplicationVersion",
             "parentUuid": {
               "transformerType": "constantUuid",
@@ -30,7 +30,7 @@
             }
           },
           "entities": {
-            "queryType": "extractorTemplateForObjectListByEntity",
+            "extractorOrCombinerType": "extractorTemplateForObjectListByEntity",
             "applicationSection": "model",
             "parentName": "Entity",
             "parentUuid": {
@@ -39,7 +39,7 @@
             }
           },
           "entityDefinitions": {
-            "queryType": "extractorTemplateForObjectListByEntity",
+            "extractorOrCombinerType": "extractorTemplateForObjectListByEntity",
             "applicationSection": "model",
             "parentName": "Entity",
             "parentUuid": {
@@ -48,7 +48,7 @@
             }
           },
           "reports": {
-            "queryType": "extractorTemplateForObjectListByEntity",
+            "extractorOrCombinerType": "extractorTemplateForObjectListByEntity",
             "parentName": "Report",
             "parentUuid": {
               "transformerType": "constantUuid",
@@ -56,7 +56,7 @@
             }
           },
           "queries": {
-            "queryType": "extractorTemplateForObjectListByEntity",
+            "extractorOrCombinerType": "extractorTemplateForObjectListByEntity",
             "parentName": "Query",
             "parentUuid": {
               "transformerType": "constantUuid",
@@ -64,7 +64,7 @@
             }
           },
           "endpoints": {
-            "queryType": "extractorTemplateForObjectListByEntity",
+            "extractorOrCombinerType": "extractorTemplateForObjectListByEntity",
             "parentName": "Query",
             "parentUuid": {
               "transformerType": "constantUuid",
@@ -72,16 +72,16 @@
             }
           },
           "instancesOfEntities": {
-            "queryType": "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList",
+            "extractorOrCombinerType": "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList",
             "rootExtractorOrReference": {
-              "queryType": "extractorByEntityReturningObjectList",
+              "extractorOrCombinerType": "extractorByEntityReturningObjectList",
               "applicationSection": "model",
               "parentName": "Entity",
               "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
             },
             "subQueryTemplate": {
               "query": {
-                "queryType":"extractorTemplateForObjectListByEntity",
+                "extractorOrCombinerType":"extractorTemplateForObjectListByEntity",
                 "parentUuid": {
                   "transformerType": "parameterReference",
                   "referenceName": "uuid"

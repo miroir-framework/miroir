@@ -691,7 +691,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                 elementTransformer: {
                   transformerType: "innerFullObjectTemplate",
                   interpolation: "runtime",
-                  referencedExtractor: "book",
+                  referenceToOuterObject: "book",
                   definition: [
                     {
                       attributeKey: {

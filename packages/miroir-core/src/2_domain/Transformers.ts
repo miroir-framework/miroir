@@ -516,7 +516,17 @@ export function transformer_InnerReference_resolve  (
       elementType: "failure",
       elementValue: {
         queryFailure: "ReferenceFoundButUndefined",
-        queryContext: "context " + JSON.stringify(localContextResults),
+        queryContext: transformerInnerReference.transformerType ==
+          "contextReference"
+            ? JSON.stringify(Object.keys(localContextResults))
+            : JSON.stringify(Object.keys(localQueryParams)),
+        failureMessage:
+        "found but undefined: referenceName " +
+          transformerInnerReference.referenceName +
+          " or referencePath " +
+          transformerInnerReference.referencePath +
+          " from " +
+          transformerInnerReference.transformerType,
       },
     };
   }
@@ -534,7 +544,17 @@ export function transformer_InnerReference_resolve  (
               elementType: "failure",
               elementValue: {
                 queryFailure: "ReferenceFoundButUndefined",
-                queryContext: JSON.stringify(localContextResults),
+                queryContext:
+                  transformerInnerReference.transformerType == "contextReference"
+                    ? JSON.stringify(Object.keys(localContextResults))
+                    : JSON.stringify(Object.keys(localQueryParams)),
+                failureMessage:
+                  "found but undefined 1: referenceName " +
+                  transformerInnerReference.referenceName +
+                  " or referencePath " +
+                  transformerInnerReference.referencePath +
+                  " from " +
+                  transformerInnerReference.transformerType,
               },
             }
         : transformerInnerReference.referencePath
@@ -551,17 +571,33 @@ export function transformer_InnerReference_resolve  (
               elementValue: {
                 queryFailure: "ReferenceFoundButUndefined",
                 queryContext:
-                  "path " +
-                  JSON.stringify(transformerInnerReference.referencePath) +
-                  " not found in " +
-                  JSON.stringify(localContextResults),
+                  transformerInnerReference.transformerType == "contextReference"
+                    ? JSON.stringify(Object.keys(localContextResults))
+                    : JSON.stringify(Object.keys(localQueryParams)),
+                failureMessage:
+                  "found but undefined: referenceName " +
+                  transformerInnerReference.referenceName +
+                  " or referencePath " +
+                  transformerInnerReference.referencePath +
+                  " from " +
+                  transformerInnerReference.transformerType,
               },
             }
         : {
             elementType: "failure",
             elementValue: {
               queryFailure: "ReferenceFoundButUndefined",
-              queryContext: "no referenceName or referencePath found in " + JSON.stringify(localContextResults),
+              queryContext:
+                transformerInnerReference.transformerType == "contextReference"
+                  ? JSON.stringify(Object.keys(localContextResults))
+                  : JSON.stringify(Object.keys(localQueryParams)),
+              failureMessage:
+                "found but undefined 2: referenceName " +
+                transformerInnerReference.referenceName +
+                " or referencePath " +
+                transformerInnerReference.referencePath +
+                " from " +
+                transformerInnerReference.transformerType,
             },
           }
       : transformerInnerReference.transformerType == "parameterReference"
@@ -574,7 +610,20 @@ export function transformer_InnerReference_resolve  (
             }
           : {
               elementType: "failure",
-              elementValue: { queryFailure: "ReferenceFoundButUndefined", queryContext: JSON.stringify(queryParams) },
+              elementValue: {
+                queryFailure: "ReferenceFoundButUndefined",
+                queryContext:
+                  transformerInnerReference.transformerType == "parameterReference"
+                    ? JSON.stringify(Object.keys(localContextResults))
+                    : JSON.stringify(Object.keys(localQueryParams)),
+                failureMessage:
+                  "found but undefined 3: referenceName " +
+                  transformerInnerReference.referenceName +
+                  " or referencePath " +
+                  transformerInnerReference.referencePath +
+                  " from " +
+                  transformerInnerReference.transformerType,
+              },
             }
         : transformerInnerReference.referencePath
         ? resolvePathOnObject(localQueryParams, transformerInnerReference.referencePath)
@@ -588,17 +637,33 @@ export function transformer_InnerReference_resolve  (
               elementValue: {
                 queryFailure: "ReferenceFoundButUndefined",
                 queryContext:
-                  "path " +
-                  JSON.stringify(transformerInnerReference.referencePath) +
-                  " not found in " +
-                  JSON.stringify(localQueryParams),
+                  transformerInnerReference.transformerType == "parameterReference"
+                    ? JSON.stringify(Object.keys(localContextResults))
+                    : JSON.stringify(Object.keys(localQueryParams)),
+                failureMessage:
+                  "found but undefined 4: referenceName " +
+                  transformerInnerReference.referenceName +
+                  " or referencePath " +
+                  transformerInnerReference.referencePath +
+                  " from " +
+                  transformerInnerReference.transformerType,
               },
             }
         : {
             elementType: "failure",
             elementValue: {
               queryFailure: "ReferenceFoundButUndefined",
-              queryContext: JSON.stringify(localQueryParams),
+              queryContext:
+                transformerInnerReference.transformerType == "parameterReference"
+                  ? JSON.stringify(Object.keys(localContextResults))
+                  : JSON.stringify(Object.keys(localQueryParams)),
+              failureMessage:
+                "found but undefined 5: referenceName " +
+                transformerInnerReference.referenceName +
+                " or referencePath " +
+                transformerInnerReference.referencePath +
+                " from " +
+                transformerInnerReference.transformerType,
             },
           }
       : transformerInnerReference.transformerType == "constantUuid"

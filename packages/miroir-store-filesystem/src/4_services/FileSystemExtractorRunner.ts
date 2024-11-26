@@ -242,7 +242,7 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
       }
       default: {
         throw new Error(
-          "extractEntityInstance can not handle QueryTemplateSelectObject query with queryType=" +
+          "extractEntityInstance can not handle QueryTemplateSelectObject query with extractorOrCombinerType=" +
             selectorParams.extractor.select.extractorOrCombinerType
         );
         break;

@@ -454,7 +454,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           definition: {
             extractors: {
               instanceList: {
-                queryType: "extractorByEntityReturningObjectList",
+                extractorOrCombinerType: "extractorByEntityReturningObjectList",
                 parentName: {
                   transformerType: "parameterReference",
                   referenceName: "createEntity_newEntityName",
@@ -992,7 +992,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           definition: {
             extractors: {
               listReportSectionElements: {
-                queryType: "extractorByEntityReturningObjectList",
+                extractorOrCombinerType: "extractorByEntityReturningObjectList",
                 parentName: {
                   transformerType: "parameterReference",
                   referenceName: "splitEntity_newEntityName",
@@ -1053,9 +1053,20 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                   referenceName: "splitEntity_newEntityName",
                 },
                 parentUuid: {
-                  transformerType: "parameterReference",
-                  referenceName: "splitEntity_newEntityUuid",
+                  transformerType: "constantObject",
+                  constantObjectValue: {
+                    transformerType: "constantObject",
+                    interpolation: "runtime",
+                    constantObjectValue: {
+                      transformerType: "parameterReference",
+                      referenceName: "splitEntity_newEntityUuid",
+                    }
+                  }
                 },
+                // parentUuid: {
+                //   transformerType: "parameterReference",
+                //   referenceName: "splitEntity_newEntityUuid",
+                // },
                 instanceUuid: {
                   transformerType: "constantObject",
                   constantObjectValue: {
@@ -1348,9 +1359,20 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                   applicationSection: "model",
                   parentName: "Menu",
                   parentUuid: {
-                    transformerType: "mustacheStringTemplate",
-                    definition: "{{entityMenu.uuid}}",
+                    transformerType: "constantObject",
+                    constantObjectValue: {
+                      transformerType: "constantObject",
+                      interpolation: "runtime",
+                      constantObjectValue: {
+                        transformerType: "mustacheStringTemplate",
+                        definition: "{{entityMenu.uuid}}",
+                      }
+                    }
                   },
+                  // parentUuid: {
+                  //   transformerType: "mustacheStringTemplate",
+                  //   definition: "{{entityMenu.uuid}}",
+                  // },
                 },
               },
               runtimeTransformers: {

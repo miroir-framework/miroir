@@ -557,7 +557,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         extractorTemplates: {
                           "select": {
                             "authors": {
-                              "queryType": "extractorTemplateForObjectListByEntity",
+                              "extractorOrCombinerType": "extractorTemplateForObjectListByEntity",
                               "parentName": "Author",
                               "parentUuid": {
                                 "transformerType": "constantUuid",

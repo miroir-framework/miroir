@@ -1085,7 +1085,7 @@ describe("queries.unit", () => {
           getExtractorRunnerParamsForDomainState(testParams.query)
         );
         for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
-          console.info(`running query for Domain State test assertion: ${currentTestName} ${testAssertionName}`);
+          console.info(`############################################## running query for DOMAIN STATE test assertion: ${currentTestName} ${testAssertionName}`);
           const result = resolvePathOnObject(preResult, testAssertionParams.resultAccessPath ?? []);
           // console.info(`For test named ${currentTestName} ${testName} result: `, result);
           // console.info(`For test named ${currentTestName} ${testName} expected result: `, testParams.expectedResult);
@@ -1099,7 +1099,7 @@ describe("queries.unit", () => {
           getExtractorRunnerParamsForDeploymentEntityState(testParams.query)
         );
         for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
-          console.info(`running query for DeploymentEntityState test assertion: ${currentTestName} ${testAssertionName}`);
+        console.info(`############################################## running query for DEPLOYMENT ENTITY STATE test assertion: ${currentTestName} ${testAssertionName}`);
           const result = resolvePathOnObject(preResult, testAssertionParams.resultAccessPath ?? []);
           // console.info(`For test named ${currentTestName} ${testName} result: `, result);
           // console.info(`For test named ${currentTestName} ${testName} expected result: `, testParams.expectedResult);
@@ -1120,7 +1120,7 @@ describe("queries.unit", () => {
           testParams.getExtractorTemplateRunnerParamsForDomainState(testParams.queryTemplate)
         ) as any;
         for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
-          console.info(`running query Template for DomainState test assertion: ${currentTestName} ${testAssertionName}`);
+          console.info(`############################################## running query TEMPLATE for DOMAIN STATE test assertion: ${currentTestName} ${testAssertionName}`);
           const result = resolvePathOnObject(preTemplateResult, testAssertionParams.resultAccessPath ?? []);
           // console.info(`For test named ${currentTestName} ${testName} Template result: `, result);
           // console.info(`For test named ${currentTestName} ${testName} expected Template result: `, testParams.expectedResult);
@@ -1137,7 +1137,7 @@ describe("queries.unit", () => {
           testParams.getExtractorTemplateRunnerParamsForDeploymentEntityState(testParams.queryTemplate)
         ) as any;
         for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
-          console.info(`running query Template for DeploymentEntityState test assertion: ${currentTestName} ${testAssertionName}`);
+          console.info(`############################################## running query TEMPLATE for DEPLOYMENT ENTITY STATE test assertion: ${currentTestName} ${testAssertionName}`);
           const result = resolvePathOnObject(preTemplateResult, testAssertionParams.resultAccessPath ?? []);
           // console.info(`For test named ${currentTestName} ${testName} Template result: `, result);
           // console.info(`For test named ${currentTestName} ${testName} expected Template result: `, testParams.expectedResult);
