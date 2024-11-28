@@ -13,7 +13,7 @@ import {
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import {
   ExtractorTemplateRunnerParamsForJzodSchema,
-  SyncExtractorRunnerMap,
+  SyncQueryRunnerMap,
   SyncExtractorTemplateRunner,
   SyncExtractorTemplateRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
@@ -26,7 +26,7 @@ import { cleanLevel } from "./constants";
 import {
   extractEntityInstanceListFromListQueryAndDomainState,
   extractEntityInstanceUuidIndexFromListQueryAndDomainState,
-  extractWithManyExtractorsFromDomainState,
+  runQueryFromDomainState,
   selectEntityInstanceFromObjectQueryAndDomainState,
   selectEntityInstanceListFromDomainState,
   selectEntityInstanceUuidIndexFromDomainState,
@@ -72,7 +72,7 @@ export const extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT: SyncE
 // ################################################################################################
 // #### selector Maps
 // ################################################################################################
-export function getSelectorMapForTemplate(): SyncExtractorRunnerMap<DomainState> {
+export function getSelectorMapForTemplate(): SyncQueryRunnerMap<DomainState> {
   return {
     extractorType: "sync",
     extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDomainState,
@@ -80,7 +80,7 @@ export function getSelectorMapForTemplate(): SyncExtractorRunnerMap<DomainState>
     extractEntityInstance: selectEntityInstanceFromObjectQueryAndDomainState,
     extractEntityInstanceUuidIndexWithObjectListExtractor: extractEntityInstanceUuidIndexFromListQueryAndDomainState,
     extractEntityInstanceListWithObjectListExtractor: extractEntityInstanceListFromListQueryAndDomainState,
-    extractWithManyExtractors: extractWithManyExtractorsFromDomainState,
+    runQuery: runQueryFromDomainState,
     extractWithExtractor: extractWithExtractor,
     // 
     extractWithManyExtractorTemplates: extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT,
@@ -90,13 +90,13 @@ export function getSelectorMapForTemplate(): SyncExtractorRunnerMap<DomainState>
 // ################################################################################################
 export type GetSelectorParamsForTemplateOnDomainStateType=<ExtractorTemplateType extends ExtractorTemplateForDomainModelDEFUNCT>(
   query: ExtractorTemplateType,
-  extractorRunnerMap?: SyncExtractorRunnerMap<DomainState>
+  extractorRunnerMap?: SyncQueryRunnerMap<DomainState>
 )=> SyncExtractorTemplateRunnerParams<ExtractorTemplateType, DomainState>;
 
 export const getExtractorTemplateRunnerParamsForDomainState: GetSelectorParamsForTemplateOnDomainStateType =
 <ExtractorTemplateType extends ExtractorTemplateForDomainModelDEFUNCT>(
     query: ExtractorTemplateType,
-    extractorRunnerMap?: SyncExtractorRunnerMap<DomainState>
+    extractorRunnerMap?: SyncQueryRunnerMap<DomainState>
   ) =>
 {
   return {

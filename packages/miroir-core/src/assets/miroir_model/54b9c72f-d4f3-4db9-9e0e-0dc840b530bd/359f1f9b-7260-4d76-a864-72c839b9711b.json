@@ -502,64 +502,40 @@
             }
           },
           "queryTemplateSelectExtractorWrapperReturningObject": {
-            "type": "union",
-            "discriminator": "queryType",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "queryTemplateExtractObjectByDirectReference"
-                }
+            "type": "object",
+            "definition": {
+              "queryType": {
+                "type": "literal",
+                "definition": "extractorWrapperReturningObject"
               },
-              {
-                "type": "object",
+              "definition": {
+                "type": "record",
                 "definition": {
-                  "queryType": {
-                    "type": "literal",
-                    "definition": "extractorWrapperReturningObject"
-                  },
-                  "definition": {
-                    "type": "record",
-                    "definition": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "relativePath": "queryTemplateSelectExtractorWrapperReturningObject"
-                      }
-                    }
+                  "type": "schemaReference",
+                  "definition":{
+                    "relativePath":"queryContextReference"
                   }
                 }
               }
-            ]
+            }
           },
           "queryTemplateSelectExtractorWrapperReturningList": {
-            "type": "union",
-            "discriminator": "queryType",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "extractorTemplateForObjectListByEntity"
-                }
+            "type": "object",
+            "definition": {
+              "queryType": {
+                "type": "literal",
+                "definition": "queryTemplateSelectExtractorWrapperReturningList"
               },
-              {
-                "type": "object",
+              "definition": {
+                "type": "array",
                 "definition": {
-                  "queryType": {
-                    "type": "literal",
-                    "definition": "extractorWrapperReturningList"
-                  },
-                  "definition": {
-                    "type": "array",
-                    "definition": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "relativePath": "queryTemplateSelectExtractorWrapperReturningList"
-                      }
-                    }
+                  "type": "schemaReference",
+                  "definition":{
+                    "relativePath":"queryContextReference"
                   }
                 }
               }
-            ]
+            }
           },
           "queryTemplateSelectExtractorWrapper": {
             "type": "union",
@@ -952,64 +928,62 @@
             }
           },
           "extractorWrapperReturningObject": {
-            "type": "union",
-            "discriminator": "extractorOrCombinerType",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "extractorForObjectByDirectReference"
-                }
+            "type": "object",
+            "definition": {
+              "extractorOrCombinerType": {
+                "type": "literal",
+                "definition": "extractorWrapperReturningObject"
               },
-              {
-                "type": "object",
+              "definition": {
+                "type": "record",
                 "definition": {
-                  "extractorOrCombinerType": {
-                    "type": "literal",
-                    "definition": "extractorWrapperReturningObject"
-                  },
-                  "definition": {
-                    "type": "record",
-                    "definition": {
+                  "type": "union",
+                  "definition": [
+                    {
                       "type": "schemaReference",
-                      "definition": {
-                        "relativePath": "extractorWrapperReturningObject"
+                      "definition":{
+                        "relativePath":"extractorOrCombinerContextReference"
+                      }
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition":{
+                        "relativePath":"extractorOrCombiner"
                       }
                     }
-                  }
+                  ]
                 }
               }
-            ]
+            }
           },
           "extractorWrapperReturningList": {
-            "type": "union",
-            "discriminator": "extractorOrCombinerType",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "extractorByEntityReturningObjectList"
-                }
+            "type": "object",
+            "definition": {
+              "extractorOrCombinerType": {
+                "type": "literal",
+                "definition": "extractorWrapperReturningList"
               },
-              {
-                "type": "object",
+              "definition": {
+                "type": "array",
                 "definition": {
-                  "extractorOrCombinerType": {
-                    "type": "literal",
-                    "definition": "extractorWrapperReturningList"
-                  },
-                  "definition": {
-                    "type": "array",
-                    "definition": {
+                  "type": "union",
+                  "definition": [
+                    {
                       "type": "schemaReference",
-                      "definition": {
-                        "relativePath": "extractorWrapperReturningList"
+                      "definition":{
+                        "relativePath":"extractorOrCombinerContextReference"
+                      }
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition":{
+                        "relativePath":"extractorOrCombiner"
                       }
                     }
-                  }
+                  ]
                 }
               }
-            ]
+            }
           },
           "extractorWrapper": {
             "type": "union",
@@ -1036,50 +1010,13 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "extractorWrapper"
+                  "relativePath": "extractorOrCombinerContextReference"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "extractorOrCombinerContextReference"
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "extractorOrCombinerType": {
-                    "type": "literal",
-                    "definition": "combiner_wrapperReturningObject"
-                  },
-                  "definition": {
-                    "type": "record",
-                    "definition": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "relativePath": "extractorOrCombiner"
-                      }
-                    }
-                  }
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "extractorOrCombinerType": {
-                    "type": "literal",
-                    "definition": "combiner_wrapperReturningList"
-                  },
-                  "definition": {
-                    "type": "array",
-                    "definition": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "relativePath": "extractorOrCombiner"
-                      }
-                    }
-                  }
+                  "relativePath": "extractorWrapper"
                 }
               },
               {
@@ -1115,7 +1052,7 @@
               }
           ]
           },
-          "queryRecord": {
+          "extractorOrCombinerRecord": {
             "type": "record",
             "definition": {
               "type": "schemaReference",

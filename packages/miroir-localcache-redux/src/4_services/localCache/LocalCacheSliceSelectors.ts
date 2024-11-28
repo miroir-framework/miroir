@@ -25,7 +25,7 @@ import {
   getDeploymentEntityStateIndex,
   getLoggerName,
   ExtractorForDomainModelDEFUNCT,
-  SyncExtractorRunner,
+  SyncQueryRunner,
   SyncExtractorRunnerParams,
   DomainModelQueryJzodSchemaParams,
   JzodSchemaQuerySelector,
@@ -172,7 +172,7 @@ export function applyDeploymentEntityStateQueryTemplateSelector<ExtractorType ex
 
 // ################################################################################################
 export function applyDeploymentEntityStateQuerySelector<ExtractorType extends ExtractorForDomainModelDEFUNCT, ResultType>( // TODO: memoize?
-  deploymentEntityStateQuerySelector: SyncExtractorRunner<ExtractorType, DeploymentEntityState, ResultType>
+  deploymentEntityStateQuerySelector: SyncQueryRunner<ExtractorType, DeploymentEntityState, ResultType>
 ): (
   reduxState: ReduxStateWithUndoRedo,
   params: SyncExtractorRunnerParams<ExtractorType, DeploymentEntityState>
@@ -213,7 +213,7 @@ export function applyDeploymentEntityStateQueryTemplateSelectorForCleanedResult<
 
 // ################################################################################################
 export function applyDeploymentEntityStateQuerySelectorForCleanedResult<QueryType extends ExtractorForDomainModelDEFUNCT>( // TODO: memoize?
-  deploymentEntityStateQuerySelector: SyncExtractorRunner<QueryType, DeploymentEntityState, DomainElement>
+  deploymentEntityStateQuerySelector: SyncQueryRunner<QueryType, DeploymentEntityState, DomainElement>
 ): (
   reduxState: ReduxStateWithUndoRedo,
   params: SyncExtractorRunnerParams<QueryType, DeploymentEntityState>

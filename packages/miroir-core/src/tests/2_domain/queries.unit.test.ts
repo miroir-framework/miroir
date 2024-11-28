@@ -10,7 +10,7 @@ import {
   QueryTemplateWithExtractorCombinerTransformer
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DeploymentEntityState } from "../../0_interfaces/2_domain/DeploymentStateInterface";
-import { SyncExtractorRunner, SyncExtractorTemplateRunner } from "../../0_interfaces/2_domain/ExtractorRunnerInterface";
+import { SyncQueryRunner, SyncExtractorTemplateRunner } from "../../0_interfaces/2_domain/ExtractorRunnerInterface";
 import {
   getExtractorRunnerParamsForDeploymentEntityState,
   GetExtractorRunnerParamsForDeploymentEntityState,
@@ -42,7 +42,7 @@ export interface TestExtractorParams {
   queryTemplate?: QueryTemplateWithExtractorCombinerTransformer;
   query?: QueryWithExtractorCombinerTransformer;
   // Domain State
-  extractorRunnerForDomainState?: SyncExtractorRunner<
+  extractorRunnerForDomainState?: SyncQueryRunner<
     QueryForExtractorOrCombinerReturningObjectOrObjectList | QueryWithExtractorCombinerTransformer,
     DomainState,
     DomainElement
@@ -830,7 +830,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           AttributeOfListObjectToCompareToReferenceUuid: "publisher",
         },
         result1: {
-          extractorOrCombinerType: "combiner_wrapperReturningObject",
+          extractorOrCombinerType: "extractorWrapperReturningObject",
           definition: {
             "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": {
               extractorOrCombinerType: "extractorOrCombinerContextReference",
@@ -839,7 +839,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           },
         },
         result2: {
-          extractorOrCombinerType: "combiner_wrapperReturningList",
+          extractorOrCombinerType: "extractorWrapperReturningList",
           definition: [
             { extractorOrCombinerType: "extractorOrCombinerContextReference", extractorOrCombinerContextReference: "booksOfPublisher" },
             { extractorOrCombinerType: "extractorOrCombinerContextReference", extractorOrCombinerContextReference: "booksOfPublisher" },

@@ -28,15 +28,16 @@ import {
   ExtractorOrCombiner,
   QueryAction,
   QueryFailed,
-  QueryTemplateConstantOrAnyReference
+  QueryTemplateConstantOrAnyReference,
+  ExtractorOrCombinerContextReference
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
-  AsyncExtractorRunnerMap,
+  AsyncQueryRunnerMap,
   ExtractorRunnerParamsForJzodSchema,
   RecordOfJzodElement,
   RecordOfJzodObject,
-  SyncExtractorRunner,
-  SyncExtractorRunnerMap,
+  SyncQueryRunner,
+  SyncQueryRunnerMap,
   SyncExtractorRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -44,7 +45,7 @@ import { MiroirLoggerFactory } from "../4_services/Logger";
 import { packageName } from "../constants";
 import { getLoggerName } from "../tools";
 import { cleanLevel } from "./constants";
-import { resolveQueryTemplate } from "./Templates";
+import { resolveExtractorTemplate } from "./Templates";
 import { applyTransformer, transformer_extended_apply } from "./Transformers";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"SyncExtractorTemplateRunner");
@@ -55,10 +56,10 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   }
 );
 
-const emptySelectorMap:SyncExtractorRunnerMap<any> = {
+const emptySelectorMap:SyncQueryRunnerMap<any> = {
   extractorType: "sync",
   extractWithExtractor: undefined as any, 
-  extractWithManyExtractors: undefined as any, 
+  runQuery: undefined as any, 
   extractEntityInstance: undefined as any,
   extractEntityInstanceUuidIndexWithObjectListExtractor: undefined as any,
   extractEntityInstanceUuidIndex: undefined as any,
@@ -68,10 +69,10 @@ const emptySelectorMap:SyncExtractorRunnerMap<any> = {
   extractWithManyExtractorTemplates: undefined as any,
 }
 
-const emptyAsyncSelectorMap:AsyncExtractorRunnerMap = {
+const emptyAsyncSelectorMap:AsyncQueryRunnerMap = {
   extractorType: "async",
   extractWithExtractor: undefined as any, 
-  extractWithManyExtractors: undefined as any, 
+  runQuery: undefined as any, 
   extractEntityInstance: undefined as any,
   extractEntityInstanceUuidIndexWithObjectListExtractor: undefined as any,
   extractEntityInstanceUuidIndex: undefined as any,
@@ -543,7 +544,7 @@ export const applyExtractorTransformerInMemory = (
 export async function handleQueryAction(
   origin: string,
   queryAction: QueryAction,
-  selectorMap: AsyncExtractorRunnerMap
+  selectorMap: AsyncQueryRunnerMap
 ): Promise<ActionReturnType> {
   log.info("handleQueryAction for", origin, "start", "queryAction", JSON.stringify(queryAction, null, 2));
   let queryResult: DomainElement;
@@ -559,7 +560,7 @@ export async function handleQueryAction(
       break;
     }
     case "queryWithExtractorCombinerTransformer": {
-      queryResult = await selectorMap.extractWithManyExtractors(
+      queryResult = await selectorMap.runQuery(
         {
           extractor: queryAction.query,
           extractorRunnerMap: selectorMap,
@@ -594,7 +595,7 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*ExtractorTempla
   context: Record<string, any>,
   pageParams: Record<string, any>,
   queryParams: Record<string, any>,
-  extractorRunnerMap:SyncExtractorRunnerMap<StateType>,
+  extractorRunnerMap:SyncQueryRunnerMap<StateType>,
   deploymentUuid: Uuid,
   extractorOrCombiner: ExtractorOrCombiner
 ): DomainElement | DomainElementFailed {
@@ -649,13 +650,15 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*ExtractorTempla
       break;
     }
     // ############################################################################################
-    case "extractorWrapperReturningObject":
-    case "combiner_wrapperReturningObject": { // build object
+    case "extractorWrapperReturningObject": {
       return {
         elementType: "object",
         elementValue: Object.fromEntries(
-          Object.entries(extractorOrCombiner.definition).map((e: [string, ExtractorOrCombiner]) => [
+          Object.entries(extractorOrCombiner.definition).map((e: [string, ExtractorOrCombinerContextReference | ExtractorOrCombiner]) => [
             e[0],
+            e[1].extractorOrCombinerType == "extractorOrCombinerContextReference"?
+              context[e[1].extractorOrCombinerContextReference]??{}
+            :
             innerSelectDomainElementFromExtractorOrCombiner( // recursive call
               state,
               context,
@@ -670,8 +673,7 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*ExtractorTempla
       };
       break;
     }
-    case "extractorWrapperReturningList":
-    case "combiner_wrapperReturningList": { // List map
+    case "extractorWrapperReturningList": {
       return {
         elementType: "array",
         elementValue: extractorOrCombiner.definition.map((e) =>
@@ -718,7 +720,7 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*ExtractorTempla
               };
 
               // TODO: faking context results here! Should we send empty contextResults instead?
-              const resolvedQuery: ExtractorOrCombiner | QueryFailed = resolveQueryTemplate(extractorOrCombiner.subQueryTemplate.query,innerQueryParams, innerQueryParams); 
+              const resolvedQuery: ExtractorOrCombiner | QueryFailed = resolveExtractorTemplate(extractorOrCombiner.subQueryTemplate.query,innerQueryParams, innerQueryParams); 
         
               if ("QueryFailure" in resolvedQuery) {
                 return [
@@ -798,8 +800,8 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*ExtractorTempla
 }
 
 // ################################################################################################
-// export const extractWithExtractor: <StateType>SyncExtractorRunner<StateType,QueryForExtractorOrCombinerReturningObjectOrObjectList | QueryWithExtractorCombinerTransformer, DomainElement> = <StateType>(
-export type ExtractWithExtractorType<StateType> = SyncExtractorRunner<
+// export const extractWithExtractor: <StateType>SyncQueryRunner<StateType,QueryForExtractorOrCombinerReturningObjectOrObjectList | QueryWithExtractorCombinerTransformer, DomainElement> = <StateType>(
+export type ExtractWithExtractorType<StateType> = SyncQueryRunner<
   QueryForExtractorOrCombinerReturningObjectOrObjectList | QueryWithExtractorCombinerTransformer,
   StateType,
   DomainElement
@@ -812,11 +814,11 @@ export const extractWithExtractor /*: ExtractWithExtractorType*/ = <StateType>(
   >
 ): DomainElement => {
   // log.info("########## extractExtractor begin, query", selectorParams);
-  const localSelectorMap: SyncExtractorRunnerMap<StateType> = selectorParams?.extractorRunnerMap ?? emptySelectorMap;
+  const localSelectorMap: SyncQueryRunnerMap<StateType> = selectorParams?.extractorRunnerMap ?? emptySelectorMap;
 
   switch (selectorParams.extractor.queryType) {
     case "queryWithExtractorCombinerTransformer": {
-      return extractWithManyExtractors(
+      return runQuery(
         state,
         selectorParams as SyncExtractorRunnerParams<QueryWithExtractorCombinerTransformer, StateType>
       );
@@ -862,12 +864,12 @@ export const extractWithExtractor /*: ExtractWithExtractorType*/ = <StateType>(
  * @param selectorParams the array of basic extractor functions
  * @returns 
  */
-export const extractWithManyExtractors = <StateType>(
+export const runQuery = <StateType>(
   state: StateType,
   selectorParams: SyncExtractorRunnerParams<QueryWithExtractorCombinerTransformer, StateType>,
 ): DomainElementObject => { 
 
-  // log.info("########## extractWithManyExtractors begin, query", selectorParams);
+  // log.info("########## runQuery begin, query", selectorParams);
   const context: Record<string, any> = {
     ...selectorParams.extractor.contextResults
   };
@@ -875,8 +877,8 @@ export const extractWithManyExtractors = <StateType>(
   //   elementType: "object",
   //   elementValue: { ...selectorParams.extractor.contextResults.elementValue },
   // };
-  // log.info("########## DomainSelector extractWithManyExtractors will use context", context);
-  const localSelectorMap: SyncExtractorRunnerMap<StateType> =
+  // log.info("########## DomainSelector runQuery will use context", context);
+  const localSelectorMap: SyncQueryRunnerMap<StateType> =
     selectorParams?.extractorRunnerMap ?? emptySelectorMap;
 
   for (const extractor of Object.entries(
@@ -919,7 +921,7 @@ export const extractWithManyExtractors = <StateType>(
       combiner[1]
     );
     context[combiner[0]] = result.elementValue; // does side effect!
-    // log.info("extractWithManyExtractors done for entry", entry[0], "query", entry[1], "result=", result);
+    // log.info("runQuery done for entry", entry[0], "query", entry[1], "result=", result);
   }
 
   for (const transformerForRuntime of 
@@ -945,7 +947,7 @@ export const extractWithManyExtractors = <StateType>(
     context[transformerForRuntime[0]] = result.elementValue; // does side effect!
     // context.elementValue[transformerForRuntime[0]] = result; // does side effect!
     log.info(
-      "extractWithManyExtractors done for transformerForRuntime",
+      "runQuery done for transformerForRuntime",
       transformerForRuntime[0],
       "transformerForRuntime",
       transformerForRuntime[1],
@@ -955,7 +957,7 @@ export const extractWithManyExtractors = <StateType>(
   }
 
   // log.info(
-  //   "extractWithManyExtractors",
+  //   "runQuery",
   //   "query",
   //   selectorParams,
   //   "domainState",
@@ -980,9 +982,7 @@ export const extractzodSchemaForSingleSelectQuery = <StateType>(
     extractorParams.query.select.extractorOrCombinerType=="literal" ||
     extractorParams.query.select.extractorOrCombinerType=="extractorOrCombinerContextReference" ||
     extractorParams.query.select.extractorOrCombinerType=="extractorWrapperReturningObject" ||
-    extractorParams.query.select.extractorOrCombinerType=="combiner_wrapperReturningObject" ||
     extractorParams.query.select.extractorOrCombinerType=="extractorWrapperReturningList" ||
-    extractorParams.query.select.extractorOrCombinerType=="combiner_wrapperReturningList" ||
     extractorParams.query.select.extractorOrCombinerType=="extractorCombinerByHeteronomousManyToManyReturningListOfObjectList" 
   ) {
     throw new Error(

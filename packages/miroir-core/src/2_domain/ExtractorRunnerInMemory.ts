@@ -12,8 +12,8 @@ import {
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import {
-  AsyncExtractorRunner,
-  AsyncExtractorRunnerMap,
+  AsyncQueryRunner,
+  AsyncQueryRunnerMap,
   AsyncExtractorRunnerParams,
   ExtractorPersistenceStoreRunner,
   ExtractorRunnerMapForJzodSchema
@@ -28,7 +28,7 @@ import {
   asyncExtractEntityInstanceListWithObjectListExtractor,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   asyncExtractWithExtractor,
-  asyncExtractWithManyExtractors,
+  asyncRunQuery,
 } from "./AsyncQuerySelectors";
 import { cleanLevel } from "./constants";
 import {
@@ -48,7 +48,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner {
   private logHeader: string;
-  private selectorMap: AsyncExtractorRunnerMap;
+  private selectorMap: AsyncQueryRunnerMap;
 
   // ################################################################################################
   constructor(private persistenceStoreController: PersistenceStoreInstanceSectionAbstractInterface) {
@@ -60,7 +60,7 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
       extractEntityInstance: this.extractEntityInstance,
       extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
       extractEntityInstanceListWithObjectListExtractor: asyncExtractEntityInstanceListWithObjectListExtractor,
-      extractWithManyExtractors: asyncExtractWithManyExtractors,
+      runQuery: asyncRunQuery,
       extractWithExtractor: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
       // ##########################################################################################
@@ -74,7 +74,7 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
   }
 
   // ################################################################################################
-  public extractEntityInstance: AsyncExtractorRunner<
+  public extractEntityInstance: AsyncQueryRunner<
     QueryForExtractorOrCombinerReturningObject,
     DomainElementEntityInstanceOrFailed
   > = async (
@@ -215,7 +215,7 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
   };
 
   // ##############################################################################################
-  public extractEntityInstanceUuidIndex: AsyncExtractorRunner<
+  public extractEntityInstanceUuidIndex: AsyncQueryRunner<
     QueryForExtractorOrCombinerReturningObjectList,
     DomainElementInstanceUuidIndexOrFailed
   > = async (
@@ -234,7 +234,7 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
   };
 
   // ##############################################################################################
-  public extractEntityInstanceList: AsyncExtractorRunner<
+  public extractEntityInstanceList: AsyncQueryRunner<
     QueryForExtractorOrCombinerReturningObjectList,
     DomainElementInstanceArrayOrFailed
   > = async (
@@ -292,7 +292,7 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
   };
 
   // ##############################################################################################
-  public getDomainStateExtractorRunnerMap(): AsyncExtractorRunnerMap {
+  public getDomainStateExtractorRunnerMap(): AsyncQueryRunnerMap {
     return this.selectorMap;
   }
 } // end of class ExtractorRunnerInMemory

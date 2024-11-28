@@ -7,7 +7,7 @@ import {
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import {
-  AsyncExtractorRunnerMap,
+  AsyncQueryRunnerMap,
   ExtractorTemplatePersistenceStoreRunner,
   ExtractorTemplateRunnerMapForJzodSchema
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
@@ -21,7 +21,7 @@ import {
   asyncExtractEntityInstanceListWithObjectListExtractor,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   asyncExtractWithExtractor,
-  asyncExtractWithManyExtractors,
+  asyncRunQuery,
 } from "./AsyncQuerySelectors";
 import { cleanLevel } from "./constants";
 import {
@@ -32,7 +32,7 @@ import {
 } from "./DomainStateQueryTemplateSelector";
 import { ExtractorRunnerInMemory } from "./ExtractorRunnerInMemory";
 import { handleQueryTemplateAction } from "./QueryTemplateSelectors";
-import { resolveExtractorTemplateForDomainModelObjects, resolveExtractorTemplateForRecordOfExtractors } from "./Templates";
+import { resolveExtractorTemplateForDomainModelObjects, resolveQueryTemplate } from "./Templates";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "ExtractorTemplateRunnerInMemory");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -42,7 +42,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersistenceStoreRunner {
   private logHeader: string;
-  private selectorMap: AsyncExtractorRunnerMap;
+  private selectorMap: AsyncQueryRunnerMap;
 
 
   // ################################################################################################
@@ -59,7 +59,7 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
       extractEntityInstance: this.extractorRunnerInMemory.extractEntityInstance,
       extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
       extractEntityInstanceListWithObjectListExtractor: asyncExtractEntityInstanceListWithObjectListExtractor,
-      extractWithManyExtractors: asyncExtractWithManyExtractors,
+      runQuery: asyncRunQuery,
       extractWithExtractor: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
       // 

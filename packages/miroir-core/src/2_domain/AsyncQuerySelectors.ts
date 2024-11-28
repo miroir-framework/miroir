@@ -16,7 +16,7 @@ import {
   QueryFailed
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
-  AsyncExtractorRunnerMap,
+  AsyncQueryRunnerMap,
   AsyncExtractorRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -25,7 +25,7 @@ import { packageName } from "../constants";
 import { getLoggerName } from "../tools";
 import { cleanLevel } from "./constants";
 import { applyExtractorForSingleObjectListToSelectedInstancesListInMemory, applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory, applyExtractorTransformerInMemory } from "./QuerySelectors";
-import { resolveQueryTemplate } from "./Templates";
+import { resolveExtractorTemplate } from "./Templates";
 import { applyTransformer } from "./Transformers";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"AsyncExtractorTemplateRunner");
@@ -36,10 +36,10 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   }
 );
 
-const emptyAsyncSelectorMap:AsyncExtractorRunnerMap = {
+const emptyAsyncSelectorMap:AsyncQueryRunnerMap = {
   extractorType: "async",
   extractWithExtractor: undefined as any, 
-  extractWithManyExtractors: undefined as any, 
+  runQuery: undefined as any, 
   extractEntityInstance: undefined as any,
   extractEntityInstanceUuidIndexWithObjectListExtractor: undefined as any,
   extractEntityInstanceUuidIndex: undefined as any,
@@ -126,7 +126,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
   newFetchedData: Record<string, any>,
   pageParams: Record<string, any>,
   queryParams: Record<string, any>,
-  extractorRunnerMap:AsyncExtractorRunnerMap,
+  extractorRunnerMap:AsyncQueryRunnerMap,
   deploymentUuid: Uuid,
   extractors: Record<string, QueryForExtractorOrCombinerReturningObjectList | QueryForExtractorOrCombinerReturningObject | QueryWithExtractorCombinerTransformer>,
   extractorOrCombiner: ExtractorOrCombiner
@@ -182,8 +182,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
       break;
     }
     // ############################################################################################
-    case "extractorWrapperReturningObject":
-    case "combiner_wrapperReturningObject": { // build object
+    case "extractorWrapperReturningObject": { // build object
       const entries = Object.entries(extractorOrCombiner.definition);
       const promises = entries.map((e: [string, ExtractorOrCombiner]) => {
         return asyncInnerSelectElementFromQuery(
@@ -206,8 +205,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
       });
       break;
     }
-    case "extractorWrapperReturningList":
-    case "combiner_wrapperReturningList": { // List map
+    case "extractorWrapperReturningList": { // List map
       const promises = extractorOrCombiner.definition.map((e) =>{
         return asyncInnerSelectElementFromQuery(
           newFetchedData,
@@ -263,7 +261,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
             };
 
             // TODO: faking context results here! Should we send empty contextResults instead?
-            const resolvedQuery: ExtractorOrCombiner | QueryFailed = resolveQueryTemplate(extractorOrCombiner.subQueryTemplate.query,innerQueryParams, innerQueryParams); 
+            const resolvedQuery: ExtractorOrCombiner | QueryFailed = resolveExtractorTemplate(extractorOrCombiner.subQueryTemplate.query,innerQueryParams, innerQueryParams); 
             if ("QueryFailure" in resolvedQuery) {
               return [
                 (entry[1] as any).uuid??"no uuid found for entry " + entry[0],
@@ -340,11 +338,11 @@ export const asyncExtractWithExtractor /**: SyncExtractorTemplateRunner */= (
   >
 ): Promise<DomainElement> => {
   // log.info("########## extractExtractor begin, query", selectorParams);
-  const localSelectorMap: AsyncExtractorRunnerMap = selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
+  const localSelectorMap: AsyncQueryRunnerMap = selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
 
   switch (selectorParams.extractor.queryType) {
     case "queryWithExtractorCombinerTransformer": {
-      return asyncExtractWithManyExtractors(
+      return asyncRunQuery(
         selectorParams as AsyncExtractorRunnerParams<QueryWithExtractorCombinerTransformer>
       );
       break;
@@ -394,12 +392,12 @@ export const asyncExtractWithExtractor /**: SyncExtractorTemplateRunner */= (
  * @returns 
  */
 
-export const asyncExtractWithManyExtractors = async (
+export const asyncRunQuery = async (
   // state: StateType,
   selectorParams: AsyncExtractorRunnerParams<QueryWithExtractorCombinerTransformer>,
 ): Promise<DomainElementObject> => {
 
-  // log.info("########## asyncExtractWithManyExtractors begin, query", selectorParams);
+  // log.info("########## asyncRunQuery begin, query", selectorParams);
 
 
   // const context: DomainElementObject = {
@@ -409,8 +407,8 @@ export const asyncExtractWithManyExtractors = async (
   const context: Record<string, any> = {
     ...selectorParams.extractor.contextResults.elementValue ,
   };
-  // log.info("########## DomainSelector asyncExtractWithManyExtractors will use context", context);
-  const localSelectorMap: AsyncExtractorRunnerMap =
+  // log.info("########## DomainSelector asyncRunQuery will use context", context);
+  const localSelectorMap: AsyncQueryRunnerMap =
     selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
 
   const extractorsPromises = Object.entries(selectorParams.extractor.extractors ?? {}).map(
@@ -435,6 +433,7 @@ export const asyncExtractWithManyExtractors = async (
   // TODO: remove await / side effect
   for (const promise of extractorsPromises) {
     const result = await promise;
+    log.info("asyncRunQuery for extractor", result[0], "result", JSON.stringify(result[1], null, 2));
     context[result[0]] = result[1]; // does side effect!
   }
   // await Promise.all(extractorsPromises).then((results) => {
@@ -459,6 +458,7 @@ export const asyncExtractWithManyExtractors = async (
       selectorParams.extractor.extractors ?? ({} as any),
       query[1]
     ).then((result): [string, DomainElement] => {
+      // log.info("asyncRunQuery for combiner", query[0], "context", JSON.stringify(result.elementValue));
       return [query[0], result.elementValue];
     });
   });
@@ -469,6 +469,7 @@ export const asyncExtractWithManyExtractors = async (
   // }
   for (const promise of combinerPromises) {
     const result = await promise;
+    log.info("asyncRunQuery for combiner", result[0], "result", JSON.stringify(result[1], null, 2));
     context[result[0]] = result[1]; // does side effect!
   }
   // await Promise.all(combinerPromises).then((results) => {
@@ -492,10 +493,11 @@ export const asyncExtractWithManyExtractors = async (
     });
     context[result[0]] = result[1]; // does side effect!
     log.info(
-      "asyncExtractWithManyExtractor for result[0]",
+      "asyncRunQuery for runtimeTransformer",
       result[0],
-      "context",
-      JSON.stringify(Object.keys(context))
+      "result",
+      // JSON.stringify(Object.keys(context))
+      JSON.stringify(result[1], null, 2)
     );
   }
   // return context;

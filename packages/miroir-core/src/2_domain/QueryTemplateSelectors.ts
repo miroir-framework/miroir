@@ -18,7 +18,7 @@ import {
   QueryTemplateAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
-  AsyncExtractorRunnerMap,
+  AsyncQueryRunnerMap,
   ExtractorTemplateRunnerParamsForJzodSchema,
   RecordOfJzodElement,
   RecordOfJzodObject,
@@ -29,11 +29,11 @@ import { MiroirLoggerFactory } from "../4_services/Logger";
 import { packageName } from "../constants";
 import { getLoggerName } from "../tools";
 import { cleanLevel } from "./constants";
-import { handleQueryAction, extractWithExtractor, extractWithManyExtractors } from "./QuerySelectors";
+import { handleQueryAction, extractWithExtractor, runQuery } from "./QuerySelectors";
 import {
-  resolveExtractorTemplate,
+  resolveExtractorOrQueryTemplate,
   resolveExtractorTemplateForDomainModelObjects,
-  resolveExtractorTemplateForRecordOfExtractors,
+  resolveQueryTemplate,
 } from "./Templates";
 import { transformer_InnerReference_resolve } from "./Transformers";
 
@@ -49,10 +49,10 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 export async function handleQueryTemplateAction(
   origin: string,
   queryTemplateAction: QueryTemplateAction, 
-  selectorMap: AsyncExtractorRunnerMap
+  selectorMap: AsyncQueryRunnerMap
 ): Promise<ActionReturnType> {
   log.info("handleQueryTemplateAction for ", origin, "queryTemplateAction", JSON.stringify(queryTemplateAction, null, 2));
-  const resolvedQuery = resolveExtractorTemplate(
+  const resolvedQuery = resolveExtractorOrQueryTemplate(
     queryTemplateAction.query
   );
 
@@ -85,12 +85,12 @@ export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <
 
   switch (selectorParams.extractorTemplate.queryType) {
     case "queryTemplateWithExtractorCombinerTransformer": {
-      const resolvedExtractor: QueryWithExtractorCombinerTransformer = resolveExtractorTemplateForRecordOfExtractors(
+      const resolvedExtractor: QueryWithExtractorCombinerTransformer = resolveQueryTemplate(
         selectorParams.extractorTemplate
       ); 
 
       log.info("extractWithExtractorTemplate found", "resolvedExtractor", JSON.stringify(resolvedExtractor, null, 2));
-      return extractWithManyExtractors(
+      return runQuery(
         state,
         {
           extractorRunnerMap: selectorParams.extractorRunnerMap,
@@ -155,11 +155,11 @@ export const extractWithManyExtractorTemplates = <StateType>(
   selectorParams: SyncExtractorTemplateRunnerParams<QueryTemplateWithExtractorCombinerTransformer, StateType>,
 ): DomainElementObject => { 
 
-  const resolvedExtractor: QueryWithExtractorCombinerTransformer = resolveExtractorTemplateForRecordOfExtractors(
+  const resolvedExtractor: QueryWithExtractorCombinerTransformer = resolveQueryTemplate(
     selectorParams.extractorTemplate
   ); 
 
-  return extractWithManyExtractors(
+  return runQuery(
     state,
     {
       extractorRunnerMap: selectorParams.extractorRunnerMap,
@@ -182,7 +182,7 @@ export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
     selectorParams.query.select.queryType=="queryContextReference" ||
     selectorParams.query.select.queryType=="extractorWrapperReturningObject" ||
     selectorParams.query.select.queryType=="combiner_wrapperReturningObject" ||
-    selectorParams.query.select.queryType=="extractorWrapperReturningList" ||
+    selectorParams.query.select.queryType=="queryTemplateSelectExtractorWrapperReturningList" ||
     selectorParams.query.select.queryType=="combiner_wrapperReturningList" ||
     selectorParams.query.select.queryType=="extractorCombinerByHeteronomousManyToManyReturningListOfObjectList" 
   ) {

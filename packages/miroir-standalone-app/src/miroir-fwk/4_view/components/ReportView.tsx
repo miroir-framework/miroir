@@ -15,7 +15,7 @@ import {
   MiroirLoggerFactory,
   RecordOfJzodObject,
   RootReport,
-  SyncExtractorRunnerMap,
+  SyncQueryRunnerMap,
   SyncExtractorRunnerParams,
   Uuid,
   getExtractorRunnerParamsForDeploymentEntityState,
@@ -80,7 +80,7 @@ export const ReportView = (props: ReportViewProps) => {
   //   props.reportSection.extractors
   // );
 
-  const deploymentEntityStateSelectorMap: SyncExtractorRunnerMap<DeploymentEntityState> = useMemo(
+  const deploymentEntityStateSelectorMap: SyncQueryRunnerMap<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
   );
@@ -179,7 +179,7 @@ export const ReportView = (props: ReportViewProps) => {
   log.info("################################################################ Fecth NON-Template report data", usedQuery);
 
   const deploymentEntityStateQueryResults: DomainElementObjectOrFailed = useDeploymentEntityStateQuerySelector(
-    deploymentEntityStateSelectorMap.extractWithManyExtractors,
+    deploymentEntityStateSelectorMap.runQuery,
     deploymentEntityStateFetchQueryParams
   );
 

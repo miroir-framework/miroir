@@ -3,9 +3,9 @@ import {
   asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceListWithObjectListExtractor,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
-  AsyncExtractorRunnerMap,
+  AsyncQueryRunnerMap,
   asyncExtractWithExtractor,
-  asyncExtractWithManyExtractors,
+  asyncRunQuery,
   DomainState,
   ExtractorTemplatePersistenceStoreRunner,
   ExtractorTemplateRunnerMapForJzodSchema,
@@ -32,7 +32,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersistenceStoreRunner {
   private logHeader: string;
-  private selectorMap: AsyncExtractorRunnerMap;
+  private selectorMap: AsyncQueryRunnerMap;
 
   // ################################################################################################
   constructor(
@@ -47,7 +47,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
       extractEntityInstance: this.fileSystemExtractorRunner.extractEntityInstance,
       extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
       extractEntityInstanceListWithObjectListExtractor: asyncExtractEntityInstanceListWithObjectListExtractor,
-      extractWithManyExtractors: asyncExtractWithManyExtractors,
+      runQuery: asyncRunQuery,
       extractWithExtractor: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
       // 

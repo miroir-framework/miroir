@@ -26,7 +26,7 @@ import {
   selectEntityUuidFromJzodAttribute,
   JzodPlainAttribute,
   ExtractorForDomainModelDEFUNCT,
-  SyncExtractorRunner,
+  SyncQueryRunner,
   SyncExtractorRunnerParams,
   DomainModelQueryJzodSchemaParams,
   JzodSchemaQuerySelector,
@@ -84,7 +84,7 @@ export function useDeploymentEntityStateQuerySelector<
   QueryType extends ExtractorForDomainModelDEFUNCT,
   ResultType extends DomainElement
 >(
-  deploymentEntityStateQuerySelector: SyncExtractorRunner<QueryType, DeploymentEntityState, ResultType>,
+  deploymentEntityStateQuerySelector: SyncQueryRunner<QueryType, DeploymentEntityState, ResultType>,
   selectorParams: SyncExtractorRunnerParams<QueryType, DeploymentEntityState>,
   customQueryInterpreter?: { [k: string]: (query: ExtractorForDomainModelDEFUNCT) => ResultType }
 ): ResultType {
@@ -114,7 +114,7 @@ export function useDeploymentEntityStateQueryTemplateSelectorForCleanedResult<
 export function useDeploymentEntityStateQuerySelectorForCleanedResult<
   QueryType extends ExtractorForDomainModelDEFUNCT
 >(
-  deploymentEntityStateQuerySelector: SyncExtractorRunner<QueryType, DeploymentEntityState, DomainElement>,
+  deploymentEntityStateQuerySelector: SyncQueryRunner<QueryType, DeploymentEntityState, DomainElement>,
   selectorParams: SyncExtractorRunnerParams<QueryType, DeploymentEntityState>,
   customQueryInterpreter?: { [k: string]: (query: ExtractorForDomainModelDEFUNCT) => DomainElement }
 ): any {

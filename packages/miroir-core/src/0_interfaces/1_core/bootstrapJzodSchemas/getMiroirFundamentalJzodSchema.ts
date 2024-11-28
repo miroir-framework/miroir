@@ -1518,14 +1518,11 @@ export function getMiroirFundamentalJzodSchema(
               optional: true,
             },
             extractors: {
-              type: "record",
+              type: "schemaReference",
               optional: true,
               definition: {
-                type: "schemaReference",
-                definition: {
-                  absolutePath: miroirFundamentalJzodSchemaUuid,
-                  relativePath: "extractorWrapper",
-                },
+                absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: "extractorOrCombinerRecord",
               },
             },
             combiners: {
@@ -1533,7 +1530,7 @@ export function getMiroirFundamentalJzodSchema(
               optional: true,
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "queryRecord",
+                relativePath: "extractorOrCombinerRecord",
               },
             },
             runtimeTransformers: {
@@ -1638,14 +1635,11 @@ export function getMiroirFundamentalJzodSchema(
               optional: true,
             },
             extractorTemplates: {
-              type: "record",
+              type: "schemaReference",
               optional: true,
               definition: {
-                type: "schemaReference",
-                definition: {
-                  absolutePath: miroirFundamentalJzodSchemaUuid,
-                  relativePath: "queryTemplateSelectExtractorWrapper",
-                },
+                absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: "queryTemplateRecord",
               },
             },
             combinerTemplates: {
@@ -2534,7 +2528,7 @@ export function getMiroirFundamentalJzodSchema(
         combinerForObjectByRelation: (miroirFundamentalJzodSchema as any).definition.context.combinerForObjectByRelation,
         combinerByRelationReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.combinerByRelationReturningObjectList,
         combinerByManyToManyRelationReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.combinerByManyToManyRelationReturningObjectList,
-        queryRecord: (miroirFundamentalJzodSchema as any).definition.context.queryRecord,
+        extractorOrCombinerRecord: (miroirFundamentalJzodSchema as any).definition.context.extractorOrCombinerRecord,
         queryAction: (miroirFundamentalJzodSchema as any).definition.context.queryAction,
         // queries
         queryContextReference: (miroirFundamentalJzodSchema as any).definition.context.queryContextReference,

@@ -1053,11 +1053,10 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                   referenceName: "splitEntity_newEntityName",
                 },
                 parentUuid: {
-                  transformerType: "constantObject",
-                  constantObjectValue: {
-                    transformerType: "constantObject",
-                    interpolation: "runtime",
-                    constantObjectValue: {
+                  transformerType: "freeObjectTemplate",
+                  definition: {
+                    transformerType: "constantString",
+                    constantStringValue: {
                       transformerType: "parameterReference",
                       referenceName: "splitEntity_newEntityUuid",
                     }
@@ -1329,7 +1328,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       actionLabel: "insertMunicipalities",
       actionName: "sequence",
       definition: [
-        // found unique municipalities from fountains
+        // find unique municipalities from fountains
         {
           compositeActionType: "queryTemplate",
           compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
@@ -1359,11 +1358,13 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                   applicationSection: "model",
                   parentName: "Menu",
                   parentUuid: {
-                    transformerType: "constantObject",
-                    constantObjectValue: {
-                      transformerType: "constantObject",
-                      interpolation: "runtime",
-                      constantObjectValue: {
+                    transformerType: "freeObjectTemplate",
+                    definition: {
+                      transformerType: {
+                        transformerType: "constantString",
+                        constantStringValue: "constantUuid"
+                      },
+                      constantUuidValue: {
                         transformerType: "mustacheStringTemplate",
                         definition: "{{entityMenu.uuid}}",
                       }

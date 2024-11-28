@@ -405,11 +405,11 @@ export {
   JzodSchemaQuerySelector,
   ExtractorRunnerMapForJzodSchema,
   ExtractorRunnerParamsForJzodSchema,
-  AsyncExtractorRunner,
-  AsyncExtractorRunnerMap,
+  AsyncQueryRunner,
+  AsyncQueryRunnerMap,
   AsyncExtractorRunnerParams,
-  SyncExtractorRunner,
-  SyncExtractorRunnerMap,
+  SyncQueryRunner,
+  SyncQueryRunnerMap,
   SyncExtractorRunnerParams,
   ExtractorRunner,
   ExtractorRunnerMap,
@@ -584,7 +584,7 @@ export {
   extractFetchQueryJzodSchema,
   extractJzodSchemaForDomainModelQuery,
   extractzodSchemaForSingleSelectQuery,
-  extractWithManyExtractors,
+  runQuery,
   extractWithExtractor,
 } from './2_domain/QuerySelectors';
 // export {
@@ -599,7 +599,7 @@ export {
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   asyncExtractEntityInstanceListWithObjectListExtractor,
   asyncExtractWithExtractor,
-  asyncExtractWithManyExtractors,
+  asyncRunQuery,
   asyncInnerSelectElementFromQuery,
 } from './2_domain/AsyncQuerySelectors';
 export{
@@ -618,8 +618,8 @@ export {
   transformer_InnerReference_resolve,
 } from "./2_domain/Transformers";
 export {
-  resolveQueryTemplate,
-  resolveExtractorTemplateForRecordOfExtractors,
+  resolveExtractorTemplate,
+  resolveQueryTemplate as resolveExtractorTemplateForRecordOfExtractors,
   resolveExtractorTemplateForDomainModelObjects,
   resolveQueryTemplateSelectExtractorWrapper,
 } from "./2_domain/Templates";

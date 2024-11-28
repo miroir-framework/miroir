@@ -25,6 +25,7 @@ import {
   ExtractorOrCombinerReturningObject,
   ExtractorOrCombinerReturningObjectList,
   Extractor,
+  ExtractorOrCombiner,
 } from "miroir-core";
 import { MixableSqlDbStoreSection, SqlDbStoreSection } from "./SqlDbStoreSection";
 
@@ -80,14 +81,14 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
 
     // ##############################################################################################
     sqlForExtractor(
-      extractor:
-        Extractor
-        | ExtractorOrCombinerReturningObject
-        | ExtractorOrCombinerReturningObjectList
-        // | CombinerByManyToManyRelationReturningObjectList
+      extractor: ExtractorOrCombiner
+        // Extractor
         // | ExtractorOrCombinerReturningObject
         // | ExtractorOrCombinerReturningObjectList
-        | ExtractorWrapper
+        // // | CombinerByManyToManyRelationReturningObjectList
+        // // | ExtractorOrCombinerReturningObject
+        // // | ExtractorOrCombinerReturningObjectList
+        // | ExtractorWrapper
         // | ExtractorForObjectByDirectReference
         // | QueryWithExtractorCombinerTransformer
     ): RecursiveStringRecords {
@@ -208,71 +209,71 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       return "SQL for extractor not implemented";
     }
 
-    // ##############################################################################################
-    sqlForExtractorTemplate(
-      extractor:
-        | ExtractorTemplateForSingleObjectList
-        | ExtractorTemplateForSingleObject
-        | QueryTemplateSelectExtractorWrapper
-        | QueryTemplateWithExtractorCombinerTransformer
-    ): RecursiveStringRecords {
-      // log.info(this.logHeader, "sqlForExtractor called with parameter", "extractor", extractor);
-      // log.info(this.logHeader, "sqlForExtractor called with sequelize", this.sequelize);
-      // log.info(this.logHeader, "sqlForExtractor called with dialect", (this.sequelize as any).dialect);
-      // // log.info(this.logHeader, "sqlForExtractor called with queryGenerator", (this.sequelize as any).dialect.queryGenerator);
-      // // log.info(this.logHeader, "sqlForExtractor called with selectQuery", (this.sequelize as any).dialect.selectQuery);
-      // // log.info(this.logHeader, "sqlForExtractor called with queryInterface", this.sequelize.getQueryInterface());
-      // // log.info(this.logHeader, "sqlForExtractor called with dialect", (this.sequelize.getQueryInterface().queryGenerator as any).dialect);
-      // // log.info(this.logHeader, "sqlForExtractor called with queryGenerator", this.sequelize.getQueryInterface().queryGenerator);
-      // log.info(this.logHeader, "sqlForExtractor called with selectQuery", (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery);
-      switch (extractor.queryType) {
-        case "extractorTemplateForObjectListByEntity": {
-          // const result = (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery(extractor.parentUuid
-          //   , {
-          // // const result = (this.sequelize as any).dialect.queryGenerator.selectQuery(extractor.parentUuid, {
-          //   attributes: ["*"],
-          // }
-          // );
-          // log.info(this.logHeader, "sqlForExtractor", "extractorTemplateForDomainModelObjects", result);
-          if (extractor.parentName == undefined) {
-            throw new Error(
-              "sqlForExtractor can not handle queryTemplateType for extractor" + JSON.stringify(extractor)
-            );
-          }
-          // const parentUuid = 
-          // TODO: use queryGenerator?
-          return `SELECT * FROM "${this.schema}"."${extractor.parentName}"`;
-          // return result;
-          break;
-        }
-        case "extractorTemplateForDomainModelObjects": {
-          const result: string = (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery(
-            extractor.select.parentUuid,
-            {
-              attributes: ["*"],
-            }
-          );
-          log.info(this.logHeader, "sqlForExtractor", "extractorTemplateForDomainModelObjects", result);
-          // return "SELECT * FROM domainModel WHERE uuid = " + extractor.deploymentUuid;
-          return result;
-          break;
-        }
-        case "queryTemplateWithExtractorCombinerTransformer": {
-          return Object.fromEntries(
-            Object.entries(extractor.extractorTemplates ?? {}).map((e) => [e[0], this.sqlForExtractorTemplate(e[1])])
-          );
-          break;
-        }
-        case "extractorForObjectByDirectReference":
-        case "extractorWrapperReturningObject":
-        case "extractorWrapperReturningList":
-        default: {
-          return "SQL for extractor could not handle queryType for extractor" + extractor;
-          break;
-        }
-      }
-      return "SQL for extractor not implemented";
-    }
+    // // ##############################################################################################
+    // sqlForExtractorTemplate(
+    //   extractor:
+    //     | ExtractorTemplateForSingleObjectList
+    //     | ExtractorTemplateForSingleObject
+    //     | QueryTemplateSelectExtractorWrapper
+    //     | QueryTemplateWithExtractorCombinerTransformer
+    // ): RecursiveStringRecords {
+    //   // log.info(this.logHeader, "sqlForExtractor called with parameter", "extractor", extractor);
+    //   // log.info(this.logHeader, "sqlForExtractor called with sequelize", this.sequelize);
+    //   // log.info(this.logHeader, "sqlForExtractor called with dialect", (this.sequelize as any).dialect);
+    //   // // log.info(this.logHeader, "sqlForExtractor called with queryGenerator", (this.sequelize as any).dialect.queryGenerator);
+    //   // // log.info(this.logHeader, "sqlForExtractor called with selectQuery", (this.sequelize as any).dialect.selectQuery);
+    //   // // log.info(this.logHeader, "sqlForExtractor called with queryInterface", this.sequelize.getQueryInterface());
+    //   // // log.info(this.logHeader, "sqlForExtractor called with dialect", (this.sequelize.getQueryInterface().queryGenerator as any).dialect);
+    //   // // log.info(this.logHeader, "sqlForExtractor called with queryGenerator", this.sequelize.getQueryInterface().queryGenerator);
+    //   // log.info(this.logHeader, "sqlForExtractor called with selectQuery", (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery);
+    //   switch (extractor.queryType) {
+    //     case "extractorTemplateForObjectListByEntity": {
+    //       // const result = (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery(extractor.parentUuid
+    //       //   , {
+    //       // // const result = (this.sequelize as any).dialect.queryGenerator.selectQuery(extractor.parentUuid, {
+    //       //   attributes: ["*"],
+    //       // }
+    //       // );
+    //       // log.info(this.logHeader, "sqlForExtractor", "extractorTemplateForDomainModelObjects", result);
+    //       if (extractor.parentName == undefined) {
+    //         throw new Error(
+    //           "sqlForExtractor can not handle queryTemplateType for extractor" + JSON.stringify(extractor)
+    //         );
+    //       }
+    //       // const parentUuid = 
+    //       // TODO: use queryGenerator?
+    //       return `SELECT * FROM "${this.schema}"."${extractor.parentName}"`;
+    //       // return result;
+    //       break;
+    //     }
+    //     case "extractorTemplateForDomainModelObjects": {
+    //       const result: string = (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery(
+    //         extractor.select.parentUuid,
+    //         {
+    //           attributes: ["*"],
+    //         }
+    //       );
+    //       log.info(this.logHeader, "sqlForExtractor", "extractorTemplateForDomainModelObjects", result);
+    //       // return "SELECT * FROM domainModel WHERE uuid = " + extractor.deploymentUuid;
+    //       return result;
+    //       break;
+    //     }
+    //     case "queryTemplateWithExtractorCombinerTransformer": {
+    //       return Object.fromEntries(
+    //         Object.entries(extractor.extractorTemplates ?? {}).map((e) => [e[0], this.sqlForExtractorTemplate(e[1])])
+    //       );
+    //       break;
+    //     }
+    //     case "extractorForObjectByDirectReference":
+    //     case "extractorWrapperReturningObject":
+    //     case "extractorWrapperReturningList":
+    //     default: {
+    //       return "SQL for extractor could not handle queryType for extractor" + extractor;
+    //       break;
+    //     }
+    //   }
+    //   return "SQL for extractor not implemented";
+    // }
 
     // #############################################################################################
     async handleQueryTemplateForServerONLY(query: QueryTemplateAction): Promise<ActionReturnType> {

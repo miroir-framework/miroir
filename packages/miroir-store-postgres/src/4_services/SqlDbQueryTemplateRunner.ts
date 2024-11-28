@@ -2,9 +2,9 @@ import {
   ActionReturnType,
   asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
-  AsyncExtractorRunnerMap,
+  AsyncQueryRunnerMap,
   asyncExtractWithExtractor,
-  asyncExtractWithManyExtractors,
+  asyncRunQuery,
   handleQueryTemplateAction,
   DomainState,
   ExtractorTemplateRunnerMapForJzodSchema,
@@ -34,7 +34,7 @@ export type RecursiveStringRecords = string | { [x: string]: RecursiveStringReco
 
 export class SqlDbExtractTemplateRunner {
   private logHeader: string;
-  private extractorRunnerMap: AsyncExtractorRunnerMap;
+  private extractorRunnerMap: AsyncQueryRunnerMap;
 
   constructor(
     private persistenceStoreController:
@@ -44,20 +44,20 @@ export class SqlDbExtractTemplateRunner {
   ) // private persistenceStoreController: typeof MixedSqlDbInstanceStoreSection // does not work
   {
     this.logHeader = "SqlDbExtractTemplateRunner " + persistenceStoreController.getStoreName();
-    const InMemoryImplementationExtractorRunnerMap: AsyncExtractorRunnerMap = {
+    const InMemoryImplementationExtractorRunnerMap: AsyncQueryRunnerMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.sqlDbExtractorRunner.extractEntityInstanceUuidIndex.bind(this.sqlDbExtractorRunner),
       extractEntityInstanceList: this.sqlDbExtractorRunner.extractEntityInstanceList.bind(this.sqlDbExtractorRunner),
       extractEntityInstance: this.sqlDbExtractorRunner.extractEntityInstance.bind(this.sqlDbExtractorRunner),
       extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
       extractEntityInstanceListWithObjectListExtractor: asyncExtractEntityInstanceListWithObjectListExtractor,
-      extractWithManyExtractors: asyncExtractWithManyExtractors,
+      runQuery: asyncRunQuery,
       extractWithExtractor: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
       // 
       extractWithManyExtractorTemplates: undefined as any,
     };
-    const dbImplementationExtractorRunnerMap: AsyncExtractorRunnerMap = {
+    const dbImplementationExtractorRunnerMap: AsyncQueryRunnerMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.sqlDbExtractorRunner.extractEntityInstanceUuidIndex.bind(this.sqlDbExtractorRunner),
       extractEntityInstanceList: this.sqlDbExtractorRunner.extractEntityInstanceList.bind(this.sqlDbExtractorRunner),
@@ -66,7 +66,7 @@ export class SqlDbExtractTemplateRunner {
         this.sqlDbExtractorRunner.asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor.bind(this.sqlDbExtractorRunner),
       extractEntityInstanceListWithObjectListExtractor:
         this.sqlDbExtractorRunner.asyncSqlDbExtractEntityInstanceListWithObjectListExtractor.bind(this.sqlDbExtractorRunner),
-      extractWithManyExtractors: this.sqlDbExtractorRunner.asyncExtractWithQuery.bind(this.sqlDbExtractorRunner),
+      runQuery: this.sqlDbExtractorRunner.asyncExtractWithQuery.bind(this.sqlDbExtractorRunner),
       extractWithExtractor: asyncExtractWithExtractor,
       applyExtractorTransformer: undefined as any,
       // 

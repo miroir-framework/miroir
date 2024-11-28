@@ -1406,26 +1406,26 @@ export function transformer_extended_apply(
     result = { elementType: "any", elementValue: transformer};
   }
 
-  log.info(
-    "transformer_extended_apply called for",
-    label,
-    "step:",
-    step,
-    "transformer.interpolation:",
-    (transformer as any)?.interpolation??"build",
-    ((transformer as any)?.interpolation??"build") == step,
-    typeof transformer,
-    "transformer",
-    JSON.stringify(transformer, null, 2),
-    "result",
-    JSON.stringify(result, null, 2),
-    // "queryParams elements",
-    // Object.keys(queryParams??{}),
-    // // JSON.stringify(Object.keys(queryParams??{}), null, 2),
-    // "contextResults elements",
-    // Object.keys(contextResults??{})
-    // // JSON.stringify(Object.keys(contextResults??{}), null, 2)
-  );
+  // log.info(
+  //   "transformer_extended_apply called for",
+  //   label,
+  //   "step:",
+  //   step,
+  //   "transformer.interpolation:",
+  //   (transformer as any)?.interpolation??"build",
+  //   ((transformer as any)?.interpolation??"build") == step,
+  //   typeof transformer,
+  //   "transformer",
+  //   JSON.stringify(transformer, null, 2),
+  //   "result",
+  //   JSON.stringify(result, null, 2),
+  //   // "queryParams elements",
+  //   // Object.keys(queryParams??{}),
+  //   // // JSON.stringify(Object.keys(queryParams??{}), null, 2),
+  //   // "contextResults elements",
+  //   // Object.keys(contextResults??{})
+  //   // // JSON.stringify(Object.keys(contextResults??{}), null, 2)
+  // );
   return result;
 
 }

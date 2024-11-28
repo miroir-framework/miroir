@@ -24,7 +24,7 @@ import {
   getLoggerName,
   LoggerInterface,
   MiroirLoggerFactory,
-  SyncExtractorRunnerMap,
+  SyncQueryRunnerMap,
   SyncExtractorRunnerParams,
   Uuid
 } from "miroir-core";
@@ -144,7 +144,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
   // const miroirConfig = context.getMiroirConfig();
   // const context = useMiroirContext();
 
-  const deploymentEntityStateSelectorMap: SyncExtractorRunnerMap<DeploymentEntityState> = useMemo(
+  const deploymentEntityStateSelectorMap: SyncQueryRunnerMap<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
   )
@@ -172,7 +172,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
 
   log.info("fetchDeploymentMenusQueryParams",fetchDeploymentMenusQueryParams)
   const miroirMenusDomainElementObject: DomainElementObjectOrFailed = useDeploymentEntityStateQuerySelector(
-    deploymentEntityStateSelectorMap.extractWithManyExtractors,
+    deploymentEntityStateSelectorMap.runQuery,
     fetchDeploymentMenusQueryParams
   );
 
