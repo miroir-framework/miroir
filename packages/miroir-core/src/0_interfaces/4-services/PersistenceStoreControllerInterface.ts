@@ -16,8 +16,8 @@ import {
   ModelAction,
   ModelActionAlterEntityAttribute,
   ModelActionRenameEntity,
-  QueryAction,
-  QueryTemplateAction,
+  RunQueryOrExtractorAction,
+  RunQueryTemplateOrExtractorTemplateAction,
   StoreManagementAction,
   StoreSectionConfiguration
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
@@ -79,8 +79,8 @@ export interface StorageSpaceHandlerInterface {
 export interface PersistenceStoreInstanceSectionAbstractInterface extends PersistenceStoreAbstractSectionInterface{
   getInstance(parentUuid: string, uuid: string): Promise<ActionEntityInstanceReturnType>;
   getInstances(parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType>;
-  handleQueryTemplateForServerONLY(query: QueryTemplateAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
-  handleQueryAction(query: QueryAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
+  handleQueryTemplateForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
+  handleQueryAction(query: RunQueryOrExtractorAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
   upsertInstance(parentUuid:string, instance:EntityInstance):Promise<ActionVoidReturnType>;
   deleteInstances(parentUuid:string, instances:EntityInstance[]):Promise<ActionVoidReturnType>;
   deleteInstance(parentUuid:string, instance:EntityInstance):Promise<ActionVoidReturnType>;
@@ -184,9 +184,9 @@ export interface PersistenceStoreControllerInterface
   getModelState(): Promise<{ [uuid: string]: EntityInstanceCollection }>; // used only for testing purposes!
   getDataState(): Promise<{ [uuid: string]: EntityInstanceCollection }>; // used only for testing purposes!
 
-  // same interface as in PersistenceStoreInstanceSectionAbstractInterface; it implies that QueryTemplateAction includes applicationSection
-  handleQueryTemplateForServerONLY(query: QueryTemplateAction): Promise<ActionReturnType>;
-  handleQueryAction(query: QueryAction): Promise<ActionReturnType>;
+  // same interface as in PersistenceStoreInstanceSectionAbstractInterface; it implies that RunQueryTemplateOrExtractorTemplateAction includes applicationSection
+  handleQueryTemplateForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType>;
+  handleQueryAction(query: RunQueryOrExtractorAction): Promise<ActionReturnType>;
   
   getInstance(section: ApplicationSection, parentUuid: string, uuid: Uuid): Promise<ActionEntityInstanceReturnType>;
   getInstances(section: ApplicationSection, parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType>;

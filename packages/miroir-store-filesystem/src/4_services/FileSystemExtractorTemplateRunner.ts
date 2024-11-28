@@ -14,7 +14,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreInstanceSectionAbstractInterface,
-  QueryTemplateAction,
+  RunQueryTemplateOrExtractorTemplateAction,
   selectEntityJzodSchemaFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
@@ -56,9 +56,9 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
   }
 
   // ################################################################################################
-  async handleQueryTemplateForServerONLY(queryTemplateAction: QueryTemplateAction): Promise<ActionReturnType> {
-    log.info(this.logHeader, "handleQueryTemplateForServerONLY", "queryTemplateAction", JSON.stringify(queryTemplateAction, null, 2));
-    return handleQueryTemplateAction("FileSystemExtractorTemplateRunner", queryTemplateAction, this.selectorMap);
+  async handleQueryTemplateForServerONLY(runQueryTemplateOrExtractorTemplateAction: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
+    log.info(this.logHeader, "handleQueryTemplateForServerONLY", "runQueryTemplateOrExtractorTemplateAction", JSON.stringify(runQueryTemplateOrExtractorTemplateAction, null, 2));
+    return handleQueryTemplateAction("FileSystemExtractorTemplateRunner", runQueryTemplateOrExtractorTemplateAction, this.selectorMap);
   }
 
 }

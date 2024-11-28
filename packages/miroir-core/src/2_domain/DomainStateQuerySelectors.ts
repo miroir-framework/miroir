@@ -417,7 +417,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncQueryRunner<
     }
     default: {
       throw new Error(
-        "selectEntityInstanceFromObjectQueryAndDomainState can not handle QueryTemplateSelectObject query with extractorOrCombinerType=" +
+        "selectEntityInstanceFromObjectQueryAndDomainState can not handle ExtractorTemplateReturningObject query with extractorOrCombinerType=" +
           selectorParams.extractor.select.extractorOrCombinerType
       );
       break;

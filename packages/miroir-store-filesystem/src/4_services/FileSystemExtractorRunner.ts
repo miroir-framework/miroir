@@ -23,7 +23,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreInstanceSectionAbstractInterface,
-  QueryAction,
+  RunQueryOrExtractorAction,
   ExtractorOrCombinerReturningObject,
   selectEntityJzodSchemaFromDomainStateNew,
   selectFetchQueryJzodSchemaFromDomainStateNew,
@@ -63,15 +63,15 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
   }
 
   // ################################################################################################
-  async handleQueryAction(queryAction: QueryAction): Promise<ActionReturnType> {
-    log.info(this.logHeader, "handleQueryAction", "queryTemplateAction", JSON.stringify(queryAction, null, 2));
+  async handleQueryAction(runQueryOrExtractorAction: RunQueryOrExtractorAction): Promise<ActionReturnType> {
+    log.info(this.logHeader, "handleQueryAction", "runQueryTemplateOrExtractorTemplateAction", JSON.stringify(runQueryOrExtractorAction, null, 2));
     let queryResult: DomainElement;
-    switch (queryAction.query.queryType) {
+    switch (runQueryOrExtractorAction.query.queryType) {
       case "queryForExtractorOrCombinerReturningObject":
       case "queryForExtractorOrCombinerReturningObjectList": {
         queryResult = await this.selectorMap.extractWithExtractor(
           {
-            extractor: queryAction.query,
+            extractor: runQueryOrExtractorAction.query,
             extractorRunnerMap: this.selectorMap,
           }
         );
@@ -80,7 +80,7 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
       case "queryWithExtractorCombinerTransformer": {
         queryResult = await this.selectorMap.runQuery(
           {
-            extractor: queryAction.query,
+            extractor: runQueryOrExtractorAction.query,
             extractorRunnerMap: this.selectorMap,
           }
         );
@@ -89,7 +89,7 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
       default: {
         return {
           status: "error",
-          error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryAction) },
+          error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(runQueryOrExtractorAction) },
         } as ActionReturnType;
         break;
       }
@@ -101,7 +101,7 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
       } as ActionReturnType;
     } else {
       const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
-      log.info(this.logHeader, "handleQueryAction", "queryTemplateAction", queryAction, "result", JSON.stringify(result, null, 2));
+      log.info(this.logHeader, "handleQueryAction", "runQueryTemplateOrExtractorTemplateAction", runQueryOrExtractorAction, "result", JSON.stringify(result, null, 2));
       return result;
     }
     // const result = { status: "ok", returnedDomainElement: { elementType: "object", elementValue: {}}} as ActionReturnType;
@@ -242,7 +242,7 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
       }
       default: {
         throw new Error(
-          "extractEntityInstance can not handle QueryTemplateSelectObject query with extractorOrCombinerType=" +
+          "extractEntityInstance can not handle ExtractorTemplateReturningObject query with extractorOrCombinerType=" +
             selectorParams.extractor.select.extractorOrCombinerType
         );
         break;

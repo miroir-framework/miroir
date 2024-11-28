@@ -26,7 +26,7 @@ import {
   JzodElement,
   JzodObject,
   ExtractorOrCombiner,
-  QueryAction,
+  RunQueryOrExtractorAction,
   QueryFailed,
   QueryTemplateConstantOrAnyReference,
   ExtractorOrCombinerContextReference
@@ -543,17 +543,17 @@ export const applyExtractorTransformerInMemory = (
 // ################################################################################################
 export async function handleQueryAction(
   origin: string,
-  queryAction: QueryAction,
+  runQueryOrExtractorAction: RunQueryOrExtractorAction,
   selectorMap: AsyncQueryRunnerMap
 ): Promise<ActionReturnType> {
-  log.info("handleQueryAction for", origin, "start", "queryAction", JSON.stringify(queryAction, null, 2));
+  log.info("handleQueryAction for", origin, "start", "runQueryOrExtractorAction", JSON.stringify(runQueryOrExtractorAction, null, 2));
   let queryResult: DomainElement;
-  switch (queryAction.query.queryType) {
+  switch (runQueryOrExtractorAction.query.queryType) {
     case "queryForExtractorOrCombinerReturningObject":
     case "queryForExtractorOrCombinerReturningObjectList": {
       queryResult = await selectorMap.extractWithExtractor(
         {
-          extractor: queryAction.query,
+          extractor: runQueryOrExtractorAction.query,
           extractorRunnerMap: selectorMap,
         }
       );
@@ -562,7 +562,7 @@ export async function handleQueryAction(
     case "queryWithExtractorCombinerTransformer": {
       queryResult = await selectorMap.runQuery(
         {
-          extractor: queryAction.query,
+          extractor: runQueryOrExtractorAction.query,
           extractorRunnerMap: selectorMap,
         }
       );
@@ -571,7 +571,7 @@ export async function handleQueryAction(
     default: {
       return {
         status: "error",
-        error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryAction) },
+        error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(runQueryOrExtractorAction) },
       } as ActionReturnType;
       break
     }
@@ -583,7 +583,7 @@ export async function handleQueryAction(
     } as ActionReturnType;
   } else {
     const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
-    log.info("handleQueryAction for", origin, "queryAction", queryAction, "result", JSON.stringify(result, null, 2));
+    log.info("handleQueryAction for", origin, "runQueryOrExtractorAction", runQueryOrExtractorAction, "result", JSON.stringify(result, null, 2));
     return result;
   }
 }
@@ -837,7 +837,7 @@ export const extractWithExtractor /*: ExtractWithExtractorType*/ = <StateType>(
       );
       return result;
         break;
-      }
+    }
     default: {
       return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } };
       break;

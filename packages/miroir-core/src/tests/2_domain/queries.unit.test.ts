@@ -82,7 +82,7 @@ const testExtractorTools = {
     getExtractorTemplateRunnerParamsForDeploymentEntityState: getExtractorTemplateRunnerParamsForDeploymentEntityState,
 }
 const testExtractorParams: Record<string, TestExtractorParams> = {
-  // ###########################################################################################
+  // // ###########################################################################################
   "error on non-existing Entity: EntityNotFound": {
     queryTemplate: {
       queryType: "queryTemplateWithExtractorCombinerTransformer",
@@ -775,7 +775,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           AttributeOfListObjectToCompareToReferenceUuid: "publisher",
         },
         result1: {
-          queryType: "combiner_wrapperReturningObject",
+          queryType: "extractorTemplateByExtractorWrapperReturningObject",
           definition: {
             "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": {
               queryType: "queryContextReference",
@@ -784,7 +784,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           },
         },
         result2: {
-          queryType: "combiner_wrapperReturningList",
+          queryType: "extractorTemplateByExtractorWrapperReturningList",
           definition: [
             { queryType: "queryContextReference", queryReference: "booksOfPublisher" },
             { queryType: "queryContextReference", queryReference: "booksOfPublisher" },

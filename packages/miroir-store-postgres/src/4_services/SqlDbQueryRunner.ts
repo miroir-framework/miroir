@@ -27,7 +27,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   ExtractorOrCombiner,
-  QueryAction,
+  RunQueryOrExtractorAction,
   ExtractorOrCombinerReturningObject,
   selectEntityJzodSchemaFromDomainStateNew,
   selectFetchQueryJzodSchemaFromDomainStateNew,
@@ -677,27 +677,27 @@ export class SqlDbQueryRunner {
   };
 
   // ##############################################################################################
-  async handleQueryAction(queryAction: QueryAction): Promise<ActionReturnType> {
-    log.info(this.logHeader, "handleQueryAction", "queryAction", JSON.stringify(queryAction, null, 2));
+  async handleQueryAction(runQueryOrExtractorAction: RunQueryOrExtractorAction): Promise<ActionReturnType> {
+    log.info(this.logHeader, "handleQueryAction", "runQueryOrExtractorAction", JSON.stringify(runQueryOrExtractorAction, null, 2));
     let queryResult: DomainElement;
-    switch (queryAction.query.queryType) {
+    switch (runQueryOrExtractorAction.query.queryType) {
       case "queryForExtractorOrCombinerReturningObject":
       case "queryForExtractorOrCombinerReturningObjectList": {
         queryResult = await this.inMemoryImplementationExtractorRunnerMap.extractWithExtractor({
-          extractor: queryAction.query,
+          extractor: runQueryOrExtractorAction.query,
           extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
         });
         break;
       }
       case "queryWithExtractorCombinerTransformer": {
-        if (queryAction.query.runAsSql) {
+        if (runQueryOrExtractorAction.query.runAsSql) {
           queryResult = await this.dbImplementationExtractorRunnerMap.runQuery({
-            extractor: queryAction.query,
+            extractor: runQueryOrExtractorAction.query,
             extractorRunnerMap: this.dbImplementationExtractorRunnerMap,
           });
         } else {
           queryResult = await this.inMemoryImplementationExtractorRunnerMap.runQuery({
-            extractor: queryAction.query,
+            extractor: runQueryOrExtractorAction.query,
             extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
           });
         }
@@ -706,7 +706,7 @@ export class SqlDbQueryRunner {
       default: {
         return {
           status: "error",
-          error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryAction) },
+          error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(runQueryOrExtractorAction) },
         } as ActionReturnType;
         break;
       }
@@ -718,7 +718,7 @@ export class SqlDbQueryRunner {
       } as ActionReturnType;
     } else {
       const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
-      log.info(this.logHeader, "handleQueryAction", "queryAction", queryAction, "result", JSON.stringify(result, null, 2));
+      log.info(this.logHeader, "handleQueryAction", "runQueryOrExtractorAction", runQueryOrExtractorAction, "result", JSON.stringify(result, null, 2));
       return result;
     }
   }
@@ -856,7 +856,7 @@ export class SqlDbQueryRunner {
       }
       default: {
         throw new Error(
-          "extractEntityInstance can not handle QueryTemplateSelectObject query with queryType=" +
+          "extractEntityInstance can not handle ExtractorTemplateReturningObject query with queryType=" +
             selectorParams.extractor.select.extractorOrCombinerType
         );
         break;

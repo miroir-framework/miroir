@@ -231,9 +231,9 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncQueryRunner<
       break;
     }
     default: {
-      // log.error("selectEntityInstanceFromDeploymentEntityState can not handle QueryTemplateSelectObject query with extractorOrCombinerType=" + selectorParams.extractor.select.extractorOrCombinerType);
+      // log.error("selectEntityInstanceFromDeploymentEntityState can not handle ExtractorTemplateReturningObject query with extractorOrCombinerType=" + selectorParams.extractor.select.extractorOrCombinerType);
       throw new Error(
-        "selectEntityInstanceFromDeploymentEntityState can not handle QueryTemplateSelectObject query with extractorOrCombinerType=" +
+        "selectEntityInstanceFromDeploymentEntityState can not handle ExtractorTemplateReturningObject query with extractorOrCombinerType=" +
           selectorParams.extractor.select.extractorOrCombinerType
       );
       break;

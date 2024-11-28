@@ -649,7 +649,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           
           nameGivenToResult: "menuUpdateQueryResult",
           queryTemplate: {
-            actionType: "queryTemplateAction",
+            actionType: "runQueryTemplateOrExtractorTemplateAction",
             actionName: "runQuery",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             applicationSection: "model",
@@ -1334,7 +1334,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
           nameGivenToResult: newEntityName,
           queryTemplate: {
-            actionType: "queryTemplateAction",
+            actionType: "runQueryTemplateOrExtractorTemplateAction",
             actionName: "runQuery",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             // applicationSection: "data",
@@ -1504,7 +1504,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           compositeActionStepLabel: "calculateEntityInstances",
           nameGivenToResult: newEntityName,
           queryTemplate: {
-            actionType: "queryTemplateAction",
+            actionType: "runQueryTemplateOrExtractorTemplateAction",
             actionName: "runQuery",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             applicationSection: "data",

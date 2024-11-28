@@ -1472,7 +1472,7 @@ describe("jzod.unfoldSchemaForValue", () => {
                 },
               ],
             },
-            queryTemplateRoot: {
+            extractorTemplateRoot: {
               type: "object",
               definition: {
                 label: {
@@ -1503,13 +1503,13 @@ describe("jzod.unfoldSchemaForValue", () => {
                 },
               },
             },
-            queryTemplateExtractObjectByDirectReference: {
+            extractorTemplateExtractorForObjectByDirectReference: {
               type: "object",
               extend: {
                 type: "schemaReference",
                 definition: {
                   eager: true,
-                  relativePath: "queryTemplateRoot",
+                  relativePath: "extractorTemplateRoot",
                 },
               },
               definition: {
@@ -1532,7 +1532,7 @@ describe("jzod.unfoldSchemaForValue", () => {
                 type: "schemaReference",
                 definition: {
                   eager: true,
-                  relativePath: "queryTemplateRoot",
+                  relativePath: "extractorTemplateRoot",
                 },
               },
               definition: {
@@ -1557,14 +1557,14 @@ describe("jzod.unfoldSchemaForValue", () => {
                 },
               },
             },
-            queryTemplateSelectExtractorWrapperReturningObject: {
+            extractorTemplateByExtractorWrapperReturningObject: {
               type: "union",
               discriminator: "extractorOrCombinerType",
               definition: [
                 {
                   type: "schemaReference",
                   definition: {
-                    relativePath: "queryTemplateExtractObjectByDirectReference",
+                    relativePath: "extractorTemplateExtractorForObjectByDirectReference",
                   },
                 },
                 {
@@ -1579,7 +1579,7 @@ describe("jzod.unfoldSchemaForValue", () => {
                       definition: {
                         type: "schemaReference",
                         definition: {
-                          relativePath: "queryTemplateSelectExtractorWrapperReturningObject",
+                          relativePath: "extractorTemplateByExtractorWrapperReturningObject",
                         },
                       },
                     },
@@ -1587,7 +1587,7 @@ describe("jzod.unfoldSchemaForValue", () => {
                 },
               ],
             },
-            queryTemplateSelectExtractorWrapperReturningList: {
+            extractorTemplateByExtractorWrapperReturningList: {
               type: "union",
               discriminator: "extractorOrCombinerType",
               definition: [
@@ -1609,7 +1609,7 @@ describe("jzod.unfoldSchemaForValue", () => {
                       definition: {
                         type: "schemaReference",
                         definition: {
-                          relativePath: "queryTemplateSelectExtractorWrapperReturningList",
+                          relativePath: "extractorTemplateByExtractorWrapperReturningList",
                         },
                       },
                     },
@@ -1617,27 +1617,27 @@ describe("jzod.unfoldSchemaForValue", () => {
                 },
               ],
             },
-            queryTemplateSelectExtractorWrapper: {
+            extractorTemplateByExtractorWrapper: {
               type: "union",
               discriminator: "extractorOrCombinerType",
               definition: [
                 {
                   type: "schemaReference",
                   definition: {
-                    relativePath: "queryTemplateSelectExtractorWrapperReturningObject",
+                    relativePath: "extractorTemplateByExtractorWrapperReturningObject",
                   },
                 },
                 {
                   type: "schemaReference",
                   definition: {
-                    relativePath: "queryTemplateSelectExtractorWrapperReturningList",
+                    relativePath: "extractorTemplateByExtractorWrapperReturningList",
                   },
                 },
               ],
             },
           },
           definition: {
-            relativePath: "queryTemplateSelectExtractorWrapper",
+            relativePath: "extractorTemplateByExtractorWrapper",
           },
         },
         expectedResult: { // TODO: missing alternate possible union branches in parentUuid, instanceUuid?

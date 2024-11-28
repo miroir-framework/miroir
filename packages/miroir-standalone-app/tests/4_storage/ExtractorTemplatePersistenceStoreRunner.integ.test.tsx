@@ -195,7 +195,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         const applicationSection:ApplicationSection = "model";
         const queryResult:ActionReturnType = await localMiroirPersistenceStoreController.handleQueryTemplateForServerONLY(
           {
-            actionType: "queryTemplateAction",
+            actionType: "runQueryTemplateOrExtractorTemplateAction",
             actionName: "runQuery",
             deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
             // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
@@ -254,7 +254,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         const applicationSection:ApplicationSection = "model";
         const queryResult:ActionReturnType = await localMiroirPersistenceStoreController.handleQueryTemplateForServerONLY(
           {
-            actionType: "queryTemplateAction",
+            actionType: "runQueryTemplateOrExtractorTemplateAction",
             actionName: "runQuery",
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -421,7 +421,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         const applicationSection:ApplicationSection = "model";
         const queryResult = await localMiroirPersistenceStoreController.handleQueryTemplateForServerONLY(
           {
-            actionType: "queryTemplateAction",
+            actionType: "runQueryTemplateOrExtractorTemplateAction",
             actionName: "runQuery",
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -492,7 +492,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       async () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleQueryTemplateForServerONLY({
-          actionType: "queryTemplateAction",
+          actionType: "runQueryTemplateOrExtractorTemplateAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -549,7 +549,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       async () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleQueryTemplateForServerONLY({
-          actionType: "queryTemplateAction",
+          actionType: "runQueryTemplateOrExtractorTemplateAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -601,7 +601,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       async () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleQueryTemplateForServerONLY({
-          actionType: "queryTemplateAction",
+          actionType: "runQueryTemplateOrExtractorTemplateAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -657,7 +657,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       async () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleQueryTemplateForServerONLY({
-          actionType: "queryTemplateAction",
+          actionType: "runQueryTemplateOrExtractorTemplateAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -771,7 +771,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       async () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleQueryTemplateForServerONLY({
-          actionType: "queryTemplateAction",
+          actionType: "runQueryTemplateOrExtractorTemplateAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",

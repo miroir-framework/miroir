@@ -228,7 +228,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                 return yield localStoreResult;
                 break;
               }
-              case "queryAction": {
+              case "runQueryOrExtractorAction": {
                 const localPersistenceStoreController: PersistenceStoreControllerInterface | undefined =
                   localParams.localPersistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
 
@@ -243,7 +243,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                 break;
 
               }
-              case "queryTemplateAction": {
+              case "runQueryTemplateOrExtractorTemplateAction": {
                 const localPersistenceStoreController =
                   localParams.localPersistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
 
@@ -302,15 +302,15 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                 return yield result;
                 break;
               }
-              case "queryAction": {
-                log.info("handlePersistenceAction queryAction received from remoteStoreNetworkClient clientResult", clientResult);
-                log.debug("handlePersistenceAction queryAction remoteStoreNetworkClient received result", clientResult.status);
+              case "runQueryOrExtractorAction": {
+                log.info("handlePersistenceAction runQueryOrExtractorAction received from remoteStoreNetworkClient clientResult", clientResult);
+                log.debug("handlePersistenceAction runQueryOrExtractorAction remoteStoreNetworkClient received result", clientResult.status);
                 return yield clientResult.data;
                 break;
               }
-              case "queryTemplateAction": {
-                log.info("handlePersistenceAction queryTemplateAction received from remoteStoreNetworkClient clientResult", clientResult);
-                log.debug("handlePersistenceAction queryTemplateAction remoteStoreNetworkClient received result", clientResult.status);
+              case "runQueryTemplateOrExtractorTemplateAction": {
+                log.info("handlePersistenceAction runQueryTemplateOrExtractorTemplateAction received from remoteStoreNetworkClient clientResult", clientResult);
+                log.debug("handlePersistenceAction runQueryTemplateOrExtractorTemplateAction remoteStoreNetworkClient received result", clientResult.status);
                 return yield clientResult.data;
                 break;
               }

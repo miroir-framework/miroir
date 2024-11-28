@@ -17,11 +17,11 @@ import {
   ExtractorTemplateForDomainModelDEFUNCT,
   JzodElement,
   JzodObject,
-  QueryAction,
+  RunQueryOrExtractorAction,
   QueryForExtractorOrCombinerReturningObject,
   QueryForExtractorOrCombinerReturningObjectList,
   QueryForExtractorOrCombinerReturningObjectOrObjectList,
-  QueryTemplateAction,
+  RunQueryTemplateOrExtractorTemplateAction,
   QueryTemplateWithExtractorCombinerTransformer,
   QueryWithExtractorCombinerTransformer
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
@@ -61,7 +61,7 @@ export type ExtractorTemplateRunner<QueryType extends ExtractorTemplateForDomain
 
 // ################################################################################################
 export interface ExtractorTemplatePersistenceStoreRunner {
-  handleQueryTemplateForServerONLY(query: QueryTemplateAction): Promise<ActionReturnType>;
+  handleQueryTemplateForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType>;
 }
 
 // ################################################################################################
@@ -190,7 +190,7 @@ export type ExtractorRunnerMap<StateType> = AsyncQueryRunnerMap | SyncQueryRunne
 
 // ################################################################################################
 export interface ExtractorPersistenceStoreRunner {
-  handleQueryAction(query: QueryAction): Promise<ActionReturnType>;
+  handleQueryAction(query: RunQueryOrExtractorAction): Promise<ActionReturnType>;
 }
 
 // ################################################################################################

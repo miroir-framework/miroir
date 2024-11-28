@@ -9,8 +9,8 @@ import {
   EntityInstancesUuidIndex,
   MetaModel,
   ModelAction,
-  QueryAction,
-  QueryTemplateAction,
+  RunQueryOrExtractorAction,
+  RunQueryTemplateOrExtractorTemplateAction,
   TransactionalInstanceAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 import { PersistenceStoreLocalOrRemoteInterface } from "../4-services/PersistenceInterface";
@@ -76,8 +76,8 @@ export type EntityInstancesUuidIndexEntityInstanceArraySelector = (entityInstanc
 // ###################################################################################
 export interface DomainControllerInterface {
   // handleAction(deploymentUuid: Uuid, action: DomainAction, currentModel?: MetaModel): Promise<void>;
-  handleQueryActionForServerONLY(action: QueryAction, currentModel?: MetaModel): Promise<ActionReturnType>;
-  handleQueryTemplateForServerONLY(action: QueryTemplateAction, currentModel?: MetaModel): Promise<ActionReturnType>;
+  handleQueryActionForServerONLY(action: RunQueryOrExtractorAction, currentModel?: MetaModel): Promise<ActionReturnType>;
+  handleQueryTemplateForServerONLY(action: RunQueryTemplateOrExtractorTemplateAction, currentModel?: MetaModel): Promise<ActionReturnType>;
   // handleCompositeActionTemplate(action: CompositeInstanceActionTemplate, actionParamValues: any, currentModel?: MetaModel): Promise<ActionVoidReturnType>;
   handleCompositeActionTemplate(action: CompositeActionTemplate, actionParamValues: any, currentModel?: MetaModel): Promise<ActionVoidReturnType>;
   handleAction(action: DomainAction, currentModel?: MetaModel): Promise<ActionVoidReturnType>;

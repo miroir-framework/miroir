@@ -8,11 +8,11 @@ import {
   EntityInstance,
   LoggerInterface,
   MiroirLoggerFactory,
-  QueryTemplateAction,
+  RunQueryTemplateOrExtractorTemplateAction,
   getLoggerName,
   ExtractorTemplateRunnerInMemory,
   ExtractorRunnerInMemory,
-  QueryAction,
+  RunQueryOrExtractorAction,
 } from "miroir-core";
 import { IndexedDbStoreSection, MixableIndexedDbStoreSection } from "./IndexedDbStoreSection.js";
 
@@ -45,7 +45,7 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
     }
 
     // #############################################################################################
-    async handleQueryAction(query: QueryAction): Promise<ActionReturnType> {
+    async handleQueryAction(query: RunQueryOrExtractorAction): Promise<ActionReturnType> {
       log.info(this.logHeader,'handleQueryAction', 'query',query);
       
       const result: ActionReturnType = await this.extractorRunner.handleQueryAction(query);
@@ -55,7 +55,7 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
     }
     
     // #############################################################################################
-    async handleQueryTemplateForServerONLY(query: QueryTemplateAction): Promise<ActionReturnType> {
+    async handleQueryTemplateForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
       log.info(this.logHeader,'handleQueryTemplateForServerONLY', 'query',query);
       
       const result: ActionReturnType = await this.extractorTemplateRunner.handleQueryTemplateForServerONLY(query);

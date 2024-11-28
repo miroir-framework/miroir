@@ -33,8 +33,8 @@ import {
   InstanceAction,
   MetaModel,
   ModelAction,
-  QueryAction,
-  QueryTemplateAction,
+  RunQueryOrExtractorAction,
+  RunQueryTemplateOrExtractorTemplateAction,
   RestPersistenceAction,
   TransactionalInstanceAction,
   TransformerForRuntime,
@@ -647,18 +647,18 @@ export class DomainController implements DomainControllerInterface {
   // used in Importer.tsx
   // used in scripts.ts
   // used in tests
-  async handleQueryActionForServerONLY(queryAction: QueryAction): Promise<ActionReturnType> {
+  async handleQueryActionForServerONLY(runQueryOrExtractorAction: RunQueryOrExtractorAction): Promise<ActionReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     log.info(
       "handleQueryTemplateForServerONLY",
       // "deploymentUuid",
-      // queryAction.deploymentUuid,
+      // runQueryOrExtractorAction.deploymentUuid,
       "actionName",
-      (queryAction as any).actionName,
+      (runQueryOrExtractorAction as any).actionName,
       "actionType",
-      queryAction?.actionType,
+      runQueryOrExtractorAction?.actionType,
       "objects",
-      JSON.stringify((queryAction as any)["objects"], null, 2)
+      JSON.stringify((runQueryOrExtractorAction as any)["objects"], null, 2)
     );
 
     if (this.domainControllerIsDeployedOn == "server") {
@@ -666,8 +666,8 @@ export class DomainController implements DomainControllerInterface {
        * we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
        */
 
-      const result: ActionReturnType = await this.persistenceStore.handlePersistenceAction(queryAction);
-      log.info("DomainController handleQueryActionForServerONLY queryAction callPersistenceAction Result=", result);
+      const result: ActionReturnType = await this.persistenceStore.handlePersistenceAction(runQueryOrExtractorAction);
+      log.info("DomainController handleQueryActionForServerONLY runQueryOrExtractorAction callPersistenceAction Result=", result);
       return result;
     } else {
       // we're on the client, the query is sent to the server for execution.
@@ -676,9 +676,9 @@ export class DomainController implements DomainControllerInterface {
       // while non-transactional accesses are limited to persistence store access (does this make sense?)
       // in both cases this enforces only the most up-to-date data is accessed.
       log.info(
-        "DomainController handleQueryActionForServerONLY queryAction sending query to server for execution",
-        // JSON.stringify(queryTemplateAction)
-        queryAction
+        "DomainController handleQueryActionForServerONLY runQueryOrExtractorAction sending query to server for execution",
+        // JSON.stringify(runQueryTemplateOrExtractorTemplateAction)
+        runQueryOrExtractorAction
       );
       const result = await this.callUtil.callPersistenceAction(
         // what if it is a REAL persistence store?? exception?
@@ -687,9 +687,9 @@ export class DomainController implements DomainControllerInterface {
           addResultToContextAsName: "dataEntitiesFromModelSection",
           expectedDomainElementType: "entityInstanceCollection",
         }, // continuation
-        queryAction
+        runQueryOrExtractorAction
       );
-      log.info("handleQueryActionForServerONLY queryAction callPersistenceAction Result=", result);
+      log.info("handleQueryActionForServerONLY runQueryOrExtractorAction callPersistenceAction Result=", result);
       return result["dataEntitiesFromModelSection"];
     }
 
@@ -702,18 +702,18 @@ export class DomainController implements DomainControllerInterface {
   // used in Importer.tsx
   // used in scripts.ts
   // used in tests
-  async handleQueryTemplateForServerONLY(queryTemplateAction: QueryTemplateAction): Promise<ActionReturnType> {
+  async handleQueryTemplateForServerONLY(runQueryTemplateOrExtractorTemplateAction: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     log.info(
       "handleQueryTemplateForServerONLY",
       // "deploymentUuid",
-      // queryTemplateAction.deploymentUuid,
+      // runQueryTemplateOrExtractorTemplateAction.deploymentUuid,
       "actionName",
-      (queryTemplateAction as any).actionName,
+      (runQueryTemplateOrExtractorTemplateAction as any).actionName,
       "actionType",
-      queryTemplateAction?.actionType,
+      runQueryTemplateOrExtractorTemplateAction?.actionType,
       "objects",
-      JSON.stringify((queryTemplateAction as any)["objects"], null, 2)
+      JSON.stringify((runQueryTemplateOrExtractorTemplateAction as any)["objects"], null, 2)
     );
 
     if (this.domainControllerIsDeployedOn == "server") {
@@ -721,8 +721,8 @@ export class DomainController implements DomainControllerInterface {
        * we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
        */
 
-      const result: ActionReturnType = await this.persistenceStore.handlePersistenceAction(queryTemplateAction);
-      log.info("DomainController handleQueryTemplateForServerONLY queryTemplateAction callPersistenceAction Result=", result);
+      const result: ActionReturnType = await this.persistenceStore.handlePersistenceAction(runQueryTemplateOrExtractorTemplateAction);
+      log.info("DomainController handleQueryTemplateForServerONLY runQueryTemplateOrExtractorTemplateAction callPersistenceAction Result=", result);
       return result;
     } else {
       // we're on the client, the query is sent to the server for execution.
@@ -731,9 +731,9 @@ export class DomainController implements DomainControllerInterface {
       // while non-transactional accesses are limited to persistence store access (does this make sense?)
       // in both cases this enforces only the most up-to-date data is accessed.
       log.info(
-        "DomainController handleQueryTemplateForServerONLY queryTemplateAction sending query to server for execution",
-        // JSON.stringify(queryTemplateAction)
-        queryTemplateAction
+        "DomainController handleQueryTemplateForServerONLY runQueryTemplateOrExtractorTemplateAction sending query to server for execution",
+        // JSON.stringify(runQueryTemplateOrExtractorTemplateAction)
+        runQueryTemplateOrExtractorTemplateAction
       );
       const result = await this.callUtil.callPersistenceAction(
         // what if it is a REAL persistence store?? exception?
@@ -742,9 +742,9 @@ export class DomainController implements DomainControllerInterface {
           addResultToContextAsName: "dataEntitiesFromModelSection",
           expectedDomainElementType: "entityInstanceCollection",
         }, // continuation
-        queryTemplateAction
+        runQueryTemplateOrExtractorTemplateAction
       );
-      log.info("handleQueryTemplateForServerONLY queryTemplateAction callPersistenceAction Result=", result);
+      log.info("handleQueryTemplateForServerONLY runQueryTemplateOrExtractorTemplateAction callPersistenceAction Result=", result);
       return result["dataEntitiesFromModelSection"];
     }
 
@@ -857,7 +857,7 @@ export class DomainController implements DomainControllerInterface {
           //   actionParamValues
           // );
   
-          // const actionResult = await this.handleQueryTemplateForServerONLY(currentAction.query as any as QueryTemplateAction);
+          // const actionResult = await this.handleQueryTemplateForServerONLY(currentAction.query as any as RunQueryTemplateOrExtractorTemplateAction);
           // if (actionResult?.status != "ok") {
           //   log.error("Error on query", JSON.stringify(actionResult, null, 2));
           // } else {

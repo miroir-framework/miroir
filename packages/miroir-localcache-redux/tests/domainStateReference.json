@@ -483,7 +483,7 @@
               "definition": {
                 "type": "schemaReference",
                 "context": {
-                  "queryTemplateSelectObject": {
+                  "extractorTemplateReturningObject": {
                     "type": "object",
                     "definition": {
                       "type": { "type": "literal", "definition": "selectObjectByParameterValue" },
@@ -520,7 +520,7 @@
                       }
                     }
                   },
-                  "queryTemplateSelectObjectList": {
+                  "extractorTemplateReturningObjectList": {
                     "type": "object",
                     "definition": {
                       "type": { "type": "literal", "definition": "combinerByRelationReturningObjectList" },
@@ -567,8 +567,8 @@
                     "type": "union",
                     "discriminator": "type",
                     "definition": [
-                      { "type": "schemaReference", "definition": { "relativePath": "queryTemplateSelectObjectList" } },
-                      { "type": "schemaReference", "definition": { "relativePath": "queryTemplateSelectObject" } }
+                      { "type": "schemaReference", "definition": { "relativePath": "extractorTemplateReturningObjectList" } },
+                      { "type": "schemaReference", "definition": { "relativePath": "extractorTemplateReturningObject" } }
                     ]
                   },
                   "queryTemplateRecord": {
@@ -614,7 +614,7 @@
                       },
                       "definition": {
                         "type": "schemaReference",
-                        "definition": { "relativePath": "queryTemplateSelectObjectList" }
+                        "definition": { "relativePath": "extractorTemplateReturningObjectList" }
                       }
                     }
                   },

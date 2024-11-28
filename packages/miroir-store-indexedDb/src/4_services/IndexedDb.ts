@@ -1,5 +1,5 @@
 import { Level } from 'level';
-import { ActionReturnType, ApplicationSection, LoggerInterface, MiroirLoggerFactory, QueryTemplateAction, entityDefinitionEntityDefinition, getLoggerName } from "miroir-core";
+import { ActionReturnType, ApplicationSection, LoggerInterface, MiroirLoggerFactory, RunQueryTemplateOrExtractorTemplateAction, entityDefinitionEntityDefinition, getLoggerName } from "miroir-core";
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";

@@ -11,7 +11,7 @@ import {
   getLoggerName,
   LoggerInterface,
   MiroirLoggerFactory,
-  QueryTemplateAction,
+  RunQueryTemplateOrExtractorTemplateAction,
   selectEntityJzodSchemaFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
@@ -78,9 +78,9 @@ export class SqlDbExtractTemplateRunner {
   }
 
   // ##############################################################################################
-  async handleQueryTemplateForServerONLY(queryTemplateAction: QueryTemplateAction): Promise<ActionReturnType> {
-    log.info(this.logHeader, "handleQueryTemplateForServerONLY", "queryTemplateAction", JSON.stringify(queryTemplateAction, null, 2));
-    return handleQueryTemplateAction("SqlDbExtractorTemplateRunner", queryTemplateAction, this.extractorRunnerMap);
+  async handleQueryTemplateForServerONLY(runQueryTemplateOrExtractorTemplateAction: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
+    log.info(this.logHeader, "handleQueryTemplateForServerONLY", "runQueryTemplateOrExtractorTemplateAction", JSON.stringify(runQueryTemplateOrExtractorTemplateAction, null, 2));
+    return handleQueryTemplateAction("SqlDbExtractorTemplateRunner", runQueryTemplateOrExtractorTemplateAction, this.extractorRunnerMap);
   }
 
 }

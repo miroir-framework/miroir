@@ -16,8 +16,8 @@ import {
   ModelActionInitModel,
   ModelActionInitModelParams,
   ModelActionRenameEntity,
-  QueryAction,
-  QueryTemplateAction,
+  RunQueryOrExtractorAction,
+  RunQueryTemplateOrExtractorTemplateAction,
   StoreSectionConfiguration
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DataStoreApplicationType } from "../0_interfaces/3_controllers/ApplicationControllerInterface";
@@ -105,7 +105,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
 
   // #############################################################################################
-  async handleQueryAction(query: QueryAction): Promise<ActionReturnType> {
+  async handleQueryAction(query: RunQueryOrExtractorAction): Promise<ActionReturnType> {
     // TODO: fix applicationSection!!!
     log.info(this.logHeader,'handleQueryAction','query',query);
     // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
@@ -122,7 +122,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
 
   // #############################################################################################
-  async handleQueryTemplateForServerONLY(query: QueryTemplateAction): Promise<ActionReturnType> {
+  async handleQueryTemplateForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
     // TODO: fix applicationSection!!!
     log.info(this.logHeader,'handleQueryTemplateForServerONLY','query',query);
     // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);

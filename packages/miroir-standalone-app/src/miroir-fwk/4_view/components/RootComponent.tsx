@@ -314,7 +314,7 @@ export const RootComponent = (props: RootComponentProps) => {
                       const adminDeployments: ActionReturnType = 
                         await domainController.handleQueryTemplateForServerONLY(
                           {
-                            actionType: "queryTemplateAction",
+                            actionType: "runQueryTemplateOrExtractorTemplateAction",
                             actionName: "runQuery",
                             deploymentUuid:adminConfigurationDeploymentAdmin.uuid,
                             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -568,7 +568,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         }
                       } 
                       await domainController.handleAction({
-                        actionType: "queryTemplateAction",
+                        actionType: "runQueryTemplateOrExtractorTemplateAction",
                         actionName: "runQuery",
                         deploymentUuid:query.deploymentUuid,
                         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",

@@ -1,5 +1,5 @@
 import { MetaEntity } from "../../0_interfaces/1_core/EntityDefinition";
-import { EntityInstanceCollection, EntityInstance, EntityDefinition, ActionReturnType, ActionEntityInstanceCollectionReturnType, ActionEntityInstanceReturnType, ActionVoidReturnType, ModelActionRenameEntity, ModelActionAlterEntityAttribute, QueryTemplateAction, QueryAction } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { EntityInstanceCollection, EntityInstance, EntityDefinition, ActionReturnType, ActionEntityInstanceCollectionReturnType, ActionEntityInstanceReturnType, ActionVoidReturnType, ModelActionRenameEntity, ModelActionAlterEntityAttribute, RunQueryTemplateOrExtractorTemplateAction, RunQueryOrExtractorAction } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { PersistenceStoreModelSectionInterface } from "../../0_interfaces/4-services/PersistenceStoreControllerInterface";
 
 export class ErrorModelStore implements PersistenceStoreModelSectionInterface {
@@ -71,10 +71,10 @@ export class ErrorModelStore implements PersistenceStoreModelSectionInterface {
   getInstances(parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType> {
     throw new Error("Method not implemented.");
   }
-  handleQueryTemplateForServerONLY(query: QueryTemplateAction): Promise<ActionReturnType> {
+  handleQueryTemplateForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
-  handleQueryAction(query: QueryAction): Promise<ActionReturnType> {
+  handleQueryAction(query: RunQueryOrExtractorAction): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
   upsertInstance(parentUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {

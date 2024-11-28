@@ -1449,7 +1449,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorOrCombinerReturningObject", // TODO: is this still an extractor, while it includes queryTemplateSelectObjectByRelation?
+                relativePath: "extractorOrCombinerReturningObject", // TODO: is this still an extractor, while it includes extractorTemplateCombinerForObjectByRelation?
               },
             },
           },
@@ -1566,7 +1566,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "queryTemplateSelectObject", // TODO: is this still an extractor, while it includes queryTemplateSelectObjectByRelation?
+                relativePath: "extractorTemplateReturningObject", // TODO: is this still an extractor, while it includes extractorTemplateCombinerForObjectByRelation?
               },
             },
           },
@@ -1590,7 +1590,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "queryTemplateSelectObjectList",
+                relativePath: "extractorTemplateReturningObjectList",
               },
             },
           },
@@ -2175,8 +2175,8 @@ export function getMiroirFundamentalJzodSchema(
         },
         localPersistenceAction: persistenceEndpointVersionV1.definition.actions[0].actionParameters,
         restPersistenceAction: persistenceEndpointVersionV1.definition.actions[1].actionParameters,
-        queryTemplateAction: queryEndpointVersionV1.definition.actions[0].actionParameters,
-        queryAction: queryEndpointVersionV1.definition.actions[1].actionParameters,
+        runQueryTemplateOrExtractorTemplateAction: queryEndpointVersionV1.definition.actions[0].actionParameters,
+        runQueryOrExtractorAction: queryEndpointVersionV1.definition.actions[1].actionParameters,
         compositeActionDefinition: domainEndpointVersionV1.definition.actions.find(
           (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
         )?.actionParameters.definition.definition,
@@ -2529,32 +2529,32 @@ export function getMiroirFundamentalJzodSchema(
         combinerByRelationReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.combinerByRelationReturningObjectList,
         combinerByManyToManyRelationReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.combinerByManyToManyRelationReturningObjectList,
         extractorOrCombinerRecord: (miroirFundamentalJzodSchema as any).definition.context.extractorOrCombinerRecord,
-        queryAction: (miroirFundamentalJzodSchema as any).definition.context.queryAction,
+        runQueryOrExtractorAction: (miroirFundamentalJzodSchema as any).definition.context.runQueryOrExtractorAction,
         // queries
         queryContextReference: (miroirFundamentalJzodSchema as any).definition.context.queryContextReference,
-        queryTemplateRoot: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateRoot,
+        extractorTemplateRoot: (miroirFundamentalJzodSchema as any).definition.context.extractorTemplateRoot,
         queryTemplateConstant: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateConstant,
         queryTemplateContextReference: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateContextReference,
         queryTemplateParameterReference: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateParameterReference,
         queryTemplateConstantOrParameterReference: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateConstantOrParameterReference,
         queryTemplateConstantOrAnyReference: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateConstantOrAnyReference,
         queryFailed: (miroirFundamentalJzodSchema as any).definition.context.queryFailed,
-        queryTemplateSelectObjectListByManyToManyRelation: (miroirFundamentalJzodSchema as any).definition.context
-          .queryTemplateSelectObjectListByManyToManyRelation,
+        extractorTemplateByManyToManyRelationReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context
+          .extractorTemplateByManyToManyRelationReturningObjectList,
         extractorTemplateForObjectListByEntity: (miroirFundamentalJzodSchema as any).definition.context
           .extractorTemplateForObjectListByEntity,
-        queryTemplateSelectObjectListByRelation: (miroirFundamentalJzodSchema as any).definition.context
-          .queryTemplateSelectObjectListByRelation,
-        queryTemplateSelectObjectByRelation: (miroirFundamentalJzodSchema as any).definition.context
-          .queryTemplateSelectObjectByRelation,
-        queryTemplateExtractObjectByDirectReference: (miroirFundamentalJzodSchema as any).definition.context
-          .queryTemplateExtractObjectByDirectReference,
-        queryTemplateSelectExtractorWrapperReturningObject: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateSelectExtractorWrapperReturningObject,
-        queryTemplateSelectExtractorWrapperReturningList: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateSelectExtractorWrapperReturningList,
-        queryTemplateSelectExtractorWrapper: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateSelectExtractorWrapper,
-        queryTemplateSelectObject: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateSelectObject,
-        queryTemplateSelectObjectList: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateSelectObjectList,
-        queryTemplateSelectByQueryCombiner: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateSelectByQueryCombiner,
+        extractorTemplateByRelationReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context
+          .extractorTemplateByRelationReturningObjectList,
+        extractorTemplateCombinerForObjectByRelation: (miroirFundamentalJzodSchema as any).definition.context
+          .extractorTemplateCombinerForObjectByRelation,
+        extractorTemplateExtractorForObjectByDirectReference: (miroirFundamentalJzodSchema as any).definition.context
+          .extractorTemplateExtractorForObjectByDirectReference,
+        extractorTemplateByExtractorWrapperReturningObject: (miroirFundamentalJzodSchema as any).definition.context.extractorTemplateByExtractorWrapperReturningObject,
+        extractorTemplateByExtractorWrapperReturningList: (miroirFundamentalJzodSchema as any).definition.context.extractorTemplateByExtractorWrapperReturningList,
+        extractorTemplateByExtractorWrapper: (miroirFundamentalJzodSchema as any).definition.context.extractorTemplateByExtractorWrapper,
+        extractorTemplateReturningObject: (miroirFundamentalJzodSchema as any).definition.context.extractorTemplateReturningObject,
+        extractorTemplateReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.extractorTemplateReturningObjectList,
+        extractorTemplateByExtractorCombiner: (miroirFundamentalJzodSchema as any).definition.context.extractorTemplateByExtractorCombiner,
         queryTemplate: (miroirFundamentalJzodSchema as any).definition.context.queryTemplate,
         queryTemplateRecord: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateRecord,
         transformer_mustacheStringTemplate: (transformerJzodSchema as any).definition.context.transformer_mustacheStringTemplate,
@@ -2611,7 +2611,7 @@ export function getMiroirFundamentalJzodSchema(
         extractorTemplateForSingleObjectList: (miroirFundamentalJzodSchema as any).definition.context.extractorTemplateForSingleObjectList,
         extractorTemplateForDomainModelObjects: (miroirFundamentalJzodSchema as any).definition.context.extractorTemplateForDomainModelObjects,
         queryTemplateWithExtractorCombinerTransformer: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateWithExtractorCombinerTransformer,
-        queryTemplateAction: queryEndpointVersionV1.definition.actions[0].actionParameters,
+        runQueryTemplateOrExtractorTemplateAction: queryEndpointVersionV1.definition.actions[0].actionParameters,
       },
       definition: {
         relativePath: "jzodElement",
@@ -2688,7 +2688,7 @@ export function getMiroirFundamentalJzodSchema(
   const extendedSchemas = [
     "jzodBaseObject",
     "queryRoot2",
-    "queryTemplateRoot",
+    "extractorTemplateRoot",
     "extractorOrCombinerRoot",
     "transformer_Abstract",
     "transformerForBuild_orderBy",
@@ -2812,20 +2812,20 @@ export function getMiroirFundamentalJzodSchema(
         //               },
         //             },
         //           },
-        //           // queryTemplateAction. TODO: why not queryAction?
+        //           // runQueryTemplateOrExtractorTemplateAction. TODO: why not runQueryOrExtractorAction?
         //           {
         //             type: "object",
         //             definition: {
         //               compositeActionType: { type: "literal", definition: "queryTemplate" },
         //               compositeActionStepLabel: { type: "string", optional: true },
         //               nameGivenToResult: { type: "string" },
-        //               queryTemplateAction: {
+        //               runQueryTemplateOrExtractorTemplateAction: {
         //                 type: "schemaReference",
         //                 definition: {
         //                   relativePath: forgeCarryOnReferenceName(
         //                     miroirFundamentalJzodSchemaUuid,
-        //                     // "queryAction"
-        //                     "queryTemplateAction"
+        //                     // "runQueryOrExtractorAction"
+        //                     "runQueryTemplateOrExtractorTemplateAction"
         //                   ),
         //                 },
         //               },
@@ -2837,13 +2837,13 @@ export function getMiroirFundamentalJzodSchema(
         //               compositeActionType: { type: "literal", definition: "query" },
         //               compositeActionStepLabel: { type: "string", optional: true },
         //               nameGivenToResult: { type: "string" },
-        //               queryAction: {
+        //               runQueryOrExtractorAction: {
         //                 type: "schemaReference",
         //                 definition: {
         //                   relativePath: forgeCarryOnReferenceName(
         //                     miroirFundamentalJzodSchemaUuid,
-        //                     "queryAction"
-        //                     // "queryTemplateAction"
+        //                     "runQueryOrExtractorAction"
+        //                     // "runQueryTemplateOrExtractorTemplateAction"
         //                   ),
         //                 },
         //               },

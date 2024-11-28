@@ -840,7 +840,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                   definition: {
                     type: "schemaReference",
                     context: {
-                      queryTemplateSelectObject: {
+                      extractorTemplateReturningObject: {
                         type: "object",
                         definition: {
                           type: {
@@ -942,7 +942,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                           },
                         },
                       },
-                      queryTemplateSelectObjectList: {
+                      extractorTemplateReturningObjectList: {
                         type: "object",
                         definition: {
                           type: {
@@ -1027,13 +1027,13 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                           {
                             type: "schemaReference",
                             definition: {
-                              relativePath: "queryTemplateSelectObjectList",
+                              relativePath: "extractorTemplateReturningObjectList",
                             },
                           },
                           {
                             type: "schemaReference",
                             definition: {
-                              relativePath: "queryTemplateSelectObject",
+                              relativePath: "extractorTemplateReturningObject",
                             },
                           },
                         ],
@@ -1102,7 +1102,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                                 type: "schemaReference",
                                 optional: true,
                                 definition: {
-                                  relativePath: "queryTemplateSelectObject",
+                                  relativePath: "extractorTemplateReturningObject",
                                 },
                               },
                             },
@@ -1119,7 +1119,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                           definition: {
                             type: "schemaReference",
                             definition: {
-                              relativePath: "queryTemplateSelectObjectList",
+                              relativePath: "extractorTemplateReturningObjectList",
                             },
                           },
                         },

@@ -12,7 +12,7 @@
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": { "type": "literal", "definition": "queryTemplateAction" },
+            "actionType": { "type": "literal", "definition": "runQueryTemplateOrExtractorTemplateAction" },
             "actionName": { "type": "literal", "definition": "runQuery" },
             "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
             "applicationSection": {
@@ -59,7 +59,7 @@
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": { "type": "literal", "definition": "queryAction" },
+            "actionType": { "type": "literal", "definition": "runQueryOrExtractorAction" },
             "actionName": { "type": "literal", "definition": "runQuery" },
             "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
             "applicationSection": {

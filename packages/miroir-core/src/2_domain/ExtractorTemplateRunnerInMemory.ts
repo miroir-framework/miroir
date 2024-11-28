@@ -3,7 +3,7 @@ import {
   DomainElement,
   QueryForExtractorOrCombinerReturningObjectOrObjectList,
   QueryWithExtractorCombinerTransformer,
-  QueryTemplateAction
+  RunQueryTemplateOrExtractorTemplateAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import {
@@ -68,9 +68,9 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
   }
 
   // ################################################################################################
-  async handleQueryTemplateForServerONLY(queryTemplateAction: QueryTemplateAction): Promise<ActionReturnType> {
-    log.info(this.logHeader, "handleQueryTemplateForServerONLY", "queryTemplateAction", JSON.stringify(queryTemplateAction, null, 2));
-    return handleQueryTemplateAction("ExtractorTemplateRunnerInMemory", queryTemplateAction, this.selectorMap);
+  async handleQueryTemplateForServerONLY(runQueryTemplateOrExtractorTemplateAction: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
+    log.info(this.logHeader, "handleQueryTemplateForServerONLY", "runQueryTemplateOrExtractorTemplateAction", JSON.stringify(runQueryTemplateOrExtractorTemplateAction, null, 2));
+    return handleQueryTemplateAction("ExtractorTemplateRunnerInMemory", runQueryTemplateOrExtractorTemplateAction, this.selectorMap);
   }
 
 } // end of class ExtractorTemplateRunnerInMemory

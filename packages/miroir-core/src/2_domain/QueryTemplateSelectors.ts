@@ -15,7 +15,7 @@ import {
   JzodElement,
   JzodObject,
   QueryTemplate,
-  QueryTemplateAction
+  RunQueryTemplateOrExtractorTemplateAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   AsyncQueryRunnerMap,
@@ -48,22 +48,22 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 // ################################################################################################
 export async function handleQueryTemplateAction(
   origin: string,
-  queryTemplateAction: QueryTemplateAction, 
+  runQueryTemplateOrExtractorTemplateAction: RunQueryTemplateOrExtractorTemplateAction, 
   selectorMap: AsyncQueryRunnerMap
 ): Promise<ActionReturnType> {
-  log.info("handleQueryTemplateAction for ", origin, "queryTemplateAction", JSON.stringify(queryTemplateAction, null, 2));
+  log.info("handleQueryTemplateAction for ", origin, "runQueryTemplateOrExtractorTemplateAction", JSON.stringify(runQueryTemplateOrExtractorTemplateAction, null, 2));
   const resolvedQuery = resolveExtractorOrQueryTemplate(
-    queryTemplateAction.query
+    runQueryTemplateOrExtractorTemplateAction.query
   );
 
   return handleQueryAction(
     origin,
     {
-      actionType: "queryAction",
-      actionName: queryTemplateAction.actionName,
-      deploymentUuid: queryTemplateAction.deploymentUuid,
-      endpoint: queryTemplateAction.endpoint,
-      applicationSection: queryTemplateAction.applicationSection,
+      actionType: "runQueryOrExtractorAction",
+      actionName: runQueryTemplateOrExtractorTemplateAction.actionName,
+      deploymentUuid: runQueryTemplateOrExtractorTemplateAction.deploymentUuid,
+      endpoint: runQueryTemplateOrExtractorTemplateAction.endpoint,
+      applicationSection: runQueryTemplateOrExtractorTemplateAction.applicationSection,
       query: resolvedQuery,
     },
     selectorMap
@@ -179,11 +179,8 @@ export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
 ): JzodObject | undefined => {
   if (
     selectorParams.query.select.queryType=="literal" ||
-    selectorParams.query.select.queryType=="queryContextReference" ||
-    selectorParams.query.select.queryType=="extractorWrapperReturningObject" ||
-    selectorParams.query.select.queryType=="combiner_wrapperReturningObject" ||
-    selectorParams.query.select.queryType=="queryTemplateSelectExtractorWrapperReturningList" ||
-    selectorParams.query.select.queryType=="combiner_wrapperReturningList" ||
+    selectorParams.query.select.queryType=="extractorTemplateByExtractorWrapperReturningObject" ||
+    selectorParams.query.select.queryType=="extractorTemplateByExtractorWrapperReturningList" ||
     selectorParams.query.select.queryType=="extractorCombinerByHeteronomousManyToManyReturningListOfObjectList" 
   ) {
     throw new Error(

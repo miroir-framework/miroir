@@ -6,8 +6,8 @@ import {
   EntityInstance,
   InstanceAction,
   ModelAction,
-  QueryAction,
-  QueryTemplateAction,
+  RunQueryOrExtractorAction,
+  RunQueryTemplateOrExtractorTemplateAction,
   StoreOrBundleAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -281,9 +281,9 @@ export async function queryActionHandler(
    * - execute on the persistent store (sql)
    * 
    */
-  const queryAction: QueryAction = body as QueryAction;
+  const runQueryOrExtractorAction: RunQueryOrExtractorAction = body as RunQueryOrExtractorAction;
 
-  const deploymentUuid = queryAction.deploymentUuid
+  const deploymentUuid = runQueryOrExtractorAction.deploymentUuid
   const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
     deploymentUuid
   );
@@ -293,8 +293,8 @@ export async function queryActionHandler(
   }
   if (useDomainControllerToHandleModelAndInstanceActions) {
     // we are on the server, the action has been received from remote client
-    // switch (queryTemplateAction.deploymentUuid) {
-    const result = await domainController.handleQueryActionForServerONLY(queryAction)
+    // switch (runQueryTemplateOrExtractorTemplateAction.deploymentUuid) {
+    const result = await domainController.handleQueryActionForServerONLY(runQueryOrExtractorAction)
     log.info(
       "RestServer queryActionHandler used adminConfigurationDeploymentMiroir domainController result=",
       JSON.stringify(result, undefined, 2)
@@ -305,11 +305,11 @@ export async function queryActionHandler(
     // uses the local cache, needs to have done a Model "rollback" action on the client//, or a Model "remoteLocalCacheRollback" action on the server
     const domainState: DomainState = localCache.getDomainState();
     const extractorRunnerMapOnDomainState = getDomainStateExtractorRunnerMap();
-    log.info("RestServer queryActionHandler queryAction=", JSON.stringify(queryAction, undefined, 2))
+    log.info("RestServer queryActionHandler runQueryOrExtractorAction=", JSON.stringify(runQueryOrExtractorAction, undefined, 2))
     log.info("RestServer queryActionHandler domainState=", JSON.stringify(domainState, undefined, 2))
     const queryResult: DomainElement = extractWithExtractor(
       domainState,
-      getExtractorRunnerParamsForDomainState(queryAction.query, extractorRunnerMapOnDomainState)
+      getExtractorRunnerParamsForDomainState(runQueryOrExtractorAction.query, extractorRunnerMapOnDomainState)
     )
     const result:ActionReturnType = {
       status: "ok",
@@ -349,9 +349,9 @@ export async function queryTemplateActionHandler(
    * 
    */
   // const query: QueryTemplateWithExtractorCombinerTransformer = body.query as QueryTemplateWithExtractorCombinerTransformer ;
-  const queryTemplateAction: QueryTemplateAction = body as QueryTemplateAction ;
+  const runQueryTemplateOrExtractorTemplateAction: RunQueryTemplateOrExtractorTemplateAction = body as RunQueryTemplateOrExtractorTemplateAction ;
 
-  const deploymentUuid = queryTemplateAction.deploymentUuid
+  const deploymentUuid = runQueryTemplateOrExtractorTemplateAction.deploymentUuid
   const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
     deploymentUuid
   );
@@ -361,8 +361,8 @@ export async function queryTemplateActionHandler(
   }
   if (useDomainControllerToHandleModelAndInstanceActions) {
     // we are on the server, the action has been received from remote client
-    // switch (queryTemplateAction.deploymentUuid) {
-    const result = await domainController.handleQueryTemplateForServerONLY(queryTemplateAction)
+    // switch (runQueryTemplateOrExtractorTemplateAction.deploymentUuid) {
+    const result = await domainController.handleQueryTemplateForServerONLY(runQueryTemplateOrExtractorTemplateAction)
     log.info(
       "RestServer queryTemplateActionHandler used adminConfigurationDeploymentMiroir domainController result=",
       JSON.stringify(result, undefined, 2)
@@ -373,11 +373,11 @@ export async function queryTemplateActionHandler(
     // uses the local cache, needs to have done a Model "rollback" action on the client//, or a Model "remoteLocalCacheRollback" action on the server
     const domainState: DomainState = localCache.getDomainState();
     const extractorRunnerMapOnDomainState = getSelectorMapForTemplate();
-    log.info("RestServer queryTemplateActionHandler queryTemplateAction=", JSON.stringify(queryTemplateAction, undefined, 2))
+    log.info("RestServer queryTemplateActionHandler runQueryTemplateOrExtractorTemplateAction=", JSON.stringify(runQueryTemplateOrExtractorTemplateAction, undefined, 2))
     log.info("RestServer queryTemplateActionHandler domainState=", JSON.stringify(domainState, undefined, 2))
     const queryResult: DomainElement = extractWithExtractorTemplate(
       domainState,
-      getExtractorTemplateRunnerParamsForDomainState(queryTemplateAction.query, extractorRunnerMapOnDomainState)
+      getExtractorTemplateRunnerParamsForDomainState(runQueryTemplateOrExtractorTemplateAction.query, extractorRunnerMapOnDomainState)
     )
     const result:ActionReturnType = {
       status: "ok",

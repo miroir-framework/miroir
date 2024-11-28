@@ -334,7 +334,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
           
           nameGivenToResult: "menuUpdateQueryResult",
           queryTemplate: {
-            actionType: "queryTemplateAction",
+            actionType: "runQueryTemplateOrExtractorTemplateAction",
             actionName: "runQuery",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             applicationSection: "model",
@@ -756,7 +756,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
         compositeActionType: "queryTemplate",
         nameGivenToResult: "menuUpdateQueryResult",
         queryTemplate: {
-          actionType: "queryTemplateAction",
+          actionType: "runQueryTemplateOrExtractorTemplateAction",
           actionName: "runQuery",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           applicationSection: "model",
@@ -1016,7 +1016,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
         //   compositeActionType: "queryTemplate",
         //   nameGivenToResult: newEntityName,
         //   queryTemplate: {
-        //     actionType: "queryTemplateAction",
+        //     actionType: "runQueryTemplateOrExtractorTemplateAction",
         //     actionName: "runQuery",
         //     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
         //     // applicationSection: "data",
@@ -1150,7 +1150,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
           compositeActionStepLabel: "calculateEntityInstances",
           nameGivenToResult: newEntityName,
           queryTemplate: {
-            actionType: "queryTemplateAction",
+            actionType: "runQueryTemplateOrExtractorTemplateAction",
             actionName: "runQuery",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             applicationSection: "data",
@@ -1394,7 +1394,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
       //   compositeActionType: "queryTemplate",
       //   nameGivenToResult: "Test2",
       //   queryTemplate: {
-      //     actionType: "queryTemplateAction",
+      //     actionType: "runQueryTemplateOrExtractorTemplateAction",
       //     actionName: "runQuery",
       //     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       //     applicationSection: "model",
@@ -1508,7 +1508,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
         compositeActionStepLabel: "calculateEntityInstances",
         nameGivenToResult: "Test2",
         queryTemplate: {
-          actionType: "queryTemplateAction",
+          actionType: "runQueryTemplateOrExtractorTemplateAction",
           actionName: "runQuery",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           applicationSection: "data",

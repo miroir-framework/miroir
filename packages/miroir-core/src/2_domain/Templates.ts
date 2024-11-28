@@ -1,19 +1,16 @@
 import {
-  QueryForExtractorOrCombinerReturningObjectOrObjectList,
-  QueryWithExtractorCombinerTransformer,
-  ExtractorTemplateForDomainModelObjects,
-  QueryTemplateWithExtractorCombinerTransformer,
-  ExtractorOrCombiner,
-  ExtractorForObjectByDirectReference,
-  QueryFailed,
-  ExtractorWrapper,
-  ExtractorWrapperReturningList,
-  QueryTemplate,
-  QueryTemplateSelectExtractorWrapper,
-  QueryContextReference,
   Extractor,
-  QueryTemplateRecord,
+  ExtractorOrCombiner,
   ExtractorOrCombinerRecord,
+  ExtractorTemplateForDomainModelObjects,
+  ExtractorWrapper,
+  QueryContextReference,
+  QueryFailed,
+  QueryForExtractorOrCombinerReturningObjectOrObjectList,
+  QueryTemplate,
+  ExtractorTemplateByExtractorWrapper,
+  QueryTemplateWithExtractorCombinerTransformer,
+  QueryWithExtractorCombinerTransformer
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/Logger";
@@ -68,10 +65,11 @@ export function resolveExtractorTemplate(
           extractorOrCombinerType: "extractorByEntityReturningObjectList",
           // applicationSection: queryTemplate.applicationSection,
           // parentName: queryTemplate.parentName,
-          parentUuid: typeof queryTemplate.parentUuid == "string"
-          ? queryTemplate.parentUuid
-          : transformer_InnerReference_resolve("build", queryTemplate.parentUuid, queryParams, contextResults)
-            .elementValue, // TODO: check for failure!
+          parentUuid:
+            typeof queryTemplate.parentUuid == "string"
+              ? queryTemplate.parentUuid
+              : transformer_InnerReference_resolve("build", queryTemplate.parentUuid, queryParams, contextResults)
+                  .elementValue, // TODO: check for failure!
         };
       }
       break;
@@ -96,50 +94,31 @@ export function resolveExtractorTemplate(
       };
       break;
     }
-    // case "extractorWrapperReturningObject": {
-    //   return {
-    //     ...cleanQueryTemplate,
-    //     extractorOrCombinerType: "extractorWrapperReturningObject",
-    //     definition: Object.fromEntries(
-    //       Object.entries(queryTemplate.definition).map((e: [string, QueryTemplate]) => [
-    //         e[0],
-    //         resolveQueryTemplate(e[1], queryParams, contextResults) as ExtractorForObjectByDirectReference, // TODO: generalize to ExtractorOrCombiner & check for failure!
-    //       ])
-    //     ),
-    //   };
-    //   break;
-    // }
-    case "queryTemplateSelectExtractorWrapperReturningList": {
+    case "extractorTemplateByExtractorWrapperReturningObject": {
       return {
         ...cleanQueryTemplate,
-        extractorOrCombinerType: "extractorWrapperReturningList",
-        // definition: queryTemplate.definition,
-        definition: queryTemplate.definition.map(
-          (e: QueryTemplate) =>
-            resolveExtractorTemplate(e, queryParams, contextResults) as ExtractorWrapperReturningList
-        ),
-      };
-      break;
-    }
-    case "combiner_wrapperReturningObject": {
-      return {
-        ...cleanQueryTemplate,
-        extractorOrCombinerType: queryTemplate.queryType,
+        extractorOrCombinerType: "extractorWrapperReturningObject",
         definition: Object.fromEntries(
-          Object.entries(queryTemplate.definition).map((e: [string, QueryTemplate]) => [
+          Object.entries(queryTemplate.definition).map((e: [string, QueryContextReference]) => [
             e[0],
-            resolveExtractorTemplate(e[1], queryParams, contextResults) as ExtractorOrCombiner, // TODO: generalize to ExtractorOrCombiner & check for failure!
+            {
+              extractorOrCombinerType: "extractorOrCombinerContextReference",
+              extractorOrCombinerContextReference: e[1].queryReference
+            } as ExtractorOrCombiner,
           ])
         ),
       };
       break;
     }
-    case "combiner_wrapperReturningList": {
+    case "extractorTemplateByExtractorWrapperReturningList": {
       return {
         ...cleanQueryTemplate,
-        extractorOrCombinerType: queryTemplate.queryType,
+        extractorOrCombinerType: "extractorWrapperReturningList",
         definition: queryTemplate.definition.map(
-          (e: QueryTemplate) => resolveExtractorTemplate(e, queryParams, contextResults) as ExtractorOrCombiner
+          (e: QueryContextReference) => ({
+              extractorOrCombinerType: "extractorOrCombinerContextReference",
+              extractorOrCombinerContextReference: e.queryReference
+            }) as ExtractorOrCombiner,
         ),
       };
       break;
@@ -208,21 +187,15 @@ export function resolveExtractorTemplate(
       return {
         ...cleanQueryTemplate,
         extractorOrCombinerType: queryTemplate.queryType,
-        // subQueryTemplate: queryTemplate.subQueryTemplate,
         rootExtractorOrReference:
           typeof queryTemplate.rootExtractorOrReference == "string"
             ? queryTemplate.rootExtractorOrReference
-            : (resolveExtractorTemplate(queryTemplate.rootExtractorOrReference, queryParams, contextResults) as Extractor), // TODO: check for failure!
+            : (resolveExtractorTemplate(
+                queryTemplate.rootExtractorOrReference,
+                queryParams,
+                contextResults
+              ) as Extractor), // TODO: check for failure!
       };
-      break;
-    }
-    case "queryContextReference": {
-      return {
-        ...cleanQueryTemplate,
-        extractorOrCombinerType: "extractorOrCombinerContextReference",
-        extractorOrCombinerContextReference: queryTemplate.queryReference,
-      };
-      // throw new Error("resolveExtractorTemplate cannot resolve queryContextReference to extractorOrCombiner");
       break;
     }
     default: {
@@ -238,7 +211,7 @@ export function resolveExtractorTemplate(
 
 // ################################################################################################
 export function resolveQueryTemplateSelectExtractorWrapper(
-  queryTemplate: QueryTemplateSelectExtractorWrapper,
+  queryTemplate: ExtractorTemplateByExtractorWrapper,
   queryParams: Record<string, any>,
   contextResults: Record<string, any>
 ): ExtractorWrapper {
@@ -288,9 +261,11 @@ export function resolveQueryTemplate(
   );
 
   // log.info("resolveQueryTemplate converted combinerTemplates, result:", combiners);
-  
-  if (Object.values(combiners).find((e) => (e as any).queryFailure)) {
-    throw new Error("QueryNotExecutable");
+  const failures = Object.values(combiners??{}).find((e) => (e as any).queryFailure);
+  if (failures && Array.isArray(failures) && failures?.length > 0) {
+    throw new Error("resolveQueryTemplate QueryNotExecutable for combiners: " + JSON.stringify(failures));
+  } else {
+    log.info("resolveQueryTemplate no failure for combiners: " + JSON.stringify(failures));
   }
   const result: QueryWithExtractorCombinerTransformer = {
     pageParams: queryTemplate.pageParams,
@@ -305,16 +280,6 @@ export function resolveQueryTemplate(
   log.info("resolveQueryTemplate converted query, result:", combiners);
 
   return result;
-  // return {
-  //   pageParams: queryTemplate.pageParams,
-  //   queryParams: queryTemplate.queryParams,
-  //   contextResults: queryTemplate.contextResults,
-  //   deploymentUuid: queryTemplate.deploymentUuid,
-  //   queryType: "queryWithExtractorCombinerTransformer",
-  //   extractors: queries as ExtractorOrCombinerRecord,
-  //   combiners: combiners as Record<string, ExtractorOrCombiner>,
-  //   runtimeTransformers: queryTemplate.runtimeTransformers,
-  // };
 }
 
 // ################################################################################################

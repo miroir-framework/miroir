@@ -7,7 +7,7 @@ import {
   DomainElementInstanceUuidIndexOrFailed,
   QueryForExtractorOrCombinerReturningObject,
   QueryForExtractorOrCombinerReturningObjectList,
-  QueryAction,
+  RunQueryOrExtractorAction,
   ExtractorOrCombinerReturningObject
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
@@ -69,8 +69,8 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
   }
 
   // ################################################################################################
-  async handleQueryAction(queryAction: QueryAction): Promise<ActionReturnType> {
-    return handleQueryAction("ExtractorRunnerInMemory", queryAction, this.selectorMap);
+  async handleQueryAction(runQueryOrExtractorAction: RunQueryOrExtractorAction): Promise<ActionReturnType> {
+    return handleQueryAction("ExtractorRunnerInMemory", runQueryOrExtractorAction, this.selectorMap);
   }
 
   // ################################################################################################
@@ -206,7 +206,7 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
       }
       default: {
         throw new Error(
-          "extractEntityInstance can not handle QueryTemplateSelectObject query with extractorOrCombinerType=" +
+          "extractEntityInstance can not handle ExtractorTemplateReturningObject query with extractorOrCombinerType=" +
             selectorParams.extractor.select.extractorOrCombinerType
         );
         break;

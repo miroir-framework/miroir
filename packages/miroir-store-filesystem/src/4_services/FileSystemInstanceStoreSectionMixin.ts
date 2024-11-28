@@ -13,9 +13,9 @@ import {
   ActionEntityInstanceReturnType,
   ActionVoidReturnType,
   ACTION_OK,
-  QueryTemplateAction,
+  RunQueryTemplateOrExtractorTemplateAction,
   ExtractorTemplateRunnerInMemory,
-  QueryAction,
+  RunQueryOrExtractorAction,
   ExtractorRunnerInMemory,
 } from "miroir-core";
 
@@ -61,7 +61,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     }
 
     // #############################################################################################
-    async handleQueryAction(query: QueryAction): Promise<ActionReturnType> {
+    async handleQueryAction(query: RunQueryOrExtractorAction): Promise<ActionReturnType> {
       log.info(this.logHeader,'handleQueryAction', 'query',query);
       
       const result: ActionReturnType = await this.extractorRunner.handleQueryAction(query);
@@ -71,7 +71,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     }
     
     // #############################################################################################
-    async handleQueryTemplateForServerONLY(query: QueryTemplateAction): Promise<ActionReturnType> {
+    async handleQueryTemplateForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
       log.info(this.logHeader,'handleQueryTemplateForServerONLY', 'query',query);
       
       const result: ActionReturnType = await this.extractorTemplateRunner.handleQueryTemplateForServerONLY(query);

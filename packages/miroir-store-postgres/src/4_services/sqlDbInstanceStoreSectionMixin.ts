@@ -11,16 +11,16 @@ import {
   ActionEntityInstanceReturnType,
   ActionVoidReturnType,
   ACTION_OK,
-  QueryTemplateAction,
+  RunQueryTemplateOrExtractorTemplateAction,
   ExtractorTemplateForSingleObjectList,
   QueryTemplateWithExtractorCombinerTransformer,
   ExtractorTemplateForSingleObject,
-  QueryTemplateSelectExtractorWrapper,
+  ExtractorTemplateByExtractorWrapper,
   QueryForExtractorOrCombinerReturningObjectList,
   QueryForExtractorOrCombinerReturningObject,
   ExtractorWrapper,
   QueryWithExtractorCombinerTransformer,
-  QueryAction,
+  RunQueryOrExtractorAction,
   QueryForExtractorOrCombinerReturningObjectOrObjectList,
   ExtractorOrCombinerReturningObject,
   ExtractorOrCombinerReturningObjectList,
@@ -214,7 +214,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     //   extractor:
     //     | ExtractorTemplateForSingleObjectList
     //     | ExtractorTemplateForSingleObject
-    //     | QueryTemplateSelectExtractorWrapper
+    //     | ExtractorTemplateByExtractorWrapper
     //     | QueryTemplateWithExtractorCombinerTransformer
     // ): RecursiveStringRecords {
     //   // log.info(this.logHeader, "sqlForExtractor called with parameter", "extractor", extractor);
@@ -276,7 +276,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     // }
 
     // #############################################################################################
-    async handleQueryTemplateForServerONLY(query: QueryTemplateAction): Promise<ActionReturnType> {
+    async handleQueryTemplateForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
       log.info(this.logHeader, "handleQueryTemplateForServerONLY", "query", query);
 
       const result: ActionReturnType = await this.extractorTemplateRunner.handleQueryTemplateForServerONLY(query);
@@ -286,7 +286,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     }
 
     // #############################################################################################
-    async handleQueryAction(query: QueryAction): Promise<ActionReturnType> {
+    async handleQueryAction(query: RunQueryOrExtractorAction): Promise<ActionReturnType> {
       log.info(this.logHeader, "handleQueryAction", "query", query);
 
       const result: ActionReturnType = await this.extractorRunner.handleQueryAction(query);
