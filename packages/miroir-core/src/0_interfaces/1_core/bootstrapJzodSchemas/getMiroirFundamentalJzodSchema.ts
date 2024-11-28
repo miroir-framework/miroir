@@ -2533,11 +2533,6 @@ export function getMiroirFundamentalJzodSchema(
         // queries
         queryContextReference: (miroirFundamentalJzodSchema as any).definition.context.queryContextReference,
         extractorTemplateRoot: (miroirFundamentalJzodSchema as any).definition.context.extractorTemplateRoot,
-        queryTemplateConstant: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateConstant,
-        queryTemplateContextReference: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateContextReference,
-        queryTemplateParameterReference: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateParameterReference,
-        queryTemplateConstantOrParameterReference: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateConstantOrParameterReference,
-        queryTemplateConstantOrAnyReference: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateConstantOrAnyReference,
         queryFailed: (miroirFundamentalJzodSchema as any).definition.context.queryFailed,
         extractorTemplateByManyToManyRelationReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context
           .extractorTemplateByManyToManyRelationReturningObjectList,

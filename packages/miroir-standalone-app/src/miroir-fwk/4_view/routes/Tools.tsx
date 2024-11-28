@@ -151,10 +151,6 @@ const initialValues = {
   newDeploymentUuid: adminConfigurationDeploymentParis.uuid,
 }
 
-// export interface ActionObjectReference extends QueryTemplateConstantOrAnyReference {
-
-// }
-
 export interface MiroirForm {
   formSchema: JzodElement,
   formAction: DomainAction,

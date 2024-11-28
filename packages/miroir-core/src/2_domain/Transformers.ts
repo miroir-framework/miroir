@@ -365,7 +365,6 @@ export function transformer_InnerReference_resolve  (
   contextResults?: Record<string, any>,
 ): DomainElement {
   // TODO: copy / paste (almost?) from query parameter lookup!
-  // log.info("transformer_InnerReference_resolve for queryTemplateConstantOrAnyReference=", queryTemplateConstantOrAnyReference, "queryParams=", queryParams,"contextResults=", contextResults)
   // log.info(
   //   "transformer_InnerReference_resolve called for transformerInnerReference=",
   //   transformerInnerReference,
@@ -479,17 +478,11 @@ export function transformer_InnerReference_resolve  (
   if (
     (transformerInnerReference.transformerType == "contextReference" &&
       (!contextResults ||
-        // (!queryTemplateConstantOrAnyReference.referenceName && !queryTemplateConstantOrAnyReference.referencePath) ||
-        // (queryTemplateConstantOrAnyReference.referenceName && queryTemplateConstantOrAnyReference.referencePath) ||
         (transformerInnerReference.referenceName && !contextResults[transformerInnerReference.referenceName]) ||
         (transformerInnerReference.referencePath &&
           (transformerInnerReference.referencePath.length == 0 ||
             !contextResults[transformerInnerReference.referencePath[0]])))) || // TODO: what about the DomainElementObject structure, attributes hould be DomainElements themselves
     (transformerInnerReference.transformerType == "parameterReference" &&
-      // (typeof queryParams != "object" ||
-      //   !queryParams.elementValue ||
-      // (!queryTemplateConstantOrAnyReference.referenceName && !queryTemplateConstantOrAnyReference.referencePath) ||
-      // (queryTemplateConstantOrAnyReference.referenceName && queryTemplateConstantOrAnyReference.referencePath) ||
       ((transformerInnerReference.referenceName &&
         !Object.keys(localQueryParams).includes(transformerInnerReference.referenceName)) ||
         (transformerInnerReference.referencePath &&
@@ -533,8 +526,7 @@ export function transformer_InnerReference_resolve  (
 
   const reference: DomainElement =
     transformerInnerReference.transformerType == "contextReference"
-      ? // ? {elementType: "any", elementValue: contextResults[queryTemplateConstantOrAnyReference.referenceName ]}
-        transformerInnerReference.referenceName
+      ? transformerInnerReference.referenceName
         ? localContextResults[transformerInnerReference.referenceName]
           ? {
               elementType: typeof localContextResults[transformerInnerReference.referenceName],
@@ -601,8 +593,7 @@ export function transformer_InnerReference_resolve  (
             },
           }
       : transformerInnerReference.transformerType == "parameterReference"
-      ? // ? { elementType: "any", elementValue: queryParams[queryTemplateConstantOrAnyReference.referenceName] }
-        transformerInnerReference.referenceName
+      ? transformerInnerReference.referenceName
         ? localQueryParams[transformerInnerReference.referenceName]
           ? {
               elementType: typeof localQueryParams[transformerInnerReference.referenceName],

@@ -28,7 +28,6 @@ import {
   ExtractorOrCombiner,
   RunQueryOrExtractorAction,
   QueryFailed,
-  QueryTemplateConstantOrAnyReference,
   ExtractorOrCombinerContextReference
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
