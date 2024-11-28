@@ -14,7 +14,7 @@ import {
   QueryTemplateWithExtractorCombinerTransformer,
   JzodElement,
   JzodObject,
-  QueryTemplate,
+  ExtractorOrCombinerTemplate,
   RunQueryTemplateOrExtractorTemplateAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
@@ -83,10 +83,10 @@ export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <
     throw new Error("extractWithExtractorTemplate requires extractorRunnerMap");
   }
 
-  switch (selectorParams.extractorTemplate.queryType) {
+  switch (selectorParams.extractorOrCombinerTemplate.queryType) {
     case "queryTemplateWithExtractorCombinerTransformer": {
       const resolvedExtractor: QueryWithExtractorCombinerTransformer = resolveQueryTemplate(
-        selectorParams.extractorTemplate
+        selectorParams.extractorOrCombinerTemplate
       ); 
 
       log.info("extractWithExtractorTemplate found", "resolvedExtractor", JSON.stringify(resolvedExtractor, null, 2));
@@ -101,7 +101,7 @@ export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <
     }
     case "extractorTemplateForDomainModelObjects": {
       const resolvedExtractor: QueryForExtractorOrCombinerReturningObjectOrObjectList = resolveExtractorTemplateForDomainModelObjects(
-        selectorParams.extractorTemplate
+        selectorParams.extractorOrCombinerTemplate
       ); 
 
       log.info("extractWithExtractorTemplate found", "resolvedExtractor", JSON.stringify(resolvedExtractor, null, 2));
@@ -123,7 +123,7 @@ export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <
         elementValue: {
           queryFailure: "QueryNotExecutable",
           failureMessage:
-            "extractWithExtractorTemplate could not handle queryType of template: " + selectorParams.extractorTemplate,
+            "extractWithExtractorTemplate could not handle queryType of template: " + selectorParams.extractorOrCombinerTemplate,
         },
       }; 
       break;
@@ -156,7 +156,7 @@ export const extractWithManyExtractorTemplates = <StateType>(
 ): DomainElementObject => { 
 
   const resolvedExtractor: QueryWithExtractorCombinerTransformer = resolveQueryTemplate(
-    selectorParams.extractorTemplate
+    selectorParams.extractorOrCombinerTemplate
   ); 
 
   return runQuery(
@@ -305,7 +305,7 @@ export const extractFetchQueryTemplateJzodSchema = <StateType>(
   
   const fetchQueryJzodSchema = Object.fromEntries(
     Object.entries(localFetchParams?.combinerTemplates??{})
-    .map((entry: [string, QueryTemplate]) => [
+    .map((entry: [string, ExtractorOrCombinerTemplate]) => [
       entry[0],
       selectorParams.extractorRunnerMap.extractzodSchemaForSingleSelectQuery(deploymentEntityState, {
         extractorRunnerMap:selectorParams.extractorRunnerMap,

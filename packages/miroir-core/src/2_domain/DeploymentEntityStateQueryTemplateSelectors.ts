@@ -83,7 +83,7 @@ export function getExtractorTemplateRunnerParamsForDeploymentEntityState<QueryTy
   extractorRunnerMap?: SyncQueryRunnerMap<DeploymentEntityState>
 ): SyncExtractorTemplateRunnerParams<QueryType, DeploymentEntityState> {
   return {
-    extractorTemplate: query,
+    extractorOrCombinerTemplate: query,
     extractorRunnerMap: extractorRunnerMap ?? getDeploymentEntityStateSelectorTemplateMap(),
   };
 }

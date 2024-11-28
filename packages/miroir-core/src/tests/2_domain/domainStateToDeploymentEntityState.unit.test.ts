@@ -1038,7 +1038,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                           },
                         ],
                       },
-                      queryTemplateRecord: {
+                      extractorOrCombinerTemplateRecord: {
                         type: "record",
                         definition: {
                           type: "schemaReference",
@@ -1058,7 +1058,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                             type: "schemaReference",
                             optional: true,
                             definition: {
-                              relativePath: "queryTemplateRecord",
+                              relativePath: "extractorOrCombinerTemplateRecord",
                             },
                           },
                           definition: {
@@ -1135,7 +1135,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                             type: "schemaReference",
                             optional: true,
                             definition: {
-                              relativePath: "queryTemplateRecord",
+                              relativePath: "extractorOrCombinerTemplateRecord",
                             },
                           },
                           definition: {
@@ -1163,7 +1163,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                             type: "schemaReference",
                             optional: true,
                             definition: {
-                              relativePath: "queryTemplateRecord",
+                              relativePath: "extractorOrCombinerTemplateRecord",
                             },
                           },
                           definition: {
@@ -1222,7 +1222,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                             type: "schemaReference",
                             optional: true,
                             definition: {
-                              relativePath: "queryTemplateRecord",
+                              relativePath: "extractorOrCombinerTemplateRecord",
                             },
                           },
                           section: {

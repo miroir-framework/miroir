@@ -18,8 +18,8 @@ import {
 describe("extractorTemplates.unit.test", () => {
 
   // ################################################################################################
-  it("convert extractorTemplate to query with resolveExtractorTemplateForDomainModelObjects", async () => { // TODO: test failure cases!
-    console.log("convert extractorTemplate to query with resolveExtractorTemplateForDomainModelObjects START")
+  it("convert extractorOrCombinerTemplate to query with resolveExtractorTemplateForDomainModelObjects", async () => { // TODO: test failure cases!
+    console.log("convert extractorOrCombinerTemplate to query with resolveExtractorTemplateForDomainModelObjects START")
     const newApplicationName = "test";
     const newUuid = uuidv4();
 
@@ -69,12 +69,12 @@ describe("extractorTemplates.unit.test", () => {
         instanceUuid: "xxxxx",
       },
     });
-    console.log("convert extractorTemplate to query with resolveExtractorTemplateForDomainModelObjects END")
+    console.log("convert extractorOrCombinerTemplate to query with resolveExtractorTemplateForDomainModelObjects END")
   }
   );
 
   // ################################################################################################
-  it("convert extractorTemplate to query with resolveExtractorTemplateForRecordOfExtractors", async () => { // TODO: test failure cases!
+  it("convert extractorOrCombinerTemplate to query with resolveExtractorTemplateForRecordOfExtractors", async () => { // TODO: test failure cases!
       console.log("convert queryTemplate to query with resolveExtractorTemplateForRecordOfExtractors START")
       const newApplicationName = "test";
       const newUuid = uuidv4();
@@ -180,7 +180,7 @@ describe("extractorTemplates.unit.test", () => {
 
       const testResult = resolveExtractorTemplateForRecordOfExtractors(uniqueRuntimeTemplate); // uuid value is ignored
       console.log(
-        "################################ converted extractorTemplate to query with resolveExtractorTemplateForRecordOfExtractors testResults",
+        "################################ converted extractorOrCombinerTemplate to query with resolveExtractorTemplateForRecordOfExtractors testResults",
         JSON.stringify(testResult, null, 2)
       );
       expect(testResult).toEqual({

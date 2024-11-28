@@ -645,7 +645,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         },
         // instances for new Entity, put in "menuUpdateQueryResult"
         {
-          compositeActionType: "queryTemplate",
+          compositeActionType: "runQueryTemplateOrExtractorTemplateAction",
           
           nameGivenToResult: "menuUpdateQueryResult",
           queryTemplate: {
@@ -1330,7 +1330,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       definition: [
         // find unique municipalities from fountains
         {
-          compositeActionType: "queryTemplate",
+          compositeActionType: "runQueryTemplateOrExtractorTemplateAction",
           compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
           nameGivenToResult: newEntityName,
           queryTemplate: {
@@ -1500,7 +1500,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         },
         // update splitted entity instances with foreign key of instances of new entity
         {
-          compositeActionType: "queryTemplate",
+          compositeActionType: "runQueryTemplateOrExtractorTemplateAction",
           compositeActionStepLabel: "calculateEntityInstances",
           nameGivenToResult: newEntityName,
           queryTemplate: {

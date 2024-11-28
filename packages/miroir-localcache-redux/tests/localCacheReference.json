@@ -601,7 +601,7 @@
                       { "type": "schemaReference", "definition": { "relativePath": "extractorTemplateReturningObject" } }
                     ]
                   },
-                  "queryTemplateRecord": {
+                  "extractorOrCombinerTemplateRecord": {
                     "type": "record",
                     "definition": { "type": "schemaReference", "definition": { "relativePath": "queryTemplate" } }
                   },
@@ -612,7 +612,7 @@
                       "selectData": {
                         "type": "schemaReference",
                         "optional": true,
-                        "definition": { "relativePath": "queryTemplateRecord" }
+                        "definition": { "relativePath": "extractorOrCombinerTemplateRecord" }
                       },
                       "definition": {
                         "type": "object",
@@ -640,7 +640,7 @@
                       "selectData": {
                         "type": "schemaReference",
                         "optional": true,
-                        "definition": { "relativePath": "queryTemplateRecord" }
+                        "definition": { "relativePath": "extractorOrCombinerTemplateRecord" }
                       },
                       "definition": {
                         "type": "schemaReference",
@@ -655,7 +655,7 @@
                       "selectData": {
                         "type": "schemaReference",
                         "optional": true,
-                        "definition": { "relativePath": "queryTemplateRecord" }
+                        "definition": { "relativePath": "extractorOrCombinerTemplateRecord" }
                       },
                       "definition": {
                         "type": "array",
@@ -673,7 +673,7 @@
                       "selectData": {
                         "type": "schemaReference",
                         "optional": true,
-                        "definition": { "relativePath": "queryTemplateRecord" }
+                        "definition": { "relativePath": "extractorOrCombinerTemplateRecord" }
                       },
                       "definition": {
                         "type": "array",

@@ -1,3 +1,4 @@
+
 import { v4 as uuidv4 } from 'uuid';
 
 import { MetaEntity, Uuid } from '../0_interfaces/1_core/EntityDefinition';
@@ -830,7 +831,7 @@ export class DomainController implements DomainControllerInterface {
           // const actionResult = await this.handleAction(currentAction.action, currentModel);
           break;
         }
-        case 'queryTemplate': {
+        case 'runQueryTemplateOrExtractorTemplateAction': {
           log.info(
             "handleCompositeActionTemplate resolved queryTemplate action",
             currentAction,
@@ -847,7 +848,7 @@ export class DomainController implements DomainControllerInterface {
           }
           break;
         }
-        case 'query': {
+        case 'runQueryOrExtractorAction': {
           throw new Error("handleCompositeActionTemplate can not handle query actions: " + JSON.stringify(currentAction));
           
           // log.info(
@@ -956,7 +957,7 @@ export class DomainController implements DomainControllerInterface {
           // const actionResult = await this.handleAction(currentAction.action, currentModel);
           break;
         }
-        case 'queryTemplate': {
+        case 'runQueryTemplateOrExtractorTemplateAction': {
           log.info(
             "handleCompositeActionTemplate", actionLabel, "resolved query action",
             currentAction,

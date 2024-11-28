@@ -330,7 +330,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
         },
         // instances for new Entity, put in "menuUpdateQueryResult"
         {
-          compositeActionType: "queryTemplate",
+          compositeActionType: "runQueryTemplateOrExtractorTemplateAction",
           
           nameGivenToResult: "menuUpdateQueryResult",
           queryTemplate: {
@@ -753,7 +753,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
         },
       },
       {
-        compositeActionType: "queryTemplate",
+        compositeActionType: "runQueryTemplateOrExtractorTemplateAction",
         nameGivenToResult: "menuUpdateQueryResult",
         queryTemplate: {
           actionType: "runQueryTemplateOrExtractorTemplateAction",
@@ -1146,7 +1146,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
         // },
         // update splitted entity instances with foreign key of instances of new entity
         {
-          compositeActionType: "queryTemplate",
+          compositeActionType: "runQueryTemplateOrExtractorTemplateAction",
           compositeActionStepLabel: "calculateEntityInstances",
           nameGivenToResult: newEntityName,
           queryTemplate: {
@@ -1504,7 +1504,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
       //   },
       // },
       {
-        compositeActionType: "queryTemplate",
+        compositeActionType: "runQueryTemplateOrExtractorTemplateAction",
         compositeActionStepLabel: "calculateEntityInstances",
         nameGivenToResult: "Test2",
         queryTemplate: {

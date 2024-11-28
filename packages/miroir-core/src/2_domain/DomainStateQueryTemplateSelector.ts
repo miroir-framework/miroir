@@ -100,7 +100,7 @@ export const getExtractorTemplateRunnerParamsForDomainState: GetSelectorParamsFo
   ) =>
 {
   return {
-    extractorTemplate: query,
+    extractorOrCombinerTemplate: query,
     extractorRunnerMap: extractorRunnerMap ?? getSelectorMapForTemplate(),
   };
 }

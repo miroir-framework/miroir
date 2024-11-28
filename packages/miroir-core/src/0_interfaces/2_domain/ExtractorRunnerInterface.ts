@@ -35,13 +35,13 @@ export type RecordOfJzodObject = Record<string, JzodObject | undefined>;
 // TEMPLATES         ##############################################################################
 export interface SyncExtractorTemplateRunnerParams<ExtractorTemplateDomainModelType extends ExtractorTemplateForDomainModelDEFUNCT, StateType> {
   extractorRunnerMap?: SyncQueryRunnerMap<StateType>
-  extractorTemplate: ExtractorTemplateDomainModelType
+  extractorOrCombinerTemplate: ExtractorTemplateDomainModelType
 }
 
 // ################################################################################################
 export interface AsyncExtractorTemplateRunnerParams<ExtractorTemplateDomainModelType extends ExtractorTemplateForDomainModelDEFUNCT> {
   extractorRunnerMap?: AsyncQueryRunnerMap
-  extractorTemplate: ExtractorTemplateDomainModelType
+  extractorOrCombinerTemplate: ExtractorTemplateDomainModelType
 }
 // ################################################################################################
 export type SyncExtractorTemplateRunner<QueryType extends ExtractorTemplateForDomainModelDEFUNCT, StateType, ResultType> = (

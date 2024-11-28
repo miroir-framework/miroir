@@ -472,7 +472,7 @@
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "queryTemplate"
+                      "relativePath": "extractorOrCombinerTemplate"
                     }
                   },
                   {
@@ -487,7 +487,7 @@
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "queryTemplate"
+                      "relativePath": "extractorOrCombinerTemplate"
                     }
                   },
                   "rootQueryObjectTransformer": {
@@ -555,7 +555,7 @@
               }
             ]
           },
-          "queryTemplate": {
+          "extractorOrCombinerTemplate": {
             "type": "union",
             "discriminator": "queryType",
             "definition": [
@@ -610,12 +610,12 @@
               }
             ]
           },
-          "queryTemplateRecord": {
+          "extractorOrCombinerTemplateRecord": {
             "type": "record",
             "definition": {
               "type": "schemaReference",
               "definition": {
-                "relativePath": "queryTemplate"
+                "relativePath": "extractorOrCombinerTemplate"
               }
             }
           },
@@ -870,7 +870,7 @@
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "queryTemplate"
+                      "relativePath": "extractorOrCombinerTemplate"
                     }
                   },
                   "rootQueryObjectTransformer": {
@@ -1021,7 +1021,7 @@
         },
         "definition": {
           "eager": true,
-          "relativePath": "queryTemplateRecord"
+          "relativePath": "extractorOrCombinerTemplateRecord"
         }
       }
     }

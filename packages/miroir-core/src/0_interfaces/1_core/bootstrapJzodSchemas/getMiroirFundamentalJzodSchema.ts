@@ -14,7 +14,7 @@ import { applyCarryOnSchema, applyCarryOnSchemaOnLevel, forgeCarryOnReferenceNam
 //   JzodSchema,
 //   JzodUnion,
 //   miroirCrossJoinQuery,
-//   queryTemplateRecord,
+//   extractorOrCombinerTemplateRecord,
 // } from "../preprocessor-generated/miroirFundamentalType";
 import { cleanLevel } from "../../../1_core/constants";
 import { MiroirLoggerFactory } from "../../../4_services/Logger";
@@ -1639,7 +1639,7 @@ export function getMiroirFundamentalJzodSchema(
               optional: true,
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "queryTemplateRecord",
+                relativePath: "extractorOrCombinerTemplateRecord",
               },
             },
             combinerTemplates: {
@@ -1647,7 +1647,7 @@ export function getMiroirFundamentalJzodSchema(
               optional: true,
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "queryTemplateRecord",
+                relativePath: "extractorOrCombinerTemplateRecord",
               },
             },
             runtimeTransformers: {
@@ -1757,7 +1757,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "queryTemplate",
+                relativePath: "extractorOrCombinerTemplate",
               },
             },
           },
@@ -2555,8 +2555,8 @@ export function getMiroirFundamentalJzodSchema(
         extractorTemplateReturningObject: (miroirFundamentalJzodSchema as any).definition.context.extractorTemplateReturningObject,
         extractorTemplateReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.extractorTemplateReturningObjectList,
         extractorTemplateByExtractorCombiner: (miroirFundamentalJzodSchema as any).definition.context.extractorTemplateByExtractorCombiner,
-        queryTemplate: (miroirFundamentalJzodSchema as any).definition.context.queryTemplate,
-        queryTemplateRecord: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateRecord,
+        extractorOrCombinerTemplate: (miroirFundamentalJzodSchema as any).definition.context.extractorOrCombinerTemplate,
+        extractorOrCombinerTemplateRecord: (miroirFundamentalJzodSchema as any).definition.context.extractorOrCombinerTemplateRecord,
         transformer_mustacheStringTemplate: (transformerJzodSchema as any).definition.context.transformer_mustacheStringTemplate,
         transformer_constantUuid: (transformerJzodSchema as any).definition.context.transformer_constantUuid,
         transformer_constantObject: (transformerJzodSchema as any).definition.context.transformer_constantObject,

@@ -140,7 +140,7 @@
                   {
                     "type": "object",
                     "definition": {
-                      "compositeActionType": { "type": "literal", "definition": "query" },
+                      "compositeActionType": { "type": "literal", "definition": "runQueryOrExtractorAction" },
                       "compositeActionStepLabel": { "type": "string", "optional": true },
                       "nameGivenToResult": { "type": "string" },
                       "query": {
@@ -155,7 +155,7 @@
                   {
                     "type": "object",
                     "definition": {
-                      "compositeActionType": { "type": "literal", "definition": "queryTemplate" },
+                      "compositeActionType": { "type": "literal", "definition": "runQueryTemplateOrExtractorTemplateAction" },
                       "compositeActionStepLabel": { "type": "string", "optional": true },
                       "nameGivenToResult": { "type": "string" },
                       "queryTemplate": {
