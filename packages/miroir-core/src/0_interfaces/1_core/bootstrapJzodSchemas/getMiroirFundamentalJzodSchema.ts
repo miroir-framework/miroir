@@ -1349,7 +1349,7 @@ export function getMiroirFundamentalJzodSchema(
           ],
         },
         // ########################################################################################
-        // EXTRACTORS    ##########################################################################
+        // QUERIES    #############################################################################
         // ########################################################################################
         localCacheExtractor: {
           type: "object",
@@ -1799,7 +1799,7 @@ export function getMiroirFundamentalJzodSchema(
             },
           ],
         },
-        domainModelQueryJzodSchemaParams: {
+        queryJzodSchemaParams: {
           type: "union",
           discriminator: "queryType",
           definition: [

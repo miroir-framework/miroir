@@ -3,12 +3,12 @@ import {
   asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceListWithObjectListExtractor,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
-  AsyncQueryRunnerMap,
+  AsyncExtractorOrQueryRunnerMap,
   asyncExtractWithExtractor,
   asyncRunQuery,
   DomainState,
   ExtractorTemplatePersistenceStoreRunner,
-  ExtractorTemplateRunnerMapForJzodSchema,
+  QueryTemplateRunnerMapForJzodSchema,
   getLoggerName,
   handleQueryTemplateAction,
   LoggerInterface,
@@ -32,7 +32,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersistenceStoreRunner {
   private logHeader: string;
-  private selectorMap: AsyncQueryRunnerMap;
+  private selectorMap: AsyncExtractorOrQueryRunnerMap;
 
   // ################################################################################################
   constructor(
@@ -63,7 +63,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
 
 }
 
-export function getDomainStateJzodSchemaExtractorRunnerMap(): ExtractorTemplateRunnerMapForJzodSchema<DomainState> {
+export function getDomainStateJzodSchemaExtractorRunnerMap(): QueryTemplateRunnerMapForJzodSchema<DomainState> {
   return {
     extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
     extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNewForTemplate,

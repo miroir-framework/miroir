@@ -184,7 +184,7 @@ afterAll(
 // ##############################################################################################
 
 // TODO: duplicate test with ExtractorTemplatePersistenceStoreRunner.integ.test.tsx
-describe.sequential("ExtractorPersistenceStoreRunner.integ.test", () => {
+describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
 
   // ################################################################################################
   it("get Entity Entity from Miroir", async () => {

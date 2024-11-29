@@ -16,7 +16,7 @@ import {
   QueryFailed
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
-  AsyncQueryRunnerMap,
+  AsyncExtractorOrQueryRunnerMap,
   AsyncExtractorOrQueryRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -28,7 +28,7 @@ import { applyExtractorForSingleObjectListToSelectedInstancesListInMemory, apply
 import { resolveExtractorTemplate } from "./Templates";
 import { applyTransformer } from "./Transformers";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"AsyncExtractorTemplateRunner");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"AsyncExtractorOrQueryTemplateRunner");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   (value: LoggerInterface) => {
@@ -36,7 +36,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   }
 );
 
-const emptyAsyncSelectorMap:AsyncQueryRunnerMap = {
+const emptyAsyncSelectorMap:AsyncExtractorOrQueryRunnerMap = {
   extractorType: "async",
   extractWithExtractor: undefined as any, 
   runQuery: undefined as any, 
@@ -126,7 +126,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
   newFetchedData: Record<string, any>,
   pageParams: Record<string, any>,
   queryParams: Record<string, any>,
-  extractorRunnerMap:AsyncQueryRunnerMap,
+  extractorRunnerMap:AsyncExtractorOrQueryRunnerMap,
   deploymentUuid: Uuid,
   extractors: Record<string, QueryForExtractorOrCombinerReturningObjectList | QueryForExtractorOrCombinerReturningObject | QueryWithExtractorCombinerTransformer>,
   extractorOrCombiner: ExtractorOrCombiner
@@ -331,14 +331,14 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
 }
 
 // ################################################################################################
-export const asyncExtractWithExtractor /**: SyncExtractorTemplateRunner */= (
-  // selectorParams: SyncExtractorTemplateRunnerParams<QueryTemplateWithExtractorCombinerTransformer, DeploymentEntityState>,
+export const asyncExtractWithExtractor /**: SyncExtractorOrQueryTemplateRunner */= (
+  // selectorParams: SyncExtractorOrQueryTemplateRunnerParams<QueryTemplateWithExtractorCombinerTransformer, DeploymentEntityState>,
   selectorParams: AsyncExtractorOrQueryRunnerParams<
     QueryForExtractorOrCombinerReturningObject | QueryForExtractorOrCombinerReturningObjectList | QueryWithExtractorCombinerTransformer
   >
 ): Promise<DomainElement> => {
   // log.info("########## extractExtractor begin, query", selectorParams);
-  const localSelectorMap: AsyncQueryRunnerMap = selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
+  const localSelectorMap: AsyncExtractorOrQueryRunnerMap = selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
 
   switch (selectorParams.extractor.queryType) {
     case "queryWithExtractorCombinerTransformer": {
@@ -408,7 +408,7 @@ export const asyncRunQuery = async (
     ...selectorParams.extractor.contextResults.elementValue ,
   };
   // log.info("########## DomainSelector asyncRunQuery will use context", context);
-  const localSelectorMap: AsyncQueryRunnerMap =
+  const localSelectorMap: AsyncExtractorOrQueryRunnerMap =
     selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
 
   const extractorsPromises = Object.entries(selectorParams.extractor.extractors ?? {}).map(

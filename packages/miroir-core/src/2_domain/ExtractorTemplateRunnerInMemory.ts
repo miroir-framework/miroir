@@ -7,9 +7,9 @@ import {
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import {
-  AsyncQueryRunnerMap,
+  AsyncExtractorOrQueryRunnerMap,
   ExtractorTemplatePersistenceStoreRunner,
-  ExtractorTemplateRunnerMapForJzodSchema
+  QueryTemplateRunnerMapForJzodSchema
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { PersistenceStoreInstanceSectionAbstractInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
@@ -32,7 +32,7 @@ import {
 } from "./DomainStateQueryTemplateSelector";
 import { ExtractorRunnerInMemory } from "./ExtractorRunnerInMemory";
 import { handleQueryTemplateAction } from "./QueryTemplateSelectors";
-import { resolveExtractorTemplateForDomainModelObjects, resolveQueryTemplate } from "./Templates";
+import { resolveQueryTemplateReturningObject, resolveQueryTemplate } from "./Templates";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "ExtractorTemplateRunnerInMemory");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -42,7 +42,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersistenceStoreRunner {
   private logHeader: string;
-  private selectorMap: AsyncQueryRunnerMap;
+  private selectorMap: AsyncExtractorOrQueryRunnerMap;
 
 
   // ################################################################################################
@@ -78,7 +78,7 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
 // ##############################################################################################
 // ##############################################################################################
 // ##############################################################################################
-export function getDomainStateJzodSchemaExtractorRunnerMap(): ExtractorTemplateRunnerMapForJzodSchema<DomainState> {
+export function getDomainStateJzodSchemaExtractorRunnerMap(): QueryTemplateRunnerMapForJzodSchema<DomainState> {
   return {
     extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
     extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNewForTemplate,

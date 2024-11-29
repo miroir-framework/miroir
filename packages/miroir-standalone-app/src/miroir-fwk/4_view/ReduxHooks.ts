@@ -18,8 +18,8 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   QueryTemplateDEFUNCT,
-  SyncExtractorTemplateRunner,
-  SyncExtractorTemplateRunnerParams,
+  SyncExtractorOrQueryTemplateRunner,
+  SyncExtractorOrQueryTemplateRunnerParams,
   RecordOfJzodElement,
   Uuid,
   getLoggerName,
@@ -28,7 +28,7 @@ import {
   QueryDEFUNCT,
   SyncExtractorOrQueryRunner,
   SyncExtractorOrQueryRunnerParams,
-  DomainModelQueryJzodSchemaParams,
+  QueryJzodSchemaParams,
   JzodSchemaQuerySelector,
   ExtractorRunnerParamsForJzodSchema
 } from "miroir-core";
@@ -68,8 +68,8 @@ export function useDeploymentEntityStateQueryTemplateSelector<
   QueryType extends QueryTemplateDEFUNCT,
   ResultType extends DomainElement
 >(
-  deploymentEntityStateQuerySelector: SyncExtractorTemplateRunner<QueryType, DeploymentEntityState, ResultType>,
-  selectorParams: SyncExtractorTemplateRunnerParams<QueryType, DeploymentEntityState>,
+  deploymentEntityStateQuerySelector: SyncExtractorOrQueryTemplateRunner<QueryType, DeploymentEntityState, ResultType>,
+  selectorParams: SyncExtractorOrQueryTemplateRunnerParams<QueryType, DeploymentEntityState>,
   customQueryInterpreter?: { [k: string]: (query: QueryTemplateDEFUNCT) => ResultType }
 ): ResultType {
   const innerSelector = useMemo(() => {
@@ -99,8 +99,8 @@ export function useDeploymentEntityStateQuerySelector<
 export function useDeploymentEntityStateQueryTemplateSelectorForCleanedResult<
   QueryType extends QueryTemplateDEFUNCT
 >(
-  deploymentEntityStateQueryTemplateSelector: SyncExtractorTemplateRunner<QueryType, DeploymentEntityState, DomainElement>,
-  selectorParams: SyncExtractorTemplateRunnerParams<QueryType, DeploymentEntityState>,
+  deploymentEntityStateQueryTemplateSelector: SyncExtractorOrQueryTemplateRunner<QueryType, DeploymentEntityState, DomainElement>,
+  selectorParams: SyncExtractorOrQueryTemplateRunnerParams<QueryType, DeploymentEntityState>,
   customQueryInterpreter?: { [k: string]: (query: QueryTemplateDEFUNCT) => DomainElement }
 ): any {
   const innerSelector = useMemo(() => {
@@ -132,8 +132,8 @@ export function useDeploymentEntityStateQuerySelectorForCleanedResult<
 // ################################################################################################
 // ################################################################################################
 export function useDomainStateQueryTemplateSelector<QueryType extends QueryTemplateDEFUNCT, ResultType >(
-  domainStateSelector:SyncExtractorTemplateRunner<QueryType, DomainState, ResultType>,
-  selectorParams:SyncExtractorTemplateRunnerParams<QueryType, DomainState>,
+  domainStateSelector:SyncExtractorOrQueryTemplateRunner<QueryType, DomainState, ResultType>,
+  selectorParams:SyncExtractorOrQueryTemplateRunnerParams<QueryType, DomainState>,
   customQueryInterpreter?: { [k: string]: (query:QueryTemplateDEFUNCT) => ResultType }
 ): ResultType {
   const innerSelector = useMemo(
@@ -148,8 +148,8 @@ export function useDomainStateQueryTemplateSelector<QueryType extends QueryTempl
 
 // ################################################################################################
 export function useDomainStateQueryTemplateSelectorForCleanedResult<QueryType extends QueryTemplateDEFUNCT, ResultType >(
-  domainStateSelector:SyncExtractorTemplateRunner<QueryType, DomainState, DomainElement>,
-  selectorParams:SyncExtractorTemplateRunnerParams<QueryType, DomainState>,
+  domainStateSelector:SyncExtractorOrQueryTemplateRunner<QueryType, DomainState, DomainElement>,
+  selectorParams:SyncExtractorOrQueryTemplateRunnerParams<QueryType, DomainState>,
   customQueryInterpreter?: { [k: string]: (query:QueryTemplateDEFUNCT) => ResultType }
 ): ResultType {
   const innerSelector = useMemo(
@@ -195,10 +195,10 @@ export function useDeploymentEntityStateJzodSchemaSelectorForTemplate<QueryTempl
 }
 
 // ################################################################################################
-export function useDeploymentEntityStateJzodSchemaSelector<QueryType extends DomainModelQueryJzodSchemaParams>(
+export function useDeploymentEntityStateJzodSchemaSelector<QueryType extends QueryJzodSchemaParams>(
   domainStateSelector:JzodSchemaQuerySelector<QueryType, DeploymentEntityState>,
   selectorParams:ExtractorRunnerParamsForJzodSchema<QueryType, DeploymentEntityState>,
-  customQueryInterpreter?: { [k: string]: (query:DomainModelQueryJzodSchemaParams) => RecordOfJzodElement | JzodElement | undefined }
+  customQueryInterpreter?: { [k: string]: (query:QueryJzodSchemaParams) => RecordOfJzodElement | JzodElement | undefined }
 ): RecordOfJzodElement | JzodElement | undefined {
   const innerSelector = useMemo(
     () => {

@@ -2,12 +2,12 @@ import {
   ActionReturnType,
   asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
-  AsyncQueryRunnerMap,
+  AsyncExtractorOrQueryRunnerMap,
   asyncExtractWithExtractor,
   asyncRunQuery,
   handleQueryTemplateAction,
   DomainState,
-  ExtractorTemplateRunnerMapForJzodSchema,
+  QueryTemplateRunnerMapForJzodSchema,
   getLoggerName,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -34,7 +34,7 @@ export type RecursiveStringRecords = string | { [x: string]: RecursiveStringReco
 
 export class SqlDbExtractTemplateRunner {
   private logHeader: string;
-  private extractorRunnerMap: AsyncQueryRunnerMap;
+  private extractorRunnerMap: AsyncExtractorOrQueryRunnerMap;
 
   constructor(
     private persistenceStoreController:
@@ -44,7 +44,7 @@ export class SqlDbExtractTemplateRunner {
   ) // private persistenceStoreController: typeof MixedSqlDbInstanceStoreSection // does not work
   {
     this.logHeader = "SqlDbExtractTemplateRunner " + persistenceStoreController.getStoreName();
-    const InMemoryImplementationExtractorRunnerMap: AsyncQueryRunnerMap = {
+    const InMemoryImplementationExtractorRunnerMap: AsyncExtractorOrQueryRunnerMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.sqlDbExtractorRunner.extractEntityInstanceUuidIndex.bind(this.sqlDbExtractorRunner),
       extractEntityInstanceList: this.sqlDbExtractorRunner.extractEntityInstanceList.bind(this.sqlDbExtractorRunner),
@@ -57,7 +57,7 @@ export class SqlDbExtractTemplateRunner {
       // 
       extractWithManyExtractorTemplates: undefined as any,
     };
-    const dbImplementationExtractorRunnerMap: AsyncQueryRunnerMap = {
+    const dbImplementationExtractorRunnerMap: AsyncExtractorOrQueryRunnerMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.sqlDbExtractorRunner.extractEntityInstanceUuidIndex.bind(this.sqlDbExtractorRunner),
       extractEntityInstanceList: this.sqlDbExtractorRunner.extractEntityInstanceList.bind(this.sqlDbExtractorRunner),
@@ -85,7 +85,7 @@ export class SqlDbExtractTemplateRunner {
 
 }
 
-export function getDomainStateJzodSchemaExtractorRunnerMap(): ExtractorTemplateRunnerMapForJzodSchema<DomainState> {
+export function getDomainStateJzodSchemaExtractorRunnerMap(): QueryTemplateRunnerMapForJzodSchema<DomainState> {
   return {
     extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
     extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNewForTemplate,

@@ -6,7 +6,7 @@ import {
   asyncExtractEntityInstanceListWithObjectListExtractor,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   AsyncExtractorOrQueryRunner,
-  AsyncQueryRunnerMap,
+  AsyncExtractorOrQueryRunnerMap,
   AsyncExtractorOrQueryRunnerParams,
   asyncExtractWithExtractor,
   asyncRunQuery,
@@ -17,8 +17,8 @@ import {
   DomainState,
   QueryForExtractorOrCombinerReturningObject,
   QueryForExtractorOrCombinerReturningObjectList,
-  ExtractorPersistenceStoreRunner,
-  ExtractorRunnerMapForJzodSchema,
+  ExtractorOrQueryPersistenceStoreRunner,
+  QueryRunnerMapForJzodSchema,
   getLoggerName,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -40,9 +40,9 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
-export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunner {
+export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceStoreRunner {
   private logHeader: string;
-  private selectorMap: AsyncQueryRunnerMap;
+  private selectorMap: AsyncExtractorOrQueryRunnerMap;
 
   // ################################################################################################
   constructor(private persistenceStoreController: PersistenceStoreInstanceSectionAbstractInterface) {
@@ -316,14 +316,14 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
   };
 
   // ##############################################################################################
-  public getDomainStateExtractorRunnerMap(): AsyncQueryRunnerMap {
+  public getDomainStateExtractorRunnerMap(): AsyncExtractorOrQueryRunnerMap {
     return this.selectorMap;
   }
 }
 
 
 
-export function getDomainStateJzodSchemaExtractorRunnerMap(): ExtractorRunnerMapForJzodSchema<DomainState> {
+export function getDomainStateJzodSchemaExtractorRunnerMap(): QueryRunnerMapForJzodSchema<DomainState> {
   return {
     extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNew,
     extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNew,

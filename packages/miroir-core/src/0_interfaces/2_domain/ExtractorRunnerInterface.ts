@@ -5,7 +5,7 @@ import {
   DomainElementInstanceArrayOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
   DomainElementObjectOrFailed,
-  DomainModelQueryJzodSchemaParams,
+  QueryJzodSchemaParams,
   DomainModelQueryTemplateJzodSchemaParams,
   ExtendedTransformerForRuntime,
   QueryByEntityUuidGetEntityDefinition,
@@ -33,31 +33,31 @@ export type RecordOfJzodObject = Record<string, JzodObject | undefined>;
 // ################################################################################################
 // ################################################################################################
 // TEMPLATES         ##############################################################################
-export interface SyncExtractorTemplateRunnerParams<ExtractorTemplateDomainModelType extends QueryTemplateDEFUNCT, StateType> {
+export interface SyncExtractorOrQueryTemplateRunnerParams<ExtractorOrQueryTemplate extends QueryTemplateDEFUNCT, StateType> {
   extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<StateType>
-  extractorOrCombinerTemplate: ExtractorTemplateDomainModelType
+  extractorOrCombinerTemplate: ExtractorOrQueryTemplate
 }
 
 // ################################################################################################
-export interface AsyncExtractorTemplateRunnerParams<ExtractorTemplateDomainModelType extends QueryTemplateDEFUNCT> {
-  extractorRunnerMap?: AsyncQueryRunnerMap
+export interface AsyncExtractorOrQueryTemplateRunnerParams<ExtractorTemplateDomainModelType extends QueryTemplateDEFUNCT> {
+  extractorRunnerMap?: AsyncExtractorOrQueryRunnerMap
   extractorOrCombinerTemplate: ExtractorTemplateDomainModelType
 }
 // ################################################################################################
-export type SyncExtractorTemplateRunner<QueryType extends QueryTemplateDEFUNCT, StateType, ResultType> = (
+export type SyncExtractorOrQueryTemplateRunner<QueryType extends QueryTemplateDEFUNCT, StateType, ResultType> = (
   state: StateType,
-  extractorAndParams: SyncExtractorTemplateRunnerParams<QueryType, StateType>
+  extractorAndParams: SyncExtractorOrQueryTemplateRunnerParams<QueryType, StateType>
 ) => ResultType;
 
 // ################################################################################################
-export type AsyncExtractorTemplateRunner<QueryType extends QueryTemplateDEFUNCT, ResultType> = (
-  extractorAndParams: AsyncExtractorTemplateRunnerParams<QueryType>
+export type AsyncExtractorOrQueryTemplateRunner<QueryType extends QueryTemplateDEFUNCT, ResultType> = (
+  extractorAndParams: AsyncExtractorOrQueryTemplateRunnerParams<QueryType>
 ) => Promise<ResultType>;
 
 // ################################################################################################
 export type ExtractorTemplateRunner<QueryType extends QueryTemplateDEFUNCT, StateType, ResultType> =
-  | SyncExtractorTemplateRunner<QueryType, StateType, ResultType>
-  | AsyncExtractorTemplateRunner<QueryType, ResultType>;
+  | SyncExtractorOrQueryTemplateRunner<QueryType, StateType, ResultType>
+  | AsyncExtractorOrQueryTemplateRunner<QueryType, ResultType>;
 
 // ################################################################################################
 export interface ExtractorTemplatePersistenceStoreRunner {
@@ -77,7 +77,7 @@ export interface SyncExtractorOrQueryRunnerParams<ExtractorDomainModelType exten
 
 // ################################################################################################
 export interface AsyncExtractorOrQueryRunnerParams<ExtractorDomainModelType extends QueryDEFUNCT> {
-  extractorRunnerMap?: AsyncQueryRunnerMap
+  extractorRunnerMap?: AsyncExtractorOrQueryRunnerMap
   extractor: ExtractorDomainModelType
 }
 // ################################################################################################
@@ -92,12 +92,12 @@ export type AsyncExtractorOrQueryRunner<QueryType extends QueryDEFUNCT, ResultTy
 ) => Promise<ResultType>;
 
 // ################################################################################################
-export type ExtractorRunner<QueryType extends QueryDEFUNCT, StateType, ResultType> =
+export type ExtractorOrQueryRunner<QueryType extends QueryDEFUNCT, StateType, ResultType> =
   | SyncExtractorOrQueryRunner<QueryType, StateType, ResultType>
   | AsyncExtractorOrQueryRunner<QueryType, ResultType>;
 
 // ################################################################################################
-export type AsyncQueryRunnerMap = {
+export type AsyncExtractorOrQueryRunnerMap = {
   extractorType: "async";
   extractWithExtractor: AsyncExtractorOrQueryRunner<
     QueryForExtractorOrCombinerReturningObjectOrObjectList | QueryWithExtractorCombinerTransformer,
@@ -138,7 +138,7 @@ export type AsyncQueryRunnerMap = {
     >
   ): Promise<DomainElement>;
   // ################################################################################################
-  extractWithManyExtractorTemplates: AsyncExtractorTemplateRunner<
+  extractWithManyExtractorTemplates: AsyncExtractorOrQueryTemplateRunner<
     QueryTemplateWithExtractorCombinerTransformer,
     DomainElementObjectOrFailed
   >;
@@ -180,7 +180,7 @@ export type SyncExtractorOrQueryRunnerMap<StateType> = {
   >;
   // ################################################################################################
   // TODO: has direct call in ReportView, ReportSectionListDisplay, JzodObjectEditor
-  extractWithManyExtractorTemplates: SyncExtractorTemplateRunner<
+  extractWithManyExtractorTemplates: SyncExtractorOrQueryTemplateRunner<
     QueryTemplateWithExtractorCombinerTransformer,
     StateType,
     DomainElementObjectOrFailed
@@ -188,16 +188,16 @@ export type SyncExtractorOrQueryRunnerMap<StateType> = {
 };
 
 // ################################################################################################
-export type ExtractorRunnerMap<StateType> = AsyncQueryRunnerMap | SyncExtractorOrQueryRunnerMap<StateType>;
+export type ExtractorOrQueryRunnerMap<StateType> = AsyncExtractorOrQueryRunnerMap | SyncExtractorOrQueryRunnerMap<StateType>;
 
 // // ################################################################################################
 // export type GenericQuerySelector<ExtractorType extends QueryTemplateDEFUNCT, StateType, ResultType> = (
 //   domainState: StateType,
-//   params: SyncExtractorTemplateRunnerParams<ExtractorType, StateType>
+//   params: SyncExtractorOrQueryTemplateRunnerParams<ExtractorType, StateType>
 // ) => ResultType;
 
 // ################################################################################################
-export interface ExtractorPersistenceStoreRunner {
+export interface ExtractorOrQueryPersistenceStoreRunner {
   handleQueryAction(query: RunQueryOrExtractorAction): Promise<ActionReturnType>;
 }
 
@@ -205,7 +205,7 @@ export interface ExtractorPersistenceStoreRunner {
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-export type ExtractorTemplateRunnerMapForJzodSchema<StateType> = {
+export type QueryTemplateRunnerMapForJzodSchema<StateType> = {
   extractJzodSchemaForDomainModelQuery: JzodSchemaQueryTemplateSelector<
     DomainModelQueryTemplateJzodSchemaParams,
     StateType
@@ -222,8 +222,8 @@ export type ExtractorTemplateRunnerMapForJzodSchema<StateType> = {
 };
 
 // ################################################################################################
-export type ExtractorRunnerMapForJzodSchema<StateType> = {
-  extractJzodSchemaForDomainModelQuery: JzodSchemaQuerySelector<DomainModelQueryJzodSchemaParams, StateType>;
+export type QueryRunnerMapForJzodSchema<StateType> = {
+  extractJzodSchemaForDomainModelQuery: JzodSchemaQuerySelector<QueryJzodSchemaParams, StateType>;
   extractEntityJzodSchema: JzodSchemaQuerySelector<QueryByEntityUuidGetEntityDefinition, StateType>;
   extractFetchQueryJzodSchema: JzodSchemaQuerySelector<QueryByQuery2GetParamJzodSchema, StateType>;
   extractzodSchemaForSingleSelectQuery: JzodSchemaQuerySelector<
@@ -234,13 +234,13 @@ export type ExtractorRunnerMapForJzodSchema<StateType> = {
 
 // ################################################################################################
 export interface ExtractorTemplateRunnerParamsForJzodSchema<QueryTemplateType extends DomainModelQueryTemplateJzodSchemaParams, StateType> {
-  extractorRunnerMap: ExtractorTemplateRunnerMapForJzodSchema<StateType>
+  extractorRunnerMap: QueryTemplateRunnerMapForJzodSchema<StateType>
   query: QueryTemplateType
 }
 
 // ################################################################################################
-export interface ExtractorRunnerParamsForJzodSchema<QueryType extends DomainModelQueryJzodSchemaParams, StateType> {
-  extractorRunnerMap: ExtractorRunnerMapForJzodSchema<StateType>
+export interface ExtractorRunnerParamsForJzodSchema<QueryType extends QueryJzodSchemaParams, StateType> {
+  extractorRunnerMap: QueryRunnerMapForJzodSchema<StateType>
   query: QueryType
 }
 
@@ -251,7 +251,7 @@ export type JzodSchemaQueryTemplateSelector<QueryTemplateType extends DomainMode
 ) => RecordOfJzodElement | JzodElement | undefined;
 
 // ################################################################################################
-export type JzodSchemaQuerySelector<QueryType extends DomainModelQueryJzodSchemaParams, StateType> = (
+export type JzodSchemaQuerySelector<QueryType extends QueryJzodSchemaParams, StateType> = (
   domainState: StateType,
   params: ExtractorRunnerParamsForJzodSchema<QueryType, StateType>
 ) => RecordOfJzodElement | JzodElement | undefined;

@@ -14,7 +14,7 @@ import {
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface";
 import {
-  ExtractorRunnerMapForJzodSchema,
+  QueryRunnerMapForJzodSchema,
   ExtractorRunnerParamsForJzodSchema,
   SyncExtractorOrQueryRunner,
   SyncExtractorOrQueryRunnerMap,
@@ -426,7 +426,7 @@ export function getDeploymentEntityStateSelectorMap(): SyncExtractorOrQueryRunne
 }
 
 // ################################################################################################
-export function getDeploymentEntityStateJzodSchemaSelectorMap(): ExtractorRunnerMapForJzodSchema<DeploymentEntityState> {
+export function getDeploymentEntityStateJzodSchemaSelectorMap(): QueryRunnerMapForJzodSchema<DeploymentEntityState> {
   return {
     extractJzodSchemaForDomainModelQuery: extractJzodSchemaForDomainModelQuery,
     extractEntityJzodSchema: extractEntityJzodSchemaFromDeploymentEntityState,

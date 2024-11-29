@@ -5,7 +5,7 @@ import {
   QueryTemplateReturningObject,
   QueryTemplateWithExtractorCombinerTransformer
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { resolveExtractorTemplateForDomainModelObjects } from '../../2_domain/Templates';
+import { resolveQueryTemplateReturningObject } from '../../2_domain/Templates';
 import {
   resolveExtractorTemplateForRecordOfExtractors
 } from "../../index";
@@ -47,7 +47,7 @@ describe("extractorTemplates.unit.test", () => {
       },
     };
 
-    const testResult = resolveExtractorTemplateForDomainModelObjects(uniqueRuntimeTemplate); // uuid value is ignored
+    const testResult = resolveQueryTemplateReturningObject(uniqueRuntimeTemplate); // uuid value is ignored
     console.log(
       "################################ converted queryTemplate to query with resolveExtractorTemplateForDomainModelObjects testResults",
       JSON.stringify(testResult, null, 2)

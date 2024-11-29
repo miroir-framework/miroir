@@ -8,7 +8,7 @@ import {
   DomainElementObjectOrFailed,
   QueryByQuery2GetParamJzodSchema,
   QueryWithExtractorCombinerTransformer,
-  ExtractorRunnerMapForJzodSchema,
+  QueryRunnerMapForJzodSchema,
   ExtractorRunnerParamsForJzodSchema,
   QueryTemplateWithExtractorCombinerTransformer,
   LoggerInterface,
@@ -193,11 +193,11 @@ export const ReportView = (props: ReportViewProps) => {
   //   // fetchedDataJzodSchema
   // );
 
-  // const jzodSchemaSelectorTemplateMap: ExtractorTemplateRunnerMapForJzodSchema<DeploymentEntityState> = useMemo(
+  // const jzodSchemaSelectorTemplateMap: QueryTemplateRunnerMapForJzodSchema<DeploymentEntityState> = useMemo(
   //   () => getMemoizedDeploymentEntityStateJzodSchemaSelectorTemplateMap(),
   //   []
   // )
-  const jzodSchemaSelectorMap: ExtractorRunnerMapForJzodSchema<DeploymentEntityState> = useMemo(
+  const jzodSchemaSelectorMap: QueryRunnerMapForJzodSchema<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateJzodSchemaSelectorMap(),
     []
   );

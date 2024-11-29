@@ -6,7 +6,7 @@ import {
   asyncExtractEntityInstanceListWithObjectListExtractor,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   AsyncExtractorOrQueryRunner,
-  AsyncQueryRunnerMap,
+  AsyncExtractorOrQueryRunnerMap,
   AsyncExtractorOrQueryRunnerParams,
   asyncExtractWithExtractor,
   asyncRunQuery,
@@ -21,7 +21,7 @@ import {
   QueryWithExtractorCombinerTransformer,
   QueryForExtractorOrCombinerReturningObject,
   QueryForExtractorOrCombinerReturningObjectList,
-  ExtractorRunnerMapForJzodSchema,
+  QueryRunnerMapForJzodSchema,
   getLoggerName,
   resolvePathOnObject,
   LoggerInterface,
@@ -60,7 +60,7 @@ const tokenSeparatorForWith = tokenComma + " ";
 export type RecursiveStringRecords = string | { [x: string]: RecursiveStringRecords };
 
 // ################################################################################################
-export function getDomainStateJzodSchemaExtractorRunnerMap(): ExtractorRunnerMapForJzodSchema<DomainState> {
+export function getDomainStateJzodSchemaExtractorRunnerMap(): QueryRunnerMapForJzodSchema<DomainState> {
   return {
     extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNew,
     extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNew,
@@ -339,8 +339,8 @@ export function sqlStringForTransformer(
 // ################################################################################################
 export class SqlDbQueryRunner {
   private logHeader: string;
-  private dbImplementationExtractorRunnerMap: AsyncQueryRunnerMap;
-  private inMemoryImplementationExtractorRunnerMap: AsyncQueryRunnerMap;
+  private dbImplementationExtractorRunnerMap: AsyncExtractorOrQueryRunnerMap;
+  private inMemoryImplementationExtractorRunnerMap: AsyncExtractorOrQueryRunnerMap;
   private sqlDbExtractTemplateRunner: SqlDbExtractTemplateRunner;
 
   constructor(
@@ -366,7 +366,7 @@ export class SqlDbQueryRunner {
       extractWithManyExtractorTemplates: undefined as any,
 
     };
-    // const dbImplementationExtractorRunnerMap: AsyncQueryRunnerMap = {
+    // const dbImplementationExtractorRunnerMap: AsyncExtractorOrQueryRunnerMap = {
     this.dbImplementationExtractorRunnerMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex.bind(this),
@@ -570,7 +570,7 @@ export class SqlDbQueryRunner {
   ): Promise<DomainElementInstanceArrayOrFailed> => {
     // (
     //   state: any,
-    //   selectorParams: AsyncExtractorTemplateRunnerParams<QueryTemplateForObjectList, any>
+    //   selectorParams: AsyncExtractorOrQueryTemplateRunnerParams<QueryTemplateForObjectList, any>
     // ): Promise<DomainElementInstanceUuidIndexOrFailed> {
     let result: Promise<DomainElementInstanceArrayOrFailed>;
     switch (selectorParams.extractor.select.extractorOrCombinerType) {
@@ -629,7 +629,7 @@ export class SqlDbQueryRunner {
   ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
     // (
     //   state: any,
-    //   selectorParams: AsyncExtractorTemplateRunnerParams<QueryTemplateForObjectList, any>
+    //   selectorParams: AsyncExtractorOrQueryTemplateRunnerParams<QueryTemplateForObjectList, any>
     // ): Promise<DomainElementInstanceUuidIndexOrFailed> {
     let result: Promise<DomainElementInstanceUuidIndexOrFailed>;
     switch (selectorParams.extractor.select.extractorOrCombinerType) {
@@ -1003,7 +1003,7 @@ export class SqlDbQueryRunner {
   };
 
   // ##############################################################################################
-  public getDomainStateExtractorRunnerMap(): AsyncQueryRunnerMap {
+  public getDomainStateExtractorRunnerMap(): AsyncExtractorOrQueryRunnerMap {
     // return this.extractorRunnerMap;
     return undefined as any;
   }

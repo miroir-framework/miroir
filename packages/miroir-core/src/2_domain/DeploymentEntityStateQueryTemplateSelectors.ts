@@ -6,10 +6,10 @@ import {
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface";
 import {
-  ExtractorTemplateRunnerMapForJzodSchema,
+  QueryTemplateRunnerMapForJzodSchema,
   ExtractorTemplateRunnerParamsForJzodSchema,
   SyncExtractorOrQueryRunnerMap,
-  SyncExtractorTemplateRunnerParams
+  SyncExtractorOrQueryTemplateRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/Logger";
@@ -63,7 +63,7 @@ export function getDeploymentEntityStateSelectorTemplateMap(): SyncExtractorOrQu
 }
 
 // ################################################################################################
-export function getDeploymentEntityStateJzodSchemaSelectorTemplateMap(): ExtractorTemplateRunnerMapForJzodSchema<DeploymentEntityState> {
+export function getDeploymentEntityStateJzodSchemaSelectorTemplateMap(): QueryTemplateRunnerMapForJzodSchema<DeploymentEntityState> {
   return {
     extractJzodSchemaForDomainModelQuery: extractJzodSchemaForDomainModelQueryTemplate,
     extractEntityJzodSchema: extractEntityJzodSchemaFromDeploymentEntityStateForTemplate,
@@ -76,12 +76,12 @@ export function getDeploymentEntityStateJzodSchemaSelectorTemplateMap(): Extract
 export type GetExtractorTemplateRunnerParamsForDeploymentEntityState = <QueryType extends QueryTemplateDEFUNCT>(
   query: QueryType,
   extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DeploymentEntityState>
-) => SyncExtractorTemplateRunnerParams<QueryType, DeploymentEntityState>;
+) => SyncExtractorOrQueryTemplateRunnerParams<QueryType, DeploymentEntityState>;
 
 export function getExtractorTemplateRunnerParamsForDeploymentEntityState<QueryType extends QueryTemplateDEFUNCT>(
   query: QueryType,
   extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DeploymentEntityState>
-): SyncExtractorTemplateRunnerParams<QueryType, DeploymentEntityState> {
+): SyncExtractorOrQueryTemplateRunnerParams<QueryType, DeploymentEntityState> {
   return {
     extractorOrCombinerTemplate: query,
     extractorRunnerMap: extractorRunnerMap ?? getDeploymentEntityStateSelectorTemplateMap(),

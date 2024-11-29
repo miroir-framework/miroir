@@ -7459,7 +7459,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "domainModelQueryJzodSchemaParams": {
+      "queryJzodSchemaParams": {
         "type": "union",
         "discriminator": "queryType",
         "definition": [

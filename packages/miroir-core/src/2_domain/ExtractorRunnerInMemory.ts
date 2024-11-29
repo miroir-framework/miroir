@@ -13,10 +13,10 @@ import {
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import {
   AsyncExtractorOrQueryRunner,
-  AsyncQueryRunnerMap,
+  AsyncExtractorOrQueryRunnerMap,
   AsyncExtractorOrQueryRunnerParams,
-  ExtractorPersistenceStoreRunner,
-  ExtractorRunnerMapForJzodSchema
+  ExtractorOrQueryPersistenceStoreRunner,
+  QueryRunnerMapForJzodSchema
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { PersistenceStoreInstanceSectionAbstractInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
@@ -46,9 +46,9 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
-export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner {
+export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStoreRunner {
   private logHeader: string;
-  private selectorMap: AsyncQueryRunnerMap;
+  private selectorMap: AsyncExtractorOrQueryRunnerMap;
 
   // ################################################################################################
   constructor(private persistenceStoreController: PersistenceStoreInstanceSectionAbstractInterface) {
@@ -292,7 +292,7 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
   };
 
   // ##############################################################################################
-  public getDomainStateExtractorRunnerMap(): AsyncQueryRunnerMap {
+  public getDomainStateExtractorRunnerMap(): AsyncExtractorOrQueryRunnerMap {
     return this.selectorMap;
   }
 } // end of class ExtractorRunnerInMemory
@@ -300,7 +300,7 @@ export class ExtractorRunnerInMemory implements ExtractorPersistenceStoreRunner 
 // ##############################################################################################
 // ##############################################################################################
 // ##############################################################################################
-export function getDomainStateJzodSchemaExtractorRunnerMap(): ExtractorRunnerMapForJzodSchema<DomainState> {
+export function getDomainStateJzodSchemaExtractorRunnerMap(): QueryRunnerMapForJzodSchema<DomainState> {
   return {
     extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNew,
     extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNew,

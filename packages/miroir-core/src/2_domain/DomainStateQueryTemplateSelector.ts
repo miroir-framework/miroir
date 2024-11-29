@@ -14,8 +14,8 @@ import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface"
 import {
   ExtractorTemplateRunnerParamsForJzodSchema,
   SyncExtractorOrQueryRunnerMap,
-  SyncExtractorTemplateRunner,
-  SyncExtractorTemplateRunnerParams
+  SyncExtractorOrQueryTemplateRunner,
+  SyncExtractorOrQueryTemplateRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/Logger";
@@ -50,7 +50,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 // ################################################################################################
 // TODO: used in extractorTemplateRunnerForDomainState.unit.test and RestServer.ts, provide a better interface?
-export type ExtractorTemplateRunnerForDomainState = SyncExtractorTemplateRunner<
+export type ExtractorTemplateRunnerForDomainState = SyncExtractorOrQueryTemplateRunner<
   QueryTemplateReturningObject | QueryTemplateWithExtractorCombinerTransformer,
   DomainState,
   DomainElement
@@ -63,7 +63,7 @@ export const extractorTemplateRunnerForDomainState: ExtractorTemplateRunnerForDo
 // ################################################################################################
 // TODO: used in RestServer.ts (with commented out access in HomePage, to create bundle)
 //  provide a better interface?
-export const extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT: SyncExtractorTemplateRunner<
+export const extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT: SyncExtractorOrQueryTemplateRunner<
   QueryTemplateWithExtractorCombinerTransformer,
   DomainState,
   DomainElementObject
@@ -91,7 +91,7 @@ export function getSelectorMapForTemplate(): SyncExtractorOrQueryRunnerMap<Domai
 export type GetSelectorParamsForTemplateOnDomainStateType=<ExtractorTemplateType extends QueryTemplateDEFUNCT>(
   query: ExtractorTemplateType,
   extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DomainState>
-)=> SyncExtractorTemplateRunnerParams<ExtractorTemplateType, DomainState>;
+)=> SyncExtractorOrQueryTemplateRunnerParams<ExtractorTemplateType, DomainState>;
 
 export const getExtractorTemplateRunnerParamsForDomainState: GetSelectorParamsForTemplateOnDomainStateType =
 <ExtractorTemplateType extends QueryTemplateDEFUNCT>(

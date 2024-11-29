@@ -284,7 +284,7 @@ export function resolveQueryTemplate(
 }
 
 // ################################################################################################
-export function resolveExtractorTemplateForDomainModelObjects(
+export function resolveQueryTemplateReturningObject(
   queryTemplateReturningObject: QueryTemplateReturningObject,
 ): QueryForExtractorOrCombinerReturningObjectOrObjectList {
 
@@ -314,7 +314,7 @@ export function resolveExtractorOrQueryTemplate(
   extractorOrCombinerTemplate: QueryTemplateReturningObject | QueryTemplateWithExtractorCombinerTransformer
 ): QueryForExtractorOrCombinerReturningObjectOrObjectList | QueryWithExtractorCombinerTransformer {
   if ('select' in extractorOrCombinerTemplate) { // TODO: implementation-specific, to be improved!
-    return resolveExtractorTemplateForDomainModelObjects(extractorOrCombinerTemplate);
+    return resolveQueryTemplateReturningObject(extractorOrCombinerTemplate);
   } else {
     return resolveQueryTemplate(extractorOrCombinerTemplate);
   }

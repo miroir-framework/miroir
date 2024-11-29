@@ -21,7 +21,7 @@ import {
   ExtractorOrCombinerReturningObject
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
-  ExtractorRunnerMapForJzodSchema,
+  QueryRunnerMapForJzodSchema,
   ExtractorRunnerParamsForJzodSchema,
   SyncExtractorOrQueryRunner,
   SyncExtractorOrQueryRunnerMap,
@@ -541,7 +541,7 @@ export function getDomainStateExtractorRunnerMap(): SyncExtractorOrQueryRunnerMa
   };
 }
 
-export function getDomainStateJzodSchemaExtractorRunnerMap(): ExtractorRunnerMapForJzodSchema<DomainState> {
+export function getDomainStateJzodSchemaExtractorRunnerMap(): QueryRunnerMapForJzodSchema<DomainState> {
   return {
     extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNew,
     extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNew,

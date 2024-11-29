@@ -18,11 +18,11 @@ import {
   RunQueryTemplateOrExtractorTemplateAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
-  AsyncQueryRunnerMap,
+  AsyncExtractorOrQueryRunnerMap,
   ExtractorTemplateRunnerParamsForJzodSchema,
   RecordOfJzodElement,
   RecordOfJzodObject,
-  SyncExtractorTemplateRunnerParams
+  SyncExtractorOrQueryTemplateRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/Logger";
@@ -32,12 +32,12 @@ import { cleanLevel } from "./constants";
 import { handleQueryAction, extractWithExtractor, runQuery } from "./QuerySelectors";
 import {
   resolveExtractorOrQueryTemplate,
-  resolveExtractorTemplateForDomainModelObjects,
+  resolveQueryTemplateReturningObject,
   resolveQueryTemplate,
 } from "./Templates";
 import { transformer_InnerReference_resolve } from "./Transformers";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"SyncExtractorTemplateRunner");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"SyncExtractorOrQueryTemplateRunner");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   (value: LoggerInterface) => {
@@ -49,9 +49,14 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 export async function handleQueryTemplateAction(
   origin: string,
   runQueryTemplateOrExtractorTemplateAction: RunQueryTemplateOrExtractorTemplateAction, 
-  selectorMap: AsyncQueryRunnerMap
+  selectorMap: AsyncExtractorOrQueryRunnerMap
 ): Promise<ActionReturnType> {
-  log.info("handleQueryTemplateAction for ", origin, "runQueryTemplateOrExtractorTemplateAction", JSON.stringify(runQueryTemplateOrExtractorTemplateAction, null, 2));
+  log.info(
+    "handleQueryTemplateAction for ",
+    origin,
+    "runQueryTemplateOrExtractorTemplateAction",
+    JSON.stringify(runQueryTemplateOrExtractorTemplateAction, null, 2)
+  );
   const resolvedQuery = resolveExtractorOrQueryTemplate(
     runQueryTemplateOrExtractorTemplateAction.query
   );
@@ -71,9 +76,9 @@ export async function handleQueryTemplateAction(
 }
 
 // ################################################################################################
-export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <StateType>(
+export const extractWithExtractorTemplate /**: SyncExtractorOrQueryTemplateRunner */= <StateType>(
   state: StateType,
-  selectorParams: SyncExtractorTemplateRunnerParams<
+  selectorParams: SyncExtractorOrQueryTemplateRunnerParams<
   QueryTemplateReturningObject | QueryTemplateWithExtractorCombinerTransformer,
     StateType
   >
@@ -100,7 +105,7 @@ export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <
       break;
     }
     case "queryTemplateReturningObject": {
-      const resolvedExtractor: QueryForExtractorOrCombinerReturningObjectOrObjectList = resolveExtractorTemplateForDomainModelObjects(
+      const resolvedExtractor: QueryForExtractorOrCombinerReturningObjectOrObjectList = resolveQueryTemplateReturningObject(
         selectorParams.extractorOrCombinerTemplate
       ); 
 
@@ -152,7 +157,7 @@ export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <
  */
 export const extractWithManyExtractorTemplates = <StateType>(
   state: StateType,
-  selectorParams: SyncExtractorTemplateRunnerParams<QueryTemplateWithExtractorCombinerTransformer, StateType>,
+  selectorParams: SyncExtractorOrQueryTemplateRunnerParams<QueryTemplateWithExtractorCombinerTransformer, StateType>,
 ): DomainElementObject => { 
 
   const resolvedExtractor: QueryWithExtractorCombinerTransformer = resolveQueryTemplate(

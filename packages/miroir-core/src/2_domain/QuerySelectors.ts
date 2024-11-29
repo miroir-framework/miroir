@@ -16,7 +16,7 @@ import {
   QueryByEntityUuidGetEntityDefinition,
   QueryByQuery2GetParamJzodSchema,
   QueryByQueryGetParamJzodSchema,
-  DomainModelQueryJzodSchemaParams,
+  QueryJzodSchemaParams,
   EntityInstance,
   ExtendedTransformerForRuntime,
   QueryForExtractorOrCombinerReturningObjectOrObjectList,
@@ -31,7 +31,7 @@ import {
   ExtractorOrCombinerContextReference
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
-  AsyncQueryRunnerMap,
+  AsyncExtractorOrQueryRunnerMap,
   ExtractorRunnerParamsForJzodSchema,
   RecordOfJzodElement,
   RecordOfJzodObject,
@@ -47,7 +47,7 @@ import { cleanLevel } from "./constants";
 import { resolveExtractorTemplate } from "./Templates";
 import { applyTransformer, transformer_extended_apply } from "./Transformers";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"SyncExtractorTemplateRunner");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"SyncExtractorOrQueryTemplateRunner");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   (value: LoggerInterface) => {
@@ -68,7 +68,7 @@ const emptySelectorMap:SyncExtractorOrQueryRunnerMap<any> = {
   extractWithManyExtractorTemplates: undefined as any,
 }
 
-const emptyAsyncSelectorMap:AsyncQueryRunnerMap = {
+const emptyAsyncSelectorMap:AsyncExtractorOrQueryRunnerMap = {
   extractorType: "async",
   extractWithExtractor: undefined as any, 
   runQuery: undefined as any, 
@@ -543,7 +543,7 @@ export const applyExtractorTransformerInMemory = (
 export async function handleQueryAction(
   origin: string,
   runQueryOrExtractorAction: RunQueryOrExtractorAction,
-  selectorMap: AsyncQueryRunnerMap
+  selectorMap: AsyncExtractorOrQueryRunnerMap
 ): Promise<ActionReturnType> {
   log.info("handleQueryAction for", origin, "start", "runQueryOrExtractorAction", JSON.stringify(runQueryOrExtractorAction, null, 2));
   let queryResult: DomainElement;
@@ -1020,7 +1020,7 @@ export const extractzodSchemaForSingleSelectQuery = <StateType>(
 // ################################################################################################
 export const extractJzodSchemaForDomainModelQuery = <StateType>(
   deploymentEntityState: StateType,
-  selectorParams: ExtractorRunnerParamsForJzodSchema<DomainModelQueryJzodSchemaParams, StateType>
+  selectorParams: ExtractorRunnerParamsForJzodSchema<QueryJzodSchemaParams, StateType>
 ): RecordOfJzodElement | JzodElement | undefined => {
   switch (selectorParams.query.queryType) {
     case "getEntityDefinition":{ 
