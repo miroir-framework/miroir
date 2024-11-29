@@ -1,14 +1,14 @@
 import {
-  ExtractorByEntityUuidGetEntityDefinition,
+  QueryByEntityUuidGetEntityDefinition,
   EntityDefinition,
-  ExtractorTemplateForDomainModelDEFUNCT,
+  QueryTemplateDEFUNCT,
   JzodObject
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface";
 import {
   ExtractorTemplateRunnerMapForJzodSchema,
   ExtractorTemplateRunnerParamsForJzodSchema,
-  SyncQueryRunnerMap,
+  SyncExtractorOrQueryRunnerMap,
   SyncExtractorTemplateRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -45,7 +45,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 // ################################################################################################
 // #### selector Maps
 // ################################################################################################
-export function getDeploymentEntityStateSelectorTemplateMap(): SyncQueryRunnerMap<DeploymentEntityState> {
+export function getDeploymentEntityStateSelectorTemplateMap(): SyncExtractorOrQueryRunnerMap<DeploymentEntityState> {
   return {
     extractorType: "sync",
     extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDeploymentEntityState,
@@ -73,14 +73,14 @@ export function getDeploymentEntityStateJzodSchemaSelectorTemplateMap(): Extract
 }
 
 // ################################################################################################
-export type GetExtractorTemplateRunnerParamsForDeploymentEntityState = <QueryType extends ExtractorTemplateForDomainModelDEFUNCT>(
+export type GetExtractorTemplateRunnerParamsForDeploymentEntityState = <QueryType extends QueryTemplateDEFUNCT>(
   query: QueryType,
-  extractorRunnerMap?: SyncQueryRunnerMap<DeploymentEntityState>
+  extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DeploymentEntityState>
 ) => SyncExtractorTemplateRunnerParams<QueryType, DeploymentEntityState>;
 
-export function getExtractorTemplateRunnerParamsForDeploymentEntityState<QueryType extends ExtractorTemplateForDomainModelDEFUNCT>(
+export function getExtractorTemplateRunnerParamsForDeploymentEntityState<QueryType extends QueryTemplateDEFUNCT>(
   query: QueryType,
-  extractorRunnerMap?: SyncQueryRunnerMap<DeploymentEntityState>
+  extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DeploymentEntityState>
 ): SyncExtractorTemplateRunnerParams<QueryType, DeploymentEntityState> {
   return {
     extractorOrCombinerTemplate: query,
@@ -95,9 +95,9 @@ export function getExtractorTemplateRunnerParamsForDeploymentEntityState<QueryTy
 // ACCESSES deploymentEntityState
 export const extractEntityJzodSchemaFromDeploymentEntityStateForTemplate = (
   deploymentEntityState: DeploymentEntityState,
-  selectorParams: ExtractorTemplateRunnerParamsForJzodSchema<ExtractorByEntityUuidGetEntityDefinition, DeploymentEntityState>
+  selectorParams: ExtractorTemplateRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, DeploymentEntityState>
 ): JzodObject | undefined => {
-  const localQuery: ExtractorByEntityUuidGetEntityDefinition = selectorParams.query;
+  const localQuery: QueryByEntityUuidGetEntityDefinition = selectorParams.query;
 
   const deploymentEntityStateIndex = getDeploymentEntityStateIndex(
     localQuery.deploymentUuid,

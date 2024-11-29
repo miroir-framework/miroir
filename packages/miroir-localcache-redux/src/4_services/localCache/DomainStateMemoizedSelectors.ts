@@ -2,7 +2,7 @@ import { createSelector } from "@reduxjs/toolkit";
 import {
   DeploymentEntityState,
   ExtractorRunnerMapForJzodSchema,
-  SyncQueryRunnerMap,
+  SyncExtractorOrQueryRunnerMap,
   extractEntityInstanceListWithObjectListExtractorInMemory,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractEntityJzodSchemaFromDeploymentEntityState,
@@ -20,7 +20,7 @@ import {
 const deploymentEntityStateSelector = (deploymentEntityState: DeploymentEntityState, params: any) => deploymentEntityState;
 const deploymentEntityStateSelectorParams = (deploymentEntityState: DeploymentEntityState, params: any) => params;
 
-export function getMemoizedDeploymentEntityStateSelectorMap(): SyncQueryRunnerMap<DeploymentEntityState> {
+export function getMemoizedDeploymentEntityStateSelectorMap(): SyncExtractorOrQueryRunnerMap<DeploymentEntityState> {
   return {
     extractorType: "sync",
     extractEntityInstance: createSelector(

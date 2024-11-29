@@ -24,8 +24,8 @@ import {
   getLoggerName,
   LoggerInterface,
   MiroirLoggerFactory,
-  SyncQueryRunnerMap,
-  SyncExtractorRunnerParams,
+  SyncExtractorOrQueryRunnerMap,
+  SyncExtractorOrQueryRunnerParams,
   Uuid
 } from "miroir-core";
 import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
@@ -144,12 +144,12 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
   // const miroirConfig = context.getMiroirConfig();
   // const context = useMiroirContext();
 
-  const deploymentEntityStateSelectorMap: SyncQueryRunnerMap<DeploymentEntityState> = useMemo(
+  const deploymentEntityStateSelectorMap: SyncExtractorOrQueryRunnerMap<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
   )
 
-  const fetchDeploymentMenusQueryParams: SyncExtractorRunnerParams<QueryWithExtractorCombinerTransformer, DeploymentEntityState> = useMemo(
+  const fetchDeploymentMenusQueryParams: SyncExtractorOrQueryRunnerParams<QueryWithExtractorCombinerTransformer, DeploymentEntityState> = useMemo(
     () => 
     getExtractorRunnerParamsForDeploymentEntityState<QueryWithExtractorCombinerTransformer>({
       queryType: "queryWithExtractorCombinerTransformer",

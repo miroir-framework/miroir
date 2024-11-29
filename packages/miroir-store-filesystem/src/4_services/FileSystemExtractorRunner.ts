@@ -5,9 +5,9 @@ import {
   asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceListWithObjectListExtractor,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
-  AsyncQueryRunner,
+  AsyncExtractorOrQueryRunner,
   AsyncQueryRunnerMap,
-  AsyncExtractorRunnerParams,
+  AsyncExtractorOrQueryRunnerParams,
   asyncExtractWithExtractor,
   asyncRunQuery,
   DomainElement,
@@ -110,11 +110,11 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
   }
 
   // ################################################################################################
-  public extractEntityInstance: AsyncQueryRunner<
+  public extractEntityInstance: AsyncExtractorOrQueryRunner<
     QueryForExtractorOrCombinerReturningObject,
     DomainElementEntityInstanceOrFailed
   > = async (
-    selectorParams: AsyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObject>
+    selectorParams: AsyncExtractorOrQueryRunnerParams<QueryForExtractorOrCombinerReturningObject>
   ): Promise<DomainElementEntityInstanceOrFailed> => {
     const querySelectorParams: ExtractorOrCombinerReturningObject = selectorParams.extractor.select as ExtractorOrCombinerReturningObject;
     const deploymentUuid = selectorParams.extractor.deploymentUuid;
@@ -251,11 +251,11 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
   };
 
   // ##############################################################################################
-  public extractEntityInstanceUuidIndex: AsyncQueryRunner<
+  public extractEntityInstanceUuidIndex: AsyncExtractorOrQueryRunner<
     QueryForExtractorOrCombinerReturningObjectList,
     DomainElementInstanceUuidIndexOrFailed
   > = async (
-    extractorRunnerParams: AsyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList>
+    extractorRunnerParams: AsyncExtractorOrQueryRunnerParams<QueryForExtractorOrCombinerReturningObjectList>
   ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
     return this.extractEntityInstanceList(extractorRunnerParams).then((result) => {
       if (result.elementType == "failure") {
@@ -269,11 +269,11 @@ export class FileSystemExtractorRunner implements ExtractorPersistenceStoreRunne
   }
 
   // ##############################################################################################
-  public extractEntityInstanceList: AsyncQueryRunner<
+  public extractEntityInstanceList: AsyncExtractorOrQueryRunner<
     QueryForExtractorOrCombinerReturningObjectList,
     DomainElementInstanceArrayOrFailed
   > = async (
-    extractorRunnerParams: AsyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList>
+    extractorRunnerParams: AsyncExtractorOrQueryRunnerParams<QueryForExtractorOrCombinerReturningObjectList>
   ): Promise<DomainElementInstanceArrayOrFailed> => {
     const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";

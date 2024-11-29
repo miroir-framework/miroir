@@ -1650,7 +1650,7 @@ export function getMiroirFundamentalJzodSchema(
           },
         },
         // JzodSchema queries  ##############################################################
-        extractorByEntityUuidGetEntityDefinition: {
+        queryByEntityUuidGetEntityDefinition: {
           type: "object",
           extend: {
             type: "schemaReference",
@@ -1675,7 +1675,7 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        extractorByTemplateGetParamJzodSchema: {
+        queryByTemplateGetParamJzodSchema: {
           type: "object",
           extend: {
             type: "schemaReference",
@@ -1688,7 +1688,7 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             queryType: {
               type: "literal",
-              definition: "extractorByTemplateGetParamJzodSchema",
+              definition: "queryByTemplateGetParamJzodSchema",
             },
             fetchParams: {
               type: "schemaReference",
@@ -1699,7 +1699,7 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        extractorByQuery2GetParamJzodSchema: {
+        queryByQuery2GetParamJzodSchema: {
           type: "object",
           extend: {
             type: "schemaReference",
@@ -1712,7 +1712,7 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             queryType: {
               type: "literal",
-              definition: "extractorByTemplateGetParamJzodSchema", // TODO: CORRECT!!!
+              definition: "queryByTemplateGetParamJzodSchema", // TODO: CORRECT!!!
             },
             fetchParams: {
               type: "schemaReference",
@@ -1723,7 +1723,7 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        extractorByQueryTemplateGetParamJzodSchema: {
+        queryByQueryTemplateGetParamJzodSchema: {
           type: "object",
           extend: {
             type: "schemaReference",
@@ -1747,7 +1747,7 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        extractorByQueryGetParamJzodSchema: {
+        queryByQueryGetParamJzodSchema: {
           type: "object",
           extend: {
             type: "schemaReference",
@@ -1780,21 +1780,21 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorByEntityUuidGetEntityDefinition",
+                relativePath: "queryByEntityUuidGetEntityDefinition",
               },
             },
             {
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorByTemplateGetParamJzodSchema",
+                relativePath: "queryByTemplateGetParamJzodSchema",
               },
             },
             {
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorByQueryTemplateGetParamJzodSchema",
+                relativePath: "queryByQueryTemplateGetParamJzodSchema",
               },
             },
           ],
@@ -1807,26 +1807,26 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorByEntityUuidGetEntityDefinition",
+                relativePath: "queryByEntityUuidGetEntityDefinition",
               },
             },
             {
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorByQuery2GetParamJzodSchema",
+                relativePath: "queryByQuery2GetParamJzodSchema",
               },
             },
             {
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorByQueryGetParamJzodSchema",
+                relativePath: "queryByQueryGetParamJzodSchema",
               },
             },
           ],
         },
-        extractorTemplateForDomainModelDEFUNCT: {
+        queryTemplateDEFUNCT: {
           type: "union",
           discriminator: "queryType",
           definition: [
@@ -1868,26 +1868,26 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorByEntityUuidGetEntityDefinition",
+                relativePath: "queryByEntityUuidGetEntityDefinition",
               },
             },
             {
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorByTemplateGetParamJzodSchema",
+                relativePath: "queryByTemplateGetParamJzodSchema",
               },
             },
             {
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorByQueryTemplateGetParamJzodSchema",
+                relativePath: "queryByQueryTemplateGetParamJzodSchema",
               },
             },
           ],
         },
-        extractorForDomainModelDEFUNCT: {
+        queryDEFUNCT: {
           type: "union",
           discriminator: "queryType",
           definition: [
@@ -1929,21 +1929,21 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorByEntityUuidGetEntityDefinition",
+                relativePath: "queryByEntityUuidGetEntityDefinition",
               },
             },
             {
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorByQuery2GetParamJzodSchema",
+                relativePath: "queryByQuery2GetParamJzodSchema",
               },
             },
             {
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorByQueryGetParamJzodSchema",
+                relativePath: "queryByQueryGetParamJzodSchema",
               },
             },
           ],

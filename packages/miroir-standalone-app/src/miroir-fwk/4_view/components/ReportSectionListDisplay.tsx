@@ -31,9 +31,9 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   objectListReportSection,
-  SyncQueryRunner,
-  SyncQueryRunnerMap,
-  SyncExtractorRunnerParams,
+  SyncExtractorOrQueryRunner,
+  SyncExtractorOrQueryRunnerMap,
+  SyncExtractorOrQueryRunnerParams,
 } from "miroir-core";
 
 import { Button } from "@mui/material";
@@ -208,7 +208,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
 
-  const deploymentEntityStateSelectorMap: SyncQueryRunnerMap<DeploymentEntityState> = useMemo(
+  const deploymentEntityStateSelectorMap: SyncExtractorOrQueryRunnerMap<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorForTemplateMap(),
     []
   )
@@ -314,7 +314,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     ]
   );
 
-  const foreignKeyObjectsFetchQueryParams: SyncExtractorRunnerParams<
+  const foreignKeyObjectsFetchQueryParams: SyncExtractorOrQueryRunnerParams<
     QueryWithExtractorCombinerTransformer,
     DeploymentEntityState
   > = useMemo(
@@ -381,7 +381,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
 
   const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
   useDeploymentEntityStateQuerySelectorForCleanedResult(
-    deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
+    deploymentEntityStateSelectorMap.runQuery as SyncExtractorOrQueryRunner<
       QueryWithExtractorCombinerTransformer,
       DeploymentEntityState,
       DomainElement

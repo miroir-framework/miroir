@@ -10,7 +10,7 @@ import {
   QueryTemplateWithExtractorCombinerTransformer
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DeploymentEntityState } from "../../0_interfaces/2_domain/DeploymentStateInterface";
-import { SyncQueryRunner, SyncExtractorTemplateRunner } from "../../0_interfaces/2_domain/ExtractorRunnerInterface";
+import { SyncExtractorOrQueryRunner, SyncExtractorTemplateRunner } from "../../0_interfaces/2_domain/ExtractorRunnerInterface";
 import {
   getExtractorRunnerParamsForDeploymentEntityState,
   GetExtractorRunnerParamsForDeploymentEntityState,
@@ -42,7 +42,7 @@ export interface TestExtractorParams {
   queryTemplate?: QueryTemplateWithExtractorCombinerTransformer;
   query?: QueryWithExtractorCombinerTransformer;
   // Domain State
-  extractorRunnerForDomainState?: SyncQueryRunner<
+  extractorRunnerForDomainState?: SyncExtractorOrQueryRunner<
     QueryForExtractorOrCombinerReturningObjectOrObjectList | QueryWithExtractorCombinerTransformer,
     DomainState,
     DomainElement

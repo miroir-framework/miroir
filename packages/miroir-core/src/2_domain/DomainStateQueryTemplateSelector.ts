@@ -3,9 +3,9 @@
 import {
   DomainElement,
   DomainElementObject,
-  ExtractorByEntityUuidGetEntityDefinition,
+  QueryByEntityUuidGetEntityDefinition,
   EntityDefinition,
-  ExtractorTemplateForDomainModelDEFUNCT,
+  QueryTemplateDEFUNCT,
   QueryTemplateReturningObject,
   QueryTemplateWithExtractorCombinerTransformer,
   JzodObject
@@ -13,7 +13,7 @@ import {
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import {
   ExtractorTemplateRunnerParamsForJzodSchema,
-  SyncQueryRunnerMap,
+  SyncExtractorOrQueryRunnerMap,
   SyncExtractorTemplateRunner,
   SyncExtractorTemplateRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
@@ -72,7 +72,7 @@ export const extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT: SyncE
 // ################################################################################################
 // #### selector Maps
 // ################################################################################################
-export function getSelectorMapForTemplate(): SyncQueryRunnerMap<DomainState> {
+export function getSelectorMapForTemplate(): SyncExtractorOrQueryRunnerMap<DomainState> {
   return {
     extractorType: "sync",
     extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDomainState,
@@ -88,15 +88,15 @@ export function getSelectorMapForTemplate(): SyncQueryRunnerMap<DomainState> {
 }
 
 // ################################################################################################
-export type GetSelectorParamsForTemplateOnDomainStateType=<ExtractorTemplateType extends ExtractorTemplateForDomainModelDEFUNCT>(
+export type GetSelectorParamsForTemplateOnDomainStateType=<ExtractorTemplateType extends QueryTemplateDEFUNCT>(
   query: ExtractorTemplateType,
-  extractorRunnerMap?: SyncQueryRunnerMap<DomainState>
+  extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DomainState>
 )=> SyncExtractorTemplateRunnerParams<ExtractorTemplateType, DomainState>;
 
 export const getExtractorTemplateRunnerParamsForDomainState: GetSelectorParamsForTemplateOnDomainStateType =
-<ExtractorTemplateType extends ExtractorTemplateForDomainModelDEFUNCT>(
+<ExtractorTemplateType extends QueryTemplateDEFUNCT>(
     query: ExtractorTemplateType,
-    extractorRunnerMap?: SyncQueryRunnerMap<DomainState>
+    extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DomainState>
   ) =>
 {
   return {
@@ -117,9 +117,9 @@ export const selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate = 
 // ACCESSES DOMAIN STATE
 export const selectEntityJzodSchemaFromDomainStateNewForTemplate = (
   domainState: DomainState,
-  selectorParams: ExtractorTemplateRunnerParamsForJzodSchema<ExtractorByEntityUuidGetEntityDefinition, DomainState>
+  selectorParams: ExtractorTemplateRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, DomainState>
 ): JzodObject | undefined => {
-  const localQuery: ExtractorByEntityUuidGetEntityDefinition = selectorParams.query;
+  const localQuery: QueryByEntityUuidGetEntityDefinition = selectorParams.query;
   if (
     domainState &&
     domainState[localQuery.deploymentUuid] &&

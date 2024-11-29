@@ -6,7 +6,7 @@ import {
   DeploymentEntityState,
   DomainElementObject,
   DomainElementObjectOrFailed,
-  ExtractorByQuery2GetParamJzodSchema,
+  QueryByQuery2GetParamJzodSchema,
   QueryWithExtractorCombinerTransformer,
   ExtractorRunnerMapForJzodSchema,
   ExtractorRunnerParamsForJzodSchema,
@@ -15,8 +15,8 @@ import {
   MiroirLoggerFactory,
   RecordOfJzodObject,
   RootReport,
-  SyncQueryRunnerMap,
-  SyncExtractorRunnerParams,
+  SyncExtractorOrQueryRunnerMap,
+  SyncExtractorOrQueryRunnerParams,
   Uuid,
   getExtractorRunnerParamsForDeploymentEntityState,
   getLoggerName,
@@ -80,7 +80,7 @@ export const ReportView = (props: ReportViewProps) => {
   //   props.reportSection.extractors
   // );
 
-  const deploymentEntityStateSelectorMap: SyncQueryRunnerMap<DeploymentEntityState> = useMemo(
+  const deploymentEntityStateSelectorMap: SyncExtractorOrQueryRunnerMap<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
   );
@@ -155,7 +155,7 @@ export const ReportView = (props: ReportViewProps) => {
     [props.reportDefinition, props.pageParams, resolvedTemplateQuery]
   );
   resolvedTemplateQuery;
-  const deploymentEntityStateFetchQueryParams: SyncExtractorRunnerParams<
+  const deploymentEntityStateFetchQueryParams: SyncExtractorOrQueryRunnerParams<
     QueryWithExtractorCombinerTransformer,
     DeploymentEntityState
   > = useMemo(
@@ -208,7 +208,7 @@ export const ReportView = (props: ReportViewProps) => {
   log.info("################################################################ Fecth NON-Template report schema");
 
   const fetchedDataJzodSchemaParams: ExtractorRunnerParamsForJzodSchema<
-    ExtractorByQuery2GetParamJzodSchema,
+    QueryByQuery2GetParamJzodSchema,
     DeploymentEntityState
   > = useMemo(
     () => ({
@@ -219,7 +219,7 @@ export const ReportView = (props: ReportViewProps) => {
         props.pageParams.reportUuid &&
         props.reportDefinition.extractors
           ? {
-            queryType: "extractorByTemplateGetParamJzodSchema",
+            queryType: "queryByTemplateGetParamJzodSchema",
               deploymentUuid: props.pageParams.deploymentUuid,
               pageParams: {
                 applicationSection: props.pageParams.applicationSection,
@@ -232,7 +232,7 @@ export const ReportView = (props: ReportViewProps) => {
             }
           : // dummy query
             {
-              queryType: "extractorByTemplateGetParamJzodSchema",
+              queryType: "queryByTemplateGetParamJzodSchema",
               deploymentUuid: "DUMMY",
               pageParams: {
                 applicationSection: "data",

@@ -17,7 +17,7 @@ import {
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   AsyncQueryRunnerMap,
-  AsyncExtractorRunnerParams
+  AsyncExtractorOrQueryRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/Logger";
@@ -63,7 +63,7 @@ const emptyAsyncSelectorMap:AsyncQueryRunnerMap = {
  */
 export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
 = (
-  selectorParams: AsyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList>
+  selectorParams: AsyncExtractorOrQueryRunnerParams<QueryForExtractorOrCombinerReturningObjectList>
 ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
   const result: Promise<DomainElementInstanceUuidIndexOrFailed> =
     (selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap).extractEntityInstanceUuidIndex(selectorParams)
@@ -91,7 +91,7 @@ export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
  */
 export const asyncExtractEntityInstanceListWithObjectListExtractor
 = (
-  selectorParams: AsyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList>
+  selectorParams: AsyncExtractorOrQueryRunnerParams<QueryForExtractorOrCombinerReturningObjectList>
 ): Promise<DomainElementInstanceArrayOrFailed> => {
   const result: Promise<DomainElementInstanceArrayOrFailed> =
     (selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap).extractEntityInstanceList(selectorParams)
@@ -333,7 +333,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
 // ################################################################################################
 export const asyncExtractWithExtractor /**: SyncExtractorTemplateRunner */= (
   // selectorParams: SyncExtractorTemplateRunnerParams<QueryTemplateWithExtractorCombinerTransformer, DeploymentEntityState>,
-  selectorParams: AsyncExtractorRunnerParams<
+  selectorParams: AsyncExtractorOrQueryRunnerParams<
     QueryForExtractorOrCombinerReturningObject | QueryForExtractorOrCombinerReturningObjectList | QueryWithExtractorCombinerTransformer
   >
 ): Promise<DomainElement> => {
@@ -343,7 +343,7 @@ export const asyncExtractWithExtractor /**: SyncExtractorTemplateRunner */= (
   switch (selectorParams.extractor.queryType) {
     case "queryWithExtractorCombinerTransformer": {
       return asyncRunQuery(
-        selectorParams as AsyncExtractorRunnerParams<QueryWithExtractorCombinerTransformer>
+        selectorParams as AsyncExtractorOrQueryRunnerParams<QueryWithExtractorCombinerTransformer>
       );
       break;
     }
@@ -394,7 +394,7 @@ export const asyncExtractWithExtractor /**: SyncExtractorTemplateRunner */= (
 
 export const asyncRunQuery = async (
   // state: StateType,
-  selectorParams: AsyncExtractorRunnerParams<QueryWithExtractorCombinerTransformer>,
+  selectorParams: AsyncExtractorOrQueryRunnerParams<QueryWithExtractorCombinerTransformer>,
 ): Promise<DomainElementObject> => {
 
   // log.info("########## asyncRunQuery begin, query", selectorParams);

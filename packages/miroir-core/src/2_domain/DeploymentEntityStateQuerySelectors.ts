@@ -3,22 +3,22 @@ import {
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceArrayOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
-  // ExtractorByEntityUuidGetEntityDefinition,
+  // QueryByEntityUuidGetEntityDefinition,
   EntityDefinition,
-  ExtractorForDomainModelDEFUNCT,
+  QueryDEFUNCT,
   QueryForExtractorOrCombinerReturningObject,
   QueryForExtractorOrCombinerReturningObjectList,
   JzodObject,
   ExtractorOrCombinerReturningObject,
-  ExtractorByEntityUuidGetEntityDefinition
+  QueryByEntityUuidGetEntityDefinition
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface";
 import {
   ExtractorRunnerMapForJzodSchema,
   ExtractorRunnerParamsForJzodSchema,
-  SyncQueryRunner,
-  SyncQueryRunnerMap,
-  SyncExtractorRunnerParams
+  SyncExtractorOrQueryRunner,
+  SyncExtractorOrQueryRunnerMap,
+  SyncExtractorOrQueryRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/Logger";
@@ -55,13 +55,13 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
  * @param selectorParams
  * @returns
  */
-export const selectEntityInstanceFromDeploymentEntityState: SyncQueryRunner<
+export const selectEntityInstanceFromDeploymentEntityState: SyncExtractorOrQueryRunner<
   QueryForExtractorOrCombinerReturningObject,
   DeploymentEntityState,
   DomainElementEntityInstanceOrFailed
 > = (
   deploymentEntityState: DeploymentEntityState,
-  selectorParams: SyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObject, DeploymentEntityState>
+  selectorParams: SyncExtractorOrQueryRunnerParams<QueryForExtractorOrCombinerReturningObject, DeploymentEntityState>
 ): DomainElementEntityInstanceOrFailed => {
   const querySelectorParams = selectorParams.extractor.select as ExtractorOrCombinerReturningObject;
   const deploymentUuid = selectorParams.extractor.deploymentUuid;
@@ -243,13 +243,13 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncQueryRunner<
 
 // ################################################################################################
 // ACCESSES deploymentEntityState
-export const selectEntityInstanceUuidIndexFromDeploymentEntityState: SyncQueryRunner<
+export const selectEntityInstanceUuidIndexFromDeploymentEntityState: SyncExtractorOrQueryRunner<
   QueryForExtractorOrCombinerReturningObjectList,
   DeploymentEntityState,
   DomainElementInstanceUuidIndexOrFailed
 > = (
   deploymentEntityState: DeploymentEntityState,
-  selectorParams: SyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList, DeploymentEntityState>
+  selectorParams: SyncExtractorOrQueryRunnerParams<QueryForExtractorOrCombinerReturningObjectList, DeploymentEntityState>
 ): DomainElementInstanceUuidIndexOrFailed => {
   const deploymentUuid = selectorParams.extractor.deploymentUuid;
   const applicationSection = selectorParams.extractor.select.applicationSection ?? "data";
@@ -302,13 +302,13 @@ export const selectEntityInstanceUuidIndexFromDeploymentEntityState: SyncQueryRu
 
 // ################################################################################################
 // ACCESSES deploymentEntityState
-export const selectEntityInstanceListFromDeploymentEntityState: SyncQueryRunner<
+export const selectEntityInstanceListFromDeploymentEntityState: SyncExtractorOrQueryRunner<
   QueryForExtractorOrCombinerReturningObjectList,
   DeploymentEntityState,
   DomainElementInstanceArrayOrFailed
 > = (
   deploymentEntityState: DeploymentEntityState,
-  selectorParams: SyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList, DeploymentEntityState>
+  selectorParams: SyncExtractorOrQueryRunnerParams<QueryForExtractorOrCombinerReturningObjectList, DeploymentEntityState>
 ): DomainElementInstanceArrayOrFailed => {
   const result = selectEntityInstanceUuidIndexFromDeploymentEntityState(deploymentEntityState, selectorParams);
 
@@ -330,9 +330,9 @@ export const selectEntityInstanceListFromDeploymentEntityState: SyncQueryRunner<
 // ACCESSES deploymentEntityState
 export const extractEntityJzodSchemaFromDeploymentEntityState = (
   deploymentEntityState: DeploymentEntityState,
-  selectorParams: ExtractorRunnerParamsForJzodSchema<ExtractorByEntityUuidGetEntityDefinition, DeploymentEntityState>
+  selectorParams: ExtractorRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, DeploymentEntityState>
 ): JzodObject | undefined => {
-  const localQuery: ExtractorByEntityUuidGetEntityDefinition = selectorParams.query;
+  const localQuery: QueryByEntityUuidGetEntityDefinition = selectorParams.query;
 
   const deploymentEntityStateIndex = getDeploymentEntityStateIndex(
     localQuery.deploymentUuid,
@@ -408,7 +408,7 @@ export const extractEntityJzodSchemaFromDeploymentEntityState = (
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-export function getDeploymentEntityStateSelectorMap(): SyncQueryRunnerMap<DeploymentEntityState> {
+export function getDeploymentEntityStateSelectorMap(): SyncExtractorOrQueryRunnerMap<DeploymentEntityState> {
   return {
     extractorType: "sync",
     extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDeploymentEntityState,
@@ -436,15 +436,15 @@ export function getDeploymentEntityStateJzodSchemaSelectorMap(): ExtractorRunner
 }
 
 // ################################################################################################
-export type GetExtractorRunnerParamsForDeploymentEntityState = <QueryType extends ExtractorForDomainModelDEFUNCT>(
+export type GetExtractorRunnerParamsForDeploymentEntityState = <QueryType extends QueryDEFUNCT>(
   query: QueryType,
-  extractorRunnerMap?: SyncQueryRunnerMap<DeploymentEntityState>
-) => SyncExtractorRunnerParams<QueryType, DeploymentEntityState>;
+  extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DeploymentEntityState>
+) => SyncExtractorOrQueryRunnerParams<QueryType, DeploymentEntityState>;
 
-export const getExtractorRunnerParamsForDeploymentEntityState = <QueryType extends ExtractorForDomainModelDEFUNCT>(
+export const getExtractorRunnerParamsForDeploymentEntityState = <QueryType extends QueryDEFUNCT>(
   query: QueryType,
-  extractorRunnerMap?: SyncQueryRunnerMap<DeploymentEntityState>
-): SyncExtractorRunnerParams<QueryType, DeploymentEntityState> =>{
+  extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DeploymentEntityState>
+): SyncExtractorOrQueryRunnerParams<QueryType, DeploymentEntityState> =>{
   return {
     extractor: query,
     extractorRunnerMap: extractorRunnerMap ?? getDeploymentEntityStateSelectorMap(),

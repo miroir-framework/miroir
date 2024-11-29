@@ -29,9 +29,9 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   ResolvedJzodSchemaReturnType,
-  SyncQueryRunner,
-  SyncQueryRunnerMap,
-  SyncExtractorRunnerParams,
+  SyncExtractorOrQueryRunner,
+  SyncExtractorOrQueryRunnerMap,
+  SyncExtractorOrQueryRunnerParams,
   Uuid,
   adminConfigurationDeploymentMiroir,
   alterObjectAtPath,
@@ -251,7 +251,7 @@ export const JzodObjectEditor = (
 ): JSX.Element => {
   count++;
   const context = useMiroirContextService();
-  const deploymentEntityStateSelectorMap: SyncQueryRunnerMap<DeploymentEntityState> = useMemo(
+  const deploymentEntityStateSelectorMap: SyncExtractorOrQueryRunnerMap<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
   );
@@ -445,7 +445,7 @@ export const JzodObjectEditor = (
       );
     }
 
-    const foreignKeyObjectsFetchQueryParams: SyncExtractorRunnerParams<
+    const foreignKeyObjectsFetchQueryParams: SyncExtractorOrQueryRunnerParams<
     QueryWithExtractorCombinerTransformer,
     DeploymentEntityState
   > = useMemo(
@@ -484,7 +484,7 @@ export const JzodObjectEditor = (
 
   const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
   useDeploymentEntityStateQuerySelectorForCleanedResult(
-    deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
+    deploymentEntityStateSelectorMap.runQuery as SyncExtractorOrQueryRunner<
       QueryWithExtractorCombinerTransformer,
       DeploymentEntityState,
       DomainElement

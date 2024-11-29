@@ -1456,7 +1456,7 @@ export type QueryTemplateWithExtractorCombinerTransformer = {
         [x: string]: ExtendedTransformerForRuntime;
     } | undefined;
 };
-export type ExtractorByEntityUuidGetEntityDefinition = {
+export type QueryByEntityUuidGetEntityDefinition = {
     deploymentUuid: string;
     pageParams: {
         [x: string]: any;
@@ -1470,7 +1470,7 @@ export type ExtractorByEntityUuidGetEntityDefinition = {
     queryType: "getEntityDefinition";
     entityUuid: string;
 };
-export type ExtractorByTemplateGetParamJzodSchema = {
+export type QueryByTemplateGetParamJzodSchema = {
     deploymentUuid: string;
     pageParams: {
         [x: string]: any;
@@ -1481,10 +1481,10 @@ export type ExtractorByTemplateGetParamJzodSchema = {
     contextResults: {
         [x: string]: any;
     };
-    queryType: "extractorByTemplateGetParamJzodSchema";
+    queryType: "queryByTemplateGetParamJzodSchema";
     fetchParams: QueryTemplateWithExtractorCombinerTransformer;
 };
-export type ExtractorByQuery2GetParamJzodSchema = {
+export type QueryByQuery2GetParamJzodSchema = {
     deploymentUuid: string;
     pageParams: {
         [x: string]: any;
@@ -1495,10 +1495,10 @@ export type ExtractorByQuery2GetParamJzodSchema = {
     contextResults: {
         [x: string]: any;
     };
-    queryType: "extractorByTemplateGetParamJzodSchema";
+    queryType: "queryByTemplateGetParamJzodSchema";
     fetchParams: QueryWithExtractorCombinerTransformer;
 };
-export type ExtractorByQueryTemplateGetParamJzodSchema = {
+export type QueryByQueryTemplateGetParamJzodSchema = {
     deploymentUuid: string;
     pageParams: {
         [x: string]: any;
@@ -1512,7 +1512,7 @@ export type ExtractorByQueryTemplateGetParamJzodSchema = {
     queryType: "getQueryJzodSchema";
     select: ExtractorOrCombinerTemplate;
 };
-export type ExtractorByQueryGetParamJzodSchema = {
+export type QueryByQueryGetParamJzodSchema = {
     deploymentUuid: string;
     pageParams: {
         [x: string]: any;
@@ -1526,10 +1526,10 @@ export type ExtractorByQueryGetParamJzodSchema = {
     queryType: "getQueryJzodSchema";
     select: ExtractorOrCombiner;
 };
-export type DomainModelQueryTemplateJzodSchemaParams = ExtractorByEntityUuidGetEntityDefinition | ExtractorByTemplateGetParamJzodSchema | ExtractorByQueryTemplateGetParamJzodSchema;
-export type DomainModelQueryJzodSchemaParams = ExtractorByEntityUuidGetEntityDefinition | ExtractorByQuery2GetParamJzodSchema | ExtractorByQueryGetParamJzodSchema;
-export type ExtractorTemplateForDomainModelDEFUNCT = QueryTemplateReturningObject | QueryTemplateWithExtractorCombinerTransformer | LocalCacheExtractor | ExtractorByEntityUuidGetEntityDefinition | ExtractorByTemplateGetParamJzodSchema | ExtractorByQueryTemplateGetParamJzodSchema;
-export type ExtractorForDomainModelDEFUNCT = QueryForExtractorOrCombinerReturningObjectOrObjectList | QueryWithExtractorCombinerTransformer | LocalCacheExtractor | ExtractorByEntityUuidGetEntityDefinition | ExtractorByQuery2GetParamJzodSchema | ExtractorByQueryGetParamJzodSchema;
+export type DomainModelQueryTemplateJzodSchemaParams = QueryByEntityUuidGetEntityDefinition | QueryByTemplateGetParamJzodSchema | QueryByQueryTemplateGetParamJzodSchema;
+export type DomainModelQueryJzodSchemaParams = QueryByEntityUuidGetEntityDefinition | QueryByQuery2GetParamJzodSchema | QueryByQueryGetParamJzodSchema;
+export type QueryTemplateDEFUNCT = QueryTemplateReturningObject | QueryTemplateWithExtractorCombinerTransformer | LocalCacheExtractor | QueryByEntityUuidGetEntityDefinition | QueryByTemplateGetParamJzodSchema | QueryByQueryTemplateGetParamJzodSchema;
+export type QueryDEFUNCT = QueryForExtractorOrCombinerReturningObjectOrObjectList | QueryWithExtractorCombinerTransformer | LocalCacheExtractor | QueryByEntityUuidGetEntityDefinition | QueryByQuery2GetParamJzodSchema | QueryByQueryGetParamJzodSchema;
 export type ______________________________________________actions_____________________________________________ = never;
 export type ActionError = {
     status: "error";
@@ -3901,15 +3901,15 @@ export const queryTemplateReturningObject: z.ZodType<QueryTemplateReturningObjec
 export const queryTemplateForObjectList: z.ZodType<QueryTemplateForObjectList> = z.object({deploymentUuid:z.string().uuid(), pageParams:z.record(z.string(),z.any()), queryParams:z.record(z.string(),z.any()), contextResults:z.record(z.string(),z.any())}).strict().extend({queryType:z.literal("queryTemplateReturningObjectList"), select:z.lazy(() =>extractorTemplateReturningObjectList)}).strict();
 export const queryTemplateReturningObjectOrObjectList: z.ZodType<QueryTemplateReturningObjectOrObjectList> = z.union([z.lazy(() =>queryTemplateReturningObject), z.lazy(() =>queryTemplateForObjectList)]);
 export const queryTemplateWithExtractorCombinerTransformer: z.ZodType<QueryTemplateWithExtractorCombinerTransformer> = z.object({deploymentUuid:z.string().uuid(), pageParams:z.record(z.string(),z.any()), queryParams:z.record(z.string(),z.any()), contextResults:z.record(z.string(),z.any())}).strict().extend({queryType:z.literal("queryTemplateWithExtractorCombinerTransformer"), runAsSql:z.boolean().optional(), extractorTemplates:z.lazy(() =>extractorOrCombinerTemplateRecord).optional(), combinerTemplates:z.lazy(() =>extractorOrCombinerTemplateRecord).optional(), runtimeTransformers:z.record(z.string(),z.lazy(() =>extendedTransformerForRuntime)).optional()}).strict();
-export const extractorByEntityUuidGetEntityDefinition: z.ZodType<ExtractorByEntityUuidGetEntityDefinition> = z.object({deploymentUuid:z.string().uuid(), pageParams:z.record(z.string(),z.any()), queryParams:z.record(z.string(),z.any()), contextResults:z.record(z.string(),z.any())}).strict().extend({queryType:z.literal("getEntityDefinition"), deploymentUuid:z.string().uuid(), entityUuid:z.string().uuid()}).strict();
-export const extractorByTemplateGetParamJzodSchema: z.ZodType<ExtractorByTemplateGetParamJzodSchema> = z.object({deploymentUuid:z.string().uuid(), pageParams:z.record(z.string(),z.any()), queryParams:z.record(z.string(),z.any()), contextResults:z.record(z.string(),z.any())}).strict().extend({queryType:z.literal("extractorByTemplateGetParamJzodSchema"), fetchParams:z.lazy(() =>queryTemplateWithExtractorCombinerTransformer)}).strict();
-export const extractorByQuery2GetParamJzodSchema: z.ZodType<ExtractorByQuery2GetParamJzodSchema> = z.object({deploymentUuid:z.string().uuid(), pageParams:z.record(z.string(),z.any()), queryParams:z.record(z.string(),z.any()), contextResults:z.record(z.string(),z.any())}).strict().extend({queryType:z.literal("extractorByTemplateGetParamJzodSchema"), fetchParams:z.lazy(() =>queryWithExtractorCombinerTransformer)}).strict();
-export const extractorByQueryTemplateGetParamJzodSchema: z.ZodType<ExtractorByQueryTemplateGetParamJzodSchema> = z.object({deploymentUuid:z.string().uuid(), pageParams:z.record(z.string(),z.any()), queryParams:z.record(z.string(),z.any()), contextResults:z.record(z.string(),z.any())}).strict().extend({queryType:z.literal("getQueryJzodSchema"), select:z.lazy(() =>extractorOrCombinerTemplate)}).strict();
-export const extractorByQueryGetParamJzodSchema: z.ZodType<ExtractorByQueryGetParamJzodSchema> = z.object({deploymentUuid:z.string().uuid(), pageParams:z.record(z.string(),z.any()), queryParams:z.record(z.string(),z.any()), contextResults:z.record(z.string(),z.any())}).strict().extend({queryType:z.literal("getQueryJzodSchema"), select:z.lazy(() =>extractorOrCombiner)}).strict();
-export const domainModelQueryTemplateJzodSchemaParams: z.ZodType<DomainModelQueryTemplateJzodSchemaParams> = z.union([z.lazy(() =>extractorByEntityUuidGetEntityDefinition), z.lazy(() =>extractorByTemplateGetParamJzodSchema), z.lazy(() =>extractorByQueryTemplateGetParamJzodSchema)]);
-export const domainModelQueryJzodSchemaParams: z.ZodType<DomainModelQueryJzodSchemaParams> = z.union([z.lazy(() =>extractorByEntityUuidGetEntityDefinition), z.lazy(() =>extractorByQuery2GetParamJzodSchema), z.lazy(() =>extractorByQueryGetParamJzodSchema)]);
-export const extractorTemplateForDomainModelDEFUNCT: z.ZodType<ExtractorTemplateForDomainModelDEFUNCT> = z.union([z.lazy(() =>queryTemplateReturningObject), z.lazy(() =>queryTemplateWithExtractorCombinerTransformer), z.lazy(() =>localCacheExtractor), z.lazy(() =>extractorByEntityUuidGetEntityDefinition), z.lazy(() =>extractorByTemplateGetParamJzodSchema), z.lazy(() =>extractorByQueryTemplateGetParamJzodSchema)]);
-export const extractorForDomainModelDEFUNCT: z.ZodType<ExtractorForDomainModelDEFUNCT> = z.union([z.lazy(() =>queryForExtractorOrCombinerReturningObjectOrObjectList), z.lazy(() =>queryWithExtractorCombinerTransformer), z.lazy(() =>localCacheExtractor), z.lazy(() =>extractorByEntityUuidGetEntityDefinition), z.lazy(() =>extractorByQuery2GetParamJzodSchema), z.lazy(() =>extractorByQueryGetParamJzodSchema)]);
+export const queryByEntityUuidGetEntityDefinition: z.ZodType<QueryByEntityUuidGetEntityDefinition> = z.object({deploymentUuid:z.string().uuid(), pageParams:z.record(z.string(),z.any()), queryParams:z.record(z.string(),z.any()), contextResults:z.record(z.string(),z.any())}).strict().extend({queryType:z.literal("getEntityDefinition"), deploymentUuid:z.string().uuid(), entityUuid:z.string().uuid()}).strict();
+export const queryByTemplateGetParamJzodSchema: z.ZodType<QueryByTemplateGetParamJzodSchema> = z.object({deploymentUuid:z.string().uuid(), pageParams:z.record(z.string(),z.any()), queryParams:z.record(z.string(),z.any()), contextResults:z.record(z.string(),z.any())}).strict().extend({queryType:z.literal("queryByTemplateGetParamJzodSchema"), fetchParams:z.lazy(() =>queryTemplateWithExtractorCombinerTransformer)}).strict();
+export const queryByQuery2GetParamJzodSchema: z.ZodType<QueryByQuery2GetParamJzodSchema> = z.object({deploymentUuid:z.string().uuid(), pageParams:z.record(z.string(),z.any()), queryParams:z.record(z.string(),z.any()), contextResults:z.record(z.string(),z.any())}).strict().extend({queryType:z.literal("queryByTemplateGetParamJzodSchema"), fetchParams:z.lazy(() =>queryWithExtractorCombinerTransformer)}).strict();
+export const queryByQueryTemplateGetParamJzodSchema: z.ZodType<QueryByQueryTemplateGetParamJzodSchema> = z.object({deploymentUuid:z.string().uuid(), pageParams:z.record(z.string(),z.any()), queryParams:z.record(z.string(),z.any()), contextResults:z.record(z.string(),z.any())}).strict().extend({queryType:z.literal("getQueryJzodSchema"), select:z.lazy(() =>extractorOrCombinerTemplate)}).strict();
+export const queryByQueryGetParamJzodSchema: z.ZodType<QueryByQueryGetParamJzodSchema> = z.object({deploymentUuid:z.string().uuid(), pageParams:z.record(z.string(),z.any()), queryParams:z.record(z.string(),z.any()), contextResults:z.record(z.string(),z.any())}).strict().extend({queryType:z.literal("getQueryJzodSchema"), select:z.lazy(() =>extractorOrCombiner)}).strict();
+export const domainModelQueryTemplateJzodSchemaParams: z.ZodType<DomainModelQueryTemplateJzodSchemaParams> = z.union([z.lazy(() =>queryByEntityUuidGetEntityDefinition), z.lazy(() =>queryByTemplateGetParamJzodSchema), z.lazy(() =>queryByQueryTemplateGetParamJzodSchema)]);
+export const domainModelQueryJzodSchemaParams: z.ZodType<DomainModelQueryJzodSchemaParams> = z.union([z.lazy(() =>queryByEntityUuidGetEntityDefinition), z.lazy(() =>queryByQuery2GetParamJzodSchema), z.lazy(() =>queryByQueryGetParamJzodSchema)]);
+export const queryTemplateDEFUNCT: z.ZodType<QueryTemplateDEFUNCT> = z.union([z.lazy(() =>queryTemplateReturningObject), z.lazy(() =>queryTemplateWithExtractorCombinerTransformer), z.lazy(() =>localCacheExtractor), z.lazy(() =>queryByEntityUuidGetEntityDefinition), z.lazy(() =>queryByTemplateGetParamJzodSchema), z.lazy(() =>queryByQueryTemplateGetParamJzodSchema)]);
+export const queryDEFUNCT: z.ZodType<QueryDEFUNCT> = z.union([z.lazy(() =>queryForExtractorOrCombinerReturningObjectOrObjectList), z.lazy(() =>queryWithExtractorCombinerTransformer), z.lazy(() =>localCacheExtractor), z.lazy(() =>queryByEntityUuidGetEntityDefinition), z.lazy(() =>queryByQuery2GetParamJzodSchema), z.lazy(() =>queryByQueryGetParamJzodSchema)]);
 export const ______________________________________________actions_____________________________________________: z.ZodType<______________________________________________actions_____________________________________________> = z.never();
 export const actionError: z.ZodType<ActionError> = z.object({status:z.literal("error"), error:z.object({errorType:z.union([z.enum(["FailedToCreateStore","FailedToDeployModule"]), z.literal("FailedToDeleteStore"), z.literal("FailedToResetAndInitMiroirAndApplicationDatabase"), z.literal("FailedToOpenStore"), z.literal("FailedToCloseStore"), z.literal("FailedToCreateInstance"), z.literal("FailedToGetInstance"), z.literal("FailedToGetInstances")]), errorMessage:z.string().optional(), error:z.object({errorMessage:z.string().optional(), stack:z.array(z.string().optional())}).strict().optional()}).strict()}).strict();
 export const actionVoidSuccess: z.ZodType<ActionVoidSuccess> = z.object({status:z.literal("ok"), returnedDomainElement:z.lazy(() =>domainElementVoid)}).strict();
