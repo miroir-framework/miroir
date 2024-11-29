@@ -6,7 +6,7 @@ import {
   ExtractorByEntityUuidGetEntityDefinition,
   EntityDefinition,
   ExtractorTemplateForDomainModelDEFUNCT,
-  ExtractorTemplateForDomainModelObjects,
+  QueryTemplateReturningObject,
   QueryTemplateWithExtractorCombinerTransformer,
   JzodObject
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -51,7 +51,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 // ################################################################################################
 // TODO: used in extractorTemplateRunnerForDomainState.unit.test and RestServer.ts, provide a better interface?
 export type ExtractorTemplateRunnerForDomainState = SyncExtractorTemplateRunner<
-  ExtractorTemplateForDomainModelObjects | QueryTemplateWithExtractorCombinerTransformer,
+  QueryTemplateReturningObject | QueryTemplateWithExtractorCombinerTransformer,
   DomainState,
   DomainElement
 >;

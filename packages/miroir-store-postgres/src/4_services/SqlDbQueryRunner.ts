@@ -570,7 +570,7 @@ export class SqlDbQueryRunner {
   ): Promise<DomainElementInstanceArrayOrFailed> => {
     // (
     //   state: any,
-    //   selectorParams: AsyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObjectList, any>
+    //   selectorParams: AsyncExtractorTemplateRunnerParams<QueryTemplateForObjectList, any>
     // ): Promise<DomainElementInstanceUuidIndexOrFailed> {
     let result: Promise<DomainElementInstanceArrayOrFailed>;
     switch (selectorParams.extractor.select.extractorOrCombinerType) {
@@ -629,7 +629,7 @@ export class SqlDbQueryRunner {
   ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
     // (
     //   state: any,
-    //   selectorParams: AsyncExtractorTemplateRunnerParams<ExtractorTemplateForSingleObjectList, any>
+    //   selectorParams: AsyncExtractorTemplateRunnerParams<QueryTemplateForObjectList, any>
     // ): Promise<DomainElementInstanceUuidIndexOrFailed> {
     let result: Promise<DomainElementInstanceUuidIndexOrFailed>;
     switch (selectorParams.extractor.select.extractorOrCombinerType) {

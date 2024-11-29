@@ -2,15 +2,16 @@ import {
   Extractor,
   ExtractorOrCombiner,
   ExtractorOrCombinerRecord,
-  ExtractorTemplateForDomainModelObjects,
+  QueryTemplateReturningObject,
   ExtractorWrapper,
-  QueryContextReference,
   QueryFailed,
   QueryForExtractorOrCombinerReturningObjectOrObjectList,
   ExtractorOrCombinerTemplate,
   ExtractorTemplateByExtractorWrapper,
   QueryTemplateWithExtractorCombinerTransformer,
-  QueryWithExtractorCombinerTransformer
+  QueryWithExtractorCombinerTransformer,
+  Transformer_InnerReference,
+  Transformer_contextOrParameterReference
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/Logger";
@@ -99,11 +100,11 @@ export function resolveExtractorTemplate(
         ...cleanQueryTemplate,
         extractorOrCombinerType: "extractorWrapperReturningObject",
         definition: Object.fromEntries(
-          Object.entries(extractorOrCombinerTemplate.definition).map((e: [string, QueryContextReference]) => [
+          Object.entries(extractorOrCombinerTemplate.definition).map((e: [string, Transformer_contextOrParameterReference]) => [
             e[0],
             {
               extractorOrCombinerType: "extractorOrCombinerContextReference",
-              extractorOrCombinerContextReference: e[1].queryReference
+              extractorOrCombinerContextReference: e[1].referenceName
             } as ExtractorOrCombiner,
           ])
         ),
@@ -115,9 +116,9 @@ export function resolveExtractorTemplate(
         ...cleanQueryTemplate,
         extractorOrCombinerType: "extractorWrapperReturningList",
         definition: extractorOrCombinerTemplate.definition.map(
-          (e: QueryContextReference) => ({
+          (e: Transformer_contextOrParameterReference) => ({
               extractorOrCombinerType: "extractorOrCombinerContextReference",
-              extractorOrCombinerContextReference: e.queryReference
+              extractorOrCombinerContextReference: e.referenceName
             }) as ExtractorOrCombiner,
         ),
       };
@@ -284,33 +285,33 @@ export function resolveQueryTemplate(
 
 // ################################################################################################
 export function resolveExtractorTemplateForDomainModelObjects(
-  extractorTemplateForDomainModelObjects: ExtractorTemplateForDomainModelObjects,
+  queryTemplateReturningObject: QueryTemplateReturningObject,
 ): QueryForExtractorOrCombinerReturningObjectOrObjectList {
 
-  const params = { ...extractorTemplateForDomainModelObjects.pageParams, ...extractorTemplateForDomainModelObjects.queryParams };
+  const params = { ...queryTemplateReturningObject.pageParams, ...queryTemplateReturningObject.queryParams };
 
-  // log.info("resolveExtractorTemplateForDomainModelObjects converting extractorTemplates:", extractorTemplateForDomainModelObjects);
+  // log.info("resolveExtractorTemplateForDomainModelObjects converting extractorTemplates:", queryTemplateReturningObject);
   
   const select = resolveExtractorTemplate(
-    extractorTemplateForDomainModelObjects.select,
+    queryTemplateReturningObject.select,
     params,
-    extractorTemplateForDomainModelObjects.contextResults
+    queryTemplateReturningObject.contextResults
   ) as any;
   // log.info("resolveExtractorTemplateForDomainModelObjects converted extractorTemplates, result:", select);
   return {
-    pageParams: extractorTemplateForDomainModelObjects.pageParams,
-    queryParams: extractorTemplateForDomainModelObjects.queryParams,
-    contextResults: extractorTemplateForDomainModelObjects.contextResults,
-    deploymentUuid: extractorTemplateForDomainModelObjects.deploymentUuid,
+    pageParams: queryTemplateReturningObject.pageParams,
+    queryParams: queryTemplateReturningObject.queryParams,
+    contextResults: queryTemplateReturningObject.contextResults,
+    deploymentUuid: queryTemplateReturningObject.deploymentUuid,
     queryType: "queryForExtractorOrCombinerReturningObjectList",
     select: select,
-    // runtimeTransformers: extractorTemplateForDomainModelObjects.runtimeTransformers,
+    // runtimeTransformers: queryTemplateReturningObject.runtimeTransformers,
   }
 }
 
 // ################################################################################################
 export function resolveExtractorOrQueryTemplate(
-  extractorOrCombinerTemplate: ExtractorTemplateForDomainModelObjects | QueryTemplateWithExtractorCombinerTransformer
+  extractorOrCombinerTemplate: QueryTemplateReturningObject | QueryTemplateWithExtractorCombinerTransformer
 ): QueryForExtractorOrCombinerReturningObjectOrObjectList | QueryWithExtractorCombinerTransformer {
   if ('select' in extractorOrCombinerTemplate) { // TODO: implementation-specific, to be improved!
     return resolveExtractorTemplateForDomainModelObjects(extractorOrCombinerTemplate);

@@ -378,7 +378,7 @@
                 "definition": {
                   "type": "schemaReference",
                   "definition":{
-                    "relativePath":"queryContextReference"
+                    "relativePath":"transformer_contextOrParameterReference"
                   }
                 }
               }
@@ -396,7 +396,7 @@
                 "definition": {
                   "type": "schemaReference",
                   "definition":{
-                    "relativePath":"queryContextReference"
+                    "relativePath":"transformer_contextOrParameterReference"
                   }
                 }
               }

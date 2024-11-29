@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 // import { describe, expect } from 'vitest';
 
 import {
-  ExtractorTemplateForDomainModelObjects,
+  QueryTemplateReturningObject,
   QueryTemplateWithExtractorCombinerTransformer
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { resolveExtractorTemplateForDomainModelObjects } from '../../2_domain/Templates';
@@ -23,8 +23,8 @@ describe("extractorTemplates.unit.test", () => {
     const newApplicationName = "test";
     const newUuid = uuidv4();
 
-    const uniqueRuntimeTemplate: ExtractorTemplateForDomainModelObjects = {
-      queryType: "extractorTemplateForDomainModelObjects",
+    const uniqueRuntimeTemplate: QueryTemplateReturningObject = {
+      queryType: "queryTemplateReturningObject",
       deploymentUuid: "xxxxx",
       pageParams: {
         instanceUuid: "xxxxx",

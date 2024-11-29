@@ -12,9 +12,9 @@ import {
   ActionVoidReturnType,
   ACTION_OK,
   RunQueryTemplateOrExtractorTemplateAction,
-  ExtractorTemplateForSingleObjectList,
+  QueryTemplateForObjectList,
   QueryTemplateWithExtractorCombinerTransformer,
-  ExtractorTemplateForSingleObject,
+  QueryTemplateReturningObject,
   ExtractorTemplateByExtractorWrapper,
   QueryForExtractorOrCombinerReturningObjectList,
   QueryForExtractorOrCombinerReturningObject,
@@ -167,7 +167,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
               attributes: ["*"],
             }
           );
-          log.info(this.logHeader, "sqlForExtractor", "extractorTemplateForDomainModelObjects", result);
+          log.info(this.logHeader, "sqlForExtractor", "queryTemplateReturningObject", result);
           // return "SELECT * FROM domainModel WHERE uuid = " + extractor.deploymentUuid;
           return result;
           break;
@@ -212,8 +212,8 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     // // ##############################################################################################
     // sqlForExtractorTemplate(
     //   extractor:
-    //     | ExtractorTemplateForSingleObjectList
-    //     | ExtractorTemplateForSingleObject
+    //     | QueryTemplateForObjectList
+    //     | QueryTemplateReturningObject
     //     | ExtractorTemplateByExtractorWrapper
     //     | QueryTemplateWithExtractorCombinerTransformer
     // ): RecursiveStringRecords {
@@ -234,7 +234,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     //       //   attributes: ["*"],
     //       // }
     //       // );
-    //       // log.info(this.logHeader, "sqlForExtractor", "extractorTemplateForDomainModelObjects", result);
+    //       // log.info(this.logHeader, "sqlForExtractor", "queryTemplateReturningObject", result);
     //       if (extractor.parentName == undefined) {
     //         throw new Error(
     //           "sqlForExtractor can not handle queryTemplateType for extractor" + JSON.stringify(extractor)
@@ -246,14 +246,14 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     //       // return result;
     //       break;
     //     }
-    //     case "extractorTemplateForDomainModelObjects": {
+    //     case "queryTemplateReturningObject": {
     //       const result: string = (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery(
     //         extractor.select.parentUuid,
     //         {
     //           attributes: ["*"],
     //         }
     //       );
-    //       log.info(this.logHeader, "sqlForExtractor", "extractorTemplateForDomainModelObjects", result);
+    //       log.info(this.logHeader, "sqlForExtractor", "queryTemplateReturningObject", result);
     //       // return "SELECT * FROM domainModel WHERE uuid = " + extractor.deploymentUuid;
     //       return result;
     //       break;

@@ -6,7 +6,7 @@ import {
   DomainElement,
   QueryForExtractorOrCombinerReturningObjectOrObjectList,
   QueryWithExtractorCombinerTransformer,
-  ExtractorTemplateForDomainModelObjects,
+  QueryTemplateReturningObject,
   QueryTemplateWithExtractorCombinerTransformer
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DeploymentEntityState } from "../../0_interfaces/2_domain/DeploymentStateInterface";
@@ -54,7 +54,7 @@ export interface TestExtractorParams {
   extractorRunnerForDeploymentEntityState?: ExtractWithExtractorType<DeploymentEntityState>;
   getExtractorRunnerParamsForDeploymentEntityState?: GetExtractorRunnerParamsForDeploymentEntityState;
   extractorTemplateRunnerForDeploymentEntityState?: SyncExtractorTemplateRunner<
-    ExtractorTemplateForDomainModelObjects | QueryTemplateWithExtractorCombinerTransformer,
+    QueryTemplateReturningObject | QueryTemplateWithExtractorCombinerTransformer,
     DeploymentEntityState,
     DomainElement
   >;
@@ -778,16 +778,16 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           queryType: "extractorTemplateByExtractorWrapperReturningObject",
           definition: {
             "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": {
-              queryType: "queryContextReference",
-              queryReference: "booksOfPublisher",
+              transformerType: "contextReference",
+              referenceName: "booksOfPublisher",
             },
           },
         },
         result2: {
           queryType: "extractorTemplateByExtractorWrapperReturningList",
           definition: [
-            { queryType: "queryContextReference", queryReference: "booksOfPublisher" },
-            { queryType: "queryContextReference", queryReference: "booksOfPublisher" },
+            { transformerType: "contextReference", referenceName: "booksOfPublisher" },
+            { transformerType: "contextReference", referenceName: "booksOfPublisher" },
           ],
         },
       },

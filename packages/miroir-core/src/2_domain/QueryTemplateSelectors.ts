@@ -10,7 +10,7 @@ import {
   DomainModelQueryTemplateJzodSchemaParams,
   QueryForExtractorOrCombinerReturningObjectOrObjectList,
   QueryWithExtractorCombinerTransformer,
-  ExtractorTemplateForDomainModelObjects,
+  QueryTemplateReturningObject,
   QueryTemplateWithExtractorCombinerTransformer,
   JzodElement,
   JzodObject,
@@ -74,7 +74,7 @@ export async function handleQueryTemplateAction(
 export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <StateType>(
   state: StateType,
   selectorParams: SyncExtractorTemplateRunnerParams<
-  ExtractorTemplateForDomainModelObjects | QueryTemplateWithExtractorCombinerTransformer,
+  QueryTemplateReturningObject | QueryTemplateWithExtractorCombinerTransformer,
     StateType
   >
 ): DomainElement => {
@@ -99,7 +99,7 @@ export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <
       )
       break;
     }
-    case "extractorTemplateForDomainModelObjects": {
+    case "queryTemplateReturningObject": {
       const resolvedExtractor: QueryForExtractorOrCombinerReturningObjectOrObjectList = resolveExtractorTemplateForDomainModelObjects(
         selectorParams.extractorOrCombinerTemplate
       ); 
