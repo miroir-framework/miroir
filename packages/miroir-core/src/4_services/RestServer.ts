@@ -34,7 +34,7 @@ import {
   getExtractorTemplateRunnerParamsForDomainState,
   getSelectorMapForTemplate
 } from "../2_domain/DomainStateQueryTemplateSelector";
-import { extractWithExtractor } from "../2_domain/QuerySelectors";
+import { extractWithExtractorOrCombinerReturningObjectOrObjectList } from "../2_domain/QuerySelectors";
 import { extractWithExtractorTemplate } from "../2_domain/QueryTemplateSelectors";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RestServer");
@@ -307,7 +307,7 @@ export async function queryActionHandler(
     const extractorRunnerMapOnDomainState = getDomainStateExtractorRunnerMap();
     log.info("RestServer queryActionHandler runQueryOrExtractorAction=", JSON.stringify(runQueryOrExtractorAction, undefined, 2))
     log.info("RestServer queryActionHandler domainState=", JSON.stringify(domainState, undefined, 2))
-    const queryResult: DomainElement = extractWithExtractor(
+    const queryResult: DomainElement = extractWithExtractorOrCombinerReturningObjectOrObjectList(
       domainState,
       getExtractorRunnerParamsForDomainState(runQueryOrExtractorAction.query, extractorRunnerMapOnDomainState)
     )

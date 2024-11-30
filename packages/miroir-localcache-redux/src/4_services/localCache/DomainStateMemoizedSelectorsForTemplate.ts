@@ -8,7 +8,7 @@ import {
   extractEntityJzodSchemaFromDeploymentEntityState,
   extractFetchQueryJzodSchema,
   extractJzodSchemaForDomainModelQuery,
-  extractWithExtractor,
+  extractWithExtractorOrCombinerReturningObjectOrObjectList,
   extractWithManyExtractorTemplates,
   runQuery,
   extractzodSchemaForSingleSelectQuery,
@@ -47,9 +47,9 @@ export function getMemoizedDeploymentEntityStateSelectorForTemplateMap(): SyncEx
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
       runQuery
     ),
-    extractWithExtractor: createSelector(
+    extractWithExtractorOrCombinerReturningObjectOrObjectList: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-      extractWithExtractor
+      extractWithExtractorOrCombinerReturningObjectOrObjectList
     ),
 
     // 

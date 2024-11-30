@@ -31,7 +31,7 @@ import {
   selectEntityInstanceListFromDomainState,
   selectEntityInstanceUuidIndexFromDomainState,
 } from "./DomainStateQuerySelectors";
-import { extractWithExtractor } from "./QuerySelectors";
+import { extractWithExtractorOrCombinerReturningObjectOrObjectList } from "./QuerySelectors";
 import {
   extractFetchQueryTemplateJzodSchema,
   extractJzodSchemaForDomainModelQueryTemplate,
@@ -81,7 +81,7 @@ export function getSelectorMapForTemplate(): SyncExtractorOrQueryRunnerMap<Domai
     extractEntityInstanceUuidIndexWithObjectListExtractor: extractEntityInstanceUuidIndexFromListQueryAndDomainState,
     extractEntityInstanceListWithObjectListExtractor: extractEntityInstanceListFromListQueryAndDomainState,
     runQuery: runQueryFromDomainState,
-    extractWithExtractor: extractWithExtractor,
+    extractWithExtractorOrCombinerReturningObjectOrObjectList: extractWithExtractorOrCombinerReturningObjectOrObjectList,
     // 
     extractWithManyExtractorTemplates: extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT,
   };

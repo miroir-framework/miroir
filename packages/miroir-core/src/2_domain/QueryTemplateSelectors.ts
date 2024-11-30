@@ -29,7 +29,7 @@ import { MiroirLoggerFactory } from "../4_services/Logger";
 import { packageName } from "../constants";
 import { getLoggerName } from "../tools";
 import { cleanLevel } from "./constants";
-import { handleQueryAction, extractWithExtractor, runQuery } from "./QuerySelectors";
+import { handleQueryAction, extractWithExtractorOrCombinerReturningObjectOrObjectList, runQuery } from "./QuerySelectors";
 import {
   resolveExtractorOrQueryTemplate,
   resolveQueryTemplateReturningObject,
@@ -111,7 +111,7 @@ export const extractWithExtractorTemplate /**: SyncExtractorOrQueryTemplateRunne
 
       log.info("extractWithExtractorTemplate found", "resolvedExtractor", JSON.stringify(resolvedExtractor, null, 2));
 
-      return extractWithExtractor(
+      return extractWithExtractorOrCombinerReturningObjectOrObjectList(
         state,
         {
           // extractorRunnerMap: {} as any,

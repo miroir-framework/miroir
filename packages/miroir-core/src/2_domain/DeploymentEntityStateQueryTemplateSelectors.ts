@@ -26,7 +26,7 @@ import {
 import {
   extractEntityInstanceListWithObjectListExtractorInMemory,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
-  extractWithExtractor,
+  extractWithExtractorOrCombinerReturningObjectOrObjectList,
   runQuery,
 } from "./QuerySelectors";
 import {
@@ -56,7 +56,7 @@ export function getDeploymentEntityStateSelectorTemplateMap(): SyncExtractorOrQu
     extractEntityInstanceListWithObjectListExtractor:
       extractEntityInstanceListWithObjectListExtractorInMemory,
     runQuery: runQuery,
-    extractWithExtractor: extractWithExtractor,
+    extractWithExtractorOrCombinerReturningObjectOrObjectList: extractWithExtractorOrCombinerReturningObjectOrObjectList,
     // 
     extractWithManyExtractorTemplates: extractWithManyExtractorTemplates,
   };

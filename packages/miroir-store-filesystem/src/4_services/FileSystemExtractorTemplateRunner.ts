@@ -48,7 +48,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
       extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
       extractEntityInstanceListWithObjectListExtractor: asyncExtractEntityInstanceListWithObjectListExtractor,
       runQuery: asyncRunQuery,
-      extractWithExtractor: asyncExtractWithExtractor,
+      extractWithExtractorOrCombinerReturningObjectOrObjectList: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
       // 
       extractWithManyExtractorTemplates: undefined as any,

@@ -57,7 +57,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 
 const emptySelectorMap:SyncExtractorOrQueryRunnerMap<any> = {
   extractorType: "sync",
-  extractWithExtractor: undefined as any, 
+  extractWithExtractorOrCombinerReturningObjectOrObjectList: undefined as any, 
   runQuery: undefined as any, 
   extractEntityInstance: undefined as any,
   extractEntityInstanceUuidIndexWithObjectListExtractor: undefined as any,
@@ -70,7 +70,7 @@ const emptySelectorMap:SyncExtractorOrQueryRunnerMap<any> = {
 
 const emptyAsyncSelectorMap:AsyncExtractorOrQueryRunnerMap = {
   extractorType: "async",
-  extractWithExtractor: undefined as any, 
+  extractWithExtractorOrCombinerReturningObjectOrObjectList: undefined as any, 
   runQuery: undefined as any, 
   extractEntityInstance: undefined as any,
   extractEntityInstanceUuidIndexWithObjectListExtractor: undefined as any,
@@ -550,10 +550,11 @@ export async function handleQueryAction(
   switch (runQueryOrExtractorAction.query.queryType) {
     case "queryForExtractorOrCombinerReturningObject":
     case "queryForExtractorOrCombinerReturningObjectList": {
-      queryResult = await selectorMap.extractWithExtractor(
+      const extractor = runQueryOrExtractorAction.query;
+      queryResult = await selectorMap.extractWithExtractorOrCombinerReturningObjectOrObjectList(
         {
-          extractor: runQueryOrExtractorAction.query,
           extractorRunnerMap: selectorMap,
+          extractor,
         }
       );
       break;
@@ -799,49 +800,60 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*ExtractorTempla
 }
 
 // ################################################################################################
-// export const extractWithExtractor: <StateType>SyncExtractorOrQueryRunner<StateType,QueryForExtractorOrCombinerReturningObjectOrObjectList | QueryWithExtractorCombinerTransformer, DomainElement> = <StateType>(
+// export const extractWithExtractorOrCombinerReturningObjectOrObjectList: <StateType>SyncExtractorOrQueryRunner<StateType,QueryForExtractorOrCombinerReturningObjectOrObjectList | QueryWithExtractorCombinerTransformer, DomainElement> = <StateType>(
 export type ExtractWithExtractorType<StateType> = SyncExtractorOrQueryRunner<
-  QueryForExtractorOrCombinerReturningObjectOrObjectList | QueryWithExtractorCombinerTransformer,
+  QueryForExtractorOrCombinerReturningObjectOrObjectList,
   StateType,
   DomainElement
 >;
-export const extractWithExtractor /*: ExtractWithExtractorType*/ = <StateType>(
+export const extractWithExtractorOrCombinerReturningObjectOrObjectList /*: ExtractWithExtractorType*/ = <StateType>(
   state: StateType,
   selectorParams: SyncExtractorOrQueryRunnerParams<
-  QueryForExtractorOrCombinerReturningObjectOrObjectList | QueryWithExtractorCombinerTransformer,
+    QueryForExtractorOrCombinerReturningObjectOrObjectList,
     StateType
   >
 ): DomainElement => {
   // log.info("########## extractExtractor begin, query", selectorParams);
   const localSelectorMap: SyncExtractorOrQueryRunnerMap<StateType> = selectorParams?.extractorRunnerMap ?? emptySelectorMap;
 
-  switch (selectorParams.extractor.queryType) {
-    case "queryWithExtractorCombinerTransformer": {
-      return runQuery(
-        state,
-        selectorParams as SyncExtractorOrQueryRunnerParams<QueryWithExtractorCombinerTransformer, StateType>
-      );
-      break;
-    }
-    case "queryForExtractorOrCombinerReturningObject":
-    case "queryForExtractorOrCombinerReturningObjectList": {
-      const result = innerSelectDomainElementFromExtractorOrCombiner(
-        state,
-        selectorParams.extractor.contextResults,
-        selectorParams.extractor.pageParams,
-        selectorParams.extractor.queryParams,
-        localSelectorMap as any,
-        selectorParams.extractor.deploymentUuid,
-        selectorParams.extractor.select
-      );
-      return result;
-        break;
-    }
-    default: {
-      return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } };
-      break;
-    }
-  }
+  const result = innerSelectDomainElementFromExtractorOrCombiner(
+    state,
+    selectorParams.extractor.contextResults,
+    selectorParams.extractor.pageParams,
+    selectorParams.extractor.queryParams,
+    localSelectorMap as any,
+    selectorParams.extractor.deploymentUuid,
+    selectorParams.extractor.select
+  );
+  return result;
+
+  // switch (selectorParams.extractor.queryType) {
+  //   case "queryWithExtractorCombinerTransformer": {
+  //     return runQuery(
+  //       state,
+  //       selectorParams as SyncExtractorOrQueryRunnerParams<QueryWithExtractorCombinerTransformer, StateType>
+  //     );
+  //     break;
+  //   }
+  //   case "queryForExtractorOrCombinerReturningObject":
+  //   case "queryForExtractorOrCombinerReturningObjectList": {
+  //     const result = innerSelectDomainElementFromExtractorOrCombiner(
+  //       state,
+  //       selectorParams.extractor.contextResults,
+  //       selectorParams.extractor.pageParams,
+  //       selectorParams.extractor.queryParams,
+  //       localSelectorMap as any,
+  //       selectorParams.extractor.deploymentUuid,
+  //       selectorParams.extractor.select
+  //     );
+  //     return result;
+  //       break;
+  //   }
+  //   default: {
+  //     return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } };
+  //     break;
+  //   }
+  // }
 
   // log.info(
   //   "extractExtractor",

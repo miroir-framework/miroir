@@ -360,7 +360,7 @@ export class SqlDbQueryRunner {
       extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
       extractEntityInstanceListWithObjectListExtractor: asyncExtractEntityInstanceListWithObjectListExtractor,
       runQuery: asyncRunQuery,
-      extractWithExtractor: asyncExtractWithExtractor,
+      extractWithExtractorOrCombinerReturningObjectOrObjectList: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
       // 
       extractWithManyExtractorTemplates: undefined as any,
@@ -377,7 +377,7 @@ export class SqlDbQueryRunner {
       extractEntityInstanceListWithObjectListExtractor:
         this.asyncSqlDbExtractEntityInstanceListWithObjectListExtractor.bind(this),
       runQuery: this.asyncExtractWithQuery.bind(this),
-      extractWithExtractor: asyncExtractWithExtractor,
+      extractWithExtractorOrCombinerReturningObjectOrObjectList: asyncExtractWithExtractor,
       applyExtractorTransformer: undefined as any,
       // 
       extractWithManyExtractorTemplates: undefined as any,
@@ -683,7 +683,7 @@ export class SqlDbQueryRunner {
     switch (runQueryOrExtractorAction.query.queryType) {
       case "queryForExtractorOrCombinerReturningObject":
       case "queryForExtractorOrCombinerReturningObjectList": {
-        queryResult = await this.inMemoryImplementationExtractorRunnerMap.extractWithExtractor({
+        queryResult = await this.inMemoryImplementationExtractorRunnerMap.extractWithExtractorOrCombinerReturningObjectOrObjectList({
           extractor: runQueryOrExtractorAction.query,
           extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
         });

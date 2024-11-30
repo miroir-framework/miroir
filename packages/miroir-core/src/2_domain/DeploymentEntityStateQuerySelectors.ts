@@ -5,7 +5,7 @@ import {
   DomainElementInstanceUuidIndexOrFailed,
   // QueryByEntityUuidGetEntityDefinition,
   EntityDefinition,
-  QueryDEFUNCT,
+  MiroirQuery,
   QueryForExtractorOrCombinerReturningObject,
   QueryForExtractorOrCombinerReturningObjectList,
   JzodObject,
@@ -32,7 +32,7 @@ import {
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractFetchQueryJzodSchema,
   extractJzodSchemaForDomainModelQuery,
-  extractWithExtractor,
+  extractWithExtractorOrCombinerReturningObjectOrObjectList,
   runQuery,
   extractzodSchemaForSingleSelectQuery
 } from "./QuerySelectors";
@@ -419,7 +419,7 @@ export function getDeploymentEntityStateSelectorMap(): SyncExtractorOrQueryRunne
     extractEntityInstanceListWithObjectListExtractor:
       extractEntityInstanceListWithObjectListExtractorInMemory,
     runQuery: runQuery,
-    extractWithExtractor: extractWithExtractor,
+    extractWithExtractorOrCombinerReturningObjectOrObjectList: extractWithExtractorOrCombinerReturningObjectOrObjectList,
     // ############################################################################################
     extractWithManyExtractorTemplates: extractWithManyExtractorTemplates,
   };
@@ -436,12 +436,12 @@ export function getDeploymentEntityStateJzodSchemaSelectorMap(): QueryRunnerMapF
 }
 
 // ################################################################################################
-export type GetExtractorRunnerParamsForDeploymentEntityState = <QueryType extends QueryDEFUNCT>(
+export type GetExtractorRunnerParamsForDeploymentEntityState = <QueryType extends MiroirQuery>(
   query: QueryType,
   extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DeploymentEntityState>
 ) => SyncExtractorOrQueryRunnerParams<QueryType, DeploymentEntityState>;
 
-export const getExtractorRunnerParamsForDeploymentEntityState = <QueryType extends QueryDEFUNCT>(
+export const getExtractorRunnerParamsForDeploymentEntityState = <QueryType extends MiroirQuery>(
   query: QueryType,
   extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DeploymentEntityState>
 ): SyncExtractorOrQueryRunnerParams<QueryType, DeploymentEntityState> =>{

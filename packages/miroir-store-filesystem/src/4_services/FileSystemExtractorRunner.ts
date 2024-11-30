@@ -55,7 +55,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
       extractEntityInstanceListWithObjectListExtractor: asyncExtractEntityInstanceListWithObjectListExtractor,
       runQuery: asyncRunQuery,
-      extractWithExtractor: asyncExtractWithExtractor,
+      extractWithExtractorOrCombinerReturningObjectOrObjectList: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
       // ############################################################################
       extractWithManyExtractorTemplates: undefined as any,
@@ -69,7 +69,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
     switch (runQueryOrExtractorAction.query.queryType) {
       case "queryForExtractorOrCombinerReturningObject":
       case "queryForExtractorOrCombinerReturningObjectList": {
-        queryResult = await this.selectorMap.extractWithExtractor(
+        queryResult = await this.selectorMap.extractWithExtractorOrCombinerReturningObjectOrObjectList(
           {
             extractor: runQueryOrExtractorAction.query,
             extractorRunnerMap: this.selectorMap,

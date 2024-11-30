@@ -68,8 +68,8 @@ export {
   ExtractorWrapperReturningObject,
   extractorWrapperReturningObject,
   LocalCacheExtractor,
-  QueryDEFUNCT,
-  queryDEFUNCT,
+  MiroirQuery,
+  miroirQuery,
   // ===
   ConceptLevel,
   StoreManagementAction,
@@ -575,7 +575,7 @@ export {
   extractJzodSchemaForDomainModelQuery,
   extractzodSchemaForSingleSelectQuery,
   runQuery,
-  extractWithExtractor,
+  extractWithExtractorOrCombinerReturningObjectOrObjectList,
 } from './2_domain/QuerySelectors';
 // export {
 //   asyncExtractEntityInstanceUuidIndexWithObjectListExtractorTemplate,

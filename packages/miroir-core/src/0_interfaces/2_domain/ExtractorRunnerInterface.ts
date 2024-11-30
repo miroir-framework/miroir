@@ -5,25 +5,27 @@ import {
   DomainElementInstanceArrayOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
   DomainElementObjectOrFailed,
-  QueryJzodSchemaParams,
   DomainModelQueryTemplateJzodSchemaParams,
   ExtendedTransformerForRuntime,
+  ExtractorOrCombiner,
+  ExtractorOrCombinerReturningObjectOrObjectList,
+  JzodElement,
+  JzodObject,
+  MiroirQuery,
   QueryByEntityUuidGetEntityDefinition,
   QueryByQuery2GetParamJzodSchema,
   QueryByQueryGetParamJzodSchema,
   QueryByQueryTemplateGetParamJzodSchema,
   QueryByTemplateGetParamJzodSchema,
-  QueryDEFUNCT,
-  QueryTemplateDEFUNCT,
-  JzodElement,
-  JzodObject,
-  RunQueryOrExtractorAction,
   QueryForExtractorOrCombinerReturningObject,
   QueryForExtractorOrCombinerReturningObjectList,
   QueryForExtractorOrCombinerReturningObjectOrObjectList,
-  RunQueryTemplateOrExtractorTemplateAction,
+  QueryJzodSchemaParams,
+  QueryTemplateDEFUNCT,
   QueryTemplateWithExtractorCombinerTransformer,
-  QueryWithExtractorCombinerTransformer
+  QueryWithExtractorCombinerTransformer,
+  RunQueryOrExtractorAction,
+  RunQueryTemplateOrExtractorTemplateAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 
 // ################################################################################################
@@ -70,39 +72,64 @@ export interface ExtractorTemplatePersistenceStoreRunner {
 // ################################################################################################
 // ################################################################################################
 // EXTRACTORS  ####################################################################################
-export interface SyncExtractorOrQueryRunnerParams<ExtractorDomainModelType extends QueryDEFUNCT, StateType> {
+// export interface SyncExtractorRunnerParams<ExtractorType extends ExtractorOrCombiner, StateType> {
+export interface SyncExtractorRunnerParams<ExtractorType extends QueryForExtractorOrCombinerReturningObjectOrObjectList, StateType> {
   extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<StateType>
-  extractor: ExtractorDomainModelType
+  extractor: ExtractorType
+}
+
+export interface SyncExtractorOrQueryRunnerParams<queryType extends MiroirQuery, StateType> {
+  extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<StateType>
+  extractor: queryType
 }
 
 // ################################################################################################
-export interface AsyncExtractorOrQueryRunnerParams<ExtractorDomainModelType extends QueryDEFUNCT> {
+// export interface AsyncExtractorRunnerParams<ExtractorType extends ExtractorOrCombiner> {
+export interface AsyncExtractorRunnerParams<ExtractorType extends QueryForExtractorOrCombinerReturningObjectOrObjectList> {
+  extractorRunnerMap?: AsyncExtractorOrQueryRunnerMap
+  extractor: ExtractorType
+}
+
+export interface AsyncExtractorOrQueryRunnerParams<ExtractorDomainModelType extends MiroirQuery> {
   extractorRunnerMap?: AsyncExtractorOrQueryRunnerMap
   extractor: ExtractorDomainModelType
 }
 // ################################################################################################
-export type SyncExtractorOrQueryRunner<QueryType extends QueryDEFUNCT, StateType, ResultType> = (
+// export type SyncExtractorRunner<QueryType extends ExtractorOrCombiner, StateType, ResultType> = (
+export type SyncExtractorRunner<QueryType extends QueryForExtractorOrCombinerReturningObjectOrObjectList, StateType, ResultType> = (
+  domainState: StateType,
+  extractorAndParams: SyncExtractorRunnerParams<QueryType, StateType>
+) => ResultType;
+
+export type SyncExtractorOrQueryRunner<QueryType extends MiroirQuery, StateType, ResultType> = (
   domainState: StateType,
   extractorAndParams: SyncExtractorOrQueryRunnerParams<QueryType, StateType>
 ) => ResultType;
 
 // ################################################################################################
-export type AsyncExtractorOrQueryRunner<QueryType extends QueryDEFUNCT, ResultType> = (
+// export type AsyncExtractorRunner<ExtractorType extends ExtractorOrCombiner, ResultType> = (
+export type AsyncExtractorRunner<ExtractorType extends QueryForExtractorOrCombinerReturningObjectOrObjectList, ResultType> = (
+  extractorAndParams: AsyncExtractorRunnerParams<ExtractorType>
+) => Promise<ResultType>;
+
+export type AsyncExtractorOrQueryRunner<QueryType extends MiroirQuery, ResultType> = (
   extractorAndParams: AsyncExtractorOrQueryRunnerParams<QueryType>
 ) => Promise<ResultType>;
 
 // ################################################################################################
-export type ExtractorOrQueryRunner<QueryType extends QueryDEFUNCT, StateType, ResultType> =
+export type ExtractorOrQueryRunner<QueryType extends MiroirQuery, StateType, ResultType> =
   | SyncExtractorOrQueryRunner<QueryType, StateType, ResultType>
   | AsyncExtractorOrQueryRunner<QueryType, ResultType>;
 
 // ################################################################################################
+export type AsyncExtractWithExtractorOrCombinerReturningObjectOrObjectList = AsyncExtractorRunner<
+  QueryForExtractorOrCombinerReturningObjectOrObjectList,
+  DomainElement
+>;
+
 export type AsyncExtractorOrQueryRunnerMap = {
   extractorType: "async";
-  extractWithExtractor: AsyncExtractorOrQueryRunner<
-    QueryForExtractorOrCombinerReturningObjectOrObjectList | QueryWithExtractorCombinerTransformer,
-    DomainElement
-  >;
+  extractWithExtractorOrCombinerReturningObjectOrObjectList: AsyncExtractWithExtractorOrCombinerReturningObjectOrObjectList;
   runQuery: AsyncExtractorOrQueryRunner<QueryWithExtractorCombinerTransformer, DomainElementObjectOrFailed>;
   extractEntityInstance: AsyncExtractorOrQueryRunner<
     QueryForExtractorOrCombinerReturningObject,
@@ -145,19 +172,22 @@ export type AsyncExtractorOrQueryRunnerMap = {
 };
 
 // ################################################################################################
+export type SyncExtractWithExtractorOrCombinerReturningObjectOrObjectList<StateType> = SyncExtractorRunner<
+  QueryForExtractorOrCombinerReturningObjectOrObjectList,
+  StateType,
+  DomainElement
+>;
+
 export type SyncExtractorOrQueryRunnerMap<StateType> = {
   extractorType: "sync";
-  extractWithExtractor: SyncExtractorOrQueryRunner<
-    QueryForExtractorOrCombinerReturningObject | QueryForExtractorOrCombinerReturningObjectList | QueryWithExtractorCombinerTransformer,
+  // extractWithExtractorOrCombinerReturningObjectOrObjectList: SyncExtractorOrQueryRunner<
+  extractWithExtractorOrCombinerReturningObjectOrObjectList: SyncExtractWithExtractorOrCombinerReturningObjectOrObjectList<StateType>;
+  runQuery: SyncExtractorOrQueryRunner<QueryWithExtractorCombinerTransformer, StateType, DomainElementObjectOrFailed>;
+  extractEntityInstance: SyncExtractorOrQueryRunner<
+    QueryForExtractorOrCombinerReturningObject,
     StateType,
-    DomainElement
+    DomainElementEntityInstanceOrFailed
   >;
-  runQuery: SyncExtractorOrQueryRunner<
-    QueryWithExtractorCombinerTransformer,
-    StateType,
-    DomainElementObjectOrFailed
-  >;
-  extractEntityInstance: SyncExtractorOrQueryRunner<QueryForExtractorOrCombinerReturningObject, StateType, DomainElementEntityInstanceOrFailed>;
   extractEntityInstanceUuidIndex: SyncExtractorOrQueryRunner<
     QueryForExtractorOrCombinerReturningObjectList,
     StateType,

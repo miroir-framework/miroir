@@ -30,7 +30,7 @@ import {
   getExtractorTemplateRunnerParamsForDomainState,
   GetSelectorParamsForTemplateOnDomainStateType
 } from "../../2_domain/DomainStateQueryTemplateSelector";
-import { extractWithExtractor, ExtractWithExtractorType } from "../../2_domain/QuerySelectors";
+import { extractWithExtractorOrCombinerReturningObjectOrObjectList, ExtractWithExtractorType } from "../../2_domain/QuerySelectors";
 import { extractWithExtractorTemplate } from "../../2_domain/QueryTemplateSelectors";
 import { domainStateToDeploymentEntityState, resolvePathOnObject } from "../../tools";
 import domainStateImport from "./domainState.json";
@@ -76,7 +76,7 @@ const testExtractorTools = {
     extractorTemplateRunnerForDomainState: extractorTemplateRunnerForDomainState,
     getExtractorTemplateRunnerParamsForDomainState: getExtractorTemplateRunnerParamsForDomainState,
     // Deployment Entity State
-    extractorRunnerForDeploymentEntityState: extractWithExtractor<DeploymentEntityState>,
+    extractorRunnerForDeploymentEntityState: extractWithExtractorOrCombinerReturningObjectOrObjectList<DeploymentEntityState>,
     getExtractorRunnerParamsForDeploymentEntityState: getExtractorRunnerParamsForDeploymentEntityState,
     extractorTemplateRunnerForDeploymentEntityState: extractWithExtractorTemplate<DeploymentEntityState>,
     getExtractorTemplateRunnerParamsForDeploymentEntityState: getExtractorTemplateRunnerParamsForDeploymentEntityState,

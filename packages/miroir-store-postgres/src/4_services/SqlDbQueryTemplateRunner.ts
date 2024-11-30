@@ -52,7 +52,7 @@ export class SqlDbExtractTemplateRunner {
       extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
       extractEntityInstanceListWithObjectListExtractor: asyncExtractEntityInstanceListWithObjectListExtractor,
       runQuery: asyncRunQuery,
-      extractWithExtractor: asyncExtractWithExtractor,
+      extractWithExtractorOrCombinerReturningObjectOrObjectList: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
       // 
       extractWithManyExtractorTemplates: undefined as any,
@@ -67,7 +67,7 @@ export class SqlDbExtractTemplateRunner {
       extractEntityInstanceListWithObjectListExtractor:
         this.sqlDbExtractorRunner.asyncSqlDbExtractEntityInstanceListWithObjectListExtractor.bind(this.sqlDbExtractorRunner),
       runQuery: this.sqlDbExtractorRunner.asyncExtractWithQuery.bind(this.sqlDbExtractorRunner),
-      extractWithExtractor: asyncExtractWithExtractor,
+      extractWithExtractorOrCombinerReturningObjectOrObjectList: asyncExtractWithExtractor,
       applyExtractorTransformer: undefined as any,
       // 
       extractWithManyExtractorTemplates: undefined as any,

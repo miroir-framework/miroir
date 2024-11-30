@@ -572,13 +572,13 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "combinerForObjectByRelation"
+                  "relativePath": "extractorForObjectByDirectReference"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "extractorForObjectByDirectReference"
+                  "relativePath": "combinerForObjectByRelation"
                 }
               }
             ]
@@ -618,7 +618,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "extractorOrCombinerReturningObject"
+                  "relativePath": "extractorForObjectByDirectReference"
                 }
               },
               {
@@ -702,6 +702,24 @@
                 "type": "schemaReference",
                 "definition": {
                   "relativePath": "combinerByManyToManyRelationReturningObjectList"
+                }
+              }
+            ]
+          },
+          "extractorOrCombinerReturningObjectOrObjectList": {
+            "type": "union",
+            "discriminator": "extractorOrCombinerType",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "extractorOrCombinerReturningObject"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "extractorOrCombinerReturningObjectList"
                 }
               }
             ]
@@ -838,25 +856,19 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "extractorWrapper"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "extractorForObjectByDirectReference"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "combinerForObjectByRelation"
+                  "relativePath": "extractorOrCombinerReturningObject"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
                   "relativePath": "extractorOrCombinerReturningObjectList"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "extractorWrapper"
                 }
               },
               {
