@@ -32,7 +32,7 @@ import {
 } from "./DomainStateQueryTemplateSelector";
 import { ExtractorRunnerInMemory } from "./ExtractorRunnerInMemory";
 import { handleQueryTemplateAction } from "./QueryTemplateSelectors";
-import { resolveQueryTemplateReturningObject, resolveQueryTemplate } from "./Templates";
+import { resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList, resolveQueryTemplateWithExtractorCombinerTransformer } from "./Templates";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "ExtractorTemplateRunnerInMemory");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -63,7 +63,7 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
       extractWithExtractorOrCombinerReturningObjectOrObjectList: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
       // 
-      extractWithManyExtractorTemplates: undefined as any,
+      runQueryTemplateWithExtractorCombinerTransformer: undefined as any,
     };
   }
 

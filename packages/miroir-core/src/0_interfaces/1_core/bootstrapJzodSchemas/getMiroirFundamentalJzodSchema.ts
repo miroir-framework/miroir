@@ -1826,7 +1826,7 @@ export function getMiroirFundamentalJzodSchema(
             },
           ],
         },
-        queryTemplateDEFUNCT: {
+        miroirQueryTemplate: {
           type: "union",
           discriminator: "queryType",
           definition: [
@@ -1834,7 +1834,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "queryTemplateReturningObject",
+                relativePath: "queryTemplateReturningObjectOrObjectList",
               },
             },
             {
@@ -2161,7 +2161,7 @@ export function getMiroirFundamentalJzodSchema(
         localPersistenceAction: persistenceEndpointVersionV1.definition.actions[0].actionParameters,
         restPersistenceAction: persistenceEndpointVersionV1.definition.actions[1].actionParameters,
         runQueryTemplateOrExtractorTemplateAction: queryEndpointVersionV1.definition.actions[0].actionParameters,
-        runQueryOrExtractorAction: queryEndpointVersionV1.definition.actions[1].actionParameters,
+        runExtractorOrQueryAction: queryEndpointVersionV1.definition.actions[1].actionParameters,
         compositeActionDefinition: domainEndpointVersionV1.definition.actions.find(
           (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
         )?.actionParameters.definition.definition,
@@ -2514,7 +2514,7 @@ export function getMiroirFundamentalJzodSchema(
         combinerByRelationReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.combinerByRelationReturningObjectList,
         combinerByManyToManyRelationReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.combinerByManyToManyRelationReturningObjectList,
         extractorOrCombinerRecord: (miroirFundamentalJzodSchema as any).definition.context.extractorOrCombinerRecord,
-        runQueryOrExtractorAction: (miroirFundamentalJzodSchema as any).definition.context.runQueryOrExtractorAction,
+        runExtractorOrQueryAction: (miroirFundamentalJzodSchema as any).definition.context.runExtractorOrQueryAction,
         // queries
         extractorTemplateRoot: (miroirFundamentalJzodSchema as any).definition.context.extractorTemplateRoot,
         queryFailed: (miroirFundamentalJzodSchema as any).definition.context.queryFailed,
@@ -2791,7 +2791,7 @@ export function getMiroirFundamentalJzodSchema(
         //               },
         //             },
         //           },
-        //           // runQueryTemplateOrExtractorTemplateAction. TODO: why not runQueryOrExtractorAction?
+        //           // runQueryTemplateOrExtractorTemplateAction. TODO: why not runExtractorOrQueryAction?
         //           {
         //             type: "object",
         //             definition: {
@@ -2803,7 +2803,7 @@ export function getMiroirFundamentalJzodSchema(
         //                 definition: {
         //                   relativePath: forgeCarryOnReferenceName(
         //                     miroirFundamentalJzodSchemaUuid,
-        //                     // "runQueryOrExtractorAction"
+        //                     // "runExtractorOrQueryAction"
         //                     "runQueryTemplateOrExtractorTemplateAction"
         //                   ),
         //                 },
@@ -2816,12 +2816,12 @@ export function getMiroirFundamentalJzodSchema(
         //               compositeActionType: { type: "literal", definition: "query" },
         //               compositeActionStepLabel: { type: "string", optional: true },
         //               nameGivenToResult: { type: "string" },
-        //               runQueryOrExtractorAction: {
+        //               runExtractorOrQueryAction: {
         //                 type: "schemaReference",
         //                 definition: {
         //                   relativePath: forgeCarryOnReferenceName(
         //                     miroirFundamentalJzodSchemaUuid,
-        //                     "runQueryOrExtractorAction"
+        //                     "runExtractorOrQueryAction"
         //                     // "runQueryTemplateOrExtractorTemplateAction"
         //                   ),
         //                 },

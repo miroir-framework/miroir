@@ -16,7 +16,7 @@ import {
   ModelAction,
   ModelActionAlterEntityAttribute,
   ModelActionRenameEntity,
-  RunQueryOrExtractorAction,
+  RunExtractorOrQueryAction,
   RunQueryTemplateOrExtractorTemplateAction,
   StoreManagementAction,
   StoreSectionConfiguration
@@ -80,7 +80,7 @@ export interface PersistenceStoreInstanceSectionAbstractInterface extends Persis
   getInstance(parentUuid: string, uuid: string): Promise<ActionEntityInstanceReturnType>;
   getInstances(parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType>;
   handleQueryTemplateForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
-  handleQueryAction(query: RunQueryOrExtractorAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
+  handleQueryAction(query: RunExtractorOrQueryAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
   upsertInstance(parentUuid:string, instance:EntityInstance):Promise<ActionVoidReturnType>;
   deleteInstances(parentUuid:string, instances:EntityInstance[]):Promise<ActionVoidReturnType>;
   deleteInstance(parentUuid:string, instance:EntityInstance):Promise<ActionVoidReturnType>;
@@ -186,7 +186,7 @@ export interface PersistenceStoreControllerInterface
 
   // same interface as in PersistenceStoreInstanceSectionAbstractInterface; it implies that RunQueryTemplateOrExtractorTemplateAction includes applicationSection
   handleQueryTemplateForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType>;
-  handleQueryAction(query: RunQueryOrExtractorAction): Promise<ActionReturnType>;
+  handleQueryAction(query: RunExtractorOrQueryAction): Promise<ActionReturnType>;
   
   getInstance(section: ApplicationSection, parentUuid: string, uuid: Uuid): Promise<ActionEntityInstanceReturnType>;
   getInstances(section: ApplicationSection, parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType>;

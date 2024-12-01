@@ -9,7 +9,7 @@ import {
   ActionVoidReturnType,
   ApplicationSection,
   RunQueryTemplateOrExtractorTemplateAction,
-  RunQueryOrExtractorAction,
+  RunExtractorOrQueryAction,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { PersistenceStoreDataSectionInterface } from "../../0_interfaces/4-services/PersistenceStoreControllerInterface";
 
@@ -65,7 +65,7 @@ export class ErrorDataStore implements PersistenceStoreDataSectionInterface {
   handleQueryTemplateForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
-  handleQueryAction(query: RunQueryOrExtractorAction): Promise<ActionReturnType> {
+  handleQueryAction(query: RunExtractorOrQueryAction): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
   upsertInstance(parentUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {

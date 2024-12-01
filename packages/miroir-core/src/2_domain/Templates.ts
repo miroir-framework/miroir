@@ -11,7 +11,8 @@ import {
   QueryTemplateWithExtractorCombinerTransformer,
   QueryWithExtractorCombinerTransformer,
   Transformer_InnerReference,
-  Transformer_contextOrParameterReference
+  Transformer_contextOrParameterReference,
+  QueryTemplateReturningObjectOrObjectList
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/Logger";
@@ -224,14 +225,14 @@ export function resolveQueryTemplateSelectExtractorWrapper(
 }
 
 // ################################################################################################
-export function resolveQueryTemplate(
+export function resolveQueryTemplateWithExtractorCombinerTransformer(
   queryTemplate: QueryTemplateWithExtractorCombinerTransformer,
 ): QueryWithExtractorCombinerTransformer {
 
   const params = { ...queryTemplate.pageParams, ...queryTemplate.queryParams };
 
   log.info(
-    "resolveQueryTemplate converting queryTemplate:",
+    "resolveQueryTemplateWithExtractorCombinerTransformer converting queryTemplate:",
     JSON.stringify(queryTemplate.extractorTemplates, null, 2)
   );
   
@@ -243,15 +244,15 @@ export function resolveQueryTemplate(
       ]
     )
   );
-  // log.info("resolveQueryTemplate converted extractorTemplates, result:", queries);
+  // log.info("resolveQueryTemplateWithExtractorCombinerTransformer converted extractorTemplates, result:", queries);
   
   const failedQueries = Object.values(queries).filter((e) => (e as any).queryFailure);
   if (failedQueries.length > 0) {
-    throw new Error("resolveQueryTemplate QueryNotExecutable failedQueries: " + JSON.stringify(failedQueries));
+    throw new Error("resolveQueryTemplateWithExtractorCombinerTransformer QueryNotExecutable failedQueries: " + JSON.stringify(failedQueries));
   }
 
   // log.info(
-  //   "resolveQueryTemplate converting combinerTemplates:",
+  //   "resolveQueryTemplateWithExtractorCombinerTransformer converting combinerTemplates:",
   //   queryTemplate.combinerTemplates
   // );
   const combiners = Object.fromEntries(
@@ -261,12 +262,12 @@ export function resolveQueryTemplate(
     ])
   );
 
-  // log.info("resolveQueryTemplate converted combinerTemplates, result:", combiners);
+  // log.info("resolveQueryTemplateWithExtractorCombinerTransformer converted combinerTemplates, result:", combiners);
   const failures = Object.values(combiners??{}).find((e) => (e as any).queryFailure);
   if (failures && Array.isArray(failures) && failures?.length > 0) {
-    throw new Error("resolveQueryTemplate QueryNotExecutable for combiners: " + JSON.stringify(failures));
+    throw new Error("resolveQueryTemplateWithExtractorCombinerTransformer QueryNotExecutable for combiners: " + JSON.stringify(failures));
   } else {
-    log.info("resolveQueryTemplate no failure for combiners: " + JSON.stringify(failures));
+    log.info("resolveQueryTemplateWithExtractorCombinerTransformer no failure for combiners: " + JSON.stringify(failures));
   }
   const result: QueryWithExtractorCombinerTransformer = {
     pageParams: queryTemplate.pageParams,
@@ -278,44 +279,47 @@ export function resolveQueryTemplate(
     combiners: combiners as Record<string, ExtractorOrCombiner>,
     runtimeTransformers: queryTemplate.runtimeTransformers,
   };
-  log.info("resolveQueryTemplate converted query, result:", combiners);
+  log.info("resolveQueryTemplateWithExtractorCombinerTransformer converted query, result:", combiners);
 
   return result;
 }
 
 // ################################################################################################
-export function resolveQueryTemplateReturningObject(
-  queryTemplateReturningObject: QueryTemplateReturningObject,
+export function resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList(
+  queryTemplateReturningObjectOrObjectList: QueryTemplateReturningObjectOrObjectList,
 ): QueryForExtractorOrCombinerReturningObjectOrObjectList {
 
-  const params = { ...queryTemplateReturningObject.pageParams, ...queryTemplateReturningObject.queryParams };
+  const params = { ...queryTemplateReturningObjectOrObjectList.pageParams, ...queryTemplateReturningObjectOrObjectList.queryParams };
 
   // log.info("resolveExtractorTemplateForDomainModelObjects converting extractorTemplates:", queryTemplateReturningObject);
   
   const select = resolveExtractorTemplate(
-    queryTemplateReturningObject.select,
+    queryTemplateReturningObjectOrObjectList.select,
     params,
-    queryTemplateReturningObject.contextResults
+    queryTemplateReturningObjectOrObjectList.contextResults
   ) as any;
   // log.info("resolveExtractorTemplateForDomainModelObjects converted extractorTemplates, result:", select);
   return {
-    pageParams: queryTemplateReturningObject.pageParams,
-    queryParams: queryTemplateReturningObject.queryParams,
-    contextResults: queryTemplateReturningObject.contextResults,
-    deploymentUuid: queryTemplateReturningObject.deploymentUuid,
-    queryType: "queryForExtractorOrCombinerReturningObjectList",
+    pageParams: queryTemplateReturningObjectOrObjectList.pageParams,
+    queryParams: queryTemplateReturningObjectOrObjectList.queryParams,
+    contextResults: queryTemplateReturningObjectOrObjectList.contextResults,
+    deploymentUuid: queryTemplateReturningObjectOrObjectList.deploymentUuid,
+    queryType:
+      queryTemplateReturningObjectOrObjectList.queryType == "queryTemplateReturningObjectList"
+        ? "queryForExtractorOrCombinerReturningObjectList"
+        : "queryForExtractorOrCombinerReturningObject",
     select: select,
     // runtimeTransformers: queryTemplateReturningObject.runtimeTransformers,
-  }
+  };
 }
 
 // ################################################################################################
 export function resolveExtractorOrQueryTemplate(
-  extractorOrCombinerTemplate: QueryTemplateReturningObject | QueryTemplateWithExtractorCombinerTransformer
+  extractorOrCombinerTemplate: QueryTemplateReturningObjectOrObjectList | QueryTemplateWithExtractorCombinerTransformer
 ): QueryForExtractorOrCombinerReturningObjectOrObjectList | QueryWithExtractorCombinerTransformer {
   if ('select' in extractorOrCombinerTemplate) { // TODO: implementation-specific, to be improved!
-    return resolveQueryTemplateReturningObject(extractorOrCombinerTemplate);
+    return resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList(extractorOrCombinerTemplate);
   } else {
-    return resolveQueryTemplate(extractorOrCombinerTemplate);
+    return resolveQueryTemplateWithExtractorCombinerTransformer(extractorOrCombinerTemplate);
   }
 }

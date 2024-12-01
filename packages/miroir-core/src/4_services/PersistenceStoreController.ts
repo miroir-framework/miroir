@@ -16,7 +16,7 @@ import {
   ModelActionInitModel,
   ModelActionInitModelParams,
   ModelActionRenameEntity,
-  RunQueryOrExtractorAction,
+  RunExtractorOrQueryAction,
   RunQueryTemplateOrExtractorTemplateAction,
   StoreSectionConfiguration
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -105,7 +105,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
 
   // #############################################################################################
-  async handleQueryAction(query: RunQueryOrExtractorAction): Promise<ActionReturnType> {
+  async handleQueryAction(query: RunExtractorOrQueryAction): Promise<ActionReturnType> {
     // TODO: fix applicationSection!!!
     log.info(this.logHeader,'handleQueryAction','query',query);
     // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);

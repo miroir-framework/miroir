@@ -25,7 +25,9 @@ import {
   ExtractorRunnerParamsForJzodSchema,
   SyncExtractorOrQueryRunner,
   SyncExtractorOrQueryRunnerMap,
-  SyncExtractorOrQueryRunnerParams
+  SyncExtractorOrQueryRunnerParams,
+  SyncExtractorRunnerParams,
+  SyncQueryRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/Logger";
@@ -33,7 +35,7 @@ import entityEntityDefinition from "../assets/miroir_model/16dbfe28-e1d7-4f20-9b
 import { packageName } from "../constants";
 import { getLoggerName } from "../tools";
 import { cleanLevel } from "./constants";
-import { extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT } from "./DomainStateQueryTemplateSelector";
+import { runQueryTemplateFromDomainState } from "./DomainStateQueryTemplateSelector";
 import {
   extractEntityInstanceListWithObjectListExtractorInMemory,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
@@ -462,8 +464,8 @@ export const runQueryFromDomainState: SyncExtractorOrQueryRunner<
 > = runQuery<DomainState>;
 
 // ################################################################################################
-export const extractWithExtractorFromDomainState: SyncExtractorOrQueryRunner<
-  QueryForExtractorOrCombinerReturningObjectOrObjectList | QueryWithExtractorCombinerTransformer,
+export const extractWithExtractorOrCombinerReturningObjectOrObjectListFromDomainState: SyncExtractorOrQueryRunner<
+  QueryForExtractorOrCombinerReturningObjectOrObjectList,
   DomainState,
   DomainElement
 > = extractWithExtractorOrCombinerReturningObjectOrObjectList<DomainState>;
@@ -537,7 +539,7 @@ export function getDomainStateExtractorRunnerMap(): SyncExtractorOrQueryRunnerMa
     runQuery: runQueryFromDomainState,
     extractWithExtractorOrCombinerReturningObjectOrObjectList: extractWithExtractorOrCombinerReturningObjectOrObjectList,
     // 
-    extractWithManyExtractorTemplates: extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT,
+    runQueryTemplateWithExtractorCombinerTransformer: runQueryTemplateFromDomainState,
   };
 }
 
@@ -551,17 +553,38 @@ export function getDomainStateJzodSchemaExtractorRunnerMap(): QueryRunnerMapForJ
 }
 
 // ################################################################################################
-export type GetExtractorRunnerParamsForDomainState = <ExtractorType extends MiroirQuery>(
+// export type GetExtractorRunnerParamsForDomainState = <ExtractorType extends MiroirQuery>(
+export type GetExtractorRunnerParamsForDomainState = <ExtractorType extends QueryForExtractorOrCombinerReturningObjectOrObjectList>(
   query: ExtractorType,
   extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DomainState>
 ) => SyncExtractorOrQueryRunnerParams<ExtractorType, DomainState>;
 
 export const getExtractorRunnerParamsForDomainState: GetExtractorRunnerParamsForDomainState = <
-  ExtractorType extends MiroirQuery
+  ExtractorType extends QueryForExtractorOrCombinerReturningObjectOrObjectList
 >(
   query: ExtractorType,
   extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DomainState>
-): SyncExtractorOrQueryRunnerParams<ExtractorType, DomainState> => {
+// ): SyncExtractorOrQueryRunnerParams<ExtractorType, DomainState> => {
+): SyncExtractorRunnerParams<ExtractorType, DomainState> => {
+  return {
+    extractor: query,
+    extractorRunnerMap: extractorRunnerMap ?? getDomainStateExtractorRunnerMap(),
+  };
+};
+// ################################################################################################
+// export type GetExtractorRunnerParamsForDomainState = <ExtractorType extends MiroirQuery>(
+export type GetQueryRunnerParamsForDomainState = <ExtractorType extends QueryWithExtractorCombinerTransformer>(
+  query: ExtractorType,
+  extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DomainState>
+) => SyncExtractorOrQueryRunnerParams<ExtractorType, DomainState>;
+
+export const getQueryRunnerParamsForDomainState: GetQueryRunnerParamsForDomainState = <
+  ExtractorType extends QueryWithExtractorCombinerTransformer
+>(
+  query: ExtractorType,
+  extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DomainState>
+// ): SyncExtractorOrQueryRunnerParams<ExtractorType, DomainState> => {
+): SyncQueryRunnerParams<ExtractorType, DomainState> => {
   return {
     extractor: query,
     extractorRunnerMap: extractorRunnerMap ?? getDomainStateExtractorRunnerMap(),

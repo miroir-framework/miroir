@@ -23,7 +23,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreInstanceSectionAbstractInterface,
-  RunQueryOrExtractorAction,
+  RunExtractorOrQueryAction,
   ExtractorOrCombinerReturningObject,
   selectEntityJzodSchemaFromDomainStateNew,
   selectFetchQueryJzodSchemaFromDomainStateNew,
@@ -58,20 +58,20 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       extractWithExtractorOrCombinerReturningObjectOrObjectList: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
       // ############################################################################
-      extractWithManyExtractorTemplates: undefined as any,
+      runQueryTemplateWithExtractorCombinerTransformer: undefined as any,
     };
   }
 
   // ################################################################################################
-  async handleQueryAction(runQueryOrExtractorAction: RunQueryOrExtractorAction): Promise<ActionReturnType> {
-    log.info(this.logHeader, "handleQueryAction", "runQueryTemplateOrExtractorTemplateAction", JSON.stringify(runQueryOrExtractorAction, null, 2));
+  async handleQueryAction(runExtractorOrQueryAction: RunExtractorOrQueryAction): Promise<ActionReturnType> {
+    log.info(this.logHeader, "handleQueryAction", "runQueryTemplateOrExtractorTemplateAction", JSON.stringify(runExtractorOrQueryAction, null, 2));
     let queryResult: DomainElement;
-    switch (runQueryOrExtractorAction.query.queryType) {
+    switch (runExtractorOrQueryAction.query.queryType) {
       case "queryForExtractorOrCombinerReturningObject":
       case "queryForExtractorOrCombinerReturningObjectList": {
         queryResult = await this.selectorMap.extractWithExtractorOrCombinerReturningObjectOrObjectList(
           {
-            extractor: runQueryOrExtractorAction.query,
+            extractor: runExtractorOrQueryAction.query,
             extractorRunnerMap: this.selectorMap,
           }
         );
@@ -80,7 +80,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       case "queryWithExtractorCombinerTransformer": {
         queryResult = await this.selectorMap.runQuery(
           {
-            extractor: runQueryOrExtractorAction.query,
+            extractor: runExtractorOrQueryAction.query,
             extractorRunnerMap: this.selectorMap,
           }
         );
@@ -89,7 +89,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       default: {
         return {
           status: "error",
-          error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(runQueryOrExtractorAction) },
+          error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(runExtractorOrQueryAction) },
         } as ActionReturnType;
         break;
       }
@@ -101,7 +101,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       } as ActionReturnType;
     } else {
       const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
-      log.info(this.logHeader, "handleQueryAction", "runQueryTemplateOrExtractorTemplateAction", runQueryOrExtractorAction, "result", JSON.stringify(result, null, 2));
+      log.info(this.logHeader, "handleQueryAction", "runQueryTemplateOrExtractorTemplateAction", runExtractorOrQueryAction, "result", JSON.stringify(result, null, 2));
       return result;
     }
     // const result = { status: "ok", returnedDomainElement: { elementType: "object", elementValue: {}}} as ActionReturnType;

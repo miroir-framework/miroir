@@ -228,7 +228,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                 return yield localStoreResult;
                 break;
               }
-              case "runQueryOrExtractorAction": {
+              case "runExtractorOrQueryAction": {
                 const localPersistenceStoreController: PersistenceStoreControllerInterface | undefined =
                   localParams.localPersistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
 
@@ -302,9 +302,9 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                 return yield result;
                 break;
               }
-              case "runQueryOrExtractorAction": {
-                log.info("handlePersistenceAction runQueryOrExtractorAction received from remoteStoreNetworkClient clientResult", clientResult);
-                log.debug("handlePersistenceAction runQueryOrExtractorAction remoteStoreNetworkClient received result", clientResult.status);
+              case "runExtractorOrQueryAction": {
+                log.info("handlePersistenceAction runExtractorOrQueryAction received from remoteStoreNetworkClient clientResult", clientResult);
+                log.debug("handlePersistenceAction runExtractorOrQueryAction remoteStoreNetworkClient received result", clientResult.status);
                 return yield clientResult.data;
                 break;
               }

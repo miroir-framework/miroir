@@ -7,28 +7,42 @@ import {
   QueryForExtractorOrCombinerReturningObjectOrObjectList,
   QueryWithExtractorCombinerTransformer,
   QueryTemplateReturningObject,
-  QueryTemplateWithExtractorCombinerTransformer
+  QueryTemplateWithExtractorCombinerTransformer,
+  QueryTemplateReturningObjectOrObjectList,
+  DomainElementObject
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DeploymentEntityState } from "../../0_interfaces/2_domain/DeploymentStateInterface";
-import { SyncExtractorOrQueryRunner, SyncExtractorOrQueryTemplateRunner } from "../../0_interfaces/2_domain/ExtractorRunnerInterface";
+import { SyncExtractorOrQueryRunner, SyncExtractorOrQueryTemplateRunner, SyncExtractorTemplateRunner, SyncQueryTemplateRunner } from "../../0_interfaces/2_domain/ExtractorRunnerInterface";
 import {
-  getExtractorRunnerParamsForDeploymentEntityState,
-  GetExtractorRunnerParamsForDeploymentEntityState,
+  getExtractorOrQueryRunnerParamsForDeploymentEntityState,
+  GetExtractorOrQueryRunnerParamsForDeploymentEntityState,
+  getQueryRunnerParamsForDeploymentEntityState,
+  GetQueryRunnerParamsForDeploymentEntityState,
+  runQueryFromDeploymentEntityState,
 } from "../../2_domain/DeploymentEntityStateQuerySelectors";
 import {
   getExtractorTemplateRunnerParamsForDeploymentEntityState,
   GetExtractorTemplateRunnerParamsForDeploymentEntityState,
+  GetQueryTemplateRunnerParamsForDeploymentEntityState,
+  getQueryTemplateRunnerParamsForDeploymentEntityState,
+  runQueryTemplateFromDeploymentEntityState,
 } from "../../2_domain/DeploymentEntityStateQueryTemplateSelectors";
 import {
-  extractWithExtractorFromDomainState,
+  extractWithExtractorOrCombinerReturningObjectOrObjectListFromDomainState,
   getExtractorRunnerParamsForDomainState,
   GetExtractorRunnerParamsForDomainState,
+  GetQueryRunnerParamsForDomainState,
+  getQueryRunnerParamsForDomainState,
+  runQueryFromDomainState,
 } from "../../2_domain/DomainStateQuerySelectors";
 import {
   ExtractorTemplateRunnerForDomainState,
   extractorTemplateRunnerForDomainState,
-  getExtractorTemplateRunnerParamsForDomainState,
-  GetSelectorParamsForTemplateOnDomainStateType
+  getExtractorOrQueryTemplateRunnerParamsForDomainState,
+  getQueryTemplateRunnerParamsForDomainState,
+  GetSelectorParamsForExtractorOrQueryTemplateOnDomainStateType,
+  GetSelectorParamsForQueryTemplateOnDomainStateType,
+  runQueryTemplateFromDomainState
 } from "../../2_domain/DomainStateQueryTemplateSelector";
 import { extractWithExtractorOrCombinerReturningObjectOrObjectList, ExtractWithExtractorType } from "../../2_domain/QuerySelectors";
 import { extractWithExtractorTemplate } from "../../2_domain/QueryTemplateSelectors";
@@ -42,22 +56,56 @@ export interface TestExtractorParams {
   queryTemplate?: QueryTemplateWithExtractorCombinerTransformer;
   query?: QueryWithExtractorCombinerTransformer;
   // Domain State
-  extractorRunnerForDomainState?: SyncExtractorOrQueryRunner<
-    QueryForExtractorOrCombinerReturningObjectOrObjectList | QueryWithExtractorCombinerTransformer,
+  // extractorRunnerForDomainState?: SyncExtractorOrQueryRunner<
+  //   QueryForExtractorOrCombinerReturningObjectOrObjectList,
+  //   DomainState,
+  //   DomainElement
+  // >;
+  // getExtractorRunnerParamsForDomainState?: GetExtractorRunnerParamsForDomainState;
+  // extractorTemplateRunnerForDomainState?: ExtractorTemplateRunnerForDomainState;
+  getQueryRunnerParamsForDomainState?: GetQueryRunnerParamsForDomainState,
+  runQueryFromDomainState?: SyncExtractorOrQueryRunner<
+    QueryWithExtractorCombinerTransformer,
     DomainState,
-    DomainElement
-  >;
-  getExtractorRunnerParamsForDomainState?: GetExtractorRunnerParamsForDomainState;
-  extractorTemplateRunnerForDomainState?: ExtractorTemplateRunnerForDomainState;
-  getExtractorTemplateRunnerParamsForDomainState?: GetSelectorParamsForTemplateOnDomainStateType;
+    DomainElementObject
+  >
+  // getExtractorRunnerParamsForDomainState?: GetExtractorRunnerParamsForDomainState;
+
+  // getExtractorOrQueryTemplateRunnerParamsForDomainState?: GetSelectorParamsForExtractorOrQueryTemplateOnDomainStateType;
+  getQueryTemplateRunnerParamsForDomainState?: GetSelectorParamsForQueryTemplateOnDomainStateType;
+  runQueryTemplateFromDomainState?: SyncExtractorOrQueryTemplateRunner<
+    QueryTemplateWithExtractorCombinerTransformer,
+    DomainState,
+    DomainElementObject
+  >
+  // ##############################################################################################
   // Deployment Entity State
+  getQueryRunnerParamsForDeploymentEntityState?: GetQueryRunnerParamsForDeploymentEntityState,
+  runQueryFromDeploymentEntityState?: SyncExtractorOrQueryRunner<
+    QueryWithExtractorCombinerTransformer,
+    DeploymentEntityState,
+    DomainElementObject
+  >
+
+  getQueryTemplateRunnerParamsForDeploymentEntityState?: GetQueryTemplateRunnerParamsForDeploymentEntityState;
+  runQueryTemplateFromDeploymentEntityState:SyncQueryTemplateRunner<
+    QueryTemplateWithExtractorCombinerTransformer,
+    DeploymentEntityState,
+    DomainElementObject
+  >
+
   extractorRunnerForDeploymentEntityState?: ExtractWithExtractorType<DeploymentEntityState>;
-  getExtractorRunnerParamsForDeploymentEntityState?: GetExtractorRunnerParamsForDeploymentEntityState;
-  extractorTemplateRunnerForDeploymentEntityState?: SyncExtractorOrQueryTemplateRunner<
-    QueryTemplateReturningObject | QueryTemplateWithExtractorCombinerTransformer,
+  getExtractorOrQueryRunnerParamsForDeploymentEntityState?: GetExtractorOrQueryRunnerParamsForDeploymentEntityState;
+  extractorTemplateRunnerForDeploymentEntityState?: SyncExtractorTemplateRunner<
+    QueryTemplateReturningObjectOrObjectList,
     DeploymentEntityState,
     DomainElement
   >;
+  // extractorTemplateRunnerForDeploymentEntityState?: SyncExtractorOrQueryTemplateRunner<
+  //   QueryTemplateReturningObject | QueryTemplateWithExtractorCombinerTransformer,
+  //   DeploymentEntityState,
+  //   DomainElement
+  // >;
   getExtractorTemplateRunnerParamsForDeploymentEntityState?: GetExtractorTemplateRunnerParamsForDeploymentEntityState
   //
   testAssertions: Record<
@@ -71,13 +119,25 @@ export interface TestExtractorParams {
 
 const testExtractorTools = {
     // Domain State
-    extractorRunnerForDomainState: extractWithExtractorFromDomainState,
-    getExtractorRunnerParamsForDomainState: getExtractorRunnerParamsForDomainState,
-    extractorTemplateRunnerForDomainState: extractorTemplateRunnerForDomainState,
-    getExtractorTemplateRunnerParamsForDomainState: getExtractorTemplateRunnerParamsForDomainState,
+    // extractorRunnerForDomainState: extractWithExtractorOrCombinerReturningObjectOrObjectListFromDomainState,
+    // getExtractorRunnerParamsForDomainState: getExtractorRunnerParamsForDomainState,
+    getQueryRunnerParamsForDomainState: getQueryRunnerParamsForDomainState,
+    queryRunnerForDomainState: runQueryFromDomainState,
+
+    // getExtractorOrQueryTemplateRunnerParamsForDomainState: getExtractorOrQueryTemplateRunnerParamsForDomainState,
+    // extractorTemplateRunnerForDomainState: extractorTemplateRunnerForDomainState,
+    runQueryTemplateFromDomainState: runQueryTemplateFromDomainState,
+    getQueryTemplateRunnerParamsForDomainState: getQueryTemplateRunnerParamsForDomainState,
+    // ############################################################################################
     // Deployment Entity State
+    getQueryRunnerParamsForDeploymentEntityState: getQueryRunnerParamsForDeploymentEntityState,
+    runQueryFromDeploymentEntityState: runQueryFromDeploymentEntityState,
+
+    getQueryTemplateRunnerParamsForDeploymentEntityState: getQueryTemplateRunnerParamsForDeploymentEntityState,
+    runQueryTemplateFromDeploymentEntityState:runQueryTemplateFromDeploymentEntityState,
+
     extractorRunnerForDeploymentEntityState: extractWithExtractorOrCombinerReturningObjectOrObjectList<DeploymentEntityState>,
-    getExtractorRunnerParamsForDeploymentEntityState: getExtractorRunnerParamsForDeploymentEntityState,
+    getExtractorOrQueryRunnerParamsForDeploymentEntityState: getExtractorOrQueryRunnerParamsForDeploymentEntityState,
     extractorTemplateRunnerForDeploymentEntityState: extractWithExtractorTemplate<DeploymentEntityState>,
     getExtractorTemplateRunnerParamsForDeploymentEntityState: getExtractorTemplateRunnerParamsForDeploymentEntityState,
 }
@@ -1079,10 +1139,12 @@ describe("queries.unit", () => {
     // Testing Extractors
     if (testParams.query) {
       // Domain State
-      if (testParams.extractorRunnerForDomainState && testParams.getExtractorRunnerParamsForDomainState) {
-        const preResult = testParams.extractorRunnerForDomainState(
+      if (testParams.runQueryFromDomainState && testParams.getQueryRunnerParamsForDomainState) {
+        // const preResult = testParams.extractorRunnerForDomainState(
+        const preResult = testParams.runQueryFromDomainState(
           domainState,
-          getExtractorRunnerParamsForDomainState(testParams.query)
+          testParams.getQueryRunnerParamsForDomainState(testParams.query)
+          // getExtractorRunnerParamsForDomainState(testParams.query)
         );
         for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
           console.info(`############################################## running query for DOMAIN STATE test assertion: ${currentTestName} ${testAssertionName}`);
@@ -1093,10 +1155,12 @@ describe("queries.unit", () => {
         }
       }
       // Deployment Entity State
-      if (testParams.extractorRunnerForDeploymentEntityState && testParams.getExtractorRunnerParamsForDeploymentEntityState) {
-        const preResult = testParams.extractorRunnerForDeploymentEntityState(
+      // if (testParams.extractorRunnerForDeploymentEntityState && testParams.getExtractorOrQueryRunnerParamsForDeploymentEntityState) {
+      if (testParams.runQueryFromDeploymentEntityState && testParams.getQueryRunnerParamsForDeploymentEntityState) {
+        const preResult = testParams.runQueryFromDeploymentEntityState(
           deploymentEntityState,
-          getExtractorRunnerParamsForDeploymentEntityState(testParams.query)
+          testParams.getQueryRunnerParamsForDeploymentEntityState(testParams.query)
+          // getExtractorOrQueryRunnerParamsForDeploymentEntityState(testParams.query)
         );
         for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
         console.info(`############################################## running query for DEPLOYMENT ENTITY STATE test assertion: ${currentTestName} ${testAssertionName}`);
@@ -1112,12 +1176,15 @@ describe("queries.unit", () => {
     if (testParams.queryTemplate) {
       // Domain State
       if (
-        testParams.extractorTemplateRunnerForDomainState &&
-        testParams.getExtractorTemplateRunnerParamsForDomainState
+        // testParams.extractorTemplateRunnerForDomainState &&
+        // testParams.getExtractorOrQueryTemplateRunnerParamsForDomainState &&
+        testParams.getQueryTemplateRunnerParamsForDomainState &&
+        testParams.runQueryTemplateFromDomainState
       ) {
-        const preTemplateResult = testParams.extractorTemplateRunnerForDomainState(
+        const preTemplateResult = testParams.runQueryTemplateFromDomainState(
           domainState,
-          testParams.getExtractorTemplateRunnerParamsForDomainState(testParams.queryTemplate)
+          testParams.getQueryTemplateRunnerParamsForDomainState(testParams.queryTemplate)
+          // testParams.getExtractorOrQueryTemplateRunnerParamsForDomainState(testParams.queryTemplate)
         ) as any;
         for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
           console.info(`############################################## running query TEMPLATE for DOMAIN STATE test assertion: ${currentTestName} ${testAssertionName}`);
@@ -1129,12 +1196,14 @@ describe("queries.unit", () => {
       }
       // Deployment Entity State
       if (
-        testParams.extractorTemplateRunnerForDeploymentEntityState &&
-        testParams.getExtractorTemplateRunnerParamsForDeploymentEntityState
+        // testParams.extractorTemplateRunnerForDeploymentEntityState &&
+        // testParams.getExtractorTemplateRunnerParamsForDeploymentEntityState
+        testParams.getQueryTemplateRunnerParamsForDeploymentEntityState &&
+        testParams.runQueryTemplateFromDeploymentEntityState
       ) {
-        const preTemplateResult = testParams.extractorTemplateRunnerForDeploymentEntityState(
+        const preTemplateResult = testParams.runQueryTemplateFromDeploymentEntityState(
           deploymentEntityState,
-          testParams.getExtractorTemplateRunnerParamsForDeploymentEntityState(testParams.queryTemplate)
+          testParams.getQueryTemplateRunnerParamsForDeploymentEntityState(testParams.queryTemplate)
         ) as any;
         for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
           console.info(`############################################## running query TEMPLATE for DEPLOYMENT ENTITY STATE test assertion: ${currentTestName} ${testAssertionName}`);

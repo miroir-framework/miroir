@@ -323,6 +323,24 @@
               }
             ]
           },
+          "extractorTemplateReturningObjectOrObjectList": {
+            "type": "union",
+            "discriminator": "extractorOrCombinerType",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "extractorTemplateReturningObject"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "extractorTemplateReturningObjectList"
+                }
+              }
+            ]
+          },
           "extractorTemplateByExtractorCombiner": {
             "type": "object",
             "definition": {

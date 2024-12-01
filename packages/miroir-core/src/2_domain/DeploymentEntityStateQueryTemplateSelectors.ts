@@ -1,15 +1,23 @@
 import {
   QueryByEntityUuidGetEntityDefinition,
   EntityDefinition,
-  QueryTemplateDEFUNCT,
-  JzodObject
+  MiroirQueryTemplate,
+  JzodObject,
+  QueryForExtractorOrCombinerReturningObjectOrObjectList,
+  QueryTemplateReturningObjectOrObjectList,
+  QueryWithExtractorCombinerTransformer,
+  QueryTemplateWithExtractorCombinerTransformer,
+  DomainElementObject
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface";
 import {
   QueryTemplateRunnerMapForJzodSchema,
   ExtractorTemplateRunnerParamsForJzodSchema,
   SyncExtractorOrQueryRunnerMap,
-  SyncExtractorOrQueryTemplateRunnerParams
+  SyncExtractorOrQueryTemplateRunnerParams,
+  SyncExtractorTemplateRunnerParams,
+  SyncQueryTemplateRunnerParams,
+  SyncQueryTemplateRunner
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/Logger";
@@ -32,7 +40,7 @@ import {
 import {
   extractFetchQueryTemplateJzodSchema,
   extractJzodSchemaForDomainModelQueryTemplate,
-  extractWithManyExtractorTemplates,
+  runQueryTemplateWithExtractorCombinerTransformer,
   extractzodSchemaForSingleSelectQueryTemplate
 } from "./QueryTemplateSelectors";
 
@@ -41,6 +49,13 @@ let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;
 });
+
+// ################################################################################################
+export const runQueryTemplateFromDeploymentEntityState: SyncQueryTemplateRunner<
+  QueryTemplateWithExtractorCombinerTransformer,
+  DeploymentEntityState,
+  DomainElementObject
+> = runQueryTemplateWithExtractorCombinerTransformer<DeploymentEntityState>;
 
 // ################################################################################################
 // #### selector Maps
@@ -58,7 +73,7 @@ export function getDeploymentEntityStateSelectorTemplateMap(): SyncExtractorOrQu
     runQuery: runQuery,
     extractWithExtractorOrCombinerReturningObjectOrObjectList: extractWithExtractorOrCombinerReturningObjectOrObjectList,
     // 
-    extractWithManyExtractorTemplates: extractWithManyExtractorTemplates,
+    runQueryTemplateWithExtractorCombinerTransformer: runQueryTemplateWithExtractorCombinerTransformer,
   };
 }
 
@@ -73,15 +88,33 @@ export function getDeploymentEntityStateJzodSchemaSelectorTemplateMap(): QueryTe
 }
 
 // ################################################################################################
-export type GetExtractorTemplateRunnerParamsForDeploymentEntityState = <QueryType extends QueryTemplateDEFUNCT>(
+export type GetExtractorTemplateRunnerParamsForDeploymentEntityState = <QueryType extends QueryTemplateReturningObjectOrObjectList>(
   query: QueryType,
   extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DeploymentEntityState>
-) => SyncExtractorOrQueryTemplateRunnerParams<QueryType, DeploymentEntityState>;
+) => SyncExtractorTemplateRunnerParams<QueryType, DeploymentEntityState>;
+// ) => SyncExtractorOrQueryTemplateRunnerParams<QueryType, DeploymentEntityState>;
 
-export function getExtractorTemplateRunnerParamsForDeploymentEntityState<QueryType extends QueryTemplateDEFUNCT>(
+export function getExtractorTemplateRunnerParamsForDeploymentEntityState<QueryType extends QueryTemplateReturningObjectOrObjectList>(
   query: QueryType,
   extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DeploymentEntityState>
-): SyncExtractorOrQueryTemplateRunnerParams<QueryType, DeploymentEntityState> {
+): SyncExtractorTemplateRunnerParams<QueryType, DeploymentEntityState> {
+  return {
+    extractorOrCombinerTemplate: query,
+    extractorRunnerMap: extractorRunnerMap ?? getDeploymentEntityStateSelectorTemplateMap(),
+  };
+}
+
+// ################################################################################################
+export type GetQueryTemplateRunnerParamsForDeploymentEntityState = (
+  query: QueryTemplateWithExtractorCombinerTransformer,
+  extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DeploymentEntityState>
+) => SyncQueryTemplateRunnerParams<QueryTemplateWithExtractorCombinerTransformer, DeploymentEntityState>;
+// ) => SyncExtractorOrQueryTemplateRunnerParams<QueryType, DeploymentEntityState>;
+
+export function getQueryTemplateRunnerParamsForDeploymentEntityState(
+  query: QueryTemplateWithExtractorCombinerTransformer,
+  extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DeploymentEntityState>
+): SyncQueryTemplateRunnerParams<QueryTemplateWithExtractorCombinerTransformer, DeploymentEntityState> {
   return {
     extractorOrCombinerTemplate: query,
     extractorRunnerMap: extractorRunnerMap ?? getDeploymentEntityStateSelectorTemplateMap(),

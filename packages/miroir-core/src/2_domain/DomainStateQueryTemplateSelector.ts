@@ -5,17 +5,23 @@ import {
   DomainElementObject,
   QueryByEntityUuidGetEntityDefinition,
   EntityDefinition,
-  QueryTemplateDEFUNCT,
+  MiroirQueryTemplate,
   QueryTemplateReturningObject,
   QueryTemplateWithExtractorCombinerTransformer,
-  JzodObject
+  JzodObject,
+  QueryTemplateReturningObjectOrObjectList,
+  QueryForExtractorOrCombinerReturningObjectOrObjectList
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import {
   ExtractorTemplateRunnerParamsForJzodSchema,
   SyncExtractorOrQueryRunnerMap,
   SyncExtractorOrQueryTemplateRunner,
-  SyncExtractorOrQueryTemplateRunnerParams
+  SyncExtractorOrQueryTemplateRunnerParams,
+  SyncExtractorTemplateRunner,
+  SyncExtractorTemplateRunnerParams,
+  SyncQueryTemplateRunner,
+  SyncQueryTemplateRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/Logger";
@@ -31,12 +37,12 @@ import {
   selectEntityInstanceListFromDomainState,
   selectEntityInstanceUuidIndexFromDomainState,
 } from "./DomainStateQuerySelectors";
-import { extractWithExtractorOrCombinerReturningObjectOrObjectList } from "./QuerySelectors";
+import { extractWithExtractorOrCombinerReturningObjectOrObjectList, runQuery } from "./QuerySelectors";
 import {
   extractFetchQueryTemplateJzodSchema,
   extractJzodSchemaForDomainModelQueryTemplate,
   extractWithExtractorTemplate,
-  extractWithManyExtractorTemplates,
+  runQueryTemplateWithExtractorCombinerTransformer,
   extractzodSchemaForSingleSelectQueryTemplate
 } from "./QueryTemplateSelectors";
 
@@ -50,8 +56,8 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 // ################################################################################################
 // TODO: used in extractorTemplateRunnerForDomainState.unit.test and RestServer.ts, provide a better interface?
-export type ExtractorTemplateRunnerForDomainState = SyncExtractorOrQueryTemplateRunner<
-  QueryTemplateReturningObject | QueryTemplateWithExtractorCombinerTransformer,
+export type ExtractorTemplateRunnerForDomainState = SyncExtractorTemplateRunner<
+  QueryTemplateReturningObjectOrObjectList,
   DomainState,
   DomainElement
 >;
@@ -59,15 +65,33 @@ export type ExtractorTemplateRunnerForDomainState = SyncExtractorOrQueryTemplate
 export const extractorTemplateRunnerForDomainState: ExtractorTemplateRunnerForDomainState =
   extractWithExtractorTemplate<DomainState>;
 
+export type QueryTemplateRunnerForDomainState = SyncQueryTemplateRunner<
+  QueryTemplateWithExtractorCombinerTransformer,
+  DomainState,
+  DomainElement
+>;
+
+export const queryTemplateRunnerForDomainState: QueryTemplateRunnerForDomainState =
+  runQueryTemplateWithExtractorCombinerTransformer<DomainState>;
+
+// export type ExtractorOrQueryTemplateRunnerForDomainState = SyncExtractorOrQueryTemplateRunner<
+//   QueryTemplateReturningObject | QueryTemplateWithExtractorCombinerTransformer,
+//   DomainState,
+//   DomainElement
+// >;
+
+// export const extractorOrQueryTemplateRunnerForDomainState: ExtractorOrQueryTemplateRunnerForDomainState =
+//   extractWithExtractorTemplate<DomainState>;
+
 
 // ################################################################################################
 // TODO: used in RestServer.ts (with commented out access in HomePage, to create bundle)
 //  provide a better interface?
-export const extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT: SyncExtractorOrQueryTemplateRunner<
+export const runQueryTemplateFromDomainState: SyncExtractorOrQueryTemplateRunner<
   QueryTemplateWithExtractorCombinerTransformer,
   DomainState,
   DomainElementObject
-> = extractWithManyExtractorTemplates<DomainState>;
+> = runQueryTemplateWithExtractorCombinerTransformer<DomainState>;
 
 // ################################################################################################
 // #### selector Maps
@@ -83,18 +107,54 @@ export function getSelectorMapForTemplate(): SyncExtractorOrQueryRunnerMap<Domai
     runQuery: runQueryFromDomainState,
     extractWithExtractorOrCombinerReturningObjectOrObjectList: extractWithExtractorOrCombinerReturningObjectOrObjectList,
     // 
-    extractWithManyExtractorTemplates: extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT,
+    runQueryTemplateWithExtractorCombinerTransformer: runQueryTemplateFromDomainState,
   };
 }
 
 // ################################################################################################
-export type GetSelectorParamsForTemplateOnDomainStateType=<ExtractorTemplateType extends QueryTemplateDEFUNCT>(
+export type GetSelectorParamsForExtractorTemplateOnDomainStateType=<ExtractorTemplateType extends QueryTemplateReturningObjectOrObjectList>(
+  query: ExtractorTemplateType,
+  extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DomainState>
+)=> SyncExtractorTemplateRunnerParams<ExtractorTemplateType, DomainState>;
+
+export const getExtractorTemplateRunnerParamsForDomainState: GetSelectorParamsForExtractorTemplateOnDomainStateType =
+<ExtractorTemplateType extends QueryTemplateReturningObjectOrObjectList>(
+    query: ExtractorTemplateType,
+    extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DomainState>
+  ) =>
+{
+  return {
+    extractorOrCombinerTemplate: query,
+    extractorRunnerMap: extractorRunnerMap ?? getSelectorMapForTemplate(),
+  };
+}
+
+// ################################################################################################
+export type GetSelectorParamsForQueryTemplateOnDomainStateType=<QueryTemplateType extends QueryTemplateWithExtractorCombinerTransformer>(
+  query: QueryTemplateType,
+  extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DomainState>
+)=> SyncQueryTemplateRunnerParams<QueryTemplateType, DomainState>;
+
+export const getQueryTemplateRunnerParamsForDomainState: GetSelectorParamsForQueryTemplateOnDomainStateType =
+<ExtractorTemplateType extends MiroirQueryTemplate>(
+    query: ExtractorTemplateType,
+    extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DomainState>
+  ) =>
+{
+  return {
+    extractorOrCombinerTemplate: query,
+    extractorRunnerMap: extractorRunnerMap ?? getSelectorMapForTemplate(),
+  };
+}
+
+// ################################################################################################
+export type GetSelectorParamsForExtractorOrQueryTemplateOnDomainStateType=<ExtractorTemplateType extends MiroirQueryTemplate>(
   query: ExtractorTemplateType,
   extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DomainState>
 )=> SyncExtractorOrQueryTemplateRunnerParams<ExtractorTemplateType, DomainState>;
 
-export const getExtractorTemplateRunnerParamsForDomainState: GetSelectorParamsForTemplateOnDomainStateType =
-<ExtractorTemplateType extends QueryTemplateDEFUNCT>(
+export const getExtractorOrQueryTemplateRunnerParamsForDomainState: GetSelectorParamsForExtractorOrQueryTemplateOnDomainStateType =
+<ExtractorTemplateType extends MiroirQueryTemplate>(
     query: ExtractorTemplateType,
     extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DomainState>
   ) =>

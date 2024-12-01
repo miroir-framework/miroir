@@ -27,7 +27,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   ExtractorOrCombiner,
-  RunQueryOrExtractorAction,
+  RunExtractorOrQueryAction,
   ExtractorOrCombinerReturningObject,
   selectEntityJzodSchemaFromDomainStateNew,
   selectFetchQueryJzodSchemaFromDomainStateNew,
@@ -363,7 +363,7 @@ export class SqlDbQueryRunner {
       extractWithExtractorOrCombinerReturningObjectOrObjectList: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
       // 
-      extractWithManyExtractorTemplates: undefined as any,
+      runQueryTemplateWithExtractorCombinerTransformer: undefined as any,
 
     };
     // const dbImplementationExtractorRunnerMap: AsyncExtractorOrQueryRunnerMap = {
@@ -380,7 +380,7 @@ export class SqlDbQueryRunner {
       extractWithExtractorOrCombinerReturningObjectOrObjectList: asyncExtractWithExtractor,
       applyExtractorTransformer: undefined as any,
       // 
-      extractWithManyExtractorTemplates: undefined as any,
+      runQueryTemplateWithExtractorCombinerTransformer: undefined as any,
     };
 
     // TODO: design error: this has to be kept consistent with SqlDbExtractTemplateRunner
@@ -677,27 +677,27 @@ export class SqlDbQueryRunner {
   };
 
   // ##############################################################################################
-  async handleQueryAction(runQueryOrExtractorAction: RunQueryOrExtractorAction): Promise<ActionReturnType> {
-    log.info(this.logHeader, "handleQueryAction", "runQueryOrExtractorAction", JSON.stringify(runQueryOrExtractorAction, null, 2));
+  async handleQueryAction(runExtractorOrQueryAction: RunExtractorOrQueryAction): Promise<ActionReturnType> {
+    log.info(this.logHeader, "handleQueryAction", "runExtractorOrQueryAction", JSON.stringify(runExtractorOrQueryAction, null, 2));
     let queryResult: DomainElement;
-    switch (runQueryOrExtractorAction.query.queryType) {
+    switch (runExtractorOrQueryAction.query.queryType) {
       case "queryForExtractorOrCombinerReturningObject":
       case "queryForExtractorOrCombinerReturningObjectList": {
         queryResult = await this.inMemoryImplementationExtractorRunnerMap.extractWithExtractorOrCombinerReturningObjectOrObjectList({
-          extractor: runQueryOrExtractorAction.query,
+          extractor: runExtractorOrQueryAction.query,
           extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
         });
         break;
       }
       case "queryWithExtractorCombinerTransformer": {
-        if (runQueryOrExtractorAction.query.runAsSql) {
+        if (runExtractorOrQueryAction.query.runAsSql) {
           queryResult = await this.dbImplementationExtractorRunnerMap.runQuery({
-            extractor: runQueryOrExtractorAction.query,
+            extractor: runExtractorOrQueryAction.query,
             extractorRunnerMap: this.dbImplementationExtractorRunnerMap,
           });
         } else {
           queryResult = await this.inMemoryImplementationExtractorRunnerMap.runQuery({
-            extractor: runQueryOrExtractorAction.query,
+            extractor: runExtractorOrQueryAction.query,
             extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
           });
         }
@@ -706,7 +706,7 @@ export class SqlDbQueryRunner {
       default: {
         return {
           status: "error",
-          error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(runQueryOrExtractorAction) },
+          error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(runExtractorOrQueryAction) },
         } as ActionReturnType;
         break;
       }
@@ -718,7 +718,7 @@ export class SqlDbQueryRunner {
       } as ActionReturnType;
     } else {
       const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
-      log.info(this.logHeader, "handleQueryAction", "runQueryOrExtractorAction", runQueryOrExtractorAction, "result", JSON.stringify(result, null, 2));
+      log.info(this.logHeader, "handleQueryAction", "runExtractorOrQueryAction", runExtractorOrQueryAction, "result", JSON.stringify(result, null, 2));
       return result;
     }
   }

@@ -20,7 +20,7 @@ import {
   entityMenu,
   QueryWithExtractorCombinerTransformer,
   getApplicationSection,
-  getExtractorRunnerParamsForDeploymentEntityState,
+  getExtractorOrQueryRunnerParamsForDeploymentEntityState,
   getLoggerName,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -151,7 +151,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
 
   const fetchDeploymentMenusQueryParams: SyncExtractorOrQueryRunnerParams<QueryWithExtractorCombinerTransformer, DeploymentEntityState> = useMemo(
     () => 
-    getExtractorRunnerParamsForDeploymentEntityState<QueryWithExtractorCombinerTransformer>({
+    getExtractorOrQueryRunnerParamsForDeploymentEntityState<QueryWithExtractorCombinerTransformer>({
       queryType: "queryWithExtractorCombinerTransformer",
       deploymentUuid: props.deploymentUuid,
       pageParams: {},

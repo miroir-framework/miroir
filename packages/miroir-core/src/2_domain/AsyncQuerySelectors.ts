@@ -51,7 +51,7 @@ const emptyAsyncSelectorMap:AsyncExtractorOrQueryRunnerMap = {
   extractEntityInstanceList: undefined as any,
   applyExtractorTransformer: undefined as any,
   // ##############################################################################################
-  extractWithManyExtractorTemplates: undefined as any,
+  runQueryTemplateWithExtractorCombinerTransformer: undefined as any,
 }
 
 // ################################################################################################
@@ -517,7 +517,7 @@ export const asyncRunQuery = async (
   }
   // return context;
   // log.info(
-  //   "extractWithManyExtractorTemplates",
+  //   "runQueryTemplateWithExtractorCombinerTransformer",
   //   "query",
   //   selectorParams,
   //   "domainState",

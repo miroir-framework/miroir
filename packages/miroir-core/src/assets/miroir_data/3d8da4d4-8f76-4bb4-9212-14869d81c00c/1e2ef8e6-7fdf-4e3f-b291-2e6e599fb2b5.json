@@ -140,14 +140,14 @@
                   {
                     "type": "object",
                     "definition": {
-                      "compositeActionType": { "type": "literal", "definition": "runQueryOrExtractorAction" },
+                      "compositeActionType": { "type": "literal", "definition": "runExtractorOrQueryAction" },
                       "compositeActionStepLabel": { "type": "string", "optional": true },
                       "nameGivenToResult": { "type": "string" },
                       "query": {
                         "type": "schemaReference",
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "runQueryOrExtractorAction"
+                          "relativePath": "runExtractorOrQueryAction"
                         }
                       }
                     }

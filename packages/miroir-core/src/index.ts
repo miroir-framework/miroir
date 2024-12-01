@@ -52,8 +52,8 @@ export {
   queryJzodSchemaParams,
   DomainModelQueryTemplateJzodSchemaParams,
   domainModelQueryTemplateJzodSchemaParams,
-  QueryTemplateDEFUNCT,
-  queryTemplateDEFUNCT,
+  MiroirQueryTemplate,
+  miroirQueryTemplate,
   // ===
   QueryForExtractorOrCombinerReturningObject,
   queryForExtractorOrCombinerReturningObject,
@@ -212,12 +212,14 @@ export {
   extractorForObjectByDirectReference,
   Extractor,
   extractor,
-  RunQueryOrExtractorAction,
-  runQueryOrExtractorAction,
+  RunExtractorOrQueryAction,
+  runExtractorOrQueryAction,
   ExtractorTemplateReturningObject,
   extractorTemplateReturningObject,
   ExtractorTemplateReturningObjectList,
   extractorTemplateReturningObjectList,
+  ExtractorTemplateReturningObjectOrObjectList,
+  extractorTemplateReturningObjectOrObjectList,
   RunQueryTemplateOrExtractorTemplateAction,
   runQueryTemplateOrExtractorTemplateAction,
   ServerConfigForClientConfig,
@@ -518,7 +520,7 @@ export {
   getDomainStateJzodSchemaExtractorRunnerMap,
   getDomainStateExtractorRunnerMap,
   getExtractorRunnerParamsForDomainState,
-  extractWithExtractorFromDomainState,
+  extractWithExtractorOrCombinerReturningObjectOrObjectListFromDomainState,
   innerSelectElementFromQueryAndDomainState,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectEntityJzodSchemaFromDomainStateNew,
@@ -531,9 +533,9 @@ export {
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
 } from './2_domain/DomainStateQuerySelectors';
 export {
-  getExtractorTemplateRunnerParamsForDomainState,
+  getExtractorOrQueryTemplateRunnerParamsForDomainState,
   getSelectorMapForTemplate,
-  extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT,
+  runQueryTemplateFromDomainState,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
@@ -546,7 +548,7 @@ export {
   selectEntityInstanceListFromDeploymentEntityState,
   getDeploymentEntityStateJzodSchemaSelectorMap,
   getDeploymentEntityStateSelectorMap,
-  getExtractorRunnerParamsForDeploymentEntityState,
+  getExtractorOrQueryRunnerParamsForDeploymentEntityState,
 } from './2_domain/DeploymentEntityStateQuerySelectors';
 export {
   getDeploymentEntityStateJzodSchemaSelectorTemplateMap,
@@ -561,7 +563,7 @@ export {
 } from './2_domain/ExtractorRunnerInMemory';
 export {
   handleQueryTemplateAction,
-  extractWithManyExtractorTemplates,
+  runQueryTemplateWithExtractorCombinerTransformer,
   extractWithExtractorTemplate,
   extractFetchQueryTemplateJzodSchema,
   extractJzodSchemaForDomainModelQueryTemplate,
@@ -609,8 +611,8 @@ export {
 } from "./2_domain/Transformers";
 export {
   resolveExtractorTemplate,
-  resolveQueryTemplate as resolveExtractorTemplateForRecordOfExtractors,
-  resolveQueryTemplateReturningObject as resolveExtractorTemplateForDomainModelObjects,
+  resolveQueryTemplateWithExtractorCombinerTransformer as resolveExtractorTemplateForRecordOfExtractors,
+  resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList as resolveExtractorTemplateForDomainModelObjects,
   resolveQueryTemplateSelectExtractorWrapper,
 } from "./2_domain/Templates";
 export {

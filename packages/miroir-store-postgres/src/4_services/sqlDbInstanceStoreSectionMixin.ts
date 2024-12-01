@@ -20,7 +20,7 @@ import {
   QueryForExtractorOrCombinerReturningObject,
   ExtractorWrapper,
   QueryWithExtractorCombinerTransformer,
-  RunQueryOrExtractorAction,
+  RunExtractorOrQueryAction,
   QueryForExtractorOrCombinerReturningObjectOrObjectList,
   ExtractorOrCombinerReturningObject,
   ExtractorOrCombinerReturningObjectList,
@@ -286,7 +286,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     }
 
     // #############################################################################################
-    async handleQueryAction(query: RunQueryOrExtractorAction): Promise<ActionReturnType> {
+    async handleQueryAction(query: RunExtractorOrQueryAction): Promise<ActionReturnType> {
       log.info(this.logHeader, "handleQueryAction", "query", query);
 
       const result: ActionReturnType = await this.extractorRunner.handleQueryAction(query);

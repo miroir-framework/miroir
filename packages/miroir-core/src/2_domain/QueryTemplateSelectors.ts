@@ -15,14 +15,16 @@ import {
   JzodElement,
   JzodObject,
   ExtractorOrCombinerTemplate,
-  RunQueryTemplateOrExtractorTemplateAction
+  RunQueryTemplateOrExtractorTemplateAction,
+  QueryTemplateReturningObjectOrObjectList
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   AsyncExtractorOrQueryRunnerMap,
   ExtractorTemplateRunnerParamsForJzodSchema,
   RecordOfJzodElement,
   RecordOfJzodObject,
-  SyncExtractorOrQueryTemplateRunnerParams
+  SyncExtractorOrQueryTemplateRunnerParams,
+  SyncExtractorTemplateRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/Logger";
@@ -32,8 +34,8 @@ import { cleanLevel } from "./constants";
 import { handleQueryAction, extractWithExtractorOrCombinerReturningObjectOrObjectList, runQuery } from "./QuerySelectors";
 import {
   resolveExtractorOrQueryTemplate,
-  resolveQueryTemplateReturningObject,
-  resolveQueryTemplate,
+  resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList,
+  resolveQueryTemplateWithExtractorCombinerTransformer,
 } from "./Templates";
 import { transformer_InnerReference_resolve } from "./Transformers";
 
@@ -48,27 +50,27 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 // ################################################################################################
 export async function handleQueryTemplateAction(
   origin: string,
-  runQueryTemplateOrExtractorTemplateAction: RunQueryTemplateOrExtractorTemplateAction, 
+  queryTemplateOrExtractorTemplateAction: RunQueryTemplateOrExtractorTemplateAction, 
   selectorMap: AsyncExtractorOrQueryRunnerMap
 ): Promise<ActionReturnType> {
   log.info(
     "handleQueryTemplateAction for ",
     origin,
     "runQueryTemplateOrExtractorTemplateAction",
-    JSON.stringify(runQueryTemplateOrExtractorTemplateAction, null, 2)
+    JSON.stringify(queryTemplateOrExtractorTemplateAction, null, 2)
   );
   const resolvedQuery = resolveExtractorOrQueryTemplate(
-    runQueryTemplateOrExtractorTemplateAction.query
+    queryTemplateOrExtractorTemplateAction.query
   );
 
   return handleQueryAction(
     origin,
     {
-      actionType: "runQueryOrExtractorAction",
-      actionName: runQueryTemplateOrExtractorTemplateAction.actionName,
-      deploymentUuid: runQueryTemplateOrExtractorTemplateAction.deploymentUuid,
-      endpoint: runQueryTemplateOrExtractorTemplateAction.endpoint,
-      applicationSection: runQueryTemplateOrExtractorTemplateAction.applicationSection,
+      actionType: "runExtractorOrQueryAction",
+      actionName: queryTemplateOrExtractorTemplateAction.actionName,
+      deploymentUuid: queryTemplateOrExtractorTemplateAction.deploymentUuid,
+      endpoint: queryTemplateOrExtractorTemplateAction.endpoint,
+      applicationSection: queryTemplateOrExtractorTemplateAction.applicationSection,
       query: resolvedQuery,
     },
     selectorMap
@@ -78,8 +80,10 @@ export async function handleQueryTemplateAction(
 // ################################################################################################
 export const extractWithExtractorTemplate /**: SyncExtractorOrQueryTemplateRunner */= <StateType>(
   state: StateType,
-  selectorParams: SyncExtractorOrQueryTemplateRunnerParams<
-  QueryTemplateReturningObject | QueryTemplateWithExtractorCombinerTransformer,
+  // selectorParams: SyncExtractorOrQueryTemplateRunnerParams<
+  selectorParams: SyncExtractorTemplateRunnerParams<
+  // QueryTemplateReturningObject | QueryTemplateWithExtractorCombinerTransformer,
+  QueryTemplateReturningObjectOrObjectList,
     StateType
   >
 ): DomainElement => {
@@ -87,53 +91,68 @@ export const extractWithExtractorTemplate /**: SyncExtractorOrQueryTemplateRunne
   if (!selectorParams.extractorRunnerMap) {
     throw new Error("extractWithExtractorTemplate requires extractorRunnerMap");
   }
+  const resolvedExtractor: QueryForExtractorOrCombinerReturningObjectOrObjectList = resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList(
+    selectorParams.extractorOrCombinerTemplate
+  ); 
+  // const resolvedExtractor: QueryWithExtractorCombinerTransformer = resolveQueryTemplateWithExtractorCombinerTransformer(
+  //   selectorParams.extractorOrCombinerTemplate
+  // ); 
 
-  switch (selectorParams.extractorOrCombinerTemplate.queryType) {
-    case "queryTemplateWithExtractorCombinerTransformer": {
-      const resolvedExtractor: QueryWithExtractorCombinerTransformer = resolveQueryTemplate(
-        selectorParams.extractorOrCombinerTemplate
-      ); 
-
-      log.info("extractWithExtractorTemplate found", "resolvedExtractor", JSON.stringify(resolvedExtractor, null, 2));
-      return runQuery(
-        state,
-        {
-          extractorRunnerMap: selectorParams.extractorRunnerMap,
-          extractor: resolvedExtractor,
-        }
-      )
-      break;
+  return extractWithExtractorOrCombinerReturningObjectOrObjectList(
+    state,
+    {
+      // extractorRunnerMap: {} as any,
+      extractorRunnerMap: selectorParams.extractorRunnerMap,
+      extractor: resolvedExtractor,
     }
-    case "queryTemplateReturningObject": {
-      const resolvedExtractor: QueryForExtractorOrCombinerReturningObjectOrObjectList = resolveQueryTemplateReturningObject(
-        selectorParams.extractorOrCombinerTemplate
-      ); 
+  )
 
-      log.info("extractWithExtractorTemplate found", "resolvedExtractor", JSON.stringify(resolvedExtractor, null, 2));
+  // switch (selectorParams.extractorOrCombinerTemplate.queryType) {
+  //   case "queryTemplateWithExtractorCombinerTransformer": {
+  //     const resolvedExtractor: QueryWithExtractorCombinerTransformer = resolveQueryTemplateWithExtractorCombinerTransformer(
+  //       selectorParams.extractorOrCombinerTemplate
+  //     ); 
 
-      return extractWithExtractorOrCombinerReturningObjectOrObjectList(
-        state,
-        {
-          // extractorRunnerMap: {} as any,
-          extractorRunnerMap: selectorParams.extractorRunnerMap,
-          extractor: resolvedExtractor,
-        }
-      )
+  //     log.info("extractWithExtractorTemplate found", "resolvedExtractor", JSON.stringify(resolvedExtractor, null, 2));
+  //     return runQuery(
+  //       state,
+  //       {
+  //         extractorRunnerMap: selectorParams.extractorRunnerMap,
+  //         extractor: resolvedExtractor,
+  //       }
+  //     )
+  //     break;
+  //   }
+  //   case "queryTemplateReturningObject": {
+  //     const resolvedExtractor: QueryForExtractorOrCombinerReturningObjectOrObjectList = resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList(
+  //       selectorParams.extractorOrCombinerTemplate
+  //     ); 
 
-      break;
-    }
-    default: {
-      return {
-        elementType: "failure",
-        elementValue: {
-          queryFailure: "QueryNotExecutable",
-          failureMessage:
-            "extractWithExtractorTemplate could not handle queryType of template: " + selectorParams.extractorOrCombinerTemplate,
-        },
-      }; 
-      break;
-    }
-  }
+  //     log.info("extractWithExtractorTemplate found", "resolvedExtractor", JSON.stringify(resolvedExtractor, null, 2));
+
+  //     return extractWithExtractorOrCombinerReturningObjectOrObjectList(
+  //       state,
+  //       {
+  //         // extractorRunnerMap: {} as any,
+  //         extractorRunnerMap: selectorParams.extractorRunnerMap,
+  //         extractor: resolvedExtractor,
+  //       }
+  //     )
+
+  //     break;
+  //   }
+  //   default: {
+  //     return {
+  //       elementType: "failure",
+  //       elementValue: {
+  //         queryFailure: "QueryNotExecutable",
+  //         failureMessage:
+  //           "extractWithExtractorTemplate could not handle queryType of template: " + selectorParams.extractorOrCombinerTemplate,
+  //       },
+  //     }; 
+  //     break;
+  //   }
+  // }
 
   // log.info(
   //   "extractExtractor",
@@ -155,12 +174,12 @@ export const extractWithExtractorTemplate /**: SyncExtractorOrQueryTemplateRunne
  * @param selectorParams the array of basic extractor functions
  * @returns 
  */
-export const extractWithManyExtractorTemplates = <StateType>(
+export const runQueryTemplateWithExtractorCombinerTransformer = <StateType>(
   state: StateType,
   selectorParams: SyncExtractorOrQueryTemplateRunnerParams<QueryTemplateWithExtractorCombinerTransformer, StateType>,
 ): DomainElementObject => { 
 
-  const resolvedExtractor: QueryWithExtractorCombinerTransformer = resolveQueryTemplate(
+  const resolvedExtractor: QueryWithExtractorCombinerTransformer = resolveQueryTemplateWithExtractorCombinerTransformer(
     selectorParams.extractorOrCombinerTemplate
   ); 
 

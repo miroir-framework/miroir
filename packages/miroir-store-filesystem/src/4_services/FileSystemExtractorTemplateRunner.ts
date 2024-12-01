@@ -51,7 +51,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
       extractWithExtractorOrCombinerReturningObjectOrObjectList: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
       // 
-      extractWithManyExtractorTemplates: undefined as any,
+      runQueryTemplateWithExtractorCombinerTransformer: undefined as any,
     };
   }
 

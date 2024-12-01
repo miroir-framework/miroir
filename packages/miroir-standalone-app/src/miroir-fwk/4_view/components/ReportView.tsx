@@ -18,7 +18,7 @@ import {
   SyncExtractorOrQueryRunnerMap,
   SyncExtractorOrQueryRunnerParams,
   Uuid,
-  getExtractorRunnerParamsForDeploymentEntityState,
+  getExtractorOrQueryRunnerParamsForDeploymentEntityState,
   getLoggerName,
   resolveExtractorTemplateForRecordOfExtractors
 } from "miroir-core";
@@ -160,7 +160,7 @@ export const ReportView = (props: ReportViewProps) => {
     DeploymentEntityState
   > = useMemo(
     () =>
-      getExtractorRunnerParamsForDeploymentEntityState<QueryWithExtractorCombinerTransformer>(
+      getExtractorOrQueryRunnerParamsForDeploymentEntityState<QueryWithExtractorCombinerTransformer>(
         usedQuery,
         deploymentEntityStateSelectorMap
       ),

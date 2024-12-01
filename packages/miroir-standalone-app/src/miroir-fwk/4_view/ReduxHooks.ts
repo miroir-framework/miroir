@@ -17,7 +17,7 @@ import {
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
-  QueryTemplateDEFUNCT,
+  MiroirQueryTemplate,
   SyncExtractorOrQueryTemplateRunner,
   SyncExtractorOrQueryTemplateRunnerParams,
   RecordOfJzodElement,
@@ -65,12 +65,12 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 // ################################################################################################
 // ################################################################################################
 export function useDeploymentEntityStateQueryTemplateSelector<
-  QueryType extends QueryTemplateDEFUNCT,
+  QueryType extends MiroirQueryTemplate,
   ResultType extends DomainElement
 >(
   deploymentEntityStateQuerySelector: SyncExtractorOrQueryTemplateRunner<QueryType, DeploymentEntityState, ResultType>,
   selectorParams: SyncExtractorOrQueryTemplateRunnerParams<QueryType, DeploymentEntityState>,
-  customQueryInterpreter?: { [k: string]: (query: QueryTemplateDEFUNCT) => ResultType }
+  customQueryInterpreter?: { [k: string]: (query: MiroirQueryTemplate) => ResultType }
 ): ResultType {
   const innerSelector = useMemo(() => {
     return applyDeploymentEntityStateQueryTemplateSelector(deploymentEntityStateQuerySelector);
@@ -97,11 +97,11 @@ export function useDeploymentEntityStateQuerySelector<
 
 // ################################################################################################
 export function useDeploymentEntityStateQueryTemplateSelectorForCleanedResult<
-  QueryType extends QueryTemplateDEFUNCT
+  QueryType extends MiroirQueryTemplate
 >(
   deploymentEntityStateQueryTemplateSelector: SyncExtractorOrQueryTemplateRunner<QueryType, DeploymentEntityState, DomainElement>,
   selectorParams: SyncExtractorOrQueryTemplateRunnerParams<QueryType, DeploymentEntityState>,
-  customQueryInterpreter?: { [k: string]: (query: QueryTemplateDEFUNCT) => DomainElement }
+  customQueryInterpreter?: { [k: string]: (query: MiroirQueryTemplate) => DomainElement }
 ): any {
   const innerSelector = useMemo(() => {
     return applyDeploymentEntityStateQueryTemplateSelectorForCleanedResult(deploymentEntityStateQueryTemplateSelector);
@@ -131,10 +131,10 @@ export function useDeploymentEntityStateQuerySelectorForCleanedResult<
 // ACCESS TO DomainState
 // ################################################################################################
 // ################################################################################################
-export function useDomainStateQueryTemplateSelector<QueryType extends QueryTemplateDEFUNCT, ResultType >(
+export function useDomainStateQueryTemplateSelector<QueryType extends MiroirQueryTemplate, ResultType >(
   domainStateSelector:SyncExtractorOrQueryTemplateRunner<QueryType, DomainState, ResultType>,
   selectorParams:SyncExtractorOrQueryTemplateRunnerParams<QueryType, DomainState>,
-  customQueryInterpreter?: { [k: string]: (query:QueryTemplateDEFUNCT) => ResultType }
+  customQueryInterpreter?: { [k: string]: (query:MiroirQueryTemplate) => ResultType }
 ): ResultType {
   const innerSelector = useMemo(
     () => {
@@ -147,10 +147,10 @@ export function useDomainStateQueryTemplateSelector<QueryType extends QueryTempl
 }
 
 // ################################################################################################
-export function useDomainStateQueryTemplateSelectorForCleanedResult<QueryType extends QueryTemplateDEFUNCT, ResultType >(
+export function useDomainStateQueryTemplateSelectorForCleanedResult<QueryType extends MiroirQueryTemplate, ResultType >(
   domainStateSelector:SyncExtractorOrQueryTemplateRunner<QueryType, DomainState, DomainElement>,
   selectorParams:SyncExtractorOrQueryTemplateRunnerParams<QueryType, DomainState>,
-  customQueryInterpreter?: { [k: string]: (query:QueryTemplateDEFUNCT) => ResultType }
+  customQueryInterpreter?: { [k: string]: (query:MiroirQueryTemplate) => ResultType }
 ): ResultType {
   const innerSelector = useMemo(
     () => {

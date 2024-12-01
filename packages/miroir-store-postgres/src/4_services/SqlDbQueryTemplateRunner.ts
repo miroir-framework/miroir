@@ -55,7 +55,7 @@ export class SqlDbExtractTemplateRunner {
       extractWithExtractorOrCombinerReturningObjectOrObjectList: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
       // 
-      extractWithManyExtractorTemplates: undefined as any,
+      runQueryTemplateWithExtractorCombinerTransformer: undefined as any,
     };
     const dbImplementationExtractorRunnerMap: AsyncExtractorOrQueryRunnerMap = {
       extractorType: "async",
@@ -70,7 +70,7 @@ export class SqlDbExtractTemplateRunner {
       extractWithExtractorOrCombinerReturningObjectOrObjectList: asyncExtractWithExtractor,
       applyExtractorTransformer: undefined as any,
       // 
-      extractWithManyExtractorTemplates: undefined as any,
+      runQueryTemplateWithExtractorCombinerTransformer: undefined as any,
     };
 
     // this.extractorRunnerMap = dbImplementationExtractorRunnerMap;

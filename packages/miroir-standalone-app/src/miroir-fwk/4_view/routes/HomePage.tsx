@@ -235,8 +235,8 @@ export const HomePage = (props: RootComponentProps) => {
     //   extractors: queryVersionBundleProducerV1.definition as ExtractorOrCombinerTemplateRecord
     // }),[miroirMetaModel])
   
-    // const producedBundle : DomainElement = useDomainStateCleanSelector(extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT, bundleProducerQuery);
-    // // const producedBundle : any = useDomainStateCleanSelector(extractWithManyExtractorsFromDomainStateForTemplateREDUNDANT, getExtractorRunnerParamsForDomainState<QueryTemplateWithExtractorCombinerTransformer>(bundleProducerQuery));
+    // const producedBundle : DomainElement = useDomainStateCleanSelector(runQueryTemplateFromDomainState, bundleProducerQuery);
+    // // const producedBundle : any = useDomainStateCleanSelector(runQueryTemplateFromDomainState, getExtractorRunnerParamsForDomainState<QueryTemplateWithExtractorCombinerTransformer>(bundleProducerQuery));
   
     // log.info("producedBundle1",producedBundle)
   

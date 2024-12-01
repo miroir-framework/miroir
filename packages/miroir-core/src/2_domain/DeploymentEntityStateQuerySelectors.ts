@@ -10,7 +10,11 @@ import {
   QueryForExtractorOrCombinerReturningObjectList,
   JzodObject,
   ExtractorOrCombinerReturningObject,
-  QueryByEntityUuidGetEntityDefinition
+  QueryByEntityUuidGetEntityDefinition,
+  QueryForExtractorOrCombinerReturningObjectOrObjectList,
+  QueryTemplateWithExtractorCombinerTransformer,
+  QueryWithExtractorCombinerTransformer,
+  DomainElementObject
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface";
 import {
@@ -37,7 +41,7 @@ import {
   extractzodSchemaForSingleSelectQuery
 } from "./QuerySelectors";
 import {
-  extractWithManyExtractorTemplates
+  runQueryTemplateWithExtractorCombinerTransformer
 } from "./QueryTemplateSelectors";
 import { transformer_InnerReference_resolve } from "./Transformers";
 
@@ -46,6 +50,14 @@ let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;
 });
+
+
+// ################################################################################################
+export const runQueryFromDeploymentEntityState: SyncExtractorOrQueryRunner<
+  QueryWithExtractorCombinerTransformer,
+  DeploymentEntityState,
+  DomainElementObject
+> = runQuery<DeploymentEntityState>;
 
 // ################################################################################################
 // ACCESSES deploymentEntityState
@@ -418,10 +430,10 @@ export function getDeploymentEntityStateSelectorMap(): SyncExtractorOrQueryRunne
       extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
     extractEntityInstanceListWithObjectListExtractor:
       extractEntityInstanceListWithObjectListExtractorInMemory,
-    runQuery: runQuery,
+    runQuery: runQueryFromDeploymentEntityState,
     extractWithExtractorOrCombinerReturningObjectOrObjectList: extractWithExtractorOrCombinerReturningObjectOrObjectList,
     // ############################################################################################
-    extractWithManyExtractorTemplates: extractWithManyExtractorTemplates,
+    runQueryTemplateWithExtractorCombinerTransformer: runQueryTemplateWithExtractorCombinerTransformer,
   };
 }
 
@@ -436,15 +448,30 @@ export function getDeploymentEntityStateJzodSchemaSelectorMap(): QueryRunnerMapF
 }
 
 // ################################################################################################
-export type GetExtractorRunnerParamsForDeploymentEntityState = <QueryType extends MiroirQuery>(
+export type GetExtractorOrQueryRunnerParamsForDeploymentEntityState = <QueryType extends MiroirQuery>(
   query: QueryType,
   extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DeploymentEntityState>
 ) => SyncExtractorOrQueryRunnerParams<QueryType, DeploymentEntityState>;
 
-export const getExtractorRunnerParamsForDeploymentEntityState = <QueryType extends MiroirQuery>(
+export const getExtractorOrQueryRunnerParamsForDeploymentEntityState = <QueryType extends MiroirQuery>(
   query: QueryType,
   extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DeploymentEntityState>
 ): SyncExtractorOrQueryRunnerParams<QueryType, DeploymentEntityState> =>{
+  return {
+    extractor: query,
+    extractorRunnerMap: extractorRunnerMap ?? getDeploymentEntityStateSelectorMap(),
+  };
+}
+// ################################################################################################
+export type GetQueryRunnerParamsForDeploymentEntityState = (
+  query: QueryWithExtractorCombinerTransformer,
+  extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DeploymentEntityState>
+) => SyncExtractorOrQueryRunnerParams<QueryWithExtractorCombinerTransformer, DeploymentEntityState>;
+
+export const getQueryRunnerParamsForDeploymentEntityState = (
+  query: QueryWithExtractorCombinerTransformer,
+  extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DeploymentEntityState>
+): SyncExtractorOrQueryRunnerParams<QueryWithExtractorCombinerTransformer, DeploymentEntityState> =>{
   return {
     extractor: query,
     extractorRunnerMap: extractorRunnerMap ?? getDeploymentEntityStateSelectorMap(),

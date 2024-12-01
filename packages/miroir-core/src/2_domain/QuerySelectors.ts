@@ -26,7 +26,7 @@ import {
   JzodElement,
   JzodObject,
   ExtractorOrCombiner,
-  RunQueryOrExtractorAction,
+  RunExtractorOrQueryAction,
   QueryFailed,
   ExtractorOrCombinerContextReference
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -65,7 +65,7 @@ const emptySelectorMap:SyncExtractorOrQueryRunnerMap<any> = {
   extractEntityInstanceListWithObjectListExtractor: undefined as any,
   extractEntityInstanceList: undefined as any,
   // ##############################################################################################
-  extractWithManyExtractorTemplates: undefined as any,
+  runQueryTemplateWithExtractorCombinerTransformer: undefined as any,
 }
 
 const emptyAsyncSelectorMap:AsyncExtractorOrQueryRunnerMap = {
@@ -79,7 +79,7 @@ const emptyAsyncSelectorMap:AsyncExtractorOrQueryRunnerMap = {
   extractEntityInstanceList: undefined as any,
   applyExtractorTransformer: undefined as any,
   // ##############################################################################################
-  extractWithManyExtractorTemplates: undefined as any,
+  runQueryTemplateWithExtractorCombinerTransformer: undefined as any,
 }
 
 // ################################################################################################
@@ -542,15 +542,15 @@ export const applyExtractorTransformerInMemory = (
 // ################################################################################################
 export async function handleQueryAction(
   origin: string,
-  runQueryOrExtractorAction: RunQueryOrExtractorAction,
+  runExtractorOrQueryAction: RunExtractorOrQueryAction,
   selectorMap: AsyncExtractorOrQueryRunnerMap
 ): Promise<ActionReturnType> {
-  log.info("handleQueryAction for", origin, "start", "runQueryOrExtractorAction", JSON.stringify(runQueryOrExtractorAction, null, 2));
+  log.info("handleQueryAction for", origin, "start", "runExtractorOrQueryAction", JSON.stringify(runExtractorOrQueryAction, null, 2));
   let queryResult: DomainElement;
-  switch (runQueryOrExtractorAction.query.queryType) {
+  switch (runExtractorOrQueryAction.query.queryType) {
     case "queryForExtractorOrCombinerReturningObject":
     case "queryForExtractorOrCombinerReturningObjectList": {
-      const extractor = runQueryOrExtractorAction.query;
+      const extractor = runExtractorOrQueryAction.query;
       queryResult = await selectorMap.extractWithExtractorOrCombinerReturningObjectOrObjectList(
         {
           extractorRunnerMap: selectorMap,
@@ -562,7 +562,7 @@ export async function handleQueryAction(
     case "queryWithExtractorCombinerTransformer": {
       queryResult = await selectorMap.runQuery(
         {
-          extractor: runQueryOrExtractorAction.query,
+          extractor: runExtractorOrQueryAction.query,
           extractorRunnerMap: selectorMap,
         }
       );
@@ -571,7 +571,7 @@ export async function handleQueryAction(
     default: {
       return {
         status: "error",
-        error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(runQueryOrExtractorAction) },
+        error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(runExtractorOrQueryAction) },
       } as ActionReturnType;
       break
     }
@@ -583,7 +583,7 @@ export async function handleQueryAction(
     } as ActionReturnType;
   } else {
     const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
-    log.info("handleQueryAction for", origin, "runQueryOrExtractorAction", runQueryOrExtractorAction, "result", JSON.stringify(result, null, 2));
+    log.info("handleQueryAction for", origin, "runExtractorOrQueryAction", runExtractorOrQueryAction, "result", JSON.stringify(result, null, 2));
     return result;
   }
 }

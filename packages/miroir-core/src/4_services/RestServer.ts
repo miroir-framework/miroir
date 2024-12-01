@@ -6,7 +6,7 @@ import {
   EntityInstance,
   InstanceAction,
   ModelAction,
-  RunQueryOrExtractorAction,
+  RunExtractorOrQueryAction,
   RunQueryTemplateOrExtractorTemplateAction,
   StoreOrBundleAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -29,13 +29,15 @@ import { cleanLevel } from "./constants";
 
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface";
-import { getDomainStateExtractorRunnerMap, getExtractorRunnerParamsForDomainState } from "../2_domain/DomainStateQuerySelectors";
+import { getDomainStateExtractorRunnerMap, getExtractorRunnerParamsForDomainState, getQueryRunnerParamsForDomainState } from "../2_domain/DomainStateQuerySelectors";
 import {
+  getExtractorOrQueryTemplateRunnerParamsForDomainState,
   getExtractorTemplateRunnerParamsForDomainState,
+  getQueryTemplateRunnerParamsForDomainState,
   getSelectorMapForTemplate
 } from "../2_domain/DomainStateQueryTemplateSelector";
 import { extractWithExtractorOrCombinerReturningObjectOrObjectList } from "../2_domain/QuerySelectors";
-import { extractWithExtractorTemplate } from "../2_domain/QueryTemplateSelectors";
+import { extractWithExtractorTemplate, runQueryTemplateWithExtractorCombinerTransformer } from "../2_domain/QueryTemplateSelectors";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RestServer");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -281,9 +283,9 @@ export async function queryActionHandler(
    * - execute on the persistent store (sql)
    * 
    */
-  const runQueryOrExtractorAction: RunQueryOrExtractorAction = body as RunQueryOrExtractorAction;
+  const runExtractorOrQueryAction: RunExtractorOrQueryAction = body as RunExtractorOrQueryAction;
 
-  const deploymentUuid = runQueryOrExtractorAction.deploymentUuid
+  const deploymentUuid = runExtractorOrQueryAction.deploymentUuid
   const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
     deploymentUuid
   );
@@ -294,7 +296,7 @@ export async function queryActionHandler(
   if (useDomainControllerToHandleModelAndInstanceActions) {
     // we are on the server, the action has been received from remote client
     // switch (runQueryTemplateOrExtractorTemplateAction.deploymentUuid) {
-    const result = await domainController.handleQueryActionForServerONLY(runQueryOrExtractorAction)
+    const result = await domainController.handleQueryActionForServerONLY(runExtractorOrQueryAction)
     log.info(
       "RestServer queryActionHandler used adminConfigurationDeploymentMiroir domainController result=",
       JSON.stringify(result, undefined, 2)
@@ -305,12 +307,33 @@ export async function queryActionHandler(
     // uses the local cache, needs to have done a Model "rollback" action on the client//, or a Model "remoteLocalCacheRollback" action on the server
     const domainState: DomainState = localCache.getDomainState();
     const extractorRunnerMapOnDomainState = getDomainStateExtractorRunnerMap();
-    log.info("RestServer queryActionHandler runQueryOrExtractorAction=", JSON.stringify(runQueryOrExtractorAction, undefined, 2))
+    log.info("RestServer queryActionHandler runExtractorOrQueryAction=", JSON.stringify(runExtractorOrQueryAction, undefined, 2))
     log.info("RestServer queryActionHandler domainState=", JSON.stringify(domainState, undefined, 2))
-    const queryResult: DomainElement = extractWithExtractorOrCombinerReturningObjectOrObjectList(
-      domainState,
-      getExtractorRunnerParamsForDomainState(runQueryOrExtractorAction.query, extractorRunnerMapOnDomainState)
-    )
+    let queryResult: DomainElement = undefined as any as DomainElement;
+    switch (runExtractorOrQueryAction.query.queryType) {
+      case "queryForExtractorOrCombinerReturningObject":
+      case "queryForExtractorOrCombinerReturningObjectList": {
+        queryResult = extractWithExtractorOrCombinerReturningObjectOrObjectList(
+          domainState,
+          getExtractorRunnerParamsForDomainState(runExtractorOrQueryAction.query, extractorRunnerMapOnDomainState)
+        );
+        break;
+      }
+      case "queryWithExtractorCombinerTransformer": {
+        queryResult = extractorRunnerMapOnDomainState.runQuery(
+          domainState,
+          getQueryRunnerParamsForDomainState(runExtractorOrQueryAction.query, extractorRunnerMapOnDomainState)
+        );
+        break;
+    }
+      default:
+        break;
+    }
+    // const queryResult: DomainElement = extractWithExtractorOrCombinerReturningObjectOrObjectList(
+    //   domainState,
+    //   // getExtractorRunnerParamsForDomainState(runExtractorOrQueryAction.query, extractorRunnerMapOnDomainState)
+    //   getExtractorRunnerParamsForDomainState(runExtractorOrQueryAction.query, extractorRunnerMapOnDomainState)
+    // )
     const result:ActionReturnType = {
       status: "ok",
       returnedDomainElement: queryResult
@@ -375,10 +398,34 @@ export async function queryTemplateActionHandler(
     const extractorRunnerMapOnDomainState = getSelectorMapForTemplate();
     log.info("RestServer queryTemplateActionHandler runQueryTemplateOrExtractorTemplateAction=", JSON.stringify(runQueryTemplateOrExtractorTemplateAction, undefined, 2))
     log.info("RestServer queryTemplateActionHandler domainState=", JSON.stringify(domainState, undefined, 2))
-    const queryResult: DomainElement = extractWithExtractorTemplate(
-      domainState,
-      getExtractorTemplateRunnerParamsForDomainState(runQueryTemplateOrExtractorTemplateAction.query, extractorRunnerMapOnDomainState)
-    )
+    let queryResult: DomainElement = undefined as any as DomainElement;
+
+    switch (runQueryTemplateOrExtractorTemplateAction.query.queryType) {
+      case "queryTemplateReturningObject":
+      case "queryTemplateReturningObjectList": {
+        queryResult = extractWithExtractorTemplate(
+          domainState,
+          getExtractorTemplateRunnerParamsForDomainState(runQueryTemplateOrExtractorTemplateAction.query, extractorRunnerMapOnDomainState)
+        )
+    
+        break;
+      }
+      case "queryTemplateWithExtractorCombinerTransformer":
+        // queryResult = extractWithExtractorTemplate(
+        queryResult = runQueryTemplateWithExtractorCombinerTransformer(
+          domainState,
+          getQueryTemplateRunnerParamsForDomainState(runQueryTemplateOrExtractorTemplateAction.query, extractorRunnerMapOnDomainState)
+        )
+            
+        break;
+    
+      default:
+        break;
+    }
+    // const queryResult: DomainElement = extractWithExtractorTemplate(
+    //   domainState,
+    //   getExtractorOrQueryTemplateRunnerParamsForDomainState(runQueryTemplateOrExtractorTemplateAction.query, extractorRunnerMapOnDomainState)
+    // )
     const result:ActionReturnType = {
       status: "ok",
       returnedDomainElement: queryResult

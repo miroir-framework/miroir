@@ -9,7 +9,7 @@ import {
   extractFetchQueryJzodSchema,
   extractJzodSchemaForDomainModelQuery,
   extractWithExtractorOrCombinerReturningObjectOrObjectList,
-  extractWithManyExtractorTemplates,
+  runQueryTemplateWithExtractorCombinerTransformer,
   runQuery,
   extractzodSchemaForSingleSelectQuery,
   selectEntityInstanceFromDeploymentEntityState,
@@ -53,9 +53,9 @@ export function getMemoizedDeploymentEntityStateSelectorForTemplateMap(): SyncEx
     ),
 
     // 
-    extractWithManyExtractorTemplates: createSelector(
+    runQueryTemplateWithExtractorCombinerTransformer: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-      extractWithManyExtractorTemplates
+      runQueryTemplateWithExtractorCombinerTransformer
     ),
   };
 }

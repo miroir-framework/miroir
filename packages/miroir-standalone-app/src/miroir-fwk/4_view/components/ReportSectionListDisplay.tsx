@@ -21,7 +21,7 @@ import {
   EntityInstancesUuidIndex,
   QueryWithExtractorCombinerTransformer,
   getApplicationSection,
-  getExtractorRunnerParamsForDeploymentEntityState,
+  getExtractorOrQueryRunnerParamsForDeploymentEntityState,
   getLoggerName,
   InstanceAction,
   JzodElement,
@@ -319,7 +319,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     DeploymentEntityState
   > = useMemo(
     () =>
-      getExtractorRunnerParamsForDeploymentEntityState<QueryWithExtractorCombinerTransformer>(
+      getExtractorOrQueryRunnerParamsForDeploymentEntityState<QueryWithExtractorCombinerTransformer>(
         {
           queryType: "queryWithExtractorCombinerTransformer",
           deploymentUuid: props.deploymentUuid,

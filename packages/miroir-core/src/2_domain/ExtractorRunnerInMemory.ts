@@ -7,7 +7,7 @@ import {
   DomainElementInstanceUuidIndexOrFailed,
   QueryForExtractorOrCombinerReturningObject,
   QueryForExtractorOrCombinerReturningObjectList,
-  RunQueryOrExtractorAction,
+  RunExtractorOrQueryAction,
   ExtractorOrCombinerReturningObject
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
@@ -64,13 +64,13 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
       extractWithExtractorOrCombinerReturningObjectOrObjectList: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
       // ##########################################################################################
-      extractWithManyExtractorTemplates: undefined as any,
+      runQueryTemplateWithExtractorCombinerTransformer: undefined as any,
     };
   }
 
   // ################################################################################################
-  async handleQueryAction(runQueryOrExtractorAction: RunQueryOrExtractorAction): Promise<ActionReturnType> {
-    return handleQueryAction("ExtractorRunnerInMemory", runQueryOrExtractorAction, this.selectorMap);
+  async handleQueryAction(runExtractorOrQueryAction: RunExtractorOrQueryAction): Promise<ActionReturnType> {
+    return handleQueryAction("ExtractorRunnerInMemory", runExtractorOrQueryAction, this.selectorMap);
   }
 
   // ################################################################################################
