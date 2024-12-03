@@ -84,7 +84,6 @@ export interface PersistenceStoreInstanceSectionAbstractInterface extends Persis
   handleQueryTemplateForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
   handleQueryAction(query: RunQueryAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
   handleExtractorAction(query: RunExtractorAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
-  handleExtractorOrQueryAction(query: RunExtractorOrQueryAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
   upsertInstance(parentUuid:string, instance:EntityInstance):Promise<ActionVoidReturnType>;
   deleteInstances(parentUuid:string, instances:EntityInstance[]):Promise<ActionVoidReturnType>;
   deleteInstance(parentUuid:string, instance:EntityInstance):Promise<ActionVoidReturnType>;
@@ -192,7 +191,6 @@ export interface PersistenceStoreControllerInterface
   handleQueryTemplateForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType>;
   handleExtractorAction(query: RunExtractorAction): Promise<ActionReturnType>;
   handleQueryAction(query: RunQueryAction): Promise<ActionReturnType>;
-  handleExtractorOrQueryAction(query: RunExtractorOrQueryAction): Promise<ActionReturnType>;
   
   getInstance(section: ApplicationSection, parentUuid: string, uuid: Uuid): Promise<ActionEntityInstanceReturnType>;
   getInstances(section: ApplicationSection, parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType>;

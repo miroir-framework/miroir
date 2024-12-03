@@ -2,13 +2,12 @@ import {
   ActionEntityInstanceCollectionReturnType,
   ActionReturnType,
   ApplicationSection,
+  BoxedExtractorOrCombinerReturningObject,
+  BoxedExtractorOrCombinerReturningObjectList,
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceArrayOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
   ExtractorOrCombinerReturningObject,
-  BoxedExtractorOrCombinerReturningObject,
-  BoxedExtractorOrCombinerReturningObjectList,
-  RunExtractorOrQueryAction,
   RunExtractorAction,
   RunQueryAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -39,7 +38,7 @@ import {
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
 } from "./DomainStateQuerySelectors";
-import { handleExtractorAction, handleExtractorOrQueryAction, handleQueryAction } from "./QuerySelectors";
+import { handleExtractorAction, handleQueryAction } from "./QuerySelectors";
 import { transformer_InnerReference_resolve } from "./Transformers";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "ExtractorRunnerInMemory");
@@ -77,11 +76,6 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
   // ################################################################################################
   async handleExtractorAction(runExtractorAction: RunExtractorAction): Promise<ActionReturnType> {
     return handleExtractorAction("ExtractorRunnerInMemory", runExtractorAction, this.selectorMap);
-  }
-
-  // ################################################################################################
-  async handleExtractorOrQueryAction(runExtractorOrQueryAction: RunExtractorOrQueryAction): Promise<ActionReturnType> {
-    return handleExtractorOrQueryAction("ExtractorRunnerInMemory", runExtractorOrQueryAction, this.selectorMap);
   }
 
   // ################################################################################################

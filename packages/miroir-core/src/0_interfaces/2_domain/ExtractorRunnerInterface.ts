@@ -40,7 +40,6 @@ export interface ExtractorTemplatePersistenceStoreRunner {
 export interface ExtractorOrQueryPersistenceStoreRunner {
   handleExtractorAction(query: RunExtractorAction): Promise<ActionReturnType>;
   handleQueryAction(query: RunQueryAction): Promise<ActionReturnType>;
-  handleExtractorOrQueryAction(query: RunExtractorOrQueryAction): Promise<ActionReturnType>;
 }
 
 // ################################################################################################

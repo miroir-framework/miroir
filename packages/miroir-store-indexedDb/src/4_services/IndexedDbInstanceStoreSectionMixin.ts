@@ -66,15 +66,15 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
       return result;
     }
     
-    // #############################################################################################
-    async handleExtractorOrQueryAction(query: RunExtractorOrQueryAction): Promise<ActionReturnType> {
-      log.info(this.logHeader,'handleExtractorOrQueryAction', 'query',query);
+    // // #############################################################################################
+    // async handleExtractorOrQueryAction(query: RunExtractorOrQueryAction): Promise<ActionReturnType> {
+    //   log.info(this.logHeader,'handleExtractorOrQueryAction', 'query',query);
       
-      const result: ActionReturnType = await this.extractorRunner.handleExtractorOrQueryAction(query);
+    //   const result: ActionReturnType = await this.extractorRunner.handleExtractorOrQueryAction(query);
 
-      log.info(this.logHeader,'handleExtractorOrQueryAction','query',query, "result", result);
-      return result;
-    }
+    //   log.info(this.logHeader,'handleExtractorOrQueryAction','query',query, "result", result);
+    //   return result;
+    // }
     
     // #############################################################################################
     async handleQueryTemplateForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {

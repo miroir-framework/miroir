@@ -10,7 +10,7 @@ import {
   ExtractorTemplatePersistenceStoreRunner,
   QueryTemplateRunnerMapForJzodSchema,
   getLoggerName,
-  handleQueryTemplateAction,
+  handleExtractorOrQueryTemplateAction,
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreInstanceSectionAbstractInterface,
@@ -58,7 +58,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
   // ################################################################################################
   async handleQueryTemplateForServerONLY(runQueryTemplateOrExtractorTemplateAction: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
     log.info(this.logHeader, "handleQueryTemplateForServerONLY", "runQueryTemplateOrExtractorTemplateAction", JSON.stringify(runQueryTemplateOrExtractorTemplateAction, null, 2));
-    return handleQueryTemplateAction("FileSystemExtractorTemplateRunner", runQueryTemplateOrExtractorTemplateAction, this.selectorMap);
+    return handleExtractorOrQueryTemplateAction("FileSystemExtractorTemplateRunner", runQueryTemplateOrExtractorTemplateAction, this.selectorMap);
   }
 
 }

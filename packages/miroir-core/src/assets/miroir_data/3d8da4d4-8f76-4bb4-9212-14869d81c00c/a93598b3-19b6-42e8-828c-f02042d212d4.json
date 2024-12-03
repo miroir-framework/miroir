@@ -120,6 +120,32 @@
           "optional": false,
           "definition": {
             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "runExtractorAction"
+          }
+        },
+        "actionErrors": {
+          "type":"literal", "definition": "FailedHandleQueryAction"
+        }
+      },
+      {
+        "actionParameters": {
+          "type": "schemaReference",
+          "optional": false,
+          "definition": {
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "runQueryAction"
+          }
+        },
+        "actionErrors": {
+          "type":"literal", "definition": "FailedHandleQueryAction"
+        }
+      },
+      {
+        "actionParameters": {
+          "type": "schemaReference",
+          "optional": false,
+          "definition": {
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
             "relativePath": "runExtractorOrQueryAction"
           }
         },

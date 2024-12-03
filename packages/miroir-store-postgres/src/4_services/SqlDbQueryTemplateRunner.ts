@@ -5,7 +5,7 @@ import {
   AsyncExtractorOrQueryRunnerMap,
   asyncExtractWithExtractor,
   asyncRunQuery,
-  handleQueryTemplateAction,
+  handleExtractorOrQueryTemplateAction,
   DomainState,
   QueryTemplateRunnerMapForJzodSchema,
   getLoggerName,
@@ -24,7 +24,7 @@ import { SqlDbDataStoreSection } from "./SqlDbDataStoreSection";
 import { SqlDbQueryRunner } from "./SqlDbQueryRunner";
 import { SqlDbModelStoreSection } from "./SqlDbModelStoreSection";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel, "PostgresExtractorRunner");
+const loggerName: string = getLoggerName(packageName, cleanLevel, "SqlDbQueryTemplateRunner");
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;
@@ -80,7 +80,7 @@ export class SqlDbExtractTemplateRunner {
   // ##############################################################################################
   async handleQueryTemplateForServerONLY(runQueryTemplateOrExtractorTemplateAction: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
     log.info(this.logHeader, "handleQueryTemplateForServerONLY", "runQueryTemplateOrExtractorTemplateAction", JSON.stringify(runQueryTemplateOrExtractorTemplateAction, null, 2));
-    return handleQueryTemplateAction("SqlDbExtractorTemplateRunner", runQueryTemplateOrExtractorTemplateAction, this.extractorRunnerMap);
+    return handleExtractorOrQueryTemplateAction("SqlDbQueryTemplateRunner", runQueryTemplateOrExtractorTemplateAction, this.extractorRunnerMap);
   }
 
 }

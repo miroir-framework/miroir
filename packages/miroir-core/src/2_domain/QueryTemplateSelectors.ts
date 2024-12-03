@@ -2,6 +2,8 @@
 
 import {
   ActionReturnType,
+  BoxedExtractorOrCombinerReturningObjectOrObjectList,
+  BoxedExtractorTemplateReturningObjectOrObjectList,
   DomainElement,
   DomainElementObject,
   DomainModelQueryTemplateJzodSchemaParams,
@@ -11,8 +13,6 @@ import {
   QueryByEntityUuidGetEntityDefinition,
   QueryByQueryTemplateGetParamJzodSchema,
   QueryByTemplateGetParamJzodSchema,
-  BoxedExtractorOrCombinerReturningObjectOrObjectList,
-  BoxedExtractorTemplateReturningObjectOrObjectList,
   QueryTemplateWithExtractorCombinerTransformer,
   QueryWithExtractorCombinerTransformer,
   RunQueryTemplateOrExtractorTemplateAction
@@ -30,7 +30,12 @@ import { MiroirLoggerFactory } from "../4_services/Logger";
 import { packageName } from "../constants";
 import { getLoggerName } from "../tools";
 import { cleanLevel } from "./constants";
-import { extractWithExtractorOrCombinerReturningObjectOrObjectList, handleExtractorOrQueryAction, runQuery } from "./QuerySelectors";
+import {
+  extractWithExtractorOrCombinerReturningObjectOrObjectList,
+  handleExtractorAction,
+  handleQueryAction,
+  runQuery,
+} from "./QuerySelectors";
 import {
   resolveExtractorOrQueryTemplate,
   resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList,
@@ -47,33 +52,66 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 );
 
 // ################################################################################################
-export async function handleQueryTemplateAction(
+export async function handleExtractorOrQueryTemplateAction(
   origin: string,
   queryTemplateOrExtractorTemplateAction: RunQueryTemplateOrExtractorTemplateAction, 
   selectorMap: AsyncExtractorOrQueryRunnerMap
 ): Promise<ActionReturnType> {
   log.info(
-    "handleQueryTemplateAction for ",
+    "handleExtractorOrQueryTemplateAction for ",
     origin,
     "runQueryTemplateOrExtractorTemplateAction",
     JSON.stringify(queryTemplateOrExtractorTemplateAction, null, 2)
   );
-  const resolvedQuery = resolveExtractorOrQueryTemplate(
+  const resolvedQuery = resolveExtractorOrQueryTemplate( // TODO: separate aas resolvedQueryTemplate and resolvedExtractorTemplate
     queryTemplateOrExtractorTemplateAction.query
   );
-
-  return handleExtractorOrQueryAction(
+  log.info(
+    "handleExtractorOrQueryTemplateAction for ",
     origin,
-    {
-      actionType: "runExtractorOrQueryAction",
-      actionName: queryTemplateOrExtractorTemplateAction.actionName,
-      deploymentUuid: queryTemplateOrExtractorTemplateAction.deploymentUuid,
-      endpoint: queryTemplateOrExtractorTemplateAction.endpoint,
-      applicationSection: queryTemplateOrExtractorTemplateAction.applicationSection,
-      query: resolvedQuery,
-    },
-    selectorMap
+    "runQueryTemplateOrExtractorTemplateAction",
+    JSON.stringify(queryTemplateOrExtractorTemplateAction, null, 2),
+    "resolvedQuery",
+    JSON.stringify(resolvedQuery, null, 2)
   );
+
+  switch (queryTemplateOrExtractorTemplateAction.query.queryType) {
+    case "boxedExtractorTemplateReturningObject":
+    case "boxedExtractorTemplateReturningObjectList": {
+      return handleExtractorAction(
+        origin,
+        {
+          actionType: "runExtractorAction",
+          actionName: queryTemplateOrExtractorTemplateAction.actionName,
+          deploymentUuid: queryTemplateOrExtractorTemplateAction.deploymentUuid,
+          endpoint: queryTemplateOrExtractorTemplateAction.endpoint,
+          applicationSection: queryTemplateOrExtractorTemplateAction.applicationSection,
+          query: resolvedQuery as any,
+        },
+        selectorMap
+      );
+    
+    }
+    case "queryTemplateWithExtractorCombinerTransformer":{
+      return handleQueryAction(
+        origin,
+        {
+          actionType: "runQueryAction",
+          actionName: queryTemplateOrExtractorTemplateAction.actionName,
+          deploymentUuid: queryTemplateOrExtractorTemplateAction.deploymentUuid,
+          endpoint: queryTemplateOrExtractorTemplateAction.endpoint,
+          applicationSection: queryTemplateOrExtractorTemplateAction.applicationSection,
+          query: resolvedQuery as any,
+        },
+        selectorMap
+      );
+      break;
+    }
+    default: {
+      throw new Error("handleExtractorOrQueryTemplateAction: unknown queryType for query: " + JSON.stringify(queryTemplateOrExtractorTemplateAction.query));
+      break;
+    }
+  }
 }
 
 // ################################################################################################
@@ -196,38 +234,6 @@ export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
   return result;
 }
 
-// // ################################################################################################
-// export const extractJzodSchemaForDomainModelQuery = <StateType>(
-//   deploymentEntityState: StateType,
-//   selectorParams: ExtractorTemplateRunnerParamsForJzodSchema<DomainModelQueryTemplateJzodSchemaParams, StateType>
-// ): RecordOfJzodElement | JzodElement | undefined => {
-//   switch (selectorParams.query.queryType) {
-//     case "getEntityDefinition":{ 
-//       return selectorParams.extractorRunnerMap.extractEntityJzodSchema(
-//         deploymentEntityState,
-//         selectorParams as ExtractorTemplateRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, StateType>
-//       );
-//       break;
-//     }
-//     case "queryByTemplateGetParamJzodSchema": {
-//       return selectorParams.extractorRunnerMap.extractFetchQueryJzodSchema(
-//         deploymentEntityState,
-//         selectorParams as ExtractorTemplateRunnerParamsForJzodSchema<QueryByTemplateGetParamJzodSchema, StateType>
-//       );
-//       break;
-//     }
-//     case "getQueryJzodSchema": {
-//       return selectorParams.extractorRunnerMap.extractzodSchemaForSingleSelectQuery(
-//         deploymentEntityState,
-//         selectorParams as ExtractorTemplateRunnerParamsForJzodSchema<QueryByQueryTemplateGetParamJzodSchema, StateType>
-//       );
-//       break;
-//     }
-//     default:
-//       return undefined;
-//       break;
-//   }
-// };
 
 // ################################################################################################
 export const extractJzodSchemaForDomainModelQueryTemplate = <StateType>(

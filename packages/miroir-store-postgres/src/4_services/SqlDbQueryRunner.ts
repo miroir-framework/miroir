@@ -692,8 +692,8 @@ export class SqlDbQueryRunner {
       const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
       log.info(
         this.logHeader,
-        "handleExtractorOrQueryAction",
-        "runExtractorOrQueryAction",
+        "handleExtractorAction",
+        "runExtractorAction",
         runExtractorAction,
         "result",
         JSON.stringify(result, null, 2)
@@ -726,8 +726,8 @@ export class SqlDbQueryRunner {
       const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
       log.info(
         this.logHeader,
-        "handleExtractorOrQueryAction",
-        "runExtractorOrQueryAction",
+        "handleQueryAction",
+        "runQueryAction",
         runQueryAction,
         "result",
         JSON.stringify(result, null, 2)
@@ -736,52 +736,52 @@ export class SqlDbQueryRunner {
     }
   }
 
-  // ##############################################################################################
-  async handleExtractorOrQueryAction(runExtractorOrQueryAction: RunExtractorOrQueryAction): Promise<ActionReturnType> {
-    log.info(this.logHeader, "handleExtractorOrQueryAction", "runExtractorOrQueryAction", JSON.stringify(runExtractorOrQueryAction, null, 2));
-    let queryResult: DomainElement;
-    switch (runExtractorOrQueryAction.query.queryType) {
-      case "boxedExtractorOrCombinerReturningObject":
-      case "boxedExtractorOrCombinerReturningObjectList": {
-        queryResult = await this.inMemoryImplementationExtractorRunnerMap.extractWithExtractorOrCombinerReturningObjectOrObjectList({
-          extractor: runExtractorOrQueryAction.query,
-          extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
-        });
-        break;
-      }
-      case "queryWithExtractorCombinerTransformer": {
-        if (runExtractorOrQueryAction.query.runAsSql) {
-          queryResult = await this.dbImplementationExtractorRunnerMap.runQuery({
-            extractor: runExtractorOrQueryAction.query,
-            extractorRunnerMap: this.dbImplementationExtractorRunnerMap,
-          });
-        } else {
-          queryResult = await this.inMemoryImplementationExtractorRunnerMap.runQuery({
-            extractor: runExtractorOrQueryAction.query,
-            extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
-          });
-        }
-        break;
-      }
-      default: {
-        return {
-          status: "error",
-          error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(runExtractorOrQueryAction) },
-        } as ActionReturnType;
-        break;
-      }
-    }
-    if (queryResult.elementType == "failure") {
-      return {
-        status: "error",
-        error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult) },
-      } as ActionReturnType;
-    } else {
-      const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
-      log.info(this.logHeader, "handleExtractorOrQueryAction", "runExtractorOrQueryAction", runExtractorOrQueryAction, "result", JSON.stringify(result, null, 2));
-      return result;
-    }
-  }
+  // // ##############################################################################################
+  // async handleExtractorOrQueryAction(runExtractorOrQueryAction: RunExtractorOrQueryAction): Promise<ActionReturnType> {
+  //   log.info(this.logHeader, "handleExtractorOrQueryAction", "runExtractorOrQueryAction", JSON.stringify(runExtractorOrQueryAction, null, 2));
+  //   let queryResult: DomainElement;
+  //   switch (runExtractorOrQueryAction.query.queryType) {
+  //     case "boxedExtractorOrCombinerReturningObject":
+  //     case "boxedExtractorOrCombinerReturningObjectList": {
+  //       queryResult = await this.inMemoryImplementationExtractorRunnerMap.extractWithExtractorOrCombinerReturningObjectOrObjectList({
+  //         extractor: runExtractorOrQueryAction.query,
+  //         extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
+  //       });
+  //       break;
+  //     }
+  //     case "queryWithExtractorCombinerTransformer": {
+  //       if (runExtractorOrQueryAction.query.runAsSql) {
+  //         queryResult = await this.dbImplementationExtractorRunnerMap.runQuery({
+  //           extractor: runExtractorOrQueryAction.query,
+  //           extractorRunnerMap: this.dbImplementationExtractorRunnerMap,
+  //         });
+  //       } else {
+  //         queryResult = await this.inMemoryImplementationExtractorRunnerMap.runQuery({
+  //           extractor: runExtractorOrQueryAction.query,
+  //           extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
+  //         });
+  //       }
+  //       break;
+  //     }
+  //     default: {
+  //       return {
+  //         status: "error",
+  //         error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(runExtractorOrQueryAction) },
+  //       } as ActionReturnType;
+  //       break;
+  //     }
+  //   }
+  //   if (queryResult.elementType == "failure") {
+  //     return {
+  //       status: "error",
+  //       error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult) },
+  //     } as ActionReturnType;
+  //   } else {
+  //     const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
+  //     log.info(this.logHeader, "handleExtractorOrQueryAction", "runExtractorOrQueryAction", runExtractorOrQueryAction, "result", JSON.stringify(result, null, 2));
+  //     return result;
+  //   }
+  // }
 
   // ##############################################################################################
   public extractEntityInstance: AsyncExtractorRunner<

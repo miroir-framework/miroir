@@ -4,6 +4,8 @@ import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import {
   ActionReturnType,
   ApplicationSection,
+  BoxedExtractorOrCombinerReturningObjectList,
+  BoxedExtractorOrCombinerReturningObjectOrObjectList,
   CombinerByManyToManyRelationReturningObjectList,
   CombinerByRelationReturningObjectList,
   DomainElement,
@@ -24,11 +26,8 @@ import {
   QueryByQuery2GetParamJzodSchema,
   QueryByQueryGetParamJzodSchema,
   QueryFailed,
-  BoxedExtractorOrCombinerReturningObjectList,
-  BoxedExtractorOrCombinerReturningObjectOrObjectList,
   QueryJzodSchemaParams,
   QueryWithExtractorCombinerTransformer,
-  RunExtractorOrQueryAction,
   RunExtractorAction,
   RunQueryAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -594,56 +593,6 @@ export async function handleQueryAction(
     return result;
   }
 }
-
-// ################################################################################################
-export async function handleExtractorOrQueryAction(
-  origin: string,
-  runExtractorOrQueryAction: RunExtractorOrQueryAction,
-  selectorMap: AsyncExtractorOrQueryRunnerMap
-): Promise<ActionReturnType> {
-  log.info("handleExtractorOrQueryAction for", origin, "start", "runExtractorOrQueryAction", JSON.stringify(runExtractorOrQueryAction, null, 2));
-  let queryResult: DomainElement;
-  switch (runExtractorOrQueryAction.query.queryType) {
-    case "boxedExtractorOrCombinerReturningObject":
-    case "boxedExtractorOrCombinerReturningObjectList": {
-      const extractor = runExtractorOrQueryAction.query;
-      queryResult = await selectorMap.extractWithExtractorOrCombinerReturningObjectOrObjectList(
-        {
-          extractorRunnerMap: selectorMap,
-          extractor,
-        }
-      );
-      break;
-    }
-    case "queryWithExtractorCombinerTransformer": {
-      queryResult = await selectorMap.runQuery(
-        {
-          extractor: runExtractorOrQueryAction.query,
-          extractorRunnerMap: selectorMap,
-        }
-      );
-      break;
-    }
-    default: {
-      return {
-        status: "error",
-        error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(runExtractorOrQueryAction) },
-      } as ActionReturnType;
-      break
-    }
-  }
-  if (queryResult.elementType == "failure") {
-    return {
-      status: "error",
-      error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult) },
-    } as ActionReturnType;
-  } else {
-    const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
-    log.info("handleExtractorOrQueryAction for", origin, "runExtractorOrQueryAction", runExtractorOrQueryAction, "result", JSON.stringify(result, null, 2));
-    return result;
-  }
-}
-
 
 // ################################################################################################
 export function innerSelectDomainElementFromExtractorOrCombiner/*ExtractorTemplateRunner*/<StateType>(

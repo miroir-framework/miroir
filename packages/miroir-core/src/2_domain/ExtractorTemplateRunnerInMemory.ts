@@ -31,7 +31,7 @@ import {
   selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
 } from "./DomainStateQueryTemplateSelector";
 import { ExtractorRunnerInMemory } from "./ExtractorRunnerInMemory";
-import { handleQueryTemplateAction } from "./QueryTemplateSelectors";
+import { handleExtractorOrQueryTemplateAction } from "./QueryTemplateSelectors";
 import { resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList, resolveQueryTemplateWithExtractorCombinerTransformer } from "./Templates";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "ExtractorTemplateRunnerInMemory");
@@ -70,7 +70,7 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
   // ################################################################################################
   async handleQueryTemplateForServerONLY(runQueryTemplateOrExtractorTemplateAction: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
     log.info(this.logHeader, "handleQueryTemplateForServerONLY", "runQueryTemplateOrExtractorTemplateAction", JSON.stringify(runQueryTemplateOrExtractorTemplateAction, null, 2));
-    return handleQueryTemplateAction("ExtractorTemplateRunnerInMemory", runQueryTemplateOrExtractorTemplateAction, this.selectorMap);
+    return handleExtractorOrQueryTemplateAction("ExtractorTemplateRunnerInMemory", runQueryTemplateOrExtractorTemplateAction, this.selectorMap);
   }
 
 } // end of class ExtractorTemplateRunnerInMemory

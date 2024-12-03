@@ -20,7 +20,9 @@ import {
   RestPersistenceClientAndRestClientInterface,
   getLoggerName,
   storeActionOrBundleActionStoreRunner,
-  PersistenceStoreControllerInterface
+  PersistenceStoreControllerInterface,
+  BoxedExtractorOrCombinerReturningObjectOrObjectList,
+  QueryWithExtractorCombinerTransformer
 } from "miroir-core";
 import { handlePromiseActionForSaga } from 'src/sagaTools.js';
 import { packageName } from '../../constants.js';
@@ -237,9 +239,50 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                     "restMethodGetHandler could not find controller for deployment: " + action.deploymentUuid
                   );
                 }
-                const localStoreResult =
-                  yield * call(() => localPersistenceStoreController.handleExtractorOrQueryAction(action));
-                return  yield localStoreResult;
+                switch (action.query.queryType) {
+                  case "boxedExtractorOrCombinerReturningObjectList":
+                  case "boxedExtractorOrCombinerReturningObject": {
+                    const localQuery:BoxedExtractorOrCombinerReturningObjectOrObjectList = action.query
+                    const localStoreResult = yield* call(() =>
+                      localPersistenceStoreController.handleExtractorAction(
+                        {
+                          actionType: "runExtractorAction",
+                          actionName: action.actionName,
+                          applicationSection: action.applicationSection,
+                          deploymentUuid: action.deploymentUuid,
+                          endpoint: action.endpoint,
+                          query: localQuery,
+                        }
+                      )
+                    );
+                    return yield localStoreResult;
+                    break;
+                  }
+                  case "queryWithExtractorCombinerTransformer": {
+                    const localQuery: QueryWithExtractorCombinerTransformer = action.query;
+                    const localStoreResult = yield* call(() =>
+                      localPersistenceStoreController.handleQueryAction({
+                        actionType: "runQueryAction",
+                        actionName: action.actionName,
+                        applicationSection: action.applicationSection,
+                        deploymentUuid: action.deploymentUuid,
+                        endpoint: action.endpoint,
+                        query: localQuery,
+                      })
+                    );
+                    return yield localStoreResult;
+                    break;
+                  }
+                  default: {
+                    throw new Error(
+                      "PersistenceActionReduxSaga handlePersistenceAction could not handle action " + JSON.stringify(action)
+                    );
+                    break;
+                  }
+                }
+                // const localStoreResult =
+                //   yield * call(() => localPersistenceStoreController.handleExtractorOrQueryAction(action));
+                // return  yield localStoreResult;
                 break;
 
               }

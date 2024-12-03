@@ -586,7 +586,7 @@ export {
   ExtractorRunnerInMemory
 } from './2_domain/ExtractorRunnerInMemory';
 export {
-  handleQueryTemplateAction,
+  handleExtractorOrQueryTemplateAction,
   runQueryTemplateWithExtractorCombinerTransformer,
   extractWithExtractorTemplate,
   extractFetchQueryTemplateJzodSchema,
