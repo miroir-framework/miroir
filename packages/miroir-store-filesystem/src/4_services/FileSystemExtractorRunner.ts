@@ -21,15 +21,17 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreInstanceSectionAbstractInterface,
-  QueryForExtractorOrCombinerReturningObject,
-  QueryForExtractorOrCombinerReturningObjectList,
+  BoxedExtractorOrCombinerReturningObject,
+  BoxedExtractorOrCombinerReturningObjectList,
   QueryRunnerMapForJzodSchema,
   RunExtractorOrQueryAction,
   selectEntityJzodSchemaFromDomainStateNew,
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
-  transformer_InnerReference_resolve
+  transformer_InnerReference_resolve,
+  RunQueryAction,
+  RunExtractorAction
 } from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
@@ -63,8 +65,52 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
   }
 
   // ################################################################################################
-  async handleQueryAction(runExtractorOrQueryAction: RunExtractorOrQueryAction): Promise<ActionReturnType> {
-    log.info(this.logHeader, "handleQueryAction", "runQueryTemplateOrExtractorTemplateAction", JSON.stringify(runExtractorOrQueryAction, null, 2));
+  async handleExtractorAction(runExtractorAction: RunExtractorAction): Promise<ActionReturnType> {
+    log.info(this.logHeader, "handleExtractorAction", "runExtractorAction", JSON.stringify(runExtractorAction, null, 2));
+    let queryResult: DomainElement;
+    queryResult = await this.selectorMap.extractWithExtractorOrCombinerReturningObjectOrObjectList(
+      {
+        extractor: runExtractorAction.query,
+        extractorRunnerMap: this.selectorMap,
+      }
+    );
+    if (queryResult.elementType == "failure") {
+      return {
+        status: "error",
+        error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult) },
+      } as ActionReturnType;
+    } else {
+      const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
+      log.info(this.logHeader, "handleExtractorAction", "runExtractorAction", runExtractorAction, "result", JSON.stringify(result, null, 2));
+      return result;
+    }
+  }
+
+  // ################################################################################################
+  async handleQueryAction(runQueryAction: RunQueryAction): Promise<ActionReturnType> {
+    log.info(this.logHeader, "handleQueryAction", "runQueryAction", JSON.stringify(runQueryAction, null, 2));
+    let queryResult: DomainElement;
+    queryResult = await this.selectorMap.runQuery(
+      {
+        extractor: runQueryAction.query,
+        extractorRunnerMap: this.selectorMap,
+      }
+    );
+    if (queryResult.elementType == "failure") {
+      return {
+        status: "error",
+        error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult) },
+      } as ActionReturnType;
+    } else {
+      const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
+      log.info(this.logHeader, "handleQueryAction", "runQueryAction", runQueryAction, "result", JSON.stringify(result, null, 2));
+      return result;
+    }
+  }
+
+  // ################################################################################################
+  async handleExtractorOrQueryAction(runExtractorOrQueryAction: RunExtractorOrQueryAction): Promise<ActionReturnType> {
+    log.info(this.logHeader, "handleExtractorOrQueryAction", "runQueryTemplateOrExtractorTemplateAction", JSON.stringify(runExtractorOrQueryAction, null, 2));
     let queryResult: DomainElement;
     switch (runExtractorOrQueryAction.query.queryType) {
       case "boxedExtractorOrCombinerReturningObject":
@@ -101,20 +147,17 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       } as ActionReturnType;
     } else {
       const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
-      log.info(this.logHeader, "handleQueryAction", "runQueryTemplateOrExtractorTemplateAction", runExtractorOrQueryAction, "result", JSON.stringify(result, null, 2));
+      log.info(this.logHeader, "handleExtractorOrQueryAction", "runQueryTemplateOrExtractorTemplateAction", runExtractorOrQueryAction, "result", JSON.stringify(result, null, 2));
       return result;
     }
-    // const result = { status: "ok", returnedDomainElement: { elementType: "object", elementValue: {}}} as ActionReturnType;
-
-    // return result;
   }
 
   // ################################################################################################
   public extractEntityInstance: AsyncExtractorRunner<
-    QueryForExtractorOrCombinerReturningObject,
+    BoxedExtractorOrCombinerReturningObject,
     DomainElementEntityInstanceOrFailed
   > = async (
-    selectorParams: AsyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObject>
+    selectorParams: AsyncExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject>
   ): Promise<DomainElementEntityInstanceOrFailed> => {
     const querySelectorParams: ExtractorOrCombinerReturningObject = selectorParams.extractor.select as ExtractorOrCombinerReturningObject;
     const deploymentUuid = selectorParams.extractor.deploymentUuid;
@@ -252,10 +295,10 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
 
   // ##############################################################################################
   public extractEntityInstanceUuidIndex: AsyncExtractorRunner<
-    QueryForExtractorOrCombinerReturningObjectList,
+    BoxedExtractorOrCombinerReturningObjectList,
     DomainElementInstanceUuidIndexOrFailed
   > = async (
-    extractorRunnerParams: AsyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList>
+    extractorRunnerParams: AsyncExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
   ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
     return this.extractEntityInstanceList(extractorRunnerParams).then((result) => {
       if (result.elementType == "failure") {
@@ -270,10 +313,10 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
 
   // ##############################################################################################
   public extractEntityInstanceList: AsyncExtractorRunner<
-    QueryForExtractorOrCombinerReturningObjectList,
+    BoxedExtractorOrCombinerReturningObjectList,
     DomainElementInstanceArrayOrFailed
   > = async (
-    extractorRunnerParams: AsyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList>
+    extractorRunnerParams: AsyncExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
   ): Promise<DomainElementInstanceArrayOrFailed> => {
     const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";

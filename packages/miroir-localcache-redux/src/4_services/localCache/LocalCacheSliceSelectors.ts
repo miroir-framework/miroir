@@ -23,7 +23,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   MiroirQueryTemplate,
-  QueryForExtractorOrCombinerReturningObjectOrObjectList,
+  BoxedExtractorOrCombinerReturningObjectOrObjectList,
   QueryJzodSchemaParams,
   QueryTemplateWithExtractorCombinerTransformer,
   QueryWithExtractorCombinerTransformer,
@@ -68,7 +68,7 @@ declare type SelectorParamsForQuery<QueryType extends QueryWithExtractorCombiner
 ) => SyncQueryRunnerParams<StateType>;
 
 // ################################################################################################
-declare type SelectorParamsForExtractor<QueryType extends QueryForExtractorOrCombinerReturningObjectOrObjectList, StateType> = (
+declare type SelectorParamsForExtractor<QueryType extends BoxedExtractorOrCombinerReturningObjectOrObjectList, StateType> = (
   reduxState: ReduxStateWithUndoRedo,
   params: SyncExtractorRunnerParams<QueryType, StateType>
 ) => SyncExtractorRunnerParams<QueryType, StateType>;

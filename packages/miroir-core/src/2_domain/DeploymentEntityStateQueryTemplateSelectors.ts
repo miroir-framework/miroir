@@ -3,7 +3,7 @@ import {
   EntityDefinition,
   JzodObject,
   QueryByEntityUuidGetEntityDefinition,
-  QueryTemplateReturningObjectOrObjectList,
+  BoxedExtractorTemplateReturningObjectOrObjectList,
   QueryTemplateWithExtractorCombinerTransformer
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface";
@@ -83,13 +83,13 @@ export function getDeploymentEntityStateJzodSchemaSelectorTemplateMap(): QueryTe
 }
 
 // ################################################################################################
-export type GetExtractorTemplateRunnerParamsForDeploymentEntityState = <QueryType extends QueryTemplateReturningObjectOrObjectList>(
+export type GetExtractorTemplateRunnerParamsForDeploymentEntityState = <QueryType extends BoxedExtractorTemplateReturningObjectOrObjectList>(
   query: QueryType,
   extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DeploymentEntityState>
 ) => SyncExtractorTemplateRunnerParams<QueryType, DeploymentEntityState>;
 // ) => SyncExtractorOrQueryTemplateRunnerParams<QueryType, DeploymentEntityState>;
 
-export function getExtractorTemplateRunnerParamsForDeploymentEntityState<QueryType extends QueryTemplateReturningObjectOrObjectList>(
+export function getExtractorTemplateRunnerParamsForDeploymentEntityState<QueryType extends BoxedExtractorTemplateReturningObjectOrObjectList>(
   query: QueryType,
   extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DeploymentEntityState>
 ): SyncExtractorTemplateRunnerParams<QueryType, DeploymentEntityState> {

@@ -11,6 +11,8 @@ import {
   asyncExtractWithExtractor,
   AsyncQueryRunnerParams,
   asyncRunQuery,
+  BoxedExtractorOrCombinerReturningObject,
+  BoxedExtractorOrCombinerReturningObjectList,
   DomainElement,
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceArrayOrFailed,
@@ -22,12 +24,11 @@ import {
   getLoggerName,
   LoggerInterface,
   MiroirLoggerFactory,
-  QueryForExtractorOrCombinerReturningObject,
-  QueryForExtractorOrCombinerReturningObjectList,
   QueryRunnerMapForJzodSchema,
-  QueryWithExtractorCombinerTransformer,
   resolvePathOnObject,
+  RunExtractorAction,
   RunExtractorOrQueryAction,
+  RunQueryAction,
   selectEntityJzodSchemaFromDomainStateNew,
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
@@ -564,11 +565,11 @@ export class SqlDbQueryRunner {
    * @returns
    */
   public asyncSqlDbExtractEntityInstanceListWithObjectListExtractor = (
-    selectorParams: AsyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList>
+    selectorParams: AsyncExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
   ): Promise<DomainElementInstanceArrayOrFailed> => {
     // (
     //   state: any,
-    //   selectorParams: AsyncExtractorOrQueryTemplateRunnerParams<QueryTemplateForObjectList, any>
+    //   selectorParams: AsyncExtractorOrQueryTemplateRunnerParams<BoxedExtractorTemplateReturningObjectList, any>
     // ): Promise<DomainElementInstanceUuidIndexOrFailed> {
     let result: Promise<DomainElementInstanceArrayOrFailed>;
     switch (selectorParams.extractor.select.extractorOrCombinerType) {
@@ -623,11 +624,11 @@ export class SqlDbQueryRunner {
    * @returns
    */
   public asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor = (
-    selectorParams: AsyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList>
+    selectorParams: AsyncExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
   ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
     // (
     //   state: any,
-    //   selectorParams: AsyncExtractorOrQueryTemplateRunnerParams<QueryTemplateForObjectList, any>
+    //   selectorParams: AsyncExtractorOrQueryTemplateRunnerParams<BoxedExtractorTemplateReturningObjectList, any>
     // ): Promise<DomainElementInstanceUuidIndexOrFailed> {
     let result: Promise<DomainElementInstanceUuidIndexOrFailed>;
     switch (selectorParams.extractor.select.extractorOrCombinerType) {
@@ -675,8 +676,69 @@ export class SqlDbQueryRunner {
   };
 
   // ##############################################################################################
-  async handleQueryAction(runExtractorOrQueryAction: RunExtractorOrQueryAction): Promise<ActionReturnType> {
-    log.info(this.logHeader, "handleQueryAction", "runExtractorOrQueryAction", JSON.stringify(runExtractorOrQueryAction, null, 2));
+  async handleExtractorAction(runExtractorAction: RunExtractorAction): Promise<ActionReturnType> {
+    log.info(this.logHeader, "handleExtractorAction", "runExtractorAction", JSON.stringify(runExtractorAction, null, 2));
+    let queryResult: DomainElement;
+    queryResult = await this.inMemoryImplementationExtractorRunnerMap.extractWithExtractorOrCombinerReturningObjectOrObjectList({
+      extractor: runExtractorAction.query,
+      extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
+    });
+    if (queryResult.elementType == "failure") {
+      return {
+        status: "error",
+        error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult) },
+      } as ActionReturnType;
+    } else {
+      const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
+      log.info(
+        this.logHeader,
+        "handleExtractorOrQueryAction",
+        "runExtractorOrQueryAction",
+        runExtractorAction,
+        "result",
+        JSON.stringify(result, null, 2)
+      );
+      return result;
+    }
+  }
+
+  // ##############################################################################################
+  async handleQueryAction(runQueryAction: RunQueryAction): Promise<ActionReturnType> {
+    log.info(this.logHeader, "handleQueryAction", "runQueryAction", JSON.stringify(runQueryAction, null, 2));
+    let queryResult: DomainElement;
+    if (runQueryAction.query.runAsSql) {
+      queryResult = await this.dbImplementationExtractorRunnerMap.runQuery({
+        extractor: runQueryAction.query,
+        extractorRunnerMap: this.dbImplementationExtractorRunnerMap,
+      });
+    } else {
+      queryResult = await this.inMemoryImplementationExtractorRunnerMap.runQuery({
+        extractor: runQueryAction.query,
+        extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
+      });
+    }
+    if (queryResult.elementType == "failure") {
+      return {
+        status: "error",
+        error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult) },
+      } as ActionReturnType;
+    } else {
+      const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
+      log.info(
+        this.logHeader,
+        "handleExtractorOrQueryAction",
+        "runExtractorOrQueryAction",
+        runQueryAction,
+        "result",
+        JSON.stringify(result, null, 2)
+      );
+      return result;
+    }
+  }
+
+  // ##############################################################################################
+  async handleExtractorOrQueryAction(runExtractorOrQueryAction: RunExtractorOrQueryAction): Promise<ActionReturnType> {
+    log.info(this.logHeader, "handleExtractorOrQueryAction", "runExtractorOrQueryAction", JSON.stringify(runExtractorOrQueryAction, null, 2));
     let queryResult: DomainElement;
     switch (runExtractorOrQueryAction.query.queryType) {
       case "boxedExtractorOrCombinerReturningObject":
@@ -716,17 +778,17 @@ export class SqlDbQueryRunner {
       } as ActionReturnType;
     } else {
       const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
-      log.info(this.logHeader, "handleQueryAction", "runExtractorOrQueryAction", runExtractorOrQueryAction, "result", JSON.stringify(result, null, 2));
+      log.info(this.logHeader, "handleExtractorOrQueryAction", "runExtractorOrQueryAction", runExtractorOrQueryAction, "result", JSON.stringify(result, null, 2));
       return result;
     }
   }
 
   // ##############################################################################################
   public extractEntityInstance: AsyncExtractorRunner<
-    QueryForExtractorOrCombinerReturningObject,
+    BoxedExtractorOrCombinerReturningObject,
     DomainElementEntityInstanceOrFailed
   > = async (
-    selectorParams: AsyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObject>
+    selectorParams: AsyncExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject>
   ): Promise<DomainElementEntityInstanceOrFailed> => {
     const querySelectorParams: ExtractorOrCombinerReturningObject = selectorParams.extractor.select as ExtractorOrCombinerReturningObject;
     const deploymentUuid = selectorParams.extractor.deploymentUuid;
@@ -864,10 +926,10 @@ export class SqlDbQueryRunner {
 
   // ##############################################################################################
   public extractEntityInstanceUuidIndex: AsyncExtractorRunner<
-    QueryForExtractorOrCombinerReturningObjectList,
+    BoxedExtractorOrCombinerReturningObjectList,
     DomainElementInstanceUuidIndexOrFailed
   > = async (
-    extractorRunnerParams: AsyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList>
+    extractorRunnerParams: AsyncExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
   ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
     return this.extractEntityInstanceList(extractorRunnerParams).then((result) => {
       if (result.elementType == "failure") {
@@ -882,10 +944,10 @@ export class SqlDbQueryRunner {
 
   // ##############################################################################################
   public extractEntityInstanceList: AsyncExtractorRunner<
-    QueryForExtractorOrCombinerReturningObjectList,
+    BoxedExtractorOrCombinerReturningObjectList,
     DomainElementInstanceArrayOrFailed
   > = async (
-    extractorRunnerParams: AsyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList>
+    extractorRunnerParams: AsyncExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
   ): Promise<DomainElementInstanceArrayOrFailed> => {
     const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
@@ -921,10 +983,10 @@ export class SqlDbQueryRunner {
 
   // ##############################################################################################
   public extractEntityInstanceUuidIndexWithFilter: AsyncExtractorRunner<
-    QueryForExtractorOrCombinerReturningObjectList,
+    BoxedExtractorOrCombinerReturningObjectList,
     DomainElementInstanceUuidIndexOrFailed
   > = async (
-    extractorRunnerParams: AsyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList>
+    extractorRunnerParams: AsyncExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
   ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
     return this.extractEntityInstanceListWithFilter(extractorRunnerParams).then((result) => {
       if (result.elementType == "failure") {
@@ -939,10 +1001,10 @@ export class SqlDbQueryRunner {
 
   // ##############################################################################################
   public extractEntityInstanceListWithFilter: AsyncExtractorRunner<
-    QueryForExtractorOrCombinerReturningObjectList,
+    BoxedExtractorOrCombinerReturningObjectList,
     DomainElementInstanceArrayOrFailed
   > = async (
-    extractorRunnerParams: AsyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList>
+    extractorRunnerParams: AsyncExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
   ): Promise<DomainElementInstanceArrayOrFailed> => {
     const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";

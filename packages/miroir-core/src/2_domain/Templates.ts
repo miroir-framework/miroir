@@ -2,17 +2,17 @@ import {
   Extractor,
   ExtractorOrCombiner,
   ExtractorOrCombinerRecord,
-  QueryTemplateReturningObject,
+  BoxedExtractorTemplateReturningObject,
   ExtractorWrapper,
   QueryFailed,
-  QueryForExtractorOrCombinerReturningObjectOrObjectList,
+  BoxedExtractorOrCombinerReturningObjectOrObjectList,
   ExtractorOrCombinerTemplate,
   ExtractorTemplateByExtractorWrapper,
   QueryTemplateWithExtractorCombinerTransformer,
   QueryWithExtractorCombinerTransformer,
   Transformer_InnerReference,
   Transformer_contextOrParameterReference,
-  QueryTemplateReturningObjectOrObjectList
+  BoxedExtractorTemplateReturningObjectOrObjectList
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/Logger";
@@ -286,8 +286,8 @@ export function resolveQueryTemplateWithExtractorCombinerTransformer(
 
 // ################################################################################################
 export function resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList(
-  boxedExtractorTemplateReturningObjectOrObjectList: QueryTemplateReturningObjectOrObjectList,
-): QueryForExtractorOrCombinerReturningObjectOrObjectList {
+  boxedExtractorTemplateReturningObjectOrObjectList: BoxedExtractorTemplateReturningObjectOrObjectList,
+): BoxedExtractorOrCombinerReturningObjectOrObjectList {
 
   const params = { ...boxedExtractorTemplateReturningObjectOrObjectList.pageParams, ...boxedExtractorTemplateReturningObjectOrObjectList.queryParams };
 
@@ -315,8 +315,8 @@ export function resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjec
 
 // ################################################################################################
 export function resolveExtractorOrQueryTemplate(
-  extractorOrCombinerTemplate: QueryTemplateReturningObjectOrObjectList | QueryTemplateWithExtractorCombinerTransformer
-): QueryForExtractorOrCombinerReturningObjectOrObjectList | QueryWithExtractorCombinerTransformer {
+  extractorOrCombinerTemplate: BoxedExtractorTemplateReturningObjectOrObjectList | QueryTemplateWithExtractorCombinerTransformer
+): BoxedExtractorOrCombinerReturningObjectOrObjectList | QueryWithExtractorCombinerTransformer {
   if ('select' in extractorOrCombinerTemplate) { // TODO: implementation-specific, to be improved!
     return resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList(extractorOrCombinerTemplate);
   } else {

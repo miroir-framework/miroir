@@ -11,9 +11,9 @@ import {
   ExtendedTransformerForRuntime,
   ExtractorOrCombiner,
   QueryFailed,
-  QueryForExtractorOrCombinerReturningObject,
-  QueryForExtractorOrCombinerReturningObjectList,
-  QueryForExtractorOrCombinerReturningObjectOrObjectList,
+  BoxedExtractorOrCombinerReturningObject,
+  BoxedExtractorOrCombinerReturningObjectList,
+  BoxedExtractorOrCombinerReturningObjectOrObjectList,
   QueryWithExtractorCombinerTransformer
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
@@ -66,7 +66,7 @@ const emptyAsyncSelectorMap:AsyncExtractorOrQueryRunnerMap = {
  */
 export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
 = (
-  selectorParams: AsyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList>
+  selectorParams: AsyncExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
 ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
   const result: Promise<DomainElementInstanceUuidIndexOrFailed> =
     (selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap).extractEntityInstanceUuidIndex(selectorParams)
@@ -94,7 +94,7 @@ export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
  */
 export const asyncExtractEntityInstanceListWithObjectListExtractor
 = (
-  selectorParams: AsyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList>
+  selectorParams: AsyncExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
 ): Promise<DomainElementInstanceArrayOrFailed> => {
   const result: Promise<DomainElementInstanceArrayOrFailed> =
     (selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap).extractEntityInstanceList(selectorParams)
@@ -119,7 +119,7 @@ export async function asyncApplyExtractorTransformerInMemory(
   actionRuntimeTransformer: ExtendedTransformerForRuntime,
   queryParams: Record<string, any>,
   newFetchedData: Record<string, any>,
-  extractors: Record<string, QueryForExtractorOrCombinerReturningObjectList | QueryForExtractorOrCombinerReturningObject | QueryWithExtractorCombinerTransformer>,
+  extractors: Record<string, BoxedExtractorOrCombinerReturningObjectList | BoxedExtractorOrCombinerReturningObject | QueryWithExtractorCombinerTransformer>,
 ): Promise<DomainElement> {
   return Promise.resolve(applyExtractorTransformerInMemory(actionRuntimeTransformer, queryParams, newFetchedData));
 }
@@ -131,7 +131,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
   queryParams: Record<string, any>,
   extractorRunnerMap:AsyncExtractorOrQueryRunnerMap,
   deploymentUuid: Uuid,
-  extractors: Record<string, QueryForExtractorOrCombinerReturningObjectList | QueryForExtractorOrCombinerReturningObject | QueryWithExtractorCombinerTransformer>,
+  extractors: Record<string, BoxedExtractorOrCombinerReturningObjectList | BoxedExtractorOrCombinerReturningObject | QueryWithExtractorCombinerTransformer>,
   extractorOrCombiner: ExtractorOrCombiner
 ): Promise<DomainElement> {
   switch (extractorOrCombiner.extractorOrCombinerType) {
@@ -337,7 +337,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
 export const asyncExtractWithExtractor: AsyncExtractWithExtractorOrCombinerReturningObjectOrObjectList /**: SyncExtractorTemplateRunner */= (
   // selectorParams: SyncExtractorOrQueryTemplateRunnerParams<QueryTemplateWithExtractorCombinerTransformer, DeploymentEntityState>,
   selectorParams: AsyncExtractorRunnerParams<
-    QueryForExtractorOrCombinerReturningObjectOrObjectList
+    BoxedExtractorOrCombinerReturningObjectOrObjectList
   >
 ): Promise<DomainElement> => {
   // log.info("########## extractExtractor begin, query", selectorParams);

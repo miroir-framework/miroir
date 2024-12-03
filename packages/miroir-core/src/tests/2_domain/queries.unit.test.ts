@@ -5,7 +5,7 @@ import { DomainState } from "../../0_interfaces/2_domain/DomainControllerInterfa
 import {
   DomainElement,
   DomainElementObject,
-  QueryTemplateReturningObjectOrObjectList,
+  BoxedExtractorTemplateReturningObjectOrObjectList,
   QueryTemplateWithExtractorCombinerTransformer,
   QueryWithExtractorCombinerTransformer
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -77,7 +77,7 @@ export interface TestExtractorParams {
 
   extractorRunnerForDeploymentEntityState?: ExtractWithExtractorType<DeploymentEntityState>;
   extractorTemplateRunnerForDeploymentEntityState?: SyncExtractorTemplateRunner<
-    QueryTemplateReturningObjectOrObjectList,
+    BoxedExtractorTemplateReturningObjectOrObjectList,
     DeploymentEntityState,
     DomainElement
   >;

@@ -7,7 +7,7 @@ import {
   JzodObject,
   MiroirQueryTemplate,
   QueryByEntityUuidGetEntityDefinition,
-  QueryTemplateReturningObjectOrObjectList,
+  BoxedExtractorTemplateReturningObjectOrObjectList,
   QueryTemplateWithExtractorCombinerTransformer
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
@@ -53,7 +53,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 // ################################################################################################
 // TODO: used in extractorTemplateRunnerForDomainState.unit.test and RestServer.ts, provide a better interface?
 export type ExtractorTemplateRunnerForDomainState = SyncExtractorTemplateRunner<
-  QueryTemplateReturningObjectOrObjectList,
+  BoxedExtractorTemplateReturningObjectOrObjectList,
   DomainState,
   DomainElement
 >;
@@ -96,13 +96,13 @@ export function getSelectorMapForTemplate(): SyncExtractorOrQueryRunnerMap<Domai
 }
 
 // ################################################################################################
-export type GetSelectorParamsForExtractorTemplateOnDomainStateType=<ExtractorTemplateType extends QueryTemplateReturningObjectOrObjectList>(
+export type GetSelectorParamsForExtractorTemplateOnDomainStateType=<ExtractorTemplateType extends BoxedExtractorTemplateReturningObjectOrObjectList>(
   query: ExtractorTemplateType,
   extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DomainState>
 )=> SyncExtractorTemplateRunnerParams<ExtractorTemplateType, DomainState>;
 
 export const getExtractorTemplateRunnerParamsForDomainState: GetSelectorParamsForExtractorTemplateOnDomainStateType =
-<ExtractorTemplateType extends QueryTemplateReturningObjectOrObjectList>(
+<ExtractorTemplateType extends BoxedExtractorTemplateReturningObjectOrObjectList>(
     query: ExtractorTemplateType,
     extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DomainState>
   ) =>

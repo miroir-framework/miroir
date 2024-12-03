@@ -2162,6 +2162,10 @@ export function getMiroirFundamentalJzodSchema(
         restPersistenceAction: persistenceEndpointVersionV1.definition.actions[1].actionParameters,
         runQueryTemplateOrExtractorTemplateAction: queryEndpointVersionV1.definition.actions[0].actionParameters,
         runExtractorOrQueryAction: queryEndpointVersionV1.definition.actions[1].actionParameters,
+        runQueryTemplateAction: queryEndpointVersionV1.definition.actions[2].actionParameters,
+        runExtractorTemplateAction: queryEndpointVersionV1.definition.actions[3].actionParameters,
+        runQueryAction: queryEndpointVersionV1.definition.actions[4].actionParameters,
+        runExtractorAction: queryEndpointVersionV1.definition.actions[5].actionParameters,
         compositeActionDefinition: domainEndpointVersionV1.definition.actions.find(
           (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
         )?.actionParameters.definition.definition,
@@ -2515,6 +2519,12 @@ export function getMiroirFundamentalJzodSchema(
         combinerByManyToManyRelationReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.combinerByManyToManyRelationReturningObjectList,
         extractorOrCombinerRecord: (miroirFundamentalJzodSchema as any).definition.context.extractorOrCombinerRecord,
         runExtractorOrQueryAction: (miroirFundamentalJzodSchema as any).definition.context.runExtractorOrQueryAction,
+        runQueryTemplateOrExtractorTemplateAction: (miroirFundamentalJzodSchema as any).definition.context.runQueryTemplateOrExtractorTemplateAction,
+        runQueryAction: (miroirFundamentalJzodSchema as any).definition.context.runQueryAction,
+        runQueryTemplateAction: (miroirFundamentalJzodSchema as any).definition.context.runQueryTemplateAction,
+        runExtractorAction: (miroirFundamentalJzodSchema as any).definition.context.runExtractorAction,
+        runExtractorTemplateAction: (miroirFundamentalJzodSchema as any).definition.context.runExtractorTemplateAction,
+        // runQueryTemplateOrExtractorTemplateAction: queryEndpointVersionV1.definition.actions[0].actionParameters,
         // queries
         extractorTemplateRoot: (miroirFundamentalJzodSchema as any).definition.context.extractorTemplateRoot,
         queryFailed: (miroirFundamentalJzodSchema as any).definition.context.queryFailed,
@@ -2590,7 +2600,6 @@ export function getMiroirFundamentalJzodSchema(
         boxedExtractorTemplateReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.boxedExtractorTemplateReturningObjectList,
         boxedExtractorTemplateReturningObjectOrObjectList: (miroirFundamentalJzodSchema as any).definition.context.boxedExtractorTemplateReturningObjectOrObjectList,
         queryTemplateWithExtractorCombinerTransformer: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateWithExtractorCombinerTransformer,
-        runQueryTemplateOrExtractorTemplateAction: queryEndpointVersionV1.definition.actions[0].actionParameters,
       },
       definition: {
         relativePath: "jzodElement",

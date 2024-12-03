@@ -16,7 +16,9 @@ import {
   ModelActionInitModel,
   ModelActionInitModelParams,
   ModelActionRenameEntity,
+  RunExtractorAction,
   RunExtractorOrQueryAction,
+  RunQueryAction,
   RunQueryTemplateOrExtractorTemplateAction,
   StoreSectionConfiguration
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -105,7 +107,24 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
 
   // #############################################################################################
-  async handleQueryAction(query: RunExtractorOrQueryAction): Promise<ActionReturnType> {
+  async handleExtractorAction(query: RunExtractorAction): Promise<ActionReturnType> {
+    // TODO: fix applicationSection!!!
+    log.info(this.logHeader,'handleExtractorAction','query',query);
+    // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
+    // log.info(this.logHeader,'this.modelStoreSection',this.modelStoreSection);
+    
+    // TODO: composite actions / queries could execute on different sections, how should this be dealt with? 
+    // RIGHT NOW RESTRICT ALL SUBQUERIES OF A QUERY TO THE SAME SECTION !!!!
+    const currentStore: PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface =
+      query.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
+    const result: ActionReturnType = await currentStore.handleExtractorAction(query);
+
+    log.info(this.logHeader,'handleExtractorAction','query',query, "result", JSON.stringify(result));
+    return Promise.resolve(result);
+  }
+
+  // #############################################################################################
+  async handleQueryAction(query: RunQueryAction): Promise<ActionReturnType> {
     // TODO: fix applicationSection!!!
     log.info(this.logHeader,'handleQueryAction','query',query);
     // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
@@ -118,6 +137,23 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     const result: ActionReturnType = await currentStore.handleQueryAction(query);
 
     log.info(this.logHeader,'handleQueryAction','query',query, "result", JSON.stringify(result));
+    return Promise.resolve(result);
+  }
+
+  // #############################################################################################
+  async handleExtractorOrQueryAction(query: RunExtractorOrQueryAction): Promise<ActionReturnType> {
+    // TODO: fix applicationSection!!!
+    log.info(this.logHeader,'handleExtractorOrQueryAction','query',query);
+    // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
+    // log.info(this.logHeader,'this.modelStoreSection',this.modelStoreSection);
+    
+    // TODO: composite actions / queries could execute on different sections, how should this be dealt with? 
+    // RIGHT NOW RESTRICT ALL SUBQUERIES OF A QUERY TO THE SAME SECTION !!!!
+    const currentStore: PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface =
+      query.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
+    const result: ActionReturnType = await currentStore.handleExtractorOrQueryAction(query);
+
+    log.info(this.logHeader,'handleExtractorOrQueryAction','query',query, "result", JSON.stringify(result));
     return Promise.resolve(result);
   }
 

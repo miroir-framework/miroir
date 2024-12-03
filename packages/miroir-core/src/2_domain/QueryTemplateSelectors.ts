@@ -11,8 +11,8 @@ import {
   QueryByEntityUuidGetEntityDefinition,
   QueryByQueryTemplateGetParamJzodSchema,
   QueryByTemplateGetParamJzodSchema,
-  QueryForExtractorOrCombinerReturningObjectOrObjectList,
-  QueryTemplateReturningObjectOrObjectList,
+  BoxedExtractorOrCombinerReturningObjectOrObjectList,
+  BoxedExtractorTemplateReturningObjectOrObjectList,
   QueryTemplateWithExtractorCombinerTransformer,
   QueryWithExtractorCombinerTransformer,
   RunQueryTemplateOrExtractorTemplateAction
@@ -30,7 +30,7 @@ import { MiroirLoggerFactory } from "../4_services/Logger";
 import { packageName } from "../constants";
 import { getLoggerName } from "../tools";
 import { cleanLevel } from "./constants";
-import { extractWithExtractorOrCombinerReturningObjectOrObjectList, handleQueryAction, runQuery } from "./QuerySelectors";
+import { extractWithExtractorOrCombinerReturningObjectOrObjectList, handleExtractorOrQueryAction, runQuery } from "./QuerySelectors";
 import {
   resolveExtractorOrQueryTemplate,
   resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList,
@@ -62,7 +62,7 @@ export async function handleQueryTemplateAction(
     queryTemplateOrExtractorTemplateAction.query
   );
 
-  return handleQueryAction(
+  return handleExtractorOrQueryAction(
     origin,
     {
       actionType: "runExtractorOrQueryAction",
@@ -80,7 +80,7 @@ export async function handleQueryTemplateAction(
 export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <StateType>(
   state: StateType,
   selectorParams: SyncExtractorTemplateRunnerParams<
-  QueryTemplateReturningObjectOrObjectList,
+  BoxedExtractorTemplateReturningObjectOrObjectList,
     StateType
   >
 ): DomainElement => {
@@ -88,7 +88,7 @@ export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <
   if (!selectorParams.extractorRunnerMap) {
     throw new Error("extractWithExtractorTemplate requires extractorRunnerMap");
   }
-  const resolvedExtractor: QueryForExtractorOrCombinerReturningObjectOrObjectList = resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList(
+  const resolvedExtractor: BoxedExtractorOrCombinerReturningObjectOrObjectList = resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList(
     selectorParams.extractorOrCombinerTemplate
   ); 
   // const resolvedExtractor: QueryWithExtractorCombinerTransformer = resolveQueryTemplateWithExtractorCombinerTransformer(

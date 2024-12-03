@@ -24,11 +24,13 @@ import {
   QueryByQuery2GetParamJzodSchema,
   QueryByQueryGetParamJzodSchema,
   QueryFailed,
-  QueryForExtractorOrCombinerReturningObjectList,
-  QueryForExtractorOrCombinerReturningObjectOrObjectList,
+  BoxedExtractorOrCombinerReturningObjectList,
+  BoxedExtractorOrCombinerReturningObjectOrObjectList,
   QueryJzodSchemaParams,
   QueryWithExtractorCombinerTransformer,
-  RunExtractorOrQueryAction
+  RunExtractorOrQueryAction,
+  RunExtractorAction,
+  RunQueryAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   AsyncExtractorOrQueryRunnerMap,
@@ -180,7 +182,7 @@ export function plainObjectToDomainElement(r:any): DomainElement {
 // ################################################################################################
 export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = (
   selectedInstancesList: DomainElementInstanceArrayOrFailed,
-  query: QueryForExtractorOrCombinerReturningObjectList,
+  query: BoxedExtractorOrCombinerReturningObjectList,
 ) => {
   if (selectedInstancesList.elementType == "failure") {
     return selectedInstancesList;
@@ -339,7 +341,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
 // ################################################################################################
 export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory = (
   selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed,
-  query: QueryForExtractorOrCombinerReturningObjectList,
+  query: BoxedExtractorOrCombinerReturningObjectList,
 ) => {
   switch (query.select.extractorOrCombinerType) {
     case "extractorByEntityReturningObjectList": {
@@ -489,7 +491,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
 export const extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
 = <StateType>(
   deploymentEntityState: StateType,
-  selectorParams: SyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList, StateType>
+  selectorParams: SyncExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, StateType>
 ): DomainElementInstanceUuidIndexOrFailed => {
   const selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed =
     (selectorParams?.extractorRunnerMap ?? emptySelectorMap).extractEntityInstanceUuidIndex(deploymentEntityState, selectorParams);
@@ -514,7 +516,7 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
 export const extractEntityInstanceListWithObjectListExtractorInMemory
 = <StateType>(
   deploymentEntityState: StateType,
-  selectorParams: SyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList, StateType>
+  selectorParams: SyncExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, StateType>
 ): DomainElementInstanceArrayOrFailed => {
   const selectedInstancesUuidIndex: DomainElementInstanceArrayOrFailed =
     (selectorParams?.extractorRunnerMap ?? emptySelectorMap).extractEntityInstanceList(deploymentEntityState, selectorParams);
@@ -541,12 +543,65 @@ export const applyExtractorTransformerInMemory = (
 };
 
 // ################################################################################################
+export async function handleExtractorAction(
+  origin: string,
+  runExtractorAction: RunExtractorAction,
+  selectorMap: AsyncExtractorOrQueryRunnerMap
+): Promise<ActionReturnType> {
+  log.info("handleExtractorAction for", origin, "start", "runExtractorAction", JSON.stringify(runExtractorAction, null, 2));
+  let queryResult: DomainElement;
+  const extractor = runExtractorAction.query;
+  queryResult = await selectorMap.extractWithExtractorOrCombinerReturningObjectOrObjectList(
+    {
+      extractorRunnerMap: selectorMap,
+      extractor,
+    }
+  );
+  if (queryResult.elementType == "failure") {
+    return {
+      status: "error",
+      error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult) },
+    } as ActionReturnType;
+  } else {
+    const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
+    log.info("handleExtractorAction for", origin, "runExtractorAction", runExtractorAction, "result", JSON.stringify(result, null, 2));
+    return result;
+  }
+}
+
+// ################################################################################################
 export async function handleQueryAction(
+  origin: string,
+  runQueryAction: RunQueryAction,
+  selectorMap: AsyncExtractorOrQueryRunnerMap
+): Promise<ActionReturnType> {
+  log.info("handleQueryAction for", origin, "start", "runQueryAction", JSON.stringify(runQueryAction, null, 2));
+  let queryResult: DomainElement;
+  queryResult = await selectorMap.runQuery(
+    {
+      extractor: runQueryAction.query,
+      extractorRunnerMap: selectorMap,
+    }
+  );
+  if (queryResult.elementType == "failure") {
+    return {
+      status: "error",
+      error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult) },
+    } as ActionReturnType;
+  } else {
+    const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
+    log.info("handleQueryAction for", origin, "runExtractorOrQueryAction", runQueryAction, "result", JSON.stringify(result, null, 2));
+    return result;
+  }
+}
+
+// ################################################################################################
+export async function handleExtractorOrQueryAction(
   origin: string,
   runExtractorOrQueryAction: RunExtractorOrQueryAction,
   selectorMap: AsyncExtractorOrQueryRunnerMap
 ): Promise<ActionReturnType> {
-  log.info("handleQueryAction for", origin, "start", "runExtractorOrQueryAction", JSON.stringify(runExtractorOrQueryAction, null, 2));
+  log.info("handleExtractorOrQueryAction for", origin, "start", "runExtractorOrQueryAction", JSON.stringify(runExtractorOrQueryAction, null, 2));
   let queryResult: DomainElement;
   switch (runExtractorOrQueryAction.query.queryType) {
     case "boxedExtractorOrCombinerReturningObject":
@@ -584,7 +639,7 @@ export async function handleQueryAction(
     } as ActionReturnType;
   } else {
     const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
-    log.info("handleQueryAction for", origin, "runExtractorOrQueryAction", runExtractorOrQueryAction, "result", JSON.stringify(result, null, 2));
+    log.info("handleExtractorOrQueryAction for", origin, "runExtractorOrQueryAction", runExtractorOrQueryAction, "result", JSON.stringify(result, null, 2));
     return result;
   }
 }
@@ -802,14 +857,14 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*ExtractorTempla
 
 // ################################################################################################
 export type ExtractWithExtractorType<StateType> = SyncExtractorRunner<
-  QueryForExtractorOrCombinerReturningObjectOrObjectList,
+  BoxedExtractorOrCombinerReturningObjectOrObjectList,
   StateType,
   DomainElement
 >;
 export const extractWithExtractorOrCombinerReturningObjectOrObjectList /*: ExtractWithExtractorType*/ = <StateType>(
   state: StateType,
   selectorParams: SyncExtractorRunnerParams<
-    QueryForExtractorOrCombinerReturningObjectOrObjectList,
+    BoxedExtractorOrCombinerReturningObjectOrObjectList,
     StateType
   >
 ): DomainElement => {

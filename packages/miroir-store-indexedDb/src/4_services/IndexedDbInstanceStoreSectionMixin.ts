@@ -13,6 +13,8 @@ import {
   ExtractorTemplateRunnerInMemory,
   ExtractorRunnerInMemory,
   RunExtractorOrQueryAction,
+  RunExtractorAction,
+  RunQueryAction,
 } from "miroir-core";
 import { IndexedDbStoreSection, MixableIndexedDbStoreSection } from "./IndexedDbStoreSection.js";
 
@@ -45,12 +47,32 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
     }
 
     // #############################################################################################
-    async handleQueryAction(query: RunExtractorOrQueryAction): Promise<ActionReturnType> {
+    async handleExtractorAction(query: RunExtractorAction): Promise<ActionReturnType> {
+      log.info(this.logHeader,'handleExtractorAction', 'query',query);
+      
+      const result: ActionReturnType = await this.extractorRunner.handleExtractorAction(query);
+
+      log.info(this.logHeader,'handleExtractorAction','query',query, "result", result);
+      return result;
+    }
+    
+    // #############################################################################################
+    async handleQueryAction(query: RunQueryAction): Promise<ActionReturnType> {
       log.info(this.logHeader,'handleQueryAction', 'query',query);
       
       const result: ActionReturnType = await this.extractorRunner.handleQueryAction(query);
 
       log.info(this.logHeader,'handleQueryAction','query',query, "result", result);
+      return result;
+    }
+    
+    // #############################################################################################
+    async handleExtractorOrQueryAction(query: RunExtractorOrQueryAction): Promise<ActionReturnType> {
+      log.info(this.logHeader,'handleExtractorOrQueryAction', 'query',query);
+      
+      const result: ActionReturnType = await this.extractorRunner.handleExtractorOrQueryAction(query);
+
+      log.info(this.logHeader,'handleExtractorOrQueryAction','query',query, "result", result);
       return result;
     }
     

@@ -12,20 +12,22 @@ import {
   ActionVoidReturnType,
   ACTION_OK,
   RunQueryTemplateOrExtractorTemplateAction,
-  QueryTemplateForObjectList,
+  BoxedExtractorTemplateReturningObjectList,
   QueryTemplateWithExtractorCombinerTransformer,
-  QueryTemplateReturningObject,
+  BoxedExtractorTemplateReturningObject,
   ExtractorTemplateByExtractorWrapper,
-  QueryForExtractorOrCombinerReturningObjectList,
-  QueryForExtractorOrCombinerReturningObject,
+  BoxedExtractorOrCombinerReturningObjectList,
+  BoxedExtractorOrCombinerReturningObject,
   ExtractorWrapper,
   QueryWithExtractorCombinerTransformer,
   RunExtractorOrQueryAction,
-  QueryForExtractorOrCombinerReturningObjectOrObjectList,
+  BoxedExtractorOrCombinerReturningObjectOrObjectList,
   ExtractorOrCombinerReturningObject,
   ExtractorOrCombinerReturningObjectList,
   Extractor,
   ExtractorOrCombiner,
+  RunExtractorAction,
+  RunQueryAction,
 } from "miroir-core";
 import { MixableSqlDbStoreSection, SqlDbStoreSection } from "./SqlDbStoreSection";
 
@@ -118,9 +120,9 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     // ##############################################################################################
     sqlForQuery(
       query:
-        | QueryForExtractorOrCombinerReturningObjectOrObjectList
-        // | QueryForExtractorOrCombinerReturningObjectList
-        // | QueryForExtractorOrCombinerReturningObject
+        | BoxedExtractorOrCombinerReturningObjectOrObjectList
+        // | BoxedExtractorOrCombinerReturningObjectList
+        // | BoxedExtractorOrCombinerReturningObject
         // | ExtractorWrapper
         | QueryWithExtractorCombinerTransformer
     ): RecursiveStringRecords {
@@ -212,8 +214,8 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     // // ##############################################################################################
     // sqlForExtractorTemplate(
     //   extractor:
-    //     | QueryTemplateForObjectList
-    //     | QueryTemplateReturningObject
+    //     | BoxedExtractorTemplateReturningObjectList
+    //     | BoxedExtractorTemplateReturningObject
     //     | ExtractorTemplateByExtractorWrapper
     //     | QueryTemplateWithExtractorCombinerTransformer
     // ): RecursiveStringRecords {
@@ -286,12 +288,32 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     }
 
     // #############################################################################################
-    async handleQueryAction(query: RunExtractorOrQueryAction): Promise<ActionReturnType> {
+    async handleExtractorAction(query: RunExtractorAction): Promise<ActionReturnType> {
+      log.info(this.logHeader, "handleExtractorAction", "query", query);
+
+      const result: ActionReturnType = await this.extractorRunner.handleExtractorAction(query);
+
+      log.info(this.logHeader, "handleExtractorAction", "query", query, "result", result);
+      return result;
+    }
+
+    // #############################################################################################
+    async handleQueryAction(query: RunQueryAction): Promise<ActionReturnType> {
       log.info(this.logHeader, "handleQueryAction", "query", query);
 
       const result: ActionReturnType = await this.extractorRunner.handleQueryAction(query);
 
       log.info(this.logHeader, "handleQueryAction", "query", query, "result", result);
+      return result;
+    }
+
+    // #############################################################################################
+    async handleExtractorOrQueryAction(query: RunExtractorOrQueryAction): Promise<ActionReturnType> {
+      log.info(this.logHeader, "handleExtractorOrQueryAction", "query", query);
+
+      const result: ActionReturnType = await this.extractorRunner.handleExtractorOrQueryAction(query);
+
+      log.info(this.logHeader, "handleExtractorOrQueryAction", "query", query, "result", result);
       return result;
     }
 

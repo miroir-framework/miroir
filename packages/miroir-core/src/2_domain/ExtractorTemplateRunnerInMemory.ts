@@ -1,7 +1,7 @@
 import {
   ActionReturnType,
   DomainElement,
-  QueryForExtractorOrCombinerReturningObjectOrObjectList,
+  BoxedExtractorOrCombinerReturningObjectOrObjectList,
   QueryWithExtractorCombinerTransformer,
   RunQueryTemplateOrExtractorTemplateAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";

@@ -192,9 +192,9 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       {},
       async () => {
         const applicationSection:ApplicationSection = "model";
-        const queryResult:ActionReturnType = await localMiroirPersistenceStoreController.handleQueryAction(
+        const queryResult:ActionReturnType = await localMiroirPersistenceStoreController.handleExtractorAction(
           {
-            actionType: "runExtractorOrQueryAction",
+            actionType: "runExtractorAction",
             actionName: "runQuery",
             deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -243,7 +243,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       async () => {
         const applicationSection: ApplicationSection = "model";
         const queryResult: ActionReturnType = await localMiroirPersistenceStoreController.handleQueryAction({
-          actionType: "runExtractorOrQueryAction",
+          actionType: "runQueryAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -407,7 +407,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       async () => {
         const applicationSection: ApplicationSection = "model";
         const queryResult: ActionReturnType = await localAppPersistenceStoreController.handleQueryAction({
-          actionType: "runExtractorOrQueryAction",
+          actionType: "runQueryAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -456,7 +456,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       async () => {
         const applicationSection: ApplicationSection = "model";
         const queryResult: ActionReturnType = await localAppPersistenceStoreController.handleQueryAction({
-          actionType: "runExtractorOrQueryAction",
+          actionType: "runQueryAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -575,7 +575,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const applicationSection:ApplicationSection = "model";
         const queryResult = await localMiroirPersistenceStoreController.handleQueryAction(
           {
-            actionType: "runExtractorOrQueryAction",
+            actionType: "runQueryAction",
             actionName: "runQuery",
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -622,7 +622,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       async () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleQueryAction({
-          actionType: "runExtractorOrQueryAction",
+          actionType: "runQueryAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -675,7 +675,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       async () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleQueryAction({
-          actionType: "runExtractorOrQueryAction",
+          actionType: "runQueryAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -725,7 +725,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       async () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleQueryAction({
-          actionType: "runExtractorOrQueryAction",
+          actionType: "runQueryAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -779,7 +779,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       async () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleQueryAction({
-          actionType: "runExtractorOrQueryAction",
+          actionType: "runQueryAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -855,7 +855,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       async () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleQueryAction({
-          actionType: "runExtractorOrQueryAction",
+          actionType: "runQueryAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -907,7 +907,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       async () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleQueryAction({
-          actionType: "runExtractorOrQueryAction",
+          actionType: "runQueryAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -966,7 +966,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       async () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleQueryAction({
-          actionType: "runExtractorOrQueryAction",
+          actionType: "runQueryAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -1070,7 +1070,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       async () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleQueryAction({
-          actionType: "runExtractorOrQueryAction",
+          actionType: "runQueryAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -1151,7 +1151,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       async () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleQueryAction({
-          actionType: "runExtractorOrQueryAction",
+          actionType: "runQueryAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
