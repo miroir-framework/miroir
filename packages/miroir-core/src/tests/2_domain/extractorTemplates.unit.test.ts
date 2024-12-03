@@ -24,7 +24,7 @@ describe("extractorTemplates.unit.test", () => {
     const newUuid = uuidv4();
 
     const uniqueRuntimeTemplate: QueryTemplateReturningObject = {
-      queryType: "queryTemplateReturningObject",
+      queryType: "boxedExtractorTemplateReturningObject",
       deploymentUuid: "xxxxx",
       pageParams: {
         instanceUuid: "xxxxx",
@@ -61,7 +61,7 @@ describe("extractorTemplates.unit.test", () => {
       },
       contextResults: {},
       deploymentUuid: "xxxxx",
-      queryType: "queryForExtractorOrCombinerReturningObject",
+      queryType: "boxedExtractorOrCombinerReturningObject",
       select: {
         extractorOrCombinerType: "extractorForObjectByDirectReference",
         parentName: "Book",

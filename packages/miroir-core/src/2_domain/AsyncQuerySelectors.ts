@@ -148,7 +148,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
       return extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor({
         extractorRunnerMap,
         extractor: {
-          queryType: "queryForExtractorOrCombinerReturningObjectList",
+          queryType: "boxedExtractorOrCombinerReturningObjectList",
           deploymentUuid: deploymentUuid,
           contextResults: newFetchedData,
           pageParams: pageParams,
@@ -169,7 +169,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
       return extractorRunnerMap.extractEntityInstance({
         extractorRunnerMap,
         extractor: {
-          queryType: "queryForExtractorOrCombinerReturningObject",
+          queryType: "boxedExtractorOrCombinerReturningObject",
           deploymentUuid: deploymentUuid,
           contextResults: newFetchedData,
           pageParams,

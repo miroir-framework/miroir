@@ -67,8 +67,8 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
     log.info(this.logHeader, "handleQueryAction", "runQueryTemplateOrExtractorTemplateAction", JSON.stringify(runExtractorOrQueryAction, null, 2));
     let queryResult: DomainElement;
     switch (runExtractorOrQueryAction.query.queryType) {
-      case "queryForExtractorOrCombinerReturningObject":
-      case "queryForExtractorOrCombinerReturningObjectList": {
+      case "boxedExtractorOrCombinerReturningObject":
+      case "boxedExtractorOrCombinerReturningObjectList": {
         queryResult = await this.selectorMap.extractWithExtractorOrCombinerReturningObjectOrObjectList(
           {
             extractor: runExtractorOrQueryAction.query,

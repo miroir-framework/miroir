@@ -585,7 +585,7 @@ export class SqlDbQueryRunner {
         return selectorParams.extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor({ // this is actually a recursive call
           extractorRunnerMap: selectorParams.extractorRunnerMap,
           extractor: {
-            queryType: "queryForExtractorOrCombinerReturningObjectList",
+            queryType: "boxedExtractorOrCombinerReturningObjectList",
             deploymentUuid: selectorParams.extractor.deploymentUuid,
             contextResults: selectorParams.extractor.contextResults,
             pageParams: selectorParams.extractor.pageParams,
@@ -644,7 +644,7 @@ export class SqlDbQueryRunner {
         return selectorParams.extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractor({ // this is actually a recursive call
           extractorRunnerMap: selectorParams.extractorRunnerMap,
           extractor: {
-            queryType: "queryForExtractorOrCombinerReturningObjectList",
+            queryType: "boxedExtractorOrCombinerReturningObjectList",
             deploymentUuid: selectorParams.extractor.deploymentUuid,
             contextResults: selectorParams.extractor.contextResults,
             pageParams: selectorParams.extractor.pageParams,
@@ -679,8 +679,8 @@ export class SqlDbQueryRunner {
     log.info(this.logHeader, "handleQueryAction", "runExtractorOrQueryAction", JSON.stringify(runExtractorOrQueryAction, null, 2));
     let queryResult: DomainElement;
     switch (runExtractorOrQueryAction.query.queryType) {
-      case "queryForExtractorOrCombinerReturningObject":
-      case "queryForExtractorOrCombinerReturningObjectList": {
+      case "boxedExtractorOrCombinerReturningObject":
+      case "boxedExtractorOrCombinerReturningObjectList": {
         queryResult = await this.inMemoryImplementationExtractorRunnerMap.extractWithExtractorOrCombinerReturningObjectOrObjectList({
           extractor: runExtractorOrQueryAction.query,
           extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,

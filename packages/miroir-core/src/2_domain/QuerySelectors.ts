@@ -549,8 +549,8 @@ export async function handleQueryAction(
   log.info("handleQueryAction for", origin, "start", "runExtractorOrQueryAction", JSON.stringify(runExtractorOrQueryAction, null, 2));
   let queryResult: DomainElement;
   switch (runExtractorOrQueryAction.query.queryType) {
-    case "queryForExtractorOrCombinerReturningObject":
-    case "queryForExtractorOrCombinerReturningObjectList": {
+    case "boxedExtractorOrCombinerReturningObject":
+    case "boxedExtractorOrCombinerReturningObjectList": {
       const extractor = runExtractorOrQueryAction.query;
       queryResult = await selectorMap.extractWithExtractorOrCombinerReturningObjectOrObjectList(
         {
@@ -614,7 +614,7 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*ExtractorTempla
       return extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor(state, {
         extractorRunnerMap,
         extractor: {
-          queryType: "queryForExtractorOrCombinerReturningObjectList",
+          queryType: "boxedExtractorOrCombinerReturningObjectList",
           deploymentUuid: deploymentUuid,
           contextResults: context,
           pageParams: pageParams,
@@ -635,7 +635,7 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*ExtractorTempla
       return extractorRunnerMap.extractEntityInstance(state, {
         extractorRunnerMap,
         extractor: {
-          queryType: "queryForExtractorOrCombinerReturningObject",
+          queryType: "boxedExtractorOrCombinerReturningObject",
           deploymentUuid: deploymentUuid,
           contextResults: context,
           pageParams,

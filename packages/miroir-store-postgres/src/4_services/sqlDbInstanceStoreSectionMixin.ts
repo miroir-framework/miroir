@@ -134,7 +134,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       // // log.info(this.logHeader, "sqlForExtractor called with queryGenerator", this.sequelize.getQueryInterface().queryGenerator);
       // log.info(this.logHeader, "sqlForExtractor called with selectQuery", (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery);
       switch (query.queryType) {
-        case "queryForExtractorOrCombinerReturningObjectList": {
+        case "boxedExtractorOrCombinerReturningObjectList": {
           // TODO: use queryGenerator?
           // where: { [filter.attribute]: { [Op.like]: "%" + filter.value + "%" } },
           switch (query.select.extractorOrCombinerType) {
@@ -160,14 +160,14 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           // return result;
           break;
         }
-        case "queryForExtractorOrCombinerReturningObjectList": {
+        case "boxedExtractorOrCombinerReturningObjectList": {
           const result: string = (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery(
             query.select.parentUuid,
             {
               attributes: ["*"],
             }
           );
-          log.info(this.logHeader, "sqlForExtractor", "queryTemplateReturningObject", result);
+          log.info(this.logHeader, "sqlForExtractor", "boxedExtractorTemplateReturningObject", result);
           // return "SELECT * FROM domainModel WHERE uuid = " + extractor.deploymentUuid;
           return result;
           break;
@@ -178,7 +178,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           );
           break;
         }
-        case "queryForExtractorOrCombinerReturningObject": {
+        case "boxedExtractorOrCombinerReturningObject": {
           switch (query.select.extractorOrCombinerType) {
             case "extractorForObjectByDirectReference": {
               return `SELECT * FROM "${this.schema}"."${query.select.parentName}" WHERE "uuid" = '${query.select.instanceUuid}'`;
@@ -190,7 +190,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
             }
             default: {
               throw new Error(
-                "sqlForQuery queryForExtractorOrCombinerReturningObject not implemented for extractorOrCombinerType of select: " +
+                "sqlForQuery boxedExtractorOrCombinerReturningObject not implemented for extractorOrCombinerType of select: " +
                   query.select
               );
               break;
@@ -234,7 +234,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     //       //   attributes: ["*"],
     //       // }
     //       // );
-    //       // log.info(this.logHeader, "sqlForExtractor", "queryTemplateReturningObject", result);
+    //       // log.info(this.logHeader, "sqlForExtractor", "boxedExtractorTemplateReturningObject", result);
     //       if (extractor.parentName == undefined) {
     //         throw new Error(
     //           "sqlForExtractor can not handle queryTemplateType for extractor" + JSON.stringify(extractor)
@@ -246,14 +246,14 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     //       // return result;
     //       break;
     //     }
-    //     case "queryTemplateReturningObject": {
+    //     case "boxedExtractorTemplateReturningObject": {
     //       const result: string = (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery(
     //         extractor.select.parentUuid,
     //         {
     //           attributes: ["*"],
     //         }
     //       );
-    //       log.info(this.logHeader, "sqlForExtractor", "queryTemplateReturningObject", result);
+    //       log.info(this.logHeader, "sqlForExtractor", "boxedExtractorTemplateReturningObject", result);
     //       // return "SELECT * FROM domainModel WHERE uuid = " + extractor.deploymentUuid;
     //       return result;
     //       break;

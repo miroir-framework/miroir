@@ -30,59 +30,18 @@ export type RecordOfJzodElement = Record<string, JzodElement | undefined>;
 export type RecordOfJzodObject = Record<string, JzodObject | undefined>;
 
 // ################################################################################################
-// ################################################################################################
-// QUERY        ###################################################################################
-export interface SyncQueryRunnerParams<StateType> {
-  extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<StateType>
-  extractor: QueryWithExtractorCombinerTransformer
+export interface ExtractorTemplatePersistenceStoreRunner {
+  handleQueryTemplateForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType>;
 }
 
 // ################################################################################################
-export type SyncQueryRunner<
-  StateType,
-  ResultType
-> = (state: StateType, extractorAndParams: SyncQueryRunnerParams<StateType>) => ResultType;
-
-// ################################################################################################
-export interface AsyncQueryRunnerParams {
-  extractorRunnerMap?: AsyncExtractorOrQueryRunnerMap
-  extractor: QueryWithExtractorCombinerTransformer
+export interface ExtractorOrQueryPersistenceStoreRunner {
+  handleQueryAction(query: RunExtractorOrQueryAction): Promise<ActionReturnType>;
 }
 
 // ################################################################################################
-export type AsyncQueryRunner<ResultType> = (
-  extractorAndParams: AsyncQueryRunnerParams
-) => Promise<ResultType>;
-
-
 // ################################################################################################
-// ################################################################################################
-// QUERY TEMPLATES         ##############################################################################
-export interface SyncQueryTemplateRunnerParams<StateType> {
-  extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<StateType>;
-  extractorOrCombinerTemplate: QueryTemplateWithExtractorCombinerTransformer;
-}
-
-// ################################################################################################
-export type SyncQueryTemplateRunner<
-  StateType,
-  ResultType
-> = (state: StateType, extractorAndParams: SyncQueryTemplateRunnerParams<StateType>) => ResultType;
-
-// ################################################################################################
-export interface AsyncQueryTemplateRunnerParams {
-  extractorRunnerMap?: AsyncExtractorOrQueryRunnerMap
-  extractorOrCombinerTemplate: QueryTemplateWithExtractorCombinerTransformer
-}
-
-// ################################################################################################
-export type AsyncQueryTemplateRunner<ResultType> = (
-  extractorAndParams: AsyncQueryTemplateRunnerParams
-) => Promise<ResultType>;
-
-// ################################################################################################
-// ################################################################################################
-// EXTRACTOR TEMPLATES         ##############################################################################
+// EXTRACTOR TEMPLATES ############################################################################
 
 export interface SyncExtractorTemplateRunnerParams<
   ExtractorTemplate extends QueryTemplateReturningObjectOrObjectList,
@@ -124,7 +83,7 @@ export interface ExtractorTemplatePersistenceStoreRunner {
 
 // ################################################################################################
 // ################################################################################################
-// EXTRACTORS         ##############################################################################
+// EXTRACTORS #####################################################################################
 export interface SyncExtractorRunnerParams<ExtractorType extends QueryForExtractorOrCombinerReturningObjectOrObjectList, StateType> {
   extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<StateType>
   extractor: ExtractorType
@@ -157,15 +116,63 @@ export type SyncExtractWithExtractorOrCombinerReturningObjectOrObjectList<StateT
 >;
 
 
+
+// ################################################################################################
+// ################################################################################################
+// QUERY ##########################################################################################
+export interface SyncQueryRunnerParams<StateType> {
+  extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<StateType>
+  extractor: QueryWithExtractorCombinerTransformer
+}
+
+// ################################################################################################
+export type SyncQueryRunner<
+  StateType,
+  ResultType
+> = (state: StateType, extractorAndParams: SyncQueryRunnerParams<StateType>) => ResultType;
+
+// ################################################################################################
+export interface AsyncQueryRunnerParams {
+  extractorRunnerMap?: AsyncExtractorOrQueryRunnerMap
+  extractor: QueryWithExtractorCombinerTransformer
+}
+
+// ################################################################################################
+export type AsyncQueryRunner<ResultType> = (
+  extractorAndParams: AsyncQueryRunnerParams
+) => Promise<ResultType>;
+
+
+// ################################################################################################
+// ################################################################################################
+// QUERY TEMPLATES ################################################################################
+export interface SyncQueryTemplateRunnerParams<StateType> {
+  extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<StateType>;
+  extractorOrCombinerTemplate: QueryTemplateWithExtractorCombinerTransformer;
+}
+
+// ################################################################################################
+export type SyncQueryTemplateRunner<
+  StateType,
+  ResultType
+> = (state: StateType, extractorAndParams: SyncQueryTemplateRunnerParams<StateType>) => ResultType;
+
+// ################################################################################################
+export interface AsyncQueryTemplateRunnerParams {
+  extractorRunnerMap?: AsyncExtractorOrQueryRunnerMap
+  extractorOrCombinerTemplate: QueryTemplateWithExtractorCombinerTransformer
+}
+
+// ################################################################################################
+export type AsyncQueryTemplateRunner<ResultType> = (
+  extractorAndParams: AsyncQueryTemplateRunnerParams
+) => Promise<ResultType>;
+
+
 // ################################################################################################
 // ################################################################################################
 // QUERY OR EXTRACTOR  ############################################################################
 export type ExtractorOrQueryRunnerMap<StateType> = AsyncExtractorOrQueryRunnerMap | SyncExtractorOrQueryRunnerMap<StateType>;
-
-// ################################################################################################
-export interface ExtractorOrQueryPersistenceStoreRunner {
-  handleQueryAction(query: RunExtractorOrQueryAction): Promise<ActionReturnType>;
-}
 
 // ################################################################################################
 // ################################################################################################
@@ -218,7 +225,6 @@ export type AsyncExtractorOrQueryRunnerMap = {
 
 export type SyncExtractorOrQueryRunnerMap<StateType> = {
   extractorType: "sync";
-  // extractWithExtractorOrCombinerReturningObjectOrObjectList: SyncExtractorOrQueryRunner<
   extractWithExtractorOrCombinerReturningObjectOrObjectList: SyncExtractWithExtractorOrCombinerReturningObjectOrObjectList<StateType>;
   runQuery: SyncQueryRunner<StateType, DomainElementObjectOrFailed>;
   extractEntityInstance: SyncExtractorRunner<
@@ -248,7 +254,6 @@ export type SyncExtractorOrQueryRunnerMap<StateType> = {
   >;
   // ################################################################################################
   // TODO: has direct call in ReportView, ReportSectionListDisplay, JzodObjectEditor
-  // runQueryTemplateWithExtractorCombinerTransformer: SyncExtractorOrQueryTemplateRunner<
   runQueryTemplateWithExtractorCombinerTransformer: SyncQueryTemplateRunner<
     StateType,
     DomainElementObjectOrFailed

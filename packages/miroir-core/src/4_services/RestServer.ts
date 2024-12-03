@@ -310,8 +310,8 @@ export async function queryActionHandler(
     log.info("RestServer queryActionHandler domainState=", JSON.stringify(domainState, undefined, 2))
     let queryResult: DomainElement = undefined as any as DomainElement;
     switch (runExtractorOrQueryAction.query.queryType) {
-      case "queryForExtractorOrCombinerReturningObject":
-      case "queryForExtractorOrCombinerReturningObjectList": {
+      case "boxedExtractorOrCombinerReturningObject":
+      case "boxedExtractorOrCombinerReturningObjectList": {
         queryResult = extractWithExtractorOrCombinerReturningObjectOrObjectList(
           domainState,
           getExtractorRunnerParamsForDomainState(runExtractorOrQueryAction.query, extractorRunnerMapOnDomainState)
@@ -400,8 +400,8 @@ export async function queryTemplateActionHandler(
     let queryResult: DomainElement = undefined as any as DomainElement;
 
     switch (runQueryTemplateOrExtractorTemplateAction.query.queryType) {
-      case "queryTemplateReturningObject":
-      case "queryTemplateReturningObjectList": {
+      case "boxedExtractorTemplateReturningObject":
+      case "boxedExtractorTemplateReturningObjectList": {
         queryResult = extractWithExtractorTemplate(
           domainState,
           getExtractorTemplateRunnerParamsForDomainState(runQueryTemplateOrExtractorTemplateAction.query, extractorRunnerMapOnDomainState)

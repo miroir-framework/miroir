@@ -1388,7 +1388,7 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        queryEnvelope: {
+        shippingBox: {
           type: "object",
           definition: {
             deploymentUuid: { // TODO: REPLACE WITH APPLICATION UUID OR LEAVE IT OPTIONAL
@@ -1415,20 +1415,20 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        queryForExtractorOrCombinerReturningObject: { 
+        boxedExtractorOrCombinerReturningObject: { 
           type: "object",
           extend: {
             type: "schemaReference",
             definition: {
               eager: true,
               absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "queryEnvelope",
+              relativePath: "shippingBox",
             },
           },
           definition: {
             queryType: {
               type: "literal",
-              definition: "queryForExtractorOrCombinerReturningObject",
+              definition: "boxedExtractorOrCombinerReturningObject",
             },
             select: {
               type: "schemaReference",
@@ -1439,20 +1439,20 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        queryForExtractorOrCombinerReturningObjectList: {
+        boxedExtractorOrCombinerReturningObjectList: {
           type: "object",
           extend: {
             type: "schemaReference",
             definition: {
               eager: true,
               absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "queryEnvelope",
+              relativePath: "shippingBox",
             },
           },
           definition: {
             queryType: {
               type: "literal",
-              definition: "queryForExtractorOrCombinerReturningObjectList",
+              definition: "boxedExtractorOrCombinerReturningObjectList",
             },
             select: {
               type: "schemaReference",
@@ -1463,7 +1463,7 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        queryForExtractorOrCombinerReturningObjectOrObjectList: {
+        boxedExtractorOrCombinerReturningObjectOrObjectList: {
           type: "union",
           discriminator: "queryType",
           definition: [
@@ -1471,14 +1471,14 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "queryForExtractorOrCombinerReturningObject",
+                relativePath: "boxedExtractorOrCombinerReturningObject",
               },
             },
             {
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "queryForExtractorOrCombinerReturningObjectList",
+                relativePath: "boxedExtractorOrCombinerReturningObjectList",
               },
             },
           ],
@@ -1490,7 +1490,7 @@ export function getMiroirFundamentalJzodSchema(
             definition: {
               eager: true,
               absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "queryEnvelope",
+              relativePath: "shippingBox",
             },
           },
           definition: {
@@ -1532,20 +1532,20 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        queryTemplateReturningObject: {
+        boxedExtractorTemplateReturningObject: {
           type: "object",
           extend: {
             type: "schemaReference",
             definition: {
               eager: true,
               absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "queryEnvelope",
+              relativePath: "shippingBox",
             },
           },
           definition: {
             queryType: {
               type: "literal",
-              definition: "queryTemplateReturningObject",
+              definition: "boxedExtractorTemplateReturningObject",
             },
             select: {
               type: "schemaReference",
@@ -1556,20 +1556,20 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        queryTemplateForObjectList: {
+        boxedExtractorTemplateReturningObjectList: {
           type: "object",
           extend: {
             type: "schemaReference",
             definition: {
               eager: true,
               absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "queryEnvelope",
+              relativePath: "shippingBox",
             },
           },
           definition: {
             queryType: {
               type: "literal",
-              definition: "queryTemplateReturningObjectList",
+              definition: "boxedExtractorTemplateReturningObjectList",
             },
             select: {
               type: "schemaReference",
@@ -1580,7 +1580,7 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        queryTemplateReturningObjectOrObjectList: {
+        boxedExtractorTemplateReturningObjectOrObjectList: {
           type: "union",
           discriminator: "queryType",
           definition: [
@@ -1588,14 +1588,14 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "queryTemplateReturningObject",
+                relativePath: "boxedExtractorTemplateReturningObject",
               },
             },
             {
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "queryTemplateForObjectList",
+                relativePath: "boxedExtractorTemplateReturningObjectList",
               },
             },
           ],
@@ -1607,7 +1607,7 @@ export function getMiroirFundamentalJzodSchema(
             definition: {
               eager: true,
               absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "queryEnvelope",
+              relativePath: "shippingBox",
             },
           },
           definition: {
@@ -1657,7 +1657,7 @@ export function getMiroirFundamentalJzodSchema(
             definition: {
               eager: true,
               absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "queryEnvelope",
+              relativePath: "shippingBox",
             },
           },
           definition: {
@@ -1682,7 +1682,7 @@ export function getMiroirFundamentalJzodSchema(
             definition: {
               eager: true,
               absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "queryEnvelope",
+              relativePath: "shippingBox",
             },
           },
           definition: {
@@ -1706,7 +1706,7 @@ export function getMiroirFundamentalJzodSchema(
             definition: {
               eager: true,
               absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "queryEnvelope",
+              relativePath: "shippingBox",
             },
           },
           definition: {
@@ -1730,7 +1730,7 @@ export function getMiroirFundamentalJzodSchema(
             definition: {
               eager: true,
               absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "queryEnvelope",
+              relativePath: "shippingBox",
             },
           },
           definition: {
@@ -1754,7 +1754,7 @@ export function getMiroirFundamentalJzodSchema(
             definition: {
               eager: true,
               absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "queryEnvelope",
+              relativePath: "shippingBox",
             },
           },
           definition: {
@@ -1834,7 +1834,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "queryTemplateReturningObjectOrObjectList",
+                relativePath: "boxedExtractorTemplateReturningObjectOrObjectList",
               },
             },
             {
@@ -1895,7 +1895,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "queryForExtractorOrCombinerReturningObjectOrObjectList",
+                relativePath: "boxedExtractorOrCombinerReturningObjectOrObjectList",
               },
             },
             {
@@ -2492,11 +2492,11 @@ export function getMiroirFundamentalJzodSchema(
         // domain elements
         // domainElementObject: (miroirFundamentalJzodSchema as any).definition.context.domainElementObject,
         // root elements
-        queryEnvelope: (miroirFundamentalJzodSchema as any).definition.context.queryEnvelope,
-        queryForExtractorOrCombinerReturningObject: (miroirFundamentalJzodSchema as any).definition.context.queryForExtractorOrCombinerReturningObject,
-        queryForExtractorOrCombinerReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.queryForExtractorOrCombinerReturningObjectList,
+        shippingBox: (miroirFundamentalJzodSchema as any).definition.context.shippingBox,
+        boxedExtractorOrCombinerReturningObject: (miroirFundamentalJzodSchema as any).definition.context.boxedExtractorOrCombinerReturningObject,
+        boxedExtractorOrCombinerReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.boxedExtractorOrCombinerReturningObjectList,
         queryWithExtractorCombinerTransformer: (miroirFundamentalJzodSchema as any).definition.context.queryWithExtractorCombinerTransformer,
-        queryForExtractorOrCombinerReturningObjectOrObjectList: (miroirFundamentalJzodSchema as any).definition.context.queryForExtractorOrCombinerReturningObjectOrObjectList,
+        boxedExtractorOrCombinerReturningObjectOrObjectList: (miroirFundamentalJzodSchema as any).definition.context.boxedExtractorOrCombinerReturningObjectOrObjectList,
         extractor: (miroirFundamentalJzodSchema as any).definition.context.extractor,
         extractorWrapperReturningList: (miroirFundamentalJzodSchema as any).definition.context.extractorWrapperReturningList,
         extractorWrapperReturningObject: (miroirFundamentalJzodSchema as any).definition.context.extractorWrapperReturningObject,
@@ -2586,9 +2586,9 @@ export function getMiroirFundamentalJzodSchema(
         transformer_menu_addItem: (miroirFundamentalJzodSchema as any).definition.context.transformer_menu_addItem,
         transformerForBuildOrRuntime: (transformerJzodSchema as any).definition.context.transformerForBuildOrRuntime,
         extendedTransformerForRuntime: (miroirFundamentalJzodSchema as any).definition.context.extendedTransformerForRuntime,
-        queryTemplateReturningObject: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateReturningObject,
-        queryTemplateForObjectList: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateForObjectList,
-        queryTemplateReturningObjectOrObjectList: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateReturningObjectOrObjectList,
+        boxedExtractorTemplateReturningObject: (miroirFundamentalJzodSchema as any).definition.context.boxedExtractorTemplateReturningObject,
+        boxedExtractorTemplateReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.boxedExtractorTemplateReturningObjectList,
+        boxedExtractorTemplateReturningObjectOrObjectList: (miroirFundamentalJzodSchema as any).definition.context.boxedExtractorTemplateReturningObjectOrObjectList,
         queryTemplateWithExtractorCombinerTransformer: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateWithExtractorCombinerTransformer,
         runQueryTemplateOrExtractorTemplateAction: queryEndpointVersionV1.definition.actions[0].actionParameters,
       },
@@ -2666,7 +2666,7 @@ export function getMiroirFundamentalJzodSchema(
   // const localizedInnerResolutionStoreReferences: Record<string, JzodReference> = Object.fromEntries(
   const extendedSchemas = [
     "jzodBaseObject",
-    "queryEnvelope",
+    "shippingBox",
     "extractorTemplateRoot",
     "extractorOrCombinerRoot",
     "transformer_Abstract",

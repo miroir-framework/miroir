@@ -286,30 +286,30 @@ export function resolveQueryTemplateWithExtractorCombinerTransformer(
 
 // ################################################################################################
 export function resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList(
-  queryTemplateReturningObjectOrObjectList: QueryTemplateReturningObjectOrObjectList,
+  boxedExtractorTemplateReturningObjectOrObjectList: QueryTemplateReturningObjectOrObjectList,
 ): QueryForExtractorOrCombinerReturningObjectOrObjectList {
 
-  const params = { ...queryTemplateReturningObjectOrObjectList.pageParams, ...queryTemplateReturningObjectOrObjectList.queryParams };
+  const params = { ...boxedExtractorTemplateReturningObjectOrObjectList.pageParams, ...boxedExtractorTemplateReturningObjectOrObjectList.queryParams };
 
-  // log.info("resolveExtractorTemplateForDomainModelObjects converting extractorTemplates:", queryTemplateReturningObject);
+  // log.info("resolveExtractorTemplateForDomainModelObjects converting extractorTemplates:", boxedExtractorTemplateReturningObject);
   
   const select = resolveExtractorTemplate(
-    queryTemplateReturningObjectOrObjectList.select,
+    boxedExtractorTemplateReturningObjectOrObjectList.select,
     params,
-    queryTemplateReturningObjectOrObjectList.contextResults
+    boxedExtractorTemplateReturningObjectOrObjectList.contextResults
   ) as any;
   // log.info("resolveExtractorTemplateForDomainModelObjects converted extractorTemplates, result:", select);
   return {
-    pageParams: queryTemplateReturningObjectOrObjectList.pageParams,
-    queryParams: queryTemplateReturningObjectOrObjectList.queryParams,
-    contextResults: queryTemplateReturningObjectOrObjectList.contextResults,
-    deploymentUuid: queryTemplateReturningObjectOrObjectList.deploymentUuid,
+    pageParams: boxedExtractorTemplateReturningObjectOrObjectList.pageParams,
+    queryParams: boxedExtractorTemplateReturningObjectOrObjectList.queryParams,
+    contextResults: boxedExtractorTemplateReturningObjectOrObjectList.contextResults,
+    deploymentUuid: boxedExtractorTemplateReturningObjectOrObjectList.deploymentUuid,
     queryType:
-      queryTemplateReturningObjectOrObjectList.queryType == "queryTemplateReturningObjectList"
-        ? "queryForExtractorOrCombinerReturningObjectList"
-        : "queryForExtractorOrCombinerReturningObject",
+      boxedExtractorTemplateReturningObjectOrObjectList.queryType == "boxedExtractorTemplateReturningObjectList"
+        ? "boxedExtractorOrCombinerReturningObjectList"
+        : "boxedExtractorOrCombinerReturningObject",
     select: select,
-    // runtimeTransformers: queryTemplateReturningObject.runtimeTransformers,
+    // runtimeTransformers: boxedExtractorTemplateReturningObject.runtimeTransformers,
   };
 }
 

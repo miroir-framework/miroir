@@ -79,9 +79,7 @@ export async function handleQueryTemplateAction(
 // ################################################################################################
 export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <StateType>(
   state: StateType,
-  // selectorParams: SyncExtractorOrQueryTemplateRunnerParams<
   selectorParams: SyncExtractorTemplateRunnerParams<
-  // QueryTemplateReturningObject | QueryTemplateWithExtractorCombinerTransformer,
   QueryTemplateReturningObjectOrObjectList,
     StateType
   >
@@ -105,53 +103,6 @@ export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <
       extractor: resolvedExtractor,
     }
   )
-
-  // switch (selectorParams.extractorOrCombinerTemplate.queryType) {
-  //   case "queryTemplateWithExtractorCombinerTransformer": {
-  //     const resolvedExtractor: QueryWithExtractorCombinerTransformer = resolveQueryTemplateWithExtractorCombinerTransformer(
-  //       selectorParams.extractorOrCombinerTemplate
-  //     ); 
-
-  //     log.info("extractWithExtractorTemplate found", "resolvedExtractor", JSON.stringify(resolvedExtractor, null, 2));
-  //     return runQuery(
-  //       state,
-  //       {
-  //         extractorRunnerMap: selectorParams.extractorRunnerMap,
-  //         extractor: resolvedExtractor,
-  //       }
-  //     )
-  //     break;
-  //   }
-  //   case "queryTemplateReturningObject": {
-  //     const resolvedExtractor: QueryForExtractorOrCombinerReturningObjectOrObjectList = resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList(
-  //       selectorParams.extractorOrCombinerTemplate
-  //     ); 
-
-  //     log.info("extractWithExtractorTemplate found", "resolvedExtractor", JSON.stringify(resolvedExtractor, null, 2));
-
-  //     return extractWithExtractorOrCombinerReturningObjectOrObjectList(
-  //       state,
-  //       {
-  //         // extractorRunnerMap: {} as any,
-  //         extractorRunnerMap: selectorParams.extractorRunnerMap,
-  //         extractor: resolvedExtractor,
-  //       }
-  //     )
-
-  //     break;
-  //   }
-  //   default: {
-  //     return {
-  //       elementType: "failure",
-  //       elementValue: {
-  //         queryFailure: "QueryNotExecutable",
-  //         failureMessage:
-  //           "extractWithExtractorTemplate could not handle queryType of template: " + selectorParams.extractorOrCombinerTemplate,
-  //       },
-  //     }; 
-  //     break;
-  //   }
-  // }
 
   // log.info(
   //   "extractExtractor",
