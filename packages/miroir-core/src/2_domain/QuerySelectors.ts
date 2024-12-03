@@ -849,7 +849,7 @@ export const extractWithExtractorOrCombinerReturningObjectOrObjectList /*: Extra
  */
 export const runQuery = <StateType>(
   state: StateType,
-  selectorParams: SyncQueryRunnerParams<QueryWithExtractorCombinerTransformer, StateType>,
+  selectorParams: SyncQueryRunnerParams<StateType>,
 ): DomainElementObject => { 
 
   // log.info("########## runQuery begin, query", selectorParams);

@@ -156,7 +156,6 @@ export const ReportView = (props: ReportViewProps) => {
   );
   resolvedTemplateQuery;
   const deploymentEntityStateFetchQueryParams: SyncQueryRunnerParams<
-    QueryWithExtractorCombinerTransformer,
     DeploymentEntityState
   > = useMemo(
     () =>

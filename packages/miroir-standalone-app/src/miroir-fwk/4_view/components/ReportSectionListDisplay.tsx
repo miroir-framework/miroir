@@ -315,7 +315,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   );
 
   const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<
-    QueryWithExtractorCombinerTransformer,
     DeploymentEntityState
   > = useMemo(
     () =>
@@ -382,7 +381,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
   useDeploymentEntityStateQuerySelectorForCleanedResult(
     deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
-      QueryWithExtractorCombinerTransformer,
       DeploymentEntityState,
       DomainElement
     >,

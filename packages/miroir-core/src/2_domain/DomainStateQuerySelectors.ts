@@ -457,7 +457,6 @@ export const innerSelectElementFromQueryAndDomainState = innerSelectDomainElemen
 
 // ################################################################################################
 export const runQueryFromDomainState: SyncQueryRunner<
-  QueryWithExtractorCombinerTransformer,
   DomainState,
   DomainElementObject
 > = runQuery<DomainState>;
@@ -574,14 +573,14 @@ export const getExtractorRunnerParamsForDomainState: GetExtractorRunnerParamsFor
 export type GetQueryRunnerParamsForDomainState = <ExtractorType extends QueryWithExtractorCombinerTransformer>(
   query: ExtractorType,
   extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DomainState>
-) => SyncQueryRunnerParams<ExtractorType, DomainState>;
+) => SyncQueryRunnerParams<DomainState>;
 
 export const getQueryRunnerParamsForDomainState: GetQueryRunnerParamsForDomainState = <
   ExtractorType extends QueryWithExtractorCombinerTransformer
 >(
   query: ExtractorType,
   extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DomainState>
-): SyncQueryRunnerParams<ExtractorType, DomainState> => {
+): SyncQueryRunnerParams<DomainState> => {
   return {
     extractor: query,
     extractorRunnerMap: extractorRunnerMap ?? getDomainStateExtractorRunnerMap(),

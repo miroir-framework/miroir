@@ -62,7 +62,6 @@ export const extractorTemplateRunnerForDomainState: ExtractorTemplateRunnerForDo
   extractWithExtractorTemplate<DomainState>;
 
 export type QueryTemplateRunnerForDomainState = SyncQueryTemplateRunner<
-  QueryTemplateWithExtractorCombinerTransformer,
   DomainState,
   DomainElement
 >;
@@ -74,7 +73,6 @@ export const queryTemplateRunnerForDomainState: QueryTemplateRunnerForDomainStat
 // TODO: used in RestServer.ts (with commented out access in HomePage, to create bundle)
 //  provide a better interface?
 export const runQueryTemplateFromDomainState: SyncQueryTemplateRunner<
-  QueryTemplateWithExtractorCombinerTransformer,
   DomainState,
   DomainElementObject
 > = runQueryTemplateWithExtractorCombinerTransformer<DomainState>;
@@ -119,10 +117,10 @@ export const getExtractorTemplateRunnerParamsForDomainState: GetSelectorParamsFo
 export type GetSelectorParamsForQueryTemplateOnDomainStateType=<QueryTemplateType extends QueryTemplateWithExtractorCombinerTransformer>(
   query: QueryTemplateType,
   extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DomainState>
-)=> SyncQueryTemplateRunnerParams<QueryTemplateType, DomainState>;
+)=> SyncQueryTemplateRunnerParams<DomainState>;
 
 export const getQueryTemplateRunnerParamsForDomainState: GetSelectorParamsForQueryTemplateOnDomainStateType =
-<ExtractorTemplateType extends MiroirQueryTemplate>(
+<ExtractorTemplateType extends QueryTemplateWithExtractorCombinerTransformer>(
     query: ExtractorTemplateType,
     extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DomainState>
   ) =>

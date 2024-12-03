@@ -456,7 +456,7 @@ export class SqlDbQueryRunner {
    * @returns 
    */
   asyncExtractWithQuery = async (
-    selectorParams: AsyncQueryRunnerParams<QueryWithExtractorCombinerTransformer>,
+    selectorParams: AsyncQueryRunnerParams,
   ): Promise<DomainElementObjectOrFailed> => {
     // log.info("########## asyncRunQuery begin, query", selectorParams);
   

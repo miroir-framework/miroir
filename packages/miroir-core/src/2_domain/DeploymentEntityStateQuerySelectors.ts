@@ -54,7 +54,6 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 // ################################################################################################
 export const runQueryFromDeploymentEntityState: SyncQueryRunner<
-  QueryWithExtractorCombinerTransformer,
   DeploymentEntityState,
   DomainElementObject
 > = runQuery<DeploymentEntityState>;
@@ -467,12 +466,12 @@ export const getExtractorRunnerParamsForDeploymentEntityState = <QueryType exten
 export type GetQueryRunnerParamsForDeploymentEntityState = (
   query: QueryWithExtractorCombinerTransformer,
   extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DeploymentEntityState>
-) => SyncQueryRunnerParams<QueryWithExtractorCombinerTransformer, DeploymentEntityState>;
+) => SyncQueryRunnerParams<DeploymentEntityState>;
 
 export const getQueryRunnerParamsForDeploymentEntityState = (
   query: QueryWithExtractorCombinerTransformer,
   extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DeploymentEntityState>
-): SyncQueryRunnerParams<QueryWithExtractorCombinerTransformer, DeploymentEntityState> =>{
+): SyncQueryRunnerParams<DeploymentEntityState> =>{
   return {
     extractor: query,
     extractorRunnerMap: extractorRunnerMap ?? getDeploymentEntityStateSelectorMap(),

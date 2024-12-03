@@ -52,14 +52,12 @@ export interface TestExtractorParams {
   // Domain State
   getQueryRunnerParamsForDomainState?: GetQueryRunnerParamsForDomainState,
   runQueryFromDomainState?: SyncQueryRunner<
-    QueryWithExtractorCombinerTransformer,
     DomainState,
     DomainElementObject
   >
 
   getQueryTemplateRunnerParamsForDomainState?: GetSelectorParamsForQueryTemplateOnDomainStateType;
   runQueryTemplateFromDomainState?: SyncQueryTemplateRunner<
-    QueryTemplateWithExtractorCombinerTransformer,
     DomainState,
     DomainElementObject
   >
@@ -67,14 +65,12 @@ export interface TestExtractorParams {
   // Deployment Entity State
   getQueryRunnerParamsForDeploymentEntityState?: GetQueryRunnerParamsForDeploymentEntityState,
   runQueryFromDeploymentEntityState?: SyncQueryRunner<
-    QueryWithExtractorCombinerTransformer,
     DeploymentEntityState,
     DomainElementObject
   >
 
   getQueryTemplateRunnerParamsForDeploymentEntityState?: GetQueryTemplateRunnerParamsForDeploymentEntityState;
   runQueryTemplateFromDeploymentEntityState:SyncQueryTemplateRunner<
-    QueryTemplateWithExtractorCombinerTransformer,
     DeploymentEntityState,
     DomainElementObject
   >

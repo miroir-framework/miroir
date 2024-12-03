@@ -175,7 +175,7 @@ export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <
  */
 export const runQueryTemplateWithExtractorCombinerTransformer = <StateType>(
   state: StateType,
-  selectorParams: SyncQueryTemplateRunnerParams<QueryTemplateWithExtractorCombinerTransformer, StateType>,
+  selectorParams: SyncQueryTemplateRunnerParams<StateType>,
 ): DomainElementObject => { 
 
   const resolvedExtractor: QueryWithExtractorCombinerTransformer = resolveQueryTemplateWithExtractorCombinerTransformer(

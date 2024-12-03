@@ -446,35 +446,34 @@ export const JzodObjectEditor = (
     }
 
     const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<
-    QueryWithExtractorCombinerTransformer,
-    DeploymentEntityState
-  > = useMemo(
-    () =>
-      getQueryRunnerParamsForDeploymentEntityState(
-        props.currentDeploymentUuid &&
-        unfoldedRawSchema.type == "uuid" &&
-        unfoldedRawSchema.tag?.value?.targetEntity
-        ?
-        {
-          queryType: "queryWithExtractorCombinerTransformer",
-          deploymentUuid: props.currentDeploymentUuid,
-          pageParams: {},
-          queryParams: {},
-          contextResults: {},
-          extractors: {
-            [unfoldedRawSchema.tag?.value?.targetEntity]:
-            {
-              extractorOrCombinerType: "extractorByEntityReturningObjectList",
-              applicationSection: getApplicationSection(props.currentDeploymentUuid,unfoldedRawSchema.tag?.value?.targetEntity),
-              parentName: "",
-              parentUuid: unfoldedRawSchema.tag?.value?.targetEntity
-            }
-          },
-        }
-        :
-        dummyDomainManyQueryWithDeploymentUuid,
-        deploymentEntityStateSelectorMap
-      ),
+      DeploymentEntityState
+    > = useMemo(
+      () =>
+        getQueryRunnerParamsForDeploymentEntityState(
+          props.currentDeploymentUuid &&
+          unfoldedRawSchema.type == "uuid" &&
+          unfoldedRawSchema.tag?.value?.targetEntity
+          ?
+          {
+            queryType: "queryWithExtractorCombinerTransformer",
+            deploymentUuid: props.currentDeploymentUuid,
+            pageParams: {},
+            queryParams: {},
+            contextResults: {},
+            extractors: {
+              [unfoldedRawSchema.tag?.value?.targetEntity]:
+              {
+                extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                applicationSection: getApplicationSection(props.currentDeploymentUuid,unfoldedRawSchema.tag?.value?.targetEntity),
+                parentName: "",
+                parentUuid: unfoldedRawSchema.tag?.value?.targetEntity
+              }
+            },
+          }
+          :
+          dummyDomainManyQueryWithDeploymentUuid,
+          deploymentEntityStateSelectorMap
+        ),
     [
       deploymentEntityStateSelectorMap,
       props.currentDeploymentUuid,
@@ -485,7 +484,6 @@ export const JzodObjectEditor = (
   const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
   useDeploymentEntityStateQuerySelectorForCleanedResult(
     deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
-      QueryWithExtractorCombinerTransformer,
       DeploymentEntityState,
       DomainElement
     >,

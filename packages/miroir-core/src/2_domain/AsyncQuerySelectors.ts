@@ -381,7 +381,7 @@ export const asyncExtractWithExtractor: AsyncExtractWithExtractorOrCombinerRetur
 
 export const asyncRunQuery = async (
   // state: StateType,
-  selectorParams: AsyncQueryRunnerParams<QueryWithExtractorCombinerTransformer>,
+  selectorParams: AsyncQueryRunnerParams,
 ): Promise<DomainElementObject> => {
 
   // log.info("########## asyncRunQuery begin, query", selectorParams);

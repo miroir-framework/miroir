@@ -149,7 +149,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
     []
   )
 
-  const fetchDeploymentMenusQueryParams: SyncQueryRunnerParams<QueryWithExtractorCombinerTransformer, DeploymentEntityState> = useMemo(
+  const fetchDeploymentMenusQueryParams: SyncQueryRunnerParams<DeploymentEntityState> = useMemo(
     () => 
     getQueryRunnerParamsForDeploymentEntityState({
       queryType: "queryWithExtractorCombinerTransformer",
