@@ -9,19 +9,18 @@ import {
   DomainElementObject,
   EntityInstance,
   ExtendedTransformerForRuntime,
-  QueryWithExtractorCombinerTransformer,
-  QueryForExtractorOrCombinerReturningObject,
-  QueryForExtractorOrCombinerReturningObjectList,
   ExtractorOrCombiner,
   QueryFailed,
-  ExtractorOrCombinerReturningObjectOrObjectList,
-  QueryForExtractorOrCombinerReturningObjectOrObjectList
+  QueryForExtractorOrCombinerReturningObject,
+  QueryForExtractorOrCombinerReturningObjectList,
+  QueryForExtractorOrCombinerReturningObjectOrObjectList,
+  QueryWithExtractorCombinerTransformer
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   AsyncExtractorOrQueryRunnerMap,
-  AsyncExtractorOrQueryRunnerParams,
   AsyncExtractorRunnerParams,
-  AsyncExtractWithExtractorOrCombinerReturningObjectOrObjectList
+  AsyncExtractWithExtractorOrCombinerReturningObjectOrObjectList,
+  AsyncQueryRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/Logger";
@@ -32,7 +31,7 @@ import { applyExtractorForSingleObjectListToSelectedInstancesListInMemory, apply
 import { resolveExtractorTemplate } from "./Templates";
 import { applyTransformer } from "./Transformers";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"AsyncExtractorOrQueryTemplateRunner");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"AsyncQuerySelectors");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   (value: LoggerInterface) => {
@@ -67,7 +66,7 @@ const emptyAsyncSelectorMap:AsyncExtractorOrQueryRunnerMap = {
  */
 export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
 = (
-  selectorParams: AsyncExtractorOrQueryRunnerParams<QueryForExtractorOrCombinerReturningObjectList>
+  selectorParams: AsyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList>
 ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
   const result: Promise<DomainElementInstanceUuidIndexOrFailed> =
     (selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap).extractEntityInstanceUuidIndex(selectorParams)
@@ -95,7 +94,7 @@ export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
  */
 export const asyncExtractEntityInstanceListWithObjectListExtractor
 = (
-  selectorParams: AsyncExtractorOrQueryRunnerParams<QueryForExtractorOrCombinerReturningObjectList>
+  selectorParams: AsyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList>
 ): Promise<DomainElementInstanceArrayOrFailed> => {
   const result: Promise<DomainElementInstanceArrayOrFailed> =
     (selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap).extractEntityInstanceList(selectorParams)
@@ -335,7 +334,7 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
 }
 
 // ################################################################################################
-export const asyncExtractWithExtractor: AsyncExtractWithExtractorOrCombinerReturningObjectOrObjectList /**: SyncExtractorOrQueryTemplateRunner */= (
+export const asyncExtractWithExtractor: AsyncExtractWithExtractorOrCombinerReturningObjectOrObjectList /**: SyncExtractorTemplateRunner */= (
   // selectorParams: SyncExtractorOrQueryTemplateRunnerParams<QueryTemplateWithExtractorCombinerTransformer, DeploymentEntityState>,
   selectorParams: AsyncExtractorRunnerParams<
     QueryForExtractorOrCombinerReturningObjectOrObjectList
@@ -354,33 +353,6 @@ export const asyncExtractWithExtractor: AsyncExtractWithExtractorOrCombinerRetur
     selectorParams.extractor.select
   );
   return result;
-
-  // switch (selectorParams.extractor.queryType) {
-  //   // case "queryWithExtractorCombinerTransformer": {
-  //   //   return asyncRunQuery(
-  //   //     selectorParams as AsyncExtractorOrQueryRunnerParams<QueryWithExtractorCombinerTransformer>
-  //   //   );
-  //   //   break;
-  //   // }
-  //   case "queryForExtractorOrCombinerReturningObject":
-  //   case "queryForExtractorOrCombinerReturningObjectList": {
-  //     const result = asyncInnerSelectElementFromQuery(
-  //       selectorParams.extractor.contextResults,
-  //       selectorParams.extractor.pageParams,
-  //       selectorParams.extractor.queryParams,
-  //       localSelectorMap as any,
-  //       selectorParams.extractor.deploymentUuid,
-  //       {},
-  //       selectorParams.extractor.select
-  //     );
-  //     return result;
-  //       break;
-  //     }
-  //   default: {
-  //     return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
-  //     break;
-  //   }
-  // }
 
   // log.info(
   //   "extractExtractor",
@@ -409,7 +381,7 @@ export const asyncExtractWithExtractor: AsyncExtractWithExtractorOrCombinerRetur
 
 export const asyncRunQuery = async (
   // state: StateType,
-  selectorParams: AsyncExtractorOrQueryRunnerParams<QueryWithExtractorCombinerTransformer>,
+  selectorParams: AsyncQueryRunnerParams<QueryWithExtractorCombinerTransformer>,
 ): Promise<DomainElementObject> => {
 
   // log.info("########## asyncRunQuery begin, query", selectorParams);

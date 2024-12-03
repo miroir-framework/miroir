@@ -31,7 +31,6 @@ import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface"
 import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface";
 import { getDomainStateExtractorRunnerMap, getExtractorRunnerParamsForDomainState, getQueryRunnerParamsForDomainState } from "../2_domain/DomainStateQuerySelectors";
 import {
-  getExtractorOrQueryTemplateRunnerParamsForDomainState,
   getExtractorTemplateRunnerParamsForDomainState,
   getQueryTemplateRunnerParamsForDomainState,
   getSelectorMapForTemplate
@@ -411,7 +410,6 @@ export async function queryTemplateActionHandler(
         break;
       }
       case "queryTemplateWithExtractorCombinerTransformer":
-        // queryResult = extractWithExtractorTemplate(
         queryResult = runQueryTemplateWithExtractorCombinerTransformer(
           domainState,
           getQueryTemplateRunnerParamsForDomainState(runQueryTemplateOrExtractorTemplateAction.query, extractorRunnerMapOnDomainState)
@@ -422,10 +420,6 @@ export async function queryTemplateActionHandler(
       default:
         break;
     }
-    // const queryResult: DomainElement = extractWithExtractorTemplate(
-    //   domainState,
-    //   getExtractorOrQueryTemplateRunnerParamsForDomainState(runQueryTemplateOrExtractorTemplateAction.query, extractorRunnerMapOnDomainState)
-    // )
     const result:ActionReturnType = {
       status: "ok",
       returnedDomainElement: queryResult

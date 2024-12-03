@@ -31,7 +31,6 @@ import {
   entityStoreBasedConfiguration,
   ignorePostgresExtraAttributesOnList,
   ignorePostgresExtraAttributesOnObject,
-  ignorePostgresExtraAttributesOnRecord,
   MetaEntity,
   MiroirConfigClient,
   MiroirLoggerFactory,

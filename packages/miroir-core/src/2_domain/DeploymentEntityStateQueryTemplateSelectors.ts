@@ -1,23 +1,19 @@
 import {
-  QueryByEntityUuidGetEntityDefinition,
+  DomainElementObject,
   EntityDefinition,
-  MiroirQueryTemplate,
   JzodObject,
-  QueryForExtractorOrCombinerReturningObjectOrObjectList,
+  QueryByEntityUuidGetEntityDefinition,
   QueryTemplateReturningObjectOrObjectList,
-  QueryWithExtractorCombinerTransformer,
-  QueryTemplateWithExtractorCombinerTransformer,
-  DomainElementObject
+  QueryTemplateWithExtractorCombinerTransformer
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface";
 import {
-  QueryTemplateRunnerMapForJzodSchema,
   ExtractorTemplateRunnerParamsForJzodSchema,
+  QueryTemplateRunnerMapForJzodSchema,
   SyncExtractorOrQueryRunnerMap,
-  SyncExtractorOrQueryTemplateRunnerParams,
   SyncExtractorTemplateRunnerParams,
-  SyncQueryTemplateRunnerParams,
-  SyncQueryTemplateRunner
+  SyncQueryTemplateRunner,
+  SyncQueryTemplateRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/Logger";
@@ -40,8 +36,8 @@ import {
 import {
   extractFetchQueryTemplateJzodSchema,
   extractJzodSchemaForDomainModelQueryTemplate,
-  runQueryTemplateWithExtractorCombinerTransformer,
-  extractzodSchemaForSingleSelectQueryTemplate
+  extractzodSchemaForSingleSelectQueryTemplate,
+  runQueryTemplateWithExtractorCombinerTransformer
 } from "./QueryTemplateSelectors";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "DeploymentEntityStateQueryTemplateSelector");

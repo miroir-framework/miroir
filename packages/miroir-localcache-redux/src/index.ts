@@ -35,7 +35,7 @@ export {
   selectEntityInstanceUuidIndexFromLocalCache,
   selectEntityInstanceUuidIndexFromLocalCacheQueryAndDeploymentEntityState,
   selectInstanceArrayForDeploymentSectionEntity,
-  selectSelectorParams,
+  selectMiroirQueryTemplateSelectorParams,
 } from "./4_services/localCache/LocalCacheSliceSelectors.js";
 export {
   createUndoRedoReducer,

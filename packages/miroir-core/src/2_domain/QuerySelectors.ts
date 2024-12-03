@@ -13,31 +13,32 @@ import {
   DomainElementInstanceUuidIndex,
   DomainElementInstanceUuidIndexOrFailed,
   DomainElementObject,
+  EntityInstance,
+  ExtendedTransformerForRuntime,
+  ExtractorByEntityReturningObjectList,
+  ExtractorOrCombiner,
+  ExtractorOrCombinerContextReference,
+  JzodElement,
+  JzodObject,
   QueryByEntityUuidGetEntityDefinition,
   QueryByQuery2GetParamJzodSchema,
   QueryByQueryGetParamJzodSchema,
-  QueryJzodSchemaParams,
-  EntityInstance,
-  ExtendedTransformerForRuntime,
-  QueryForExtractorOrCombinerReturningObjectOrObjectList,
-  ExtractorByEntityReturningObjectList,
-  QueryWithExtractorCombinerTransformer,
-  QueryForExtractorOrCombinerReturningObjectList,
-  JzodElement,
-  JzodObject,
-  ExtractorOrCombiner,
-  RunExtractorOrQueryAction,
   QueryFailed,
-  ExtractorOrCombinerContextReference
+  QueryForExtractorOrCombinerReturningObjectList,
+  QueryForExtractorOrCombinerReturningObjectOrObjectList,
+  QueryJzodSchemaParams,
+  QueryWithExtractorCombinerTransformer,
+  RunExtractorOrQueryAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   AsyncExtractorOrQueryRunnerMap,
   ExtractorRunnerParamsForJzodSchema,
   RecordOfJzodElement,
   RecordOfJzodObject,
-  SyncExtractorOrQueryRunner,
   SyncExtractorOrQueryRunnerMap,
-  SyncExtractorOrQueryRunnerParams
+  SyncExtractorRunner,
+  SyncExtractorRunnerParams,
+  SyncQueryRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/Logger";
@@ -47,7 +48,7 @@ import { cleanLevel } from "./constants";
 import { resolveExtractorTemplate } from "./Templates";
 import { applyTransformer, transformer_extended_apply } from "./Transformers";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"SyncExtractorOrQueryTemplateRunner");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"QuerySelectors");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   (value: LoggerInterface) => {
@@ -488,7 +489,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
 export const extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
 = <StateType>(
   deploymentEntityState: StateType,
-  selectorParams: SyncExtractorOrQueryRunnerParams<QueryForExtractorOrCombinerReturningObjectList, StateType>
+  selectorParams: SyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList, StateType>
 ): DomainElementInstanceUuidIndexOrFailed => {
   const selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed =
     (selectorParams?.extractorRunnerMap ?? emptySelectorMap).extractEntityInstanceUuidIndex(deploymentEntityState, selectorParams);
@@ -513,7 +514,7 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
 export const extractEntityInstanceListWithObjectListExtractorInMemory
 = <StateType>(
   deploymentEntityState: StateType,
-  selectorParams: SyncExtractorOrQueryRunnerParams<QueryForExtractorOrCombinerReturningObjectList, StateType>
+  selectorParams: SyncExtractorRunnerParams<QueryForExtractorOrCombinerReturningObjectList, StateType>
 ): DomainElementInstanceArrayOrFailed => {
   const selectedInstancesUuidIndex: DomainElementInstanceArrayOrFailed =
     (selectorParams?.extractorRunnerMap ?? emptySelectorMap).extractEntityInstanceList(deploymentEntityState, selectorParams);
@@ -800,15 +801,14 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*ExtractorTempla
 }
 
 // ################################################################################################
-// export const extractWithExtractorOrCombinerReturningObjectOrObjectList: <StateType>SyncExtractorOrQueryRunner<StateType,QueryForExtractorOrCombinerReturningObjectOrObjectList | QueryWithExtractorCombinerTransformer, DomainElement> = <StateType>(
-export type ExtractWithExtractorType<StateType> = SyncExtractorOrQueryRunner<
+export type ExtractWithExtractorType<StateType> = SyncExtractorRunner<
   QueryForExtractorOrCombinerReturningObjectOrObjectList,
   StateType,
   DomainElement
 >;
 export const extractWithExtractorOrCombinerReturningObjectOrObjectList /*: ExtractWithExtractorType*/ = <StateType>(
   state: StateType,
-  selectorParams: SyncExtractorOrQueryRunnerParams<
+  selectorParams: SyncExtractorRunnerParams<
     QueryForExtractorOrCombinerReturningObjectOrObjectList,
     StateType
   >
@@ -826,34 +826,6 @@ export const extractWithExtractorOrCombinerReturningObjectOrObjectList /*: Extra
     selectorParams.extractor.select
   );
   return result;
-
-  // switch (selectorParams.extractor.queryType) {
-  //   case "queryWithExtractorCombinerTransformer": {
-  //     return runQuery(
-  //       state,
-  //       selectorParams as SyncExtractorOrQueryRunnerParams<QueryWithExtractorCombinerTransformer, StateType>
-  //     );
-  //     break;
-  //   }
-  //   case "queryForExtractorOrCombinerReturningObject":
-  //   case "queryForExtractorOrCombinerReturningObjectList": {
-  //     const result = innerSelectDomainElementFromExtractorOrCombiner(
-  //       state,
-  //       selectorParams.extractor.contextResults,
-  //       selectorParams.extractor.pageParams,
-  //       selectorParams.extractor.queryParams,
-  //       localSelectorMap as any,
-  //       selectorParams.extractor.deploymentUuid,
-  //       selectorParams.extractor.select
-  //     );
-  //     return result;
-  //       break;
-  //   }
-  //   default: {
-  //     return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } };
-  //     break;
-  //   }
-  // }
 
   // log.info(
   //   "extractExtractor",
@@ -877,7 +849,7 @@ export const extractWithExtractorOrCombinerReturningObjectOrObjectList /*: Extra
  */
 export const runQuery = <StateType>(
   state: StateType,
-  selectorParams: SyncExtractorOrQueryRunnerParams<QueryWithExtractorCombinerTransformer, StateType>,
+  selectorParams: SyncQueryRunnerParams<QueryWithExtractorCombinerTransformer, StateType>,
 ): DomainElementObject => { 
 
   // log.info("########## runQuery begin, query", selectorParams);

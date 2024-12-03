@@ -18,14 +18,14 @@ import {
   DeploymentEntityState,
   DomainElementObjectOrFailed,
   entityMenu,
-  QueryWithExtractorCombinerTransformer,
   getApplicationSection,
-  getExtractorOrQueryRunnerParamsForDeploymentEntityState,
   getLoggerName,
+  getQueryRunnerParamsForDeploymentEntityState,
   LoggerInterface,
   MiroirLoggerFactory,
+  QueryWithExtractorCombinerTransformer,
   SyncExtractorOrQueryRunnerMap,
-  SyncExtractorOrQueryRunnerParams,
+  SyncQueryRunnerParams,
   Uuid
 } from "miroir-core";
 import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
@@ -149,9 +149,9 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
     []
   )
 
-  const fetchDeploymentMenusQueryParams: SyncExtractorOrQueryRunnerParams<QueryWithExtractorCombinerTransformer, DeploymentEntityState> = useMemo(
+  const fetchDeploymentMenusQueryParams: SyncQueryRunnerParams<QueryWithExtractorCombinerTransformer, DeploymentEntityState> = useMemo(
     () => 
-    getExtractorOrQueryRunnerParamsForDeploymentEntityState<QueryWithExtractorCombinerTransformer>({
+    getQueryRunnerParamsForDeploymentEntityState({
       queryType: "queryWithExtractorCombinerTransformer",
       deploymentUuid: props.deploymentUuid,
       pageParams: {},

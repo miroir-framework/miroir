@@ -4,34 +4,33 @@ import {
   ActionReturnType,
   DomainElement,
   DomainElementObject,
-  QueryByEntityUuidGetEntityDefinition,
-  QueryByTemplateGetParamJzodSchema,
-  QueryByQueryTemplateGetParamJzodSchema,
   DomainModelQueryTemplateJzodSchemaParams,
-  QueryForExtractorOrCombinerReturningObjectOrObjectList,
-  QueryWithExtractorCombinerTransformer,
-  QueryTemplateReturningObject,
-  QueryTemplateWithExtractorCombinerTransformer,
+  ExtractorOrCombinerTemplate,
   JzodElement,
   JzodObject,
-  ExtractorOrCombinerTemplate,
-  RunQueryTemplateOrExtractorTemplateAction,
-  QueryTemplateReturningObjectOrObjectList
+  QueryByEntityUuidGetEntityDefinition,
+  QueryByQueryTemplateGetParamJzodSchema,
+  QueryByTemplateGetParamJzodSchema,
+  QueryForExtractorOrCombinerReturningObjectOrObjectList,
+  QueryTemplateReturningObjectOrObjectList,
+  QueryTemplateWithExtractorCombinerTransformer,
+  QueryWithExtractorCombinerTransformer,
+  RunQueryTemplateOrExtractorTemplateAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   AsyncExtractorOrQueryRunnerMap,
   ExtractorTemplateRunnerParamsForJzodSchema,
   RecordOfJzodElement,
   RecordOfJzodObject,
-  SyncExtractorOrQueryTemplateRunnerParams,
-  SyncExtractorTemplateRunnerParams
+  SyncExtractorTemplateRunnerParams,
+  SyncQueryTemplateRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/Logger";
 import { packageName } from "../constants";
 import { getLoggerName } from "../tools";
 import { cleanLevel } from "./constants";
-import { handleQueryAction, extractWithExtractorOrCombinerReturningObjectOrObjectList, runQuery } from "./QuerySelectors";
+import { extractWithExtractorOrCombinerReturningObjectOrObjectList, handleQueryAction, runQuery } from "./QuerySelectors";
 import {
   resolveExtractorOrQueryTemplate,
   resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList,
@@ -39,7 +38,7 @@ import {
 } from "./Templates";
 import { transformer_InnerReference_resolve } from "./Transformers";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"SyncExtractorOrQueryTemplateRunner");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"QueryTemplateSelectors");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   (value: LoggerInterface) => {
@@ -78,7 +77,7 @@ export async function handleQueryTemplateAction(
 }
 
 // ################################################################################################
-export const extractWithExtractorTemplate /**: SyncExtractorOrQueryTemplateRunner */= <StateType>(
+export const extractWithExtractorTemplate /**: SyncExtractorTemplateRunner */= <StateType>(
   state: StateType,
   // selectorParams: SyncExtractorOrQueryTemplateRunnerParams<
   selectorParams: SyncExtractorTemplateRunnerParams<
@@ -176,7 +175,7 @@ export const extractWithExtractorTemplate /**: SyncExtractorOrQueryTemplateRunne
  */
 export const runQueryTemplateWithExtractorCombinerTransformer = <StateType>(
   state: StateType,
-  selectorParams: SyncExtractorOrQueryTemplateRunnerParams<QueryTemplateWithExtractorCombinerTransformer, StateType>,
+  selectorParams: SyncQueryTemplateRunnerParams<QueryTemplateWithExtractorCombinerTransformer, StateType>,
 ): DomainElementObject => { 
 
   const resolvedExtractor: QueryWithExtractorCombinerTransformer = resolveQueryTemplateWithExtractorCombinerTransformer(

@@ -6,21 +6,21 @@ import {
   DeploymentEntityState,
   DomainElementObject,
   DomainElementObjectOrFailed,
-  QueryByQuery2GetParamJzodSchema,
-  QueryWithExtractorCombinerTransformer,
-  QueryRunnerMapForJzodSchema,
   ExtractorRunnerParamsForJzodSchema,
-  QueryTemplateWithExtractorCombinerTransformer,
+  getLoggerName,
+  getQueryRunnerParamsForDeploymentEntityState,
   LoggerInterface,
   MiroirLoggerFactory,
+  QueryByQuery2GetParamJzodSchema,
+  QueryRunnerMapForJzodSchema,
+  QueryTemplateWithExtractorCombinerTransformer,
+  QueryWithExtractorCombinerTransformer,
   RecordOfJzodObject,
+  resolveExtractorTemplateForRecordOfExtractors,
   RootReport,
   SyncExtractorOrQueryRunnerMap,
-  SyncExtractorOrQueryRunnerParams,
-  Uuid,
-  getExtractorOrQueryRunnerParamsForDeploymentEntityState,
-  getLoggerName,
-  resolveExtractorTemplateForRecordOfExtractors
+  SyncQueryRunnerParams,
+  Uuid
 } from "miroir-core";
 
 
@@ -155,12 +155,12 @@ export const ReportView = (props: ReportViewProps) => {
     [props.reportDefinition, props.pageParams, resolvedTemplateQuery]
   );
   resolvedTemplateQuery;
-  const deploymentEntityStateFetchQueryParams: SyncExtractorOrQueryRunnerParams<
+  const deploymentEntityStateFetchQueryParams: SyncQueryRunnerParams<
     QueryWithExtractorCombinerTransformer,
     DeploymentEntityState
   > = useMemo(
     () =>
-      getExtractorOrQueryRunnerParamsForDeploymentEntityState<QueryWithExtractorCombinerTransformer>(
+    getQueryRunnerParamsForDeploymentEntityState(
         usedQuery,
         deploymentEntityStateSelectorMap
       ),

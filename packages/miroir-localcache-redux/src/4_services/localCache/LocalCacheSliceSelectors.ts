@@ -9,27 +9,30 @@ import { createSelector } from "@reduxjs/toolkit";
 import {
   DeploymentEntityState,
   DomainElement,
+  domainElementToPlainObject,
   DomainModelQueryTemplateJzodSchemaParams,
   DomainState,
   EntityInstancesUuidIndex,
-  JzodElement,
-  JzodSchemaQueryTemplateSelector,
+  ExtractorRunnerParamsForJzodSchema,
   ExtractorTemplateRunnerParamsForJzodSchema,
+  getDeploymentEntityStateIndex,
+  getLoggerName,
+  JzodElement,
+  JzodSchemaQuerySelector,
+  JzodSchemaQueryTemplateSelector,
   LoggerInterface,
   MiroirLoggerFactory,
   MiroirQueryTemplate,
-  SyncExtractorOrQueryTemplateRunner,
-  SyncExtractorOrQueryTemplateRunnerParams,
-  RecordOfJzodElement,
-  domainElementToPlainObject,
-  getDeploymentEntityStateIndex,
-  getLoggerName,
-  MiroirQuery,
-  SyncExtractorOrQueryRunner,
-  SyncExtractorOrQueryRunnerParams,
+  QueryForExtractorOrCombinerReturningObjectOrObjectList,
   QueryJzodSchemaParams,
-  JzodSchemaQuerySelector,
-  ExtractorRunnerParamsForJzodSchema
+  QueryTemplateWithExtractorCombinerTransformer,
+  QueryWithExtractorCombinerTransformer,
+  RecordOfJzodElement,
+  SyncExtractorRunnerParams,
+  SyncQueryRunner,
+  SyncQueryRunnerParams,
+  SyncQueryTemplateRunner,
+  SyncQueryTemplateRunnerParams
 } from "miroir-core";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../constants.js";
@@ -52,16 +55,23 @@ declare type JzodSchemaSelectorParamsSelector<QueryType extends DomainModelQuery
 
 
 // ################################################################################################
-declare type SelectorParamsTemplateSelector<QueryType extends MiroirQueryTemplate, StateType> = (
+// declare type SelectorParamsTemplateSelector<QueryType extends MiroirQueryTemplate, StateType> = (
+declare type SelectorParamsTemplateSelector<QueryType extends QueryTemplateWithExtractorCombinerTransformer, StateType> = (
   reduxState: ReduxStateWithUndoRedo,
-  params: SyncExtractorOrQueryTemplateRunnerParams<QueryType, StateType>
-) => SyncExtractorOrQueryTemplateRunnerParams<QueryType, StateType>;
+  params: SyncQueryTemplateRunnerParams<QueryType, StateType>
+) => SyncQueryTemplateRunnerParams<QueryType, StateType>;
 
 // ################################################################################################
-declare type SelectorParamsSelector<QueryType extends MiroirQuery, StateType> = (
+declare type SelectorParamsForQuery<QueryType extends QueryWithExtractorCombinerTransformer, StateType> = (
   reduxState: ReduxStateWithUndoRedo,
-  params: SyncExtractorOrQueryRunnerParams<QueryType, StateType>
-) => SyncExtractorOrQueryRunnerParams<QueryType, StateType>;
+  params: SyncQueryRunnerParams<QueryType, StateType>
+) => SyncQueryRunnerParams<QueryType, StateType>;
+
+// ################################################################################################
+declare type SelectorParamsForExtractor<QueryType extends QueryForExtractorOrCombinerReturningObjectOrObjectList, StateType> = (
+  reduxState: ReduxStateWithUndoRedo,
+  params: SyncExtractorRunnerParams<QueryType, StateType>
+) => SyncExtractorRunnerParams<QueryType, StateType>;
 
 
 // ################################################################################################
@@ -72,18 +82,19 @@ export const selectCurrentDeploymentEntityStateFromReduxState = (
 };
 
 // ################################################################################################
-export const selectDeploymentEntityStateSelectorForQueryTemplateParams /*: DomainStateSelectorParamsSelector<Q> */ = <QueryType extends MiroirQueryTemplate>(
+export const selectDeploymentEntityStateSelectorForQueryTemplateParams /*: DomainStateSelectorParamsSelector<Q> */ = <QueryType extends QueryTemplateWithExtractorCombinerTransformer>(
   reduxState: ReduxStateWithUndoRedo,
-  params: SyncExtractorOrQueryTemplateRunnerParams<QueryType, DeploymentEntityState>
-): SyncExtractorOrQueryTemplateRunnerParams<QueryType, DeploymentEntityState> => {
+  params: SyncQueryTemplateRunnerParams<QueryType, DeploymentEntityState>
+): SyncQueryTemplateRunnerParams<QueryType, DeploymentEntityState> => {
   return params;
 };
 
 // ################################################################################################
-export const selectDeploymentEntityStateSelectorParams /*: DomainStateSelectorParamsSelector<Q> */ = <QueryType extends MiroirQuery>(
+// export const selectDeploymentEntityStateSelectorParams /*: DomainStateSelectorParamsSelector<Q> */ = <QueryType extends MiroirQuery>(
+export const selectDeploymentEntityStateSelectorParams /*: DomainStateSelectorParamsSelector<Q> */ = <QueryType extends QueryWithExtractorCombinerTransformer>(
   reduxState: ReduxStateWithUndoRedo,
-  params: SyncExtractorOrQueryRunnerParams<QueryType, DeploymentEntityState>
-): SyncExtractorOrQueryRunnerParams<QueryType, DeploymentEntityState> => {
+  params: SyncQueryRunnerParams<QueryType, DeploymentEntityState>
+): SyncQueryRunnerParams<QueryType, DeploymentEntityState> => {
   return params;
 };
 
@@ -109,7 +120,9 @@ export const selectDomainStateFromReduxState: (
 
 
 // ################################################################################################
-export const selectSelectorParams /*: SelectorParamsSelector*/ = <Q extends MiroirQueryTemplate>(
+// TODO: UPDATE!
+// export const selectQuerySelectorParams /*: SelectorParamsSelector*/ = <Q extends MiroirQueryTemplate>(
+export const selectMiroirQueryTemplateSelectorParams /*: SelectorParamsSelector*/ = <Q extends MiroirQueryTemplate>(
   reduxState: ReduxStateWithUndoRedo,
   params: Q
 ) => {
@@ -118,10 +131,12 @@ export const selectSelectorParams /*: SelectorParamsSelector*/ = <Q extends Miro
 
 
 // ################################################################################################
-export const selectDomainStateSelectorParams/*:SelectorParamsSelector<Q, DomainState> */ = <QueryType extends MiroirQueryTemplate>(
+export const selectDomainStateSelectorParams /*:SelectorParamsSelector<Q, DomainState> */ = <
+  QueryType extends QueryTemplateWithExtractorCombinerTransformer
+>(
   reduxState: ReduxStateWithUndoRedo,
-  params: SyncExtractorOrQueryTemplateRunnerParams<QueryType, DomainState>
-): SyncExtractorOrQueryTemplateRunnerParams<QueryType, DomainState> => {
+  params: SyncQueryTemplateRunnerParams<QueryType, DomainState>
+): SyncQueryTemplateRunnerParams<QueryType, DomainState> => {
   return params;
 };
 
@@ -158,11 +173,13 @@ export const selectJzodSchemaSelectorParams = <QueryType extends QueryJzodSchema
 // DOMAIN STATE SELECTORS
 // ################################################################################################
 // ################################################################################################
-export function applyDeploymentEntityStateQueryTemplateSelector<ExtractorType extends MiroirQueryTemplate, ResultType>( // TODO: memoize?
-  deploymentEntityStateQuerySelector: SyncExtractorOrQueryTemplateRunner<ExtractorType, DeploymentEntityState, ResultType>
+// export function applyDeploymentEntityStateQueryTemplateSelector<ExtractorType extends MiroirQueryTemplate, ResultType>( // TODO: memoize?
+export function applyDeploymentEntityStateQueryTemplateSelector<ExtractorType extends QueryTemplateWithExtractorCombinerTransformer, ResultType>( // TODO: memoize?
+  deploymentEntityStateQuerySelector: SyncQueryTemplateRunner<ExtractorType, DeploymentEntityState, ResultType>
 ): (
   reduxState: ReduxStateWithUndoRedo,
-  params: SyncExtractorOrQueryTemplateRunnerParams<ExtractorType, DeploymentEntityState>
+  // params: SyncExtractorOrQueryTemplateRunnerParams<ExtractorType, DeploymentEntityState>
+  params: SyncQueryTemplateRunnerParams<ExtractorType, DeploymentEntityState>
 ) => ResultType { 
   return createSelector(
     [
@@ -177,28 +194,35 @@ export function applyDeploymentEntityStateQueryTemplateSelector<ExtractorType ex
 }
 
 // ################################################################################################
-export function applyDeploymentEntityStateQuerySelector<ExtractorType extends MiroirQuery, ResultType>( // TODO: memoize?
-  deploymentEntityStateQuerySelector: SyncExtractorOrQueryRunner<ExtractorType, DeploymentEntityState, ResultType>
+export function applyDeploymentEntityStateQuerySelector<
+  ExtractorType extends QueryWithExtractorCombinerTransformer,
+  ResultType
+>( // TODO: memoize?
+  deploymentEntityStateQuerySelector: SyncQueryRunner<ExtractorType, DeploymentEntityState, ResultType>
 ): (
   reduxState: ReduxStateWithUndoRedo,
-  params: SyncExtractorOrQueryRunnerParams<ExtractorType, DeploymentEntityState>
-) => ResultType { 
+  params: SyncQueryRunnerParams<ExtractorType, DeploymentEntityState>
+) => ResultType {
   return createSelector(
-    [selectCurrentDeploymentEntityStateFromReduxState, selectDeploymentEntityStateSelectorParams as SelectorParamsSelector<ExtractorType, DeploymentEntityState>],
+    [
+      selectCurrentDeploymentEntityStateFromReduxState,
+      selectDeploymentEntityStateSelectorParams as SelectorParamsForQuery<ExtractorType, DeploymentEntityState>,
+    ],
     deploymentEntityStateQuerySelector
-  )
+  );
 }
 
 // ################################################################################################
-export function applyDeploymentEntityStateQueryTemplateSelectorForCleanedResult<QueryType extends MiroirQueryTemplate>( // TODO: memoize?
-  deploymentEntityStateQuerySelector: SyncExtractorOrQueryTemplateRunner<QueryType, DeploymentEntityState, DomainElement>
+// export function applyDeploymentEntityStateQueryTemplateSelectorForCleanedResult<QueryType extends MiroirQueryTemplate>( // TODO: memoize?
+export function applyDeploymentEntityStateQueryTemplateSelectorForCleanedResult<QueryType extends QueryTemplateWithExtractorCombinerTransformer>( // TODO: memoize?
+  deploymentEntityStateQuerySelector: SyncQueryTemplateRunner<QueryType, DeploymentEntityState, DomainElement>
 ): (
   reduxState: ReduxStateWithUndoRedo,
-  params: SyncExtractorOrQueryTemplateRunnerParams<QueryType, DeploymentEntityState>
+  params: SyncQueryTemplateRunnerParams<QueryType, DeploymentEntityState>
 ) => any { 
   const cleanupFunction = (
     deploymentEntityState: DeploymentEntityState,
-    params: SyncExtractorOrQueryTemplateRunnerParams<QueryType, DeploymentEntityState>
+    params: SyncQueryTemplateRunnerParams<QueryType, DeploymentEntityState>
   ): DomainElement => {
     const partial: DomainElement = deploymentEntityStateQuerySelector(deploymentEntityState, params);
     const result: any = domainElementToPlainObject(partial);
@@ -218,15 +242,15 @@ export function applyDeploymentEntityStateQueryTemplateSelectorForCleanedResult<
 }
 
 // ################################################################################################
-export function applyDeploymentEntityStateQuerySelectorForCleanedResult<QueryType extends MiroirQuery>( // TODO: memoize?
-  deploymentEntityStateQuerySelector: SyncExtractorOrQueryRunner<QueryType, DeploymentEntityState, DomainElement>
+export function applyDeploymentEntityStateQuerySelectorForCleanedResult<QueryType extends QueryWithExtractorCombinerTransformer>( // TODO: memoize?
+  deploymentEntityStateQuerySelector: SyncQueryRunner<QueryType, DeploymentEntityState, DomainElement>
 ): (
   reduxState: ReduxStateWithUndoRedo,
-  params: SyncExtractorOrQueryRunnerParams<QueryType, DeploymentEntityState>
+  params: SyncQueryRunnerParams<QueryType, DeploymentEntityState>
 ) => any { 
   const cleanupFunction = (
     deploymentEntityState: DeploymentEntityState,
-    params: SyncExtractorOrQueryRunnerParams<QueryType, DeploymentEntityState>
+    params: SyncQueryRunnerParams<QueryType, DeploymentEntityState>
   ): DomainElement => {
     const partial: DomainElement = deploymentEntityStateQuerySelector(deploymentEntityState, params);
     const result: any = domainElementToPlainObject(partial);
@@ -236,7 +260,7 @@ export function applyDeploymentEntityStateQuerySelectorForCleanedResult<QueryTyp
   return createSelector(
     [
       selectCurrentDeploymentEntityStateFromReduxState,
-      selectDeploymentEntityStateSelectorParams as SelectorParamsSelector<
+      selectDeploymentEntityStateSelectorParams as SelectorParamsForQuery<
         QueryType,
         DeploymentEntityState
       >,
@@ -247,11 +271,12 @@ export function applyDeploymentEntityStateQuerySelectorForCleanedResult<QueryTyp
 
 
 // ################################################################################################
-export function applyDomainStateQueryTemplateSelector<QueryType extends MiroirQueryTemplate, ResultType>( // TODO: memoize?
-  domainStateSelector: SyncExtractorOrQueryTemplateRunner<QueryType, DomainState, ResultType>
+// export function applyDomainStateQueryTemplateSelector<QueryType extends MiroirQueryTemplate, ResultType>( // TODO: memoize?
+export function applyDomainStateQueryTemplateSelector<QueryType extends QueryTemplateWithExtractorCombinerTransformer, ResultType>( // TODO: memoize?
+  domainStateSelector: SyncQueryTemplateRunner<QueryType, DomainState, ResultType>
 ): (
   reduxState: ReduxStateWithUndoRedo,
-  params: SyncExtractorOrQueryTemplateRunnerParams<QueryType, DomainState>
+  params: SyncQueryTemplateRunnerParams<QueryType, DomainState>
 ) => ResultType { 
   return createSelector(
     // [selectDomainStateFromReduxState, selectDomainStateSelectorParams],
@@ -310,13 +335,15 @@ export function applyDeploymentEntityStateJzodSchemaSelector<QueryType extends Q
 
 
 // ################################################################################################
-export function applyDomainStateQuerySelectorForCleanedResult<QueryType extends MiroirQueryTemplate>( // TODO: memoize?
-  domainStateSelector: SyncExtractorOrQueryTemplateRunner<QueryType, DomainState, DomainElement>
+// export function applyDomainStateQuerySelectorForCleanedResult<QueryType extends MiroirQueryTemplate>( // TODO: memoize?
+export function applyDomainStateQuerySelectorForCleanedResult<QueryType extends QueryTemplateWithExtractorCombinerTransformer>( // TODO: memoize?
+  domainStateSelector: SyncQueryTemplateRunner<QueryType, DomainState, DomainElement>
 ): (
   reduxState: ReduxStateWithUndoRedo,
-  params: SyncExtractorOrQueryTemplateRunnerParams<QueryType, DomainState>
+  // params: SyncExtractorOrQueryTemplateRunnerParams<QueryType, DomainState>
+  params: SyncQueryTemplateRunnerParams<QueryType, DomainState>
 ) => any { 
-  const cleanupFunction = (domainState: DomainState, params: SyncExtractorOrQueryTemplateRunnerParams<QueryType, DomainState>):DomainElement => {
+  const cleanupFunction = (domainState: DomainState, params: SyncQueryTemplateRunnerParams<QueryType, DomainState>):DomainElement => {
     const partial:DomainElement = domainStateSelector(domainState, params);
     const result:any = domainElementToPlainObject(partial)
     return result;
@@ -410,8 +437,10 @@ export const selectEntityInstanceUuidIndexFromLocalCache = createSelector (
 
 
 //#########################################################################################
+// TODO: is used only with LocalCacheExtractor!
 export const selectInstanceArrayForDeploymentSectionEntity = createSelector(
-  [selectEntityInstanceUuidIndexFromLocalCache, selectSelectorParams],
+  [selectEntityInstanceUuidIndexFromLocalCache, selectMiroirQueryTemplateSelectorParams],
+  // (state: EntityInstancesUuidIndex, params: MiroirQueryTemplate) => {
   (state: EntityInstancesUuidIndex, params: MiroirQueryTemplate) => {
     // log.info("selectInstanceArrayForDeploymentSectionEntity called", params, state);
 

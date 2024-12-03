@@ -19,10 +19,9 @@ import {
   Entity,
   EntityDefinition,
   EntityInstancesUuidIndex,
-  QueryWithExtractorCombinerTransformer,
   getApplicationSection,
-  getExtractorOrQueryRunnerParamsForDeploymentEntityState,
   getLoggerName,
+  getQueryRunnerParamsForDeploymentEntityState,
   InstanceAction,
   JzodElement,
   JzodObject,
@@ -31,9 +30,10 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   objectListReportSection,
-  SyncExtractorOrQueryRunner,
+  QueryWithExtractorCombinerTransformer,
   SyncExtractorOrQueryRunnerMap,
-  SyncExtractorOrQueryRunnerParams,
+  SyncQueryRunner,
+  SyncQueryRunnerParams
 } from "miroir-core";
 
 import { Button } from "@mui/material";
@@ -314,12 +314,12 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     ]
   );
 
-  const foreignKeyObjectsFetchQueryParams: SyncExtractorOrQueryRunnerParams<
+  const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<
     QueryWithExtractorCombinerTransformer,
     DeploymentEntityState
   > = useMemo(
     () =>
-      getExtractorOrQueryRunnerParamsForDeploymentEntityState<QueryWithExtractorCombinerTransformer>(
+      getQueryRunnerParamsForDeploymentEntityState(
         {
           queryType: "queryWithExtractorCombinerTransformer",
           deploymentUuid: props.deploymentUuid,
@@ -381,7 +381,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
 
   const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
   useDeploymentEntityStateQuerySelectorForCleanedResult(
-    deploymentEntityStateSelectorMap.runQuery as SyncExtractorOrQueryRunner<
+    deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
       QueryWithExtractorCombinerTransformer,
       DeploymentEntityState,
       DomainElement

@@ -17,7 +17,6 @@ import {
   EntityInstance,
   EntityInstanceWithName,
   EntityInstancesUuidIndex,
-  QueryWithExtractorCombinerTransformer,
   JzodArray,
   JzodElement,
   JzodEnum,
@@ -28,10 +27,11 @@ import {
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
+  QueryWithExtractorCombinerTransformer,
   ResolvedJzodSchemaReturnType,
-  SyncExtractorOrQueryRunner,
   SyncExtractorOrQueryRunnerMap,
-  SyncExtractorOrQueryRunnerParams,
+  SyncQueryRunner,
+  SyncQueryRunnerParams,
   Uuid,
   adminConfigurationDeploymentMiroir,
   alterObjectAtPath,
@@ -39,8 +39,8 @@ import {
   dummyDomainManyQueryWithDeploymentUuid,
   getApplicationSection,
   getDefaultValueForJzodSchemaWithResolution,
-  getExtractorOrQueryRunnerParamsForDeploymentEntityState,
   getLoggerName,
+  getQueryRunnerParamsForDeploymentEntityState,
   resolvePathOnObject,
   resolveReferencesForJzodSchemaAndValueObject,
   unfoldJzodSchemaOnce
@@ -445,12 +445,12 @@ export const JzodObjectEditor = (
       );
     }
 
-    const foreignKeyObjectsFetchQueryParams: SyncExtractorOrQueryRunnerParams<
+    const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<
     QueryWithExtractorCombinerTransformer,
     DeploymentEntityState
   > = useMemo(
     () =>
-      getExtractorOrQueryRunnerParamsForDeploymentEntityState<QueryWithExtractorCombinerTransformer>(
+      getQueryRunnerParamsForDeploymentEntityState(
         props.currentDeploymentUuid &&
         unfoldedRawSchema.type == "uuid" &&
         unfoldedRawSchema.tag?.value?.targetEntity
@@ -484,7 +484,7 @@ export const JzodObjectEditor = (
 
   const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
   useDeploymentEntityStateQuerySelectorForCleanedResult(
-    deploymentEntityStateSelectorMap.runQuery as SyncExtractorOrQueryRunner<
+    deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
       QueryWithExtractorCombinerTransformer,
       DeploymentEntityState,
       DomainElement

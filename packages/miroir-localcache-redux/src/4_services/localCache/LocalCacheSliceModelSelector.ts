@@ -188,7 +188,7 @@ export const selectModelForDeploymentFromReduxState: () => (
       selectJzodSchemasFromReduxState,
       selectMenusFromReduxState,
       selectReportsFromReduxState,
-      // selectSelectorParams,
+      // selectMiroirQueryTemplateSelectorParams,
     ],
     (
       applicationVersions: EntityInstancesUuidIndex,
