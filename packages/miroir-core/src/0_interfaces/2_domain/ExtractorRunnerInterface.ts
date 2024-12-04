@@ -22,7 +22,9 @@ import {
   QueryTemplateWithExtractorCombinerTransformer,
   QueryWithExtractorCombinerTransformer,
   RunExtractorAction,
+  RunExtractorTemplateAction,
   RunQueryAction,
+  RunQueryTemplateAction,
   RunQueryTemplateOrExtractorTemplateAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 
@@ -79,6 +81,8 @@ export type ExtractorTemplateRunner<QueryType extends BoxedExtractorTemplateRetu
 
 // ################################################################################################
 export interface ExtractorTemplatePersistenceStoreRunner {
+  handleQueryTemplateActionForServerONLY(query: RunQueryTemplateAction): Promise<ActionReturnType>;
+  handleExtractorTemplateActionForServerONLY(query: RunExtractorTemplateAction): Promise<ActionReturnType>;
   handleQueryTemplateOrExtractorTemplateActionForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType>;
 }
 

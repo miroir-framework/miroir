@@ -15,6 +15,8 @@ import {
   RunExtractorOrQueryAction,
   RunExtractorAction,
   RunQueryAction,
+  RunQueryTemplateAction,
+  RunExtractorTemplateAction,
 } from "miroir-core";
 import { IndexedDbStoreSection, MixableIndexedDbStoreSection } from "./IndexedDbStoreSection.js";
 
@@ -66,6 +68,26 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
       return result;
     }
     
+    // #############################################################################################
+    async handleQueryTemplateActionForServerONLY(query: RunQueryTemplateAction): Promise<ActionReturnType> {
+      log.info(this.logHeader,'handleQueryTemplateActionForServerONLY', 'query',query);
+      
+      const result: ActionReturnType = await this.extractorTemplateRunner.handleQueryTemplateActionForServerONLY(query);
+
+      log.info(this.logHeader,'handleQueryTemplateActionForServerONLY','query',query, "result", result);
+      return result;
+    }
+
+    // #############################################################################################
+    async handleExtractorTemplateActionForServerONLY(query: RunExtractorTemplateAction): Promise<ActionReturnType> {
+      log.info(this.logHeader,'handleQueryTemplateActionForServerONLY', 'query',query);
+      
+      const result: ActionReturnType = await this.extractorTemplateRunner.handleExtractorTemplateActionForServerONLY(query);
+
+      log.info(this.logHeader,'handleExtractorTemplateActionForServerONLY','query',query, "result", result);
+      return result;
+    }
+
     // #############################################################################################
     async handleQueryTemplateOrExtractorTemplateActionForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
       log.info(this.logHeader,'handleQueryTemplateOrExtractorTemplateActionForServerONLY', 'query',query);

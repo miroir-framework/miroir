@@ -16,7 +16,7 @@ import {
   QueryTemplateWithExtractorCombinerTransformer,
   QueryWithExtractorCombinerTransformer,
   RecordOfJzodObject,
-  resolveExtractorTemplateForRecordOfExtractors,
+  resolveQueryTemplateWithExtractorCombinerTransformer,
   RootReport,
   SyncExtractorOrQueryRunnerMap,
   SyncQueryRunnerParams,
@@ -119,7 +119,7 @@ export const ReportView = (props: ReportViewProps) => {
 
   const resolvedTemplateQuery: QueryWithExtractorCombinerTransformer = useMemo(
     () =>
-      resolveExtractorTemplateForRecordOfExtractors(
+      resolveQueryTemplateWithExtractorCombinerTransformer(
         deploymentEntityStateFetchQueryTemplate
       ),
     [deploymentEntityStateFetchQueryTemplate]

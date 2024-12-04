@@ -1,5 +1,7 @@
 import {
   ActionReturnType,
+  RunExtractorTemplateAction,
+  RunQueryTemplateAction,
   RunQueryTemplateOrExtractorTemplateAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
@@ -28,7 +30,7 @@ import {
   selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
 } from "./DomainStateQueryTemplateSelector";
 import { ExtractorRunnerInMemory } from "./ExtractorRunnerInMemory";
-import { handleExtractorOrQueryTemplateAction } from "./QueryTemplateSelectors";
+import { handleExtractorOrQueryTemplateAction, handleExtractorTemplateAction, handleQueryTemplateAction, runQueryTemplateWithExtractorCombinerTransformer } from "./QueryTemplateSelectors";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "ExtractorTemplateRunnerInMemory");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -60,6 +62,40 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
       //
       runQueryTemplateWithExtractorCombinerTransformer: undefined as any,
     };
+  }
+
+  // ################################################################################################
+  async handleQueryTemplateActionForServerONLY(
+    runQueryTemplateAction: RunQueryTemplateAction
+  ): Promise<ActionReturnType> {
+    log.info(
+      this.logHeader,
+      "handleQueryTemplateActionForServerONLY",
+      "runQueryTemplateAction",
+      JSON.stringify(runQueryTemplateAction, null, 2)
+    );
+    return handleQueryTemplateAction(
+      "ExtractorTemplateRunnerInMemory",
+      runQueryTemplateAction,
+      this.selectorMap
+    );
+  }
+
+  // ################################################################################################
+  async handleExtractorTemplateActionForServerONLY(
+    runExtractorTemplateAction: RunExtractorTemplateAction
+  ): Promise<ActionReturnType> {
+    log.info(
+      this.logHeader,
+      "handleQueryTemplateOrExtractorTemplateActionForServerONLY",
+      "runQueryTemplateOrExtractorTemplateAction",
+      JSON.stringify(runExtractorTemplateAction, null, 2)
+    );
+    return handleExtractorTemplateAction(
+      "ExtractorTemplateRunnerInMemory",
+      runExtractorTemplateAction,
+      this.selectorMap
+    );
   }
 
   // ################################################################################################

@@ -16,7 +16,11 @@ import {
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
-  asyncExtractEntityInstanceListWithObjectListExtractor
+  asyncExtractEntityInstanceListWithObjectListExtractor,
+  RunQueryTemplateAction,
+  handleQueryTemplateAction,
+  RunExtractorTemplateAction,
+  handleExtractorTemplateAction
 } from "miroir-core";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
@@ -75,6 +79,18 @@ export class SqlDbExtractTemplateRunner {
 
     // this.extractorRunnerMap = dbImplementationExtractorRunnerMap;
     this.extractorRunnerMap = InMemoryImplementationExtractorRunnerMap;
+  }
+
+  // ##############################################################################################
+  async handleQueryTemplateActionForServerONLY(runQueryTemplateAction: RunQueryTemplateAction): Promise<ActionReturnType> {
+    log.info(this.logHeader, "handleQueryTemplateActionForServerONLY", "runQueryTemplateAction", JSON.stringify(runQueryTemplateAction, null, 2));
+    return handleQueryTemplateAction("SqlDbQueryTemplateRunner", runQueryTemplateAction, this.extractorRunnerMap);
+  }
+
+  // ##############################################################################################
+  async handleExtractorTemplateActionForServerONLY(runExtractorTemplateAction: RunExtractorTemplateAction): Promise<ActionReturnType> {
+    log.info(this.logHeader, "handleExtractorTemplateActionForServerONLY", "runExtractorTemplateAction", JSON.stringify(runExtractorTemplateAction, null, 2));
+    return handleExtractorTemplateAction("SqlDbQueryTemplateRunner", runExtractorTemplateAction, this.extractorRunnerMap);
   }
 
   // ##############################################################################################

@@ -7,6 +7,7 @@ import {
   DomainElement,
   DomainElementObject,
   DomainModelQueryTemplateJzodSchemaParams,
+  extractor,
   ExtractorOrCombinerTemplate,
   JzodElement,
   JzodObject,
@@ -15,6 +16,9 @@ import {
   QueryByTemplateGetParamJzodSchema,
   QueryTemplateWithExtractorCombinerTransformer,
   QueryWithExtractorCombinerTransformer,
+  RunExtractorAction,
+  RunExtractorTemplateAction,
+  RunQueryTemplateAction,
   RunQueryTemplateOrExtractorTemplateAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
@@ -52,6 +56,96 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 );
 
 // ################################################################################################
+export async function handleQueryTemplateAction(
+  origin: string,
+  queryTemplateAction: RunQueryTemplateAction, 
+  selectorMap: AsyncExtractorOrQueryRunnerMap
+): Promise<ActionReturnType> {
+  log.info(
+    "handleQueryTemplateAction for ",
+    origin,
+    "queryTemplateAction",
+    JSON.stringify(queryTemplateAction, null, 2)
+  );
+  const resolvedQuery = resolveExtractorOrQueryTemplate( // TODO: separate aas resolvedQueryTemplate and resolvedExtractorTemplate
+    queryTemplateAction.query
+  );
+  log.info(
+    "handleQueryTemplateAction for ",
+    origin,
+    "queryTemplateOrExtractorTemplateAction",
+    JSON.stringify(queryTemplateAction, null, 2),
+    "resolvedQuery",
+    JSON.stringify(resolvedQuery, null, 2)
+  );
+
+  return handleQueryAction(
+    origin,
+    {
+      actionType: "runQueryAction",
+      actionName: queryTemplateAction.actionName,
+      deploymentUuid: queryTemplateAction.deploymentUuid,
+      endpoint: queryTemplateAction.endpoint,
+      applicationSection: queryTemplateAction.applicationSection,
+      query: resolvedQuery as any,
+    },
+    selectorMap
+  );
+}
+
+// ################################################################################################
+export async function handleExtractorTemplateAction(
+  origin: string,
+  extractorTemplateAction: RunExtractorTemplateAction,
+  selectorMap: AsyncExtractorOrQueryRunnerMap
+): Promise<ActionReturnType> {
+  log.info(
+    "handleExtractorTemplateAction for ",
+    origin,
+    "extractorTemplateAction",
+    JSON.stringify(extractorTemplateAction, null, 2)
+  );
+  const resolvedQuery = resolveExtractorOrQueryTemplate( // TODO: separate aas resolvedQueryTemplate and resolvedExtractorTemplate
+    extractorTemplateAction.query
+  );
+
+  const extractorAction: RunExtractorAction = {
+    actionType: "runExtractorAction",
+    actionName: extractorTemplateAction.actionName,
+    deploymentUuid: extractorTemplateAction.deploymentUuid,
+    endpoint: extractorTemplateAction.endpoint,
+    applicationSection: extractorTemplateAction.applicationSection,
+    query: resolvedQuery as any,
+  };
+
+  log.info(
+    "handleExtractorTemplateAction for ",
+    origin,
+    "extractorTemplateAction",
+    JSON.stringify(extractorTemplateAction, null, 2),
+    "resolvedQuery",
+    JSON.stringify(resolvedQuery, null, 2),
+    "extractorAction",
+    JSON.stringify(extractorAction, null, 2)
+  );
+
+
+  return handleExtractorAction(
+    origin,
+    extractorAction,
+    // {
+    //   actionType: "runExtractorAction",
+    //   actionName: extractorTemplateAction.actionName,
+    //   deploymentUuid: extractorTemplateAction.deploymentUuid,
+    //   endpoint: extractorTemplateAction.endpoint,
+    //   applicationSection: extractorTemplateAction.applicationSection,
+    //   query: resolvedQuery as any,
+    // },
+    selectorMap
+  );
+}
+
+// ################################################################################################
 export async function handleExtractorOrQueryTemplateAction(
   origin: string,
   queryTemplateOrExtractorTemplateAction: RunQueryTemplateOrExtractorTemplateAction, 
@@ -78,16 +172,23 @@ export async function handleExtractorOrQueryTemplateAction(
   switch (queryTemplateOrExtractorTemplateAction.query.queryType) {
     case "boxedExtractorTemplateReturningObject":
     case "boxedExtractorTemplateReturningObjectList": {
+      const extractorAction: RunExtractorAction = {
+        actionType: "runExtractorAction",
+        actionName: queryTemplateOrExtractorTemplateAction.actionName,
+        deploymentUuid: queryTemplateOrExtractorTemplateAction.deploymentUuid,
+        endpoint: queryTemplateOrExtractorTemplateAction.endpoint,
+        applicationSection: queryTemplateOrExtractorTemplateAction.applicationSection,
+        query: resolvedQuery as any,
+      };
+      log.info(
+        "handleExtractorOrQueryTemplateAction for ",
+        origin,
+        "############################################# extractorAction",
+        JSON.stringify(extractorAction, null, 2),
+      );
       return handleExtractorAction(
         origin,
-        {
-          actionType: "runExtractorAction",
-          actionName: queryTemplateOrExtractorTemplateAction.actionName,
-          deploymentUuid: queryTemplateOrExtractorTemplateAction.deploymentUuid,
-          endpoint: queryTemplateOrExtractorTemplateAction.endpoint,
-          applicationSection: queryTemplateOrExtractorTemplateAction.applicationSection,
-          query: resolvedQuery as any,
-        },
+        extractorAction,
         selectorMap
       );
     

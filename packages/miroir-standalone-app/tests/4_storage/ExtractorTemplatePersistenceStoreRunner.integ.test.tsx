@@ -23,8 +23,11 @@ import {
   entityDefinitionAuthor,
   entityDefinitionBook,
   entityDefinitionPublisher,
+  entityEntity,
   EntityInstance,
   entityPublisher,
+  entityReport,
+  entityStoreBasedConfiguration,
   ignorePostgresExtraAttributesOnList,
   ignorePostgresExtraAttributesOnObject,
   ignorePostgresExtraAttributesOnRecord,
@@ -192,9 +195,9 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       {},
       async () => {
         const applicationSection:ApplicationSection = "model";
-        const queryResult:ActionReturnType = await localMiroirPersistenceStoreController.handleQueryTemplateOrExtractorTemplateActionForServerONLY(
+        const queryResult:ActionReturnType = await localMiroirPersistenceStoreController.handleExtractorTemplateActionForServerONLY(
           {
-            actionType: "runQueryTemplateOrExtractorTemplateAction",
+            actionType: "runExtractorTemplateAction",
             actionName: "runQuery",
             deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
             // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
@@ -250,10 +253,10 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       "ExtractorTemplatePersistenceStoreRunner_selectEntityInstanceUuidIndex",
       {},
       async () => {
-        const applicationSection:ApplicationSection = "model";
-        const queryResult:ActionReturnType = await localMiroirPersistenceStoreController.handleQueryTemplateOrExtractorTemplateActionForServerONLY(
-          {
-            actionType: "runQueryTemplateOrExtractorTemplateAction",
+        const applicationSection: ApplicationSection = "model";
+        const queryResult: ActionReturnType =
+          await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
+            actionType: "runQueryTemplateAction",
             actionName: "runQuery",
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -268,147 +271,29 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                 entities: {
                   queryType: "extractorTemplateForObjectListByEntity",
                   applicationSection: applicationSection,
-                  parentName: "Entity",
+                  parentName: entityEntity.name,
                   parentUuid: {
                     transformerType: "constantUuid",
-                    constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                    constantUuidValue: entityEntity.uuid,
                   },
-                }
-              }
-            }
-          }
-        );
+                },
+              },
+            },
+          });
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
-        return queryResult;// == "ok" ? queryResult : {status: "error", error: queryResult.error};
+        return queryResult; // == "ok" ? queryResult : {status: "error", error: queryResult.error};
       },
-      (a) => ignorePostgresExtraAttributesOnRecord((a as any).returnedDomainElement.elementValue.entities, ["author"]),
+      (a) =>
+        ignorePostgresExtraAttributesOnList(
+          (a as any).returnedDomainElement.elementValue.entities.sort((a, b) => a.name.localeCompare(b.name)),
+          ["author"]
+        ),
       // (a) => (a as any).returnedDomainElement.elementValue.entities.elementValue,
       // undefined, // expected result transformation
       undefined, // name to give to result
-      "object",//"instanceUuidIndex",
-      {
-        "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad": {
-          "uuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-          "parentName": "Entity",
-          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-          "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-          "name": "Entity",
-          "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          "conceptLevel": "MetaModel",
-          "description": "The Metaclass for entities."
-        },
-        "35c5608a-7678-4f07-a4ec-76fc5bc35424": {
-          "uuid": "35c5608a-7678-4f07-a4ec-76fc5bc35424",
-          "parentName": "Entity",
-          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-          "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-          "name": "SelfApplicationDeploymentConfiguration",
-          "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          "conceptLevel": "Model",
-          "description": "An Application Deployment"
-        },
-        "3d8da4d4-8f76-4bb4-9212-14869d81c00c": {
-          "uuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
-          "parentName": "Entity",
-          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-          "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-          "name": "Endpoint",
-          "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          "conceptLevel": "Model",
-          "description": "An Endpoint, servicing Actions that are part of a Domain Specific Language"
-        },
-        "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916": {
-          "uuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-          "parentName": "Entity",
-          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-          "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-          "name": "Report",
-          "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          "conceptLevel": "Model",
-          "description": "Report, allowing to display model instances"
-        },
-        "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd": {
-          "uuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-          "parentName": "Entity",
-          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-          "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-          "name": "EntityDefinition",
-          "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          "conceptLevel": "MetaModel",
-          "description": "The Metaclass for the definition of entities."
-        },
-        "5e81e1b9-38be-487c-b3e5-53796c57fccf": {
-          "uuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
-          "parentName": "Entity",
-          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-          "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-          "name": "JzodSchema",
-          "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          "conceptLevel": "Model",
-          "description": "Common Jzod Schema definitions, available to all Entity definitions"
-        },
-        "7990c0c9-86c3-40a1-a121-036c91b55ed7": {
-          "uuid": "7990c0c9-86c3-40a1-a121-036c91b55ed7",
-          "parentName": "Entity",
-          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-          "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-          "name": "StoreBasedConfiguration",
-          "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          "conceptLevel": "Model",
-          "description": "A configuration of storage-related aspects of a Model."
-        },
-        "a659d350-dd97-4da9-91de-524fa01745dc": {
-          "uuid": "a659d350-dd97-4da9-91de-524fa01745dc",
-          "parentName": "Entity",
-          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-          "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-          "name": "SelfApplication",
-          "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          "conceptLevel": "Model",
-          "description": "Self Application"
-        },
-        "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24": {
-          "uuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
-          "parentName": "Entity",
-          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-          "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-          "name": "SelfApplicationVersion",
-          "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          "conceptLevel": "Model",
-          "description": "A Version of the Self Application"
-        },
-        "cdb0aec6-b848-43ac-a058-fe2dbe5811f1": {
-          "uuid": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
-          "parentName": "Entity",
-          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-          "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-          "name": "ApplicationModelBranch",
-          "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          "conceptLevel": "Model",
-          "description": "A Branch of an Application Model"
-        },
-        "dde4c883-ae6d-47c3-b6df-26bc6e3c1842": {
-          "uuid": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
-          "parentName": "Entity",
-          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-          "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-          "name": "Menu",
-          "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          "conceptLevel": "Model",
-          "description": "Menu, allowing to display elements useful to navigate the application"
-        },
-        "e4320b9e-ab45-4abe-85d8-359604b3c62f": {
-          "uuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
-          "parentName": "Entity",
-          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-          "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-          "name": "Query",
-          "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          "conceptLevel": "Model",
-          "description": "A Query"
-        }
-      }
-    )
+      "object", //"instanceUuidIndex",
+      [entityAuthor, entityBook, entityPublisher].sort((a, b) => a.name.localeCompare(b.name))
+    );
   });
   
   // ################################################################################################
@@ -417,10 +302,10 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       "ExtractorTemplatePersistenceStoreRunner_selectObjectListByEntity_filtered",
       {},
       async () => {
-        const applicationSection:ApplicationSection = "model";
-        const queryResult = await localMiroirPersistenceStoreController.handleQueryTemplateOrExtractorTemplateActionForServerONLY(
-          {
-            actionType: "runQueryTemplateOrExtractorTemplateAction",
+        const applicationSection: ApplicationSection = "model";
+        const queryResult =
+          await localMiroirPersistenceStoreController.handleQueryTemplateActionForServerONLY({
+            actionType: "runQueryTemplateAction",
             actionName: "runQuery",
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -450,36 +335,41 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                 },
               },
             },
-          }
-        );
+          });
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      (a) => ignorePostgresExtraAttributesOnRecord((a as any).returnedDomainElement.elementValue.entities, ["author"]),
+      (a) =>
+        ignorePostgresExtraAttributesOnList(
+          (a as any).returnedDomainElement.elementValue.entities.sort((a, b) => a.name.localeCompare(b.name)),
+          ["author"]
+        ),
       undefined, // name to give to result
       "object",
-      {
-        "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916": {
-          "uuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-          "parentName": "Entity",
-          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-          "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-          "name": "Report",
-          "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          "conceptLevel": "Model",
-          "description": "Report, allowing to display model instances"
-        },
-        "7990c0c9-86c3-40a1-a121-036c91b55ed7": {
-          "uuid": "7990c0c9-86c3-40a1-a121-036c91b55ed7",
-          "parentName": "Entity",
-          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-          "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-          "name": "StoreBasedConfiguration",
-          "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          "conceptLevel": "Model",
-          "description": "A configuration of storage-related aspects of a Model."
-        },
-      }
+      [entityReport, entityStoreBasedConfiguration].sort((a, b) => a.name.localeCompare(b.name))
+
+      // {
+      //   "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916": {
+      //     "uuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+      //     "parentName": "Entity",
+      //     "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+      //     "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+      //     "name": "Report",
+      //     "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+      //     "conceptLevel": "Model",
+      //     "description": "Report, allowing to display model instances"
+      //   },
+      //   "7990c0c9-86c3-40a1-a121-036c91b55ed7": {
+      //     "uuid": "7990c0c9-86c3-40a1-a121-036c91b55ed7",
+      //     "parentName": "Entity",
+      //     "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+      //     "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+      //     "name": "StoreBasedConfiguration",
+      //     "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+      //     "conceptLevel": "Model",
+      //     "description": "A configuration of storage-related aspects of a Model."
+      //   },
+      // }
     );
   });
   
@@ -490,8 +380,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       {},
       async () => {
         const applicationSection: ApplicationSection = "data";
-        const queryResult = await localAppPersistenceStoreController.handleQueryTemplateOrExtractorTemplateActionForServerONLY({
-          actionType: "runQueryTemplateOrExtractorTemplateAction",
+        const queryResult = await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
+          actionType: "runQueryTemplateAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -547,8 +437,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       {},
       async () => {
         const applicationSection: ApplicationSection = "data";
-        const queryResult = await localAppPersistenceStoreController.handleQueryTemplateOrExtractorTemplateActionForServerONLY({
-          actionType: "runQueryTemplateOrExtractorTemplateAction",
+        const queryResult = await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
+          actionType: "runQueryTemplateAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -599,8 +489,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       {},
       async () => {
         const applicationSection: ApplicationSection = "data";
-        const queryResult = await localAppPersistenceStoreController.handleQueryTemplateOrExtractorTemplateActionForServerONLY({
-          actionType: "runQueryTemplateOrExtractorTemplateAction",
+        const queryResult = await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
+          actionType: "runQueryTemplateAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -655,8 +545,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       {},
       async () => {
         const applicationSection: ApplicationSection = "data";
-        const queryResult = await localAppPersistenceStoreController.handleQueryTemplateOrExtractorTemplateActionForServerONLY({
-          actionType: "runQueryTemplateOrExtractorTemplateAction",
+        const queryResult = await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
+          actionType: "runQueryTemplateAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -761,7 +651,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       ]
     );
   });
-  
+
   // ################################################################################################
   it("get books of an author with combiner", async () => {
     await chainVitestSteps(
@@ -769,8 +659,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       {},
       async () => {
         const applicationSection: ApplicationSection = "data";
-        const queryResult = await localAppPersistenceStoreController.handleQueryTemplateOrExtractorTemplateActionForServerONLY({
-          actionType: "runQueryTemplateOrExtractorTemplateAction",
+        const queryResult = await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
+          actionType: "runQueryTemplateAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -835,15 +725,15 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       // (a) => (a as any).returnedDomainElement.elementValue.booksOfAuthor,
       (a) => {
         // console.log("ICI!!!");
-        const result = ignorePostgresExtraAttributesOnRecord(
-          (a as any).returnedDomainElement.elementValue.booksOfAuthor
+        const result = ignorePostgresExtraAttributesOnList(
+          (a as any).returnedDomainElement.elementValue.booksOfAuthor.sort((a, b) => a.name.localeCompare(b.name))
         );
         console.log("CORRECTED result", JSON.stringify(result, null, 2));
         return result;
       },
       undefined, // name to give to result
       "object", // must equal a.returnedDomainElement.elementType
-      {
+      Object.values({
         "c6852e89-3c3c-447f-b827-4b5b9d830975": {
           author: "ce7b601d-be5f-4bc6-a5af-14091594046a",
           conceptLevel: "Data",
@@ -862,7 +752,28 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
           publisher: "516a7366-39e7-4998-82cb-80199a7fa667",
           uuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
         },
-      }
+      }).sort((a, b) => a.name.localeCompare(b.name))
+
+      // {
+      //   "c6852e89-3c3c-447f-b827-4b5b9d830975": {
+      //     author: "ce7b601d-be5f-4bc6-a5af-14091594046a",
+      //     conceptLevel: "Data",
+      //     name: "Le Pain et le Cirque",
+      //     parentName: "Book",
+      //     parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      //     publisher: "516a7366-39e7-4998-82cb-80199a7fa667",
+      //     uuid: "c6852e89-3c3c-447f-b827-4b5b9d830975",
+      //   },
+      //   "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": {
+      //     author: "ce7b601d-be5f-4bc6-a5af-14091594046a",
+      //     conceptLevel: "Data",
+      //     name: "Et dans l'éternité je ne m'ennuierai pas",
+      //     parentName: "Book",
+      //     parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      //     publisher: "516a7366-39e7-4998-82cb-80199a7fa667",
+      //     uuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+      //   },
+      // }
     );
   });
   

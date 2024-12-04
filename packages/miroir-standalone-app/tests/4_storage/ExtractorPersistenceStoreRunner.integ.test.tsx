@@ -435,16 +435,16 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult; // == "ok" ? queryResult : {status: "error", error: queryResult.error};
       },
-      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.entities.sort((a,b) => a.name.localeCompare(b.name)), ["author"]),
+      (a) =>
+        ignorePostgresExtraAttributesOnList(
+          (a as any).returnedDomainElement.elementValue.entities.sort((a, b) => a.name.localeCompare(b.name)),
+          ["author"]
+        ),
       // (a) => (a as any).returnedDomainElement.elementValue.entities.elementValue,
       // undefined, // expected result transformation
       undefined, // name to give to result
       "object", //"instanceUuidIndex",
-      [
-        entityAuthor,
-        entityBook,
-        entityPublisher,
-      ]
+      [entityAuthor, entityBook, entityPublisher].sort((a, b) => a.name.localeCompare(b.name))
     );
   });
   
@@ -572,45 +572,44 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       "ExtractorPersistenceStoreRunner_selectObjectListByEntity_filtered",
       {},
       async () => {
-        const applicationSection:ApplicationSection = "model";
-        const queryResult = await localMiroirPersistenceStoreController.handleQueryAction(
-          {
-            actionType: "runQueryAction",
-            actionName: "runQuery",
+        const applicationSection: ApplicationSection = "model";
+        const queryResult = await localMiroirPersistenceStoreController.handleQueryAction({
+          actionType: "runQueryAction",
+          actionName: "runQuery",
+          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+          applicationSection: applicationSection,
+          query: {
+            queryType: "queryWithExtractorCombinerTransformer",
+            pageParams: {},
+            queryParams: {},
+            contextResults: {},
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-            applicationSection: applicationSection,
-            query: {
-              queryType: "queryWithExtractorCombinerTransformer",
-              pageParams: {},
-              queryParams: {},
-              contextResults: {},
-              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-              extractors: {
-                entities: {
-                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                  applicationSection: applicationSection,
-                  parentName: "Entity",
-                  parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  filter: {
-                    attributeName: "name",
-                    value: "or"
-                  },
+            extractors: {
+              entities: {
+                extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                applicationSection: applicationSection,
+                parentName: "Entity",
+                parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                filter: {
+                  attributeName: "name",
+                  value: "or",
                 },
               },
             },
-          }
-        );
+          },
+        });
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.entities.sort((a,b) => a.name.localeCompare(b.name)), ["author"]),
+      (a) =>
+        ignorePostgresExtraAttributesOnList(
+          (a as any).returnedDomainElement.elementValue.entities.sort((a, b) => a.name.localeCompare(b.name)),
+          ["author"]
+        ),
       undefined, // name to give to result
       "object",
-      [
-        entityReport,
-        entityStoreBasedConfiguration
-      ].sort((a,b) => a.name.localeCompare(b.name))
+      [entityReport, entityStoreBasedConfiguration].sort((a, b) => a.name.localeCompare(b.name))
     );
   });
   

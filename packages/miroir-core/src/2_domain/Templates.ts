@@ -46,8 +46,8 @@ export function resolveExtractorTemplate(
     case "extractorTemplateForObjectListByEntity": {
       if (extractorOrCombinerTemplate.filter) {
         return {
-          ...cleanQueryTemplate,
           extractorOrCombinerType: "extractorByEntityReturningObjectList",
+          ...cleanQueryTemplate,
           // applicationSection: queryTemplate.applicationSection,
           // parentName: queryTemplate.parentName,
           parentUuid:
@@ -63,8 +63,8 @@ export function resolveExtractorTemplate(
         };
       } else {
         return {
-          ...extractorOrCombinerTemplate,
           extractorOrCombinerType: "extractorByEntityReturningObjectList",
+          ...cleanQueryTemplate,
           // applicationSection: queryTemplate.applicationSection,
           // parentName: queryTemplate.parentName,
           parentUuid:
@@ -78,8 +78,8 @@ export function resolveExtractorTemplate(
     }
     case "extractorForObjectByDirectReference": {
       return {
-        ...cleanQueryTemplate,
         extractorOrCombinerType: "extractorForObjectByDirectReference",
+        ...cleanQueryTemplate,
         // applicationSection: queryTemplate.applicationSection,
         // parentName: queryTemplate.parentName,
         parentUuid:
@@ -98,8 +98,8 @@ export function resolveExtractorTemplate(
     }
     case "extractorTemplateByExtractorWrapperReturningObject": {
       return {
-        ...cleanQueryTemplate,
         extractorOrCombinerType: "extractorWrapperReturningObject",
+        ...cleanQueryTemplate,
         definition: Object.fromEntries(
           Object.entries(extractorOrCombinerTemplate.definition).map((e: [string, Transformer_contextOrParameterReference]) => [
             e[0],
@@ -114,8 +114,8 @@ export function resolveExtractorTemplate(
     }
     case "extractorTemplateByExtractorWrapperReturningList": {
       return {
-        ...cleanQueryTemplate,
         extractorOrCombinerType: "extractorWrapperReturningList",
+        ...cleanQueryTemplate,
         definition: extractorOrCombinerTemplate.definition.map(
           (e: Transformer_contextOrParameterReference) => ({
               extractorOrCombinerType: "extractorOrCombinerContextReference",
@@ -127,8 +127,8 @@ export function resolveExtractorTemplate(
     }
     case "combinerByRelationReturningObjectList": {
       return {
-        ...cleanQueryTemplate,
         extractorOrCombinerType: extractorOrCombinerTemplate.queryType,
+        ...cleanQueryTemplate,
         // applicationSection: queryTemplate.applicationSection,
         // AttributeOfListObjectToCompareToReferenceUuid: queryTemplate.AttributeOfListObjectToCompareToReferenceUuid,
         // parentName: queryTemplate.parentName,
@@ -147,8 +147,8 @@ export function resolveExtractorTemplate(
     }
     case "combinerByManyToManyRelationReturningObjectList": {
       return {
-        ...cleanQueryTemplate,
         extractorOrCombinerType: extractorOrCombinerTemplate.queryType,
+        ...cleanQueryTemplate,
         // applicationSection: queryTemplate.applicationSection,
         // parentName: queryTemplate.parentName,
         // objectListReferenceAttribute: queryTemplate.objectListReferenceAttribute,
@@ -167,8 +167,8 @@ export function resolveExtractorTemplate(
     }
     case "combinerForObjectByRelation": {
       return {
-        ...cleanQueryTemplate,
         extractorOrCombinerType: extractorOrCombinerTemplate.queryType,
+        ...cleanQueryTemplate,
         // applicationSection: queryTemplate.applicationSection,
         // AttributeOfObjectToCompareToReferenceUuid: queryTemplate.AttributeOfObjectToCompareToReferenceUuid,
         // parentName: queryTemplate.parentName,
@@ -187,8 +187,8 @@ export function resolveExtractorTemplate(
     }
     case "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList": {
       return {
-        ...cleanQueryTemplate,
         extractorOrCombinerType: extractorOrCombinerTemplate.queryType,
+        ...cleanQueryTemplate,
         rootExtractorOrReference:
           typeof extractorOrCombinerTemplate.rootExtractorOrReference == "string"
             ? extractorOrCombinerTemplate.rootExtractorOrReference
@@ -270,11 +270,12 @@ export function resolveQueryTemplateWithExtractorCombinerTransformer(
     log.info("resolveQueryTemplateWithExtractorCombinerTransformer no failure for combiners: " + JSON.stringify(failures));
   }
   const result: QueryWithExtractorCombinerTransformer = {
+    queryType: "queryWithExtractorCombinerTransformer",
     pageParams: queryTemplate.pageParams,
     queryParams: queryTemplate.queryParams,
     contextResults: queryTemplate.contextResults,
     deploymentUuid: queryTemplate.deploymentUuid,
-    queryType: "queryWithExtractorCombinerTransformer",
+    
     extractors: queries as ExtractorOrCombinerRecord,
     combiners: combiners as Record<string, ExtractorOrCombiner>,
     runtimeTransformers: queryTemplate.runtimeTransformers,
@@ -291,14 +292,14 @@ export function resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjec
 
   const params = { ...boxedExtractorTemplateReturningObjectOrObjectList.pageParams, ...boxedExtractorTemplateReturningObjectOrObjectList.queryParams };
 
-  // log.info("resolveExtractorTemplateForDomainModelObjects converting extractorTemplates:", boxedExtractorTemplateReturningObject);
+  // log.info("resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList converting extractorTemplates:", boxedExtractorTemplateReturningObject);
   
   const select = resolveExtractorTemplate(
     boxedExtractorTemplateReturningObjectOrObjectList.select,
     params,
     boxedExtractorTemplateReturningObjectOrObjectList.contextResults
   ) as any;
-  // log.info("resolveExtractorTemplateForDomainModelObjects converted extractorTemplates, result:", select);
+  // log.info("resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList converted extractorTemplates, result:", select);
   return {
     pageParams: boxedExtractorTemplateReturningObjectOrObjectList.pageParams,
     queryParams: boxedExtractorTemplateReturningObjectOrObjectList.queryParams,

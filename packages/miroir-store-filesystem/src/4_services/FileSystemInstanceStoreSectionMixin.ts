@@ -19,6 +19,8 @@ import {
   ExtractorRunnerInMemory,
   RunExtractorAction,
   RunQueryAction,
+  RunQueryTemplateAction,
+  RunExtractorTemplateAction,
 } from "miroir-core";
 
 import { packageName } from "../constants.js";
@@ -79,6 +81,26 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
       const result: ActionReturnType = await this.extractorRunner.handleQueryAction(query);
 
       log.info(this.logHeader,'handleQueryAction DONE','query',query, "result", result);
+      return result;
+    }
+    
+    // #############################################################################################
+    async handleQueryTemplateActionForServerONLY(query: RunQueryTemplateAction): Promise<ActionReturnType> {
+      log.info(this.logHeader,'handleQueryTemplateActionForServerONLY', 'query',query);
+      
+      const result: ActionReturnType = await this.extractorTemplateRunner.handleQueryTemplateActionForServerONLY(query);
+
+      log.info(this.logHeader,'handleQueryTemplateActionForServerONLY','query',query, "result", result);
+      return result;
+    }
+    
+    // #############################################################################################
+    async handleExtractorTemplateActionForServerONLY(query: RunExtractorTemplateAction): Promise<ActionReturnType> {
+      log.info(this.logHeader,'handleExtractorTemplateActionForServerONLY', 'query',query);
+      
+      const result: ActionReturnType = await this.extractorTemplateRunner.handleExtractorTemplateActionForServerONLY(query);
+
+      log.info(this.logHeader,'handleExtractorTemplateActionForServerONLY','query',query, "result", result);
       return result;
     }
     

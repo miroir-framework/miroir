@@ -18,7 +18,11 @@ import {
   selectEntityJzodSchemaFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
-  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate
+  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
+  RunExtractorTemplateAction,
+  handleQueryTemplateAction,
+  RunQueryTemplateAction,
+  handleExtractorTemplateAction
 } from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
@@ -53,6 +57,18 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
       // 
       runQueryTemplateWithExtractorCombinerTransformer: undefined as any,
     };
+  }
+
+  // ################################################################################################
+  async handleQueryTemplateActionForServerONLY(runQueryTemplateAction: RunQueryTemplateAction): Promise<ActionReturnType> {
+    log.info(this.logHeader, "handleQueryTemplateActionForServerONLY", "runQueryTemplateAction", JSON.stringify(runQueryTemplateAction, null, 2));
+    return handleQueryTemplateAction("FileSystemExtractorTemplateRunner", runQueryTemplateAction, this.selectorMap);
+  }
+
+  // ################################################################################################
+  async handleExtractorTemplateActionForServerONLY(runExtractorTemplateAction: RunExtractorTemplateAction): Promise<ActionReturnType> {
+    log.info(this.logHeader, "handleExtractorTemplateActionForServerONLY", "runExtractorTemplateAction", JSON.stringify(runExtractorTemplateAction, null, 2));
+    return handleExtractorTemplateAction("FileSystemExtractorTemplateRunner", runExtractorTemplateAction, this.selectorMap);
   }
 
   // ################################################################################################

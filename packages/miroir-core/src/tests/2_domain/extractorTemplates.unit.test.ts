@@ -7,7 +7,7 @@ import {
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList } from '../../2_domain/Templates';
 import {
-  resolveExtractorTemplateForRecordOfExtractors
+  resolveQueryTemplateWithExtractorCombinerTransformer
 } from "../../index";
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
@@ -18,8 +18,8 @@ import {
 describe("extractorTemplates.unit.test", () => {
 
   // ################################################################################################
-  it("convert extractorOrCombinerTemplate to query with resolveExtractorTemplateForDomainModelObjects", async () => { // TODO: test failure cases!
-    console.log("convert extractorOrCombinerTemplate to query with resolveExtractorTemplateForDomainModelObjects START")
+  it("convert extractorOrCombinerTemplate to query with resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList", async () => { // TODO: test failure cases!
+    console.log("convert extractorOrCombinerTemplate to query with resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList START")
     const newApplicationName = "test";
     const newUuid = uuidv4();
 
@@ -49,7 +49,7 @@ describe("extractorTemplates.unit.test", () => {
 
     const testResult = resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList(uniqueRuntimeTemplate); // uuid value is ignored
     console.log(
-      "################################ converted queryTemplate to query with resolveExtractorTemplateForDomainModelObjects testResults",
+      "################################ converted queryTemplate to query with resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList testResults",
       JSON.stringify(testResult, null, 2)
     );
     expect(testResult).toEqual({
@@ -69,13 +69,13 @@ describe("extractorTemplates.unit.test", () => {
         instanceUuid: "xxxxx",
       },
     });
-    console.log("convert extractorOrCombinerTemplate to query with resolveExtractorTemplateForDomainModelObjects END")
+    console.log("convert extractorOrCombinerTemplate to query with resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList END")
   }
   );
 
   // ################################################################################################
-  it("convert extractorOrCombinerTemplate to query with resolveExtractorTemplateForRecordOfExtractors", async () => { // TODO: test failure cases!
-      console.log("convert queryTemplate to query with resolveExtractorTemplateForRecordOfExtractors START")
+  it("convert extractorOrCombinerTemplate to query with resolveQueryTemplateWithExtractorCombinerTransformer", async () => { // TODO: test failure cases!
+      console.log("convert queryTemplate to query with resolveQueryTemplateWithExtractorCombinerTransformer START")
       const newApplicationName = "test";
       const newUuid = uuidv4();
 
@@ -178,9 +178,9 @@ describe("extractorTemplates.unit.test", () => {
         },
       };
 
-      const testResult = resolveExtractorTemplateForRecordOfExtractors(uniqueRuntimeTemplate); // uuid value is ignored
+      const testResult = resolveQueryTemplateWithExtractorCombinerTransformer(uniqueRuntimeTemplate); // uuid value is ignored
       console.log(
-        "################################ converted extractorOrCombinerTemplate to query with resolveExtractorTemplateForRecordOfExtractors testResults",
+        "################################ converted extractorOrCombinerTemplate to query with resolveQueryTemplateWithExtractorCombinerTransformer testResults",
         JSON.stringify(testResult, null, 2)
       );
       expect(testResult).toEqual({
@@ -242,7 +242,7 @@ describe("extractorTemplates.unit.test", () => {
           },
         },
       });
-      console.log("convert queryTemplate to query with resolveExtractorTemplateForRecordOfExtractors END")
+      console.log("convert queryTemplate to query with resolveQueryTemplateWithExtractorCombinerTransformer END")
     }
   );
 

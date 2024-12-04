@@ -587,6 +587,8 @@ export {
 } from './2_domain/ExtractorRunnerInMemory';
 export {
   handleExtractorOrQueryTemplateAction,
+  handleExtractorTemplateAction,
+  handleQueryTemplateAction,
   runQueryTemplateWithExtractorCombinerTransformer,
   extractWithExtractorTemplate,
   extractFetchQueryTemplateJzodSchema,
@@ -635,8 +637,8 @@ export {
 } from "./2_domain/Transformers";
 export {
   resolveExtractorTemplate,
-  resolveQueryTemplateWithExtractorCombinerTransformer as resolveExtractorTemplateForRecordOfExtractors,
-  resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList as resolveExtractorTemplateForDomainModelObjects,
+  resolveQueryTemplateWithExtractorCombinerTransformer,
+  resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList,
   resolveQueryTemplateSelectExtractorWrapper,
 } from "./2_domain/Templates";
 export {
