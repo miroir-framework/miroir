@@ -132,7 +132,7 @@ export const deleteCascade = async (p: {
     };
   
     const foreignKeyUnfilteredObjects: ActionReturnType = 
-      await p.domainController.handleQueryTemplateForServerONLY(
+      await p.domainController.handleQueryTemplateOrExtractorTemplateActionForServerONLY(
         {
           actionType: "runQueryTemplateOrExtractorTemplateAction",
           actionName: "runQuery",

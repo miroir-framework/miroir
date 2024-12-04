@@ -18,7 +18,9 @@ import {
   ModelActionRenameEntity,
   RunExtractorAction,
   RunExtractorOrQueryAction,
+  RunExtractorTemplateAction,
   RunQueryAction,
+  RunQueryTemplateAction,
   RunQueryTemplateOrExtractorTemplateAction,
   StoreSectionConfiguration
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -141,9 +143,9 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
 
   // #############################################################################################
-  async handleQueryTemplateForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
+  async handleExtractorTemplateActionForServerONLY(query: RunExtractorTemplateAction): Promise<ActionReturnType> {
     // TODO: fix applicationSection!!!
-    log.info(this.logHeader,'handleQueryTemplateForServerONLY','query',query);
+    log.info(this.logHeader,'handleExtractorTemplateActionForServerONLY','query',query);
     // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
     // log.info(this.logHeader,'this.modelStoreSection',this.modelStoreSection);
     
@@ -152,9 +154,45 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     const currentStore: PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface =
       query.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
       
-    const result: ActionReturnType = await currentStore.handleQueryTemplateForServerONLY(query);
+    const result: ActionReturnType = await currentStore.handleExtractorTemplateActionForServerONLY(query);
 
-    log.info(this.logHeader,'handleQueryTemplateForServerONLY','query',query, "result", JSON.stringify(result));
+    log.info(this.logHeader,'handleExtractorTemplateActionForServerONLY','query',query, "result", JSON.stringify(result));
+    return Promise.resolve(result);
+  }
+
+  // #############################################################################################
+  async handleQueryTemplateActionForServerONLY(query: RunQueryTemplateAction): Promise<ActionReturnType> {
+    // TODO: fix applicationSection!!!
+    log.info(this.logHeader,'handleQueryTemplateActionForServerONLY','query',query);
+    // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
+    // log.info(this.logHeader,'this.modelStoreSection',this.modelStoreSection);
+    
+    // TODO: composite actions / queries could execute on different sections, how should this be dealt with? 
+    // RIGHT NOW RESTRICT ALL SUBQUERIES OF A QUERY TO THE SAME SECTION !!!!
+    const currentStore: PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface =
+      query.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
+      
+    const result: ActionReturnType = await currentStore.handleQueryTemplateActionForServerONLY(query);
+
+    log.info(this.logHeader,'handleQueryTemplateActionForServerONLY','query',query, "result", JSON.stringify(result));
+    return Promise.resolve(result);
+  }
+
+  // #############################################################################################
+  async handleQueryTemplateOrExtractorTemplateActionForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
+    // TODO: fix applicationSection!!!
+    log.info(this.logHeader,'handleQueryTemplateOrExtractorTemplateActionForServerONLY','query',query);
+    // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
+    // log.info(this.logHeader,'this.modelStoreSection',this.modelStoreSection);
+    
+    // TODO: composite actions / queries could execute on different sections, how should this be dealt with? 
+    // RIGHT NOW RESTRICT ALL SUBQUERIES OF A QUERY TO THE SAME SECTION !!!!
+    const currentStore: PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface =
+      query.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
+      
+    const result: ActionReturnType = await currentStore.handleQueryTemplateOrExtractorTemplateActionForServerONLY(query);
+
+    log.info(this.logHeader,'handleQueryTemplateOrExtractorTemplateActionForServerONLY','query',query, "result", JSON.stringify(result));
     return Promise.resolve(result);
   }
 

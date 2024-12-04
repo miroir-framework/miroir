@@ -1,8 +1,5 @@
 import {
   ActionReturnType,
-  DomainElement,
-  BoxedExtractorOrCombinerReturningObjectOrObjectList,
-  QueryWithExtractorCombinerTransformer,
   RunQueryTemplateOrExtractorTemplateAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
@@ -32,7 +29,6 @@ import {
 } from "./DomainStateQueryTemplateSelector";
 import { ExtractorRunnerInMemory } from "./ExtractorRunnerInMemory";
 import { handleExtractorOrQueryTemplateAction } from "./QueryTemplateSelectors";
-import { resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList, resolveQueryTemplateWithExtractorCombinerTransformer } from "./Templates";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "ExtractorTemplateRunnerInMemory");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -44,11 +40,10 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
   private logHeader: string;
   private selectorMap: AsyncExtractorOrQueryRunnerMap;
 
-
   // ################################################################################################
   constructor(
     private persistenceStoreController: PersistenceStoreInstanceSectionAbstractInterface,
-    private extractorRunnerInMemory: ExtractorRunnerInMemory,
+    private extractorRunnerInMemory: ExtractorRunnerInMemory
   ) {
     this.logHeader = "PersistenceStoreController " + persistenceStoreController.getStoreName();
     // this.extractorRunnerInMemory = new ExtractorRunnerInMemory(persistenceStoreController
@@ -62,17 +57,27 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
       runQuery: asyncRunQuery,
       extractWithExtractorOrCombinerReturningObjectOrObjectList: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
-      // 
+      //
       runQueryTemplateWithExtractorCombinerTransformer: undefined as any,
     };
   }
 
   // ################################################################################################
-  async handleQueryTemplateForServerONLY(runQueryTemplateOrExtractorTemplateAction: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
-    log.info(this.logHeader, "handleQueryTemplateForServerONLY", "runQueryTemplateOrExtractorTemplateAction", JSON.stringify(runQueryTemplateOrExtractorTemplateAction, null, 2));
-    return handleExtractorOrQueryTemplateAction("ExtractorTemplateRunnerInMemory", runQueryTemplateOrExtractorTemplateAction, this.selectorMap);
+  async handleQueryTemplateOrExtractorTemplateActionForServerONLY(
+    runQueryTemplateOrExtractorTemplateAction: RunQueryTemplateOrExtractorTemplateAction
+  ): Promise<ActionReturnType> {
+    log.info(
+      this.logHeader,
+      "handleQueryTemplateOrExtractorTemplateActionForServerONLY",
+      "runQueryTemplateOrExtractorTemplateAction",
+      JSON.stringify(runQueryTemplateOrExtractorTemplateAction, null, 2)
+    );
+    return handleExtractorOrQueryTemplateAction(
+      "ExtractorTemplateRunnerInMemory",
+      runQueryTemplateOrExtractorTemplateAction,
+      this.selectorMap
+    );
   }
-
 } // end of class ExtractorTemplateRunnerInMemory
 
 // ##############################################################################################

@@ -295,7 +295,7 @@ export async function queryActionHandler(
   if (useDomainControllerToHandleModelAndInstanceActions) {
     // we are on the server, the action has been received from remote client
     // switch (runQueryTemplateOrExtractorTemplateAction.deploymentUuid) {
-    const result = await domainController.handleQueryActionForServerONLY(runExtractorOrQueryAction)
+    const result = await domainController.handleQueryActionOrExtractorActionForServerONLY(runExtractorOrQueryAction)
     log.info(
       "RestServer queryActionHandler used adminConfigurationDeploymentMiroir domainController result=",
       JSON.stringify(result, undefined, 2)
@@ -384,7 +384,8 @@ export async function queryTemplateActionHandler(
   if (useDomainControllerToHandleModelAndInstanceActions) {
     // we are on the server, the action has been received from remote client
     // switch (runQueryTemplateOrExtractorTemplateAction.deploymentUuid) {
-    const result = await domainController.handleQueryTemplateForServerONLY(runQueryTemplateOrExtractorTemplateAction)
+    // const result = await domainController.handleQueryTemplateOrExtractorTemplateActionForServerONLY(runQueryTemplateOrExtractorTemplateAction)
+    const result = await domainController.handleQueryTemplateOrExtractorTemplateActionForServerONLY(runQueryTemplateOrExtractorTemplateAction)
     log.info(
       "RestServer queryTemplateActionHandler used adminConfigurationDeploymentMiroir domainController result=",
       JSON.stringify(result, undefined, 2)

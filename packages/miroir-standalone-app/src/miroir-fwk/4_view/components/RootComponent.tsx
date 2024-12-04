@@ -312,7 +312,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         },
                       };
                       const adminDeployments: ActionReturnType = 
-                        await domainController.handleQueryTemplateForServerONLY(
+                        await domainController.handleQueryTemplateOrExtractorTemplateActionForServerONLY(
                           {
                             actionType: "runQueryTemplateOrExtractorTemplateAction",
                             actionName: "runQuery",

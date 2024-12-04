@@ -2,7 +2,10 @@ import { describe } from 'vitest';
 
 // import { miroirFileSystemStoreSectionStartup } from "../dist/bundle";
 import {
+  ActionReturnType,
+  adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
+  ApplicationSection,
   author1,
   author2,
   author3,
@@ -10,38 +13,35 @@ import {
   book2,
   book3,
   book4,
-  ActionReturnType,
-  adminConfigurationDeploymentLibrary,
-  ApplicationSection,
+  book5,
+  book6,
   defaultLevels,
   DomainControllerInterface,
-  MiroirConfigClient,
-  MiroirLoggerFactory,
-  PersistenceStoreControllerInterface,
-  PersistenceStoreControllerManagerInterface,
   entityAuthor,
   entityBook,
   EntityDefinition,
   entityDefinitionAuthor,
   entityDefinitionBook,
+  entityDefinitionPublisher,
   EntityInstance,
-  MetaEntity,
-  reportBookList,
-  Report,
-  book5,
-  book6,
-  ignorePostgresExtraAttributesOnRecord,
+  entityPublisher,
   ignorePostgresExtraAttributesOnList,
   ignorePostgresExtraAttributesOnObject,
-  entityPublisher,
-  entityDefinitionPublisher,
+  ignorePostgresExtraAttributesOnRecord,
+  MetaEntity,
+  MiroirConfigClient,
+  MiroirLoggerFactory,
+  PersistenceStoreControllerInterface,
+  PersistenceStoreControllerManagerInterface,
   publisher1,
   publisher2,
   publisher3,
-  queryTemplate
+  Report,
+  reportBookList
 } from "miroir-core";
 
 
+import { LocalCache } from 'miroir-localcache-redux';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
@@ -55,7 +55,6 @@ import {
   miroirBeforeAll,
   miroirBeforeEach,
 } from "../utils/tests-utils.js";
-import { LocalCache } from 'miroir-localcache-redux';
 
 let localCache: LocalCache;
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
@@ -193,7 +192,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       {},
       async () => {
         const applicationSection:ApplicationSection = "model";
-        const queryResult:ActionReturnType = await localMiroirPersistenceStoreController.handleQueryTemplateForServerONLY(
+        const queryResult:ActionReturnType = await localMiroirPersistenceStoreController.handleQueryTemplateOrExtractorTemplateActionForServerONLY(
           {
             actionType: "runQueryTemplateOrExtractorTemplateAction",
             actionName: "runQuery",
@@ -252,7 +251,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       {},
       async () => {
         const applicationSection:ApplicationSection = "model";
-        const queryResult:ActionReturnType = await localMiroirPersistenceStoreController.handleQueryTemplateForServerONLY(
+        const queryResult:ActionReturnType = await localMiroirPersistenceStoreController.handleQueryTemplateOrExtractorTemplateActionForServerONLY(
           {
             actionType: "runQueryTemplateOrExtractorTemplateAction",
             actionName: "runQuery",
@@ -419,7 +418,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       {},
       async () => {
         const applicationSection:ApplicationSection = "model";
-        const queryResult = await localMiroirPersistenceStoreController.handleQueryTemplateForServerONLY(
+        const queryResult = await localMiroirPersistenceStoreController.handleQueryTemplateOrExtractorTemplateActionForServerONLY(
           {
             actionType: "runQueryTemplateOrExtractorTemplateAction",
             actionName: "runQuery",
@@ -491,7 +490,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       {},
       async () => {
         const applicationSection: ApplicationSection = "data";
-        const queryResult = await localAppPersistenceStoreController.handleQueryTemplateForServerONLY({
+        const queryResult = await localAppPersistenceStoreController.handleQueryTemplateOrExtractorTemplateActionForServerONLY({
           actionType: "runQueryTemplateOrExtractorTemplateAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
@@ -548,7 +547,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       {},
       async () => {
         const applicationSection: ApplicationSection = "data";
-        const queryResult = await localAppPersistenceStoreController.handleQueryTemplateForServerONLY({
+        const queryResult = await localAppPersistenceStoreController.handleQueryTemplateOrExtractorTemplateActionForServerONLY({
           actionType: "runQueryTemplateOrExtractorTemplateAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
@@ -600,7 +599,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       {},
       async () => {
         const applicationSection: ApplicationSection = "data";
-        const queryResult = await localAppPersistenceStoreController.handleQueryTemplateForServerONLY({
+        const queryResult = await localAppPersistenceStoreController.handleQueryTemplateOrExtractorTemplateActionForServerONLY({
           actionType: "runQueryTemplateOrExtractorTemplateAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
@@ -656,7 +655,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       {},
       async () => {
         const applicationSection: ApplicationSection = "data";
-        const queryResult = await localAppPersistenceStoreController.handleQueryTemplateForServerONLY({
+        const queryResult = await localAppPersistenceStoreController.handleQueryTemplateOrExtractorTemplateActionForServerONLY({
           actionType: "runQueryTemplateOrExtractorTemplateAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
@@ -770,7 +769,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       {},
       async () => {
         const applicationSection: ApplicationSection = "data";
-        const queryResult = await localAppPersistenceStoreController.handleQueryTemplateForServerONLY({
+        const queryResult = await localAppPersistenceStoreController.handleQueryTemplateOrExtractorTemplateActionForServerONLY({
           actionType: "runQueryTemplateOrExtractorTemplateAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,

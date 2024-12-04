@@ -1,5 +1,5 @@
 import { MetaEntity } from "../../0_interfaces/1_core/EntityDefinition";
-import { EntityInstanceCollection, EntityInstance, EntityDefinition, ActionReturnType, ActionEntityInstanceCollectionReturnType, ActionEntityInstanceReturnType, ActionVoidReturnType, ModelActionRenameEntity, ModelActionAlterEntityAttribute, RunQueryTemplateOrExtractorTemplateAction, RunExtractorOrQueryAction, RunExtractorAction, RunQueryAction } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { EntityInstanceCollection, EntityInstance, EntityDefinition, ActionReturnType, ActionEntityInstanceCollectionReturnType, ActionEntityInstanceReturnType, ActionVoidReturnType, ModelActionRenameEntity, ModelActionAlterEntityAttribute, RunQueryTemplateOrExtractorTemplateAction, RunExtractorOrQueryAction, RunExtractorAction, RunQueryAction, RunQueryTemplateAction, RunExtractorTemplateAction } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { PersistenceStoreModelSectionInterface } from "../../0_interfaces/4-services/PersistenceStoreControllerInterface";
 
 export class ErrorModelStore implements PersistenceStoreModelSectionInterface {
@@ -71,7 +71,13 @@ export class ErrorModelStore implements PersistenceStoreModelSectionInterface {
   getInstances(parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType> {
     throw new Error("Method not implemented.");
   }
-  handleQueryTemplateForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
+  handleQueryTemplateActionForServerONLY(query: RunQueryTemplateAction): Promise<ActionReturnType> {
+    throw new Error("Method not implemented.");
+  }
+  handleExtractorTemplateActionForServerONLY(query: RunExtractorTemplateAction): Promise<ActionReturnType> {
+    throw new Error("Method not implemented.");
+  }
+  handleQueryTemplateOrExtractorTemplateActionForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
   handleExtractorAction(query: RunExtractorAction): Promise<ActionReturnType> {

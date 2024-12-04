@@ -230,6 +230,36 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                 return yield localStoreResult;
                 break;
               }
+              case 'runExtractorAction': {
+                const localPersistenceStoreController: PersistenceStoreControllerInterface | undefined =
+                  localParams.localPersistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
+
+                if (!localPersistenceStoreController) {
+                  throw new Error(
+                    "restMethodGetHandler could not find controller for deployment: " + action.deploymentUuid
+                  );
+                }
+                const localStoreResult = yield* call(() =>
+                  localPersistenceStoreController.handleExtractorAction(action)
+                );
+                return yield localStoreResult;
+                break
+              }
+              case 'runQueryAction': {
+                const localPersistenceStoreController: PersistenceStoreControllerInterface | undefined =
+                  localParams.localPersistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
+
+                if (!localPersistenceStoreController) {
+                  throw new Error(
+                    "restMethodGetHandler could not find controller for deployment: " + action.deploymentUuid
+                  );
+                }
+                const localStoreResult = yield* call(() =>
+                  localPersistenceStoreController.handleQueryAction(action)
+                );
+                return yield localStoreResult;
+                break;
+              }
               case "runExtractorOrQueryAction": {
                 const localPersistenceStoreController: PersistenceStoreControllerInterface | undefined =
                   localParams.localPersistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
@@ -280,9 +310,6 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                     break;
                   }
                 }
-                // const localStoreResult =
-                //   yield * call(() => localPersistenceStoreController.handleExtractorOrQueryAction(action));
-                // return  yield localStoreResult;
                 break;
 
               }
@@ -296,7 +323,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                   );
                 }
                 const localStoreResult =
-                  yield * call(() => localPersistenceStoreController.handleQueryTemplateForServerONLY(action));
+                  yield * call(() => localPersistenceStoreController.handleQueryTemplateOrExtractorTemplateActionForServerONLY(action));
                 return  yield localStoreResult;
                 break;
 

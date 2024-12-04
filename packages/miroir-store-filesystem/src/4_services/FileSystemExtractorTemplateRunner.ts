@@ -56,8 +56,8 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
   }
 
   // ################################################################################################
-  async handleQueryTemplateForServerONLY(runQueryTemplateOrExtractorTemplateAction: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
-    log.info(this.logHeader, "handleQueryTemplateForServerONLY", "runQueryTemplateOrExtractorTemplateAction", JSON.stringify(runQueryTemplateOrExtractorTemplateAction, null, 2));
+  async handleQueryTemplateOrExtractorTemplateActionForServerONLY(runQueryTemplateOrExtractorTemplateAction: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
+    log.info(this.logHeader, "handleQueryTemplateOrExtractorTemplateActionForServerONLY", "runQueryTemplateOrExtractorTemplateAction", JSON.stringify(runQueryTemplateOrExtractorTemplateAction, null, 2));
     return handleExtractorOrQueryTemplateAction("FileSystemExtractorTemplateRunner", runQueryTemplateOrExtractorTemplateAction, this.selectorMap);
   }
 

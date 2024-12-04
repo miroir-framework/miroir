@@ -18,7 +18,9 @@ import {
   ModelActionRenameEntity,
   RunExtractorAction,
   RunExtractorOrQueryAction,
+  RunExtractorTemplateAction,
   RunQueryAction,
+  RunQueryTemplateAction,
   RunQueryTemplateOrExtractorTemplateAction,
   StoreManagementAction,
   StoreSectionConfiguration
@@ -81,7 +83,9 @@ export interface StorageSpaceHandlerInterface {
 export interface PersistenceStoreInstanceSectionAbstractInterface extends PersistenceStoreAbstractSectionInterface{
   getInstance(parentUuid: string, uuid: string): Promise<ActionEntityInstanceReturnType>;
   getInstances(parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType>;
-  handleQueryTemplateForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
+  handleExtractorTemplateActionForServerONLY(query: RunExtractorTemplateAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
+  handleQueryTemplateActionForServerONLY(query: RunQueryTemplateAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
+  handleQueryTemplateOrExtractorTemplateActionForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
   handleQueryAction(query: RunQueryAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
   handleExtractorAction(query: RunExtractorAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
   upsertInstance(parentUuid:string, instance:EntityInstance):Promise<ActionVoidReturnType>;
@@ -188,7 +192,7 @@ export interface PersistenceStoreControllerInterface
   getDataState(): Promise<{ [uuid: string]: EntityInstanceCollection }>; // used only for testing purposes!
 
   // same interface as in PersistenceStoreInstanceSectionAbstractInterface; it implies that RunQueryTemplateOrExtractorTemplateAction includes applicationSection
-  handleQueryTemplateForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType>;
+  handleQueryTemplateOrExtractorTemplateActionForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType>;
   handleExtractorAction(query: RunExtractorAction): Promise<ActionReturnType>;
   handleQueryAction(query: RunQueryAction): Promise<ActionReturnType>;
   

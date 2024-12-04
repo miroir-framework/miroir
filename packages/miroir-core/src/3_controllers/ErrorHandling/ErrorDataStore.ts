@@ -12,6 +12,8 @@ import {
   RunExtractorOrQueryAction,
   RunExtractorAction,
   RunQueryAction,
+  RunQueryTemplateAction,
+  RunExtractorTemplateAction,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { PersistenceStoreDataSectionInterface } from "../../0_interfaces/4-services/PersistenceStoreControllerInterface";
 
@@ -64,7 +66,13 @@ export class ErrorDataStore implements PersistenceStoreDataSectionInterface {
   getInstances(parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType> {
     throw new Error("Method not implemented.");
   }
-  handleQueryTemplateForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
+  handleQueryTemplateActionForServerONLY(query: RunQueryTemplateAction): Promise<ActionReturnType> {
+    throw new Error("Method not implemented.");
+  }
+  handleExtractorTemplateActionForServerONLY(query: RunExtractorTemplateAction): Promise<ActionReturnType> {
+    throw new Error("Method not implemented.");
+  }
+  handleQueryTemplateOrExtractorTemplateActionForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
   handleExtractorAction(query: RunExtractorAction): Promise<ActionReturnType> {

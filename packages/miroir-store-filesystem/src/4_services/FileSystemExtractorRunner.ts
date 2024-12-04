@@ -108,50 +108,6 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
     }
   }
 
-  // // ################################################################################################
-  // async handleExtractorOrQueryAction(runExtractorOrQueryAction: RunExtractorOrQueryAction): Promise<ActionReturnType> {
-  //   log.info(this.logHeader, "handleExtractorOrQueryAction", "runQueryTemplateOrExtractorTemplateAction", JSON.stringify(runExtractorOrQueryAction, null, 2));
-  //   let queryResult: DomainElement;
-  //   switch (runExtractorOrQueryAction.query.queryType) {
-  //     case "boxedExtractorOrCombinerReturningObject":
-  //     case "boxedExtractorOrCombinerReturningObjectList": {
-  //       queryResult = await this.selectorMap.extractWithExtractorOrCombinerReturningObjectOrObjectList(
-  //         {
-  //           extractor: runExtractorOrQueryAction.query,
-  //           extractorRunnerMap: this.selectorMap,
-  //         }
-  //       );
-  //       break;
-  //     }
-  //     case "queryWithExtractorCombinerTransformer": {
-  //       queryResult = await this.selectorMap.runQuery(
-  //         {
-  //           extractor: runExtractorOrQueryAction.query,
-  //           extractorRunnerMap: this.selectorMap,
-  //         }
-  //       );
-  //       break;
-  //     }
-  //     default: {
-  //       return {
-  //         status: "error",
-  //         error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(runExtractorOrQueryAction) },
-  //       } as ActionReturnType;
-  //       break;
-  //     }
-  //   }
-  //   if (queryResult.elementType == "failure") {
-  //     return {
-  //       status: "error",
-  //       error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult) },
-  //     } as ActionReturnType;
-  //   } else {
-  //     const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
-  //     log.info(this.logHeader, "handleExtractorOrQueryAction", "runQueryTemplateOrExtractorTemplateAction", runExtractorOrQueryAction, "result", JSON.stringify(result, null, 2));
-  //     return result;
-  //   }
-  // }
-
   // ################################################################################################
   public extractEntityInstance: AsyncExtractorRunner<
     BoxedExtractorOrCombinerReturningObject,

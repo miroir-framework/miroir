@@ -278,12 +278,12 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     // }
 
     // #############################################################################################
-    async handleQueryTemplateForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
-      log.info(this.logHeader, "handleQueryTemplateForServerONLY", "query", query);
+    async handleQueryTemplateOrExtractorTemplateActionForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
+      log.info(this.logHeader, "handleQueryTemplateOrExtractorTemplateActionForServerONLY", "query", query);
 
-      const result: ActionReturnType = await this.extractorTemplateRunner.handleQueryTemplateForServerONLY(query);
+      const result: ActionReturnType = await this.extractorTemplateRunner.handleQueryTemplateOrExtractorTemplateActionForServerONLY(query);
 
-      log.info(this.logHeader, "handleQueryTemplateForServerONLY", "query", query, "result", result);
+      log.info(this.logHeader, "handleQueryTemplateOrExtractorTemplateActionForServerONLY", "query", query, "result", result);
       return result;
     }
 
@@ -306,16 +306,6 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       log.info(this.logHeader, "handleQueryAction", "query", query, "result", result);
       return result;
     }
-
-    // // #############################################################################################
-    // async handleExtractorOrQueryAction(query: RunExtractorOrQueryAction): Promise<ActionReturnType> {
-    //   log.info(this.logHeader, "handleExtractorOrQueryAction", "query", query);
-
-    //   const result: ActionReturnType = await this.extractorRunner.handleExtractorOrQueryAction(query);
-
-    //   log.info(this.logHeader, "handleExtractorOrQueryAction", "query", query, "result", result);
-    //   return result;
-    // }
 
     // ##############################################################################################
     async getInstance(parentUuid: string, uuid: string): Promise<ActionEntityInstanceReturnType> {

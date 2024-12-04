@@ -22,7 +22,6 @@ import {
   QueryTemplateWithExtractorCombinerTransformer,
   QueryWithExtractorCombinerTransformer,
   RunExtractorAction,
-  RunExtractorOrQueryAction,
   RunQueryAction,
   RunQueryTemplateOrExtractorTemplateAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
@@ -33,7 +32,7 @@ export type RecordOfJzodObject = Record<string, JzodObject | undefined>;
 
 // ################################################################################################
 export interface ExtractorTemplatePersistenceStoreRunner {
-  handleQueryTemplateForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType>;
+  handleQueryTemplateOrExtractorTemplateActionForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType>;
 }
 
 // ################################################################################################
@@ -80,7 +79,7 @@ export type ExtractorTemplateRunner<QueryType extends BoxedExtractorTemplateRetu
 
 // ################################################################################################
 export interface ExtractorTemplatePersistenceStoreRunner {
-  handleQueryTemplateForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType>;
+  handleQueryTemplateOrExtractorTemplateActionForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType>;
 }
 
 

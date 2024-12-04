@@ -66,23 +66,13 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
       return result;
     }
     
-    // // #############################################################################################
-    // async handleExtractorOrQueryAction(query: RunExtractorOrQueryAction): Promise<ActionReturnType> {
-    //   log.info(this.logHeader,'handleExtractorOrQueryAction', 'query',query);
-      
-    //   const result: ActionReturnType = await this.extractorRunner.handleExtractorOrQueryAction(query);
-
-    //   log.info(this.logHeader,'handleExtractorOrQueryAction','query',query, "result", result);
-    //   return result;
-    // }
-    
     // #############################################################################################
-    async handleQueryTemplateForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
-      log.info(this.logHeader,'handleQueryTemplateForServerONLY', 'query',query);
+    async handleQueryTemplateOrExtractorTemplateActionForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
+      log.info(this.logHeader,'handleQueryTemplateOrExtractorTemplateActionForServerONLY', 'query',query);
       
-      const result: ActionReturnType = await this.extractorTemplateRunner.handleQueryTemplateForServerONLY(query);
+      const result: ActionReturnType = await this.extractorTemplateRunner.handleQueryTemplateOrExtractorTemplateActionForServerONLY(query);
 
-      log.info(this.logHeader,'handleQueryTemplateForServerONLY','query',query, "result", result);
+      log.info(this.logHeader,'handleQueryTemplateOrExtractorTemplateActionForServerONLY','query',query, "result", result);
       return result;
     }
 
