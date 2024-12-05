@@ -34,14 +34,14 @@ import {
   InstanceAction,
   MetaModel,
   ModelAction,
-  RunExtractorOrQueryAction,
-  RunQueryTemplateOrExtractorTemplateAction,
+  RunBoxedExtractorOrQueryAction,
+  RunQueryTemplateOrBoxedExtractorTemplateAction,
   RestPersistenceAction,
   TransactionalInstanceAction,
   TransformerForRuntime,
   UndoRedoAction,
   RunQueryTemplateAction,
-  RunExtractorTemplateAction
+  RunBoxedExtractorTemplateAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface';
 import { ACTION_OK } from '../1_core/constants';
@@ -650,20 +650,20 @@ export class DomainController implements DomainControllerInterface {
   // used in Importer.tsx
   // used in scripts.ts
   // used in tests
-  async handleQueryActionOrExtractorActionForServerONLY(
-    runExtractorOrQueryAction: RunExtractorOrQueryAction
+  async handleQueryActionOrBoxedExtractorActionForServerONLY(
+    runBoxedExtractorOrQueryAction: RunBoxedExtractorOrQueryAction
   ): Promise<ActionReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     log.info(
-      "handleQueryTemplateOrExtractorTemplateActionForServerONLY",
+      "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY",
       // "deploymentUuid",
-      // runExtractorOrQueryAction.deploymentUuid,
+      // runBoxedExtractorOrQueryAction.deploymentUuid,
       "actionName",
-      (runExtractorOrQueryAction as any).actionName,
+      (runBoxedExtractorOrQueryAction as any).actionName,
       "actionType",
-      runExtractorOrQueryAction?.actionType,
+      runBoxedExtractorOrQueryAction?.actionType,
       "objects",
-      JSON.stringify((runExtractorOrQueryAction as any)["objects"], null, 2)
+      JSON.stringify((runBoxedExtractorOrQueryAction as any)["objects"], null, 2)
     );
 
     if (this.domainControllerIsDeployedOn == "server") {
@@ -671,9 +671,9 @@ export class DomainController implements DomainControllerInterface {
        * we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
        */
 
-      const result: ActionReturnType = await this.persistenceStore.handlePersistenceAction(runExtractorOrQueryAction);
+      const result: ActionReturnType = await this.persistenceStore.handlePersistenceAction(runBoxedExtractorOrQueryAction);
       log.info(
-        "DomainController handleQueryActionOrExtractorActionForServerONLY runExtractorOrQueryAction callPersistenceAction Result=",
+        "DomainController handleQueryActionOrBoxedExtractorActionForServerONLY runBoxedExtractorOrQueryAction callPersistenceAction Result=",
         result
       );
       return result;
@@ -684,9 +684,9 @@ export class DomainController implements DomainControllerInterface {
       // while non-transactional accesses are limited to persistence store access (does this make sense?)
       // in both cases this enforces only the most up-to-date data is accessed.
       log.info(
-        "DomainController handleQueryActionOrExtractorActionForServerONLY runExtractorOrQueryAction sending query to server for execution",
-        // JSON.stringify(runQueryTemplateOrExtractorTemplateAction)
-        runExtractorOrQueryAction
+        "DomainController handleQueryActionOrBoxedExtractorActionForServerONLY runBoxedExtractorOrQueryAction sending query to server for execution",
+        // JSON.stringify(runQueryTemplateOrBoxedExtractorTemplateAction)
+        runBoxedExtractorOrQueryAction
       );
       const result = await this.callUtil.callPersistenceAction(
         // what if it is a REAL persistence store?? exception?
@@ -695,10 +695,10 @@ export class DomainController implements DomainControllerInterface {
           addResultToContextAsName: "dataEntitiesFromModelSection",
           expectedDomainElementType: "entityInstanceCollection",
         }, // continuation
-        runExtractorOrQueryAction
+        runBoxedExtractorOrQueryAction
       );
       log.info(
-        "handleQueryActionOrExtractorActionForServerONLY runExtractorOrQueryAction callPersistenceAction Result=",
+        "handleQueryActionOrBoxedExtractorActionForServerONLY runBoxedExtractorOrQueryAction callPersistenceAction Result=",
         result
       );
       return result["dataEntitiesFromModelSection"];
@@ -720,7 +720,7 @@ export class DomainController implements DomainControllerInterface {
     log.info(
       "handleQueryTemplateActionForServerONLY",
       // "deploymentUuid",
-      // runQueryTemplateOrExtractorTemplateAction.deploymentUuid,
+      // runQueryTemplateOrBoxedExtractorTemplateAction.deploymentUuid,
       "actionName",
       (runQueryTemplateAction as any).actionName,
       "actionType",
@@ -750,7 +750,7 @@ export class DomainController implements DomainControllerInterface {
       // in both cases this enforces only the most up-to-date data is accessed.
       log.info(
         "DomainController handleQueryTemplateActionForServerONLY sending query to server for execution",
-        // JSON.stringify(runQueryTemplateOrExtractorTemplateAction)
+        // JSON.stringify(runQueryTemplateOrBoxedExtractorTemplateAction)
         runQueryTemplateAction
       );
       const result = await this.callUtil.callPersistenceAction(
@@ -778,20 +778,20 @@ export class DomainController implements DomainControllerInterface {
   // used in Importer.tsx
   // used in scripts.ts
   // used in tests
-  async handleExtractorTemplateActionForServerONLY(
-    runExtractorTemplateAction: RunExtractorTemplateAction
+  async handleBoxedExtractorTemplateActionForServerONLY(
+    runBoxedExtractorTemplateAction: RunBoxedExtractorTemplateAction
   ): Promise<ActionReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     log.info(
-      "handleExtractorTemplateActionForServerONLY",
+      "handleBoxedExtractorTemplateActionForServerONLY",
       // "deploymentUuid",
-      // runQueryTemplateOrExtractorTemplateAction.deploymentUuid,
+      // runQueryTemplateOrBoxedExtractorTemplateAction.deploymentUuid,
       "actionName",
-      (runExtractorTemplateAction as any).actionName,
+      (runBoxedExtractorTemplateAction as any).actionName,
       "actionType",
-      runExtractorTemplateAction?.actionType,
+      runBoxedExtractorTemplateAction?.actionType,
       "objects",
-      JSON.stringify((runExtractorTemplateAction as any)["objects"], null, 2)
+      JSON.stringify((runBoxedExtractorTemplateAction as any)["objects"], null, 2)
     );
 
     if (this.domainControllerIsDeployedOn == "server") {
@@ -800,10 +800,10 @@ export class DomainController implements DomainControllerInterface {
        */
 
       const result: ActionReturnType = await this.persistenceStore.handlePersistenceAction(
-        runExtractorTemplateAction
+        runBoxedExtractorTemplateAction
       );
       log.info(
-        "DomainController handleExtractorTemplateActionForServerONLY callPersistenceAction Result=",
+        "DomainController handleBoxedExtractorTemplateActionForServerONLY callPersistenceAction Result=",
         result
       );
       return result;
@@ -814,9 +814,9 @@ export class DomainController implements DomainControllerInterface {
       // while non-transactional accesses are limited to persistence store access (does this make sense?)
       // in both cases this enforces only the most up-to-date data is accessed.
       log.info(
-        "DomainController handleExtractorTemplateActionForServerONLY sending query to server for execution",
-        // JSON.stringify(runQueryTemplateOrExtractorTemplateAction)
-        runExtractorTemplateAction
+        "DomainController handleBoxedExtractorTemplateActionForServerONLY sending query to server for execution",
+        // JSON.stringify(runQueryTemplateOrBoxedExtractorTemplateAction)
+        runBoxedExtractorTemplateAction
       );
       const result = await this.callUtil.callPersistenceAction(
         // what if it is a REAL persistence store?? exception?
@@ -825,10 +825,10 @@ export class DomainController implements DomainControllerInterface {
           addResultToContextAsName: "dataEntitiesFromModelSection",
           expectedDomainElementType: "entityInstanceCollection",
         }, // continuation
-        runExtractorTemplateAction
+        runBoxedExtractorTemplateAction
       );
       log.info(
-        "handleExtractorTemplateActionForServerONLY callPersistenceAction Result=",
+        "handleBoxedExtractorTemplateActionForServerONLY callPersistenceAction Result=",
         result
       );
       return result["dataEntitiesFromModelSection"];
@@ -843,20 +843,20 @@ export class DomainController implements DomainControllerInterface {
   // used in Importer.tsx
   // used in scripts.ts
   // used in tests
-  async handleQueryTemplateOrExtractorTemplateActionForServerONLY(
-    runQueryTemplateOrExtractorTemplateAction: RunQueryTemplateOrExtractorTemplateAction
+  async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
+    runQueryTemplateOrBoxedExtractorTemplateAction: RunQueryTemplateOrBoxedExtractorTemplateAction
   ): Promise<ActionReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     log.info(
-      "handleQueryTemplateOrExtractorTemplateActionForServerONLY",
+      "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY",
       // "deploymentUuid",
-      // runQueryTemplateOrExtractorTemplateAction.deploymentUuid,
+      // runQueryTemplateOrBoxedExtractorTemplateAction.deploymentUuid,
       "actionName",
-      (runQueryTemplateOrExtractorTemplateAction as any).actionName,
+      (runQueryTemplateOrBoxedExtractorTemplateAction as any).actionName,
       "actionType",
-      runQueryTemplateOrExtractorTemplateAction?.actionType,
+      runQueryTemplateOrBoxedExtractorTemplateAction?.actionType,
       "objects",
-      JSON.stringify((runQueryTemplateOrExtractorTemplateAction as any)["objects"], null, 2)
+      JSON.stringify((runQueryTemplateOrBoxedExtractorTemplateAction as any)["objects"], null, 2)
     );
 
     if (this.domainControllerIsDeployedOn == "server") {
@@ -865,10 +865,10 @@ export class DomainController implements DomainControllerInterface {
        */
 
       const result: ActionReturnType = await this.persistenceStore.handlePersistenceAction(
-        runQueryTemplateOrExtractorTemplateAction
+        runQueryTemplateOrBoxedExtractorTemplateAction
       );
       log.info(
-        "DomainController handleQueryTemplateOrExtractorTemplateActionForServerONLY runQueryTemplateOrExtractorTemplateAction callPersistenceAction Result=",
+        "DomainController handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY runQueryTemplateOrBoxedExtractorTemplateAction callPersistenceAction Result=",
         result
       );
       return result;
@@ -879,9 +879,9 @@ export class DomainController implements DomainControllerInterface {
       // while non-transactional accesses are limited to persistence store access (does this make sense?)
       // in both cases this enforces only the most up-to-date data is accessed.
       log.info(
-        "DomainController handleQueryTemplateOrExtractorTemplateActionForServerONLY runQueryTemplateOrExtractorTemplateAction sending query to server for execution",
-        // JSON.stringify(runQueryTemplateOrExtractorTemplateAction)
-        runQueryTemplateOrExtractorTemplateAction
+        "DomainController handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY runQueryTemplateOrBoxedExtractorTemplateAction sending query to server for execution",
+        // JSON.stringify(runQueryTemplateOrBoxedExtractorTemplateAction)
+        runQueryTemplateOrBoxedExtractorTemplateAction
       );
       const result = await this.callUtil.callPersistenceAction(
         // what if it is a REAL persistence store?? exception?
@@ -890,10 +890,10 @@ export class DomainController implements DomainControllerInterface {
           addResultToContextAsName: "dataEntitiesFromModelSection",
           expectedDomainElementType: "entityInstanceCollection",
         }, // continuation
-        runQueryTemplateOrExtractorTemplateAction
+        runQueryTemplateOrBoxedExtractorTemplateAction
       );
       log.info(
-        "handleQueryTemplateOrExtractorTemplateActionForServerONLY runQueryTemplateOrExtractorTemplateAction callPersistenceAction Result=",
+        "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY runQueryTemplateOrBoxedExtractorTemplateAction callPersistenceAction Result=",
         result
       );
       return result["dataEntitiesFromModelSection"];
@@ -955,7 +955,7 @@ export class DomainController implements DomainControllerInterface {
           }
           break;
         }
-        case "runQueryTemplateOrExtractorTemplateAction": {
+        case "runQueryTemplateAction": {
           log.info(
             "handleCompositeActionTemplate resolved queryTemplate action",
             currentAction,
@@ -963,7 +963,7 @@ export class DomainController implements DomainControllerInterface {
             actionParamValues
           );
 
-          const actionResult = await this.handleQueryTemplateOrExtractorTemplateActionForServerONLY(
+          const actionResult = await this.handleQueryTemplateActionForServerONLY(
             currentAction.queryTemplate
           );
           if (actionResult?.status != "ok") {
@@ -979,7 +979,31 @@ export class DomainController implements DomainControllerInterface {
           }
           break;
         }
-        case "runExtractorOrQueryAction": {
+        case "runBoxedExtractorTemplateAction": {
+          log.info(
+            "handleCompositeActionTemplate resolved extractorTemplate action",
+            currentAction,
+            "with actionParamValues",
+            actionParamValues
+          );
+
+          const actionResult = await this.handleBoxedExtractorTemplateActionForServerONLY(
+            currentAction.queryTemplate
+          );
+          if (actionResult?.status != "ok") {
+            log.error("Error on query", JSON.stringify(actionResult, null, 2));
+          } else {
+            log.info(
+              "handleCompositeActionTemplate extractorTemplate adding result to context as",
+              currentAction.nameGivenToResult,
+              "value",
+              actionResult
+            );
+            localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement.elementValue;
+          }
+          break;
+        }
+        case "runBoxedExtractorOrQueryAction": {
           throw new Error(
             "handleCompositeActionTemplate can not handle query actions: " + JSON.stringify(currentAction)
           );
@@ -991,13 +1015,6 @@ export class DomainController implements DomainControllerInterface {
           //   actionParamValues
           // );
 
-          // const actionResult = await this.handleQueryTemplateOrExtractorTemplateActionForServerONLY(currentAction.query as any as RunQueryTemplateOrExtractorTemplateAction);
-          // if (actionResult?.status != "ok") {
-          //   log.error("Error on query", JSON.stringify(actionResult, null, 2));
-          // } else {
-          //   log.info("handleCompositeActionTemplate query adding result to context as", currentAction.nameGivenToResult, "value", actionResult);
-          //   localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement.elementValue;
-          // }
           break;
         }
         default: {
@@ -1094,7 +1111,7 @@ export class DomainController implements DomainControllerInterface {
           // const actionResult = await this.handleAction(currentAction.action, currentModel);
           break;
         }
-        case "runQueryTemplateOrExtractorTemplateAction": {
+        case "runQueryTemplateAction": {
           log.info(
             "handleCompositeActionTemplate",
             actionLabel,
@@ -1104,7 +1121,35 @@ export class DomainController implements DomainControllerInterface {
             actionParamValues
           );
 
-          const actionResult = await this.handleQueryTemplateOrExtractorTemplateActionForServerONLY(
+          const actionResult = await this.handleQueryTemplateActionForServerONLY(
+            currentAction.queryTemplate
+          );
+          if (actionResult?.status != "ok") {
+            log.error("Error on query", JSON.stringify(actionResult, null, 2));
+          } else {
+            log.info(
+              "handleCompositeActionTemplate",
+              actionLabel,
+              "query adding result to context as",
+              currentAction.nameGivenToResult,
+              "value",
+              actionResult
+            );
+            localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement.elementValue;
+          }
+          break;
+        }
+        case "runBoxedExtractorTemplateAction": {
+          log.info(
+            "handleCompositeActionTemplate",
+            actionLabel,
+            "resolved query action",
+            currentAction,
+            "with actionParamValues",
+            actionParamValues
+          );
+
+          const actionResult = await this.handleBoxedExtractorTemplateActionForServerONLY(
             currentAction.queryTemplate
           );
           if (actionResult?.status != "ok") {

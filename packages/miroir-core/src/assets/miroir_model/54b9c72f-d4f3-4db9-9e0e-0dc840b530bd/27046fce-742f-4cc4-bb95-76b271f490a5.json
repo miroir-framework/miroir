@@ -1,69 +1,146 @@
 {
   "uuid": "27046fce-742f-4cc4-bb95-76b271f490a5",
-  "parentName":"EntityDefinition",
-  "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentName": "EntityDefinition",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
-  "conceptLevel":"Model",
-  "name":"SelfApplicationVersion",
+  "conceptLevel": "Model",
+  "name": "SelfApplicationVersion",
   "icon": "Interests",
   "jzodSchema": {
     "type": "object",
     "definition": {
       "uuid": {
         "type": "uuid",
-        "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Uuid",
+            "editable": false
+          }
+        }
       },
       "parentName": {
         "type": "string",
         "optional": true,
-        "tag": { "value": {  "id":2, "defaultLabel": "Entity Name", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 2,
+            "defaultLabel": "Entity Name",
+            "editable": false
+          }
+        }
       },
       "parentUuid": {
         "type": "uuid",
-        "tag": { "value": {  "id":3, "defaultLabel": "Entity Uuid", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 3,
+            "defaultLabel": "Entity Uuid",
+            "editable": false
+          }
+        }
       },
       "parentDefinitionVersionUuid": {
         "type": "uuid",
         "optional": true,
-        "tag": { "value": {  "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 4,
+            "defaultLabel": "Entity Definition Version Uuid",
+            "editable": false
+          }
+        }
       },
       "name": {
         "type": "string",
-        "tag": { "value": {  "id":5, "defaultLabel": "Name", "editable": true }}
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Name",
+            "editable": true
+          }
+        }
       },
       "defaultLabel": {
         "type": "string",
         "optional": true,
-        "tag": { "value": {  "id":6, "defaultLabel": "Default Label", "editable": true }}
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Default Label",
+            "editable": true
+          }
+        }
       },
       "description": {
         "type": "string",
         "optional": true,
-        "tag": { "value": {  "id":7, "defaultLabel": "Description", "editable": true }}
+        "tag": {
+          "value": {
+            "id": 7,
+            "defaultLabel": "Description",
+            "editable": true
+          }
+        }
       },
       "type": {
         "type": "string",
         "optional": true,
-        "tag": { "value": {  "id":8, "defaultLabel": "Type of Report", "editable": true }}
+        "tag": {
+          "value": {
+            "id": 8,
+            "defaultLabel": "Type of Report",
+            "editable": true
+          }
+        }
       },
       "application": {
         "type": "uuid",
-        "tag": { "value": {  "id":9, "defaultLabel": "Application", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 9,
+            "defaultLabel": "Application",
+            "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+            "editable": false
+          }
+        }
       },
       "branch": {
         "type": "uuid",
-        "tag": { "value": {  "id":10, "defaultLabel": "Branch", "description":"The Branch of this Application Version", "targetEntity": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 10,
+            "defaultLabel": "Branch",
+            "description": "The Branch of this Application Version",
+            "targetEntity": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+            "editable": false
+          }
+        }
       },
       "previousVersion": {
         "type": "uuid",
         "optional": true,
-        "tag": { "value": {  "id":11, "defaultLabel": "Previous Application Version", "description":"Previous version of the application on this Branch.", "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 11,
+            "defaultLabel": "Previous Application Version",
+            "description": "Previous version of the application on this Branch.",
+            "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+            "editable": false
+          }
+        }
       },
       "modelStructureMigration": {
         "type": "array",
         "optional": true,
-        "tag": { "value": {  "id":12, "defaultLabel": "Structure Migration from Previous Version", "editable": true }},
+        "tag": {
+          "value": {
+            "id": 12,
+            "defaultLabel": "Structure Migration from Previous Version",
+            "editable": true
+          }
+        },
         "definition": {
           "type": "record",
           "definition": {
@@ -74,11 +151,17 @@
       "modelCUDMigration": {
         "type": "array",
         "optional": true,
-        "tag": { "value": {  "id":13, "defaultLabel": "Create-Update-Delete Migration from Previous Version", "editable": true }},
+        "tag": {
+          "value": {
+            "id": 13,
+            "defaultLabel": "Create-Update-Delete Migration from Previous Version",
+            "editable": true
+          }
+        },
         "definition": {
           "type": "record",
           "definition": {
-            "type": "any" 
+            "type": "any"
           }
         }
       }

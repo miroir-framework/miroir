@@ -1,61 +1,129 @@
 {
   "uuid": "69bf7c03-a1df-4d1c-88c1-44363feeea87",
-  "parentName":"EntityDefinition",
-  "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentName": "EntityDefinition",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
-  "conceptLevel":"Model",
-  "name":"ApplicationModelBranch",
+  "conceptLevel": "Model",
+  "name": "ApplicationModelBranch",
   "icon": "Interests",
   "jzodSchema": {
     "type": "object",
     "definition": {
       "uuid": {
         "type": "uuid",
-        "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Uuid",
+            "editable": false
+          }
+        }
       },
       "parentName": {
         "type": "string",
         "optional": true,
-        "tag": { "value": {  "id":2, "defaultLabel": "Entity Name", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 2,
+            "defaultLabel": "Entity Name",
+            "editable": false
+          }
+        }
       },
       "parentUuid": {
         "type": "uuid",
-        "tag": { "value": {  "id":3, "defaultLabel": "Entity Uuid", "targetEntityApplicationSection":"model", "targetEntity":"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 3,
+            "defaultLabel": "Entity Uuid",
+            "targetEntityApplicationSection": "model",
+            "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "editable": false
+          }
+        }
       },
       "parentDefinitionVersionUuid": {
         "type": "uuid",
         "optional": true,
-        "tag": { "value": {  "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 4,
+            "defaultLabel": "Entity Definition Version Uuid",
+            "editable": false
+          }
+        }
       },
       "conceptLevel": {
         "type": "enum",
-        "definition": ["MetaModel", "Model", "Data"],
+        "definition": [
+          "MetaModel",
+          "Model",
+          "Data"
+        ],
         "optional": true,
-        "tag": { "value": {  "id": 5, "defaultLabel": "Concept Level", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Concept Level",
+            "editable": false
+          }
+        }
       },
       "name": {
         "type": "string",
-        "tag": { "value": {  "id":6, "defaultLabel": "Name", "editable": true }}
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Name",
+            "editable": true
+          }
+        }
       },
       "defaultLabel": {
         "type": "string",
         "optional": true,
-        "tag": { "value": {  "id":7, "defaultLabel": "Name", "editable": true }}
+        "tag": {
+          "value": {
+            "id": 7,
+            "defaultLabel": "Name",
+            "editable": true
+          }
+        }
       },
       "application": {
         "type": "uuid",
-        "tag": { "value": {  "id":8, "defaultLabel": "Application", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 8,
+            "defaultLabel": "Application",
+            "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+            "editable": false
+          }
+        }
       },
       "headVersion": {
         "type": "uuid",
         "optional": true,
-        "tag": { "value": {  "id":9, "defaultLabel": "Head Version", "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24", "editable": true }}
+        "tag": {
+          "value": {
+            "id": 9,
+            "defaultLabel": "Head Version",
+            "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+            "editable": true
+          }
+        }
       },
       "description": {
         "type": "string",
         "optional": true,
-        "tag": { "value": {  "id": 10, "defaultLabel": "Description", "editable": true }}
+        "tag": {
+          "value": {
+            "id": 10,
+            "defaultLabel": "Description",
+            "editable": true
+          }
+        }
       }
     }
   }

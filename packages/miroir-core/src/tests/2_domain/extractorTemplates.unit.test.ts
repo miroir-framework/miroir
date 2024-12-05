@@ -5,10 +5,10 @@ import {
   BoxedExtractorTemplateReturningObject,
   QueryTemplateWithExtractorCombinerTransformer
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList } from '../../2_domain/Templates';
 import {
   resolveQueryTemplateWithExtractorCombinerTransformer
 } from "../../index";
+import { resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList } from '../../2_domain/Templates';
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
@@ -18,8 +18,8 @@ import {
 describe("extractorTemplates.unit.test", () => {
 
   // ################################################################################################
-  it("convert extractorOrCombinerTemplate to query with resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList", async () => { // TODO: test failure cases!
-    console.log("convert extractorOrCombinerTemplate to query with resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList START")
+  it("convert extractorOrCombinerTemplate to query with resolveQueryTemplateForBoxedExtractorOrCombinerReturningObjectOrObjectList", async () => { // TODO: test failure cases!
+    console.log("convert extractorOrCombinerTemplate to query with resolveQueryTemplateForBoxedExtractorOrCombinerReturningObjectOrObjectList START")
     const newApplicationName = "test";
     const newUuid = uuidv4();
 
@@ -34,7 +34,7 @@ describe("extractorTemplates.unit.test", () => {
       },
       contextResults: {},
       select: {
-          queryType: "extractorForObjectByDirectReference",
+          extractorTemplateType: "extractorForObjectByDirectReference",
           parentName: "Book",
           parentUuid: {
             transformerType: "constantUuid",
@@ -47,9 +47,9 @@ describe("extractorTemplates.unit.test", () => {
       },
     };
 
-    const testResult = resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList(uniqueRuntimeTemplate); // uuid value is ignored
+    const testResult = resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList(uniqueRuntimeTemplate); // uuid value is ignored
     console.log(
-      "################################ converted queryTemplate to query with resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList testResults",
+      "################################ converted queryTemplate to query with resolveQueryTemplateForBoxedExtractorOrCombinerReturningObjectOrObjectList testResults",
       JSON.stringify(testResult, null, 2)
     );
     expect(testResult).toEqual({
@@ -69,7 +69,7 @@ describe("extractorTemplates.unit.test", () => {
         instanceUuid: "xxxxx",
       },
     });
-    console.log("convert extractorOrCombinerTemplate to query with resolveQueryTemplateForExtractorOrCombinerReturningObjectOrObjectList END")
+    console.log("convert extractorOrCombinerTemplate to query with resolveQueryTemplateForBoxedExtractorOrCombinerReturningObjectOrObjectList END")
   }
   );
 
@@ -91,7 +91,7 @@ describe("extractorTemplates.unit.test", () => {
         contextResults: {},
         extractorTemplates: {
           book: {
-            queryType: "extractorForObjectByDirectReference",
+            extractorTemplateType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
               transformerType: "constantUuid",
@@ -103,7 +103,7 @@ describe("extractorTemplates.unit.test", () => {
             },
           },
           fountain: {
-            queryType: "extractorForObjectByDirectReference",
+            extractorTemplateType: "extractorForObjectByDirectReference",
             parentName: "Fountain",
             parentUuid: {
               transformerType: "parameterReference",
@@ -121,7 +121,7 @@ describe("extractorTemplates.unit.test", () => {
         },
         combinerTemplates: {
           publisher: {
-            queryType: "combinerForObjectByRelation",
+            extractorTemplateType: "combinerForObjectByRelation",
             parentName: "Publisher",
             parentUuid: {
               transformerType: "constantUuid",
@@ -135,7 +135,7 @@ describe("extractorTemplates.unit.test", () => {
             AttributeOfObjectToCompareToReferenceUuid: "publisher",
           },
           booksOfPublisher: {
-            queryType: "combinerByRelationReturningObjectList",
+            extractorTemplateType: "combinerByRelationReturningObjectList",
             parentName: "Book",
             parentUuid: {
               transformerType: "constantUuid",
@@ -149,7 +149,7 @@ describe("extractorTemplates.unit.test", () => {
             AttributeOfListObjectToCompareToReferenceUuid: "publisher",
           },
           booksOfAuthor: {
-            queryType: "combinerByRelationReturningObjectList",
+            extractorTemplateType: "combinerByRelationReturningObjectList",
             parentName: "Book",
             parentUuid: {
               transformerType: "constantUuid",
@@ -163,7 +163,7 @@ describe("extractorTemplates.unit.test", () => {
             AttributeOfListObjectToCompareToReferenceUuid: "author",
           },
           publishersOfBooks: {
-            queryType: "combinerByManyToManyRelationReturningObjectList",
+            extractorTemplateType: "combinerByManyToManyRelationReturningObjectList",
             parentName: "Publisher",
             parentUuid: {
               transformerType: "constantUuid",

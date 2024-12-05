@@ -1,11 +1,11 @@
 {
-  "uuid":"381ab1be-337f-4198-b1d3-f686867fc1dd",
-  "parentName":"EntityDefinition",
-  "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "uuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  "parentName": "EntityDefinition",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-  "name":"Entity",
-  "conceptLevel":"MetaModel",
+  "name": "Entity",
+  "conceptLevel": "MetaModel",
   "description": "Entities",
   "defaultInstanceDetailsReportUuid": "074d1de9-594d-42d6-8848-467baeb6f3e0",
   "viewAttributes": [
@@ -20,46 +20,105 @@
     "definition": {
       "uuid": {
         "type": "uuid",
-        "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Uuid",
+            "editable": false
+          }
+        }
       },
       "parentName": {
         "type": "string",
         "optional": true,
-        "tag": { "value": {  "id":2, "defaultLabel": "Entity Name", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 2,
+            "defaultLabel": "Entity Name",
+            "editable": false
+          }
+        }
       },
       "parentUuid": {
         "type": "uuid",
-        "tag": { "value": {  "id":3, "defaultLabel": "Entity Uuid", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 3,
+            "defaultLabel": "Entity Uuid",
+            "editable": false
+          }
+        }
       },
       "parentDefinitionVersionUuid": {
         "type": "uuid",
         "optional": true,
-        "tag": { "value": {  "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 4,
+            "defaultLabel": "Entity Definition Version Uuid",
+            "editable": false
+          }
+        }
       },
       "conceptLevel": {
         "type": "enum",
-        "definition": ["MetaModel", "Model", "Data"],
+        "definition": [
+          "MetaModel",
+          "Model",
+          "Data"
+        ],
         "optional": true,
-        "tag": { "value": {  "id": 5, "defaultLabel": "Concept Level", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Concept Level",
+            "editable": false
+          }
+        }
       },
       "application": {
         "type": "uuid",
         "optional": true,
-        "tag": { "value": {  "id": 6, "defaultLabel": "Application", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Application",
+            "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+            "editable": false
+          }
+        }
       },
       "name": {
         "type": "string",
-        "tag": { "value": {  "id":7, "defaultLabel": "Name", "editable": true }}
+        "tag": {
+          "value": {
+            "id": 7,
+            "defaultLabel": "Name",
+            "editable": true
+          }
+        }
       },
       "author": {
         "type": "uuid",
         "optional": true,
-        "tag": { "value": {  "id":8, "defaultLabel": "Application", "editable": true }}
+        "tag": {
+          "value": {
+            "id": 8,
+            "defaultLabel": "Application",
+            "editable": true
+          }
+        }
       },
       "description": {
         "type": "string",
         "optional": true,
-        "tag": { "value": {  "id": 9, "defaultLabel": "Description", "editable": true }}
+        "tag": {
+          "value": {
+            "id": 9,
+            "defaultLabel": "Description",
+            "editable": true
+          }
+        }
       }
     }
   }

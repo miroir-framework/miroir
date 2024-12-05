@@ -1,40 +1,76 @@
 {
   "uuid": "f93af951-ea13-4815-a2e3-ec0cab1fadd2",
-  "parentName":"EntityDefinition",
-  "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentName": "EntityDefinition",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "7990c0c9-86c3-40a1-a121-036c91b55ed7",
-  "conceptLevel":"Model",
-  "name":"StoreBasedConfiguration",
+  "conceptLevel": "Model",
+  "name": "StoreBasedConfiguration",
   "icon": "Interests",
   "jzodSchema": {
     "type": "object",
     "definition": {
       "uuid": {
         "type": "uuid",
-        "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Uuid",
+            "editable": false
+          }
+        }
       },
       "parentName": {
         "type": "string",
         "optional": true,
-        "tag": { "value": {  "id":2, "defaultLabel": "Entity Name", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 2,
+            "defaultLabel": "Entity Name",
+            "editable": false
+          }
+        }
       },
       "parentUuid": {
         "type": "uuid",
-        "tag": { "value": {  "id":3, "defaultLabel": "Entity Uuid", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 3,
+            "defaultLabel": "Entity Uuid",
+            "editable": false
+          }
+        }
       },
       "parentDefinitionVersionUuid": {
         "type": "uuid",
         "optional": true,
-        "tag": { "value": {  "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 4,
+            "defaultLabel": "Entity Definition Version Uuid",
+            "editable": false
+          }
+        }
       },
       "name": {
         "type": "string",
-        "tag": { "value": {  "id":5, "defaultLabel": "Name", "editable": true }}
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Name",
+            "editable": true
+          }
+        }
       },
       "defaultLabel": {
         "type": "string",
-        "tag": { "value": {  "id":6, "defaultLabel": "Default Label", "editable": true }}
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Default Label",
+            "editable": true
+          }
+        }
       },
       "definition": {
         "type": "object",
@@ -44,7 +80,13 @@
             "type": "string"
           }
         },
-        "tag": { "value": {  "id":7, "defaultLabel": "The configuration itself", "editable": true }}
+        "tag": {
+          "value": {
+            "id": 7,
+            "defaultLabel": "The configuration itself",
+            "editable": true
+          }
+        }
       }
     }
   }

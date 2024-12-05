@@ -18,7 +18,7 @@ import {
   RecordOfJzodObject,
   resolveQueryTemplateWithExtractorCombinerTransformer,
   RootReport,
-  SyncExtractorOrQueryRunnerMap,
+  SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunnerParams,
   Uuid
 } from "miroir-core";
@@ -80,7 +80,7 @@ export const ReportView = (props: ReportViewProps) => {
   //   props.reportSection.extractors
   // );
 
-  const deploymentEntityStateSelectorMap: SyncExtractorOrQueryRunnerMap<DeploymentEntityState> = useMemo(
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
   );

@@ -12,12 +12,26 @@
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": {"type": "literal", "definition":"applicationAction"},
-            "actionName": {"type": "literal", "definition":"createApplication"},
-            "endpoint": {"type": "literal", "definition":"ddd9c928-2ceb-4f67-971b-5898090412d6"},
+            "actionType": {
+              "type": "literal",
+              "definition": "applicationAction"
+            },
+            "actionName": {
+              "type": "literal",
+              "definition": "createApplication"
+            },
+            "endpoint": {
+              "type": "literal",
+              "definition": "ddd9c928-2ceb-4f67-971b-5898090412d6"
+            },
             "objects": {
               "type": "array",
-              "tag": { "value": {  "defaultLabel": "Application Instance to create", "editable": true }},
+              "tag": {
+                "value": {
+                  "defaultLabel": "Application Instance to create",
+                  "editable": true
+                }
+              },
               "definition": {
                 "type": "schemaReference",
                 "optional": false,
@@ -34,12 +48,26 @@
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": {"type": "literal", "definition":"applicationAction"},
-            "actionName": {"type": "literal", "definition":"deleteApplication"},
-            "endpoint": {"type": "literal", "definition":"ddd9c928-2ceb-4f67-971b-5898090412d6"},
+            "actionType": {
+              "type": "literal",
+              "definition": "applicationAction"
+            },
+            "actionName": {
+              "type": "literal",
+              "definition": "deleteApplication"
+            },
+            "endpoint": {
+              "type": "literal",
+              "definition": "ddd9c928-2ceb-4f67-971b-5898090412d6"
+            },
             "objects": {
               "type": "array",
-              "tag": { "value": {  "defaultLabel": "Application Instance to create", "editable": true }},
+              "tag": {
+                "value": {
+                  "defaultLabel": "Application Instance to create",
+                  "editable": true
+                }
+              },
               "definition": {
                 "type": "schemaReference",
                 "optional": false,

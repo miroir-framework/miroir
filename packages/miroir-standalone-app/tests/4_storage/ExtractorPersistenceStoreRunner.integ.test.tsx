@@ -192,9 +192,9 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       {},
       async () => {
         const applicationSection:ApplicationSection = "model";
-        const queryResult:ActionReturnType = await localMiroirPersistenceStoreController.handleExtractorAction(
+        const queryResult:ActionReturnType = await localMiroirPersistenceStoreController.handleBoxedExtractorAction(
           {
-            actionType: "runExtractorAction",
+            actionType: "runBoxedExtractorAction",
             actionName: "runQuery",
             deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",

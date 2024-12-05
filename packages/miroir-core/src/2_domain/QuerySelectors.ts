@@ -28,17 +28,17 @@ import {
   QueryFailed,
   QueryJzodSchemaParams,
   QueryWithExtractorCombinerTransformer,
-  RunExtractorAction,
+  RunBoxedExtractorAction,
   RunQueryAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
-  AsyncExtractorOrQueryRunnerMap,
+  AsyncBoxedExtractorOrQueryRunnerMap,
   ExtractorRunnerParamsForJzodSchema,
   RecordOfJzodElement,
   RecordOfJzodObject,
-  SyncExtractorOrQueryRunnerMap,
-  SyncExtractorRunner,
-  SyncExtractorRunnerParams,
+  SyncBoxedExtractorOrQueryRunnerMap,
+  SyncBoxedExtractorRunner,
+  SyncBoxedExtractorRunnerParams,
   SyncQueryRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -57,9 +57,9 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   }
 );
 
-const emptySelectorMap:SyncExtractorOrQueryRunnerMap<any> = {
+const emptySelectorMap:SyncBoxedExtractorOrQueryRunnerMap<any> = {
   extractorType: "sync",
-  extractWithExtractorOrCombinerReturningObjectOrObjectList: undefined as any, 
+  extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: undefined as any, 
   runQuery: undefined as any, 
   extractEntityInstance: undefined as any,
   extractEntityInstanceUuidIndexWithObjectListExtractor: undefined as any,
@@ -70,9 +70,9 @@ const emptySelectorMap:SyncExtractorOrQueryRunnerMap<any> = {
   runQueryTemplateWithExtractorCombinerTransformer: undefined as any,
 }
 
-const emptyAsyncSelectorMap:AsyncExtractorOrQueryRunnerMap = {
+const emptyAsyncSelectorMap:AsyncBoxedExtractorOrQueryRunnerMap = {
   extractorType: "async",
-  extractWithExtractorOrCombinerReturningObjectOrObjectList: undefined as any, 
+  extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: undefined as any, 
   runQuery: undefined as any, 
   extractEntityInstance: undefined as any,
   extractEntityInstanceUuidIndexWithObjectListExtractor: undefined as any,
@@ -490,7 +490,10 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
 export const extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
 = <StateType>(
   deploymentEntityState: StateType,
-  selectorParams: SyncExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, StateType>
+  selectorParams: SyncBoxedExtractorRunnerParams<
+  BoxedExtractorOrCombinerReturningObjectList, 
+    StateType
+  >
 ): DomainElementInstanceUuidIndexOrFailed => {
   const selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed =
     (selectorParams?.extractorRunnerMap ?? emptySelectorMap).extractEntityInstanceUuidIndex(deploymentEntityState, selectorParams);
@@ -515,7 +518,7 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
 export const extractEntityInstanceListWithObjectListExtractorInMemory
 = <StateType>(
   deploymentEntityState: StateType,
-  selectorParams: SyncExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, StateType>
+  selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, StateType>
 ): DomainElementInstanceArrayOrFailed => {
   const selectedInstancesUuidIndex: DomainElementInstanceArrayOrFailed =
     (selectorParams?.extractorRunnerMap ?? emptySelectorMap).extractEntityInstanceList(deploymentEntityState, selectorParams);
@@ -542,15 +545,15 @@ export const applyExtractorTransformerInMemory = (
 };
 
 // ################################################################################################
-export async function handleExtractorAction(
+export async function handleBoxedExtractorAction(
   origin: string,
-  runExtractorAction: RunExtractorAction,
-  selectorMap: AsyncExtractorOrQueryRunnerMap
+  runBoxedExtractorAction: RunBoxedExtractorAction,
+  selectorMap: AsyncBoxedExtractorOrQueryRunnerMap
 ): Promise<ActionReturnType> {
-  log.info("handleExtractorAction for", origin, "start", "runExtractorAction", JSON.stringify(runExtractorAction, null, 2));
+  log.info("handleBoxedExtractorAction for", origin, "start", "runBoxedExtractorAction", JSON.stringify(runBoxedExtractorAction, null, 2));
   let queryResult: DomainElement;
-  const extractor = runExtractorAction.query;
-  queryResult = await selectorMap.extractWithExtractorOrCombinerReturningObjectOrObjectList(
+  const extractor = runBoxedExtractorAction.query;
+  queryResult = await selectorMap.extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
     {
       extractorRunnerMap: selectorMap,
       extractor,
@@ -563,7 +566,7 @@ export async function handleExtractorAction(
     } as ActionReturnType;
   } else {
     const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
-    log.info("handleExtractorAction for", origin, "runExtractorAction", runExtractorAction, "result", JSON.stringify(result, null, 2));
+    log.info("handleBoxedExtractorAction for", origin, "runBoxedExtractorAction", runBoxedExtractorAction, "result", JSON.stringify(result, null, 2));
     return result;
   }
 }
@@ -572,7 +575,7 @@ export async function handleExtractorAction(
 export async function handleQueryAction(
   origin: string,
   runQueryAction: RunQueryAction,
-  selectorMap: AsyncExtractorOrQueryRunnerMap
+  selectorMap: AsyncBoxedExtractorOrQueryRunnerMap
 ): Promise<ActionReturnType> {
   log.info("handleQueryAction for", origin, "start", "runQueryAction", JSON.stringify(runQueryAction, null, 2));
   let queryResult: DomainElement;
@@ -589,18 +592,18 @@ export async function handleQueryAction(
     } as ActionReturnType;
   } else {
     const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
-    log.info("handleQueryAction for", origin, "runExtractorOrQueryAction", runQueryAction, "result", JSON.stringify(result, null, 2));
+    log.info("handleQueryAction for", origin, "runBoxedExtractorOrQueryAction", runQueryAction, "result", JSON.stringify(result, null, 2));
     return result;
   }
 }
 
 // ################################################################################################
-export function innerSelectDomainElementFromExtractorOrCombiner/*ExtractorTemplateRunner*/<StateType>(
+export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorTemplateRunner*/<StateType>(
   state: StateType,
   context: Record<string, any>,
   pageParams: Record<string, any>,
   queryParams: Record<string, any>,
-  extractorRunnerMap:SyncExtractorOrQueryRunnerMap<StateType>,
+  extractorRunnerMap:SyncBoxedExtractorOrQueryRunnerMap<StateType>,
   deploymentUuid: Uuid,
   extractorOrCombiner: ExtractorOrCombiner
 ): DomainElement | DomainElementFailed {
@@ -805,20 +808,20 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*ExtractorTempla
 }
 
 // ################################################################################################
-export type ExtractWithExtractorType<StateType> = SyncExtractorRunner<
+export type ExtractWithExtractorType<StateType> = SyncBoxedExtractorRunner<
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   StateType,
   DomainElement
 >;
-export const extractWithExtractorOrCombinerReturningObjectOrObjectList /*: ExtractWithExtractorType*/ = <StateType>(
+export const extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList /*: ExtractWithExtractorType*/ = <StateType>(
   state: StateType,
-  selectorParams: SyncExtractorRunnerParams<
+  selectorParams: SyncBoxedExtractorRunnerParams<
     BoxedExtractorOrCombinerReturningObjectOrObjectList,
     StateType
   >
 ): DomainElement => {
   // log.info("########## extractExtractor begin, query", selectorParams);
-  const localSelectorMap: SyncExtractorOrQueryRunnerMap<StateType> = selectorParams?.extractorRunnerMap ?? emptySelectorMap;
+  const localSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<StateType> = selectorParams?.extractorRunnerMap ?? emptySelectorMap;
 
   const result = innerSelectDomainElementFromExtractorOrCombiner(
     state,
@@ -865,7 +868,7 @@ export const runQuery = <StateType>(
   //   elementValue: { ...selectorParams.extractor.contextResults.elementValue },
   // };
   // log.info("########## DomainSelector runQuery will use context", context);
-  const localSelectorMap: SyncExtractorOrQueryRunnerMap<StateType> =
+  const localSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<StateType> =
     selectorParams?.extractorRunnerMap ?? emptySelectorMap;
 
   for (const extractor of Object.entries(

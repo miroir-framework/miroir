@@ -301,7 +301,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         contextResults: {},
                         extractorTemplates: {
                           [subQueryName]: {
-                            queryType: "extractorTemplateForObjectListByEntity",
+                            extractorTemplateType: "extractorTemplateForObjectListByEntity",
                             applicationSection: "data",
                             parentName: "Deployment",
                             parentUuid: {
@@ -312,9 +312,9 @@ export const RootComponent = (props: RootComponentProps) => {
                         },
                       };
                       const adminDeployments: ActionReturnType = 
-                        await domainController.handleQueryTemplateOrExtractorTemplateActionForServerONLY(
+                        await domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
                           {
-                            actionType: "runQueryTemplateOrExtractorTemplateAction",
+                            actionType: "runQueryTemplateOrBoxedExtractorTemplateAction",
                             actionName: "runQuery",
                             deploymentUuid:adminConfigurationDeploymentAdmin.uuid,
                             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -568,7 +568,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         }
                       } 
                       await domainController.handleAction({
-                        actionType: "runQueryTemplateOrExtractorTemplateAction",
+                        actionType: "runQueryTemplateOrBoxedExtractorTemplateAction",
                         actionName: "runQuery",
                         deploymentUuid:query.deploymentUuid,
                         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",

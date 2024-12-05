@@ -29,7 +29,7 @@ import {
   MiroirLoggerFactory,
   QueryWithExtractorCombinerTransformer,
   ResolvedJzodSchemaReturnType,
-  SyncExtractorOrQueryRunnerMap,
+  SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
   SyncQueryRunnerParams,
   Uuid,
@@ -251,7 +251,7 @@ export const JzodObjectEditor = (
 ): JSX.Element => {
   count++;
   const context = useMiroirContextService();
-  const deploymentEntityStateSelectorMap: SyncExtractorOrQueryRunnerMap<DeploymentEntityState> = useMemo(
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorMap(),
     []
   );

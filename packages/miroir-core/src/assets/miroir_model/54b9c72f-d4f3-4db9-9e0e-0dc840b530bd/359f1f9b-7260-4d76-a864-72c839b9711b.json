@@ -12,33 +12,75 @@
     "definition": {
       "uuid": {
         "type": "uuid",
-        "tag": { "value": {  "id": 1, "defaultLabel": "Uuid", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Uuid",
+            "editable": false
+          }
+        }
       },
       "parentName": {
         "type": "string",
-        "tag": { "value": {  "id": 2, "defaultLabel": "Entity Name", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 2,
+            "defaultLabel": "Entity Name",
+            "editable": false
+          }
+        }
       },
       "parentUuid": {
         "type": "uuid",
-        "tag": { "value": {  "id": 3, "defaultLabel": "Entity Uuid", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 3,
+            "defaultLabel": "Entity Uuid",
+            "editable": false
+          }
+        }
       },
       "parentDefinitionVersionUuid": {
         "type": "uuid",
         "optional": true,
-        "tag": { "value": {  "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 4,
+            "defaultLabel": "Entity Definition Version Uuid",
+            "editable": false
+          }
+        }
       },
       "name": {
         "type": "string",
-        "tag": { "value": {  "id": 5, "defaultLabel": "Name", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Name",
+            "editable": false
+          }
+        }
       },
       "description": {
         "type": "string",
         "optional": true,
-        "tag": { "value": {  "id": 6, "defaultLabel": "Description", "editable": true }}
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Description",
+            "editable": true
+          }
+        }
       },
       "definition": {
         "type": "schemaReference",
-        "tag": { "value": {  "id": 7, "defaultLabel": "Query Version definition", "editable": true }},
+        "tag": {
+          "value": {
+            "id": 7,
+            "defaultLabel": "Query Version definition",
+            "editable": true
+          }
+        },
         "context": {
           "queryFailed": {
             "type": "object",
@@ -113,12 +155,24 @@
               "label": {
                 "type": "string",
                 "optional": true,
-                "tag": { "value": {  "id":1, "defaultLabel": "Label", "editable": false }}
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Label",
+                    "editable": false
+                  }
+                }
               },
               "applicationSection": {
                 "type": "schemaReference",
                 "optional": true,
-                "tag": { "value": {  "id":2, "defaultLabel": "Application Section", "editable": false }},
+                "tag": {
+                  "value": {
+                    "id": 2,
+                    "defaultLabel": "Application Section",
+                    "editable": false
+                  }
+                },
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "applicationSection"
@@ -127,11 +181,23 @@
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "tag": { "value": {  "id":3, "defaultLabel": "Parent Name", "editable": false }}
+                "tag": {
+                  "value": {
+                    "id": 3,
+                    "defaultLabel": "Parent Name",
+                    "editable": false
+                  }
+                }
               },
               "parentUuid": {
                 "type": "schemaReference",
-                "tag": { "value": {  "id":4, "defaultLabel": "Parent Uuid", "editable": false }},
+                "tag": {
+                  "value": {
+                    "id": 4,
+                    "defaultLabel": "Parent Uuid",
+                    "editable": false
+                  }
+                },
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "transformer_InnerReference"
@@ -149,14 +215,14 @@
               }
             },
             "definition": {
-              "queryType": {
+              "extractorTemplateType": {
                 "type": "literal",
                 "definition": "combinerForObjectByRelation"
               },
               "objectReference": {
                 "type": "schemaReference",
                 "definition": {
-                  "absolutePath":"fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "transformerForRuntime_InnerReference"
                 }
               },
@@ -175,7 +241,7 @@
               }
             },
             "definition": {
-              "queryType": {
+              "extractorTemplateType": {
                 "type": "literal",
                 "definition": "extractorForObjectByDirectReference"
               },
@@ -216,7 +282,7 @@
               }
             },
             "definition": {
-              "queryType": {
+              "extractorTemplateType": {
                 "type": "literal",
                 "definition": "extractorTemplateForObjectListByEntity"
               },
@@ -248,14 +314,14 @@
               }
             },
             "definition": {
-              "queryType": {
+              "extractorTemplateType": {
                 "type": "literal",
                 "definition": "combinerByRelationReturningObjectList"
               },
               "objectReference": {
                 "type": "schemaReference",
                 "definition": {
-                  "absolutePath":"fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "transformerForRuntime_InnerReference"
                 }
               },
@@ -278,7 +344,7 @@
               }
             },
             "definition": {
-              "queryType": {
+              "extractorTemplateType": {
                 "type": "literal",
                 "definition": "combinerByManyToManyRelationReturningObjectList"
               },
@@ -344,12 +410,12 @@
           "extractorTemplateByExtractorCombiner": {
             "type": "object",
             "definition": {
-              "queryType": {
+              "extractorTemplateType": {
                 "type": "literal",
                 "definition": "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList"
               },
               "rootExtractorOrReference": {
-                "type": "union", 
+                "type": "union",
                 "definition": [
                   {
                     "type": "schemaReference",
@@ -387,7 +453,7 @@
           "extractorTemplateByExtractorWrapperReturningObject": {
             "type": "object",
             "definition": {
-              "queryType": {
+              "extractorTemplateType": {
                 "type": "literal",
                 "definition": "extractorTemplateByExtractorWrapperReturningObject"
               },
@@ -395,8 +461,8 @@
                 "type": "record",
                 "definition": {
                   "type": "schemaReference",
-                  "definition":{
-                    "relativePath":"transformer_contextOrParameterReference"
+                  "definition": {
+                    "relativePath": "transformer_contextOrParameterReference"
                   }
                 }
               }
@@ -405,7 +471,7 @@
           "extractorTemplateByExtractorWrapperReturningList": {
             "type": "object",
             "definition": {
-              "queryType": {
+              "extractorTemplateType": {
                 "type": "literal",
                 "definition": "extractorTemplateByExtractorWrapperReturningList"
               },
@@ -413,8 +479,8 @@
                 "type": "array",
                 "definition": {
                   "type": "schemaReference",
-                  "definition":{
-                    "relativePath":"transformer_contextOrParameterReference"
+                  "definition": {
+                    "relativePath": "transformer_contextOrParameterReference"
                   }
                 }
               }
@@ -487,8 +553,13 @@
               {
                 "type": "object",
                 "definition": {
-                  "queryType": { "type": "literal", "definition": "literal" },
-                  "definition": { "type": "string" }
+                  "extractorTemplateType": {
+                    "type": "literal",
+                    "definition": "literal"
+                  },
+                  "definition": {
+                    "type": "string"
+                  }
                 }
               }
             ]
@@ -508,12 +579,24 @@
               "label": {
                 "type": "string",
                 "optional": true,
-                "tag": { "value": {  "id":1, "defaultLabel": "Label", "editable": false }}
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Label",
+                    "editable": false
+                  }
+                }
               },
               "applicationSection": {
                 "type": "schemaReference",
                 "optional": true,
-                "tag": { "value": {  "id":2, "defaultLabel": "Application Section", "editable": false }},
+                "tag": {
+                  "value": {
+                    "id": 2,
+                    "defaultLabel": "Application Section",
+                    "editable": false
+                  }
+                },
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "applicationSection"
@@ -522,11 +605,23 @@
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "tag": { "value": {  "id":3, "defaultLabel": "Parent Name", "editable": false }}
+                "tag": {
+                  "value": {
+                    "id": 3,
+                    "defaultLabel": "Parent Name",
+                    "editable": false
+                  }
+                }
               },
               "parentUuid": {
                 "type": "uuid",
-                "tag": { "value": {  "id":4, "defaultLabel": "Parent Uuid", "editable": false }}
+                "tag": {
+                  "value": {
+                    "id": 4,
+                    "defaultLabel": "Parent Uuid",
+                    "editable": false
+                  }
+                }
               }
             }
           },
@@ -799,14 +894,14 @@
                   "definition": [
                     {
                       "type": "schemaReference",
-                      "definition":{
-                        "relativePath":"extractorOrCombinerContextReference"
+                      "definition": {
+                        "relativePath": "extractorOrCombinerContextReference"
                       }
                     },
                     {
                       "type": "schemaReference",
-                      "definition":{
-                        "relativePath":"extractorOrCombiner"
+                      "definition": {
+                        "relativePath": "extractorOrCombiner"
                       }
                     }
                   ]
@@ -828,14 +923,14 @@
                   "definition": [
                     {
                       "type": "schemaReference",
-                      "definition":{
-                        "relativePath":"extractorOrCombinerContextReference"
+                      "definition": {
+                        "relativePath": "extractorOrCombinerContextReference"
                       }
                     },
                     {
                       "type": "schemaReference",
-                      "definition":{
-                        "relativePath":"extractorOrCombiner"
+                      "definition": {
+                        "relativePath": "extractorOrCombiner"
                       }
                     }
                   ]
@@ -898,11 +993,16 @@
               {
                 "type": "object",
                 "definition": {
-                  "extractorOrCombinerType": { "type": "literal", "definition": "literal" },
-                  "definition": { "type": "string" }
+                  "extractorOrCombinerType": {
+                    "type": "literal",
+                    "definition": "literal"
+                  },
+                  "definition": {
+                    "type": "string"
+                  }
                 }
               }
-          ]
+            ]
           },
           "extractorOrCombinerRecord": {
             "type": "record",

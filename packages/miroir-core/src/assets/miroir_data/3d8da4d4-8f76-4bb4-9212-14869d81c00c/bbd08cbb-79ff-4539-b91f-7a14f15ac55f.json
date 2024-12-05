@@ -11,30 +11,68 @@
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": {"type": "literal", "definition":"storeManagementAction"},
-            "actionName": {"type": "literal", "definition":"createStore"},
-            "endpoint": {"type": "literal", "definition":"bbd08cbb-79ff-4539-b91f-7a14f15ac55f"},
-            "configuration": { "type":"schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeUnitConfiguration" } },
+            "actionType": {
+              "type": "literal",
+              "definition": "storeManagementAction"
+            },
+            "actionName": {
+              "type": "literal",
+              "definition": "createStore"
+            },
+            "endpoint": {
+              "type": "literal",
+              "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
+            },
+            "configuration": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "storeUnitConfiguration"
+              }
+            },
             "deploymentUuid": {
               "type": "uuid",
-              "tag": { "value": {  "defaultLabel": "Module Deployment Uuid", "editable": false }}
+              "tag": {
+                "value": {
+                  "defaultLabel": "Module Deployment Uuid",
+                  "editable": false
+                }
+              }
             }
           }
         },
         "actionErrors": {
-          "type":"enum", "definition": ["FailedToCreateStore", "FailedToDeployModule"]
+          "type": "enum",
+          "definition": [
+            "FailedToCreateStore",
+            "FailedToDeployModule"
+          ]
         }
       },
       {
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": { "type": "literal", "definition": "storeManagementAction" },
-            "actionName": { "type": "literal", "definition": "deleteStore" },
-            "endpoint": { "type": "literal", "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" },
+            "actionType": {
+              "type": "literal",
+              "definition": "storeManagementAction"
+            },
+            "actionName": {
+              "type": "literal",
+              "definition": "deleteStore"
+            },
+            "endpoint": {
+              "type": "literal",
+              "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
+            },
             "deploymentUuid": {
               "type": "uuid",
-              "tag": { "value": {  "defaultLabel": "Module Deployment Uuid", "editable": false }}
+              "tag": {
+                "value": {
+                  "defaultLabel": "Module Deployment Uuid",
+                  "editable": false
+                }
+              }
             },
             "configuration": {
               "type": "schemaReference",
@@ -46,16 +84,26 @@
           }
         },
         "actionErrors": {
-          "type":"literal", "definition": "FailedToDeleteStore"
+          "type": "literal",
+          "definition": "FailedToDeleteStore"
         }
       },
       {
-        "actionParameters" : {
+        "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": { "type": "literal", "definition": "storeManagementAction" },
-            "actionName": { "type": "literal", "definition": "resetAndInitMiroirAndApplicationDatabase" },
-            "endpoint": { "type": "literal", "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" },
+            "actionType": {
+              "type": "literal",
+              "definition": "storeManagementAction"
+            },
+            "actionName": {
+              "type": "literal",
+              "definition": "resetAndInitMiroirAndApplicationDatabase"
+            },
+            "endpoint": {
+              "type": "literal",
+              "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
+            },
             "deployments": {
               "type": "array",
               "definition": {
@@ -68,21 +116,36 @@
             },
             "deploymentUuid": {
               "type": "uuid",
-              "tag": { "value": {  "defaultLabel": "Module Deployment Uuid", "editable": false }}
+              "tag": {
+                "value": {
+                  "defaultLabel": "Module Deployment Uuid",
+                  "editable": false
+                }
+              }
             }
           }
         },
         "actionErrors": {
-          "type":"literal", "definition": "FailedToResetAndInitMiroirAndApplicationDatabase"
+          "type": "literal",
+          "definition": "FailedToResetAndInitMiroirAndApplicationDatabase"
         }
       },
       {
-        "actionParameters" : {
+        "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": { "type": "literal", "definition": "storeManagementAction" },
-            "actionName": { "type": "literal", "definition": "openStore" },
-            "endpoint": { "type": "literal", "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" },
+            "actionType": {
+              "type": "literal",
+              "definition": "storeManagementAction"
+            },
+            "actionName": {
+              "type": "literal",
+              "definition": "openStore"
+            },
+            "endpoint": {
+              "type": "literal",
+              "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
+            },
             "configuration": {
               "type": "record",
               "definition": {
@@ -95,29 +158,50 @@
             },
             "deploymentUuid": {
               "type": "uuid",
-              "tag": { "value": {  "defaultLabel": "Module Deployment Uuid", "editable": false }}
+              "tag": {
+                "value": {
+                  "defaultLabel": "Module Deployment Uuid",
+                  "editable": false
+                }
+              }
             }
           }
         },
         "actionErrors": {
-          "type":"literal", "definition": "FailedToOpenStore"
+          "type": "literal",
+          "definition": "FailedToOpenStore"
         }
       },
       {
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": {"type": "literal", "definition":"storeManagementAction"},
-            "actionName": {"type": "literal", "definition":"closeStore"},
-            "endpoint": {"type": "literal", "definition":"bbd08cbb-79ff-4539-b91f-7a14f15ac55f"},
+            "actionType": {
+              "type": "literal",
+              "definition": "storeManagementAction"
+            },
+            "actionName": {
+              "type": "literal",
+              "definition": "closeStore"
+            },
+            "endpoint": {
+              "type": "literal",
+              "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
+            },
             "deploymentUuid": {
               "type": "uuid",
-              "tag": { "value": {  "defaultLabel": "Module Deployment Uuid", "editable": false }}
+              "tag": {
+                "value": {
+                  "defaultLabel": "Module Deployment Uuid",
+                  "editable": false
+                }
+              }
             }
           }
         },
         "actionErrors": {
-          "type":"literal", "definition": "FailedToCloseStore"
+          "type": "literal",
+          "definition": "FailedToCloseStore"
         }
       }
     ],

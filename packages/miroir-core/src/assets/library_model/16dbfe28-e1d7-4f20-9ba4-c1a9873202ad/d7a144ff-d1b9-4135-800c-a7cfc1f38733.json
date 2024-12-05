@@ -1,10 +1,10 @@
 {
-  "uuid":"d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-  "parentName":"Entity",
-  "parentUuid":"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "uuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+  "parentName": "Entity",
+  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
   "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-  "name":"Author",
-  "conceptLevel":"Model",
+  "name": "Author",
+  "conceptLevel": "Model",
   "description": "The Author of a book."
 }

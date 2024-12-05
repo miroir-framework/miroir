@@ -1,15 +1,15 @@
 {
   "uuid": "f9aff35d-8636-4519-8361-c7648e0ddc68",
   "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-  "parentName":"Report",
-  "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-  "name":"EntityDefinitionList",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "name": "EntityDefinitionList",
   "defaultLabel": "Entity Definitions",
   "definition": {
     "reportParameters": {},
     "extractorTemplates": {
       "entityDefinitions": {
-        "queryType": "extractorTemplateForObjectListByEntity",
+        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
         "applicationSection": "model",
         "parentName": "Entity Definition",
         "parentUuid": {
@@ -19,7 +19,7 @@
       }
     },
     "section": {
-      "type":"objectListReportSection",
+      "type": "objectListReportSection",
       "definition": {
         "label": "Entity Definitions",
         "parentName": "Entity Definition",

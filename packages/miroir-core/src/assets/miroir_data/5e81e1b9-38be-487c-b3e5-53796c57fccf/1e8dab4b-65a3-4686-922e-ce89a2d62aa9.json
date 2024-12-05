@@ -9,7 +9,7 @@
     "context": {
       "jzodBaseObject": {
         "type": "object",
-        "tag": { 
+        "tag": {
           "optional": true,
           "schema": {
             "optional": true,
@@ -17,7 +17,10 @@
               "type": "object",
               "optional": true,
               "definition": {
-                "optional": { "type": "boolean", "optional": true },
+                "optional": {
+                  "type": "boolean",
+                  "optional": true
+                },
                 "metaSchema": {
                   "type": "schemaReference",
                   "optional": true,
@@ -38,11 +41,26 @@
               "type": "object",
               "optional": true,
               "definition": {
-                "id": { "type": "number", "optional": true },
-                "defaultLabel": { "type": "string", "optional": true },
-                "initializeTo": { "type": "any", "optional": true },
-                "targetEntity": { "type": "string", "optional": true },
-                "editable": { "type": "boolean", "optional": true }
+                "id": {
+                  "type": "number",
+                  "optional": true
+                },
+                "defaultLabel": {
+                  "type": "string",
+                  "optional": true
+                },
+                "initializeTo": {
+                  "type": "any",
+                  "optional": true
+                },
+                "targetEntity": {
+                  "type": "string",
+                  "optional": true
+                },
+                "editable": {
+                  "type": "boolean",
+                  "optional": true
+                }
               }
             }
           }
@@ -118,7 +136,10 @@
         "definition": {
           "type": {
             "type": "enum",
-            "definition": ["min", "max"]
+            "definition": [
+              "min",
+              "max"
+            ]
           },
           "parameter": {
             "type": "any"
@@ -140,7 +161,10 @@
             "type": "literal",
             "definition": "date"
           },
-          "coerce": { "type": "boolean", "optional": true },
+          "coerce": {
+            "type": "boolean",
+            "optional": true
+          },
           "validations": {
             "type": "array",
             "optional": true,
@@ -194,7 +218,10 @@
             "type": "literal",
             "definition": "number"
           },
-          "coerce": { "type": "boolean", "optional": true },
+          "coerce": {
+            "type": "boolean",
+            "optional": true
+          },
           "validations": {
             "type": "array",
             "optional": true,
@@ -252,7 +279,10 @@
             "type": "literal",
             "definition": "string"
           },
-          "coerce": { "type": "boolean", "optional": true },
+          "coerce": {
+            "type": "boolean",
+            "optional": true
+          },
           "validations": {
             "type": "array",
             "optional": true,
@@ -542,10 +572,18 @@
           "definition": {
             "type": "union",
             "definition": [
-              { "type": "string" },
-              { "type": "number" },
-              { "type": "bigint" },
-              { "type": "boolean" }
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "bigint"
+              },
+              {
+                "type": "boolean"
+              }
             ]
           }
         }
@@ -649,7 +687,10 @@
             "type": "boolean",
             "optional": true
           },
-          "partial": { "type": "boolean", "optional": true },
+          "partial": {
+            "type": "boolean",
+            "optional": true
+          },
           "carryOn": {
             "type": "union",
             "optional": true,
@@ -783,7 +824,10 @@
                 "type": "boolean",
                 "optional": true
               },
-              "partial": { "type": "boolean", "optional": true },
+              "partial": {
+                "type": "boolean",
+                "optional": true
+              },
               "relativePath": {
                 "type": "string",
                 "optional": true
@@ -877,7 +921,9 @@
                     "type": "literal",
                     "definition": "string"
                   },
-                  "value": { "type": "string" }
+                  "value": {
+                    "type": "string"
+                  }
                 }
               },
               {

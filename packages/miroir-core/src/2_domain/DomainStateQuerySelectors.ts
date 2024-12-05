@@ -22,9 +22,9 @@ import {
 import {
   ExtractorRunnerParamsForJzodSchema,
   QueryRunnerMapForJzodSchema,
-  SyncExtractorOrQueryRunnerMap,
-  SyncExtractorRunner,
-  SyncExtractorRunnerParams,
+  SyncBoxedExtractorOrQueryRunnerMap,
+  SyncBoxedExtractorRunner,
+  SyncBoxedExtractorRunnerParams,
   SyncQueryRunner,
   SyncQueryRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
@@ -40,7 +40,7 @@ import {
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractFetchQueryJzodSchema,
   extractJzodSchemaForDomainModelQuery,
-  extractWithExtractorOrCombinerReturningObjectOrObjectList,
+  extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
   extractzodSchemaForSingleSelectQuery,
   innerSelectDomainElementFromExtractorOrCombiner,
   runQuery,
@@ -98,13 +98,13 @@ export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: QueryByTemplate
 
 // ################################################################################################
 // ACCESSES DOMAIN STATE
-export const selectEntityInstanceUuidIndexFromDomainState: SyncExtractorRunner<
+export const selectEntityInstanceUuidIndexFromDomainState: SyncBoxedExtractorRunner<
   BoxedExtractorOrCombinerReturningObjectList,
   DomainState,
   DomainElementInstanceUuidIndexOrFailed
 > = (
   domainState: DomainState,
-  selectorParams: SyncExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, DomainState>
+  selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, DomainState>
 ): DomainElementInstanceUuidIndexOrFailed => {
   const deploymentUuid = selectorParams.extractor.deploymentUuid;
   const applicationSection = selectorParams.extractor.select.applicationSection ?? "data";
@@ -173,13 +173,13 @@ export const selectEntityInstanceUuidIndexFromDomainState: SyncExtractorRunner<
 
 // ################################################################################################
 // ACCESSES DOMAIN STATE
-export const selectEntityInstanceListFromDomainState: SyncExtractorRunner<
+export const selectEntityInstanceListFromDomainState: SyncBoxedExtractorRunner<
   BoxedExtractorOrCombinerReturningObjectList,
   DomainState,
   DomainElementInstanceArrayOrFailed
 > = (
   domainState: DomainState,
-  selectorParams: SyncExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, DomainState>
+  selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, DomainState>
 ): DomainElementInstanceArrayOrFailed => {
   const result = selectEntityInstanceUuidIndexFromDomainState(domainState, selectorParams);
 
@@ -200,13 +200,13 @@ export const selectEntityInstanceListFromDomainState: SyncExtractorRunner<
  * @param selectorParams
  * @returns
  */
-export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRunner<
+export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtractorRunner<
   BoxedExtractorOrCombinerReturningObject,
   DomainState,
   DomainElementEntityInstanceOrFailed
 > = (
   domainState: DomainState,
-  selectorParams: SyncExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject, DomainState>
+  selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject, DomainState>
 ): DomainElementEntityInstanceOrFailed => {
   const querySelectorParams: ExtractorOrCombinerReturningObject = selectorParams.extractor.select as ExtractorOrCombinerReturningObject;
   const deploymentUuid = selectorParams.extractor.deploymentUuid;
@@ -433,7 +433,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncExtractorRun
  * @param selectorParams
  * @returns
  */
-export const extractEntityInstanceUuidIndexFromListQueryAndDomainState: SyncExtractorRunner<
+export const extractEntityInstanceUuidIndexFromListQueryAndDomainState: SyncBoxedExtractorRunner<
   BoxedExtractorOrCombinerReturningObjectList,
   DomainState,
   DomainElementInstanceUuidIndexOrFailed
@@ -446,7 +446,7 @@ export const extractEntityInstanceUuidIndexFromListQueryAndDomainState: SyncExtr
  * @param selectorParams
  * @returns
  */
-export const extractEntityInstanceListFromListQueryAndDomainState: SyncExtractorRunner<
+export const extractEntityInstanceListFromListQueryAndDomainState: SyncBoxedExtractorRunner<
   BoxedExtractorOrCombinerReturningObjectList,
   DomainState,
   DomainElementInstanceArrayOrFailed
@@ -462,11 +462,11 @@ export const runQueryFromDomainState: SyncQueryRunner<
 > = runQuery<DomainState>;
 
 // ################################################################################################
-export const extractWithExtractorOrCombinerReturningObjectOrObjectListFromDomainState: SyncExtractorRunner<
+export const extractWithExtractorOrCombinerReturningObjectOrObjectListFromDomainState: SyncBoxedExtractorRunner<
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   DomainState,
   DomainElement
-> = extractWithExtractorOrCombinerReturningObjectOrObjectList<DomainState>;
+> = extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList<DomainState>;
 
 // ################################################################################################
 // JZOD SCHEMAs selectors
@@ -526,7 +526,7 @@ export const selectJzodSchemaByDomainModelQueryFromDomainStateNew = extractJzodS
 // DEPENDENT ON RESELECT / REDUX. TO MOVE TO miroir-localCache-redux!
 // ################################################################################################
 
-export function getDomainStateExtractorRunnerMap(): SyncExtractorOrQueryRunnerMap<DomainState> {
+export function getDomainStateExtractorRunnerMap(): SyncBoxedExtractorOrQueryRunnerMap<DomainState> {
   return {
     extractorType: "sync",
     extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDomainState,
@@ -535,7 +535,7 @@ export function getDomainStateExtractorRunnerMap(): SyncExtractorOrQueryRunnerMa
     extractEntityInstanceUuidIndexWithObjectListExtractor: extractEntityInstanceUuidIndexFromListQueryAndDomainState,
     extractEntityInstanceListWithObjectListExtractor: extractEntityInstanceListFromListQueryAndDomainState,
     runQuery: runQueryFromDomainState,
-    extractWithExtractorOrCombinerReturningObjectOrObjectList: extractWithExtractorOrCombinerReturningObjectOrObjectList,
+    extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
     // 
     runQueryTemplateWithExtractorCombinerTransformer: runQueryTemplateFromDomainState,
   };
@@ -554,15 +554,15 @@ export function getDomainStateJzodSchemaExtractorRunnerMap(): QueryRunnerMapForJ
 // export type GetExtractorRunnerParamsForDomainState = <ExtractorType extends MiroirQuery>(
 export type GetExtractorRunnerParamsForDomainState = <ExtractorType extends BoxedExtractorOrCombinerReturningObjectOrObjectList>(
   query: ExtractorType,
-  extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DomainState>
-) => SyncExtractorRunnerParams<ExtractorType, DomainState>;
+  extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<DomainState>
+) => SyncBoxedExtractorRunnerParams<ExtractorType, DomainState>;
 
 export const getExtractorRunnerParamsForDomainState: GetExtractorRunnerParamsForDomainState = <
   ExtractorType extends BoxedExtractorOrCombinerReturningObjectOrObjectList
 >(
   query: ExtractorType,
-  extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DomainState>
-): SyncExtractorRunnerParams<ExtractorType, DomainState> => {
+  extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<DomainState>
+): SyncBoxedExtractorRunnerParams<ExtractorType, DomainState> => {
   return {
     extractor: query,
     extractorRunnerMap: extractorRunnerMap ?? getDomainStateExtractorRunnerMap(),
@@ -572,14 +572,14 @@ export const getExtractorRunnerParamsForDomainState: GetExtractorRunnerParamsFor
 // export type GetExtractorRunnerParamsForDomainState = <ExtractorType extends MiroirQuery>(
 export type GetQueryRunnerParamsForDomainState = <ExtractorType extends QueryWithExtractorCombinerTransformer>(
   query: ExtractorType,
-  extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DomainState>
+  extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<DomainState>
 ) => SyncQueryRunnerParams<DomainState>;
 
 export const getQueryRunnerParamsForDomainState: GetQueryRunnerParamsForDomainState = <
   ExtractorType extends QueryWithExtractorCombinerTransformer
 >(
   query: ExtractorType,
-  extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<DomainState>
+  extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<DomainState>
 ): SyncQueryRunnerParams<DomainState> => {
   return {
     extractor: query,

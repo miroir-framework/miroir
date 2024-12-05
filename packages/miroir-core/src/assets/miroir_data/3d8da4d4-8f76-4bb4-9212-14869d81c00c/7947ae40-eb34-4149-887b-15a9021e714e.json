@@ -12,12 +12,27 @@
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": {"type": "literal", "definition":"modelAction"},
-            "actionName": {"type": "literal", "definition":"initModel"},
-            "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
+            "actionType": {
+              "type": "literal",
+              "definition": "modelAction"
+            },
+            "actionName": {
+              "type": "literal",
+              "definition": "initModel"
+            },
+            "endpoint": {
+              "type": "literal",
+              "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+            },
             "deploymentUuid": {
               "type": "uuid",
-              "tag": { "value": {  "id":1, "defaultLabel": "Deployment", "editable": false }}
+              "tag": {
+                "value": {
+                  "id": 1,
+                  "defaultLabel": "Deployment",
+                  "editable": false
+                }
+              }
             },
             "params": {
               "type": "object",
@@ -80,12 +95,27 @@
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": {"type": "literal", "definition":"modelAction"},
-            "actionName": {"type": "literal", "definition":"commit"},
-            "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
+            "actionType": {
+              "type": "literal",
+              "definition": "modelAction"
+            },
+            "actionName": {
+              "type": "literal",
+              "definition": "commit"
+            },
+            "endpoint": {
+              "type": "literal",
+              "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+            },
             "deploymentUuid": {
               "type": "uuid",
-              "tag": { "value": {  "id":1, "defaultLabel": "Deployment", "editable": false }}
+              "tag": {
+                "value": {
+                  "id": 1,
+                  "defaultLabel": "Deployment",
+                  "editable": false
+                }
+              }
             }
           }
         }
@@ -94,12 +124,27 @@
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": {"type": "literal", "definition":"modelAction"},
-            "actionName": {"type": "literal", "definition":"rollback"},
-            "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
+            "actionType": {
+              "type": "literal",
+              "definition": "modelAction"
+            },
+            "actionName": {
+              "type": "literal",
+              "definition": "rollback"
+            },
+            "endpoint": {
+              "type": "literal",
+              "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+            },
             "deploymentUuid": {
               "type": "uuid",
-              "tag": { "value": {  "id":1, "defaultLabel": "Deployment", "editable": false }}
+              "tag": {
+                "value": {
+                  "id": 1,
+                  "defaultLabel": "Deployment",
+                  "editable": false
+                }
+              }
             }
           }
         }
@@ -108,12 +153,27 @@
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": {"type": "literal", "definition":"modelAction"},
-            "actionName": {"type": "literal", "definition":"remoteLocalCacheRollback"},
-            "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
+            "actionType": {
+              "type": "literal",
+              "definition": "modelAction"
+            },
+            "actionName": {
+              "type": "literal",
+              "definition": "remoteLocalCacheRollback"
+            },
+            "endpoint": {
+              "type": "literal",
+              "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+            },
             "deploymentUuid": {
               "type": "uuid",
-              "tag": { "value": {  "id":1, "defaultLabel": "Deployment", "editable": false }}
+              "tag": {
+                "value": {
+                  "id": 1,
+                  "defaultLabel": "Deployment",
+                  "editable": false
+                }
+              }
             }
           }
         }
@@ -122,12 +182,27 @@
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": {"type": "literal", "definition":"modelAction"},
-            "actionName": {"type": "literal", "definition":"resetModel"},
-            "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
+            "actionType": {
+              "type": "literal",
+              "definition": "modelAction"
+            },
+            "actionName": {
+              "type": "literal",
+              "definition": "resetModel"
+            },
+            "endpoint": {
+              "type": "literal",
+              "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+            },
             "deploymentUuid": {
               "type": "uuid",
-              "tag": { "value": {  "id":1, "defaultLabel": "Deployment", "editable": false }}
+              "tag": {
+                "value": {
+                  "id": 1,
+                  "defaultLabel": "Deployment",
+                  "editable": false
+                }
+              }
             }
           }
         }
@@ -136,12 +211,27 @@
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": {"type": "literal", "definition":"modelAction"},
-            "actionName": {"type": "literal", "definition":"resetData"},
-            "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
+            "actionType": {
+              "type": "literal",
+              "definition": "modelAction"
+            },
+            "actionName": {
+              "type": "literal",
+              "definition": "resetData"
+            },
+            "endpoint": {
+              "type": "literal",
+              "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+            },
             "deploymentUuid": {
               "type": "uuid",
-              "tag": { "value": {  "id":1, "defaultLabel": "Deployment", "editable": false }}
+              "tag": {
+                "value": {
+                  "id": 1,
+                  "defaultLabel": "Deployment",
+                  "editable": false
+                }
+              }
             }
           }
         }
@@ -150,24 +240,50 @@
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": {"type": "literal", "definition":"modelAction"},
-            "actionName": {"type": "literal", "definition":"alterEntityAttribute"},
-            "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
-            "transactional": { "type": "boolean", "optional": true },
+            "actionType": {
+              "type": "literal",
+              "definition": "modelAction"
+            },
+            "actionName": {
+              "type": "literal",
+              "definition": "alterEntityAttribute"
+            },
+            "endpoint": {
+              "type": "literal",
+              "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+            },
+            "transactional": {
+              "type": "boolean",
+              "optional": true
+            },
             "deploymentUuid": {
               "type": "uuid",
-              "tag": { "value": {  "id":1, "defaultLabel": "Deployment", "editable": false }}
+              "tag": {
+                "value": {
+                  "id": 1,
+                  "defaultLabel": "Deployment",
+                  "editable": false
+                }
+              }
             },
             "entityName": {
               "type": "string"
             },
             "entityUuid": {
               "type": "string",
-              "validations": [{ "type": "uuid" }]
+              "validations": [
+                {
+                  "type": "uuid"
+                }
+              ]
             },
             "entityDefinitionUuid": {
               "type": "string",
-              "validations": [{ "type": "uuid" }]
+              "validations": [
+                {
+                  "type": "uuid"
+                }
+              ]
             },
             "addColumns": {
               "type": "array",
@@ -210,13 +326,31 @@
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": {"type": "literal", "definition":"modelAction"},
-            "actionName": {"type": "literal", "definition":"renameEntity"},
-            "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
-            "transactional": { "type": "boolean", "optional": true },
+            "actionType": {
+              "type": "literal",
+              "definition": "modelAction"
+            },
+            "actionName": {
+              "type": "literal",
+              "definition": "renameEntity"
+            },
+            "endpoint": {
+              "type": "literal",
+              "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+            },
+            "transactional": {
+              "type": "boolean",
+              "optional": true
+            },
             "deploymentUuid": {
               "type": "uuid",
-              "tag": { "value": {  "id":1, "defaultLabel": "Deployment", "editable": false }}
+              "tag": {
+                "value": {
+                  "id": 1,
+                  "defaultLabel": "Deployment",
+                  "editable": false
+                }
+              }
             },
             "entityName": {
               "type": "string",
@@ -224,11 +358,19 @@
             },
             "entityUuid": {
               "type": "string",
-              "validations": [{ "type": "uuid" }]
+              "validations": [
+                {
+                  "type": "uuid"
+                }
+              ]
             },
             "entityDefinitionUuid": {
               "type": "string",
-              "validations": [{ "type": "uuid" }]
+              "validations": [
+                {
+                  "type": "uuid"
+                }
+              ]
             },
             "targetValue": {
               "type": "string"
@@ -240,13 +382,31 @@
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": {"type": "literal", "definition":"modelAction"},
-            "actionName": {"type": "literal", "definition":"createEntity"},
-            "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
-            "transactional": { "type": "boolean", "optional": true },
+            "actionType": {
+              "type": "literal",
+              "definition": "modelAction"
+            },
+            "actionName": {
+              "type": "literal",
+              "definition": "createEntity"
+            },
+            "endpoint": {
+              "type": "literal",
+              "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+            },
+            "transactional": {
+              "type": "boolean",
+              "optional": true
+            },
             "deploymentUuid": {
               "type": "uuid",
-              "tag": { "value": {  "id":1, "defaultLabel": "Deployment", "editable": false }}
+              "tag": {
+                "value": {
+                  "id": 1,
+                  "defaultLabel": "Deployment",
+                  "editable": false
+                }
+              }
             },
             "entities": {
               "type": "array",
@@ -277,14 +437,32 @@
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": {"type": "literal", "definition":"modelAction"},
-            "actionName": {"type": "literal", "definition":"dropEntity"},
-            "transactional": { "type": "boolean", "optional": true },
+            "actionType": {
+              "type": "literal",
+              "definition": "modelAction"
+            },
+            "actionName": {
+              "type": "literal",
+              "definition": "dropEntity"
+            },
+            "transactional": {
+              "type": "boolean",
+              "optional": true
+            },
             "deploymentUuid": {
               "type": "uuid",
-              "tag": { "value": {  "id":1, "defaultLabel": "Deployment", "editable": false }}
+              "tag": {
+                "value": {
+                  "id": 1,
+                  "defaultLabel": "Deployment",
+                  "editable": false
+                }
+              }
             },
-            "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
+            "endpoint": {
+              "type": "literal",
+              "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+            },
             "entityUuid": {
               "type": "string"
             },

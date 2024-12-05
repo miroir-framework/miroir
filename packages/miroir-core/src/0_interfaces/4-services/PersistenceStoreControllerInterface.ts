@@ -16,12 +16,12 @@ import {
   ModelAction,
   ModelActionAlterEntityAttribute,
   ModelActionRenameEntity,
-  RunExtractorAction,
-  RunExtractorOrQueryAction,
-  RunExtractorTemplateAction,
+  RunBoxedExtractorAction,
+  RunBoxedExtractorOrQueryAction,
+  RunBoxedExtractorTemplateAction,
   RunQueryAction,
   RunQueryTemplateAction,
-  RunQueryTemplateOrExtractorTemplateAction,
+  RunQueryTemplateOrBoxedExtractorTemplateAction,
   StoreManagementAction,
   StoreSectionConfiguration
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
@@ -83,11 +83,11 @@ export interface StorageSpaceHandlerInterface {
 export interface PersistenceStoreInstanceSectionAbstractInterface extends PersistenceStoreAbstractSectionInterface{
   getInstance(parentUuid: string, uuid: string): Promise<ActionEntityInstanceReturnType>;
   getInstances(parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType>;
-  handleExtractorTemplateActionForServerONLY(query: RunExtractorTemplateAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
+  handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
   handleQueryTemplateActionForServerONLY(query: RunQueryTemplateAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
-  handleQueryTemplateOrExtractorTemplateActionForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
+  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
   handleQueryAction(query: RunQueryAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
-  handleExtractorAction(query: RunExtractorAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
+  handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
   upsertInstance(parentUuid:string, instance:EntityInstance):Promise<ActionVoidReturnType>;
   deleteInstances(parentUuid:string, instances:EntityInstance[]):Promise<ActionVoidReturnType>;
   deleteInstance(parentUuid:string, instance:EntityInstance):Promise<ActionVoidReturnType>;
@@ -191,11 +191,11 @@ export interface PersistenceStoreControllerInterface
   getModelState(): Promise<{ [uuid: string]: EntityInstanceCollection }>; // used only for testing purposes!
   getDataState(): Promise<{ [uuid: string]: EntityInstanceCollection }>; // used only for testing purposes!
 
-  // same interface as in PersistenceStoreInstanceSectionAbstractInterface; it implies that RunQueryTemplateOrExtractorTemplateAction includes applicationSection
+  // same interface as in PersistenceStoreInstanceSectionAbstractInterface; it implies that RunQueryTemplateOrBoxedExtractorTemplateAction includes applicationSection
   handleQueryTemplateActionForServerONLY(query: RunQueryTemplateAction): Promise<ActionReturnType>;
-  handleExtractorTemplateActionForServerONLY(query: RunExtractorTemplateAction): Promise<ActionReturnType>;
-  handleQueryTemplateOrExtractorTemplateActionForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType>;
-  handleExtractorAction(query: RunExtractorAction): Promise<ActionReturnType>;
+  handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<ActionReturnType>;
+  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType>;
+  handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<ActionReturnType>;
   handleQueryAction(query: RunQueryAction): Promise<ActionReturnType>;
   
   getInstance(section: ApplicationSection, parentUuid: string, uuid: Uuid): Promise<ActionEntityInstanceReturnType>;

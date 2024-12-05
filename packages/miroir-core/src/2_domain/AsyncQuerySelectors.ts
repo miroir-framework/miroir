@@ -17,9 +17,9 @@ import {
   QueryWithExtractorCombinerTransformer
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
-  AsyncExtractorOrQueryRunnerMap,
-  AsyncExtractorRunnerParams,
-  AsyncExtractWithExtractorOrCombinerReturningObjectOrObjectList,
+  AsyncBoxedExtractorOrQueryRunnerMap,
+  AsyncBoxedExtractorRunnerParams,
+  AsyncExtractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
   AsyncQueryRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -39,9 +39,9 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   }
 );
 
-const emptyAsyncSelectorMap:AsyncExtractorOrQueryRunnerMap = {
+const emptyAsyncSelectorMap:AsyncBoxedExtractorOrQueryRunnerMap = {
   extractorType: "async",
-  extractWithExtractorOrCombinerReturningObjectOrObjectList: undefined as any, 
+  extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: undefined as any, 
   runQuery: undefined as any, 
   extractEntityInstance: undefined as any,
   extractEntityInstanceUuidIndexWithObjectListExtractor: undefined as any,
@@ -66,7 +66,7 @@ const emptyAsyncSelectorMap:AsyncExtractorOrQueryRunnerMap = {
  */
 export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
 = (
-  selectorParams: AsyncExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
+  selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
 ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
   const result: Promise<DomainElementInstanceUuidIndexOrFailed> =
     (selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap).extractEntityInstanceUuidIndex(selectorParams)
@@ -94,7 +94,7 @@ export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
  */
 export const asyncExtractEntityInstanceListWithObjectListExtractor
 = (
-  selectorParams: AsyncExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
+  selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
 ): Promise<DomainElementInstanceArrayOrFailed> => {
   const result: Promise<DomainElementInstanceArrayOrFailed> =
     (selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap).extractEntityInstanceList(selectorParams)
@@ -125,11 +125,11 @@ export async function asyncApplyExtractorTransformerInMemory(
 }
 
 // ################################################################################################
-export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
+export function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRunner*/(
   newFetchedData: Record<string, any>,
   pageParams: Record<string, any>,
   queryParams: Record<string, any>,
-  extractorRunnerMap:AsyncExtractorOrQueryRunnerMap,
+  extractorRunnerMap:AsyncBoxedExtractorOrQueryRunnerMap,
   deploymentUuid: Uuid,
   extractors: Record<string, BoxedExtractorOrCombinerReturningObjectList | BoxedExtractorOrCombinerReturningObject | QueryWithExtractorCombinerTransformer>,
   extractorOrCombiner: ExtractorOrCombiner
@@ -334,14 +334,14 @@ export function asyncInnerSelectElementFromQuery/*ExtractorTemplateRunner*/(
 }
 
 // ################################################################################################
-export const asyncExtractWithExtractor: AsyncExtractWithExtractorOrCombinerReturningObjectOrObjectList /**: SyncExtractorTemplateRunner */= (
+export const asyncExtractWithExtractor: AsyncExtractWithBoxedExtractorOrCombinerReturningObjectOrObjectList /**: SyncBoxedExtractorTemplateRunner */= (
   // selectorParams: SyncExtractorOrQueryTemplateRunnerParams<QueryTemplateWithExtractorCombinerTransformer, DeploymentEntityState>,
-  selectorParams: AsyncExtractorRunnerParams<
+  selectorParams: AsyncBoxedExtractorRunnerParams<
     BoxedExtractorOrCombinerReturningObjectOrObjectList
   >
 ): Promise<DomainElement> => {
   // log.info("########## extractExtractor begin, query", selectorParams);
-  const localSelectorMap: AsyncExtractorOrQueryRunnerMap = selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
+  const localSelectorMap: AsyncBoxedExtractorOrQueryRunnerMap = selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
 
   const result = asyncInnerSelectElementFromQuery(
     selectorParams.extractor.contextResults,
@@ -395,7 +395,7 @@ export const asyncRunQuery = async (
     ...selectorParams.extractor.contextResults.elementValue ,
   };
   // log.info("########## DomainSelector asyncRunQuery will use context", context);
-  const localSelectorMap: AsyncExtractorOrQueryRunnerMap =
+  const localSelectorMap: AsyncBoxedExtractorOrQueryRunnerMap =
     selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
 
   const extractorsPromises = Object.entries(selectorParams.extractor.extractors ?? {}).map(

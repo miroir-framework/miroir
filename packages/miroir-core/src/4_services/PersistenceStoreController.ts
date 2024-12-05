@@ -16,12 +16,12 @@ import {
   ModelActionInitModel,
   ModelActionInitModelParams,
   ModelActionRenameEntity,
-  RunExtractorAction,
-  RunExtractorOrQueryAction,
-  RunExtractorTemplateAction,
+  RunBoxedExtractorAction,
+  RunBoxedExtractorOrQueryAction,
+  RunBoxedExtractorTemplateAction,
   RunQueryAction,
   RunQueryTemplateAction,
-  RunQueryTemplateOrExtractorTemplateAction,
+  RunQueryTemplateOrBoxedExtractorTemplateAction,
   StoreSectionConfiguration
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DataStoreApplicationType } from "../0_interfaces/3_controllers/ApplicationControllerInterface";
@@ -109,9 +109,9 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
 
   // #############################################################################################
-  async handleExtractorAction(action: RunExtractorAction): Promise<ActionReturnType> {
+  async handleBoxedExtractorAction(action: RunBoxedExtractorAction): Promise<ActionReturnType> {
     // TODO: fix applicationSection!!!
-    log.info(this.logHeader,'handleExtractorAction','query',action);
+    log.info(this.logHeader,'handleBoxedExtractorAction','query',action);
     // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
     // log.info(this.logHeader,'this.modelStoreSection',this.modelStoreSection);
     
@@ -119,9 +119,9 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     // RIGHT NOW RESTRICT ALL SUBQUERIES OF A QUERY TO THE SAME SECTION !!!!
     const currentStore: PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface =
       action.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
-    const result: ActionReturnType = await currentStore.handleExtractorAction(action);
+    const result: ActionReturnType = await currentStore.handleBoxedExtractorAction(action);
 
-    log.info(this.logHeader,'handleExtractorAction','query',action, "result", JSON.stringify(result));
+    log.info(this.logHeader,'handleBoxedExtractorAction','query',action, "result", JSON.stringify(result));
     return Promise.resolve(result);
   }
 
@@ -143,9 +143,9 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
 
   // #############################################################################################
-  async handleExtractorTemplateActionForServerONLY(action: RunExtractorTemplateAction): Promise<ActionReturnType> {
+  async handleBoxedExtractorTemplateActionForServerONLY(action: RunBoxedExtractorTemplateAction): Promise<ActionReturnType> {
     // TODO: fix applicationSection!!!
-    log.info(this.logHeader,'handleExtractorTemplateActionForServerONLY','query',action);
+    log.info(this.logHeader,'handleBoxedExtractorTemplateActionForServerONLY','query',action);
     // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
     // log.info(this.logHeader,'this.modelStoreSection',this.modelStoreSection);
     
@@ -154,9 +154,9 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     const currentStore: PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface =
       action.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
       
-    const result: ActionReturnType = await currentStore.handleExtractorTemplateActionForServerONLY(action);
+    const result: ActionReturnType = await currentStore.handleBoxedExtractorTemplateActionForServerONLY(action);
 
-    log.info(this.logHeader,'handleExtractorTemplateActionForServerONLY','query',action, "result", JSON.stringify(result));
+    log.info(this.logHeader,'handleBoxedExtractorTemplateActionForServerONLY','query',action, "result", JSON.stringify(result));
     return Promise.resolve(result);
   }
 
@@ -179,9 +179,9 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
 
   // #############################################################################################
-  async handleQueryTemplateOrExtractorTemplateActionForServerONLY(action: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
+  async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(action: RunQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType> {
     // TODO: fix applicationSection!!!
-    log.info(this.logHeader,'handleQueryTemplateOrExtractorTemplateActionForServerONLY','query',action);
+    log.info(this.logHeader,'handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY','query',action);
     // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
     // log.info(this.logHeader,'this.modelStoreSection',this.modelStoreSection);
     
@@ -190,9 +190,9 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     const currentStore: PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface =
       action.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
       
-    const result: ActionReturnType = await currentStore.handleQueryTemplateOrExtractorTemplateActionForServerONLY(action);
+    const result: ActionReturnType = await currentStore.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(action);
 
-    log.info(this.logHeader,'handleQueryTemplateOrExtractorTemplateActionForServerONLY','query',action, "result", JSON.stringify(result));
+    log.info(this.logHeader,'handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY','query',action, "result", JSON.stringify(result));
     return Promise.resolve(result);
   }
 

@@ -8,14 +8,14 @@ import {
   DomainElementInstanceArrayOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
   ExtractorOrCombinerReturningObject,
-  RunExtractorAction,
+  RunBoxedExtractorAction,
   RunQueryAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import {
-  AsyncExtractorOrQueryRunnerMap,
-  AsyncExtractorRunner,
-  AsyncExtractorRunnerParams,
+  AsyncBoxedExtractorOrQueryRunnerMap,
+  AsyncBoxedExtractorRunner,
+  AsyncBoxedExtractorRunnerParams,
   ExtractorOrQueryPersistenceStoreRunner,
   QueryRunnerMapForJzodSchema
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
@@ -38,7 +38,7 @@ import {
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
 } from "./DomainStateQuerySelectors";
-import { handleExtractorAction, handleQueryAction } from "./QuerySelectors";
+import { handleBoxedExtractorAction, handleQueryAction } from "./QuerySelectors";
 import { transformer_InnerReference_resolve } from "./Transformers";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "ExtractorRunnerInMemory");
@@ -49,7 +49,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStoreRunner {
   private logHeader: string;
-  private selectorMap: AsyncExtractorOrQueryRunnerMap;
+  private selectorMap: AsyncBoxedExtractorOrQueryRunnerMap;
 
   // ################################################################################################
   constructor(private persistenceStoreController: PersistenceStoreInstanceSectionAbstractInterface) {
@@ -62,7 +62,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
       extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
       extractEntityInstanceListWithObjectListExtractor: asyncExtractEntityInstanceListWithObjectListExtractor,
       runQuery: asyncRunQuery,
-      extractWithExtractorOrCombinerReturningObjectOrObjectList: asyncExtractWithExtractor,
+      extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
       // ##########################################################################################
       runQueryTemplateWithExtractorCombinerTransformer: undefined as any,
@@ -74,16 +74,16 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
     return handleQueryAction("ExtractorRunnerInMemory", runQueryAction, this.selectorMap);
   }
   // ################################################################################################
-  async handleExtractorAction(runExtractorAction: RunExtractorAction): Promise<ActionReturnType> {
-    return handleExtractorAction("ExtractorRunnerInMemory", runExtractorAction, this.selectorMap);
+  async handleBoxedExtractorAction(runBoxedExtractorAction: RunBoxedExtractorAction): Promise<ActionReturnType> {
+    return handleBoxedExtractorAction("ExtractorRunnerInMemory", runBoxedExtractorAction, this.selectorMap);
   }
 
   // ################################################################################################
-  public extractEntityInstance: AsyncExtractorRunner<
+  public extractEntityInstance: AsyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObject,
     DomainElementEntityInstanceOrFailed
   > = async (
-    selectorParams: AsyncExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject>
+    selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject>
   ): Promise<DomainElementEntityInstanceOrFailed> => {
     const querySelectorParams: ExtractorOrCombinerReturningObject = selectorParams.extractor.select;
     const deploymentUuid = selectorParams.extractor.deploymentUuid;
@@ -220,11 +220,11 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
   };
 
   // ##############################################################################################
-  public extractEntityInstanceUuidIndex: AsyncExtractorRunner<
+  public extractEntityInstanceUuidIndex: AsyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObjectList,
     DomainElementInstanceUuidIndexOrFailed
   > = async (
-    extractorRunnerParams: AsyncExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
+    extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
   ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
     return this.extractEntityInstanceList(extractorRunnerParams).then((result) => {
       if (result.elementType == "failure") {
@@ -239,11 +239,11 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
   };
 
   // ##############################################################################################
-  public extractEntityInstanceList: AsyncExtractorRunner<
+  public extractEntityInstanceList: AsyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObjectList,
     DomainElementInstanceArrayOrFailed
   > = async (
-    extractorRunnerParams: AsyncExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
+    extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
   ): Promise<DomainElementInstanceArrayOrFailed> => {
     const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
@@ -297,7 +297,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
   };
 
   // ##############################################################################################
-  public getDomainStateExtractorRunnerMap(): AsyncExtractorOrQueryRunnerMap {
+  public getDomainStateExtractorRunnerMap(): AsyncBoxedExtractorOrQueryRunnerMap {
     return this.selectorMap;
   }
 } // end of class ExtractorRunnerInMemory

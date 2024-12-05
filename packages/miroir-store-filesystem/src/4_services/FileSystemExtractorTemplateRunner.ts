@@ -3,26 +3,26 @@ import {
   asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceListWithObjectListExtractor,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
-  AsyncExtractorOrQueryRunnerMap,
+  AsyncBoxedExtractorOrQueryRunnerMap,
   asyncExtractWithExtractor,
   asyncRunQuery,
   DomainState,
   ExtractorTemplatePersistenceStoreRunner,
   QueryTemplateRunnerMapForJzodSchema,
   getLoggerName,
-  handleExtractorOrQueryTemplateAction,
+  handleBoxedExtractorTemplateOrQueryTemplateAction,
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreInstanceSectionAbstractInterface,
-  RunQueryTemplateOrExtractorTemplateAction,
+  RunQueryTemplateOrBoxedExtractorTemplateAction,
   selectEntityJzodSchemaFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
-  RunExtractorTemplateAction,
+  RunBoxedExtractorTemplateAction,
   handleQueryTemplateAction,
   RunQueryTemplateAction,
-  handleExtractorTemplateAction
+  handleBoxedExtractorTemplateAction
 } from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
@@ -36,7 +36,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersistenceStoreRunner {
   private logHeader: string;
-  private selectorMap: AsyncExtractorOrQueryRunnerMap;
+  private selectorMap: AsyncBoxedExtractorOrQueryRunnerMap;
 
   // ################################################################################################
   constructor(
@@ -52,31 +52,59 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
       extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
       extractEntityInstanceListWithObjectListExtractor: asyncExtractEntityInstanceListWithObjectListExtractor,
       runQuery: asyncRunQuery,
-      extractWithExtractorOrCombinerReturningObjectOrObjectList: asyncExtractWithExtractor,
+      extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
-      // 
+      //
       runQueryTemplateWithExtractorCombinerTransformer: undefined as any,
     };
   }
 
   // ################################################################################################
-  async handleQueryTemplateActionForServerONLY(runQueryTemplateAction: RunQueryTemplateAction): Promise<ActionReturnType> {
-    log.info(this.logHeader, "handleQueryTemplateActionForServerONLY", "runQueryTemplateAction", JSON.stringify(runQueryTemplateAction, null, 2));
+  async handleQueryTemplateActionForServerONLY(
+    runQueryTemplateAction: RunQueryTemplateAction
+  ): Promise<ActionReturnType> {
+    log.info(
+      this.logHeader,
+      "handleQueryTemplateActionForServerONLY",
+      "runQueryTemplateAction",
+      JSON.stringify(runQueryTemplateAction, null, 2)
+    );
     return handleQueryTemplateAction("FileSystemExtractorTemplateRunner", runQueryTemplateAction, this.selectorMap);
   }
 
   // ################################################################################################
-  async handleExtractorTemplateActionForServerONLY(runExtractorTemplateAction: RunExtractorTemplateAction): Promise<ActionReturnType> {
-    log.info(this.logHeader, "handleExtractorTemplateActionForServerONLY", "runExtractorTemplateAction", JSON.stringify(runExtractorTemplateAction, null, 2));
-    return handleExtractorTemplateAction("FileSystemExtractorTemplateRunner", runExtractorTemplateAction, this.selectorMap);
+  async handleBoxedExtractorTemplateActionForServerONLY(
+    runBoxedExtractorTemplateAction: RunBoxedExtractorTemplateAction
+  ): Promise<ActionReturnType> {
+    log.info(
+      this.logHeader,
+      "handleBoxedExtractorTemplateActionForServerONLY",
+      "runBoxedExtractorTemplateAction",
+      JSON.stringify(runBoxedExtractorTemplateAction, null, 2)
+    );
+    return handleBoxedExtractorTemplateAction(
+      "FileSystemExtractorTemplateRunner",
+      runBoxedExtractorTemplateAction,
+      this.selectorMap
+    );
   }
 
   // ################################################################################################
-  async handleQueryTemplateOrExtractorTemplateActionForServerONLY(runQueryTemplateOrExtractorTemplateAction: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
-    log.info(this.logHeader, "handleQueryTemplateOrExtractorTemplateActionForServerONLY", "runQueryTemplateOrExtractorTemplateAction", JSON.stringify(runQueryTemplateOrExtractorTemplateAction, null, 2));
-    return handleExtractorOrQueryTemplateAction("FileSystemExtractorTemplateRunner", runQueryTemplateOrExtractorTemplateAction, this.selectorMap);
+  async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
+    runQueryTemplateOrBoxedExtractorTemplateAction: RunQueryTemplateOrBoxedExtractorTemplateAction
+  ): Promise<ActionReturnType> {
+    log.info(
+      this.logHeader,
+      "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY",
+      "runQueryTemplateOrBoxedExtractorTemplateAction",
+      JSON.stringify(runQueryTemplateOrBoxedExtractorTemplateAction, null, 2)
+    );
+    return handleBoxedExtractorTemplateOrQueryTemplateAction(
+      "FileSystemExtractorTemplateRunner",
+      runQueryTemplateOrBoxedExtractorTemplateAction,
+      this.selectorMap
+    );
   }
-
 }
 
 export function getDomainStateJzodSchemaExtractorRunnerMap(): QueryTemplateRunnerMapForJzodSchema<DomainState> {

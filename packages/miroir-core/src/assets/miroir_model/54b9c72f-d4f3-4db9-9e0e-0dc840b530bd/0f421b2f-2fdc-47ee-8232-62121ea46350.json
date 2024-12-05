@@ -18,63 +18,77 @@
     "definition": {
       "uuid": {
         "type": "uuid",
-        "tag": { "value": { 
-          "id": 1,
-          "defaultLabel": "Uuid",
-          "editable": false
-        }}
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Uuid",
+            "editable": false
+          }
+        }
       },
       "parentName": {
         "type": "string",
         "optional": true,
-        "tag": { "value": { 
-          "id": 2,
-          "defaultLabel": "Entity Name",
-          "editable": false
-        }}
+        "tag": {
+          "value": {
+            "id": 2,
+            "defaultLabel": "Entity Name",
+            "editable": false
+          }
+        }
       },
       "parentUuid": {
         "type": "uuid",
-        "tag": { "value": { 
-          "id": 3,
-          "defaultLabel": "Entity Uuid",
-          "editable": false
-        }}
+        "tag": {
+          "value": {
+            "id": 3,
+            "defaultLabel": "Entity Uuid",
+            "editable": false
+          }
+        }
       },
       "parentDefinitionVersionUuid": {
         "type": "uuid",
         "optional": true,
-        "tag": { "value": { 
-          "id": 4,
-          "defaultLabel": "Entity Definition Version Uuid",
-          "editable": false
-        }}
+        "tag": {
+          "value": {
+            "id": 4,
+            "defaultLabel": "Entity Definition Version Uuid",
+            "editable": false
+          }
+        }
       },
       "name": {
         "type": "string",
-        "tag": { "value": { 
-          "id": 5,
-          "defaultLabel": "Name",
-          "editable": true
-        }}
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Name",
+            "editable": true
+          }
+        }
       },
       "defaultLabel": {
         "type": "string",
-        "tag": { "value": { 
-          "id": 6,
-          "defaultLabel": "Default Label",
-          "editable": true
-        }}
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Default Label",
+            "editable": true
+          }
+        }
       },
       "description": {
         "type": "string",
         "optional": true,
-        "tag": { "value": { 
-          "id": 7,
-          "defaultLabel": "Description",
-          "editable": true
+        "tag": {
+          "value": {
+            "id": 7,
+            "defaultLabel": "Description",
+            "editable": true
+          }
         }
-      }},
+      },
       "definition": {
         "type": "schemaReference",
         "context": {
@@ -98,11 +112,13 @@
                     "type": "uuid"
                   }
                 ],
-                "tag": { "value": { 
-                  "id": 1,
-                  "defaultLabel": "Application",
-                  "editable": false
-                }}
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Application",
+                    "editable": false
+                  }
+                }
               },
               "reportUuid": {
                 "type": "string",
@@ -111,11 +127,13 @@
                     "type": "uuid"
                   }
                 ],
-                "tag": { "value": { 
-                  "id": 1,
-                  "defaultLabel": "Report",
-                  "editable": false
-                }}
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Report",
+                    "editable": false
+                  }
+                }
               },
               "instanceUuid": {
                 "type": "string",
@@ -125,11 +143,13 @@
                     "type": "uuid"
                   }
                 ],
-                "tag": { "value": { 
-                  "id": 1,
-                  "defaultLabel": "Instance",
-                  "editable": false
-                }}
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Instance",
+                    "editable": false
+                  }
+                }
               },
               "icon": {
                 "type": "string",

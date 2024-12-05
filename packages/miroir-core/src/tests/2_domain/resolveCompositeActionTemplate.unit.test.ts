@@ -196,7 +196,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
           definition: {
             extractorTemplates: {
               elementToDisplay: {
-                queryType: "extractorForObjectByDirectReference",
+                extractorTemplateType: "extractorForObjectByDirectReference",
                 parentName: {
                   transformerType: "parameterReference",
                   referenceName: "createEntity_newEntityName",
@@ -330,11 +330,11 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
         },
         // instances for new Entity, put in "menuUpdateQueryResult"
         {
-          compositeActionType: "runQueryTemplateOrExtractorTemplateAction",
+          compositeActionType: "runQueryTemplateAction",
           
           nameGivenToResult: "menuUpdateQueryResult",
           queryTemplate: {
-            actionType: "runQueryTemplateOrExtractorTemplateAction",
+            actionType: "runQueryTemplateAction",
             actionName: "runQuery",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             applicationSection: "model",
@@ -354,7 +354,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
               contextResults: {},
               extractorTemplates: {
                 menuList: {
-                  queryType: "extractorTemplateForObjectListByEntity",
+                  extractorTemplateType: "extractorTemplateForObjectListByEntity",
                   applicationSection: "model",
                   parentName: "Menu",
                   parentUuid: {
@@ -709,7 +709,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
                     definition: {
                       extractorTemplates: {
                         elementToDisplay: {
-                          queryType: "extractorForObjectByDirectReference",
+                          extractorTemplateType: "extractorForObjectByDirectReference",
                           parentName: "newEntityName",
                           parentUuid: {
                             transformerType: "constantString",
@@ -753,10 +753,10 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
         },
       },
       {
-        compositeActionType: "runQueryTemplateOrExtractorTemplateAction",
+        compositeActionType: "runQueryTemplateAction",
         nameGivenToResult: "menuUpdateQueryResult",
         queryTemplate: {
-          actionType: "runQueryTemplateOrExtractorTemplateAction",
+          actionType: "runQueryTemplateAction",
           actionName: "runQuery",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           applicationSection: "model",
@@ -769,7 +769,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
             contextResults: {},
             extractorTemplates: {
               menuList: {
-                queryType: "extractorTemplateForObjectListByEntity",
+                extractorTemplateType: "extractorTemplateForObjectListByEntity",
                 applicationSection: "model",
                 parentName: "Menu",
                 parentUuid: {
@@ -1016,7 +1016,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
         //   compositeActionType: "queryTemplate",
         //   nameGivenToResult: newEntityName,
         //   queryTemplate: {
-        //     actionType: "runQueryTemplateOrExtractorTemplateAction",
+        //     actionType: "runQueryTemplatAction",
         //     actionName: "runQuery",
         //     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
         //     // applicationSection: "data",
@@ -1036,7 +1036,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
         //       contextResults: { },
         //       extractorTemplates: {
         //         menuUuidIndex: {
-        //           queryType: "extractorTemplateForObjectListByEntity",
+        //           extractorTemplateType: "extractorTemplateForObjectListByEntity",
         //           applicationSection: "model",
         //           parentName: "Menu",
         //           parentUuid: {
@@ -1146,11 +1146,11 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
         // },
         // update splitted entity instances with foreign key of instances of new entity
         {
-          compositeActionType: "runQueryTemplateOrExtractorTemplateAction",
+          compositeActionType: "runQueryTemplateAction",
           compositeActionStepLabel: "calculateEntityInstances",
           nameGivenToResult: newEntityName,
           queryTemplate: {
-            actionType: "runQueryTemplateOrExtractorTemplateAction",
+            actionType: "runQueryTemplateAction",
             actionName: "runQuery",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             applicationSection: "data",
@@ -1170,7 +1170,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
               contextResults: { },
               extractorTemplates: {
                 // [splittedEntityName + "UuidIndex"]: {
-                //   queryType: "extractorTemplateForObjectListByEntity",
+                //   extractorTemplateType: "extractorTemplateForObjectListByEntity",
                 //   applicationSection: "data",
                 //   parentName: {
                 //     transformerType: "parameterReference",
@@ -1394,7 +1394,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
       //   compositeActionType: "queryTemplate",
       //   nameGivenToResult: "Test2",
       //   queryTemplate: {
-      //     actionType: "runQueryTemplateOrExtractorTemplateAction",
+      //     actionType: "runQueryTemplateOrBoxedExtractorTemplateAction",
       //     actionName: "runQuery",
       //     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       //     applicationSection: "model",
@@ -1410,7 +1410,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
       //       contextResults: {},
       //       extractorTemplates: {
       //         menuUuidIndex: {
-      //           queryType: "extractorTemplateForObjectListByEntity",
+      //           extractorTemplateType: "extractorTemplateForObjectListByEntity",
       //           applicationSection: "model",
       //           parentName: "Menu",
       //           parentUuid: {
@@ -1504,11 +1504,11 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
       //   },
       // },
       {
-        compositeActionType: "runQueryTemplateOrExtractorTemplateAction",
+        compositeActionType: "runQueryTemplateAction",
         compositeActionStepLabel: "calculateEntityInstances",
         nameGivenToResult: "Test2",
         queryTemplate: {
-          actionType: "runQueryTemplateOrExtractorTemplateAction",
+          actionType: "runQueryTemplateAction",
           actionName: "runQuery",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           applicationSection: "data",
@@ -1524,7 +1524,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
             contextResults: {},
             extractorTemplates: {
               // TestUuidIndex: {
-              //   queryType: "extractorTemplateForObjectListByEntity",
+              //   extractorTemplateType: "extractorTemplateForObjectListByEntity",
               //   applicationSection: "data",
               //   parentName: "Test",
               //   parentUuid: {

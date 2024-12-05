@@ -511,7 +511,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           definition: {
             extractorTemplates: {
               elementToDisplay: {
-                queryType: "extractorForObjectByDirectReference",
+                extractorTemplateType: "extractorForObjectByDirectReference",
                 parentName: {
                   transformerType: "parameterReference",
                   referenceName: "createEntity_newEntityName",
@@ -645,11 +645,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         },
         // instances for new Entity, put in "menuUpdateQueryResult"
         {
-          compositeActionType: "runQueryTemplateOrExtractorTemplateAction",
+          compositeActionType: "runQueryTemplateOrBoxedExtractorTemplateAction",
           
           nameGivenToResult: "menuUpdateQueryResult",
           queryTemplate: {
-            actionType: "runQueryTemplateOrExtractorTemplateAction",
+            actionType: "runQueryTemplateOrBoxedExtractorTemplateAction",
             actionName: "runQuery",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             applicationSection: "model",
@@ -669,7 +669,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               contextResults: {},
               extractorTemplates: {
                 menuList: {
-                  queryType: "extractorTemplateForObjectListByEntity",
+                  extractorTemplateType: "extractorTemplateForObjectListByEntity",
                   applicationSection: "model",
                   parentName: "Menu",
                   parentUuid: {
@@ -1047,7 +1047,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           definition: {
             extractorTemplates: {
               elementToDisplay: {
-                queryType: "extractorForObjectByDirectReference",
+                extractorTemplateType: "extractorForObjectByDirectReference",
                 parentName: {
                   transformerType: "parameterReference",
                   referenceName: "splitEntity_newEntityName",
@@ -1079,7 +1079,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                 },
               },
               fountainsOfMunicipality: {
-                queryType: "combinerByRelationReturningObjectList",
+                extractorTemplateType: "combinerByRelationReturningObjectList",
                 parentName: "Fountain",
                 parentUuid: {
                   transformerType: "parameterReference",
@@ -1330,11 +1330,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       definition: [
         // find unique municipalities from fountains
         {
-          compositeActionType: "runQueryTemplateOrExtractorTemplateAction",
+          compositeActionType: "runQueryTemplateOrBoxedExtractorTemplateAction",
           compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
           nameGivenToResult: newEntityName,
           queryTemplate: {
-            actionType: "runQueryTemplateOrExtractorTemplateAction",
+            actionType: "runQueryTemplateOrBoxedExtractorTemplateAction",
             actionName: "runQuery",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             // applicationSection: "data",
@@ -1354,7 +1354,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               contextResults: { },
               extractorTemplates: {
                 menuUuidIndex: {
-                  queryType: "extractorTemplateForObjectListByEntity",
+                  extractorTemplateType: "extractorTemplateForObjectListByEntity",
                   applicationSection: "model",
                   parentName: "Menu",
                   parentUuid: {
@@ -1500,11 +1500,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         },
         // update splitted entity instances with foreign key of instances of new entity
         {
-          compositeActionType: "runQueryTemplateOrExtractorTemplateAction",
+          compositeActionType: "runQueryTemplateOrBoxedExtractorTemplateAction",
           compositeActionStepLabel: "calculateEntityInstances",
           nameGivenToResult: newEntityName,
           queryTemplate: {
-            actionType: "runQueryTemplateOrExtractorTemplateAction",
+            actionType: "runQueryTemplateOrBoxedExtractorTemplateAction",
             actionName: "runQuery",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             applicationSection: "data",
@@ -1525,7 +1525,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               extractorTemplates: {
                 "splittedEntityUuidIndex": {
                 // [splittedEntityName + "UuidIndex"]: {
-                  queryType: "extractorTemplateForObjectListByEntity",
+                  extractorTemplateType: "extractorTemplateForObjectListByEntity",
                   applicationSection: "data",
                   parentName: {
                     transformerType: "parameterReference",

@@ -1,16 +1,16 @@
 {
   "uuid": "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
   "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-  "parentName":"Report",
-  "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-  "name":"ReportList",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "name": "ReportList",
   "defaultLabel": "Reports",
   "type": "list",
   "definition": {
     "reportParameters": {},
     "extractorTemplates": {
       "reports": {
-        "queryType": "extractorTemplateForObjectListByEntity",
+        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
         "parentName": "Report",
         "parentUuid": {
           "transformerType": "constantUuid",
@@ -19,7 +19,7 @@
       }
     },
     "section": {
-      "type":"objectListReportSection",
+      "type": "objectListReportSection",
       "definition": {
         "label": "Reports",
         "parentName": "Report",

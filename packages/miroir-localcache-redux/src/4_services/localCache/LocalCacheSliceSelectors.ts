@@ -28,7 +28,7 @@ import {
   QueryTemplateWithExtractorCombinerTransformer,
   QueryWithExtractorCombinerTransformer,
   RecordOfJzodElement,
-  SyncExtractorRunnerParams,
+  SyncBoxedExtractorRunnerParams,
   SyncQueryRunner,
   SyncQueryRunnerParams,
   SyncQueryTemplateRunner,
@@ -70,8 +70,8 @@ declare type SelectorParamsForQuery<QueryType extends QueryWithExtractorCombiner
 // ################################################################################################
 declare type SelectorParamsForExtractor<QueryType extends BoxedExtractorOrCombinerReturningObjectOrObjectList, StateType> = (
   reduxState: ReduxStateWithUndoRedo,
-  params: SyncExtractorRunnerParams<QueryType, StateType>
-) => SyncExtractorRunnerParams<QueryType, StateType>;
+  params: SyncBoxedExtractorRunnerParams<QueryType, StateType>
+) => SyncBoxedExtractorRunnerParams<QueryType, StateType>;
 
 
 // ################################################################################################

@@ -67,7 +67,7 @@ describe("extractorTransformerSql.unit.test", () => {
         //     pageParams: {},
         //     queryParams: {},
         //     select: {
-        //       queryType: "extractorForObjectByDirectReference",
+        //       extractorTemplateType: "extractorForObjectByDirectReference",
         //       applicationSection: "data",
         //       parentName: "Book",
         //       parentUuid: entityBook.uuid,
@@ -137,7 +137,7 @@ describe("extractorTransformerSql.unit.test", () => {
   //       //     pageParams: {},
   //       //     queryParams: {},
   //       //     select: {
-  //       //       queryType: "extractorForObjectByDirectReference",
+  //       //       extractorTemplateType: "extractorForObjectByDirectReference",
   //       //       applicationSection: "data",
   //       //       parentName: "Book",
   //       //       parentUuid: entityBook.uuid,

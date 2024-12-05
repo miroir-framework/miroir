@@ -8,15 +8,15 @@ import {
   EntityInstance,
   LoggerInterface,
   MiroirLoggerFactory,
-  RunQueryTemplateOrExtractorTemplateAction,
+  RunQueryTemplateOrBoxedExtractorTemplateAction,
   getLoggerName,
   ExtractorTemplateRunnerInMemory,
   ExtractorRunnerInMemory,
-  RunExtractorOrQueryAction,
-  RunExtractorAction,
+  RunBoxedExtractorOrQueryAction,
+  RunBoxedExtractorAction,
   RunQueryAction,
   RunQueryTemplateAction,
-  RunExtractorTemplateAction,
+  RunBoxedExtractorTemplateAction,
 } from "miroir-core";
 import { IndexedDbStoreSection, MixableIndexedDbStoreSection } from "./IndexedDbStoreSection.js";
 
@@ -49,12 +49,12 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
     }
 
     // #############################################################################################
-    async handleExtractorAction(query: RunExtractorAction): Promise<ActionReturnType> {
-      log.info(this.logHeader,'handleExtractorAction', 'query',query);
+    async handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<ActionReturnType> {
+      log.info(this.logHeader,'handleBoxedExtractorAction', 'query',query);
       
-      const result: ActionReturnType = await this.extractorRunner.handleExtractorAction(query);
+      const result: ActionReturnType = await this.extractorRunner.handleBoxedExtractorAction(query);
 
-      log.info(this.logHeader,'handleExtractorAction','query',query, "result", result);
+      log.info(this.logHeader,'handleBoxedExtractorAction','query',query, "result", result);
       return result;
     }
     
@@ -79,22 +79,22 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
     }
 
     // #############################################################################################
-    async handleExtractorTemplateActionForServerONLY(query: RunExtractorTemplateAction): Promise<ActionReturnType> {
+    async handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<ActionReturnType> {
       log.info(this.logHeader,'handleQueryTemplateActionForServerONLY', 'query',query);
       
-      const result: ActionReturnType = await this.extractorTemplateRunner.handleExtractorTemplateActionForServerONLY(query);
+      const result: ActionReturnType = await this.extractorTemplateRunner.handleBoxedExtractorTemplateActionForServerONLY(query);
 
-      log.info(this.logHeader,'handleExtractorTemplateActionForServerONLY','query',query, "result", result);
+      log.info(this.logHeader,'handleBoxedExtractorTemplateActionForServerONLY','query',query, "result", result);
       return result;
     }
 
     // #############################################################################################
-    async handleQueryTemplateOrExtractorTemplateActionForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType> {
-      log.info(this.logHeader,'handleQueryTemplateOrExtractorTemplateActionForServerONLY', 'query',query);
+    async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType> {
+      log.info(this.logHeader,'handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY', 'query',query);
       
-      const result: ActionReturnType = await this.extractorTemplateRunner.handleQueryTemplateOrExtractorTemplateActionForServerONLY(query);
+      const result: ActionReturnType = await this.extractorTemplateRunner.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query);
 
-      log.info(this.logHeader,'handleQueryTemplateOrExtractorTemplateActionForServerONLY','query',query, "result", result);
+      log.info(this.logHeader,'handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY','query',query, "result", result);
       return result;
     }
 

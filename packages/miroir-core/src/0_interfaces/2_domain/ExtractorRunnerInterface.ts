@@ -21,11 +21,11 @@ import {
   QueryJzodSchemaParams,
   QueryTemplateWithExtractorCombinerTransformer,
   QueryWithExtractorCombinerTransformer,
-  RunExtractorAction,
-  RunExtractorTemplateAction,
+  RunBoxedExtractorAction,
+  RunBoxedExtractorTemplateAction,
   RunQueryAction,
   RunQueryTemplateAction,
-  RunQueryTemplateOrExtractorTemplateAction
+  RunQueryTemplateOrBoxedExtractorTemplateAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 
 // ################################################################################################
@@ -34,88 +34,88 @@ export type RecordOfJzodObject = Record<string, JzodObject | undefined>;
 
 // ################################################################################################
 export interface ExtractorTemplatePersistenceStoreRunner {
-  handleQueryTemplateOrExtractorTemplateActionForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType>;
+  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType>;
 }
 
 // ################################################################################################
 export interface ExtractorOrQueryPersistenceStoreRunner {
-  handleExtractorAction(query: RunExtractorAction): Promise<ActionReturnType>;
+  handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<ActionReturnType>;
   handleQueryAction(query: RunQueryAction): Promise<ActionReturnType>;
 }
 
 // ################################################################################################
 // ################################################################################################
-// EXTRACTOR TEMPLATES ############################################################################
+// BOXED EXTRACTOR TEMPLATES ############################################################################
 
-export interface SyncExtractorTemplateRunnerParams<
+export interface SyncBoxedExtractorTemplateRunnerParams<
   ExtractorTemplate extends BoxedExtractorTemplateReturningObjectOrObjectList,
   StateType
 > {
-  extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<StateType>;
+  extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<StateType>;
   extractorOrCombinerTemplate: ExtractorTemplate;
 }
 
-export type SyncExtractorTemplateRunner<
+export type SyncBoxedExtractorTemplateRunner<
   QueryType extends BoxedExtractorTemplateReturningObjectOrObjectList,
   StateType,
   ResultType
-> = (state: StateType, extractorAndParams: SyncExtractorTemplateRunnerParams<QueryType, StateType>) => ResultType;
+> = (state: StateType, extractorAndParams: SyncBoxedExtractorTemplateRunnerParams<QueryType, StateType>) => ResultType;
 
 // ################################################################################################
-export interface AsyncExtractorTemplateRunnerParams<ExtractorTemplateDomainModelType extends BoxedExtractorTemplateReturningObjectOrObjectList> {
-  extractorRunnerMap?: AsyncExtractorOrQueryRunnerMap
+export interface AsyncBoxedExtractorTemplateRunnerParams<ExtractorTemplateDomainModelType extends BoxedExtractorTemplateReturningObjectOrObjectList> {
+  extractorRunnerMap?: AsyncBoxedExtractorOrQueryRunnerMap
   extractorOrCombinerTemplate: ExtractorTemplateDomainModelType
 }
 
 
 // ################################################################################################
-export type AsyncExtractorTemplateRunner<QueryType extends BoxedExtractorTemplateReturningObjectOrObjectList, ResultType> = (
-  extractorAndParams: AsyncExtractorTemplateRunnerParams<QueryType>
+export type AsyncBoxedExtractorTemplateRunner<QueryType extends BoxedExtractorTemplateReturningObjectOrObjectList, ResultType> = (
+  extractorAndParams: AsyncBoxedExtractorTemplateRunnerParams<QueryType>
 ) => Promise<ResultType>;
 
 
 // ################################################################################################
-export type ExtractorTemplateRunner<QueryType extends BoxedExtractorTemplateReturningObjectOrObjectList, StateType, ResultType> =
-  | SyncExtractorTemplateRunner<QueryType, StateType, ResultType>
-  | AsyncExtractorTemplateRunner<QueryType, ResultType>;
+export type BoxedExtractorTemplateRunner<QueryType extends BoxedExtractorTemplateReturningObjectOrObjectList, StateType, ResultType> =
+  | SyncBoxedExtractorTemplateRunner<QueryType, StateType, ResultType>
+  | AsyncBoxedExtractorTemplateRunner<QueryType, ResultType>;
 
 // ################################################################################################
 export interface ExtractorTemplatePersistenceStoreRunner {
   handleQueryTemplateActionForServerONLY(query: RunQueryTemplateAction): Promise<ActionReturnType>;
-  handleExtractorTemplateActionForServerONLY(query: RunExtractorTemplateAction): Promise<ActionReturnType>;
-  handleQueryTemplateOrExtractorTemplateActionForServerONLY(query: RunQueryTemplateOrExtractorTemplateAction): Promise<ActionReturnType>;
+  handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<ActionReturnType>;
+  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType>;
 }
 
 
 // ################################################################################################
 // ################################################################################################
-// EXTRACTORS #####################################################################################
-export interface SyncExtractorRunnerParams<ExtractorType extends BoxedExtractorOrCombinerReturningObjectOrObjectList, StateType> {
-  extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<StateType>
+// BOXED EXTRACTORS #####################################################################################
+export interface SyncBoxedExtractorRunnerParams<ExtractorType extends BoxedExtractorOrCombinerReturningObjectOrObjectList, StateType> {
+  extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<StateType>
   extractor: ExtractorType
 }
 
-export interface AsyncExtractorRunnerParams<ExtractorType extends BoxedExtractorOrCombinerReturningObjectOrObjectList> {
-  extractorRunnerMap?: AsyncExtractorOrQueryRunnerMap
+export interface AsyncBoxedExtractorRunnerParams<ExtractorType extends BoxedExtractorOrCombinerReturningObjectOrObjectList> {
+  extractorRunnerMap?: AsyncBoxedExtractorOrQueryRunnerMap
   extractor: ExtractorType
 }
 
-export type SyncExtractorRunner<QueryType extends BoxedExtractorOrCombinerReturningObjectOrObjectList, StateType, ResultType> = (
+export type SyncBoxedExtractorRunner<QueryType extends BoxedExtractorOrCombinerReturningObjectOrObjectList, StateType, ResultType> = (
   domainState: StateType,
-  extractorAndParams: SyncExtractorRunnerParams<QueryType, StateType>
+  extractorAndParams: SyncBoxedExtractorRunnerParams<QueryType, StateType>
 ) => ResultType;
 
-export type AsyncExtractorRunner<ExtractorType extends BoxedExtractorOrCombinerReturningObjectOrObjectList, ResultType> = (
-  extractorAndParams: AsyncExtractorRunnerParams<ExtractorType>
+export type AsyncBoxedExtractorRunner<ExtractorType extends BoxedExtractorOrCombinerReturningObjectOrObjectList, ResultType> = (
+  extractorAndParams: AsyncBoxedExtractorRunnerParams<ExtractorType>
 ) => Promise<ResultType>;
 
-export type AsyncExtractWithExtractorOrCombinerReturningObjectOrObjectList = AsyncExtractorRunner<
+export type AsyncExtractWithBoxedExtractorOrCombinerReturningObjectOrObjectList = AsyncBoxedExtractorRunner<
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   DomainElement
 >;
 
 // ################################################################################################
-export type SyncExtractWithExtractorOrCombinerReturningObjectOrObjectList<StateType> = SyncExtractorRunner<
+export type SyncExtractWithBoxedExtractorOrCombinerReturningObjectOrObjectList<StateType> = SyncBoxedExtractorRunner<
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   StateType,
   DomainElement
@@ -127,7 +127,7 @@ export type SyncExtractWithExtractorOrCombinerReturningObjectOrObjectList<StateT
 // ################################################################################################
 // QUERY ##########################################################################################
 export interface SyncQueryRunnerParams<StateType> {
-  extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<StateType>
+  extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<StateType>
   extractor: QueryWithExtractorCombinerTransformer
 }
 
@@ -139,7 +139,7 @@ export type SyncQueryRunner<
 
 // ################################################################################################
 export interface AsyncQueryRunnerParams {
-  extractorRunnerMap?: AsyncExtractorOrQueryRunnerMap
+  extractorRunnerMap?: AsyncBoxedExtractorOrQueryRunnerMap
   extractor: QueryWithExtractorCombinerTransformer
 }
 
@@ -153,7 +153,7 @@ export type AsyncQueryRunner<ResultType> = (
 // ################################################################################################
 // QUERY TEMPLATES ################################################################################
 export interface SyncQueryTemplateRunnerParams<StateType> {
-  extractorRunnerMap?: SyncExtractorOrQueryRunnerMap<StateType>;
+  extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<StateType>;
   extractorOrCombinerTemplate: QueryTemplateWithExtractorCombinerTransformer;
 }
 
@@ -165,7 +165,7 @@ export type SyncQueryTemplateRunner<
 
 // ################################################################################################
 export interface AsyncQueryTemplateRunnerParams {
-  extractorRunnerMap?: AsyncExtractorOrQueryRunnerMap
+  extractorRunnerMap?: AsyncBoxedExtractorOrQueryRunnerMap
   extractorOrCombinerTemplate: QueryTemplateWithExtractorCombinerTransformer
 }
 
@@ -178,34 +178,34 @@ export type AsyncQueryTemplateRunner<ResultType> = (
 // ################################################################################################
 // ################################################################################################
 // QUERY OR EXTRACTOR  ############################################################################
-export type ExtractorOrQueryRunnerMap<StateType> = AsyncExtractorOrQueryRunnerMap | SyncExtractorOrQueryRunnerMap<StateType>;
+export type ExtractorOrQueryRunnerMap<StateType> = AsyncBoxedExtractorOrQueryRunnerMap | SyncBoxedExtractorOrQueryRunnerMap<StateType>;
 
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
 // MAPS  ##########################################################################################
-export type AsyncExtractorOrQueryRunnerMap = {
+export type AsyncBoxedExtractorOrQueryRunnerMap = {
   extractorType: "async";
-  extractWithExtractorOrCombinerReturningObjectOrObjectList: AsyncExtractWithExtractorOrCombinerReturningObjectOrObjectList;
+  extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: AsyncExtractWithBoxedExtractorOrCombinerReturningObjectOrObjectList;
   runQuery: AsyncQueryRunner<DomainElementObjectOrFailed>;
-  extractEntityInstance: AsyncExtractorRunner<
+  extractEntityInstance: AsyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObject,
     DomainElementEntityInstanceOrFailed
   >;
-  extractEntityInstanceUuidIndex: AsyncExtractorRunner<
+  extractEntityInstanceUuidIndex: AsyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObjectList,
     DomainElementInstanceUuidIndexOrFailed
   >;
-  extractEntityInstanceList: AsyncExtractorRunner<
+  extractEntityInstanceList: AsyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObjectList,
     DomainElementInstanceArrayOrFailed
   >;
-  extractEntityInstanceUuidIndexWithObjectListExtractor: AsyncExtractorRunner<
+  extractEntityInstanceUuidIndexWithObjectListExtractor: AsyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObjectList,
     DomainElementInstanceUuidIndexOrFailed
   >;
-  extractEntityInstanceListWithObjectListExtractor: AsyncExtractorRunner<
+  extractEntityInstanceListWithObjectListExtractor: AsyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObjectList,
     DomainElementInstanceArrayOrFailed
   >;
@@ -229,31 +229,31 @@ export type AsyncExtractorOrQueryRunnerMap = {
 };
 
 
-export type SyncExtractorOrQueryRunnerMap<StateType> = {
+export type SyncBoxedExtractorOrQueryRunnerMap<StateType> = {
   extractorType: "sync";
-  extractWithExtractorOrCombinerReturningObjectOrObjectList: SyncExtractWithExtractorOrCombinerReturningObjectOrObjectList<StateType>;
+  extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: SyncExtractWithBoxedExtractorOrCombinerReturningObjectOrObjectList<StateType>;
   runQuery: SyncQueryRunner<StateType, DomainElementObjectOrFailed>;
-  extractEntityInstance: SyncExtractorRunner<
+  extractEntityInstance: SyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObject,
     StateType,
     DomainElementEntityInstanceOrFailed
   >;
-  extractEntityInstanceUuidIndex: SyncExtractorRunner<
+  extractEntityInstanceUuidIndex: SyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObjectList,
     StateType,
     DomainElementInstanceUuidIndexOrFailed
   >;
-  extractEntityInstanceUuidIndexWithObjectListExtractor: SyncExtractorRunner<
+  extractEntityInstanceUuidIndexWithObjectListExtractor: SyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObjectList,
     StateType,
     DomainElementInstanceUuidIndexOrFailed
   >;
-  extractEntityInstanceList: SyncExtractorRunner<
+  extractEntityInstanceList: SyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObjectList,
     StateType,
     DomainElementInstanceArrayOrFailed
   >;
-  extractEntityInstanceListWithObjectListExtractor: SyncExtractorRunner<
+  extractEntityInstanceListWithObjectListExtractor: SyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObjectList,
     StateType,
     DomainElementInstanceArrayOrFailed

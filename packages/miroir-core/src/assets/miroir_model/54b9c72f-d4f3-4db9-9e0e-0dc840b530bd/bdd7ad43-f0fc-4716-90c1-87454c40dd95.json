@@ -20,44 +20,102 @@
     "definition": {
       "uuid": {
         "type": "uuid",
-        "tag": { "value": {  "id": 1, "defaultLabel": "Uuid", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Uuid",
+            "editable": false
+          }
+        }
       },
       "parentName": {
         "type": "string",
-        "tag": { "value": {  "id": 2, "defaultLabel": "Entity Name", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 2,
+            "defaultLabel": "Entity Name",
+            "editable": false
+          }
+        }
       },
       "parentUuid": {
         "type": "uuid",
-        "tag": { "value": {  "id": 3, "defaultLabel": "Entity Uuid", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 3,
+            "defaultLabel": "Entity Uuid",
+            "editable": false
+          }
+        }
       },
       "parentDefinitionVersionUuid": {
         "type": "uuid",
         "optional": true,
-        "tag": { "value": {  "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 4,
+            "defaultLabel": "Entity Definition Version Uuid",
+            "editable": false
+          }
+        }
       },
       "name": {
         "type": "string",
-        "tag": { "value": {  "id": 5, "defaultLabel": "Name", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Name",
+            "editable": false
+          }
+        }
       },
       "entityUuid": {
         "type": "uuid",
-        "tag": { "value": {  "id": 6, "defaultLabel": "Entity Uuid of the Entity which this definition is the definition", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Entity Uuid of the Entity which this definition is the definition",
+            "editable": false
+          }
+        }
       },
       "conceptLevel": {
         "type": "enum",
-        "definition": ["MetaModel", "Model", "Data"],
+        "definition": [
+          "MetaModel",
+          "Model",
+          "Data"
+        ],
         "optional": true,
-        "tag": { "value": {  "id": 7, "defaultLabel": "Concept Level", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 7,
+            "defaultLabel": "Concept Level",
+            "editable": false
+          }
+        }
       },
       "description": {
         "type": "string",
         "optional": true,
-        "tag": { "value": {  "id": 8, "defaultLabel": "Description", "editable": true }}
+        "tag": {
+          "value": {
+            "id": 8,
+            "defaultLabel": "Description",
+            "editable": true
+          }
+        }
       },
       "defaultInstanceDetailsReportUuid": {
         "type": "uuid",
         "optional": true,
-        "tag": { "value": {  "id": 9, "defaultLabel": "Default Report used to display instances of this Entity", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 9,
+            "defaultLabel": "Default Report used to display instances of this Entity",
+            "editable": false
+          }
+        }
       },
       "viewAttributes": {
         "type": "array",
@@ -72,7 +130,13 @@
           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
           "relativePath": "jzodObject"
         },
-        "tag": { "value": {  "id": 11, "defaultLabel": "Jzod Schema", "editable": true }}
+        "tag": {
+          "value": {
+            "id": 11,
+            "defaultLabel": "Jzod Schema",
+            "editable": true
+          }
+        }
       }
     }
   }

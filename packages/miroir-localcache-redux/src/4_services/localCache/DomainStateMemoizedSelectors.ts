@@ -2,13 +2,13 @@ import { createSelector } from "@reduxjs/toolkit";
 import {
   DeploymentEntityState,
   QueryRunnerMapForJzodSchema,
-  SyncExtractorOrQueryRunnerMap,
+  SyncBoxedExtractorOrQueryRunnerMap,
   extractEntityInstanceListWithObjectListExtractorInMemory,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractEntityJzodSchemaFromDeploymentEntityState,
   extractFetchQueryJzodSchema,
   extractJzodSchemaForDomainModelQuery,
-  extractWithExtractorOrCombinerReturningObjectOrObjectList,
+  extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
   runQueryTemplateWithExtractorCombinerTransformer,
   runQuery,
   extractzodSchemaForSingleSelectQuery,
@@ -20,7 +20,7 @@ import {
 const deploymentEntityStateSelector = (deploymentEntityState: DeploymentEntityState, params: any) => deploymentEntityState;
 const deploymentEntityStateSelectorParams = (deploymentEntityState: DeploymentEntityState, params: any) => params;
 
-export function getMemoizedDeploymentEntityStateSelectorMap(): SyncExtractorOrQueryRunnerMap<DeploymentEntityState> {
+export function getMemoizedDeploymentEntityStateSelectorMap(): SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> {
   return {
     extractorType: "sync",
     extractEntityInstance: createSelector(
@@ -47,9 +47,9 @@ export function getMemoizedDeploymentEntityStateSelectorMap(): SyncExtractorOrQu
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
       runQuery
     ),
-    extractWithExtractorOrCombinerReturningObjectOrObjectList: createSelector(
+    extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-      extractWithExtractorOrCombinerReturningObjectOrObjectList
+      extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList
     ),
     // ############################################################################################
     runQueryTemplateWithExtractorCombinerTransformer: createSelector(
