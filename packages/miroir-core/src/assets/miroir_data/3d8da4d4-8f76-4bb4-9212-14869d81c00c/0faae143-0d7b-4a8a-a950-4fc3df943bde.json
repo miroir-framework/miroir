@@ -12,7 +12,7 @@
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": { "type": "literal", "definition": "runQueryTemplateOrExtractorTemplateAction" },
+            "actionType": { "type": "literal", "definition": "runQueryTemplateOrBoxedExtractorTemplateAction" },
             "actionName": { "type": "literal", "definition": "runQuery" },
             "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
             "applicationSection": {
@@ -59,7 +59,7 @@
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": { "type": "literal", "definition": "runExtractorOrQueryAction" },
+            "actionType": { "type": "literal", "definition": "runBoxedExtractorOrQueryAction" },
             "actionName": { "type": "literal", "definition": "runQuery" },
             "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
             "applicationSection": {
@@ -140,7 +140,7 @@
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": { "type": "literal", "definition": "runExtractorTemplateAction" },
+            "actionType": { "type": "literal", "definition": "runBoxedExtractorTemplateAction" },
             "actionName": { "type": "literal", "definition": "runQuery" },
             "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
             "applicationSection": {
@@ -208,7 +208,7 @@
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": { "type": "literal", "definition": "runExtractorAction" },
+            "actionType": { "type": "literal", "definition": "runBoxedExtractorAction" },
             "actionName": { "type": "literal", "definition": "runQuery" },
             "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
             "applicationSection": {

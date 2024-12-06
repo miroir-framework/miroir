@@ -13,7 +13,7 @@ import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  adminConfigurationDeploymentTest1,
+  // adminConfigurationDeploymentTest1,
   getLoggerName,
   getReportsAndEntitiesDefinitionsForDeploymentUuid
 } from "miroir-core";
@@ -125,8 +125,8 @@ export const deployments = [
   adminConfigurationDeploymentMiroir,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentTest1,
-  adminConfigurationDeploymentTest4,
+  // adminConfigurationDeploymentTest1,
+  // adminConfigurationDeploymentTest4,
   adminConfigurationDeploymentParis,
 ] as any[]; //type for Admin Application Deployment Entity Definition
 
@@ -162,8 +162,8 @@ export const ReportPage = () => {
 
   const libraryAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentLibrary.uuid);
 
-  const test1AppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentTest1.uuid);
-  const test4AppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentTest4.uuid);
+  // const test1AppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentTest1.uuid);
+  // const test4AppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentTest4.uuid);
   const parisAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentParis.uuid);
 
   // log.info("ReportPage currentModel", currentModel);
@@ -218,16 +218,16 @@ export const ReportPage = () => {
           miroirMetaModel, 
           libraryAppModel,
         ),
-        [adminConfigurationDeploymentTest1.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-          adminConfigurationDeploymentTest1.uuid,
-          miroirMetaModel, 
-          test1AppModel,
-        ),
-        [adminConfigurationDeploymentTest4.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-          adminConfigurationDeploymentTest4.uuid,
-          miroirMetaModel, 
-          test4AppModel,
-        ),
+        // [adminConfigurationDeploymentTest1.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+        //   adminConfigurationDeploymentTest1.uuid,
+        //   miroirMetaModel, 
+        //   test1AppModel,
+        // ),
+        // [adminConfigurationDeploymentTest4.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+        //   adminConfigurationDeploymentTest4.uuid,
+        //   miroirMetaModel, 
+        //   test4AppModel,
+        // ),
         [adminConfigurationDeploymentParis.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
           adminConfigurationDeploymentParis.uuid,
           miroirMetaModel, 
@@ -236,7 +236,8 @@ export const ReportPage = () => {
       }
     ),
     // [miroirMetaModel, libraryAppModel, adminAppModel, test1AppModel, test4AppModel, parisAppModel]
-    [miroirMetaModel, libraryAppModel, adminAppModel, test1AppModel, test4AppModel ]
+    // [miroirMetaModel, libraryAppModel, adminAppModel, test1AppModel, test4AppModel ]
+    [miroirMetaModel, libraryAppModel, adminAppModel ]
   );
 
   useEffect(() =>

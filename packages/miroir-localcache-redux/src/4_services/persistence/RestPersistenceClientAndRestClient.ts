@@ -57,8 +57,9 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
   } = {
     RestPersistenceAction: { "*": { attribute: "objects", result: "crudInstances" } },
     modelAction: { "*": { action: true } },
-    // runQueryTemplateOrBoxedExtractorTemplateAction: { "*": { attribute: "query", result: "query" } },
     runQueryTemplateOrBoxedExtractorTemplateAction: { "*": { action: true } },
+    runQueryTemplateAction: { "*": { action: true } },
+    runBoxedExtractorTemplateAction: { "*": { action: true } },
     instanceAction: { "*": { action: true } },
     storeManagementAction: { "*": { action: true } }, // TODO: remove, there must be no impact when adding/removing an actionType
   };
@@ -127,7 +128,12 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
         return result;
         break;
       }
-      case "runBoxedExtractorOrQueryAction": {
+      case "LocalPersistenceAction": {
+        throw new Error("LocalPersistenceAction cannot be handled by RestPersistenceClientAndRestClient.handleNetworkPersistenceAction");
+      }
+      case "runBoxedExtractorAction":
+      case "runBoxedExtractorOrQueryAction":
+      case "runQueryAction": {
         const callParams = this.getRestCallParams(action, this.rootApiUrl + "/query");
         log.debug("handleNetworkPersistenceAction", action, "callParams", callParams);
         const result = await callParams.operation(callParams.url, callParams.args);
@@ -135,6 +141,8 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
         return result;
         break;
       }
+      case "runBoxedExtractorTemplateAction":
+      case "runQueryTemplateAction":
       case "runQueryTemplateOrBoxedExtractorTemplateAction": {
         const callParams = this.getRestCallParams(action, this.rootApiUrl + "/queryTemplate");
         log.debug("handleNetworkPersistenceAction", action, "callParams", callParams);

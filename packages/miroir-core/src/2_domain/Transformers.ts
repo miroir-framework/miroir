@@ -1179,17 +1179,16 @@ export function innerTransformer_plainObject_apply(
     const result = Object.fromEntries(
       attributeEntries.map((e) => [e[0], e[1].elementValue])
     )
-    log.info(
-      "innerTransformer_plainObject_apply on",
-      label,
-      "step",
-      step,
-      "object",
-      transformer,
-      "result converted object",
-      JSON.stringify(result, null, 2)
-    );
-    // log.info("transformer_apply converted plain object", transformer, "converted object", result);
+    // log.info(
+    //   "innerTransformer_plainObject_apply on",
+    //   label,
+    //   "step",
+    //   step,
+    //   "object",
+    //   transformer,
+    //   "result converted object",
+    //   JSON.stringify(result, null, 2)
+    // );
 
     return {
       elementType: "object",

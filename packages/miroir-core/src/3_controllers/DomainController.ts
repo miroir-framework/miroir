@@ -563,6 +563,12 @@ export class DomainController implements DomainControllerInterface {
             ...modelEntitiesToFetch.map((e) => ({ section: "model" as ApplicationSection, entity: e })),
             ...dataEntitiesToFetch.map((e) => ({ section: "data" as ApplicationSection, entity: e as MetaEntity })),
           ];
+          log.debug(
+            "DomainController loadConfigurationFromRemoteDataStore for deployment",
+            deploymentUuid,
+            "found entities to fetch",
+            toFetchEntities
+          );
           let instances: EntityInstanceCollection[] = []; //TODO: replace with functional implementation
           for (const e of toFetchEntities) {
             // makes sequential calls to interface. Make parallel calls instead using Promise.all?
@@ -967,7 +973,12 @@ export class DomainController implements DomainControllerInterface {
             currentAction.queryTemplate
           );
           if (actionResult?.status != "ok") {
-            log.error("Error on query", JSON.stringify(actionResult, null, 2));
+            log.error(
+              "Error on runQueryTemplateAction with nameGivenToResult",
+              currentAction.nameGivenToResult,
+              "query=",
+              JSON.stringify(actionResult, null, 2)
+            );
           } else {
             log.info(
               "handleCompositeActionTemplate queryTemplate adding result to context as",
@@ -991,7 +1002,12 @@ export class DomainController implements DomainControllerInterface {
             currentAction.queryTemplate
           );
           if (actionResult?.status != "ok") {
-            log.error("Error on query", JSON.stringify(actionResult, null, 2));
+            log.error(
+              "Error on runQueryTemplateAction with nameGivenToResult",
+              currentAction.nameGivenToResult,
+              "query=",
+              JSON.stringify(actionResult, null, 2)
+            );
           } else {
             log.info(
               "handleCompositeActionTemplate extractorTemplate adding result to context as",
@@ -1153,7 +1169,12 @@ export class DomainController implements DomainControllerInterface {
             currentAction.queryTemplate
           );
           if (actionResult?.status != "ok") {
-            log.error("Error on query", JSON.stringify(actionResult, null, 2));
+            log.error(
+              "Error on runBoxedExtractorTemplateAction with nameGivenToResult",
+              currentAction.nameGivenToResult,
+              "query=",
+              JSON.stringify(actionResult, null, 2)
+            );
           } else {
             log.info(
               "handleCompositeActionTemplate",

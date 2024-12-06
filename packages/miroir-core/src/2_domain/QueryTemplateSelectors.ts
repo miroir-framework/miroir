@@ -7,9 +7,7 @@ import {
   DomainElement,
   DomainElementObject,
   DomainModelQueryTemplateJzodSchemaParams,
-  ExtractorOrCombinerReturningObjectOrObjectList,
   ExtractorOrCombinerTemplate,
-  ExtractorTemplateReturningObjectOrObjectList,
   JzodElement,
   JzodObject,
   QueryByEntityUuidGetEntityDefinition,
@@ -17,8 +15,8 @@ import {
   QueryByTemplateGetParamJzodSchema,
   QueryTemplateWithExtractorCombinerTransformer,
   QueryWithExtractorCombinerTransformer,
-  RunBoxedExtractorTemplateAction,
   RunBoxedExtractorAction,
+  RunBoxedExtractorTemplateAction,
   RunQueryTemplateAction,
   RunQueryTemplateOrBoxedExtractorTemplateAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -27,7 +25,6 @@ import {
   ExtractorTemplateRunnerParamsForJzodSchema,
   RecordOfJzodElement,
   RecordOfJzodObject,
-  SyncBoxedExtractorRunnerParams,
   SyncBoxedExtractorTemplateRunnerParams,
   SyncQueryTemplateRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
@@ -44,8 +41,6 @@ import {
 } from "./QuerySelectors";
 import {
   resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList,
-  resolveExtractorTemplate,
-  resolveExtractorTemplateForExtractorOrCombinerReturningObjectOrObjectList,
   resolveQueryTemplateWithExtractorCombinerTransformer
 } from "./Templates";
 import { transformer_InnerReference_resolve } from "./Transformers";
@@ -64,19 +59,19 @@ export async function handleQueryTemplateAction(
   queryTemplateAction: RunQueryTemplateAction, 
   selectorMap: AsyncBoxedExtractorOrQueryRunnerMap
 ): Promise<ActionReturnType> {
-  log.info(
-    "handleQueryTemplateAction for ",
-    origin,
-    "queryTemplateAction",
-    JSON.stringify(queryTemplateAction, null, 2)
-  );
+  // log.info(
+  //   "handleQueryTemplateAction for ",
+  //   origin,
+  //   "queryTemplateAction",
+  //   JSON.stringify(queryTemplateAction, null, 2)
+  // );
   const resolvedQuery = resolveQueryTemplateWithExtractorCombinerTransformer( // TODO: separate aas resolvedQueryTemplate and resolvedExtractorTemplate
     queryTemplateAction.query
   );
   log.info(
     "handleQueryTemplateAction for ",
     origin,
-    "queryTemplateOrExtractorTemplateAction",
+    "handleQueryTemplateAction",
     JSON.stringify(queryTemplateAction, null, 2),
     "resolvedQuery",
     JSON.stringify(resolvedQuery, null, 2)

@@ -10,7 +10,7 @@
   "definition": {
     "extractorTemplates": {
       "deployments": {
-        "queryType": "extractorTemplateForObjectListByEntity",
+        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
         "parentName": "Deployment",
         "parentUuid": {
           "transformerType": "constantUuid",

@@ -9,7 +9,7 @@
   "definition": {
     "extractorTemplates": {
       "author": {
-        "queryType": "extractorForObjectByDirectReference",
+        "extractorTemplateType": "extractorForObjectByDirectReference",
         "parentName": "Author",
         "parentUuid": {
           "transformerType": "constantUuid",
@@ -23,7 +23,7 @@
     },
     "combinerTemplates": {
       "booksOfAuthor": {
-        "queryType": "combinerByRelationReturningObjectList",
+        "extractorTemplateType": "combinerByRelationReturningObjectList",
         "parentName": "Book",
         "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
         "objectReference": {
@@ -33,7 +33,7 @@
         "AttributeOfListObjectToCompareToReferenceUuid": "author"
       },
       "publishersOfBooks": {
-        "queryType": "combinerByManyToManyRelationReturningObjectList",
+        "extractorTemplateType": "combinerByManyToManyRelationReturningObjectList",
         "parentName": "Publisher",
         "parentUuid": {
           "transformerType": "constantUuid",
@@ -46,7 +46,7 @@
         "objectListReferenceAttribute": "publisher"
       },
       "BooksOfPublishers": {
-        "queryType": "combinerByManyToManyRelationReturningObjectList",
+        "extractorTemplateType": "combinerByManyToManyRelationReturningObjectList",
         "parentName": "Book",
         "parentUuid": {
           "transformerType": "constantUuid",

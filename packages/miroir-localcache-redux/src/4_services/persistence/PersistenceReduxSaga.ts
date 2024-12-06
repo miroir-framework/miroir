@@ -313,6 +313,35 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                 break;
 
               }
+              case 'runQueryTemplateAction': {
+                const localPersistenceStoreController =
+                  localParams.localPersistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
+
+                if (!localPersistenceStoreController) {
+                  throw new Error(
+                    "restMethodGetHandler could not find controller for deployment: " + action.deploymentUuid
+                  );
+                }
+                const localStoreResult =
+                  yield * call(() => localPersistenceStoreController.handleQueryTemplateActionForServerONLY(action));
+                return  yield localStoreResult;
+                break;
+              }
+              case 'runBoxedExtractorTemplateAction': {
+                const localPersistenceStoreController =
+                  localParams.localPersistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
+
+                if (!localPersistenceStoreController) {
+                  throw new Error(
+                    "restMethodGetHandler could not find controller for deployment: " + action.deploymentUuid
+                  );
+                }
+                const localStoreResult =
+                  yield * call(() => localPersistenceStoreController.handleBoxedExtractorTemplateActionForServerONLY(action));
+                return  yield localStoreResult;
+                break;
+
+              }
               case "runQueryTemplateOrBoxedExtractorTemplateAction": {
                 const localPersistenceStoreController =
                   localParams.localPersistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
@@ -326,7 +355,6 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                   yield * call(() => localPersistenceStoreController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(action));
                 return  yield localStoreResult;
                 break;
-
               }
               case "RestPersistenceAction":
               // case ""
@@ -338,7 +366,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
               }
             }
             return yield ACTION_OK;
-          }
+          } // end if (this.params.persistenceStoreAccessMode == "local")
 
           // if this.access == "local" then function has returned already
           if (this.params.persistenceStoreAccessMode == "remote") {
@@ -384,6 +412,15 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                 return yield clientResult.data;
                 break;
               }
+              case 'runBoxedExtractorAction':
+              case 'runQueryAction':
+              case 'runQueryTemplateAction':
+              case 'runBoxedExtractorTemplateAction': {
+                log.info("handlePersistenceAction runBoxedExtractorAction received from remoteStoreNetworkClient clientResult", clientResult);
+                log.debug("handlePersistenceAction runBoxedExtractorAction remoteStoreNetworkClient received result", clientResult.status);
+                return yield clientResult.data;
+                break;
+              }
               case "bundleAction":
               case "instanceAction":
               case "modelAction":
@@ -395,7 +432,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                 break;
               }
             }
-          }
+          } // end if (this.params.persistenceStoreAccessMode == "remote")
 
           throw new Error( // this should never happen
             "persistenceReduxSaga persistenceActionReduxSaga found neither remoteStoreNetworkClient nor persistenceStoreControllerManager for action " +

@@ -16,10 +16,10 @@
     },
     "select": {
       "result": {
-        "queryType": "extractorWrapperReturningObject",
+        "extractorTemplateType": "extractorWrapperReturningObject",
         "definition": {
           "type": {
-            "queryType": "literal",
+            "extractorTemplateType": "literal",
             "definition": "runtime"
           },
           "applicationVersion": {

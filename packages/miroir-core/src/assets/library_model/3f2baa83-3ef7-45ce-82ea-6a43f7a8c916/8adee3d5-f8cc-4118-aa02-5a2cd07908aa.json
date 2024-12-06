@@ -9,7 +9,7 @@
   "definition": {
     "extractorTemplates": {
       "user": {
-        "queryType": "extractorForObjectByDirectReference",
+        "extractorTemplateType": "extractorForObjectByDirectReference",
         "parentName": "User",
         "parentUuid": {
           "transformerType": "constantUuid",

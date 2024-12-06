@@ -9,7 +9,7 @@
   "definition": {
     "extractorTemplates": {
       "publisher": {
-        "queryType": "extractorForObjectByDirectReference",
+        "extractorTemplateType": "extractorForObjectByDirectReference",
         "parentName": "Author",
         "parentUuid": {
           "transformerType": "constantUuid",
@@ -23,7 +23,7 @@
     },
     "combinerTemplates": {
       "booksOfPublisher": {
-        "queryType": "combinerByRelationReturningObjectList",
+        "extractorTemplateType": "combinerByRelationReturningObjectList",
         "parentName": "Book",
         "parentUuid": {
           "transformerType": "constantUuid",

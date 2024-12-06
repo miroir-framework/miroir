@@ -992,7 +992,7 @@ import menuDefaultAdmin from "./assets/admin_model/dde4c883-ae6d-47c3-b6df-26bc6
 import adminConfigurationDeploymentAdmin from "./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/18db21bf-f8d3-4f6a-8296-84b69f6dc48b.json";
 import adminConfigurationDeploymentMiroir from "./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 import adminConfigurationDeploymentLibrary from "./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
-import adminConfigurationDeploymentTest1 from "./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/15e2004a-e7a0-4b9e-8acd-6d3500a6c9ad.json";
+// import adminConfigurationDeploymentTest1 from "./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/15e2004a-e7a0-4b9e-8acd-6d3500a6c9ad.json";
 import entityApplicationForAdmin from "./assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/25d935e7-9e93-42c2-aade-0472b883492b.json";
 import entityDeployment from "./assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7959d814-400c-4e80-988f-a00fe582ab98.json";
 import entityDefinitionDeployment from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c50240e7-c451-46c2-b60a-07b3172a5ef9.json";
@@ -1001,7 +1001,7 @@ export {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  adminConfigurationDeploymentTest1,
+  // adminConfigurationDeploymentTest1,
   entityApplicationForAdmin,
   entityDeployment,
   entityDefinitionDeployment,

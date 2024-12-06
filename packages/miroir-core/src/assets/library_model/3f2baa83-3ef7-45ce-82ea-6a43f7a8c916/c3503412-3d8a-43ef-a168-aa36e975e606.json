@@ -10,7 +10,7 @@
   "definition": {
     "extractorTemplates": {
       "book": {
-        "queryType": "extractorForObjectByDirectReference",
+        "extractorTemplateType": "extractorForObjectByDirectReference",
         "parentName": "Book",
         "parentUuid": {
           "transformerType": "constantUuid",
@@ -24,7 +24,7 @@
     },
     "combinerTemplates": {
       "publisher": {
-        "queryType": "combinerForObjectByRelation",
+        "extractorTemplateType": "combinerForObjectByRelation",
         "parentName": "Publisher",
         "parentUuid": {
           "transformerType": "constantUuid",
@@ -38,7 +38,7 @@
         "AttributeOfObjectToCompareToReferenceUuid": "publisher"
       },
       "author": {
-        "queryType": "combinerForObjectByRelation",
+        "extractorTemplateType": "combinerForObjectByRelation",
         "parentName": "Author",
         "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
         "objectReference": {
@@ -49,7 +49,7 @@
         "AttributeOfObjectToCompareToReferenceUuid": "author"
       },
       "booksOfPublisher": {
-        "queryType": "combinerByRelationReturningObjectList",
+        "extractorTemplateType": "combinerByRelationReturningObjectList",
         "parentName": "Book",
         "parentUuid": {
           "transformerType": "constantUuid",
@@ -63,7 +63,7 @@
         "AttributeOfListObjectToCompareToReferenceUuid": "publisher"
       },
       "booksOfAuthor": {
-        "queryType": "combinerByRelationReturningObjectList",
+        "extractorTemplateType": "combinerByRelationReturningObjectList",
         "parentName": "Book",
         "parentUuid": {
           "transformerType": "constantUuid",

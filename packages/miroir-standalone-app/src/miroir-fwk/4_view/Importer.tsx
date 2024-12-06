@@ -645,11 +645,12 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         },
         // instances for new Entity, put in "menuUpdateQueryResult"
         {
-          compositeActionType: "runQueryTemplateOrBoxedExtractorTemplateAction",
-          
+          // compositeActionType: "runQueryTemplateOrBoxedExtractorTemplateAction",
+          compositeActionType: "runQueryTemplateAction",
           nameGivenToResult: "menuUpdateQueryResult",
           queryTemplate: {
-            actionType: "runQueryTemplateOrBoxedExtractorTemplateAction",
+            // actionType: "runQueryTemplateOrBoxedExtractorTemplateAction",
+            actionType: "runQueryTemplateAction",
             actionName: "runQuery",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             applicationSection: "model",
@@ -1330,11 +1331,12 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       definition: [
         // find unique municipalities from fountains
         {
-          compositeActionType: "runQueryTemplateOrBoxedExtractorTemplateAction",
+          // compositeActionType: "runQueryTemplateOrBoxedExtractorTemplateAction",
+          compositeActionType: "runQueryTemplateAction",
           compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
           nameGivenToResult: newEntityName,
           queryTemplate: {
-            actionType: "runQueryTemplateOrBoxedExtractorTemplateAction",
+            actionType: "runQueryTemplateAction",
             actionName: "runQuery",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             // applicationSection: "data",
@@ -1344,6 +1346,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               referenceName: "currentDeploymentUuid"
             },
             query: {
+              // queryType: "queryTemplateWithExtractorCombinerTransformer",
               queryType: "queryTemplateWithExtractorCombinerTransformer",
               deploymentUuid: {
                 transformerType: "parameterReference",
@@ -1500,11 +1503,13 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         },
         // update splitted entity instances with foreign key of instances of new entity
         {
-          compositeActionType: "runQueryTemplateOrBoxedExtractorTemplateAction",
+          // compositeActionType: "runQueryTemplateOrBoxedExtractorTemplateAction",
+          compositeActionType: "runQueryTemplateAction",
           compositeActionStepLabel: "calculateEntityInstances",
           nameGivenToResult: newEntityName,
           queryTemplate: {
-            actionType: "runQueryTemplateOrBoxedExtractorTemplateAction",
+            // actionType: "runQueryTemplateOrBoxedExtractorTemplateAction",
+            actionType: "runQueryTemplateAction",
             actionName: "runQuery",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             applicationSection: "data",
@@ -2310,12 +2315,12 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           templates: {
             ...createNewApplication.templates,
             ...actionHandlerCreateFountainEntity.templates,
-            ...(actionSplitFountainEntity as any).templates,
+            // ...(actionSplitFountainEntity as any).templates,
           },
           definition: [
             ...(createNewApplication as any).definition,
             ...(actionHandlerCreateFountainEntity as any).definition,
-            ...(actionSplitFountainEntity as any).definition,
+            // ...(actionSplitFountainEntity as any).definition,
           ]
         }
 

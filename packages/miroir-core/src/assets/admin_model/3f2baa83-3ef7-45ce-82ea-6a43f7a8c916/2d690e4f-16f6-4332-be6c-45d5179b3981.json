@@ -9,7 +9,7 @@
     "reportParameters": {},
     "extractorTemplates": {
       "bundles": {
-        "queryType": "extractorTemplateForObjectListByEntity",
+        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
         "parentName": "Bundle",
         "parentUuid": {
           "transformerType": "constantUuid",

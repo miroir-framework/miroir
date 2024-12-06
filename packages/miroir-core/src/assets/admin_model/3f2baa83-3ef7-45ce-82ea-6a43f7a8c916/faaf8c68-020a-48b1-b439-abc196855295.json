@@ -9,7 +9,7 @@
   "definition": {
     "extractorTemplates": {
       "bundle": {
-        "queryType": "extractorForObjectByDirectReference",
+        "extractorTemplateType": "extractorForObjectByDirectReference",
         "parentName": "Deployment",
         "parentUuid": {
           "transformerType": "constantUuid",

@@ -10,7 +10,7 @@
     "reportParameters": {},
     "extractorTemplates": {
       "commits": {
-        "queryType": "extractorTemplateForObjectListByEntity",
+        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
         "parentName": "Commit",
         "parentUuid": {
           "transformerType": "constantUuid",

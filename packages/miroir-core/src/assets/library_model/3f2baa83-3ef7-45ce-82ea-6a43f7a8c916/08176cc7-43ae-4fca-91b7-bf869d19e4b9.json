@@ -10,7 +10,7 @@
     "reportParameters": {},
     "extractorTemplates": {
       "countries": {
-        "queryType": "extractorTemplateForObjectListByEntity",
+        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
         "parentName": "Country",
         "parentUuid": {
           "transformerType": "constantUuid",
