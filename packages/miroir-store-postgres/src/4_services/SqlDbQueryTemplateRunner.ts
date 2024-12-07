@@ -11,13 +11,13 @@ import {
   getLoggerName,
   LoggerInterface,
   MiroirLoggerFactory,
-  RunQueryTemplateOrBoxedExtractorTemplateAction,
+  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   selectEntityJzodSchemaFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
   asyncExtractEntityInstanceListWithObjectListExtractor,
-  RunQueryTemplateAction,
+  RunBoxedQueryTemplateAction,
   handleQueryTemplateAction,
   RunBoxedExtractorTemplateAction,
   handleBoxedExtractorTemplateAction
@@ -82,9 +82,9 @@ export class SqlDbExtractTemplateRunner {
   }
 
   // ##############################################################################################
-  async handleQueryTemplateActionForServerONLY(runQueryTemplateAction: RunQueryTemplateAction): Promise<ActionReturnType> {
-    log.info(this.logHeader, "handleQueryTemplateActionForServerONLY", "runQueryTemplateAction", JSON.stringify(runQueryTemplateAction, null, 2));
-    return handleQueryTemplateAction("SqlDbQueryTemplateRunner", runQueryTemplateAction, this.extractorRunnerMap);
+  async handleQueryTemplateActionForServerONLY(runBoxedQueryTemplateAction: RunBoxedQueryTemplateAction): Promise<ActionReturnType> {
+    log.info(this.logHeader, "handleQueryTemplateActionForServerONLY", "runBoxedQueryTemplateAction", JSON.stringify(runBoxedQueryTemplateAction, null, 2));
+    return handleQueryTemplateAction("SqlDbQueryTemplateRunner", runBoxedQueryTemplateAction, this.extractorRunnerMap);
   }
 
   // ##############################################################################################
@@ -94,9 +94,9 @@ export class SqlDbExtractTemplateRunner {
   }
 
   // ##############################################################################################
-  async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(runQueryTemplateOrBoxedExtractorTemplateAction: RunQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType> {
-    log.info(this.logHeader, "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY", "runQueryTemplateOrBoxedExtractorTemplateAction", JSON.stringify(runQueryTemplateOrBoxedExtractorTemplateAction, null, 2));
-    return handleBoxedExtractorTemplateOrQueryTemplateAction("SqlDbQueryTemplateRunner", runQueryTemplateOrBoxedExtractorTemplateAction, this.extractorRunnerMap);
+  async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(runBoxedQueryTemplateOrBoxedExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType> {
+    log.info(this.logHeader, "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY", "runBoxedQueryTemplateOrBoxedExtractorTemplateAction", JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction, null, 2));
+    return handleBoxedExtractorTemplateOrQueryTemplateAction("SqlDbQueryTemplateRunner", runBoxedQueryTemplateOrBoxedExtractorTemplateAction, this.extractorRunnerMap);
   }
 
 }

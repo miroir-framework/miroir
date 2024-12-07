@@ -1,8 +1,8 @@
 import {
   ActionReturnType,
   RunBoxedExtractorTemplateAction,
-  RunQueryTemplateAction,
-  RunQueryTemplateOrBoxedExtractorTemplateAction
+  RunBoxedQueryTemplateAction,
+  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import {
@@ -66,17 +66,17 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
 
   // ################################################################################################
   async handleQueryTemplateActionForServerONLY(
-    runQueryTemplateAction: RunQueryTemplateAction
+    runBoxedQueryTemplateAction: RunBoxedQueryTemplateAction
   ): Promise<ActionReturnType> {
     log.info(
       this.logHeader,
       "handleQueryTemplateActionForServerONLY",
-      "runQueryTemplateAction",
-      JSON.stringify(runQueryTemplateAction, null, 2)
+      "runBoxedQueryTemplateAction",
+      JSON.stringify(runBoxedQueryTemplateAction, null, 2)
     );
     return handleQueryTemplateAction(
       "ExtractorTemplateRunnerInMemory",
-      runQueryTemplateAction,
+      runBoxedQueryTemplateAction,
       this.selectorMap
     );
   }
@@ -88,7 +88,7 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
     log.info(
       this.logHeader,
       "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY",
-      "runQueryTemplateOrBoxedExtractorTemplateAction",
+      "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
       JSON.stringify(runBoxedExtractorTemplateAction, null, 2)
     );
     return handleBoxedExtractorTemplateAction(
@@ -100,17 +100,17 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
 
   // ################################################################################################
   async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
-    runQueryTemplateOrBoxedExtractorTemplateAction: RunQueryTemplateOrBoxedExtractorTemplateAction
+    runBoxedQueryTemplateOrBoxedExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
   ): Promise<ActionReturnType> {
     log.info(
       this.logHeader,
       "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY",
-      "runQueryTemplateOrBoxedExtractorTemplateAction",
-      JSON.stringify(runQueryTemplateOrBoxedExtractorTemplateAction, null, 2)
+      "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
+      JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction, null, 2)
     );
     return handleBoxedExtractorTemplateOrQueryTemplateAction(
       "ExtractorTemplateRunnerInMemory",
-      runQueryTemplateOrBoxedExtractorTemplateAction,
+      runBoxedQueryTemplateOrBoxedExtractorTemplateAction,
       this.selectorMap
     );
   }

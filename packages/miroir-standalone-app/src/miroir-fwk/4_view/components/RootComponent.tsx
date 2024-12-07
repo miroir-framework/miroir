@@ -20,7 +20,7 @@ import {
   DomainControllerInterface,
   DomainElementObject,
   domainEndpointVersionV1,
-  QueryTemplateWithExtractorCombinerTransformer,
+  BoxedQueryTemplateWithExtractorCombinerTransformer,
   EntityDefinition,
   entityDefinitionSelfApplication,
   entityDefinitionSelfApplicationVersion,
@@ -292,8 +292,8 @@ export const RootComponent = (props: RootComponentProps) => {
                       });
 
                       const subQueryName = "deployments";
-                      const adminDeploymentsQuery: QueryTemplateWithExtractorCombinerTransformer = {
-                        queryType: "queryTemplateWithExtractorCombinerTransformer",
+                      const adminDeploymentsQuery: BoxedQueryTemplateWithExtractorCombinerTransformer = {
+                        queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
                         deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                         pageParams: {},
                         queryParams: {},
@@ -314,7 +314,7 @@ export const RootComponent = (props: RootComponentProps) => {
                       const adminDeployments: ActionReturnType = 
                         await domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
                           {
-                            actionType: "runQueryTemplateOrBoxedExtractorTemplateAction",
+                            actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
                             actionName: "runQuery",
                             deploymentUuid:adminConfigurationDeploymentAdmin.uuid,
                             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -539,8 +539,8 @@ export const RootComponent = (props: RootComponentProps) => {
                   </button> */}
                   {/* <button
                     onClick={async () => {
-                      const query:QueryTemplateWithExtractorCombinerTransformer = {
-                        queryType: "queryTemplateWithExtractorCombinerTransformer",
+                      const query:BoxedQueryTemplateWithExtractorCombinerTransformer = {
+                        queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
                         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                         contextResults: {
                           elementType: "object",
@@ -568,7 +568,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         }
                       } 
                       await domainController.handleAction({
-                        actionType: "runQueryTemplateOrBoxedExtractorTemplateAction",
+                        actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
                         actionName: "runQuery",
                         deploymentUuid:query.deploymentUuid,
                         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",

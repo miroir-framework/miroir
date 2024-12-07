@@ -13,7 +13,7 @@ import {
   MiroirLoggerFactory,
   QueryByQuery2GetParamJzodSchema,
   QueryRunnerMapForJzodSchema,
-  QueryTemplateWithExtractorCombinerTransformer,
+  BoxedQueryTemplateWithExtractorCombinerTransformer,
   QueryWithExtractorCombinerTransformer,
   RecordOfJzodObject,
   resolveQueryTemplateWithExtractorCombinerTransformer,
@@ -85,14 +85,14 @@ export const ReportView = (props: ReportViewProps) => {
     []
   );
 
-  const deploymentEntityStateFetchQueryTemplate: QueryTemplateWithExtractorCombinerTransformer = useMemo(
+  const deploymentEntityStateFetchQueryTemplate: BoxedQueryTemplateWithExtractorCombinerTransformer = useMemo(
     () =>
       props.reportDefinition.extractorTemplates &&
       props.pageParams.deploymentUuid &&
       props.pageParams.applicationSection &&
       props.pageParams.reportUuid
         ? {
-            queryType: "queryTemplateWithExtractorCombinerTransformer",
+            queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
             deploymentUuid: props.pageParams.deploymentUuid,
             pageParams: props.pageParams,
             queryParams: {},
@@ -103,7 +103,7 @@ export const ReportView = (props: ReportViewProps) => {
           }
         : // dummy query
           {
-            queryType: "queryTemplateWithExtractorCombinerTransformer",
+            queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
             deploymentUuid: "",
             pageParams: paramsAsdomainElements,
             queryParams: {},

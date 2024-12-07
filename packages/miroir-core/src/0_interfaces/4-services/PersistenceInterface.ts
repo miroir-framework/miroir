@@ -1,7 +1,7 @@
 import { HttpMethod } from "../1_core/Http";
 import {
   ActionReturnType,
-  QueryTemplateWithExtractorCombinerTransformer,
+  BoxedQueryTemplateWithExtractorCombinerTransformer,
   EntityInstance,
   EntityInstanceCollection,
   PersistenceAction,
@@ -17,8 +17,8 @@ export interface HttpRequestBodyFormat {
   instances?: EntityInstance[];
   crudInstances?: EntityInstance[];
   modelUpdate?: any;
-  query?: QueryTemplateWithExtractorCombinerTransformer | QueryWithExtractorCombinerTransformer;
-  // queryTemplate?: QueryTemplateWithExtractorCombinerTransformer;
+  query?: BoxedQueryTemplateWithExtractorCombinerTransformer | QueryWithExtractorCombinerTransformer;
+  // queryTemplate?: BoxedQueryTemplateWithExtractorCombinerTransformer;
   other?: any;
 };
 

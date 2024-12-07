@@ -8,7 +8,7 @@ import {
   MiroirQueryTemplate,
   QueryByEntityUuidGetEntityDefinition,
   BoxedExtractorTemplateReturningObjectOrObjectList,
-  QueryTemplateWithExtractorCombinerTransformer
+  BoxedQueryTemplateWithExtractorCombinerTransformer
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import {
@@ -114,13 +114,13 @@ export const getExtractorTemplateRunnerParamsForDomainState: GetSelectorParamsFo
 }
 
 // ################################################################################################
-export type GetSelectorParamsForQueryTemplateOnDomainStateType=<QueryTemplateType extends QueryTemplateWithExtractorCombinerTransformer>(
+export type GetSelectorParamsForQueryTemplateOnDomainStateType=<QueryTemplateType extends BoxedQueryTemplateWithExtractorCombinerTransformer>(
   query: QueryTemplateType,
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<DomainState>
 )=> SyncQueryTemplateRunnerParams<DomainState>;
 
 export const getQueryTemplateRunnerParamsForDomainState: GetSelectorParamsForQueryTemplateOnDomainStateType =
-<ExtractorTemplateType extends QueryTemplateWithExtractorCombinerTransformer>(
+<ExtractorTemplateType extends BoxedQueryTemplateWithExtractorCombinerTransformer>(
     query: ExtractorTemplateType,
     extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<DomainState>
   ) =>

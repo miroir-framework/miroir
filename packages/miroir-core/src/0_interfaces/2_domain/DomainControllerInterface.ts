@@ -11,8 +11,8 @@ import {
   ModelAction,
   RunBoxedExtractorOrQueryAction,
   RunBoxedExtractorTemplateAction,
-  RunQueryTemplateAction,
-  RunQueryTemplateOrBoxedExtractorTemplateAction,
+  RunBoxedQueryTemplateAction,
+  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   TransactionalInstanceAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 import { PersistenceStoreLocalOrRemoteInterface } from "../4-services/PersistenceInterface";
@@ -83,7 +83,7 @@ export interface DomainControllerInterface {
     currentModel?: MetaModel
   ): Promise<ActionReturnType>;
   handleQueryTemplateActionForServerONLY(
-    action: RunQueryTemplateAction,
+    action: RunBoxedQueryTemplateAction,
     currentModel?: MetaModel
   ): Promise<ActionReturnType>;
   handleBoxedExtractorTemplateActionForServerONLY(
@@ -91,7 +91,7 @@ export interface DomainControllerInterface {
     currentModel?: MetaModel
   ): Promise<ActionReturnType>;
   handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
-    action: RunQueryTemplateOrBoxedExtractorTemplateAction,
+    action: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
     currentModel?: MetaModel
   ): Promise<ActionReturnType>;
   // handleCompositeActionTemplate(action: CompositeInstanceActionTemplate, actionParamValues: any, currentModel?: MetaModel): Promise<ActionVoidReturnType>;

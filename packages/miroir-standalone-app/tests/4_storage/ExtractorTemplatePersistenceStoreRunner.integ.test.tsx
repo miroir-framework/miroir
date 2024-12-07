@@ -255,13 +255,13 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         const applicationSection: ApplicationSection = "model";
         const queryResult: ActionReturnType =
           await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
-            actionType: "runQueryTemplateAction",
+            actionType: "runBoxedQueryTemplateAction",
             actionName: "runQuery",
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             applicationSection: applicationSection,
             query: {
-              queryType: "queryTemplateWithExtractorCombinerTransformer",
+              queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
               pageParams: {},
               queryParams: {},
               contextResults: {},
@@ -304,13 +304,13 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         const applicationSection: ApplicationSection = "model";
         const queryResult =
           await localMiroirPersistenceStoreController.handleQueryTemplateActionForServerONLY({
-            actionType: "runQueryTemplateAction",
+            actionType: "runBoxedQueryTemplateAction",
             actionName: "runQuery",
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             applicationSection: applicationSection,
             query: {
-              queryType: "queryTemplateWithExtractorCombinerTransformer",
+              queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
               pageParams: {},
               queryParams: {},
               contextResults: {},
@@ -380,13 +380,13 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       async () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
-          actionType: "runQueryTemplateAction",
+          actionType: "runBoxedQueryTemplateAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           applicationSection: applicationSection,
           query: {
-            queryType: "queryTemplateWithExtractorCombinerTransformer",
+            queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
             pageParams: {},
             queryParams: {},
             contextResults: {},
@@ -437,13 +437,13 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       async () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
-          actionType: "runQueryTemplateAction",
+          actionType: "runBoxedQueryTemplateAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           applicationSection: applicationSection,
           query: {
-            queryType: "queryTemplateWithExtractorCombinerTransformer",
+            queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
             pageParams: {},
             queryParams: {},
             contextResults: {},
@@ -489,13 +489,13 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       async () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
-          actionType: "runQueryTemplateAction",
+          actionType: "runBoxedQueryTemplateAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           applicationSection: applicationSection,
           query: {
-            queryType: "queryTemplateWithExtractorCombinerTransformer",
+            queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
             pageParams: {},
             queryParams: {},
             contextResults: {},
@@ -545,13 +545,13 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       async () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
-          actionType: "runQueryTemplateAction",
+          actionType: "runBoxedQueryTemplateAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           applicationSection: applicationSection,
           query: {
-            queryType: "queryTemplateWithExtractorCombinerTransformer",
+            queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
             pageParams: {},
             queryParams: {},
             contextResults: {},
@@ -659,13 +659,13 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       async () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
-          actionType: "runQueryTemplateAction",
+          actionType: "runBoxedQueryTemplateAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           applicationSection: applicationSection,
           query: {
-            queryType: "queryTemplateWithExtractorCombinerTransformer",
+            queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
             pageParams: {},
             queryParams: {
               instanceUuid: "c6852e89-3c3c-447f-b827-4b5b9d830975",

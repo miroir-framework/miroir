@@ -1600,7 +1600,7 @@ export function getMiroirFundamentalJzodSchema(
             },
           ],
         },
-        queryTemplateWithExtractorCombinerTransformer: {
+        boxedQueryTemplateWithExtractorCombinerTransformer: {
           type: "object",
           extend: {
             type: "schemaReference",
@@ -1613,7 +1613,7 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             queryType: {
               type: "literal",
-              definition: "queryTemplateWithExtractorCombinerTransformer",
+              definition: "boxedQueryTemplateWithExtractorCombinerTransformer",
             },
             runAsSql: {
               type: "boolean",
@@ -1694,7 +1694,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "queryTemplateWithExtractorCombinerTransformer",
+                relativePath: "boxedQueryTemplateWithExtractorCombinerTransformer",
               },
             },
           },
@@ -1841,7 +1841,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "queryTemplateWithExtractorCombinerTransformer",
+                relativePath: "boxedQueryTemplateWithExtractorCombinerTransformer",
               },
             },
             {
@@ -2160,9 +2160,9 @@ export function getMiroirFundamentalJzodSchema(
         },
         localPersistenceAction: persistenceEndpointVersionV1.definition.actions[0].actionParameters,
         restPersistenceAction: persistenceEndpointVersionV1.definition.actions[1].actionParameters,
-        runQueryTemplateOrBoxedExtractorTemplateAction: queryEndpointVersionV1.definition.actions[0].actionParameters,
+        runBoxedQueryTemplateOrBoxedExtractorTemplateAction: queryEndpointVersionV1.definition.actions[0].actionParameters,
         runBoxedExtractorOrQueryAction: queryEndpointVersionV1.definition.actions[1].actionParameters,
-        runQueryTemplateAction: queryEndpointVersionV1.definition.actions[2].actionParameters,
+        runBoxedQueryTemplateAction: queryEndpointVersionV1.definition.actions[2].actionParameters,
         runBoxedExtractorTemplateAction: queryEndpointVersionV1.definition.actions[3].actionParameters,
         runQueryAction: queryEndpointVersionV1.definition.actions[4].actionParameters,
         runBoxedExtractorAction: queryEndpointVersionV1.definition.actions[5].actionParameters,
@@ -2519,12 +2519,12 @@ export function getMiroirFundamentalJzodSchema(
         combinerByManyToManyRelationReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.combinerByManyToManyRelationReturningObjectList,
         extractorOrCombinerRecord: (miroirFundamentalJzodSchema as any).definition.context.extractorOrCombinerRecord,
         runBoxedExtractorOrQueryAction: (miroirFundamentalJzodSchema as any).definition.context.runBoxedExtractorOrQueryAction,
-        runQueryTemplateOrBoxedExtractorTemplateAction: (miroirFundamentalJzodSchema as any).definition.context.runQueryTemplateOrBoxedExtractorTemplateAction,
+        runBoxedQueryTemplateOrBoxedExtractorTemplateAction: (miroirFundamentalJzodSchema as any).definition.context.runBoxedQueryTemplateOrBoxedExtractorTemplateAction,
         runQueryAction: (miroirFundamentalJzodSchema as any).definition.context.runQueryAction,
-        runQueryTemplateAction: (miroirFundamentalJzodSchema as any).definition.context.runQueryTemplateAction,
+        runBoxedQueryTemplateAction: (miroirFundamentalJzodSchema as any).definition.context.runBoxedQueryTemplateAction,
         runBoxedExtractorAction: (miroirFundamentalJzodSchema as any).definition.context.runBoxedExtractorAction,
         runBoxedExtractorTemplateAction: (miroirFundamentalJzodSchema as any).definition.context.runBoxedExtractorTemplateAction,
-        // runQueryTemplateOrBoxedExtractorTemplateAction: queryEndpointVersionV1.definition.actions[0].actionParameters,
+        // runBoxedQueryTemplateOrBoxedExtractorTemplateAction: queryEndpointVersionV1.definition.actions[0].actionParameters,
         // queries
         extractorTemplateRoot: (miroirFundamentalJzodSchema as any).definition.context.extractorTemplateRoot,
         queryFailed: (miroirFundamentalJzodSchema as any).definition.context.queryFailed,
@@ -2600,7 +2600,7 @@ export function getMiroirFundamentalJzodSchema(
         boxedExtractorTemplateReturningObject: (miroirFundamentalJzodSchema as any).definition.context.boxedExtractorTemplateReturningObject,
         boxedExtractorTemplateReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.boxedExtractorTemplateReturningObjectList,
         boxedExtractorTemplateReturningObjectOrObjectList: (miroirFundamentalJzodSchema as any).definition.context.boxedExtractorTemplateReturningObjectOrObjectList,
-        queryTemplateWithExtractorCombinerTransformer: (miroirFundamentalJzodSchema as any).definition.context.queryTemplateWithExtractorCombinerTransformer,
+        boxedQueryTemplateWithExtractorCombinerTransformer: (miroirFundamentalJzodSchema as any).definition.context.boxedQueryTemplateWithExtractorCombinerTransformer,
       },
       definition: {
         relativePath: "jzodElement",

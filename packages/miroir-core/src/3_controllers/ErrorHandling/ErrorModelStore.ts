@@ -1,5 +1,5 @@
 import { MetaEntity } from "../../0_interfaces/1_core/EntityDefinition";
-import { EntityInstanceCollection, EntityInstance, EntityDefinition, ActionReturnType, ActionEntityInstanceCollectionReturnType, ActionEntityInstanceReturnType, ActionVoidReturnType, ModelActionRenameEntity, ModelActionAlterEntityAttribute, RunQueryTemplateOrBoxedExtractorTemplateAction, RunBoxedExtractorOrQueryAction, RunBoxedExtractorAction, RunQueryAction, RunQueryTemplateAction, RunBoxedExtractorTemplateAction } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { EntityInstanceCollection, EntityInstance, EntityDefinition, ActionReturnType, ActionEntityInstanceCollectionReturnType, ActionEntityInstanceReturnType, ActionVoidReturnType, ModelActionRenameEntity, ModelActionAlterEntityAttribute, RunBoxedQueryTemplateOrBoxedExtractorTemplateAction, RunBoxedExtractorOrQueryAction, RunBoxedExtractorAction, RunQueryAction, RunBoxedQueryTemplateAction, RunBoxedExtractorTemplateAction } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { PersistenceStoreModelSectionInterface } from "../../0_interfaces/4-services/PersistenceStoreControllerInterface";
 
 export class ErrorModelStore implements PersistenceStoreModelSectionInterface {
@@ -71,13 +71,13 @@ export class ErrorModelStore implements PersistenceStoreModelSectionInterface {
   getInstances(parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType> {
     throw new Error("Method not implemented.");
   }
-  handleQueryTemplateActionForServerONLY(query: RunQueryTemplateAction): Promise<ActionReturnType> {
+  handleQueryTemplateActionForServerONLY(query: RunBoxedQueryTemplateAction): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
   handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
-  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType> {
+  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
   handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<ActionReturnType> {

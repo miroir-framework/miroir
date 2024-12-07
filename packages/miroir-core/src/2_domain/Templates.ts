@@ -8,7 +8,7 @@ import {
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   ExtractorOrCombinerTemplate,
   ExtractorTemplateByExtractorWrapper,
-  QueryTemplateWithExtractorCombinerTransformer,
+  BoxedQueryTemplateWithExtractorCombinerTransformer,
   QueryWithExtractorCombinerTransformer,
   Transformer_InnerReference,
   Transformer_contextOrParameterReference,
@@ -229,7 +229,7 @@ export function resolveQueryTemplateSelectExtractorWrapper(
 
 // ################################################################################################
 export function resolveQueryTemplateWithExtractorCombinerTransformer(
-  queryTemplate: QueryTemplateWithExtractorCombinerTransformer,
+  queryTemplate: BoxedQueryTemplateWithExtractorCombinerTransformer,
 ): QueryWithExtractorCombinerTransformer {
 
   const params = { ...queryTemplate.pageParams, ...queryTemplate.queryParams };
@@ -354,8 +354,8 @@ export function resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectLi
 
 // ################################################################################################
 export function resolveExtractorOrQueryTemplate(
-  // extractorOrCombinerTemplate: BoxedExtractorTemplateReturningObjectOrObjectList | QueryTemplateWithExtractorCombinerTransformer
-  extractorOrCombinerTemplate: ExtractorTemplateReturningObjectOrObjectList | QueryTemplateWithExtractorCombinerTransformer,
+  // extractorOrCombinerTemplate: BoxedExtractorTemplateReturningObjectOrObjectList | BoxedQueryTemplateWithExtractorCombinerTransformer
+  extractorOrCombinerTemplate: ExtractorTemplateReturningObjectOrObjectList | BoxedQueryTemplateWithExtractorCombinerTransformer,
   pageParams: Record<string, any>,
   queryParams: Record<string, any>,
   contextResults: Record<string, any>,
@@ -363,7 +363,7 @@ export function resolveExtractorOrQueryTemplate(
 // ): BoxedExtractorOrCombinerReturningObjectOrObjectList | QueryWithExtractorCombinerTransformer {
 ): ExtractorOrCombinerReturningObjectOrObjectList | QueryWithExtractorCombinerTransformer {
   if ("queryType" in extractorOrCombinerTemplate) { // TODO: implementation-specific, to be improved!
-    return resolveQueryTemplateWithExtractorCombinerTransformer(extractorOrCombinerTemplate as QueryTemplateWithExtractorCombinerTransformer);
+    return resolveQueryTemplateWithExtractorCombinerTransformer(extractorOrCombinerTemplate as BoxedQueryTemplateWithExtractorCombinerTransformer);
   } else {
     // return resolveQueryTemplateForBoxedExtractorOrCombinerReturningObjectOrObjectList(extractorOrCombinerTemplate);
     return resolveExtractorTemplateForExtractorOrCombinerReturningObjectOrObjectList(

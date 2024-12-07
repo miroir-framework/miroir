@@ -7,7 +7,7 @@ import {
   InstanceAction,
   ModelAction,
   RunBoxedExtractorOrQueryAction,
-  RunQueryTemplateOrBoxedExtractorTemplateAction,
+  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   StoreOrBundleAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -294,7 +294,7 @@ export async function queryActionHandler(
   }
   if (useDomainControllerToHandleModelAndInstanceActions) {
     // we are on the server, the action has been received from remote client
-    // switch (runQueryTemplateOrBoxedExtractorTemplateAction.deploymentUuid) {
+    // switch (runBoxedQueryTemplateOrBoxedExtractorTemplateAction.deploymentUuid) {
     const result = await domainController.handleQueryActionOrBoxedExtractorActionForServerONLY(runBoxedExtractorOrQueryAction)
     log.info(
       "RestServer queryActionHandler used adminConfigurationDeploymentMiroir domainController result=",
@@ -370,10 +370,10 @@ export async function queryTemplateActionHandler(
    * - execute on the persistent store (sql)
    * 
    */
-  // const query: QueryTemplateWithExtractorCombinerTransformer = body.query as QueryTemplateWithExtractorCombinerTransformer ;
-  const runQueryTemplateOrBoxedExtractorTemplateAction: RunQueryTemplateOrBoxedExtractorTemplateAction = body as RunQueryTemplateOrBoxedExtractorTemplateAction ;
+  // const query: BoxedQueryTemplateWithExtractorCombinerTransformer = body.query as BoxedQueryTemplateWithExtractorCombinerTransformer ;
+  const runBoxedQueryTemplateOrBoxedExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction = body as RunBoxedQueryTemplateOrBoxedExtractorTemplateAction ;
 
-  const deploymentUuid = runQueryTemplateOrBoxedExtractorTemplateAction.deploymentUuid
+  const deploymentUuid = runBoxedQueryTemplateOrBoxedExtractorTemplateAction.deploymentUuid
   const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
     deploymentUuid
   );
@@ -383,9 +383,9 @@ export async function queryTemplateActionHandler(
   }
   if (useDomainControllerToHandleModelAndInstanceActions) {
     // we are on the server, the action has been received from remote client
-    // switch (runQueryTemplateOrBoxedExtractorTemplateAction.deploymentUuid) {
-    // const result = await domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(runQueryTemplateOrBoxedExtractorTemplateAction)
-    const result = await domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(runQueryTemplateOrBoxedExtractorTemplateAction)
+    // switch (runBoxedQueryTemplateOrBoxedExtractorTemplateAction.deploymentUuid) {
+    // const result = await domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(runBoxedQueryTemplateOrBoxedExtractorTemplateAction)
+    const result = await domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(runBoxedQueryTemplateOrBoxedExtractorTemplateAction)
     log.info(
       "RestServer queryTemplateActionHandler used adminConfigurationDeploymentMiroir domainController result=",
       JSON.stringify(result, undefined, 2)
@@ -396,24 +396,24 @@ export async function queryTemplateActionHandler(
     // uses the local cache, needs to have done a Model "rollback" action on the client//, or a Model "remoteLocalCacheRollback" action on the server
     const domainState: DomainState = localCache.getDomainState();
     const extractorRunnerMapOnDomainState = getSelectorMapForTemplate();
-    log.info("RestServer queryTemplateActionHandler runQueryTemplateOrBoxedExtractorTemplateAction=", JSON.stringify(runQueryTemplateOrBoxedExtractorTemplateAction, undefined, 2))
+    log.info("RestServer queryTemplateActionHandler runBoxedQueryTemplateOrBoxedExtractorTemplateAction=", JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction, undefined, 2))
     log.info("RestServer queryTemplateActionHandler domainState=", JSON.stringify(domainState, undefined, 2))
     let queryResult: DomainElement = undefined as any as DomainElement;
 
-    switch (runQueryTemplateOrBoxedExtractorTemplateAction.query.queryType) {
+    switch (runBoxedQueryTemplateOrBoxedExtractorTemplateAction.query.queryType) {
       case "boxedExtractorTemplateReturningObject":
       case "boxedExtractorTemplateReturningObjectList": {
         queryResult = extractWithBoxedExtractorTemplate(
           domainState,
-          getExtractorTemplateRunnerParamsForDomainState(runQueryTemplateOrBoxedExtractorTemplateAction.query, extractorRunnerMapOnDomainState)
+          getExtractorTemplateRunnerParamsForDomainState(runBoxedQueryTemplateOrBoxedExtractorTemplateAction.query, extractorRunnerMapOnDomainState)
         )
     
         break;
       }
-      case "queryTemplateWithExtractorCombinerTransformer":
+      case "boxedQueryTemplateWithExtractorCombinerTransformer":
         queryResult = runQueryTemplateWithExtractorCombinerTransformer(
           domainState,
-          getQueryTemplateRunnerParamsForDomainState(runQueryTemplateOrBoxedExtractorTemplateAction.query, extractorRunnerMapOnDomainState)
+          getQueryTemplateRunnerParamsForDomainState(runBoxedQueryTemplateOrBoxedExtractorTemplateAction.query, extractorRunnerMapOnDomainState)
         )
             
         break;

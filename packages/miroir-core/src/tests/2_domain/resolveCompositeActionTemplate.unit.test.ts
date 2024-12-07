@@ -330,11 +330,11 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
         },
         // instances for new Entity, put in "menuUpdateQueryResult"
         {
-          compositeActionType: "runQueryTemplateAction",
+          compositeActionType: "runBoxedQueryTemplateAction",
           
           nameGivenToResult: "menuUpdateQueryResult",
           queryTemplate: {
-            actionType: "runQueryTemplateAction",
+            actionType: "runBoxedQueryTemplateAction",
             actionName: "runQuery",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             applicationSection: "model",
@@ -753,10 +753,10 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
         },
       },
       {
-        compositeActionType: "runQueryTemplateAction",
+        compositeActionType: "runBoxedQueryTemplateAction",
         nameGivenToResult: "menuUpdateQueryResult",
         queryTemplate: {
-          actionType: "runQueryTemplateAction",
+          actionType: "runBoxedQueryTemplateAction",
           actionName: "runQuery",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           applicationSection: "model",
@@ -1026,7 +1026,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
         //       referenceName: "currentDeploymentUuid"
         //     },
         //     query: {
-        //       queryType: "queryTemplateWithExtractorCombinerTransformer",
+        //       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
         //       deploymentUuid: {
         //         transformerType: "parameterReference",
         //         referenceName: "currentDeploymentUuid",
@@ -1146,11 +1146,11 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
         // },
         // update splitted entity instances with foreign key of instances of new entity
         {
-          compositeActionType: "runQueryTemplateAction",
+          compositeActionType: "runBoxedQueryTemplateAction",
           compositeActionStepLabel: "calculateEntityInstances",
           nameGivenToResult: newEntityName,
           queryTemplate: {
-            actionType: "runQueryTemplateAction",
+            actionType: "runBoxedQueryTemplateAction",
             actionName: "runQuery",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             applicationSection: "data",
@@ -1160,7 +1160,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
               referenceName: "currentDeploymentUuid"
             },
             query: {
-              queryType: "queryTemplateWithExtractorCombinerTransformer",
+              queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
               deploymentUuid: {
                 transformerType: "parameterReference",
                 referenceName: "currentDeploymentUuid",
@@ -1394,13 +1394,13 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
       //   compositeActionType: "queryTemplate",
       //   nameGivenToResult: "Test2",
       //   queryTemplate: {
-      //     actionType: "runQueryTemplateOrBoxedExtractorTemplateAction",
+      //     actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
       //     actionName: "runQuery",
       //     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       //     applicationSection: "model",
       //     deploymentUuid: "54b3b3b3-7b3b-4b3b-8b3b-3b3b3b3b3b3b",
       //     query: {
-      //       queryType: "queryTemplateWithExtractorCombinerTransformer",
+      //       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       //       deploymentUuid: "54b3b3b3-7b3b-4b3b-8b3b-3b3b3b3b3b3b",
       //       pageParams: {
       //         deploymentUuid: "54b3b3b3-7b3b-4b3b-8b3b-3b3b3b3b3b3b",
@@ -1504,17 +1504,17 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
       //   },
       // },
       {
-        compositeActionType: "runQueryTemplateAction",
+        compositeActionType: "runBoxedQueryTemplateAction",
         compositeActionStepLabel: "calculateEntityInstances",
         nameGivenToResult: "Test2",
         queryTemplate: {
-          actionType: "runQueryTemplateAction",
+          actionType: "runBoxedQueryTemplateAction",
           actionName: "runQuery",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           applicationSection: "data",
           deploymentUuid: "54b3b3b3-7b3b-4b3b-8b3b-3b3b3b3b3b3b",
           query: {
-            queryType: "queryTemplateWithExtractorCombinerTransformer",
+            queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
             deploymentUuid: "54b3b3b3-7b3b-4b3b-8b3b-3b3b3b3b3b3b",
             pageParams: {
               deploymentUuid: "54b3b3b3-7b3b-4b3b-8b3b-3b3b3b3b3b3b",

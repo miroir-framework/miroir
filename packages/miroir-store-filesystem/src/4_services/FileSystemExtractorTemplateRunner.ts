@@ -14,14 +14,14 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreInstanceSectionAbstractInterface,
-  RunQueryTemplateOrBoxedExtractorTemplateAction,
+  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   selectEntityJzodSchemaFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
   RunBoxedExtractorTemplateAction,
   handleQueryTemplateAction,
-  RunQueryTemplateAction,
+  RunBoxedQueryTemplateAction,
   handleBoxedExtractorTemplateAction
 } from "miroir-core";
 import { packageName } from "../constants.js";
@@ -61,15 +61,15 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
 
   // ################################################################################################
   async handleQueryTemplateActionForServerONLY(
-    runQueryTemplateAction: RunQueryTemplateAction
+    runBoxedQueryTemplateAction: RunBoxedQueryTemplateAction
   ): Promise<ActionReturnType> {
     log.info(
       this.logHeader,
       "handleQueryTemplateActionForServerONLY",
-      "runQueryTemplateAction",
-      JSON.stringify(runQueryTemplateAction, null, 2)
+      "runBoxedQueryTemplateAction",
+      JSON.stringify(runBoxedQueryTemplateAction, null, 2)
     );
-    return handleQueryTemplateAction("FileSystemExtractorTemplateRunner", runQueryTemplateAction, this.selectorMap);
+    return handleQueryTemplateAction("FileSystemExtractorTemplateRunner", runBoxedQueryTemplateAction, this.selectorMap);
   }
 
   // ################################################################################################
@@ -91,17 +91,17 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
 
   // ################################################################################################
   async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
-    runQueryTemplateOrBoxedExtractorTemplateAction: RunQueryTemplateOrBoxedExtractorTemplateAction
+    runBoxedQueryTemplateOrBoxedExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
   ): Promise<ActionReturnType> {
     log.info(
       this.logHeader,
       "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY",
-      "runQueryTemplateOrBoxedExtractorTemplateAction",
-      JSON.stringify(runQueryTemplateOrBoxedExtractorTemplateAction, null, 2)
+      "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
+      JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction, null, 2)
     );
     return handleBoxedExtractorTemplateOrQueryTemplateAction(
       "FileSystemExtractorTemplateRunner",
-      runQueryTemplateOrBoxedExtractorTemplateAction,
+      runBoxedQueryTemplateOrBoxedExtractorTemplateAction,
       this.selectorMap
     );
   }

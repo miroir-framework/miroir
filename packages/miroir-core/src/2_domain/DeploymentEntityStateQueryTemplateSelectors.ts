@@ -4,7 +4,7 @@ import {
   JzodObject,
   QueryByEntityUuidGetEntityDefinition,
   BoxedExtractorTemplateReturningObjectOrObjectList,
-  QueryTemplateWithExtractorCombinerTransformer
+  BoxedQueryTemplateWithExtractorCombinerTransformer
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface";
 import {
@@ -101,12 +101,12 @@ export function getExtractorTemplateRunnerParamsForDeploymentEntityState<QueryTy
 
 // ################################################################################################
 export type GetQueryTemplateRunnerParamsForDeploymentEntityState = (
-  query: QueryTemplateWithExtractorCombinerTransformer,
+  query: BoxedQueryTemplateWithExtractorCombinerTransformer,
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState>
 ) => SyncQueryTemplateRunnerParams<DeploymentEntityState>;
 
 export function getQueryTemplateRunnerParamsForDeploymentEntityState(
-  query: QueryTemplateWithExtractorCombinerTransformer,
+  query: BoxedQueryTemplateWithExtractorCombinerTransformer,
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState>
 ): SyncQueryTemplateRunnerParams<DeploymentEntityState> {
   return {

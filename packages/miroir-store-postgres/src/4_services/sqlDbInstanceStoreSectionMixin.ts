@@ -11,9 +11,9 @@ import {
   ActionEntityInstanceReturnType,
   ActionVoidReturnType,
   ACTION_OK,
-  RunQueryTemplateOrBoxedExtractorTemplateAction,
+  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   BoxedExtractorTemplateReturningObjectList,
-  QueryTemplateWithExtractorCombinerTransformer,
+  BoxedQueryTemplateWithExtractorCombinerTransformer,
   BoxedExtractorTemplateReturningObject,
   ExtractorTemplateByExtractorWrapper,
   BoxedExtractorOrCombinerReturningObjectList,
@@ -28,7 +28,7 @@ import {
   ExtractorOrCombiner,
   RunBoxedExtractorAction,
   RunQueryAction,
-  RunQueryTemplateAction,
+  RunBoxedQueryTemplateAction,
   RunBoxedExtractorTemplateAction,
 } from "miroir-core";
 import { MixableSqlDbStoreSection, SqlDbStoreSection } from "./SqlDbStoreSection";
@@ -219,7 +219,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     //     | BoxedExtractorTemplateReturningObjectList
     //     | BoxedExtractorTemplateReturningObject
     //     | ExtractorTemplateByExtractorWrapper
-    //     | QueryTemplateWithExtractorCombinerTransformer
+    //     | BoxedQueryTemplateWithExtractorCombinerTransformer
     // ): RecursiveStringRecords {
     //   // log.info(this.logHeader, "sqlForExtractor called with parameter", "extractor", extractor);
     //   // log.info(this.logHeader, "sqlForExtractor called with sequelize", this.sequelize);
@@ -262,7 +262,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     //       return result;
     //       break;
     //     }
-    //     case "queryTemplateWithExtractorCombinerTransformer": {
+    //     case "boxedQueryTemplateWithExtractorCombinerTransformer": {
     //       return Object.fromEntries(
     //         Object.entries(extractor.extractorTemplates ?? {}).map((e) => [e[0], this.sqlForExtractorTemplate(e[1])])
     //       );
@@ -280,7 +280,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     // }
 
     // #############################################################################################
-    async handleQueryTemplateActionForServerONLY(query: RunQueryTemplateAction): Promise<ActionReturnType> {
+    async handleQueryTemplateActionForServerONLY(query: RunBoxedQueryTemplateAction): Promise<ActionReturnType> {
       log.info(this.logHeader, "handleQueryTemplateActionForServerONLY", "query", query);
 
       const result: ActionReturnType = await this.extractorTemplateRunner.handleQueryTemplateActionForServerONLY(query);
@@ -300,7 +300,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     }
 
     // #############################################################################################
-    async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType> {
+    async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType> {
       log.info(this.logHeader, "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY", "query", query);
 
       const result: ActionReturnType = await this.extractorTemplateRunner.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query);

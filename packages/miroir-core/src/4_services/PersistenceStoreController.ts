@@ -20,8 +20,8 @@ import {
   RunBoxedExtractorOrQueryAction,
   RunBoxedExtractorTemplateAction,
   RunQueryAction,
-  RunQueryTemplateAction,
-  RunQueryTemplateOrBoxedExtractorTemplateAction,
+  RunBoxedQueryTemplateAction,
+  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   StoreSectionConfiguration
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DataStoreApplicationType } from "../0_interfaces/3_controllers/ApplicationControllerInterface";
@@ -161,7 +161,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
 
   // #############################################################################################
-  async handleQueryTemplateActionForServerONLY(action: RunQueryTemplateAction): Promise<ActionReturnType> {
+  async handleQueryTemplateActionForServerONLY(action: RunBoxedQueryTemplateAction): Promise<ActionReturnType> {
     // TODO: fix applicationSection!!!
     log.info(this.logHeader,'handleQueryTemplateActionForServerONLY','query',action);
     // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
@@ -179,7 +179,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
 
   // #############################################################################################
-  async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(action: RunQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType> {
+  async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(action: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType> {
     // TODO: fix applicationSection!!!
     log.info(this.logHeader,'handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY','query',action);
     // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);

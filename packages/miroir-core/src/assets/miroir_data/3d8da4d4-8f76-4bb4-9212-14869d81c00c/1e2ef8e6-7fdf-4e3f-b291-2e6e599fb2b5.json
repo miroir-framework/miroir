@@ -140,14 +140,14 @@
                   {
                     "type": "object",
                     "definition": {
-                      "compositeActionType": { "type": "literal", "definition": "runQueryTemplateAction" },
+                      "compositeActionType": { "type": "literal", "definition": "runBoxedQueryTemplateAction" },
                       "compositeActionStepLabel": { "type": "string", "optional": true },
                       "nameGivenToResult": { "type": "string" },
                       "queryTemplate": {
                         "type": "schemaReference",
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "runQueryTemplateAction"
+                          "relativePath": "runBoxedQueryTemplateAction"
                         }
                       }
                     }
@@ -185,14 +185,14 @@
                   {
                     "type": "object",
                     "definition": {
-                      "compositeActionType": { "type": "literal", "definition": "runQueryTemplateOrBoxedExtractorTemplateAction" },
+                      "compositeActionType": { "type": "literal", "definition": "runBoxedQueryTemplateOrBoxedExtractorTemplateAction" },
                       "compositeActionStepLabel": { "type": "string", "optional": true },
                       "nameGivenToResult": { "type": "string" },
                       "queryTemplate": {
                         "type": "schemaReference",
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "runQueryTemplateOrBoxedExtractorTemplateAction"
+                          "relativePath": "runBoxedQueryTemplateOrBoxedExtractorTemplateAction"
                         }
                       }
                     }

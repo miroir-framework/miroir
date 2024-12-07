@@ -313,7 +313,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                 break;
 
               }
-              case 'runQueryTemplateAction': {
+              case 'runBoxedQueryTemplateAction': {
                 const localPersistenceStoreController =
                   localParams.localPersistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
 
@@ -342,7 +342,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                 break;
 
               }
-              case "runQueryTemplateOrBoxedExtractorTemplateAction": {
+              case "runBoxedQueryTemplateOrBoxedExtractorTemplateAction": {
                 const localPersistenceStoreController =
                   localParams.localPersistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
 
@@ -406,15 +406,15 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                 return yield clientResult.data;
                 break;
               }
-              case "runQueryTemplateOrBoxedExtractorTemplateAction": {
-                log.info("handlePersistenceAction runQueryTemplateOrBoxedExtractorTemplateAction received from remoteStoreNetworkClient clientResult", clientResult);
-                log.debug("handlePersistenceAction runQueryTemplateOrBoxedExtractorTemplateAction remoteStoreNetworkClient received result", clientResult.status);
+              case "runBoxedQueryTemplateOrBoxedExtractorTemplateAction": {
+                log.info("handlePersistenceAction runBoxedQueryTemplateOrBoxedExtractorTemplateAction received from remoteStoreNetworkClient clientResult", clientResult);
+                log.debug("handlePersistenceAction runBoxedQueryTemplateOrBoxedExtractorTemplateAction remoteStoreNetworkClient received result", clientResult.status);
                 return yield clientResult.data;
                 break;
               }
               case 'runBoxedExtractorAction':
               case 'runQueryAction':
-              case 'runQueryTemplateAction':
+              case 'runBoxedQueryTemplateAction':
               case 'runBoxedExtractorTemplateAction': {
                 log.info("handlePersistenceAction runBoxedExtractorAction received from remoteStoreNetworkClient clientResult", clientResult);
                 log.debug("handlePersistenceAction runBoxedExtractorAction remoteStoreNetworkClient received result", clientResult.status);

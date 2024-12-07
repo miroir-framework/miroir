@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import {
   BoxedExtractorTemplateReturningObject,
-  QueryTemplateWithExtractorCombinerTransformer
+  BoxedQueryTemplateWithExtractorCombinerTransformer
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   resolveQueryTemplateWithExtractorCombinerTransformer
@@ -79,8 +79,8 @@ describe("extractorTemplates.unit.test", () => {
       const newApplicationName = "test";
       const newUuid = uuidv4();
 
-      const uniqueRuntimeTemplate: QueryTemplateWithExtractorCombinerTransformer = {
-        queryType: "queryTemplateWithExtractorCombinerTransformer",
+      const uniqueRuntimeTemplate: BoxedQueryTemplateWithExtractorCombinerTransformer = {
+        queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
         deploymentUuid: "xxxxx",
         pageParams: {
           instanceUuid: "xxxxx",

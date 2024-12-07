@@ -16,7 +16,7 @@ import {
   BoxedExtractorOrCombinerReturningObject,
   BoxedExtractorOrCombinerReturningObjectList,
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
-  QueryTemplateWithExtractorCombinerTransformer,
+  BoxedQueryTemplateWithExtractorCombinerTransformer,
   QueryWithExtractorCombinerTransformer
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
@@ -64,8 +64,8 @@ export const dummyDomainManyQueryWithDeploymentUuid: QueryWithExtractorCombinerT
   runtimeTransformers: {},
 };
 
-export const dummyDomainManyQueryTemplateWithDeploymentUuid: QueryTemplateWithExtractorCombinerTransformer = {
-  queryType: "queryTemplateWithExtractorCombinerTransformer",
+export const dummyDomainManyQueryTemplateWithDeploymentUuid: BoxedQueryTemplateWithExtractorCombinerTransformer = {
+  queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
   deploymentUuid: "",
   pageParams: {},
   queryParams: {},
@@ -87,7 +87,7 @@ export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: QueryByTemplate
   queryParams: {},
   contextResults: {},
   fetchParams: {
-    queryType: "queryTemplateWithExtractorCombinerTransformer",
+    queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
     deploymentUuid: "",
     pageParams: {},
     queryParams: {},

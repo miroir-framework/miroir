@@ -3,7 +3,7 @@ import {
   ApplicationSection,
   DomainControllerInterface,
   DomainElementObject,
-  QueryTemplateWithExtractorCombinerTransformer,
+  BoxedQueryTemplateWithExtractorCombinerTransformer,
   EntityDefinition,
   EntityInstance,
   InstanceAction,
@@ -107,8 +107,8 @@ export const deleteCascade = async (p: {
       },
     };
   
-    const foreignKeyObjectsFetchQuery: QueryTemplateWithExtractorCombinerTransformer = {
-      queryType: "queryTemplateWithExtractorCombinerTransformer",
+    const foreignKeyObjectsFetchQuery: BoxedQueryTemplateWithExtractorCombinerTransformer = {
+      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       deploymentUuid: p.deploymentUuid,
       pageParams,
       queryParams: {},
@@ -134,7 +134,7 @@ export const deleteCascade = async (p: {
     const foreignKeyUnfilteredObjects: ActionReturnType = 
       await p.domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
         {
-          actionType: "runQueryTemplateOrBoxedExtractorTemplateAction",
+          actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
           actionName: "runQuery",
           applicationSection: p.applicationSection,
           deploymentUuid:p.deploymentUuid,

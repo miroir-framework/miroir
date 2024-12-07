@@ -19,13 +19,13 @@ import {
   QueryByQueryTemplateGetParamJzodSchema,
   QueryByTemplateGetParamJzodSchema,
   QueryJzodSchemaParams,
-  QueryTemplateWithExtractorCombinerTransformer,
+  BoxedQueryTemplateWithExtractorCombinerTransformer,
   QueryWithExtractorCombinerTransformer,
   RunBoxedExtractorAction,
   RunBoxedExtractorTemplateAction,
   RunQueryAction,
-  RunQueryTemplateAction,
-  RunQueryTemplateOrBoxedExtractorTemplateAction
+  RunBoxedQueryTemplateAction,
+  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 
 // ################################################################################################
@@ -34,7 +34,7 @@ export type RecordOfJzodObject = Record<string, JzodObject | undefined>;
 
 // ################################################################################################
 export interface ExtractorTemplatePersistenceStoreRunner {
-  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType>;
+  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType>;
 }
 
 // ################################################################################################
@@ -81,9 +81,9 @@ export type BoxedExtractorTemplateRunner<QueryType extends BoxedExtractorTemplat
 
 // ################################################################################################
 export interface ExtractorTemplatePersistenceStoreRunner {
-  handleQueryTemplateActionForServerONLY(query: RunQueryTemplateAction): Promise<ActionReturnType>;
+  handleQueryTemplateActionForServerONLY(query: RunBoxedQueryTemplateAction): Promise<ActionReturnType>;
   handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<ActionReturnType>;
-  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType>;
+  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType>;
 }
 
 
@@ -154,7 +154,7 @@ export type AsyncQueryRunner<ResultType> = (
 // QUERY TEMPLATES ################################################################################
 export interface SyncQueryTemplateRunnerParams<StateType> {
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<StateType>;
-  extractorOrCombinerTemplate: QueryTemplateWithExtractorCombinerTransformer;
+  extractorOrCombinerTemplate: BoxedQueryTemplateWithExtractorCombinerTransformer;
 }
 
 // ################################################################################################
@@ -166,7 +166,7 @@ export type SyncQueryTemplateRunner<
 // ################################################################################################
 export interface AsyncQueryTemplateRunnerParams {
   extractorRunnerMap?: AsyncBoxedExtractorOrQueryRunnerMap
-  extractorOrCombinerTemplate: QueryTemplateWithExtractorCombinerTransformer
+  extractorOrCombinerTemplate: BoxedQueryTemplateWithExtractorCombinerTransformer
 }
 
 // ################################################################################################

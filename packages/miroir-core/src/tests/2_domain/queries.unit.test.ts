@@ -6,7 +6,7 @@ import {
   DomainElement,
   DomainElementObject,
   BoxedExtractorTemplateReturningObjectOrObjectList,
-  QueryTemplateWithExtractorCombinerTransformer,
+  BoxedQueryTemplateWithExtractorCombinerTransformer,
   QueryWithExtractorCombinerTransformer
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DeploymentEntityState } from "../../0_interfaces/2_domain/DeploymentStateInterface";
@@ -46,7 +46,7 @@ const domainState: DomainState = domainStateImport as DomainState;
 const deploymentEntityState: DeploymentEntityState = domainStateToDeploymentEntityState(domainState);
 
 export interface TestExtractorParams {
-  queryTemplate?: QueryTemplateWithExtractorCombinerTransformer;
+  queryTemplate?: BoxedQueryTemplateWithExtractorCombinerTransformer;
   query?: QueryWithExtractorCombinerTransformer;
   // ################################################################################################
   // Domain State
@@ -115,7 +115,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   // // ###########################################################################################
   "error on non-existing Entity: EntityNotFound": {
     queryTemplate: {
-      queryType: "queryTemplateWithExtractorCombinerTransformer",
+      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {},
@@ -172,7 +172,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   },
   "error on non-existing object uuid: InstanceNotFound": {
     queryTemplate: {
-      queryType: "queryTemplateWithExtractorCombinerTransformer",
+      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {},
@@ -230,7 +230,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   },
   "select 1 object from Domain State": {
     queryTemplate: {
-      queryType: "queryTemplateWithExtractorCombinerTransformer",
+      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {},
@@ -281,7 +281,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   },
   // "select 1 object from Domain State using context reference": {
   //   queryTemplate: {
-  //     queryType: "queryTemplateWithExtractorCombinerTransformer",
+  //     queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
   //     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
   //     contextResults: {},
   //     pageParams: {},
@@ -341,7 +341,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   // },
   "select 1 object from Domain State using direct query parameter reference": {
     queryTemplate: {
-      queryType: "queryTemplateWithExtractorCombinerTransformer",
+      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {},
@@ -391,7 +391,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   },
   "select 1 object from the uuid found in an attribute of another object from Domain State": {
     queryTemplate: {
-      queryType: "queryTemplateWithExtractorCombinerTransformer",
+      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {},
@@ -466,7 +466,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   },
   "select Authors": {
     queryTemplate: {
-      queryType: "queryTemplateWithExtractorCombinerTransformer",
+      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {
@@ -552,7 +552,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   },
   "select Authors with filter": {
     queryTemplate: {
-      queryType: "queryTemplateWithExtractorCombinerTransformer",
+      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {
@@ -633,7 +633,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   },
   "select Books of Publisher of given Book from Domain State": {
     queryTemplate: {
-      queryType: "queryTemplateWithExtractorCombinerTransformer",
+      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {
@@ -748,7 +748,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   },
   "select custom-built result: Books of Publisher of given Book from Domain State": {
     queryTemplate: {
-      queryType: "queryTemplateWithExtractorCombinerTransformer",
+      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {
@@ -909,7 +909,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   },
   "select custom-built result with extractorCombinerByHeteronomousManyToManyReturningListOfObjectList: instances of all Entites from Domain State, indexed by Entity Uuid": {
     queryTemplate: {
-      queryType: "queryTemplateWithExtractorCombinerTransformer",
+      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {
@@ -1023,7 +1023,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   },
   "select Unique Publisher Uuids of Books": {
     queryTemplate: {
-      queryType: "queryTemplateWithExtractorCombinerTransformer",
+      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {

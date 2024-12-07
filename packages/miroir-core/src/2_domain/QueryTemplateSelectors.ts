@@ -13,12 +13,12 @@ import {
   QueryByEntityUuidGetEntityDefinition,
   QueryByQueryTemplateGetParamJzodSchema,
   QueryByTemplateGetParamJzodSchema,
-  QueryTemplateWithExtractorCombinerTransformer,
+  BoxedQueryTemplateWithExtractorCombinerTransformer,
   QueryWithExtractorCombinerTransformer,
   RunBoxedExtractorAction,
   RunBoxedExtractorTemplateAction,
-  RunQueryTemplateAction,
-  RunQueryTemplateOrBoxedExtractorTemplateAction
+  RunBoxedQueryTemplateAction,
+  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   AsyncBoxedExtractorOrQueryRunnerMap,
@@ -56,7 +56,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 // ################################################################################################
 export async function handleQueryTemplateAction(
   origin: string,
-  queryTemplateAction: RunQueryTemplateAction, 
+  queryTemplateAction: RunBoxedQueryTemplateAction, 
   selectorMap: AsyncBoxedExtractorOrQueryRunnerMap
 ): Promise<ActionReturnType> {
   // log.info(
@@ -152,13 +152,13 @@ export async function handleBoxedExtractorTemplateAction(
 // ################################################################################################
 export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
   origin: string,
-  queryTemplateOrExtractorTemplateAction: RunQueryTemplateOrBoxedExtractorTemplateAction, 
+  queryTemplateOrExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction, 
   selectorMap: AsyncBoxedExtractorOrQueryRunnerMap
 ): Promise<ActionReturnType> {
   log.info(
     "handleBoxedExtractorTemplateOrQueryTemplateAction for ",
     origin,
-    "runQueryTemplateOrBoxedExtractorTemplateAction",
+    "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
     JSON.stringify(queryTemplateOrExtractorTemplateAction, null, 2)
   );
   // const resolvedQuery = resolveExtractorOrQueryTemplate( // TODO: separate aas resolvedQueryTemplate and resolvedExtractorTemplate
@@ -172,7 +172,7 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
   // log.info(
   //   "handleBoxedExtractorTemplateOrQueryTemplateAction for ",
   //   origin,
-  //   "runQueryTemplateOrBoxedExtractorTemplateAction",
+  //   "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
   //   JSON.stringify(queryTemplateOrExtractorTemplateAction, null, 2),
   //   "resolvedQuery",
   //   JSON.stringify(resolvedQuery, null, 2)
@@ -180,13 +180,13 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
 
   if ("queryType" in queryTemplateOrExtractorTemplateAction.query) {
     const resolvedQuery = resolveQueryTemplateWithExtractorCombinerTransformer( // TODO: separate aas resolvedQueryTemplate and resolvedExtractorTemplate
-      queryTemplateOrExtractorTemplateAction.query as QueryTemplateWithExtractorCombinerTransformer,
+      queryTemplateOrExtractorTemplateAction.query as BoxedQueryTemplateWithExtractorCombinerTransformer,
   
     );
     log.info(
       "handleBoxedExtractorTemplateOrQueryTemplateAction for ",
       origin,
-      "runQueryTemplateOrBoxedExtractorTemplateAction",
+      "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
       JSON.stringify(queryTemplateOrExtractorTemplateAction, null, 2),
       "resolvedQuery",
       JSON.stringify(resolvedQuery, null, 2)
@@ -219,7 +219,7 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
     log.info(
       "handleBoxedExtractorTemplateOrQueryTemplateAction for",
       origin,
-      "runQueryTemplateOrBoxedExtractorTemplateAction",
+      "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
       JSON.stringify(queryTemplateOrExtractorTemplateAction, null, 2),
       "resolvedQuery",
       JSON.stringify(resolvedQuery, null, 2)
@@ -259,7 +259,7 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
   //     log.info(
   //       "handleBoxedExtractorTemplateOrQueryTemplateAction for ",
   //       origin,
-  //       "runQueryTemplateOrBoxedExtractorTemplateAction",
+  //       "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
   //       JSON.stringify(queryTemplateOrExtractorTemplateAction, null, 2),
   //       "resolvedQuery",
   //       JSON.stringify(resolvedQuery, null, 2)
@@ -285,7 +285,7 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
   //     );
     
   //   }
-  //   case "queryTemplateWithExtractorCombinerTransformer":{
+  //   case "boxedQueryTemplateWithExtractorCombinerTransformer":{
   //     return handleQueryAction(
   //       origin,
   //       {
@@ -491,7 +491,7 @@ export const extractFetchQueryTemplateJzodSchema = <StateType>(
   deploymentEntityState: StateType,
   selectorParams: ExtractorTemplateRunnerParamsForJzodSchema<QueryByTemplateGetParamJzodSchema, StateType>
 ):  RecordOfJzodObject | undefined => {
-  const localFetchParams: QueryTemplateWithExtractorCombinerTransformer = selectorParams.query.fetchParams
+  const localFetchParams: BoxedQueryTemplateWithExtractorCombinerTransformer = selectorParams.query.fetchParams
   // log.info("selectFetchQueryJzodSchemaFromDomainState called", selectorParams.query);
   
   const fetchQueryJzodSchema = Object.fromEntries(
