@@ -140,6 +140,36 @@
                   {
                     "type": "object",
                     "definition": {
+                      "compositeActionType": { "type": "literal", "definition": "runQueryTemplateAction" },
+                      "compositeActionStepLabel": { "type": "string", "optional": true },
+                      "nameGivenToResult": { "type": "string" },
+                      "queryTemplate": {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "runQueryTemplateAction"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "compositeActionType": { "type": "literal", "definition": "runBoxedExtractorTemplateAction" },
+                      "compositeActionStepLabel": { "type": "string", "optional": true },
+                      "nameGivenToResult": { "type": "string" },
+                      "queryTemplate": {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "runBoxedExtractorTemplateAction"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
                       "compositeActionType": { "type": "literal", "definition": "runBoxedExtractorOrQueryAction" },
                       "compositeActionStepLabel": { "type": "string", "optional": true },
                       "nameGivenToResult": { "type": "string" },
