@@ -3,15 +3,12 @@ import adminConfigurationDeploymentLibrary from "../../assets/admin_data/7959d81
 import { DomainState } from "../../0_interfaces/2_domain/DomainControllerInterface";
 
 import {
-  DomainElement,
-  DomainElementObject,
-  BoxedExtractorTemplateReturningObjectOrObjectList,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
-  BoxedQueryWithExtractorCombinerTransformer
+  BoxedQueryWithExtractorCombinerTransformer,
+  DomainElementObject
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DeploymentEntityState } from "../../0_interfaces/2_domain/DeploymentStateInterface";
 import {
-  SyncBoxedExtractorTemplateRunner,
   SyncQueryRunner,
   SyncQueryTemplateRunner
 } from "../../0_interfaces/2_domain/ExtractorRunnerInterface";
@@ -21,11 +18,9 @@ import {
   runQueryFromDeploymentEntityState
 } from "../../2_domain/DeploymentEntityStateQuerySelectors";
 import {
-  getExtractorTemplateRunnerParamsForDeploymentEntityState,
-  GetExtractorTemplateRunnerParamsForDeploymentEntityState,
   GetQueryTemplateRunnerParamsForDeploymentEntityState,
   getQueryTemplateRunnerParamsForDeploymentEntityState,
-  runQueryTemplateFromDeploymentEntityState,
+  runQueryTemplateFromDeploymentEntityState
 } from "../../2_domain/DeploymentEntityStateQueryTemplateSelectors";
 import {
   GetQueryRunnerParamsForDomainState,
@@ -37,8 +32,6 @@ import {
   GetSelectorParamsForQueryTemplateOnDomainStateType,
   runQueryTemplateFromDomainState
 } from "../../2_domain/DomainStateQueryTemplateSelector";
-import { extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList, ExtractWithExtractorType } from "../../2_domain/QuerySelectors";
-import { extractWithBoxedExtractorTemplate } from "../../2_domain/QueryTemplateSelectors";
 import { domainStateToDeploymentEntityState, resolvePathOnObject } from "../../tools";
 import domainStateImport from "./domainState.json";
 
@@ -75,13 +68,13 @@ export interface TestExtractorParams {
     DomainElementObject
   >
 
-  extractorRunnerForDeploymentEntityState?: ExtractWithExtractorType<DeploymentEntityState>;
-  extractorTemplateRunnerForDeploymentEntityState?: SyncBoxedExtractorTemplateRunner<
-    BoxedExtractorTemplateReturningObjectOrObjectList,
-    DeploymentEntityState,
-    DomainElement
-  >;
-  getExtractorTemplateRunnerParamsForDeploymentEntityState?: GetExtractorTemplateRunnerParamsForDeploymentEntityState
+  // extractorRunnerForDeploymentEntityState?: ExtractWithExtractorType<DeploymentEntityState>;
+  // extractorTemplateRunnerForDeploymentEntityState?: SyncBoxedExtractorTemplateRunner<
+  //   BoxedExtractorTemplateReturningObjectOrObjectList,
+  //   DeploymentEntityState,
+  //   DomainElement
+  // >;
+  // getExtractorTemplateRunnerParamsForDeploymentEntityState?: GetExtractorTemplateRunnerParamsForDeploymentEntityState
   //
   testAssertions: Record<
     string,
@@ -94,23 +87,26 @@ export interface TestExtractorParams {
 
 const testExtractorTools = {
     // Domain State
-    getQueryRunnerParamsForDomainState: getQueryRunnerParamsForDomainState,
-    queryRunnerForDomainState: runQueryFromDomainState,
-
-    runQueryTemplateFromDomainState: runQueryTemplateFromDomainState,
     getQueryTemplateRunnerParamsForDomainState: getQueryTemplateRunnerParamsForDomainState,
+    runQueryTemplateFromDomainState: runQueryTemplateFromDomainState,
+
+    getQueryRunnerParamsForDomainState: getQueryRunnerParamsForDomainState,
+    runQueryFromDomainState: runQueryFromDomainState,
+
     // ############################################################################################
     // Deployment Entity State
+    getQueryTemplateRunnerParamsForDeploymentEntityState: getQueryTemplateRunnerParamsForDeploymentEntityState,
+    runQueryTemplateFromDeploymentEntityState:runQueryTemplateFromDeploymentEntityState,
+    
     getQueryRunnerParamsForDeploymentEntityState: getQueryRunnerParamsForDeploymentEntityState,
     runQueryFromDeploymentEntityState: runQueryFromDeploymentEntityState,
 
-    getQueryTemplateRunnerParamsForDeploymentEntityState: getQueryTemplateRunnerParamsForDeploymentEntityState,
-    runQueryTemplateFromDeploymentEntityState:runQueryTemplateFromDeploymentEntityState,
-
-    extractorRunnerForDeploymentEntityState: extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList<DeploymentEntityState>,
-    extractorTemplateRunnerForDeploymentEntityState: extractWithBoxedExtractorTemplate<DeploymentEntityState>,
-    getExtractorTemplateRunnerParamsForDeploymentEntityState: getExtractorTemplateRunnerParamsForDeploymentEntityState,
+    // extractors
+    // extractorRunnerForDeploymentEntityState: extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList<DeploymentEntityState>,
+    // extractorTemplateRunnerForDeploymentEntityState: extractWithBoxedExtractorTemplate<DeploymentEntityState>,
+    // getExtractorTemplateRunnerParamsForDeploymentEntityState: getExtractorTemplateRunnerParamsForDeploymentEntityState,
 }
+
 const testExtractorParams: Record<string, TestExtractorParams> = {
   // // ###########################################################################################
   "error on non-existing Entity: EntityNotFound": {

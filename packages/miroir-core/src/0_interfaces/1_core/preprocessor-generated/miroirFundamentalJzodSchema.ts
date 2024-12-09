@@ -25438,7 +25438,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryWithExtractorCombinerTransformer": {
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryWithExtractorCombinerTransformer": {
         "type": "union",
         "definition": [
           {
@@ -26663,7 +26663,7 @@ export const miroirFundamentalJzodSchema = {
                     "type": "schemaReference",
                     "optional": false,
                     "definition": {
-                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryWithExtractorCombinerTransformer"
+                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryWithExtractorCombinerTransformer"
                     },
                     "context": {}
                   },
@@ -26900,7 +26900,7 @@ export const miroirFundamentalJzodSchema = {
                 "type": "schemaReference",
                 "optional": false,
                 "definition": {
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryWithExtractorCombinerTransformer"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryWithExtractorCombinerTransformer"
                 },
                 "context": {}
               }

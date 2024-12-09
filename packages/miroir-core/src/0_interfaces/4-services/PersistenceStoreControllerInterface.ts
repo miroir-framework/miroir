@@ -192,9 +192,9 @@ export interface PersistenceStoreControllerInterface
   getDataState(): Promise<{ [uuid: string]: EntityInstanceCollection }>; // used only for testing purposes!
 
   // same interface as in PersistenceStoreInstanceSectionAbstractInterface; it implies that RunBoxedQueryTemplateOrBoxedExtractorTemplateAction includes applicationSection
+  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType>;
   handleQueryTemplateActionForServerONLY(query: RunBoxedQueryTemplateAction): Promise<ActionReturnType>;
   handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<ActionReturnType>;
-  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType>;
   handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<ActionReturnType>;
   handleQueryAction(query: RunQueryAction): Promise<ActionReturnType>;
   

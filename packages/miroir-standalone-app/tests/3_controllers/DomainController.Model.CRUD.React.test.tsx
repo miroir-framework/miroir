@@ -57,7 +57,7 @@ import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 
-import { loglevelnext } from '../../src/loglevelnextImporter';
+import { loglevelnext } from '../../src/loglevelnextImporter.js';
 
 const env:any = (import.meta as any).env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
@@ -142,7 +142,7 @@ afterEach(
 )
 
 describe.sequential(
-  'DomainController.Model.CRUD',
+  'DomainController.Model.CRUD.React',
   () => {
 
     // ###########################################################################################

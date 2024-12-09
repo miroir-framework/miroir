@@ -51,7 +51,7 @@ import {
 } from "miroir-standalone-app/tests/utils/tests-utils";
 
 
-// import { refreshAllInstancesTest } from "./DomainController.Data.CRUD.functions";
+// import { refreshAllInstancesTest } from "./DomainController.Data.CRUD.React.functions";
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
@@ -66,7 +66,7 @@ import { log } from "console";
 
 
 // jest intercepts logs, only console.log will produce test output
-// const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.Data.CRUD");
+// const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.Data.CRUD.React");
 // let log:LoggerInterface = console as any as LoggerInterface;
 // MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 //   (value: LoggerInterface) => {
@@ -164,7 +164,7 @@ describe.sequential("Mustache.unit", () => {
 
   //   const result = Mustache.render(transformer, { name: "Joe" });
   //   expect(result).toBe("found: Joe");
-  // }); //  end describe('DomainController.Data.CRUD',
+  // }); //  end describe('DomainController.Data.CRUD.React',
 
   it("nested template", async () => {
 
@@ -189,5 +189,5 @@ describe.sequential("Mustache.unit", () => {
 
     console.log("result", result);
     expect(result).toBe("found: Joe");
-  }); //  end describe('DomainController.Data.CRUD',
+  }); //  end describe('DomainController.Data.CRUD.React',
 });

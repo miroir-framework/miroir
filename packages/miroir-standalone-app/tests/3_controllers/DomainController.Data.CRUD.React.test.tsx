@@ -49,7 +49,7 @@ import {
 } from "miroir-standalone-app/tests/utils/tests-utils";
 
 
-import { refreshAllInstancesTest } from "./DomainController.Data.CRUD.functions";
+import { refreshAllInstancesTest } from "./DomainController.Data.CRUD.React.functions";
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
@@ -63,7 +63,7 @@ import { loglevelnext } from '../../src/loglevelnextImporter.js';
 
 
 // jest intercepts logs, only console.log will produce test output
-// const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.Data.CRUD");
+// const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.Data.CRUD.React");
 // let log:LoggerInterface = console as any as LoggerInterface;
 // MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 //   (value: LoggerInterface) => {
@@ -146,7 +146,7 @@ afterEach(
 
 const globalTimeOut = 10000;
 
-describe.sequential('DomainController.Data.CRUD',
+describe.sequential('DomainController.Data.CRUD.React',
   () => {
 
     // ###########################################################################################
@@ -696,5 +696,5 @@ describe.sequential('DomainController.Data.CRUD',
         }
       }
     )
-  } //  end describe('DomainController.Data.CRUD',
+  } //  end describe('DomainController.Data.CRUD.React',
 )

@@ -47,7 +47,7 @@ import { loglevelnext } from '../../src/loglevelnextImporter';
 
 
 
-// const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.Model.undo-redo");
+// const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.Model.undo-redo.React");
 // let log:LoggerInterface = console as any as LoggerInterface;
 // MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 //   (value: LoggerInterface) => {
@@ -131,7 +131,7 @@ afterEach(
 )
 
 describe.sequential(
-  'DomainController.Model.undo-redo',
+  'DomainController.Model.undo-redo.React',
   () => {
     // ###########################################################################################
     it(

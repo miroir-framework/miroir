@@ -42,7 +42,7 @@ import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestU
 import { packageName } from "../../src/constants.js";
 import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.Data.CRUD.functions");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.Data.CRUD.React.functions");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   (value: LoggerInterface) => {
