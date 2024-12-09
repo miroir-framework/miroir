@@ -192,7 +192,7 @@ describe("extractorTemplates.unit.test", () => {
         },
         contextResults: {},
         deploymentUuid: "xxxxx",
-        queryType: "queryWithExtractorCombinerTransformer",
+        queryType: "boxedQueryWithExtractorCombinerTransformer",
         extractors: {
           book: {
             extractorOrCombinerType: "extractorForObjectByDirectReference",

@@ -12,7 +12,7 @@ import {
   BoxedExtractorOrCombinerReturningObject,
   BoxedExtractorOrCombinerReturningObjectList,
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
-  QueryWithExtractorCombinerTransformer
+  BoxedQueryWithExtractorCombinerTransformer
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface";
 import {
@@ -464,12 +464,12 @@ export const getExtractorRunnerParamsForDeploymentEntityState = <QueryType exten
 
 // ################################################################################################
 export type GetQueryRunnerParamsForDeploymentEntityState = (
-  query: QueryWithExtractorCombinerTransformer,
+  query: BoxedQueryWithExtractorCombinerTransformer,
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState>
 ) => SyncQueryRunnerParams<DeploymentEntityState>;
 
 export const getQueryRunnerParamsForDeploymentEntityState = (
-  query: QueryWithExtractorCombinerTransformer,
+  query: BoxedQueryWithExtractorCombinerTransformer,
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState>
 ): SyncQueryRunnerParams<DeploymentEntityState> =>{
   return {

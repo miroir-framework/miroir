@@ -22,7 +22,7 @@ import {
   storeActionOrBundleActionStoreRunner,
   PersistenceStoreControllerInterface,
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
-  QueryWithExtractorCombinerTransformer
+  BoxedQueryWithExtractorCombinerTransformer
 } from "miroir-core";
 import { handlePromiseActionForSaga } from 'src/sagaTools.js';
 import { packageName } from '../../constants.js';
@@ -288,8 +288,8 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                     return yield localStoreResult;
                     break;
                   }
-                  case "queryWithExtractorCombinerTransformer": {
-                    const localQuery: QueryWithExtractorCombinerTransformer = action.query;
+                  case "boxedQueryWithExtractorCombinerTransformer": {
+                    const localQuery: BoxedQueryWithExtractorCombinerTransformer = action.query;
                     const localStoreResult = yield* call(() =>
                       localPersistenceStoreController.handleQueryAction({
                         actionType: "runQueryAction",

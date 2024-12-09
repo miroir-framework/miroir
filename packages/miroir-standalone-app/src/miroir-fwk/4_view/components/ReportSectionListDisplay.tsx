@@ -30,7 +30,7 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   objectListReportSection,
-  QueryWithExtractorCombinerTransformer,
+  BoxedQueryWithExtractorCombinerTransformer,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
   SyncQueryRunnerParams
@@ -320,7 +320,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     () =>
       getQueryRunnerParamsForDeploymentEntityState(
         {
-          queryType: "queryWithExtractorCombinerTransformer",
+          queryType: "boxedQueryWithExtractorCombinerTransformer",
           deploymentUuid: props.deploymentUuid,
           pageParams: props.paramsAsdomainElements,
           queryParams: {},

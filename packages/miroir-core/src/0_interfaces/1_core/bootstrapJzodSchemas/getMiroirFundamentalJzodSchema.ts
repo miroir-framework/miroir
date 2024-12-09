@@ -23,7 +23,7 @@ import { getLoggerName } from "../../../tools";
 import { LoggerInterface } from "../../4-services/LoggerInterface";
 import {
   extractorOrCombinerReturningObject,
-  queryWithExtractorCombinerTransformer,
+  boxedQueryWithExtractorCombinerTransformer,
   JzodElement,
   transformerForBuild_list_pickElement,
   transformerForRuntime_list_pickElement,
@@ -1483,7 +1483,7 @@ export function getMiroirFundamentalJzodSchema(
             },
           ],
         },
-        queryWithExtractorCombinerTransformer: {
+        boxedQueryWithExtractorCombinerTransformer: {
           type: "object",
           extend: {
             type: "schemaReference",
@@ -1496,7 +1496,7 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             queryType: {
               type: "literal",
-              definition: "queryWithExtractorCombinerTransformer",
+              definition: "boxedQueryWithExtractorCombinerTransformer",
             },
             runAsSql: {
               type: "boolean",
@@ -1718,7 +1718,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "queryWithExtractorCombinerTransformer",
+                relativePath: "boxedQueryWithExtractorCombinerTransformer",
               },
             },
           },
@@ -1902,7 +1902,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "queryWithExtractorCombinerTransformer",
+                relativePath: "boxedQueryWithExtractorCombinerTransformer",
               },
             },
             {
@@ -2499,7 +2499,7 @@ export function getMiroirFundamentalJzodSchema(
         shippingBox: (miroirFundamentalJzodSchema as any).definition.context.shippingBox,
         boxedExtractorOrCombinerReturningObject: (miroirFundamentalJzodSchema as any).definition.context.boxedExtractorOrCombinerReturningObject,
         boxedExtractorOrCombinerReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.boxedExtractorOrCombinerReturningObjectList,
-        queryWithExtractorCombinerTransformer: (miroirFundamentalJzodSchema as any).definition.context.queryWithExtractorCombinerTransformer,
+        boxedQueryWithExtractorCombinerTransformer: (miroirFundamentalJzodSchema as any).definition.context.boxedQueryWithExtractorCombinerTransformer,
         boxedExtractorOrCombinerReturningObjectOrObjectList: (miroirFundamentalJzodSchema as any).definition.context.boxedExtractorOrCombinerReturningObjectOrObjectList,
         extractor: (miroirFundamentalJzodSchema as any).definition.context.extractor,
         extractorWrapperReturningList: (miroirFundamentalJzodSchema as any).definition.context.extractorWrapperReturningList,

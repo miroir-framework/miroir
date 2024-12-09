@@ -14,7 +14,7 @@ import {
   BoxedExtractorOrCombinerReturningObject,
   BoxedExtractorOrCombinerReturningObjectList,
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
-  QueryWithExtractorCombinerTransformer
+  BoxedQueryWithExtractorCombinerTransformer
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   AsyncBoxedExtractorOrQueryRunnerMap,
@@ -119,7 +119,7 @@ export async function asyncApplyExtractorTransformerInMemory(
   actionRuntimeTransformer: ExtendedTransformerForRuntime,
   queryParams: Record<string, any>,
   newFetchedData: Record<string, any>,
-  extractors: Record<string, BoxedExtractorOrCombinerReturningObjectList | BoxedExtractorOrCombinerReturningObject | QueryWithExtractorCombinerTransformer>,
+  extractors: Record<string, BoxedExtractorOrCombinerReturningObjectList | BoxedExtractorOrCombinerReturningObject | BoxedQueryWithExtractorCombinerTransformer>,
 ): Promise<DomainElement> {
   return Promise.resolve(applyExtractorTransformerInMemory(actionRuntimeTransformer, queryParams, newFetchedData));
 }
@@ -131,7 +131,7 @@ export function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRunner*/
   queryParams: Record<string, any>,
   extractorRunnerMap:AsyncBoxedExtractorOrQueryRunnerMap,
   deploymentUuid: Uuid,
-  extractors: Record<string, BoxedExtractorOrCombinerReturningObjectList | BoxedExtractorOrCombinerReturningObject | QueryWithExtractorCombinerTransformer>,
+  extractors: Record<string, BoxedExtractorOrCombinerReturningObjectList | BoxedExtractorOrCombinerReturningObject | BoxedQueryWithExtractorCombinerTransformer>,
   extractorOrCombiner: ExtractorOrCombiner
 ): Promise<DomainElement> {
   switch (extractorOrCombiner.extractorOrCombinerType) {

@@ -17,7 +17,7 @@ import {
   BoxedExtractorOrCombinerReturningObjectList,
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
-  QueryWithExtractorCombinerTransformer
+  BoxedQueryWithExtractorCombinerTransformer
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   ExtractorRunnerParamsForJzodSchema,
@@ -55,8 +55,8 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 const emptyDomainObject: DomainElementObject = { elementType: "object", elementValue: {} };
 
-export const dummyDomainManyQueryWithDeploymentUuid: QueryWithExtractorCombinerTransformer = {
-  queryType: "queryWithExtractorCombinerTransformer",
+export const dummyDomainManyQueryWithDeploymentUuid: BoxedQueryWithExtractorCombinerTransformer = {
+  queryType: "boxedQueryWithExtractorCombinerTransformer",
   deploymentUuid: "",
   pageParams: {},
   queryParams: {},
@@ -570,13 +570,13 @@ export const getExtractorRunnerParamsForDomainState: GetExtractorRunnerParamsFor
 };
 // ################################################################################################
 // export type GetExtractorRunnerParamsForDomainState = <ExtractorType extends MiroirQuery>(
-export type GetQueryRunnerParamsForDomainState = <ExtractorType extends QueryWithExtractorCombinerTransformer>(
+export type GetQueryRunnerParamsForDomainState = <ExtractorType extends BoxedQueryWithExtractorCombinerTransformer>(
   query: ExtractorType,
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<DomainState>
 ) => SyncQueryRunnerParams<DomainState>;
 
 export const getQueryRunnerParamsForDomainState: GetQueryRunnerParamsForDomainState = <
-  ExtractorType extends QueryWithExtractorCombinerTransformer
+  ExtractorType extends BoxedQueryWithExtractorCombinerTransformer
 >(
   query: ExtractorType,
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<DomainState>

@@ -343,7 +343,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
               referenceName: "currentDeploymentUuid"
             },
             query: {
-              queryType: "queryWithExtractorCombinerTransformer",
+              queryType: "boxedQueryWithExtractorCombinerTransformer",
               deploymentUuid: {
                 transformerType: "parameterReference",
                 referenceName: "currentDeploymentUuid",
@@ -762,7 +762,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
           applicationSection: "model",
           deploymentUuid: "b4b3b3b3-7b3b-4b3b-8b3b-3b3b3b3b3b3b",
           query: {
-            queryType: "queryWithExtractorCombinerTransformer",
+            queryType: "boxedQueryWithExtractorCombinerTransformer",
             deploymentUuid: "b4b3b3b3-7b3b-4b3b-8b3b-3b3b3b3b3b3b",
             pageParams: {},
             queryParams: {},

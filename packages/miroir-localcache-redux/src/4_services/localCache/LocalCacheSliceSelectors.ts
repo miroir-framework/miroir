@@ -26,7 +26,7 @@ import {
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   QueryJzodSchemaParams,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
-  QueryWithExtractorCombinerTransformer,
+  BoxedQueryWithExtractorCombinerTransformer,
   RecordOfJzodElement,
   SyncBoxedExtractorRunnerParams,
   SyncQueryRunner,
@@ -62,7 +62,7 @@ declare type SelectorParamsTemplateSelector<QueryType extends BoxedQueryTemplate
 ) => SyncQueryTemplateRunnerParams<StateType>;
 
 // ################################################################################################
-declare type SelectorParamsForQuery<QueryType extends QueryWithExtractorCombinerTransformer, StateType> = (
+declare type SelectorParamsForQuery<QueryType extends BoxedQueryWithExtractorCombinerTransformer, StateType> = (
   reduxState: ReduxStateWithUndoRedo,
   params: SyncQueryRunnerParams<StateType>
 ) => SyncQueryRunnerParams<StateType>;
@@ -91,7 +91,7 @@ export const selectDeploymentEntityStateSelectorForQueryTemplateParams /*: Domai
 
 // ################################################################################################
 // export const selectDeploymentEntityStateSelectorParams /*: DomainStateSelectorParamsSelector<Q> */ = <QueryType extends MiroirQuery>(
-export const selectDeploymentEntityStateSelectorParams /*: DomainStateSelectorParamsSelector<Q> */ = <QueryType extends QueryWithExtractorCombinerTransformer>(
+export const selectDeploymentEntityStateSelectorParams /*: DomainStateSelectorParamsSelector<Q> */ = <QueryType extends BoxedQueryWithExtractorCombinerTransformer>(
   reduxState: ReduxStateWithUndoRedo,
   params: SyncQueryRunnerParams<DeploymentEntityState>
 ): SyncQueryRunnerParams<DeploymentEntityState> => {
@@ -195,7 +195,7 @@ export function applyDeploymentEntityStateQueryTemplateSelector<QueryType extend
 
 // ################################################################################################
 export function applyDeploymentEntityStateQuerySelector<
-  ExtractorType extends QueryWithExtractorCombinerTransformer,
+  ExtractorType extends BoxedQueryWithExtractorCombinerTransformer,
   ResultType
 >( // TODO: memoize?
   deploymentEntityStateQuerySelector: SyncQueryRunner<DeploymentEntityState, ResultType>
@@ -242,7 +242,7 @@ export function applyDeploymentEntityStateQueryTemplateSelectorForCleanedResult<
 }
 
 // ################################################################################################
-export function applyDeploymentEntityStateQuerySelectorForCleanedResult<QueryType extends QueryWithExtractorCombinerTransformer>( // TODO: memoize?
+export function applyDeploymentEntityStateQuerySelectorForCleanedResult<QueryType extends BoxedQueryWithExtractorCombinerTransformer>( // TODO: memoize?
   deploymentEntityStateQuerySelector: SyncQueryRunner<DeploymentEntityState, DomainElement>
 ): (
   reduxState: ReduxStateWithUndoRedo,

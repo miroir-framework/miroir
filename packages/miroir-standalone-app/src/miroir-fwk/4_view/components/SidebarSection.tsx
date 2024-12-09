@@ -23,7 +23,7 @@ import {
   getQueryRunnerParamsForDeploymentEntityState,
   LoggerInterface,
   MiroirLoggerFactory,
-  QueryWithExtractorCombinerTransformer,
+  BoxedQueryWithExtractorCombinerTransformer,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunnerParams,
   Uuid
@@ -152,7 +152,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
   const fetchDeploymentMenusQueryParams: SyncQueryRunnerParams<DeploymentEntityState> = useMemo(
     () => 
     getQueryRunnerParamsForDeploymentEntityState({
-      queryType: "queryWithExtractorCombinerTransformer",
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
       deploymentUuid: props.deploymentUuid,
       pageParams: {},
       queryParams: {},

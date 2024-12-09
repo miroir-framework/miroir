@@ -14,7 +14,7 @@ import {
   QueryByQueryTemplateGetParamJzodSchema,
   QueryByTemplateGetParamJzodSchema,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
-  QueryWithExtractorCombinerTransformer,
+  BoxedQueryWithExtractorCombinerTransformer,
   RunBoxedExtractorAction,
   RunBoxedExtractorTemplateAction,
   RunBoxedQueryTemplateAction,
@@ -330,7 +330,7 @@ export const extractWithBoxedExtractorTemplate /**: SyncBoxedExtractorTemplateRu
   //   selectorParams.extractorOrCombinerTemplate.contextResults,
   //   selectorParams.extractorOrCombinerTemplate.deploymentUuid
   // ); 
-  // const resolvedExtractor: QueryWithExtractorCombinerTransformer = resolveQueryTemplateWithExtractorCombinerTransformer(
+  // const resolvedExtractor: BoxedQueryWithExtractorCombinerTransformer = resolveQueryTemplateWithExtractorCombinerTransformer(
   //   selectorParams.extractorOrCombinerTemplate
   // ); 
 
@@ -378,7 +378,7 @@ export const runQueryTemplateWithExtractorCombinerTransformer = <StateType>(
   selectorParams: SyncQueryTemplateRunnerParams<StateType>,
 ): DomainElementObject => { 
 
-  const resolvedExtractor: QueryWithExtractorCombinerTransformer = resolveQueryTemplateWithExtractorCombinerTransformer(
+  const resolvedExtractor: BoxedQueryWithExtractorCombinerTransformer = resolveQueryTemplateWithExtractorCombinerTransformer(
     selectorParams.extractorOrCombinerTemplate
   ); 
 

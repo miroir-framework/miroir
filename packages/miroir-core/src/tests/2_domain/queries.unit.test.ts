@@ -7,7 +7,7 @@ import {
   DomainElementObject,
   BoxedExtractorTemplateReturningObjectOrObjectList,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
-  QueryWithExtractorCombinerTransformer
+  BoxedQueryWithExtractorCombinerTransformer
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DeploymentEntityState } from "../../0_interfaces/2_domain/DeploymentStateInterface";
 import {
@@ -47,7 +47,7 @@ const deploymentEntityState: DeploymentEntityState = domainStateToDeploymentEnti
 
 export interface TestExtractorParams {
   queryTemplate?: BoxedQueryTemplateWithExtractorCombinerTransformer;
-  query?: QueryWithExtractorCombinerTransformer;
+  query?: BoxedQueryWithExtractorCombinerTransformer;
   // ################################################################################################
   // Domain State
   getQueryRunnerParamsForDomainState?: GetQueryRunnerParamsForDomainState,
@@ -136,7 +136,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
     },
     query:{
-      queryType: "queryWithExtractorCombinerTransformer",
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: { },
@@ -193,7 +193,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
     },
     query: {
-      queryType: "queryWithExtractorCombinerTransformer",
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
       "deploymentUuid": adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: { },
@@ -251,7 +251,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
     },
     query: {
-      queryType: "queryWithExtractorCombinerTransformer",
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {},
@@ -308,7 +308,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   //     },
   //   },
   //   query: {
-  //     queryType: "queryWithExtractorCombinerTransformer",
+  //     queryType: "boxedQueryWithExtractorCombinerTransformer",
   //     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
   //     contextResults: {},
   //     pageParams: { },
@@ -362,7 +362,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
     },
     query: {
-      queryType: "queryWithExtractorCombinerTransformer",
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: { },
       pageParams: { },
@@ -428,7 +428,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
     },
     query: {
-      queryType: "queryWithExtractorCombinerTransformer",
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {},
@@ -492,7 +492,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       runtimeTransformers: {},
     },
     query: {
-      queryType: "queryWithExtractorCombinerTransformer",
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {
@@ -584,7 +584,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
     },
     query: {
-      queryType: "queryWithExtractorCombinerTransformer",
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {
@@ -694,7 +694,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
     },
     query: {
-      queryType: "queryWithExtractorCombinerTransformer",
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {
@@ -823,7 +823,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
     },
     query: {
-      queryType: "queryWithExtractorCombinerTransformer",
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {
@@ -959,7 +959,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
     },
     query: {
-      queryType: "queryWithExtractorCombinerTransformer",
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {
@@ -1056,7 +1056,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
     },
     query: {
-      queryType: "queryWithExtractorCombinerTransformer",
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {

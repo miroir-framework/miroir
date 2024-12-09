@@ -19,7 +19,7 @@ import {
   BoxedExtractorOrCombinerReturningObjectList,
   BoxedExtractorOrCombinerReturningObject,
   ExtractorWrapper,
-  QueryWithExtractorCombinerTransformer,
+  BoxedQueryWithExtractorCombinerTransformer,
   RunBoxedExtractorOrQueryAction,
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   ExtractorOrCombinerReturningObject,
@@ -94,7 +94,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         // // | ExtractorOrCombinerReturningObjectList
         // | ExtractorWrapper
         // | ExtractorForObjectByDirectReference
-        // | QueryWithExtractorCombinerTransformer
+        // | BoxedQueryWithExtractorCombinerTransformer
     ): RecursiveStringRecords {
       switch (extractor.extractorOrCombinerType) {
         case "extractorForObjectByDirectReference": {
@@ -126,7 +126,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         // | BoxedExtractorOrCombinerReturningObjectList
         // | BoxedExtractorOrCombinerReturningObject
         // | ExtractorWrapper
-        | QueryWithExtractorCombinerTransformer
+        | BoxedQueryWithExtractorCombinerTransformer
     ): RecursiveStringRecords {
       // log.info(this.logHeader, "sqlForExtractor called with parameter", "extractor", extractor);
       // log.info(this.logHeader, "sqlForExtractor called with sequelize", this.sequelize);
@@ -176,7 +176,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           return result;
           break;
         }
-        case "queryWithExtractorCombinerTransformer": {
+        case "boxedQueryWithExtractorCombinerTransformer": {
           return Object.fromEntries(
             Object.entries(query.extractors ?? {}).map((e) => [e[0], this.sqlForExtractor(e[1])])
           );

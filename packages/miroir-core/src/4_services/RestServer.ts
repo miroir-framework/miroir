@@ -318,7 +318,7 @@ export async function queryActionHandler(
         );
         break;
       }
-      case "queryWithExtractorCombinerTransformer": {
+      case "boxedQueryWithExtractorCombinerTransformer": {
         queryResult = extractorRunnerMapOnDomainState.runQuery(
           domainState,
           getQueryRunnerParamsForDomainState(runBoxedExtractorOrQueryAction.query, extractorRunnerMapOnDomainState)

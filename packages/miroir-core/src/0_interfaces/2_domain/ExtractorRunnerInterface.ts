@@ -20,7 +20,7 @@ import {
   QueryByTemplateGetParamJzodSchema,
   QueryJzodSchemaParams,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
-  QueryWithExtractorCombinerTransformer,
+  BoxedQueryWithExtractorCombinerTransformer,
   RunBoxedExtractorAction,
   RunBoxedExtractorTemplateAction,
   RunQueryAction,
@@ -128,7 +128,7 @@ export type SyncExtractWithBoxedExtractorOrCombinerReturningObjectOrObjectList<S
 // QUERY ##########################################################################################
 export interface SyncQueryRunnerParams<StateType> {
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<StateType>
-  extractor: QueryWithExtractorCombinerTransformer
+  extractor: BoxedQueryWithExtractorCombinerTransformer
 }
 
 // ################################################################################################
@@ -140,7 +140,7 @@ export type SyncQueryRunner<
 // ################################################################################################
 export interface AsyncQueryRunnerParams {
   extractorRunnerMap?: AsyncBoxedExtractorOrQueryRunnerMap
-  extractor: QueryWithExtractorCombinerTransformer
+  extractor: BoxedQueryWithExtractorCombinerTransformer
 }
 
 // ################################################################################################
@@ -219,7 +219,7 @@ export type AsyncBoxedExtractorOrQueryRunnerMap = {
       string,
       | BoxedExtractorOrCombinerReturningObjectList
       | BoxedExtractorOrCombinerReturningObject
-      | QueryWithExtractorCombinerTransformer
+      | BoxedQueryWithExtractorCombinerTransformer
     >
   ): Promise<DomainElement>;
   // ################################################################################################

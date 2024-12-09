@@ -24,7 +24,7 @@ import {
   MiroirQueryTemplate,
   QueryJzodSchemaParams,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
-  QueryWithExtractorCombinerTransformer,
+  BoxedQueryWithExtractorCombinerTransformer,
   RecordOfJzodElement,
   SyncQueryRunner,
   SyncQueryRunnerParams,

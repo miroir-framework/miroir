@@ -27,7 +27,7 @@ import {
   QueryByQueryGetParamJzodSchema,
   QueryFailed,
   QueryJzodSchemaParams,
-  QueryWithExtractorCombinerTransformer,
+  BoxedQueryWithExtractorCombinerTransformer,
   RunBoxedExtractorAction,
   RunQueryAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -1053,7 +1053,7 @@ export const extractFetchQueryJzodSchema = <StateType>(
   deploymentEntityState: StateType,
   selectorParams: ExtractorRunnerParamsForJzodSchema<QueryByQuery2GetParamJzodSchema, StateType>
 ):  RecordOfJzodObject | undefined => {
-  const localFetchParams: QueryWithExtractorCombinerTransformer = selectorParams.query.fetchParams
+  const localFetchParams: BoxedQueryWithExtractorCombinerTransformer = selectorParams.query.fetchParams
   // log.info("selectFetchQueryJzodSchemaFromDomainState called", selectorParams.query);
   
   const fetchQueryJzodSchema = Object.fromEntries(

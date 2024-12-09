@@ -14,7 +14,7 @@ import {
   QueryByQuery2GetParamJzodSchema,
   QueryRunnerMapForJzodSchema,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
-  QueryWithExtractorCombinerTransformer,
+  BoxedQueryWithExtractorCombinerTransformer,
   RecordOfJzodObject,
   resolveQueryTemplateWithExtractorCombinerTransformer,
   RootReport,
@@ -117,7 +117,7 @@ export const ReportView = (props: ReportViewProps) => {
 
   log.info("################################################################ resolving query Template");
 
-  const resolvedTemplateQuery: QueryWithExtractorCombinerTransformer = useMemo(
+  const resolvedTemplateQuery: BoxedQueryWithExtractorCombinerTransformer = useMemo(
     () =>
       resolveQueryTemplateWithExtractorCombinerTransformer(
         deploymentEntityStateFetchQueryTemplate
@@ -128,12 +128,12 @@ export const ReportView = (props: ReportViewProps) => {
   log.info("resolvedQuery", resolvedTemplateQuery);
   log.info("################################################################ resolved query Template DONE");
 
-  const usedQuery: QueryWithExtractorCombinerTransformer = useMemo(
+  const usedQuery: BoxedQueryWithExtractorCombinerTransformer = useMemo(
     () =>
     props.pageParams.deploymentUuid && props.pageParams.applicationSection && props.pageParams.reportUuid
       ? props.reportDefinition.extractors
         ? {
-            queryType: "queryWithExtractorCombinerTransformer",
+            queryType: "boxedQueryWithExtractorCombinerTransformer",
             deploymentUuid: props.pageParams.deploymentUuid,
             pageParams: props.pageParams,
             queryParams: {},
@@ -145,7 +145,7 @@ export const ReportView = (props: ReportViewProps) => {
           }
         : resolvedTemplateQuery
       : {
-          queryType: "queryWithExtractorCombinerTransformer",
+          queryType: "boxedQueryWithExtractorCombinerTransformer",
           deploymentUuid: "",
           pageParams: paramsAsdomainElements,
           queryParams: {},
@@ -241,14 +241,14 @@ export const ReportView = (props: ReportViewProps) => {
               queryParams: {},
               contextResults: {},
               fetchParams: {
-                queryType: "queryWithExtractorCombinerTransformer",
+                queryType: "boxedQueryWithExtractorCombinerTransformer",
                 deploymentUuid: "DUMMY",
                 pageParams: paramsAsdomainElements,
                 queryParams: {},
                 contextResults: {},
                 // extractorTemplates: {},
                 extractors: {},
-              } as QueryWithExtractorCombinerTransformer,
+              } as BoxedQueryWithExtractorCombinerTransformer,
             },
     }),
     [jzodSchemaSelectorMap, props.pageParams, props.reportDefinition]

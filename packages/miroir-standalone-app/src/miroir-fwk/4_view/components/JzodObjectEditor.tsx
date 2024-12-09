@@ -27,7 +27,7 @@ import {
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
-  QueryWithExtractorCombinerTransformer,
+  BoxedQueryWithExtractorCombinerTransformer,
   ResolvedJzodSchemaReturnType,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
@@ -455,7 +455,7 @@ export const JzodObjectEditor = (
           unfoldedRawSchema.tag?.value?.targetEntity
           ?
           {
-            queryType: "queryWithExtractorCombinerTransformer",
+            queryType: "boxedQueryWithExtractorCombinerTransformer",
             deploymentUuid: props.currentDeploymentUuid,
             pageParams: {},
             queryParams: {},
