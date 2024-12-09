@@ -28,7 +28,7 @@ import {
   resolvePathOnObject,
   RunBoxedExtractorAction,
   RunBoxedExtractorOrQueryAction,
-  RunQueryAction,
+  RunBoxedQueryAction,
   selectEntityJzodSchemaFromDomainStateNew,
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
@@ -703,17 +703,17 @@ export class SqlDbQueryRunner {
   }
 
   // ##############################################################################################
-  async handleQueryAction(runQueryAction: RunQueryAction): Promise<ActionReturnType> {
-    log.info(this.logHeader, "handleQueryAction", "runQueryAction", JSON.stringify(runQueryAction, null, 2));
+  async handleBoxedQueryAction(runBoxedQueryAction: RunBoxedQueryAction): Promise<ActionReturnType> {
+    log.info(this.logHeader, "handleBoxedQueryAction", "runBoxedQueryAction", JSON.stringify(runBoxedQueryAction, null, 2));
     let queryResult: DomainElement;
-    if (runQueryAction.query.runAsSql) {
+    if (runBoxedQueryAction.query.runAsSql) {
       queryResult = await this.dbImplementationExtractorRunnerMap.runQuery({
-        extractor: runQueryAction.query,
+        extractor: runBoxedQueryAction.query,
         extractorRunnerMap: this.dbImplementationExtractorRunnerMap,
       });
     } else {
       queryResult = await this.inMemoryImplementationExtractorRunnerMap.runQuery({
-        extractor: runQueryAction.query,
+        extractor: runBoxedQueryAction.query,
         extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
       });
     }
@@ -726,9 +726,9 @@ export class SqlDbQueryRunner {
       const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
       log.info(
         this.logHeader,
-        "handleQueryAction",
-        "runQueryAction",
-        runQueryAction,
+        "handleBoxedQueryAction",
+        "runBoxedQueryAction",
+        runBoxedQueryAction,
         "result",
         JSON.stringify(result, null, 2)
       );

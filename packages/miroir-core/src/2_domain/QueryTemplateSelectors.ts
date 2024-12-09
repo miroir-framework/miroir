@@ -36,7 +36,7 @@ import { cleanLevel } from "./constants";
 import {
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
   handleBoxedExtractorAction,
-  handleQueryAction,
+  handleBoxedQueryAction,
   runQuery,
 } from "./QuerySelectors";
 import {
@@ -77,10 +77,10 @@ export async function handleQueryTemplateAction(
     JSON.stringify(resolvedQuery, null, 2)
   );
 
-  return handleQueryAction(
+  return handleBoxedQueryAction(
     origin,
     {
-      actionType: "runQueryAction",
+      actionType: "runBoxedQueryAction",
       actionName: queryTemplateAction.actionName,
       deploymentUuid: queryTemplateAction.deploymentUuid,
       endpoint: queryTemplateAction.endpoint,
@@ -191,10 +191,10 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
       "resolvedQuery",
       JSON.stringify(resolvedQuery, null, 2)
     );
-    return handleQueryAction(
+    return handleBoxedQueryAction(
       origin,
       {
-        actionType: "runQueryAction",
+        actionType: "runBoxedQueryAction",
         actionName: queryTemplateOrExtractorTemplateAction.actionName,
         deploymentUuid: queryTemplateOrExtractorTemplateAction.deploymentUuid,
         endpoint: queryTemplateOrExtractorTemplateAction.endpoint,
@@ -286,10 +286,10 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
     
   //   }
   //   case "boxedQueryTemplateWithExtractorCombinerTransformer":{
-  //     return handleQueryAction(
+  //     return handleBoxedQueryAction(
   //       origin,
   //       {
-  //         actionType: "runQueryAction",
+  //         actionType: "runBoxedQueryAction",
   //         actionName: queryTemplateOrExtractorTemplateAction.actionName,
   //         deploymentUuid: queryTemplateOrExtractorTemplateAction.deploymentUuid,
   //         endpoint: queryTemplateOrExtractorTemplateAction.endpoint,

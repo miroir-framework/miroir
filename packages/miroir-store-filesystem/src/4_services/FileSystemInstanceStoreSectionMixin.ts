@@ -18,7 +18,7 @@ import {
   RunBoxedExtractorOrQueryAction,
   ExtractorRunnerInMemory,
   RunBoxedExtractorAction,
-  RunQueryAction,
+  RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
   RunBoxedExtractorTemplateAction,
 } from "miroir-core";
@@ -75,12 +75,12 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     }
     
     // #############################################################################################
-    async handleQueryAction(query: RunQueryAction): Promise<ActionReturnType> {
-      log.info(this.logHeader,'handleQueryAction', 'query',query);
+    async handleBoxedQueryAction(query: RunBoxedQueryAction): Promise<ActionReturnType> {
+      log.info(this.logHeader,'handleBoxedQueryAction', 'query',query);
       
-      const result: ActionReturnType = await this.extractorRunner.handleQueryAction(query);
+      const result: ActionReturnType = await this.extractorRunner.handleBoxedQueryAction(query);
 
-      log.info(this.logHeader,'handleQueryAction DONE','query',query, "result", result);
+      log.info(this.logHeader,'handleBoxedQueryAction DONE','query',query, "result", result);
       return result;
     }
     

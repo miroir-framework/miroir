@@ -242,8 +242,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       {},
       async () => {
         const applicationSection: ApplicationSection = "model";
-        const queryResult: ActionReturnType = await localMiroirPersistenceStoreController.handleQueryAction({
-          actionType: "runQueryAction",
+        const queryResult: ActionReturnType = await localMiroirPersistenceStoreController.handleBoxedQueryAction({
+          actionType: "runBoxedQueryAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -406,8 +406,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       {},
       async () => {
         const applicationSection: ApplicationSection = "model";
-        const queryResult: ActionReturnType = await localAppPersistenceStoreController.handleQueryAction({
-          actionType: "runQueryAction",
+        const queryResult: ActionReturnType = await localAppPersistenceStoreController.handleBoxedQueryAction({
+          actionType: "runBoxedQueryAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -455,8 +455,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       {},
       async () => {
         const applicationSection: ApplicationSection = "model";
-        const queryResult: ActionReturnType = await localAppPersistenceStoreController.handleQueryAction({
-          actionType: "runQueryAction",
+        const queryResult: ActionReturnType = await localAppPersistenceStoreController.handleBoxedQueryAction({
+          actionType: "runBoxedQueryAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -573,8 +573,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       {},
       async () => {
         const applicationSection: ApplicationSection = "model";
-        const queryResult = await localMiroirPersistenceStoreController.handleQueryAction({
-          actionType: "runQueryAction",
+        const queryResult = await localMiroirPersistenceStoreController.handleBoxedQueryAction({
+          actionType: "runBoxedQueryAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -620,8 +620,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       {},
       async () => {
         const applicationSection: ApplicationSection = "data";
-        const queryResult = await localAppPersistenceStoreController.handleQueryAction({
-          actionType: "runQueryAction",
+        const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
+          actionType: "runBoxedQueryAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -673,8 +673,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       {},
       async () => {
         const applicationSection: ApplicationSection = "data";
-        const queryResult = await localAppPersistenceStoreController.handleQueryAction({
-          actionType: "runQueryAction",
+        const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
+          actionType: "runBoxedQueryAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -723,8 +723,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       {},
       async () => {
         const applicationSection: ApplicationSection = "data";
-        const queryResult = await localAppPersistenceStoreController.handleQueryAction({
-          actionType: "runQueryAction",
+        const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
+          actionType: "runBoxedQueryAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -777,8 +777,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       {},
       async () => {
         const applicationSection: ApplicationSection = "data";
-        const queryResult = await localAppPersistenceStoreController.handleQueryAction({
-          actionType: "runQueryAction",
+        const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
+          actionType: "runBoxedQueryAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -853,8 +853,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       {},
       async () => {
         const applicationSection: ApplicationSection = "data";
-        const queryResult = await localAppPersistenceStoreController.handleQueryAction({
-          actionType: "runQueryAction",
+        const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
+          actionType: "runBoxedQueryAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -905,8 +905,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       {},
       async () => {
         const applicationSection: ApplicationSection = "data";
-        const queryResult = await localAppPersistenceStoreController.handleQueryAction({
-          actionType: "runQueryAction",
+        const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
+          actionType: "runBoxedQueryAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -964,8 +964,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       {},
       async () => {
         const applicationSection: ApplicationSection = "data";
-        const queryResult = await localAppPersistenceStoreController.handleQueryAction({
-          actionType: "runQueryAction",
+        const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
+          actionType: "runBoxedQueryAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -1068,8 +1068,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       {},
       async () => {
         const applicationSection: ApplicationSection = "data";
-        const queryResult = await localAppPersistenceStoreController.handleQueryAction({
-          actionType: "runQueryAction",
+        const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
+          actionType: "runBoxedQueryAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -1149,8 +1149,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       {},
       async () => {
         const applicationSection: ApplicationSection = "data";
-        const queryResult = await localAppPersistenceStoreController.handleQueryAction({
-          actionType: "runQueryAction",
+        const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
+          actionType: "runBoxedQueryAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",

@@ -19,7 +19,7 @@ import {
   RunBoxedExtractorAction,
   RunBoxedExtractorOrQueryAction,
   RunBoxedExtractorTemplateAction,
-  RunQueryAction,
+  RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   StoreSectionConfiguration
@@ -126,9 +126,9 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
 
   // #############################################################################################
-  async handleQueryAction(action: RunQueryAction): Promise<ActionReturnType> {
+  async handleBoxedQueryAction(action: RunBoxedQueryAction): Promise<ActionReturnType> {
     // TODO: fix applicationSection!!!
-    log.info(this.logHeader,'handleQueryAction','query',action);
+    log.info(this.logHeader,'handleBoxedQueryAction','query',action);
     // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
     // log.info(this.logHeader,'this.modelStoreSection',this.modelStoreSection);
     
@@ -136,9 +136,9 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     // RIGHT NOW RESTRICT ALL SUBQUERIES OF A QUERY TO THE SAME SECTION !!!!
     const currentStore: PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface =
       action.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
-    const result: ActionReturnType = await currentStore.handleQueryAction(action);
+    const result: ActionReturnType = await currentStore.handleBoxedQueryAction(action);
 
-    log.info(this.logHeader,'handleQueryAction','query',action, "result", JSON.stringify(result));
+    log.info(this.logHeader,'handleBoxedQueryAction','query',action, "result", JSON.stringify(result));
     return Promise.resolve(result);
   }
 

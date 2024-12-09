@@ -174,7 +174,7 @@
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": { "type": "literal", "definition": "runQueryAction" },
+            "actionType": { "type": "literal", "definition": "runBoxedQueryAction" },
             "actionName": { "type": "literal", "definition": "runQuery" },
             "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
             "applicationSection": {

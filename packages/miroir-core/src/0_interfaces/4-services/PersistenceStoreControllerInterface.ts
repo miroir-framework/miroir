@@ -19,7 +19,7 @@ import {
   RunBoxedExtractorAction,
   RunBoxedExtractorOrQueryAction,
   RunBoxedExtractorTemplateAction,
-  RunQueryAction,
+  RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   StoreManagementAction,
@@ -86,7 +86,7 @@ export interface PersistenceStoreInstanceSectionAbstractInterface extends Persis
   handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
   handleQueryTemplateActionForServerONLY(query: RunBoxedQueryTemplateAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
   handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
-  handleQueryAction(query: RunQueryAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
+  handleBoxedQueryAction(query: RunBoxedQueryAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
   handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
   upsertInstance(parentUuid:string, instance:EntityInstance):Promise<ActionVoidReturnType>;
   deleteInstances(parentUuid:string, instances:EntityInstance[]):Promise<ActionVoidReturnType>;
@@ -196,7 +196,7 @@ export interface PersistenceStoreControllerInterface
   handleQueryTemplateActionForServerONLY(query: RunBoxedQueryTemplateAction): Promise<ActionReturnType>;
   handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<ActionReturnType>;
   handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<ActionReturnType>;
-  handleQueryAction(query: RunQueryAction): Promise<ActionReturnType>;
+  handleBoxedQueryAction(query: RunBoxedQueryAction): Promise<ActionReturnType>;
   
   getInstance(section: ApplicationSection, parentUuid: string, uuid: Uuid): Promise<ActionEntityInstanceReturnType>;
   getInstances(section: ApplicationSection, parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType>;

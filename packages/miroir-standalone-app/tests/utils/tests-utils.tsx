@@ -201,8 +201,6 @@ export async function addEntitiesAndInstancesForEmulatedServer(
   localAppPersistenceStoreController: PersistenceStoreControllerInterface,
   entities: { entity: MetaEntity, entityDefinition: EntityDefinition, instances: EntityInstance[] }[],
   reportBookList: EntityInstance,
-  // authorList: EntityInstance[],
-  // bookList: EntityInstance[],
 ) {
   for (const entity of entities) {
     await localAppPersistenceStoreController.createEntity(entity.entity as MetaEntity, entity.entityDefinition as EntityDefinition);
@@ -213,12 +211,6 @@ export async function addEntitiesAndInstancesForEmulatedServer(
       await localAppPersistenceStoreController?.upsertInstance('data', instance as EntityInstance);
     }
   }
-  // for (const author of authorList) {
-  //   await localAppPersistenceStoreController?.upsertInstance('data', author as EntityInstance);
-  // }
-  // for (const book of bookList) {
-  //   await localAppPersistenceStoreController?.upsertInstance('data', book as EntityInstance);
-  // }
 }
 
 export async function addEntitiesAndInstancesForRealServer(
@@ -226,8 +218,6 @@ export async function addEntitiesAndInstancesForRealServer(
   localCache: LocalCache,
   adminConfigurationDeploymentLibrary: EntityInstance,
   entities: { entity: MetaEntity, entityDefinition: EntityDefinition, instances: EntityInstance[] }[],
-  // authorList: EntityInstance[],
-  // bookList: EntityInstance[],
   act?: unknown,
 ) {
   const createAction: DomainAction = {
@@ -297,13 +287,7 @@ export async function addEntitiesAndInstances(
   miroirConfig: MiroirConfigClient,
   adminConfigurationDeploymentLibrary: EntityInstance,
   entities: { entity: MetaEntity, entityDefinition: EntityDefinition, instances: EntityInstance[] }[],
-  // entityAuthor: MetaEntity,
-  // entityBook: MetaEntity,
-  // entityDefinitionAuthor: EntityDefinition,
-  // entityDefinitionBook: EntityDefinition,
   reportBookList: EntityInstance,
-  // authorList: EntityInstance[],
-  // bookList: EntityInstance[],
   act?: unknown,
 ) {
   if (miroirConfig.client.emulateServer) {
@@ -311,8 +295,6 @@ export async function addEntitiesAndInstances(
       localAppPersistenceStoreController,
       entities,
       reportBookList,
-      // authorList,
-      // bookList,
     );
   } else {
     await addEntitiesAndInstancesForRealServer(
@@ -320,8 +302,6 @@ export async function addEntitiesAndInstances(
       localCache,
       adminConfigurationDeploymentLibrary,
       entities,
-      // authorList,
-      // bookList,
       act,
     );
   }

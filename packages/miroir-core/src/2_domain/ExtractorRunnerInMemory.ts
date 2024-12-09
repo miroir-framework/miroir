@@ -9,7 +9,7 @@ import {
   DomainElementInstanceUuidIndexOrFailed,
   ExtractorOrCombinerReturningObject,
   RunBoxedExtractorAction,
-  RunQueryAction
+  RunBoxedQueryAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import {
@@ -38,7 +38,7 @@ import {
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
 } from "./DomainStateQuerySelectors";
-import { handleBoxedExtractorAction, handleQueryAction } from "./QuerySelectors";
+import { handleBoxedExtractorAction, handleBoxedQueryAction } from "./QuerySelectors";
 import { transformer_InnerReference_resolve } from "./Transformers";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "ExtractorRunnerInMemory");
@@ -70,8 +70,8 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
   }
 
   // ################################################################################################
-  async handleQueryAction(runQueryAction: RunQueryAction): Promise<ActionReturnType> {
-    return handleQueryAction("ExtractorRunnerInMemory", runQueryAction, this.selectorMap);
+  async handleBoxedQueryAction(runBoxedQueryAction: RunBoxedQueryAction): Promise<ActionReturnType> {
+    return handleBoxedQueryAction("ExtractorRunnerInMemory", runBoxedQueryAction, this.selectorMap);
   }
   // ################################################################################################
   async handleBoxedExtractorAction(runBoxedExtractorAction: RunBoxedExtractorAction): Promise<ActionReturnType> {

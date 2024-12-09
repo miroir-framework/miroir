@@ -11,7 +11,7 @@ import {
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   RunBoxedExtractorOrQueryAction,
   RunBoxedExtractorAction,
-  RunQueryAction,
+  RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
   RunBoxedExtractorTemplateAction,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -78,7 +78,7 @@ export class ErrorDataStore implements PersistenceStoreDataSectionInterface {
   handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
-  handleQueryAction(query: RunQueryAction): Promise<ActionReturnType> {
+  handleBoxedQueryAction(query: RunBoxedQueryAction): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
   upsertInstance(parentUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {

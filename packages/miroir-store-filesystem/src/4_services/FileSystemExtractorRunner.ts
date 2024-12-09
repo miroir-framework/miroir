@@ -30,7 +30,7 @@ import {
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
   transformer_InnerReference_resolve,
-  RunQueryAction,
+  RunBoxedQueryAction,
   RunBoxedExtractorAction
 } from "miroir-core";
 import { packageName } from "../constants.js";
@@ -87,12 +87,12 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
   }
 
   // ################################################################################################
-  async handleQueryAction(runQueryAction: RunQueryAction): Promise<ActionReturnType> {
-    log.info(this.logHeader, "handleQueryAction", "runQueryAction", JSON.stringify(runQueryAction, null, 2));
+  async handleBoxedQueryAction(runBoxedQueryAction: RunBoxedQueryAction): Promise<ActionReturnType> {
+    log.info(this.logHeader, "handleBoxedQueryAction", "runBoxedQueryAction", JSON.stringify(runBoxedQueryAction, null, 2));
     let queryResult: DomainElement;
     queryResult = await this.selectorMap.runQuery(
       {
-        extractor: runQueryAction.query,
+        extractor: runBoxedQueryAction.query,
         extractorRunnerMap: this.selectorMap,
       }
     );
@@ -103,7 +103,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       } as ActionReturnType;
     } else {
       const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
-      log.info(this.logHeader, "handleQueryAction", "runQueryAction", runQueryAction, "result", JSON.stringify(result, null, 2));
+      log.info(this.logHeader, "handleBoxedQueryAction", "runBoxedQueryAction", runBoxedQueryAction, "result", JSON.stringify(result, null, 2));
       return result;
     }
   }

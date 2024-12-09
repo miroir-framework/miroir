@@ -29,7 +29,7 @@ import {
   QueryJzodSchemaParams,
   BoxedQueryWithExtractorCombinerTransformer,
   RunBoxedExtractorAction,
-  RunQueryAction
+  RunBoxedQueryAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   AsyncBoxedExtractorOrQueryRunnerMap,
@@ -572,16 +572,16 @@ export async function handleBoxedExtractorAction(
 }
 
 // ################################################################################################
-export async function handleQueryAction(
+export async function handleBoxedQueryAction(
   origin: string,
-  runQueryAction: RunQueryAction,
+  runBoxedQueryAction: RunBoxedQueryAction,
   selectorMap: AsyncBoxedExtractorOrQueryRunnerMap
 ): Promise<ActionReturnType> {
-  log.info("handleQueryAction for", origin, "start", "runQueryAction", JSON.stringify(runQueryAction, null, 2));
+  log.info("handleBoxedQueryAction for", origin, "start", "runBoxedQueryAction", JSON.stringify(runBoxedQueryAction, null, 2));
   let queryResult: DomainElement;
   queryResult = await selectorMap.runQuery(
     {
-      extractor: runQueryAction.query,
+      extractor: runBoxedQueryAction.query,
       extractorRunnerMap: selectorMap,
     }
   );
@@ -592,7 +592,7 @@ export async function handleQueryAction(
     } as ActionReturnType;
   } else {
     const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
-    log.info("handleQueryAction for", origin, "runBoxedExtractorOrQueryAction", runQueryAction, "result", JSON.stringify(result, null, 2));
+    log.info("handleBoxedQueryAction for", origin, "runBoxedExtractorOrQueryAction", runBoxedQueryAction, "result", JSON.stringify(result, null, 2));
     return result;
   }
 }

@@ -133,7 +133,7 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
       }
       case "runBoxedExtractorAction":
       case "runBoxedExtractorOrQueryAction":
-      case "runQueryAction": {
+      case "runBoxedQueryAction": {
         const callParams = this.getRestCallParams(action, this.rootApiUrl + "/query");
         log.debug("handleNetworkPersistenceAction", action, "callParams", callParams);
         const result = await callParams.operation(callParams.url, callParams.args);

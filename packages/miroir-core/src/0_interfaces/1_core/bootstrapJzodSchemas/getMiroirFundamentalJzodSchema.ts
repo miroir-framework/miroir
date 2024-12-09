@@ -2164,7 +2164,7 @@ export function getMiroirFundamentalJzodSchema(
         runBoxedExtractorOrQueryAction: queryEndpointVersionV1.definition.actions[1].actionParameters,
         runBoxedQueryTemplateAction: queryEndpointVersionV1.definition.actions[2].actionParameters,
         runBoxedExtractorTemplateAction: queryEndpointVersionV1.definition.actions[3].actionParameters,
-        runQueryAction: queryEndpointVersionV1.definition.actions[4].actionParameters,
+        runBoxedQueryAction: queryEndpointVersionV1.definition.actions[4].actionParameters,
         runBoxedExtractorAction: queryEndpointVersionV1.definition.actions[5].actionParameters,
         compositeActionDefinition: domainEndpointVersionV1.definition.actions.find(
           (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
@@ -2520,7 +2520,7 @@ export function getMiroirFundamentalJzodSchema(
         extractorOrCombinerRecord: (miroirFundamentalJzodSchema as any).definition.context.extractorOrCombinerRecord,
         runBoxedExtractorOrQueryAction: (miroirFundamentalJzodSchema as any).definition.context.runBoxedExtractorOrQueryAction,
         runBoxedQueryTemplateOrBoxedExtractorTemplateAction: (miroirFundamentalJzodSchema as any).definition.context.runBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-        runQueryAction: (miroirFundamentalJzodSchema as any).definition.context.runQueryAction,
+        runBoxedQueryAction: (miroirFundamentalJzodSchema as any).definition.context.runBoxedQueryAction,
         runBoxedQueryTemplateAction: (miroirFundamentalJzodSchema as any).definition.context.runBoxedQueryTemplateAction,
         runBoxedExtractorAction: (miroirFundamentalJzodSchema as any).definition.context.runBoxedExtractorAction,
         runBoxedExtractorTemplateAction: (miroirFundamentalJzodSchema as any).definition.context.runBoxedExtractorTemplateAction,

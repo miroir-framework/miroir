@@ -27,7 +27,7 @@ import {
   Extractor,
   ExtractorOrCombiner,
   RunBoxedExtractorAction,
-  RunQueryAction,
+  RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
   RunBoxedExtractorTemplateAction,
 } from "miroir-core";
@@ -320,12 +320,12 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     }
 
     // #############################################################################################
-    async handleQueryAction(query: RunQueryAction): Promise<ActionReturnType> {
-      log.info(this.logHeader, "handleQueryAction", "query", query);
+    async handleBoxedQueryAction(query: RunBoxedQueryAction): Promise<ActionReturnType> {
+      log.info(this.logHeader, "handleBoxedQueryAction", "query", query);
 
-      const result: ActionReturnType = await this.extractorRunner.handleQueryAction(query);
+      const result: ActionReturnType = await this.extractorRunner.handleBoxedQueryAction(query);
 
-      log.info(this.logHeader, "handleQueryAction", "query", query, "result", result);
+      log.info(this.logHeader, "handleBoxedQueryAction", "query", query, "result", result);
       return result;
     }
 

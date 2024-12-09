@@ -73,12 +73,6 @@ MiroirLoggerFactory.setEffectiveLoggerFactory(
 
 console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
-miroirAppStartup();
-miroirCoreStartup();
-miroirFileSystemStoreSectionStartup();
-miroirIndexedDbStoreSectionStartup();
-miroirPostgresStoreSectionStartup();
-
 
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
@@ -90,6 +84,13 @@ let miroirContext: MiroirContext;
 
 beforeAll(
   async () => {
+    miroirAppStartup();
+    miroirCoreStartup();
+    miroirFileSystemStoreSectionStartup();
+    miroirIndexedDbStoreSectionStartup();
+    miroirPostgresStoreSectionStartup();
+
+
     // Establish requests interception layer before all tests.
     const wrapped = await miroirBeforeAll(
       miroirConfig as MiroirConfigClient,
