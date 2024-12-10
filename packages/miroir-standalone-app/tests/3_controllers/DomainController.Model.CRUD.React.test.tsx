@@ -102,11 +102,11 @@ beforeAll(
         localMiroirPersistenceStoreController = wrapped.localMiroirPersistenceStoreController;
         localAppPersistenceStoreController = wrapped.localAppPersistenceStoreController;
       }
-      localCache = wrapped.localCache;
-      miroirContext = wrapped.miroirContext;
-      domainController = wrapped.domainController;
       localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
       localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
+      localCache = wrapped.localCache;
+      domainController = wrapped.domainController;
+      miroirContext = wrapped.miroirContext;
     } else {
       throw new Error("beforeAll failed initialization!");
     }
@@ -124,6 +124,12 @@ beforeEach(
   }
 )
 
+afterEach(
+  async () => {
+    await miroirAfterEach(miroirConfig, domainController, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
+  }
+)
+
 afterAll(
   async () => {
     await miroirAfterAll(
@@ -133,12 +139,6 @@ afterAll(
       localAppPersistenceStoreController,
       localDataStoreServer
     );
-  }
-)
-
-afterEach(
-  async () => {
-    await miroirAfterEach(miroirConfig, domainController, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
   }
 )
 

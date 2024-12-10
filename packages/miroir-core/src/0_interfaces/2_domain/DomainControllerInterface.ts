@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   ActionReturnType,
   ActionVoidReturnType,
+  CompositeAction,
   CompositeActionTemplate,
   DomainAction,
   EntityInstance,
@@ -98,6 +99,11 @@ export interface DomainControllerInterface {
   handleCompositeActionTemplate(
     action: CompositeActionTemplate,
     actionParamValues: any,
+    currentModel?: MetaModel
+  ): Promise<ActionVoidReturnType>;
+  handleCompositeAction(
+    action: CompositeAction,
+    actionParamValues: Record<string, any>,
     currentModel?: MetaModel
   ): Promise<ActionVoidReturnType>;
   handleAction(action: DomainAction, currentModel?: MetaModel): Promise<ActionVoidReturnType>;

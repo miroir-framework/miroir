@@ -57,6 +57,7 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
   } = {
     RestPersistenceAction: { "*": { attribute: "objects", result: "crudInstances" } },
     modelAction: { "*": { action: true } },
+    runBoxedExtractorOrQueryAction: { "*": { action: true } },
     runBoxedQueryTemplateOrBoxedExtractorTemplateAction: { "*": { action: true } },
     runBoxedQueryTemplateAction: { "*": { action: true } },
     runBoxedExtractorTemplateAction: { "*": { action: true } },

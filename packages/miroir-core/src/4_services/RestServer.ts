@@ -283,7 +283,10 @@ export async function queryActionHandler(
    * 
    */
   const runBoxedExtractorOrQueryAction: RunBoxedExtractorOrQueryAction = body as RunBoxedExtractorOrQueryAction;
-
+  log.info(
+    "RestServer queryActionHandler runBoxedExtractorOrQueryAction",
+    JSON.stringify(runBoxedExtractorOrQueryAction, undefined, 2)
+  );
   const deploymentUuid = runBoxedExtractorOrQueryAction.deploymentUuid
   const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
     deploymentUuid

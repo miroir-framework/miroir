@@ -401,8 +401,8 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                 break;
               }
               case "runBoxedExtractorOrQueryAction": {
-                log.info("handlePersistenceAction runBoxedExtractorOrQueryAction received from remoteStoreNetworkClient clientResult", clientResult);
-                log.debug("handlePersistenceAction runBoxedExtractorOrQueryAction remoteStoreNetworkClient received result", clientResult.status);
+                log.info("handlePersistenceAction runBoxedExtractorOrQueryAction received from remoteStoreNetworkClient clientResult", JSON.stringify(clientResult, undefined, 2));
+                log.debug("handlePersistenceAction runBoxedExtractorOrQueryAction remoteStoreNetworkClient received status", clientResult.status);
                 return yield clientResult.data;
                 break;
               }

@@ -940,8 +940,8 @@ export class DomainController implements DomainControllerInterface {
       switch (currentAction.compositeActionType) {
         case "compositeAction": {
           log.info(
-            "handleCompositeActionTemplate compositeInstanceAction action to resolve",
-            JSON.stringify(currentAction.compositeActionTemplate, null, 2)
+            "handleCompositeAction compositeAction action to handle",
+            JSON.stringify(currentAction, null, 2)
           );
           const actionResult = await this.handleCompositeAction(
             currentAction.compositeActionTemplate,
@@ -952,7 +952,7 @@ export class DomainController implements DomainControllerInterface {
         }
         case "domainAction": {
           log.info(
-            "handleCompositeActionTemplate compositeInstanceAction action to resolve",
+            "handleCompositeAction domainAction action to handle",
             JSON.stringify(currentAction.domainAction, null, 2)
           );
           const actionResult = await this.handleAction(currentAction.domainAction, currentModel);
@@ -963,7 +963,7 @@ export class DomainController implements DomainControllerInterface {
         }
         case "runBoxedQueryTemplateAction": {
           log.info(
-            "handleCompositeActionTemplate resolved queryTemplate action",
+            "handleCompositeActionTemplate boxedQueryTemplateAction to handle",
             currentAction,
             "with actionParamValues",
             actionParamValues
@@ -981,7 +981,7 @@ export class DomainController implements DomainControllerInterface {
             );
           } else {
             log.info(
-              "handleCompositeActionTemplate queryTemplate adding result to context as",
+              "handleCompositeActionTemplate boxedQueryTemplateAction adding result to context as",
               currentAction.nameGivenToResult,
               "value",
               actionResult
@@ -992,7 +992,7 @@ export class DomainController implements DomainControllerInterface {
         }
         case "runBoxedExtractorTemplateAction": {
           log.info(
-            "handleCompositeActionTemplate resolved extractorTemplate action",
+            "handleCompositeAction resolved extractorTemplate action",
             currentAction,
             "with actionParamValues",
             actionParamValues
@@ -1020,21 +1020,43 @@ export class DomainController implements DomainControllerInterface {
           break;
         }
         case "runBoxedExtractorOrQueryAction": {
-          throw new Error(
-            "handleCompositeActionTemplate can not handle query actions: " + JSON.stringify(currentAction)
-          );
-
-          // log.info(
-          //   "handleCompositeActionTemplate resolved query action",
-          //   currentAction,
-          //   "with actionParamValues",
-          //   actionParamValues
+          // throw new Error(
+          //   "handleCompositeAction can not handle query actions: " + JSON.stringify(currentAction)
           // );
 
+          log.info(
+            "handleCompositeActionTemplate runBoxedExtractorOrQueryAction to handle",
+            currentAction,
+            "with actionParamValues",
+            actionParamValues
+          );
+
+          const actionResult = await this.handleQueryActionOrBoxedExtractorActionForServerONLY(
+            currentAction.query
+          );
+          if (actionResult?.status != "ok") {
+            log.error(
+              "Error on runBoxedExtractorOrQueryAction with nameGivenToResult",
+              currentAction.nameGivenToResult,
+              "query=",
+              JSON.stringify(actionResult, null, 2)
+            );
+          } else {
+            log.info(
+              "handleCompositeActionTemplate runBoxedExtractorOrQueryAction adding result to context as",
+              currentAction.nameGivenToResult,
+              "value",
+              JSON.stringify(actionResult, null, 2)
+            );
+            localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement.elementValue;
+          }
           break;
         }
+        case 'runBoxedQueryTemplateOrBoxedExtractorTemplateAction': {
+          throw new Error("handleCompositeAction can not handle query actions: " + JSON.stringify(currentAction));
+        }
         default: {
-          log.error("handleCompositeActionTemplate unknown compositeActionType", currentAction);
+          log.error("handleCompositeAction unknown compositeActionType", currentAction);
           break;
         }
       }
