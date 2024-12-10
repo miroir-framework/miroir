@@ -1,5 +1,10 @@
 import {
+  FormControl,
   Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
   Toolbar
 } from "@mui/material";
 import { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
@@ -16,14 +21,12 @@ import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
+  BoxedQueryTemplateWithExtractorCombinerTransformer,
   defaultMiroirMetaModel,
   DomainControllerInterface,
   DomainElementObject,
   domainEndpointVersionV1,
-  BoxedQueryTemplateWithExtractorCombinerTransformer,
   EntityDefinition,
-  entityDefinitionSelfApplication,
-  entityDefinitionSelfApplicationVersion,
   entityDefinitionBundleV1,
   entityDefinitionCommit,
   entityDefinitionDeployment,
@@ -33,6 +36,8 @@ import {
   entityDefinitionMenu,
   entityDefinitionQueryVersionV1,
   entityDefinitionReport,
+  entityDefinitionSelfApplication,
+  entityDefinitionSelfApplicationVersion,
   entityDeployment,
   getLoggerName,
   getMiroirFundamentalJzodSchema,
@@ -44,21 +49,20 @@ import {
   MiroirLoggerFactory,
   modelEndpointV1,
   persistenceEndpointVersionV1,
-  PersistenceStoreLocalOrRemoteInterface,
   queryEndpointVersionV1,
   storeManagementEndpoint,
   StoreOrBundleAction,
   StoreUnitConfiguration,
   transformerJzodSchema,
-  undoRedoEndpointVersionV1,
-  transformerMenuV1
+  transformerMenuV1,
+  undoRedoEndpointVersionV1
 } from "miroir-core";
 import { ReduxStateChanges } from "miroir-localcache-redux";
 
 import { useDomainControllerService, useLocalCacheTransactions, useMiroirContextService } from '../MiroirContextReactProvider.js';
 import AppBar from './AppBar.js';
 
-import { packageName } from '../../../constants.js';
+import { deployments, packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
@@ -163,7 +167,13 @@ export const RootComponent = (props: RootComponentProps) => {
   const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   const miroirConfig = context.miroirContext.getMiroirConfig();
 
+  // ##############################################################################################
+  const displayedDeploymentUuid = context.deploymentUuid;
+  const setDisplayedDeploymentUuid = context.setDeploymentUuid;
+  const displayedApplicationSection = context.applicationSection;
+  const setDisplayedApplicationSection = context.setApplicationSection;
 
+  // ##############################################################################################
 
   const miroirFundamentalJzodSchema: JzodSchema = useMemo(() => getMiroirFundamentalJzodSchema(
     entityDefinitionBundleV1 as EntityDefinition,
@@ -201,6 +211,14 @@ export const RootComponent = (props: RootComponentProps) => {
     setDrawerIsOpen(false);
   };
 
+  const handleChangeDisplayedDeployment = (event: SelectChangeEvent) => {
+    event.stopPropagation();
+    log.info('handleChangeDisplayedDeployment',event);
+    setDisplayedDeploymentUuid(event.target.value);
+    log.info('handleChangeDisplayedDeployment',displayedDeploymentUuid);
+    setDisplayedApplicationSection('data');
+    // setDisplayedReportUuid("");
+  };
 
 
   return (
@@ -227,6 +245,26 @@ export const RootComponent = (props: RootComponentProps) => {
                   <div>uuid: {uuidv4()}</div>
                   <div>transactions: {JSON.stringify(transactions)}</div>
                 <p />
+                <div>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">Chosen application Deployment</InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={context.deploymentUuid}
+                      label="displayedDeploymentUuid"
+                      onChange={handleChangeDisplayedDeployment}
+                    >
+                      {deployments.map((deployment) => {
+                        return (
+                          <MenuItem key={deployment.name} value={deployment.uuid}>
+                            {deployment.description}
+                          </MenuItem>
+                        );
+                      })}
+                    </Select>
+                  </FormControl>
+                </div>
 
                 <span>
                   <button

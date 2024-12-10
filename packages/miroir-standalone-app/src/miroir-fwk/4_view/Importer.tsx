@@ -37,12 +37,11 @@ import {
   resolveReferencesForJzodSchemaAndValueObject
 } from "miroir-core";
 import * as XLSX from 'xlsx';
-import { packageName } from "../../constants.js";
+import { adminConfigurationDeploymentParis, applicationParis, packageName } from "../../constants.js";
 import { JzodObjectEditor } from "./components/JzodObjectEditor.js";
 import { cleanLevel } from "./constants.js";
 import { useDomainControllerService, useErrorLogService, useMiroirContextService } from "./MiroirContextReactProvider.js";
 import { useCurrentModel } from "./ReduxHooks.js";
-import { adminConfigurationDeploymentParis, applicationParis } from "./routes/ReportPage.js";
 import { create } from "domain";
 
 

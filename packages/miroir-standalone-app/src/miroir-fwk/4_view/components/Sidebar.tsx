@@ -19,10 +19,9 @@ import {
   MiroirLoggerFactory
 } from "miroir-core";
 import { FC, useMemo } from 'react';
-import { packageName } from '../../../constants.js';
+import { adminConfigurationDeploymentParis, defaultMenuParisUuid, packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 import { SidebarSection } from './SidebarSection.js';
-import { adminConfigurationDeploymentParis, defaultMenuParisUuid } from '../routes/ReportPage.js';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"Sidebar");
 let log:LoggerInterface = console as any as LoggerInterface;

@@ -1090,7 +1090,7 @@ export function innerTransformer_apply(
     }
     case "constantObject": {
       log.info("innerTransformer_apply constantObject", transformer.constantObjectValue);
-      log.error("innerTransformer_apply called with constantObject", transformer.constantObjectValue);
+      // log.error("innerTransformer_apply called with constantObject", transformer.constantObjectValue);
       return { elementType: "object", elementValue: transformer.constantObjectValue };
       break;
     }

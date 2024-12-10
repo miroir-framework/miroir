@@ -54,6 +54,7 @@ import miroirConfigRealServerIndexedDb from "./assets/miroirConfig-realServer-in
 import miroirConfigRealServerSql from "./assets/miroirConfig-realServer-sql.json";
 import miroirConfig from "./assets/miroirConfig.json";
 import { ToolsPage } from "./miroir-fwk/4_view/routes/Tools.js";
+import { ConceptPage } from "./miroir-fwk/4_view/routes/Concept.js";
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
   // "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
@@ -128,6 +129,11 @@ const router = createBrowserRouter([
       {
         path: "tools",
         element: <ToolsPage />,
+        // errorElement: <ErrorPage />,
+      },
+      {
+        path: "concept",
+        element: <ConceptPage />,
         // errorElement: <ErrorPage />,
       },
     ]

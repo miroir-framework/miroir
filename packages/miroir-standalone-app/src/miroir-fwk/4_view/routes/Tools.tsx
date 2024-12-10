@@ -30,7 +30,7 @@ import {
   resolveReferencesForJzodSchemaAndValueObject
 } from "miroir-core";
 
-import { packageName } from "../../../constants.js";
+import { adminConfigurationDeploymentParis, applicationParis, packageName } from "../../../constants.js";
 import {
   useDomainControllerService,
   useErrorLogService,
@@ -41,7 +41,6 @@ import {
 import { useCurrentModel } from "../ReduxHooks.js";
 import { JzodObjectEditor } from "../components/JzodObjectEditor.js";
 import { cleanLevel } from "../constants.js";
-import { adminConfigurationDeploymentParis, applicationParis } from './ReportPage.js';
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ToolsPage");

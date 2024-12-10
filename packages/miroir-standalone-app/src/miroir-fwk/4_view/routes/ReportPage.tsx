@@ -22,7 +22,7 @@ import {
   useMiroirContextService
 } from "../../../miroir-fwk/4_view/MiroirContextReactProvider.js";
 
-import { packageName } from '../../../constants.js';
+import { adminConfigurationDeploymentParis, deployments, packageName, ReportUrlParamKeys } from "../../../constants.js";
 import { useCurrentModel } from '../ReduxHooks.js';
 import { ReportView } from '../components/ReportView.js';
 import { cleanLevel } from '../constants.js';
@@ -32,8 +32,6 @@ let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;
 });
-
-export type ReportUrlParamKeys = 'deploymentUuid' | 'applicationSection' | 'reportUuid' | 'instanceUuid';
 
 
 const miroirExpression: JzodElement = {
@@ -48,87 +46,14 @@ const miroirExpression: JzodElement = {
   }
 }
 
-export const adminConfigurationDeploymentTest4 = {
-  "parentName": "Deployment",
-  "parentUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
-  "uuid": "f97cce64-78e9-419f-a4bd-5cbf52833ede",
-  "name": "test4ApplicationSqlDeployment",
-  "defaultLabel": "test4ApplicationSqlDeployment",
-  "application": "0e7e56a9-ef59-4bf1-b17e-c710444d969e",
-  "description": "The default Sql Deployment for Application test4",
-  "configuration": {
-      "admin": {
-          "emulatedServerType": "sql",
-          "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-          "schema": "miroirAdmin"
-      },
-      "model": {
-          "emulatedServerType": "sql",
-          "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-          "schema": "test4Model"
-      },
-      "data": {
-          "emulatedServerType": "sql",
-          "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-          "schema": "test4Data"
-      }
-  }
-}
-
-export const defaultMenuParisUuid = "84c178cc-1b1b-497a-a035-9b3d756bb085";
-export const selfApplicationParis = {
-  "uuid": "70e02039-e283-4381-9575-8c52aed18a87",
-  "parentName": "Application",
-  "parentUuid": "25d935e7-9e93-42c2-aade-0472b883492b",
-  "name": "Paris",
-  "defaultLabel": "The Paris application.",
-  "description": "This application contains the Paris model and data",
-  "selfApplication": "70e02039-e283-4381-9575-8c52aed18a87"
-};
-export const applicationParis = {
-  "uuid": "a118ba22-1be2-423f-aa77-f0baaa76313f",
-  "parentName": "Application",
-  "parentUuid": "25d935e7-9e93-42c2-aade-0472b883492b",
-  "name": "Paris",
-  "defaultLabel": "The Paris application.",
-  "description": "This application contains the Paris model and data",
-  "selfApplication": "70e02039-e283-4381-9575-8c52aed18a87"
-};
-export const adminConfigurationDeploymentParis = {
-  uuid: "f1b74341-129b-474c-affa-e910d6cba01d",
-  parentName: "Deployment",
-  parentUuid: "7959d814-400c-4e80-988f-a00fe582ab98",
-  name: "ParisApplicationSqlDeployment",
-  defaultLabel: "ParisApplicationSqlDeployment",
-  application: "70e02039-e283-4381-9575-8c52aed18a87",
-  description: "The default Sql Deployment for Application Paris",
-  configuration: {
-    admin: {
-      emulatedServerType: "sql",
-      connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-      schema: "miroirAdmin",
-    },
-    model: {
-      emulatedServerType: "sql",
-      connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-      schema: "ParisModel",
-    },
-    data: {
-      emulatedServerType: "sql",
-      connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-      schema: "ParisData",
-    },
-  },
-};
-
-export const deployments = [
-  adminConfigurationDeploymentMiroir,
-  adminConfigurationDeploymentLibrary,
-  adminConfigurationDeploymentAdmin,
-  // adminConfigurationDeploymentTest1,
-  // adminConfigurationDeploymentTest4,
-  adminConfigurationDeploymentParis,
-] as any[]; //type for Admin Application Deployment Entity Definition
+// export const deployments = [
+//   adminConfigurationDeploymentMiroir,
+//   adminConfigurationDeploymentLibrary,
+//   adminConfigurationDeploymentAdmin,
+//   // adminConfigurationDeploymentTest1,
+//   // adminConfigurationDeploymentTest4,
+//   adminConfigurationDeploymentParis,
+// ] as any[]; //type for Admin Application Deployment Entity Definition
 
 
 let count = 0;

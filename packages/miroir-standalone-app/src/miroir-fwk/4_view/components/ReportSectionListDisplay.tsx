@@ -42,7 +42,7 @@ import { Button } from "@mui/material";
 import { getMemoizedDeploymentEntityStateSelectorForTemplateMap } from "miroir-localcache-redux";
 
 import { AddBox } from "@mui/icons-material";
-import { packageName } from "../../../constants.js";
+import { packageName, deployments } from "../../../constants.js";
 import {
   useDomainControllerService,
   useMiroirContextInnerFormOutput,
@@ -51,7 +51,6 @@ import {
 import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from "../ReduxHooks.js";
 import { cleanLevel } from "../constants.js";
 import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "../getColumnDefinitionsFromEntityAttributes.js";
-import { deployments } from "../routes/ReportPage.js";
 import { deleteCascade } from "../scripts.js";
 import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from "./JsonObjectEditFormDialog.js";
 import { noValue } from "./JzodObjectEditor.js";

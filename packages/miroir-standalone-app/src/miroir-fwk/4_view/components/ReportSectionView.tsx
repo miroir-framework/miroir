@@ -18,10 +18,9 @@ import {
 
 
 
-import { packageName } from '../../../constants.js';
+import { packageName, deployments } from '../../../constants.js';
 import { useMiroirContextService } from '../MiroirContextReactProvider.js';
 import { cleanLevel } from '../constants.js';
-import { deployments } from '../routes/ReportPage.js';
 import { ReportSectionEntityInstance } from './ReportSectionEntityInstance.js';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
 

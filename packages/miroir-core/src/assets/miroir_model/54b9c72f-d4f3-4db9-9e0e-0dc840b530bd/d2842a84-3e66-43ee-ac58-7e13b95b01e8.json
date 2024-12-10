@@ -1,0 +1,55 @@
+{
+  "name": "Test",
+  "uuid": "d2842a84-3e66-43ee-ac58-7e13b95b01e8",
+  "parentName": "EntityDefinition",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "entityUuid": "c37625c7-0b35-4d6a-811d-8181eb978301",
+  "conceptLevel": "Model",
+  "defaultInstanceDetailsReportUuid": "d65d8dc8-2a7f-4111-81b1-0324e816c1a8",
+  "jzodSchema": {
+    "type": "object",
+    "definition": {
+      "uuid": {
+        "type": "string",
+        "validations": [
+          {
+            "type": "uuid"
+          }
+        ],
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Uuid",
+            "editable": false
+          }
+        }
+      },
+      "parentName": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Uuid",
+            "editable": false
+          }
+        }
+      },
+      "parentUuid": {
+        "type": "string",
+        "validations": [
+          {
+            "type": "uuid"
+          }
+        ],
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "parentUuid",
+            "editable": false
+          }
+        }
+      }
+    }
+  }
+}

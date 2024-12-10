@@ -5,7 +5,6 @@ import {
   Select,
   SelectChangeEvent
 } from "@mui/material";
-import Box from '@mui/material/Box';
 import { useEffect, useMemo } from "react";
 import { Params } from "react-router-dom";
 import { v4 as uuidv4 } from 'uuid';
@@ -49,16 +48,16 @@ import { useCurrentModel } from "../ReduxHooks.js";
 
 
 // import entityPublisher from "../../assets/library_model/";
-import { packageName } from "../../../constants.js";
+import {
+  adminConfigurationDeploymentParis,
+  deployments,
+  packageName,
+  ReportUrlParamKeys,
+  selfApplicationParis,
+} from "../../../constants.js";
 import { ReportView } from "../components/ReportView.js";
 import { cleanLevel } from "../constants.js";
-import {
-  ReportUrlParamKeys,
-  adminConfigurationDeploymentParis,
-  adminConfigurationDeploymentTest4,
-  deployments,
-  selfApplicationParis,
-} from "./ReportPage.js";
+
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"HomePage");
 let log:LoggerInterface = console as any as LoggerInterface;
