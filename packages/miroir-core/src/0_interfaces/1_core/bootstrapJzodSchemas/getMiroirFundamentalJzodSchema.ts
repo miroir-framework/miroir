@@ -233,7 +233,14 @@ export function getMiroirFundamentalJzodSchema(
 
   // log.info("domainActionDefinitions", domainActionDefinitions)
   log.info("dynamicTransformersJzodSchema", JSON.stringify(dynamicTransformersJzodSchema, null, 2));
-
+  const localCompositeActionDefinition = domainEndpointVersionV1.definition.actions.find(
+    (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
+  )?.actionParameters.definition;
+  const localRunTestCaseAction = localCompositeActionDefinition.definition.definition.definition.find(
+    (a: any) => a.definition?.compositeActionType?.definition == "runTestCaseCompositeAction"
+  );
+  log.info("localCompositeActionDefinition", JSON.stringify(localCompositeActionDefinition, null, 2));
+  log.info("localRunTestCaseAction", JSON.stringify(localRunTestCaseAction, null, 2));
   const miroirFundamentalJzodSchema: any = {
     // const miroirFundamentalJzodSchema: JzodSchema = {
     uuid: miroirFundamentalJzodSchemaUuid,
@@ -2192,6 +2199,11 @@ export function getMiroirFundamentalJzodSchema(
         // extendedCompositeAction: domainEndpointVersionV1.definition.actions.find(
         //   (a: any) => a.actionParameters?.definition?.actionType?.definition == "extendedCompositeAction"
         // )?.actionParameters,
+        runTestCaseCompositeAction: domainEndpointVersionV1.definition.actions.find(
+          (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
+        )?.actionParameters.definition.definition.definition.definition.find(
+          (a: any) => a.definition?.compositeActionType?.definition == "runTestCaseCompositeAction"
+        ),
         domainAction: {
           type: "union",
           definition: domainEndpointVersionV1.definition.actions.map((e: any) => e.actionParameters),
@@ -2516,10 +2528,10 @@ export function getMiroirFundamentalJzodSchema(
         // domainElementObject: (miroirFundamentalJzodSchema as any).definition.context.domainElementObject,
         // root elements
         testCase: (miroirFundamentalJzodSchema as any).definition.context.testCase,
-        testCompositeAction: (miroirFundamentalJzodSchema as any).definition.context.testCompositeAction,
+        // testCompositeAction: (miroirFundamentalJzodSchema as any).definition.context.testCompositeAction,
         // test: (miroirFundamentalJzodSchema as any).definition.context.test,
         // testActionRunTest: (miroirFundamentalJzodSchema as any).definition.context.testActionRunTest,
-        testAction_runTestCompositeAction: (miroirFundamentalJzodSchema as any).definition.context.testAction_runTestCompositeAction,
+        // testAction_runTestCompositeAction: (miroirFundamentalJzodSchema as any).definition.context.testAction_runTestCompositeAction,
         testAction_runTestCase: (miroirFundamentalJzodSchema as any).definition.context.testAction_runTestCase,
         // testActionRunTest: (miroirFundamentalJzodSchema as any).definition.context.testActionRunTest,
         shippingBox: (miroirFundamentalJzodSchema as any).definition.context.shippingBox,

@@ -317,7 +317,10 @@ export {
   carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction,
   ExtractorOrCombiner,
   extractorOrCombiner,
-
+  TestAction_runTestCompositeAction,
+  testAction_runTestCompositeAction,
+  TestCompositeAction,
+  testCompositeAction
 }
 from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType"
 

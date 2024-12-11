@@ -39,6 +39,8 @@ import {
   RunBoxedExtractorTemplateAction,
   RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+  TestAction_runTestCompositeAction,
+  TestCompositeAction,
   TransactionalInstanceAction,
   TransformerForRuntime,
   UndoRedoAction
@@ -914,6 +916,206 @@ export class DomainController implements DomainControllerInterface {
 
   // ##############################################################################################
   // TODO: not used, not tested!
+  async handleTestAction(
+    // testAction: TestAction_runTestCompositeAction,
+    testAction: TestCompositeAction,
+    actionParamValues: Record<string, any>,
+    currentModel: MetaModel
+  ): Promise<ActionVoidReturnType> {
+    const localActionParams = { ...actionParamValues };
+    let localContext: Record<string, any> = { ...actionParamValues };
+
+    log.info("handleTestAction testAction", testAction, "localActionParams", localActionParams);
+    // const resolved: any = resolveCompositeActionTemplate(compositeAction, localActionParams, currentModel);
+
+    log.info("handleTestAction compositeInstanceAction localActionParams", localActionParams);
+    // log.info(
+    //   "handleCompositeAction compositeInstanceAction resolvedCompositeActionDefinition",
+    //   JSON.stringify(resolved.resolvedCompositeActionDefinition, null, 2)
+    // );
+    // switch (testAction.actionName) {
+    //   case "runTestCompositeAction": {
+    const localCompositeAction: CompositeAction = {
+      ...testAction.compositeAction,
+      definition: [
+        ...testAction.compositeAction.definition,
+        testAction.testCaseAction
+      ],
+    }
+    // const result = await this.handleCompositeAction(testAction.compositeAction, localActionParams, currentModel);
+    const result = await this.handleCompositeAction(localCompositeAction, localActionParams, currentModel);
+    //   }
+    //   default: {
+    //     throw new Error("handleTestAction cannot handle action name for" + testAction.actionName);
+    //   }
+    // }
+    // for (const currentAction of testAction.definition) {
+    //   log.info(
+    //     "handleCompositeAction compositeInstanceAction currentAction",
+    //     // JSON.stringify(currentAction, null, 2),
+    //     currentAction,
+    //     "localContext keys",
+    //     Object.keys(localContext),
+    //     "localContext",
+    //     localContext
+    //   );
+    //   switch (currentAction.compositeActionType) {
+    //     case "compositeAction": {
+    //       log.info(
+    //         "handleCompositeAction compositeAction action to handle",
+    //         JSON.stringify(currentAction, null, 2)
+    //       );
+    //       const actionResult = await this.handleCompositeAction(
+    //         currentAction.compositeActionTemplate,
+    //         actionParamValues,
+    //         currentModel
+    //       );
+    //       break;
+    //     }
+    //     case "domainAction": {
+    //       log.info(
+    //         "handleCompositeAction domainAction action to handle",
+    //         JSON.stringify(currentAction.domainAction, null, 2)
+    //       );
+    //       const actionResult = await this.handleAction(currentAction.domainAction, currentModel);
+    //       if (actionResult?.status != "ok") {
+    //         log.error("Error on action", JSON.stringify(actionResult, null, 2));
+    //       }
+    //       break;
+    //     }
+    //     case "runBoxedQueryTemplateAction": {
+    //       log.info(
+    //         "handleCompositeActionTemplate boxedQueryTemplateAction to handle",
+    //         currentAction,
+    //         "with actionParamValues",
+    //         actionParamValues
+    //       );
+
+    //       const actionResult = await this.handleQueryTemplateActionForServerONLY(
+    //         currentAction.queryTemplate
+    //       );
+    //       if (actionResult?.status != "ok") {
+    //         log.error(
+    //           "Error on runBoxedQueryTemplateAction with nameGivenToResult",
+    //           currentAction.nameGivenToResult,
+    //           "query=",
+    //           JSON.stringify(actionResult, null, 2)
+    //         );
+    //       } else {
+    //         log.info(
+    //           "handleCompositeActionTemplate boxedQueryTemplateAction adding result to context as",
+    //           currentAction.nameGivenToResult,
+    //           "value",
+    //           actionResult
+    //         );
+    //         localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement.elementValue;
+    //       }
+    //       break;
+    //     }
+    //     case "runBoxedExtractorTemplateAction": {
+    //       log.info(
+    //         "handleCompositeAction resolved extractorTemplate action",
+    //         currentAction,
+    //         "with actionParamValues",
+    //         actionParamValues
+    //       );
+
+    //       const actionResult = await this.handleBoxedExtractorTemplateActionForServerONLY(
+    //         currentAction.queryTemplate
+    //       );
+    //       if (actionResult?.status != "ok") {
+    //         log.error(
+    //           "Error on runBoxedQueryTemplateAction with nameGivenToResult",
+    //           currentAction.nameGivenToResult,
+    //           "query=",
+    //           JSON.stringify(actionResult, null, 2)
+    //         );
+    //       } else {
+    //         log.info(
+    //           "handleCompositeActionTemplate extractorTemplate adding result to context as",
+    //           currentAction.nameGivenToResult,
+    //           "value",
+    //           actionResult
+    //         );
+    //         localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement.elementValue;
+    //       }
+    //       break;
+    //     }
+    //     case "runBoxedExtractorOrQueryAction": {
+    //       // throw new Error(
+    //       //   "handleCompositeAction can not handle query actions: " + JSON.stringify(currentAction)
+    //       // );
+
+    //       log.info(
+    //         "handleCompositeActionTemplate runBoxedExtractorOrQueryAction to handle",
+    //         currentAction,
+    //         "with actionParamValues",
+    //         actionParamValues
+    //       );
+
+    //       const actionResult = await this.handleQueryActionOrBoxedExtractorActionForServerONLY(
+    //         currentAction.query
+    //       );
+    //       if (actionResult?.status != "ok") {
+    //         log.error(
+    //           "Error on runBoxedExtractorOrQueryAction with nameGivenToResult",
+    //           currentAction.nameGivenToResult,
+    //           "query=",
+    //           JSON.stringify(actionResult, null, 2)
+    //         );
+    //       } else {
+    //         log.info(
+    //           "handleCompositeActionTemplate runBoxedExtractorOrQueryAction adding result to context as",
+    //           currentAction.nameGivenToResult,
+    //           "value",
+    //           JSON.stringify(actionResult, null, 2)
+    //         );
+    //         localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement.elementValue;
+    //       }
+    //       break;
+    //     }
+    //     case 'runBoxedQueryTemplateOrBoxedExtractorTemplateAction': {
+    //       throw new Error("handleCompositeAction can not handle query actions: " + JSON.stringify(currentAction));
+    //     }
+    //     case 'runTestCaseCompositeAction': {
+    //       if (!ConfigurationService.testImplementation) {
+    //         throw new Error(
+    //           "ConfigurationService.testImplementation is not set, please inject a test implementation using ConfigurationService.registerTestImplementation on startup if you want to run tests at runtime."
+    //         );
+    //       }
+    //       const preValueToTest = resolvePathOnObject(
+    //         localContext,
+    //         currentAction.testCase.definition.resultAccessPath ?? []
+    //       );
+    //       const valueToTest = Array.isArray(preValueToTest)
+    //           ? ignorePostgresExtraAttributesOnList(preValueToTest, currentAction.testCase.definition.ignoreAttributes??[])
+    //           : ignorePostgresExtraAttributesOnObject(preValueToTest, currentAction.testCase.definition.ignoreAttributes??[])
+    //       ;
+    //       log.info(
+    //         "handleCompositeAction runTestCaseCompositeAction to handle",
+    //         JSON.stringify(currentAction.testCase, null, 2),
+    //         "preValueToTest",
+    //         JSON.stringify(preValueToTest, null, 2),
+    //         "valueToTest",
+    //         JSON.stringify(valueToTest, null, 2)
+    //       );
+    //       ConfigurationService.testImplementation
+    //         .expect(valueToTest)
+    //         .toEqual(currentAction.testCase.definition.expectedValue);
+    //       log.info("handleCompositeAction runTestCaseCompositeAction test passed", currentAction.testCase);
+    //       break;
+    //     }
+    //     default: {
+    //       log.error("handleCompositeAction unknown compositeActionType", currentAction);
+    //       break;
+    //     }
+    //   }
+    // }
+    return Promise.resolve(ACTION_OK);
+  }
+  
+  // ##############################################################################################
+  // TODO: not used, not tested!
   async handleCompositeAction(
     compositeAction: CompositeAction,
     actionParamValues: Record<string, any>,
@@ -1059,7 +1261,7 @@ export class DomainController implements DomainControllerInterface {
         case 'runBoxedQueryTemplateOrBoxedExtractorTemplateAction': {
           throw new Error("handleCompositeAction can not handle query actions: " + JSON.stringify(currentAction));
         }
-        case 'runTestCaseAction': {
+        case 'runTestCaseCompositeAction': {
           if (!ConfigurationService.testImplementation) {
             throw new Error(
               "ConfigurationService.testImplementation is not set, please inject a test implementation using ConfigurationService.registerTestImplementation on startup if you want to run tests at runtime."
@@ -1074,7 +1276,7 @@ export class DomainController implements DomainControllerInterface {
               : ignorePostgresExtraAttributesOnObject(preValueToTest, currentAction.testCase.definition.ignoreAttributes??[])
           ;
           log.info(
-            "handleCompositeAction runTestCaseAction to handle",
+            "handleCompositeAction runTestCaseCompositeAction to handle",
             JSON.stringify(currentAction.testCase, null, 2),
             "preValueToTest",
             JSON.stringify(preValueToTest, null, 2),
@@ -1084,7 +1286,7 @@ export class DomainController implements DomainControllerInterface {
           ConfigurationService.testImplementation
             .expect(valueToTest)
             .toEqual(currentAction.testCase.definition.expectedValue);
-          log.info("handleCompositeAction runTestCaseAction test passed", currentAction.testCase);
+          log.info("handleCompositeAction runTestCaseCompositeAction test passed", currentAction.testCase);
           break;
         }
         default: {
@@ -1095,6 +1297,7 @@ export class DomainController implements DomainControllerInterface {
     }
     return Promise.resolve(ACTION_OK);
   }
+
   // ##############################################################################################
   async handleCompositeActionTemplate(
     compositeAction: CompositeActionTemplate,
@@ -1256,6 +1459,7 @@ export class DomainController implements DomainControllerInterface {
     }
     return Promise.resolve(ACTION_OK);
   }
+
   // ##############################################################################################
   async handleAction(domainAction: DomainAction, currentModel: MetaModel): Promise<ActionVoidReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;

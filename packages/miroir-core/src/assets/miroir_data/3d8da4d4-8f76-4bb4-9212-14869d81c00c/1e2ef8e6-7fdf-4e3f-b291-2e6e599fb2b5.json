@@ -200,7 +200,7 @@
                   {
                     "type": "object",
                     "definition": {
-                      "compositeActionType": { "type": "literal", "definition": "runTestCaseAction" },
+                      "compositeActionType": { "type": "literal", "definition": "runTestCaseCompositeAction" },
                       "compositeActionStepLabel": { "type": "string", "optional": true },
                       "nameGivenToResult": { "type": "string" },
                       "testCase": {

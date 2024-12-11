@@ -3682,11 +3682,11 @@ export const miroirFundamentalJzodSchema = {
               "relativePath": "compositeAction"
             }
           },
-          "test": {
+          "testCaseAction": {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "testCase"
+              "relativePath": "runTestCaseCompositeAction"
             }
           }
         }
@@ -3784,11 +3784,11 @@ export const miroirFundamentalJzodSchema = {
                       "relativePath": "compositeAction"
                     }
                   },
-                  "test": {
+                  "testCaseAction": {
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "testCase"
+                      "relativePath": "runTestCaseCompositeAction"
                     }
                   }
                 }
@@ -4522,14 +4522,11 @@ export const miroirFundamentalJzodSchema = {
             }
           },
           "extractors": {
-            "type": "record",
+            "type": "schemaReference",
             "optional": true,
             "definition": {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "extractorWrapper"
-              }
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "extractorOrCombinerRecord"
             }
           },
           "combiners": {
@@ -5146,14 +5143,11 @@ export const miroirFundamentalJzodSchema = {
                     }
                   },
                   "extractors": {
-                    "type": "record",
+                    "type": "schemaReference",
                     "optional": true,
                     "definition": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "extractorWrapper"
-                      }
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "extractorOrCombinerRecord"
                     }
                   },
                   "combiners": {
@@ -10716,7 +10710,7 @@ export const miroirFundamentalJzodSchema = {
               "definition": {
                 "compositeActionType": {
                   "type": "literal",
-                  "definition": "runTestCaseAction"
+                  "definition": "runTestCaseCompositeAction"
                 },
                 "compositeActionStepLabel": {
                   "type": "string",
@@ -10912,7 +10906,7 @@ export const miroirFundamentalJzodSchema = {
                   "definition": {
                     "compositeActionType": {
                       "type": "literal",
-                      "definition": "runTestCaseAction"
+                      "definition": "runTestCaseCompositeAction"
                     },
                     "compositeActionStepLabel": {
                       "type": "string",
@@ -10931,6 +10925,29 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               ]
+            }
+          }
+        }
+      },
+      "runTestCaseCompositeAction": {
+        "type": "object",
+        "definition": {
+          "compositeActionType": {
+            "type": "literal",
+            "definition": "runTestCaseCompositeAction"
+          },
+          "compositeActionStepLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "nameGivenToResult": {
+            "type": "string"
+          },
+          "testCase": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "testCase"
             }
           }
         }
@@ -11172,7 +11189,7 @@ export const miroirFundamentalJzodSchema = {
                       "definition": {
                         "compositeActionType": {
                           "type": "literal",
-                          "definition": "runTestCaseAction"
+                          "definition": "runTestCaseCompositeAction"
                         },
                         "compositeActionStepLabel": {
                           "type": "string",
@@ -18723,27 +18740,12 @@ export const miroirFundamentalJzodSchema = {
                 "context": {}
               },
               "extractors": {
-                "type": "union",
+                "type": "schemaReference",
                 "optional": true,
-                "definition": [
-                  {
-                    "type": "record",
-                    "optional": true,
-                    "definition": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorWrapper"
-                      },
-                      "context": {}
-                    }
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "carryOnObject"
-                    }
-                  }
-                ]
+                "definition": {
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerRecord"
+                },
+                "context": {}
               },
               "combiners": {
                 "type": "schemaReference",
@@ -19808,27 +19810,12 @@ export const miroirFundamentalJzodSchema = {
                             "context": {}
                           },
                           "extractors": {
-                            "type": "union",
+                            "type": "schemaReference",
                             "optional": true,
-                            "definition": [
-                              {
-                                "type": "record",
-                                "optional": true,
-                                "definition": {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorWrapper"
-                                  },
-                                  "context": {}
-                                }
-                              },
-                              {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "relativePath": "carryOnObject"
-                                }
-                              }
-                            ]
+                            "definition": {
+                              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerRecord"
+                            },
+                            "context": {}
                           },
                           "combiners": {
                             "type": "schemaReference",
@@ -24711,7 +24698,7 @@ export const miroirFundamentalJzodSchema = {
                               "definition": [
                                 {
                                   "type": "literal",
-                                  "definition": "runTestCaseAction"
+                                  "definition": "runTestCaseCompositeAction"
                                 },
                                 {
                                   "type": "schemaReference",
@@ -25118,7 +25105,7 @@ export const miroirFundamentalJzodSchema = {
                       "definition": [
                         {
                           "type": "literal",
-                          "definition": "runTestCaseAction"
+                          "definition": "runTestCaseCompositeAction"
                         },
                         {
                           "type": "schemaReference",
@@ -25631,7 +25618,7 @@ export const miroirFundamentalJzodSchema = {
                               "definition": [
                                 {
                                   "type": "literal",
-                                  "definition": "runTestCaseAction"
+                                  "definition": "runTestCaseCompositeAction"
                                 },
                                 {
                                   "type": "schemaReference",
@@ -25817,154 +25804,6 @@ export const miroirFundamentalJzodSchema = {
                     }
                   }
                 ]
-              }
-            }
-          }
-        ]
-      },
-      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testCompositeAction": {
-        "type": "union",
-        "definition": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "carryOnObject"
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "testType": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "literal",
-                    "definition": "testCompositeAction"
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "carryOnObject"
-                    }
-                  }
-                ]
-              },
-              "compositeAction": {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
-                },
-                "context": {}
-              },
-              "test": {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testCase"
-                },
-                "context": {}
-              }
-            }
-          }
-        ]
-      },
-      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAction_runTestCompositeAction": {
-        "type": "union",
-        "definition": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "carryOnObject"
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "actionType": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "literal",
-                    "definition": "testAction"
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "carryOnObject"
-                    }
-                  }
-                ]
-              },
-              "actionName": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "literal",
-                    "definition": "runTestCompositeAction"
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "carryOnObject"
-                    }
-                  }
-                ]
-              },
-              "endpoint": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "literal",
-                    "definition": "a9139e2d-a714-4c9c-bdee-c104488e2eaa"
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "carryOnObject"
-                    }
-                  }
-                ]
-              },
-              "deploymentUuid": {
-                "type": "union",
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false
-                  }
-                },
-                "definition": [
-                  {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "id": 1,
-                        "defaultLabel": "Uuid",
-                        "editable": false
-                      }
-                    }
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "carryOnObject"
-                    }
-                  }
-                ]
-              },
-              "applicationSection": {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                },
-                "context": {}
-              },
-              "testToRun": {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testCompositeAction"
-                },
-                "context": {}
               }
             }
           }

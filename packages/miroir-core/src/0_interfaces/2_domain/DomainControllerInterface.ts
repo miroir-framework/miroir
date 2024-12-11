@@ -14,6 +14,8 @@ import {
   RunBoxedExtractorTemplateAction,
   RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+  TestAction_runTestCompositeAction,
+  TestCompositeAction,
   TransactionalInstanceAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 import { PersistenceStoreLocalOrRemoteInterface } from "../4-services/PersistenceInterface";
@@ -106,6 +108,13 @@ export interface DomainControllerInterface {
     actionParamValues: Record<string, any>,
     currentModel?: MetaModel
   ): Promise<ActionVoidReturnType>;
+  handleTestAction(
+    // testAction: TestAction_runTestCompositeAction,
+    testAction: TestCompositeAction,
+    actionParamValues: Record<string, any>,
+    currentModel: MetaModel
+  ): Promise<ActionVoidReturnType>;
+
   handleAction(action: DomainAction, currentModel?: MetaModel): Promise<ActionVoidReturnType>;
   /**
    * data access must accomodate different styles of access
