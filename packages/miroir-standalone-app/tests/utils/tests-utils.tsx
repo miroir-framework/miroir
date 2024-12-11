@@ -1,5 +1,7 @@
 import type { RenderOptions } from '@testing-library/react';
 import { render } from '@testing-library/react';
+import { expect } from 'vitest';
+
 import { RequestHandler } from 'msw';
 import { SetupWorkerApi } from 'msw/browser';
 import { SetupServerApi, setupServer } from 'msw/node';
@@ -59,7 +61,6 @@ import path from 'path';
 import { packageName } from '../../src/constants';
 import { MiroirContextReactProvider } from '../../src/miroir-fwk/4_view/MiroirContextReactProvider';
 import { cleanLevel } from '../../src/miroir-fwk/4_view/constants';
-import { expect } from 'vitest';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"tests-utils");
 let log:LoggerInterface = console as any as LoggerInterface;

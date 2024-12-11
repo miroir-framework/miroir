@@ -252,6 +252,8 @@ export {
   report,
   ReportSection,
   reportSection,
+  Test,
+  test,
   DomainElementObject,
   domainElementObject,
   DomainElementObjectOrFailed,
@@ -366,6 +368,10 @@ export {
   StorageTypeSchema,
   ClientServerDistributionModeSchema,
 } from './0_interfaces/1_core/StorageConfiguration';
+export {
+  TestImplementationExpect,
+  TestImplementation,
+} from './0_interfaces/1_core/TestImplementation';
 export {
   EntityDefinitionEntityDefinition,
   EntityDefinitionEntityDefinitionAttribute,
@@ -707,7 +713,7 @@ export {
 export { miroirCoreStartup } from './startup';
 export { stringTuple, circularReplacer, getLoggerName, resolvePathOnObject } from './tools';
 
-import entityEndpointVersion from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e4320b9e-ab45-4abe-85d8-359604b3c62f.json';
+import entityEndpointVersion from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3d8da4d4-8f76-4bb4-9212-14869d81c00c.json';
 import entityEntity from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
 import entityEntityDefinition from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
 import entityJzodSchema from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/5e81e1b9-38be-487c-b3e5-53796c57fccf.json';
@@ -719,6 +725,7 @@ import entitySelfApplicationVersion from './assets/miroir_model/16dbfe28-e1d7-4f
 import entitySelfApplicationModelBranch from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/cdb0aec6-b848-43ac-a058-fe2dbe5811f1.json';
 import entityStoreBasedConfiguration from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7990c0c9-86c3-40a1-a121-036c91b55ed7.json';
 import entityQueryVersion from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e4320b9e-ab45-4abe-85d8-359604b3c62f.json';
+import entityTest from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c37625c7-0b35-4d6a-811d-8181eb978301.json';
 
 import entityDefinitionEndpoint from './assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/e3c1cc69-066d-4f52-beeb-b659dc7a88b9.json';
 import entityDefinitionEntity from './assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/381ab1be-337f-4198-b1d3-f686867fc1dd.json';
@@ -731,6 +738,7 @@ import entityDefinitionSelfApplication from './assets/miroir_model/54b9c72f-d4f3
 import entityDefinitionSelfApplicationDeploymentConfiguration from './assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bd303ae8-6bce-4b44-a63c-815b9ebf728b.json';
 import entityDefinitionSelfApplicationVersion from './assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json';
 import entityDefinitionSelfApplicationModelBranch from './assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/69bf7c03-a1df-4d1c-88c1-44363feeea87.json';
+import entityDefinitionTest from './assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/d2842a84-3e66-43ee-ac58-7e13b95b01e8.json';
 
 import selfApplicationMiroir from './assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/21840247-b5b1-4344-baec-f818f4797d92.json';
 import selfApplicationDeploymentMiroir from './assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json';
@@ -751,6 +759,8 @@ import reportMenuList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a
 import reportJzodSchemaList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/8b22e84e-9374-4121-b2a7-d13d947a0ba2.json';
 import reportQueryVersionList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/7aed09a9-8a2d-4437-95ab-62966e38352c.json';
 import reportReportList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855.json';
+import reportTestList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/683ba925-835e-4f9d-845b-7fae500316ad.json';
+import reportTestDetails from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/d65d8dc8-2a7f-4111-81b1-0324e816c1a8.json';
 
 import queryVersionBundleProducerV1 from './assets/miroir_data/e4320b9e-ab45-4abe-85d8-359604b3c62f/e8c15587-af5d-4c08-b5b7-22f959447690.json';
 
@@ -777,7 +787,7 @@ import entityDefinitionCommit from "../src/assets/miroir_model/54b9c72f-d4f3-4db
 import entityDefinitionQueryVersionV1 from "../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/359f1f9b-7260-4d76-a864-72c839b9711b.json";
 // import entityDefinitionReportV1 from "../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json" assert { type: "json" };
 import domainEndpointVersionV1 from "../src/assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5.json";
-// import modelEndpointVersionV1 from "../src/assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/7947ae40-eb34-4149-887b-15a9021e714e.json" assert { type: "json" };
+import testEndpointVersionV1 from "../src/assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/a9139e2d-a714-4c9c-bdee-c104488e2eaa.json" assert { type: "json" };
 import storeManagementEndpoint from "../src/assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/bbd08cbb-79ff-4539-b91f-7a14f15ac55f.json";
 import instanceEndpointVersionV1 from "../src/assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ed520de4-55a9-4550-ac50-b1b713b72a89.json";
 import undoRedoEndpointVersionV1 from "../src/assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/71c04f8e-c687-4ea7-9a19-bc98d796c389.json";
@@ -812,6 +822,7 @@ export {
   entityQueryVersion,
   entityReport,
   entityStoreBasedConfiguration,
+  entityTest,
   
   // entityDefinitionApplicationV1,
   domainEndpointVersionV1,
@@ -835,6 +846,7 @@ export {
   // entityDefinitionQuery,
   entityDefinitionQuery,
   entityDefinitionReport,
+  entityDefinitionTest,
   
   miroirJzodSchemaBootstrap,
   
@@ -849,6 +861,7 @@ export {
   deploymentEndpointV1,
   instanceEndpointV1,
   modelEndpointV1,
+  testEndpointVersionV1,
   menuDefaultMiroir,
 
   storeManagementEndpoint,
@@ -874,6 +887,8 @@ export {
   reportReportList,
   // reportQueryList,
   reportQueryVersionList,
+  reportTestList,
+  reportTestDetails,
   // 
   transformerJzodSchema,
   transformerMenuV1,

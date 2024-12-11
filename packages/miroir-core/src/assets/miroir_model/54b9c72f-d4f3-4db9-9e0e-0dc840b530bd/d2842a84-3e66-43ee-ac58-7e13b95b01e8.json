@@ -49,6 +49,66 @@
             "editable": false
           }
         }
+      },
+      "definition": {
+        "type": "union",
+        "discriminator": "testType",
+        "definition": [
+          {
+            "type": "object",
+            "definition": {
+              "testType": {
+                "type": "literal",
+                "definition": "testCompositeAction"
+              },
+              "compositeAction": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeAction"
+                }
+              },
+              "test": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "testCase"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "testType": {
+                "type": "literal",
+                "definition": "testCase"
+              },
+              "definition": {
+                "type": "object",
+                "definition": {
+                  "resultAccessPath": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "string"
+                    }
+                  },
+                  "ignoreAttributes": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "string"
+                    }
+                  },
+                  "expectedValue": {
+                    "type": "any"
+                  }
+                }
+              }
+            }
+          }
+        ]
       }
     }
   }

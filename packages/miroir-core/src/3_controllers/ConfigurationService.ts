@@ -2,6 +2,7 @@
 // TODO: put in ConfigurationServiceInterface
 
 import { StorageType } from "../0_interfaces/1_core/StorageConfiguration";
+import { TestImplementation } from "../0_interfaces/1_core/TestImplementation";
 import { ApplicationSection, StoreSectionConfiguration } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { PersistenceStoreAdminSectionFactory, AdminStoreFactoryRegister, PersistenceStoreAdminSectionInterface, PersistenceStoreDataOrModelSectionInterface, PersistenceStoreSectionFactory, StoreSectionFactoryRegister } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
@@ -39,6 +40,7 @@ export class ConfigurationService {
   static packages:PackageConfiguration[] = [];
   static StoreSectionFactoryRegister:StoreSectionFactoryRegister = new Map();
   static adminStoreFactoryRegister:AdminStoreFactoryRegister = new Map();
+  static testImplementation:TestImplementation | undefined = undefined;
 
   constructor() {
     
@@ -65,6 +67,12 @@ export class ConfigurationService {
       JSON.stringify({storageType}), adminStoreFactory
       );
     log.info("ConfigurationService registered in registerAdminStoreFactory",this.adminStoreFactoryRegister);
+  }
+
+  public static registerTestImplementation(implement:TestImplementation) {
+    log.info("ConfigurationService registerTestImplementation in",implement);
+    this.testImplementation = implement;
+    log.info("ConfigurationService registered in registerTestImplementation",this.testImplementation);
   }
 
 }

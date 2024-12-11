@@ -38,6 +38,7 @@ import {
   entityDefinitionReport,
   entityDefinitionSelfApplication,
   entityDefinitionSelfApplicationVersion,
+  entityDefinitionTest,
   entityDeployment,
   getLoggerName,
   getMiroirFundamentalJzodSchema,
@@ -55,7 +56,8 @@ import {
   StoreUnitConfiguration,
   transformerJzodSchema,
   transformerMenuV1,
-  undoRedoEndpointVersionV1
+  undoRedoEndpointVersionV1,
+  testEndpointVersionV1,
 } from "miroir-core";
 import { ReduxStateChanges } from "miroir-localcache-redux";
 
@@ -186,6 +188,7 @@ export const RootComponent = (props: RootComponentProps) => {
     domainEndpointVersionV1,
     queryEndpointVersionV1,
     persistenceEndpointVersionV1,
+    testEndpointVersionV1,
     jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
     transformerJzodSchema as JzodSchema,
     [transformerMenuV1],
@@ -198,6 +201,7 @@ export const RootComponent = (props: RootComponentProps) => {
     entityDefinitionMenu  as EntityDefinition,
     entityDefinitionQueryVersionV1 as EntityDefinition,
     entityDefinitionReport as EntityDefinition,
+    entityDefinitionTest as EntityDefinition,
     // jzodSchemajzodMiroirBootstrapSchema as any,
   ),[]);
 

@@ -44,7 +44,9 @@ import {
   undoRedoEndpointVersionV1,
   transformerMenuV1,
   miroirFundamentalJzodSchemaUuid,
-  transformerJzodSchema
+  transformerJzodSchema,
+  entityDefinitionTest,
+  testEndpointVersionV1
 } from "miroir-core";
 
 import {
@@ -94,6 +96,7 @@ const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
   domainEndpointVersionV1,
   queryEndpointVersionV1,
   persistenceEndpointVersionV1,
+  testEndpointVersionV1,
   jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
   transformerJzodSchema as JzodSchema,
   [transformerMenuV1],
@@ -106,6 +109,7 @@ const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
   entityDefinitionMenu  as EntityDefinition,
   entityDefinitionQueryVersionV1 as EntityDefinition,
   entityDefinitionReport as EntityDefinition,
+  entityDefinitionTest as EntityDefinition,
   // jzodSchemajzodMiroirBootstrapSchema as any,
 );
 

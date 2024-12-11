@@ -63,6 +63,7 @@ import applicationEndpointV1 from "../../assets/miroir_data/3d8da4d4-8f76-4bb4-9
 import deploymentEndpointV1 from "../../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/bbd08cbb-79ff-4539-b91f-7a14f15ac55f.json";
 import instanceEndpointV1 from "../../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ed520de4-55a9-4550-ac50-b1b713b72a89.json";
 import modelEndpointV1 from "../../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/7947ae40-eb34-4149-887b-15a9021e714e.json";
+import testEndpointVersionV1 from "../../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/a9139e2d-a714-4c9c-bdee-c104488e2eaa.json" assert { type: "json" };
 
 import applicationVersionInitialMiroirVersionCrossEntityDefinitionEntity from "../../assets/miroir_data/8bec933d-6287-4de7-8a88-5c24216de9f4/17adb534-1dcb-4874-a4ef-6c1e03b31c4e.json";
 import applicationVersionInitialMiroirVersionCrossEntityDefinitionEntityDefinition from "../../assets/miroir_data/8bec933d-6287-4de7-8a88-5c24216de9f4/48644159-66d4-426d-b38d-d083fd455e7b.json";
@@ -101,7 +102,7 @@ import entityDefinitionReportV1 from "../../assets/miroir_model/54b9c72f-d4f3-4d
 
 // import entityDefinitionDeployment from "../../src/assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c50240e7-c451-46c2-b60a-07b3172a5ef9.json" assert { type: "json" };
 import entityDefinitionDeployment from "../../assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c50240e7-c451-46c2-b60a-07b3172a5ef9.json";
-import { transformerMenuV1 } from "../../index";
+import { entityDefinitionTest, transformerMenuV1 } from "../../index";
 
 export const defaultMiroirMetaModel: MetaModel = {
   configuration: [instanceConfigurationReference],
@@ -216,6 +217,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       domainEndpointVersionV1,
       queryEndpointVersionV1,
       persistenceEndpointVersionV1,
+      testEndpointVersionV1,
       jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
       transformerJzodSchema as JzodSchema,
       [transformerMenuV1],
@@ -227,7 +229,8 @@ describe("jzod.unfoldSchemaForValue", () => {
       entityDefinitionJzodSchema as EntityDefinition,
       entityDefinitionMenu as EntityDefinition,
       entityDefinitionQueryVersionV1 as EntityDefinition,
-      entityDefinitionReport as EntityDefinition
+      entityDefinitionReport as EntityDefinition,
+      entityDefinitionTest as EntityDefinition,
       // jzodSchemajzodMiroirBootstrapSchema as any,
     );
     console.log(expect.getState().currentTestName, "called getMiroirFundamentalJzodSchema");

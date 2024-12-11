@@ -21,14 +21,16 @@ import { MiroirLoggerFactory } from "../../../4_services/Logger";
 import { packageName } from "../../../constants";
 import { getLoggerName } from "../../../tools";
 import { LoggerInterface } from "../../4-services/LoggerInterface";
-import {
-  extractorOrCombinerReturningObject,
-  boxedQueryWithExtractorCombinerTransformer,
-  JzodElement,
-  transformerForBuild_list_pickElement,
-  transformerForRuntime_list_pickElement,
-} from "../preprocessor-generated/miroirFundamentalType";
+// import {
+//   extractorOrCombinerReturningObject,
+//   boxedQueryWithExtractorCombinerTransformer,
+//   JzodElement,
+//   transformerForBuild_list_pickElement,
+//   transformerForRuntime_list_pickElement,
+//   testActionRunTest,
+// } from "../preprocessor-generated/miroirFundamentalType";
 import { optional } from "zod";
+// import { entityDefinitionTest } from "../../..";
 // import { Endpoint } from "../../../3_controllers/Endpoint";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "getMiroirFundamentalJzodSchema");
@@ -196,6 +198,7 @@ export function getMiroirFundamentalJzodSchema(
   domainEndpointVersionV1: any,
   queryEndpointVersionV1: any,
   persistenceEndpointVersionV1: any,
+  testEndpointVersionV1: any,
   jzodSchemajzodMiroirBootstrapSchema: any,
   transformerJzodSchema: any,
   dynamicTransformersJzodSchema: any[], // TransformerDefinition[]
@@ -207,7 +210,8 @@ export function getMiroirFundamentalJzodSchema(
   entityDefinitionJzodSchemaV1: any,
   entityDefinitionMenu: any,
   entityDefinitionQueryVersionV1: any,
-  entityDefinitionReportV1: any
+  entityDefinitionReportV1: any,
+  entityDefinitionTest: any
 ): any {
   // ): JzodSchema {
   const entityDefinitionQueryVersionV1WithAbsoluteReferences = makeReferencesAbsolute(
@@ -255,11 +259,8 @@ export function getMiroirFundamentalJzodSchema(
           type: "never",
         },
         // ...(transformerJzodSchema as any).definition.context, // gives "transformer_InnerReference", "transformerForBuild", "actionHandler"
-        ...makeReferencesAbsolute(
-          (transformerJzodSchema as any).definition,
-          miroirFundamentalJzodSchemaUuid,
-          true
-        ).context, // gives "transformer_InnerReference", "transformerForBuild", "actionHandler"
+        ...makeReferencesAbsolute((transformerJzodSchema as any).definition, miroirFundamentalJzodSchemaUuid, true)
+          .context, // gives "transformer_InnerReference", "transformerForBuild", "actionHandler"
         ...Object.fromEntries(
           dynamicTransformersJzodSchema.map((e: any) => [
             e.name,
@@ -267,23 +268,23 @@ export function getMiroirFundamentalJzodSchema(
           ])
         ),
         extendedTransformerForRuntime: {
-          "type": "union",
+          type: "union",
           definition: [
             {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": miroirFundamentalJzodSchemaUuid,
-                "relativePath": "transformerForRuntime"
-              }
+              type: "schemaReference",
+              definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: "transformerForRuntime",
+              },
             },
             {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": miroirFundamentalJzodSchemaUuid,
-                "relativePath": "transformer_menu_addItem"
-              }
-            }
-          ]
+              type: "schemaReference",
+              definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: "transformer_menu_addItem",
+              },
+            },
+          ],
         },
         ______________________________________________miroirMetaModel_____________________________________________: {
           type: "never",
@@ -581,6 +582,13 @@ export function getMiroirFundamentalJzodSchema(
         deployment: entityDefinitionDeployment.jzodSchema as any,
         entity: entityDefinitionEntity.jzodSchema as any,
         entityDefinition: entityDefinitionEntityDefinitionV1.jzodSchema as any,
+        testCompositeAction: (entityDefinitionTest.jzodSchema as any).definition.definition.definition.find(
+          (e: any) => e.definition.testType.definition == "testCompositeAction"
+        ),
+        testCase: (entityDefinitionTest.jzodSchema as any).definition.definition.definition.find(
+          (e: any) => e.definition.testType.definition == "testCase"
+        ),
+        test: entityDefinitionTest.jzodSchema as any,
         // application: entityDefinitionApplicationV1.jzodSchema as JzodObject,
         // applicationVersion: entityDefinitionApplicationVersionV1.jzodSchema as JzodObject,
         // bundle: entityDefinitionBundleV1.jzodSchema as JzodObject,
@@ -1211,6 +1219,7 @@ export function getMiroirFundamentalJzodSchema(
             "instance",
             "instanceUuid",
             "instanceUuidIndexUuidIndex",
+            "void"
           ],
         },
         domainElement: {
@@ -1391,7 +1400,8 @@ export function getMiroirFundamentalJzodSchema(
         shippingBox: {
           type: "object",
           definition: {
-            deploymentUuid: { // TODO: REPLACE WITH APPLICATION UUID OR LEAVE IT OPTIONAL
+            deploymentUuid: {
+              // TODO: REPLACE WITH APPLICATION UUID OR LEAVE IT OPTIONAL
               type: "uuid",
               tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
             },
@@ -1415,7 +1425,7 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        boxedExtractorOrCombinerReturningObject: { 
+        boxedExtractorOrCombinerReturningObject: {
           type: "object",
           extend: {
             type: "schemaReference",
@@ -2123,6 +2133,12 @@ export function getMiroirFundamentalJzodSchema(
           type: "union",
           definition: modelEndpointVersionV1.definition.actions.map((e: any) => e.actionParameters),
         },
+        testAction_runTestCompositeAction: testEndpointVersionV1.definition.actions.find(
+          (a: any) => a.actionParameters.definition.actionName.definition == "runTestCompositeAction"
+        )?.actionParameters,
+        testAction_runTestCase: testEndpointVersionV1.definition.actions.find(
+          (a: any) => a.actionParameters.definition.actionName.definition == "runTestCase"
+        )?.actionParameters,
         instanceCUDAction: {
           type: "union",
           definition: instanceEndpointVersionV1.definition.actions
@@ -2160,7 +2176,8 @@ export function getMiroirFundamentalJzodSchema(
         },
         localPersistenceAction: persistenceEndpointVersionV1.definition.actions[0].actionParameters,
         restPersistenceAction: persistenceEndpointVersionV1.definition.actions[1].actionParameters,
-        runBoxedQueryTemplateOrBoxedExtractorTemplateAction: queryEndpointVersionV1.definition.actions[0].actionParameters,
+        runBoxedQueryTemplateOrBoxedExtractorTemplateAction:
+          queryEndpointVersionV1.definition.actions[0].actionParameters,
         runBoxedExtractorOrQueryAction: queryEndpointVersionV1.definition.actions[1].actionParameters,
         runBoxedQueryTemplateAction: queryEndpointVersionV1.definition.actions[2].actionParameters,
         runBoxedExtractorTemplateAction: queryEndpointVersionV1.definition.actions[3].actionParameters,
@@ -2334,6 +2351,8 @@ export function getMiroirFundamentalJzodSchema(
 
   // console.log("################## domainActionDefinitions", JSON.stringify(domainActionDefinitions, null, 2))
   console.log("################## miroirFundamentalJzodSchema", JSON.stringify(Object.keys(miroirFundamentalJzodSchema.definition.context), null, 2))
+  console.log("################## testCase", JSON.stringify((miroirFundamentalJzodSchema as any).definition.context.testCase, null, 2))
+  console.log("################## testAction_runTestCase", JSON.stringify((miroirFundamentalJzodSchema as any).definition.context.testAction_runTestCase, null, 2))
 
   // const innerResolutionStore: Record<string, JzodReference> = {
   const innerResolutionStore: Record<string, any> = {
@@ -2496,6 +2515,13 @@ export function getMiroirFundamentalJzodSchema(
         // domain elements
         // domainElementObject: (miroirFundamentalJzodSchema as any).definition.context.domainElementObject,
         // root elements
+        testCase: (miroirFundamentalJzodSchema as any).definition.context.testCase,
+        testCompositeAction: (miroirFundamentalJzodSchema as any).definition.context.testCompositeAction,
+        // test: (miroirFundamentalJzodSchema as any).definition.context.test,
+        // testActionRunTest: (miroirFundamentalJzodSchema as any).definition.context.testActionRunTest,
+        testAction_runTestCompositeAction: (miroirFundamentalJzodSchema as any).definition.context.testAction_runTestCompositeAction,
+        testAction_runTestCase: (miroirFundamentalJzodSchema as any).definition.context.testAction_runTestCase,
+        // testActionRunTest: (miroirFundamentalJzodSchema as any).definition.context.testActionRunTest,
         shippingBox: (miroirFundamentalJzodSchema as any).definition.context.shippingBox,
         boxedExtractorOrCombinerReturningObject: (miroirFundamentalJzodSchema as any).definition.context.boxedExtractorOrCombinerReturningObject,
         boxedExtractorOrCombinerReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.boxedExtractorOrCombinerReturningObjectList,

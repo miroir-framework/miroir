@@ -34,14 +34,14 @@ import {
   InstanceAction,
   MetaModel,
   ModelAction,
-  RunBoxedExtractorOrQueryAction,
-  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   RestPersistenceAction,
+  RunBoxedExtractorOrQueryAction,
+  RunBoxedExtractorTemplateAction,
+  RunBoxedQueryTemplateAction,
+  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   TransactionalInstanceAction,
   TransformerForRuntime,
-  UndoRedoAction,
-  RunBoxedQueryTemplateAction,
-  RunBoxedExtractorTemplateAction
+  UndoRedoAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface';
 import { ACTION_OK } from '../1_core/constants';
@@ -51,12 +51,16 @@ import { transformer_extended_apply } from '../2_domain/Transformers';
 import { MiroirLoggerFactory } from '../4_services/Logger';
 import { packageName } from '../constants';
 import {
+  ConfigurationService,
+  ignorePostgresExtraAttributesOnList,
+  ignorePostgresExtraAttributesOnObject,
   selfApplicationMiroir,
   selfApplicationModelBranchMiroirMasterBranch,
   selfApplicationStoreBasedConfigurationMiroir,
   selfApplicationVersionInitialMiroirVersion,
+  TestImplementation,
 } from "../index";
-import { getLoggerName } from '../tools';
+import { getLoggerName, resolvePathOnObject } from '../tools';
 import { cleanLevel } from './constants';
 import { Endpoint } from './Endpoint';
 import { CallUtils } from './ErrorHandling/CallUtils';
@@ -1054,6 +1058,34 @@ export class DomainController implements DomainControllerInterface {
         }
         case 'runBoxedQueryTemplateOrBoxedExtractorTemplateAction': {
           throw new Error("handleCompositeAction can not handle query actions: " + JSON.stringify(currentAction));
+        }
+        case 'runTestCaseAction': {
+          if (!ConfigurationService.testImplementation) {
+            throw new Error(
+              "ConfigurationService.testImplementation is not set, please inject a test implementation using ConfigurationService.registerTestImplementation on startup if you want to run tests at runtime."
+            );
+          }
+          const preValueToTest = resolvePathOnObject(
+            localContext,
+            currentAction.testCase.definition.resultAccessPath ?? []
+          );
+          const valueToTest = Array.isArray(preValueToTest)
+              ? ignorePostgresExtraAttributesOnList(preValueToTest, currentAction.testCase.definition.ignoreAttributes??[])
+              : ignorePostgresExtraAttributesOnObject(preValueToTest, currentAction.testCase.definition.ignoreAttributes??[])
+          ;
+          log.info(
+            "handleCompositeAction runTestCaseAction to handle",
+            JSON.stringify(currentAction.testCase, null, 2),
+            "preValueToTest",
+            JSON.stringify(preValueToTest, null, 2),
+            "valueToTest",
+            JSON.stringify(valueToTest, null, 2)
+          );
+          ConfigurationService.testImplementation
+            .expect(valueToTest)
+            .toEqual(currentAction.testCase.definition.expectedValue);
+          log.info("handleCompositeAction runTestCaseAction test passed", currentAction.testCase);
+          break;
         }
         default: {
           log.error("handleCompositeAction unknown compositeActionType", currentAction);
