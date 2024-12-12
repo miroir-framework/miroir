@@ -72,6 +72,14 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 
 
 // ################################################################################################
+const deployments = [adminConfigurationDeploymentLibrary, adminConfigurationDeploymentMiroir];
+
+
+
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 export interface BeforeAllReturnType {
   localCache: LocalCache,
   miroirContext: MiroirContext,
@@ -503,45 +511,6 @@ export async function miroirBeforeAll(
 
       await startLocalPersistenceStoreControllers(localMiroirPersistenceStoreController, localAppPersistenceStoreController)
 
-      // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.open',JSON.stringify(localMiroirPersistenceStoreController, circularReplacer()));
-      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll DONE');
-      return Promise.resolve({
-        domainController,
-        miroirContext: miroirContext,
-        localCache: localCache,
-        persistenceStoreControllerManager,
-        localMiroirPersistenceStoreController,
-        localAppPersistenceStoreController,
-        localDataStoreWorker,
-        localDataStoreServer,
-      });
-    }
-  } catch (error) {
-    console.error('Error beforeAll',error);
-    throw error;
-  }
-  // return Promise.resolve(undefined);
-}
-
-// ###############################################################################################
-export async function miroirBeforeEach(
-  miroirConfig: MiroirConfigClient,
-  domainController: DomainControllerInterface | undefined,
-  localMiroirPersistenceStoreController: PersistenceStoreControllerInterface,
-  localAppPersistenceStoreController: PersistenceStoreControllerInterface,
-):Promise<void> {
-  
-  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach');
-  if (!miroirConfig.client.emulateServer) { // NOT EMULATED SERVER, USING REAL SERVER!
-    // throw new Error('emulateServer must be true in miroirConfig, tests must be independent of server.'); // TODO: really???
-    if (domainController) {
-      // await resetAndInitMiroirAndApplicationDatabase(domainController, [adminConfigurationDeploymentLibrary, adminConfigurationDeploymentMiroir]);
-      await resetAndInitMiroirAndApplicationDatabase(domainController, [selfApplicationDeploymentMiroir, selfApplicationDeploymentLibrary]);
-    } else {
-      throw new Error("miroirBeforeEach could not send commands to reset remote datastore because no domain controller has been provided.");
-    }
-  } else { // EMULATED SERVER, USING LOCAL DATASTORE
-    try {
       try {
         const miroirModelStoreCreated: ActionReturnType = await localMiroirPersistenceStoreController.createStore(
           miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].model
@@ -574,6 +543,46 @@ export async function miroirBeforeEach(
         throw new Error("miroirBeforeEach could not create model and data stores " + error);
       }
 
+      // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.open',JSON.stringify(localMiroirPersistenceStoreController, circularReplacer()));
+      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll DONE');
+      return Promise.resolve({
+        domainController,
+        miroirContext: miroirContext,
+        localCache: localCache,
+        persistenceStoreControllerManager,
+        localMiroirPersistenceStoreController,
+        localAppPersistenceStoreController,
+        localDataStoreWorker,
+        localDataStoreServer,
+      });
+    }
+  } catch (error) {
+    console.error('Error beforeAll',error);
+    throw error;
+  }
+  // return Promise.resolve(undefined);
+}
+
+// ###############################################################################################
+export async function miroirBeforeEach(
+  miroirConfig: MiroirConfigClient,
+  // domainController: DomainControllerInterface | undefined,
+  domainController: DomainControllerInterface,
+  localMiroirPersistenceStoreController: PersistenceStoreControllerInterface,
+  localAppPersistenceStoreController: PersistenceStoreControllerInterface,
+):Promise<void> {
+  
+  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach');
+  if (!miroirConfig.client.emulateServer) { // NOT EMULATED SERVER, USING REAL SERVER!
+    // throw new Error('emulateServer must be true in miroirConfig, tests must be independent of server.'); // TODO: really???
+    if (domainController) {
+      // await resetAndInitMiroirAndApplicationDatabase(domainController, [adminConfigurationDeploymentLibrary, adminConfigurationDeploymentMiroir]);
+      await resetAndInitMiroirAndApplicationDatabase(domainController, deployments);
+    } else {
+      throw new Error("miroirBeforeEach could not send commands to reset remote datastore because no domain controller has been provided.");
+    }
+  } else { // EMULATED SERVER, USING LOCAL DATASTORE
+    try {
       try {
         await localAppPersistenceStoreController.clear();
         await localMiroirPersistenceStoreController.clear();
@@ -632,32 +641,29 @@ export async function miroirBeforeEach(
 // #################################################################################################################
 export async function miroirAfterEach(
   miroirConfig: MiroirConfigClient,
-  domainController: DomainControllerInterface | undefined,
+  domainController: DomainControllerInterface,
   localMiroirPersistenceStoreController: PersistenceStoreControllerInterface,
   localAppPersistenceStoreController: PersistenceStoreControllerInterface,
 ):Promise<void> {
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterEach');
   if (!miroirConfig.client.emulateServer) {
-    console.log('miroirAfterEach emulateServer is false in miroirConfig, a real server is used, nothing to do on client side.'); // TODO: empty clear / reset datastore
+    // console.log('miroirAfterEach emulateServer is false in miroirConfig, a real server is used, nothing to do on client side.'); // TODO: empty clear / reset datastore
+    for (const d of deployments) {
+      await domainController.handleAction({
+        actionType: "modelAction",
+        actionName: "resetModel",
+        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        deploymentUuid: d.uuid,
+      });
+    }
+  
   } else {
     try {
-      // await localDataStore?.close();
-      // await localMiroirPersistenceStoreController.clear();
-      // await localAppPersistenceStoreController.clear();
-      const miroirModelStoreCreated: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(
-        miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].model
-      );
-      const miroirDataStoreCreated: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(
-        miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].data
-      );
-      const libraryModelStoreCreated: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(
-        miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid].model
-      );
-      const libraryDataStoreCreated: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(
-        miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid].data
-      );
+      await localAppPersistenceStoreController.clear();
+      await localMiroirPersistenceStoreController.clear();
     } catch (error) {
-      console.error('Error afterEach',error);
+      console.error('miroirAfterEach could not clear persistence stores, can not go further!');
+      throw(error);
     }
   }
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done afterEach');
@@ -721,6 +727,19 @@ export async function miroirAfterAll(
     }
   } else {
     try {
+      const miroirModelStoreDeleted: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(
+        miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].model
+      );
+      const miroirDataStoreDeleted: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(
+        miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].data
+      );
+      const libraryModelStoreDeleted: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(
+        miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid].model
+      );
+      const libraryDataStoreDeleted: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(
+        miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid].data
+      );
+  
       await (localRestServer as any)?.close();
       await localMiroirPersistenceStoreController.close();
       await localAppPersistenceStoreController.close();
