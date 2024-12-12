@@ -592,6 +592,9 @@ export function getMiroirFundamentalJzodSchema(
         testCompositeAction: (entityDefinitionTest.jzodSchema as any).definition.definition.definition.find(
           (e: any) => e.definition.testType.definition == "testCompositeAction"
         ),
+        testCompositeActionTemplate: (entityDefinitionTest.jzodSchema as any).definition.definition.definition.find(
+          (e: any) => e.definition.testType.definition == "testCompositeActionTemplate"
+        ),
         testCase: (entityDefinitionTest.jzodSchema as any).definition.definition.definition.find(
           (e: any) => e.definition.testType.definition == "testCase"
         ),
@@ -2528,12 +2531,7 @@ export function getMiroirFundamentalJzodSchema(
         // domainElementObject: (miroirFundamentalJzodSchema as any).definition.context.domainElementObject,
         // root elements
         testCase: (miroirFundamentalJzodSchema as any).definition.context.testCase,
-        // testCompositeAction: (miroirFundamentalJzodSchema as any).definition.context.testCompositeAction,
-        // test: (miroirFundamentalJzodSchema as any).definition.context.test,
-        // testActionRunTest: (miroirFundamentalJzodSchema as any).definition.context.testActionRunTest,
-        // testAction_runTestCompositeAction: (miroirFundamentalJzodSchema as any).definition.context.testAction_runTestCompositeAction,
         testAction_runTestCase: (miroirFundamentalJzodSchema as any).definition.context.testAction_runTestCase,
-        // testActionRunTest: (miroirFundamentalJzodSchema as any).definition.context.testActionRunTest,
         shippingBox: (miroirFundamentalJzodSchema as any).definition.context.shippingBox,
         boxedExtractorOrCombinerReturningObject: (miroirFundamentalJzodSchema as any).definition.context.boxedExtractorOrCombinerReturningObject,
         boxedExtractorOrCombinerReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.boxedExtractorOrCombinerReturningObjectList,

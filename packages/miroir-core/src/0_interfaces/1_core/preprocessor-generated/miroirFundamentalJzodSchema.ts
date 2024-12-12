@@ -3691,6 +3691,29 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "testCompositeActionTemplate": {
+        "type": "object",
+        "definition": {
+          "testType": {
+            "type": "literal",
+            "definition": "testCompositeActionTemplate"
+          },
+          "compositeActionTemplate": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "compositeActionTemplate"
+            }
+          },
+          "testCaseAction": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "runTestCaseCompositeAction"
+            }
+          }
+        }
+      },
       "testCase": {
         "type": "object",
         "definition": {
@@ -3782,6 +3805,29 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "compositeAction"
+                    }
+                  },
+                  "testCaseAction": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "runTestCaseCompositeAction"
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "testType": {
+                    "type": "literal",
+                    "definition": "testCompositeActionTemplate"
+                  },
+                  "compositeActionTemplate": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "compositeActionTemplate"
                     }
                   },
                   "testCaseAction": {
@@ -10604,7 +10650,7 @@ export const miroirFundamentalJzodSchema = {
                   "type": "string",
                   "optional": true
                 },
-                "compositeActionTemplate": {
+                "compositeAction": {
                   "type": "schemaReference",
                   "definition": {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -10800,7 +10846,7 @@ export const miroirFundamentalJzodSchema = {
                       "type": "string",
                       "optional": true
                     },
-                    "compositeActionTemplate": {
+                    "compositeAction": {
                       "type": "schemaReference",
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -11083,7 +11129,7 @@ export const miroirFundamentalJzodSchema = {
                           "type": "string",
                           "optional": true
                         },
-                        "compositeActionTemplate": {
+                        "compositeAction": {
                           "type": "schemaReference",
                           "definition": {
                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -24453,7 +24499,7 @@ export const miroirFundamentalJzodSchema = {
                                 }
                               ]
                             },
-                            "compositeActionTemplate": {
+                            "compositeAction": {
                               "type": "schemaReference",
                               "definition": {
                                 "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
@@ -24860,7 +24906,7 @@ export const miroirFundamentalJzodSchema = {
                         }
                       ]
                     },
-                    "compositeActionTemplate": {
+                    "compositeAction": {
                       "type": "schemaReference",
                       "definition": {
                         "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
@@ -25373,7 +25419,7 @@ export const miroirFundamentalJzodSchema = {
                                 }
                               ]
                             },
-                            "compositeActionTemplate": {
+                            "compositeAction": {
                               "type": "schemaReference",
                               "definition": {
                                 "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"

@@ -82,43 +82,43 @@ async function resetAndInitMiroirAndApplicationDatabase(
   deployments: any[] // TODO: use Deployment Entity Type!
 ) {
   // const deployments = [adminConfigurationDeploymentLibrary, adminConfigurationDeploymentMiroir];
-
-  for (const d of deployments) {
-    await domainController.handleAction({
-      actionType: "modelAction",
-      actionName: "resetModel",
-      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      deploymentUuid: d.uuid,
-    });
-  }
-  for (const d of deployments) {
-    await domainController.handleAction({
-      actionType: "modelAction",
-      actionName: "initModel",
-      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      deploymentUuid: d.uuid,
-      params: {
-        dataStoreType: d.uuid == adminConfigurationDeploymentMiroir.uuid?"miroir":"app",
-        metaModel: defaultMiroirMetaModel,
-        application: selfApplicationMiroir,
-        applicationDeploymentConfiguration: d,
-        applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
-        applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
-        applicationVersion: selfApplicationVersionInitialMiroirVersion,
-      },
-    });
-  }
-  log.info(
-    "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ resetAndInitMiroirAndApplicationDatabase APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-  );
-  for (const d of deployments) {
-    await domainController.handleAction({
-      actionType: "modelAction",
-      actionName: "rollback",
-      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      deploymentUuid: d.uuid,
-    });
-  }
+  throw new Error("Not implemented");
+  // for (const d of deployments) {
+  //   await domainController.handleAction({
+  //     actionType: "modelAction",
+  //     actionName: "resetModel",
+  //     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+  //     deploymentUuid: d.uuid,
+  //   });
+  // }
+  // for (const d of deployments) {
+  //   await domainController.handleAction({
+  //     actionType: "modelAction",
+  //     actionName: "initModel",
+  //     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+  //     deploymentUuid: d.uuid,
+  //     params: {
+  //       dataStoreType: d.uuid == adminConfigurationDeploymentMiroir.uuid?"miroir":"app",
+  //       metaModel: defaultMiroirMetaModel,
+  //       application: selfApplicationMiroir,
+  //       applicationDeploymentConfiguration: d,
+  //       applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
+  //       applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
+  //       applicationVersion: selfApplicationVersionInitialMiroirVersion,
+  //     },
+  //   });
+  // }
+  // log.info(
+  //   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ resetAndInitMiroirAndApplicationDatabase APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+  // );
+  // for (const d of deployments) {
+  //   await domainController.handleAction({
+  //     actionType: "modelAction",
+  //     actionName: "rollback",
+  //     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+  //     deploymentUuid: d.uuid,
+  //   });
+  // }
 }
 
 // ################################################################################################
@@ -1150,7 +1150,7 @@ export class DomainController implements DomainControllerInterface {
             JSON.stringify(currentAction, null, 2)
           );
           const actionResult = await this.handleCompositeAction(
-            currentAction.compositeActionTemplate,
+            currentAction.compositeAction,
             actionParamValues,
             currentModel
           );
