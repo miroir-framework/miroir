@@ -39,7 +39,8 @@ import {
   publisher3,
   Report,
   reportBookList,
-  TestCompositeAction
+  TestCompositeAction,
+  Uuid
 } from "miroir-core";
 
 
@@ -208,181 +209,225 @@ afterAll(
 // ##############################################################################################
 // ##############################################################################################
 // ##############################################################################################
+type TestActionParams = {
+  testActionType: "testCompositeAction",
+  deploymentUuid: Uuid,
+  compositeTestAction: TestCompositeAction,
+} 
+// | {
+//   testActionType: "testCompositeActionTemplate",
+//   deploymentUuid: Uuid,
+//   compositeTestAction: TestComposite,
+// } 
+
+const testActions: Record<string, TestActionParams> = {
+  "get Entity Entity from Miroir": {
+    testActionType: "testCompositeAction",
+    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+    compositeTestAction: {
+      testType: "testCompositeAction",
+      compositeAction: {
+        actionType: "compositeAction",
+        actionLabel: "selectEntityEntity",
+        actionName: "sequence",
+        definition: [
+          {
+            compositeActionType: "domainAction",
+            compositeActionStepLabel: "selectEntityEntity_refresh",
+            domainAction: {
+              actionName: "rollback",
+              actionType: "modelAction",
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+            },
+          },
+          {
+            compositeActionType: "runBoxedExtractorOrQueryAction",
+            compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+            nameGivenToResult: "entityEntity",
+            query: {
+              actionType: "runBoxedExtractorOrQueryAction",
+              actionName: "runQuery",
+              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              applicationSection: "model", // TODO: give only application section in individual queries?
+              deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+              query: {
+                queryType: "boxedQueryWithExtractorCombinerTransformer",
+                deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                pageParams: {
+                  currentDeploymentUuid: adminConfigurationDeploymentMiroir.uuid
+                },
+                queryParams: { },
+                contextResults: { },
+                extractors: {
+                  entity: {
+                    extractorOrCombinerType: "extractorForObjectByDirectReference",
+                    applicationSection: "model",
+                    parentName: "Entity",
+                    parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                    instanceUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  }
+                },
+              }
+            }
+          },
+        ]
+      },
+      testCaseAction: {
+        compositeActionType: "runTestCaseCompositeAction",
+        compositeActionStepLabel: "checkEntityEntity",
+        nameGivenToResult: "checkEntityEntity",
+        testCase: {
+          testType: "testCase",
+          definition: {
+            resultAccessPath: [ "entityEntity", "entity" ],
+            ignoreAttributes: [ "author" ],
+            expectedValue: {
+              uuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+              parentName: "Entity",
+              parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+              parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+              name: "Entity",
+              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+              conceptLevel: "MetaModel",
+              description: "The Metaclass for entities.",
+            }
+          }
+        }
+      }
+    }
+  }
+}
 
 // TODO: duplicate test with ExtractorTemplatePersistenceStoreRunner.integ.test.tsx
 describe.sequential("DomainNewController.CompositeAction.integ.test", () => {
-
-  // ################################################################################################
-  it("get Entity Entity from Miroir", async () => {
-    const expectedValue = {
-      uuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-      parentName: "Entity",
-      parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-      parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
-      name: "Entity",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-      conceptLevel: "MetaModel",
-      description: "The Metaclass for entities.",
-    }
+  it.each(Object.entries(testActions))('test %s', async (currentTestName, testAction: TestActionParams) => {
+    // const fullTestName = describe.sequential.name + "/" + currentTestName
+    const fullTestName = expect.getState().currentTestName?? "no test name";
+    console.info("STARTING test:", fullTestName);
+    // expect(currentTestName != undefined).toBeTruthy();
+    // expect(testParams.testAssertions).toBeDefined();
 
     await chainVitestSteps(
-      "ExtractorPersistenceStoreRunner_selectEntityInstance_selectObjectByDirectReference",
+      fullTestName,
       {},
       async () => {
-        const applicationSection:ApplicationSection = "model";
-        const localCompositeAction: CompositeAction = {
-          actionType: "compositeAction",
-          actionLabel: "selectEntityEntity",
-          actionName: "sequence",
-          definition: [
-            {
-              compositeActionType: "domainAction",
-              compositeActionStepLabel: "selectEntityEntity_refresh",
-              domainAction: {
-                actionName: "rollback",
-                actionType: "modelAction",
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                // deploymentUuid: {
-                //   transformerType: "parameterReference",
-                //   referenceName: "currentDeploymentUuid",
-                // },
-              },
-            },
-            {
-              compositeActionType: "runBoxedExtractorOrQueryAction",
-              compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
-              nameGivenToResult: "entityEntity",
-              query: {
-                actionType: "runBoxedExtractorOrQueryAction",
-                actionName: "runQuery",
-                endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                applicationSection: "model", // TODO: give only application section in individual queries?
-                deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                query: {
-                  queryType: "boxedQueryWithExtractorCombinerTransformer",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                  pageParams: {
-                    currentDeploymentUuid: adminConfigurationDeploymentMiroir.uuid
-                  },
-                  queryParams: { },
-                  contextResults: { },
-                  extractors: {
-                    entity: {
-                      extractorOrCombinerType: "extractorForObjectByDirectReference",
-                      applicationSection: "model",
-                      parentName: "Entity",
-                      parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                      instanceUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                    }
-                  },
-                }
-              }
-            },
-            // {
-            //   compositeActionType: "runTestCaseCompositeAction",
-            //   compositeActionStepLabel: "checkEntityEntity",
-            //   nameGivenToResult: "checkEntityEntity",
-            //   testCase: {
-            //     testType: "testCase",
-            //     definition: {
-            //       resultAccessPath: [ "entityEntity", "entity" ],
-            //       ignoreAttributes: [ "author" ],
-            //       expectedValue: expectedValue
-            //     }
-            //   }
-            // }
-          ]
-        };
-
-  
-        const compositeTestAction: TestCompositeAction  = {
-          // uuid: "", // TODO: remove this field from Test, define StoredTest? Or TestDefinition?
-          // parentUuid: "d2842a84-3e66-43ee-ac58-7e13b95b01e8",
-          // definition: {
-          testType: "testCompositeAction",
-          compositeAction: localCompositeAction,
-          testCaseAction: {
-            compositeActionType: "runTestCaseCompositeAction",
-            compositeActionStepLabel: "checkEntityEntity",
-            nameGivenToResult: "checkEntityEntity",
-            testCase: {
-              testType: "testCase",
-              definition: {
-                resultAccessPath: [ "entityEntity", "entity" ],
-                ignoreAttributes: [ "author" ],
-                expectedValue: expectedValue
-              }
-            }
-          }
-
-          // test: {
-          //   testType: "testCase",
-          //   definition: {
-          //     resultAccessPath: [ "entityEntity", "entity" ],
-          //     ignoreAttributes: [ "author" ],
-          //     expectedValue: expectedValue
-          //   }
-          // }
-          // }
-        }
-        // const compositeTestAction: TestCompositeAction  = {
-        //   // uuid: "", // TODO: remove this field from Test, define StoredTest? Or TestDefinition?
-        //   // parentUuid: "d2842a84-3e66-43ee-ac58-7e13b95b01e8",
-        //   // definition: {
-        //   testType: "testCompositeAction",
-        //   compositeAction: localCompositeAction,
-        //   test: {
-        //     testType: "testCase",
-        //     definition: {
-        //       resultAccessPath: [ "entityEntity", "entity" ],
-        //       ignoreAttributes: [ "author" ],
-        //       expectedValue: expectedValue
-        //     }
-        //   }
-        //   // }
-        // }
-        // const compositeTest: Test  = {
-        //   uuid: "", // TODO: remove this field from Test, define StoredTest? Or TestDefinition?
-        //   parentUuid: "d2842a84-3e66-43ee-ac58-7e13b95b01e8",
-        //   definition: {
-        //     testType: "testCompositeAction",
-        //     compositeAction: localCompositeAction,
-        //     test: {
-        //       testType: "testCase",
-        //       definition: {
-        //         resultAccessPath: [ "entityEntity", "entity" ],
-        //         ignoreAttributes: [ "author" ],
-        //         expectedValue: expectedValue
-        //       }
-        //     }
-        //   }
-        // }
-        // const queryResult:ActionReturnType = await domainController.handleCompositeAction(
-        //   localCompositeAction,
-        //   {},
-        //   localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
-        //   // {} as any,
-        // );
         const queryResult:ActionReturnType = await domainController.handleTestAction(
-          compositeTestAction,
+          testAction.compositeTestAction,
           {},
-          localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
-          // {} as any,
+          localCache.currentModel(testAction.deploymentUuid)
         );
-        console.log("test queryResult", JSON.stringify(queryResult, null, 2));
+        console.log("test", fullTestName, ": queryResult=", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      // (a) => (a as any).returnedDomainElement.elementValue,
-      // (a) => ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement.elementValue.entity, ["author"]),
       undefined, // expected result transformation
       undefined, // name to give to result
-      // "instance",
       "void",
       undefined, // expectedValue
-      // expectedValue
     );
   });
+
+  // // ################################################################################################
+  // it("get Entity Entity from Miroir", async () => {
+  //   const expectedValue = {
+  //     uuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  //     parentName: "Entity",
+  //     parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  //     parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  //     name: "Entity",
+  //     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  //     conceptLevel: "MetaModel",
+  //     description: "The Metaclass for entities.",
+  //   }
+
+  //   await chainVitestSteps(
+  //     "ExtractorPersistenceStoreRunner_selectEntityInstance_selectObjectByDirectReference",
+  //     {},
+  //     async () => {
+  //       const applicationSection:ApplicationSection = "model";
+  //       const localCompositeAction: CompositeAction = {
+  //         actionType: "compositeAction",
+  //         actionLabel: "selectEntityEntity",
+  //         actionName: "sequence",
+  //         definition: [
+  //           {
+  //             compositeActionType: "domainAction",
+  //             compositeActionStepLabel: "selectEntityEntity_refresh",
+  //             domainAction: {
+  //               actionName: "rollback",
+  //               actionType: "modelAction",
+  //               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+  //               deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+  //             },
+  //           },
+  //           {
+  //             compositeActionType: "runBoxedExtractorOrQueryAction",
+  //             compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+  //             nameGivenToResult: "entityEntity",
+  //             query: {
+  //               actionType: "runBoxedExtractorOrQueryAction",
+  //               actionName: "runQuery",
+  //               endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+  //               applicationSection: "model", // TODO: give only application section in individual queries?
+  //               deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+  //               query: {
+  //                 queryType: "boxedQueryWithExtractorCombinerTransformer",
+  //                 deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+  //                 pageParams: {
+  //                   currentDeploymentUuid: adminConfigurationDeploymentMiroir.uuid
+  //                 },
+  //                 queryParams: { },
+  //                 contextResults: { },
+  //                 extractors: {
+  //                   entity: {
+  //                     extractorOrCombinerType: "extractorForObjectByDirectReference",
+  //                     applicationSection: "model",
+  //                     parentName: "Entity",
+  //                     parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  //                     instanceUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  //                   }
+  //                 },
+  //               }
+  //             }
+  //           },
+  //         ]
+  //       };
+
+  
+  //       const compositeTestAction: TestCompositeAction  = {
+  //         testType: "testCompositeAction",
+  //         compositeAction: localCompositeAction,
+  //         testCaseAction: {
+  //           compositeActionType: "runTestCaseCompositeAction",
+  //           compositeActionStepLabel: "checkEntityEntity",
+  //           nameGivenToResult: "checkEntityEntity",
+  //           testCase: {
+  //             testType: "testCase",
+  //             definition: {
+  //               resultAccessPath: [ "entityEntity", "entity" ],
+  //               ignoreAttributes: [ "author" ],
+  //               expectedValue: expectedValue
+  //             }
+  //           }
+  //         }
+  //       }
+  //       const queryResult:ActionReturnType = await domainController.handleTestAction(
+  //         compositeTestAction,
+  //         {},
+  //         localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
+  //         // {} as any,
+  //       );
+  //       console.log("test queryResult", JSON.stringify(queryResult, null, 2));
+  //       return queryResult;
+  //     },
+  //     undefined, // expected result transformation
+  //     undefined, // name to give to result
+  //     // "instance",
+  //     "void",
+  //     undefined, // expectedValue
+  //     // expectedValue
+  //   );
+  // });
 
   // // ################################################################################################
   // it("get Miroir Entities", async () => {
