@@ -12,6 +12,7 @@ import { MiroirLoggerFactory } from "../4_services/Logger";
 import { packageName } from "../constants";
 import { getLoggerName } from "../tools";
 import { cleanLevel } from "./constants";
+import { EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"resetApplicationDatabases");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -21,9 +22,15 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   }
 );
 
+export interface NewDeployment {
+  adminConfigurationDeployment: EntityInstance,
+  selfApplicationDeployment: EntityInstance,
+}
+
 export async function resetAndInitMiroirAndApplicationDatabase(
   domainController: DomainControllerInterface,
-  deployments: any[] // TODO: use Deployment Entity Type!
+  // deployments: any[] // TODO: use Deployment Entity Type!
+  deployments: NewDeployment[] // TODO: use Deployment Entity Type!
 ) {
   // const deployments = [adminConfigurationDeploymentLibrary, adminConfigurationDeploymentMiroir];
 
@@ -32,7 +39,7 @@ export async function resetAndInitMiroirAndApplicationDatabase(
       actionType: "modelAction",
       actionName: "resetModel",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      deploymentUuid: d.uuid,
+      deploymentUuid: d.adminConfigurationDeployment.uuid,
     });
   }
   for (const d of deployments) {
@@ -40,12 +47,12 @@ export async function resetAndInitMiroirAndApplicationDatabase(
       actionType: "modelAction",
       actionName: "initModel",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      deploymentUuid: d.uuid,
+      deploymentUuid: d.adminConfigurationDeployment.uuid,
       params: {
-        dataStoreType: d.uuid == adminConfigurationDeploymentMiroir.uuid?"miroir":"app",
+        dataStoreType: d.adminConfigurationDeployment.uuid == adminConfigurationDeploymentMiroir.uuid?"miroir":"app",
         metaModel: defaultMiroirMetaModel,
         application: selfApplicationMiroir,
-        applicationDeploymentConfiguration: d,
+        applicationDeploymentConfiguration: d.adminConfigurationDeployment,
         applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
         applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
         applicationVersion: selfApplicationVersionInitialMiroirVersion,
@@ -60,7 +67,7 @@ export async function resetAndInitMiroirAndApplicationDatabase(
       actionType: "modelAction",
       actionName: "rollback",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      deploymentUuid: d.uuid,
+      deploymentUuid: d.adminConfigurationDeployment.uuid,
     });
   }
 }

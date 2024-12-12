@@ -674,6 +674,7 @@ export {
 } from './3_controllers/ErrorHandling/ErrorModelStore';
 export {
   resetAndInitMiroirAndApplicationDatabase,
+  NewDeployment,
 } from './3_controllers/resetApplicationDatabase';
 export {
   storeActionOrBundleActionStoreRunner,
