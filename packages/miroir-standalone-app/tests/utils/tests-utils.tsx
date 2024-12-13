@@ -54,7 +54,9 @@ import {
   InstanceAction,
   entityAuthor,
   entityBook,
-  NewDeployment,
+  DeploymentConfiguration,
+  resetAndInitMiroirAndApplicationDatabaseNew,
+  SelfApplicationDeploymentConfiguration,
 } from "miroir-core";
 import { LocalCache, PersistenceReduxSaga, ReduxStoreWithUndoRedo, RestPersistenceClientAndRestClient } from 'miroir-localcache-redux';
 import { createMswRestServer } from 'miroir-server-msw-stub';
@@ -75,14 +77,14 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 // ################################################################################################
 const deployments = [adminConfigurationDeploymentMiroir, adminConfigurationDeploymentLibrary ];
 
-const newDeployments: NewDeployment[] = [
+const deploymentConfigurations: DeploymentConfiguration[] = [
   {
     adminConfigurationDeployment: adminConfigurationDeploymentMiroir,
-    selfApplicationDeployment: selfApplicationDeploymentMiroir,
+    selfApplicationDeployment: selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
   },
   {
     adminConfigurationDeployment: adminConfigurationDeploymentLibrary,
-    selfApplicationDeployment: selfApplicationDeploymentLibrary,
+    selfApplicationDeployment: selfApplicationDeploymentLibrary  as SelfApplicationDeploymentConfiguration,
   },
 ];
 
@@ -579,76 +581,17 @@ export async function miroirBeforeAll(
 // ###############################################################################################
 export async function miroirBeforeEach(
   miroirConfig: MiroirConfigClient,
-  // domainController: DomainControllerInterface | undefined,
   domainController: DomainControllerInterface,
   localMiroirPersistenceStoreController: PersistenceStoreControllerInterface,
   localAppPersistenceStoreController: PersistenceStoreControllerInterface,
 ):Promise<void> {
   
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach');
-  if (!miroirConfig.client.emulateServer) { // NOT EMULATED SERVER, USING REAL SERVER!
-    // throw new Error('emulateServer must be true in miroirConfig, tests must be independent of server.'); // TODO: really???
-    if (domainController) {
-      // await resetAndInitMiroirAndApplicationDatabase(domainController, [adminConfigurationDeploymentLibrary, adminConfigurationDeploymentMiroir]);
-      await resetAndInitMiroirAndApplicationDatabase(domainController, newDeployments);
-    } else {
-      throw new Error("miroirBeforeEach could not send commands to reset remote datastore because no domain controller has been provided.");
-    }
-  } else { // EMULATED SERVER, USING LOCAL DATASTORE
-    // await resetAndInitMiroirAndApplicationDatabase(domainController, deployments);
-    try {
-      try {
-        // await localAppPersistenceStoreController.clear();
-        // await localMiroirPersistenceStoreController.clear();
-        for (const d of newDeployments) {
-          await domainController.handleAction({
-            actionType: "modelAction",
-            actionName: "resetModel",
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            deploymentUuid: d.adminConfigurationDeployment.uuid,
-          });
-        }
-      } catch (error) {
-        console.error('miroirBeforeEach could not clear persistence stores, can not go further!');
-        throw(error);
-      }
-      try {
-        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach initApplication miroir START');
-        for (const d of newDeployments) {
-          await domainController.handleAction({
-            actionType: "modelAction",
-            actionName: "initModel",
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            deploymentUuid: d.adminConfigurationDeployment.uuid,
-            params: {
-              dataStoreType: d.adminConfigurationDeployment.uuid == adminConfigurationDeploymentMiroir.uuid?"miroir":"app",
-              metaModel: defaultMiroirMetaModel,
-              application: selfApplicationMiroir,
-              // applicationDeploymentConfiguration: d,
-              // applicationDeploymentConfiguration: d.adminConfigurationDeployment,
-              applicationDeploymentConfiguration: d.selfApplicationDeployment, // TODO: DISCREPANCY BETWEEN EMULATED AND REAL SERVERS!! WHY?
-              applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
-              applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
-              applicationVersion: selfApplicationVersionInitialMiroirVersion,
-            },
-          });
-        }
-      
-        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach initApplication app END');
-      } catch (error) {
-        console.error('miroirBeforeEach could not initApplication for app datastore, can not go further!');
-        throw(error);
-      }
-    } catch (error) {
-      console.error('beforeEach',error);
-      throw(error);
-    }
-    console.trace("miroirBeforeEach miroir model state", await localMiroirPersistenceStoreController.getModelState());
-    console.trace("miroirBeforeEach miroir data state", await localMiroirPersistenceStoreController.getDataState());
-    console.trace("miroirBeforeEach library app model state", await localAppPersistenceStoreController.getModelState());
-    console.trace("miroirBeforeEach library app data state", await localAppPersistenceStoreController.getDataState());
-  }
-
+    await resetAndInitMiroirAndApplicationDatabaseNew(domainController, deploymentConfigurations);
+    // console.trace("miroirBeforeEach miroir model state", await localMiroirPersistenceStoreController.getModelState());
+    // console.trace("miroirBeforeEach miroir data state", await localMiroirPersistenceStoreController.getDataState());
+    // console.trace("miroirBeforeEach library app model state", await localAppPersistenceStoreController.getModelState());
+    // console.trace("miroirBeforeEach library app data state", await localAppPersistenceStoreController.getDataState());
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done miroirBeforeEach');
   document.body.innerHTML = '';
 
@@ -665,7 +608,7 @@ export async function miroirAfterEach(
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterEach');
   if (!miroirConfig.client.emulateServer) {
     // console.log('miroirAfterEach emulateServer is false in miroirConfig, a real server is used, nothing to do on client side.'); // TODO: empty clear / reset datastore
-    for (const d of newDeployments) {
+    for (const d of deploymentConfigurations) {
       await domainController.handleAction({
         actionType: "modelAction",
         actionName: "resetModel",

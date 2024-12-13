@@ -118,7 +118,7 @@ export async function modelInitialize(
     
     // bootstrap Application Deployment Configuration
     await persistenceStoreController.createEntity(entitySelfApplicationDeploymentConfiguration as MetaEntity, entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition);
-    log.info(logHeader, 'created entity ApplicationDeploymentConfiguration',persistenceStoreController.getEntityUuids());
+    log.info(logHeader, 'created entity entitySelfApplicationDeploymentConfiguration',persistenceStoreController.getEntityUuids());
     
     // // bootstrap Endpoint
     // await persistenceStoreController.createEntity(entityEndpoint as MetaEntity, entityDefinitionEndpoint as EntityDefinition);
@@ -171,7 +171,9 @@ export async function modelInitialize(
     
 
     await persistenceStoreController.upsertInstance('data', selfApplication);
+    // log.info(logHeader, 'inserting miroir selfApplicationDeploymentConfiguration',selfApplicationDeploymentConfiguration);
     await persistenceStoreController.upsertInstance('data', selfApplicationDeploymentConfiguration);
+    // log.info(logHeader, 'inserting miroir selfApplicationDeploymentConfiguration DONE');
     await persistenceStoreController.upsertInstance('data', selfApplicationModelBranch);
     await persistenceStoreController.upsertInstance('data', selfApplicationVersion);
     await persistenceStoreController.upsertInstance('data', selfApplicationStoreBasedConfiguration);
@@ -232,7 +234,7 @@ export async function modelInitialize(
     );
     log.info(
       logHeader,
-      "app initialized entity ApplicationDeploymentConfiguration",
+      "app initialized entity selfApplicationDeploymentConfiguration",
       persistenceStoreController.getEntityUuids()
     );
 
@@ -273,7 +275,9 @@ export async function modelInitialize(
     log.info(logHeader, "app initialized entity StoreBasedConfiguration", persistenceStoreController.getEntityUuids());
 
     await persistenceStoreController.upsertInstance("model", selfApplication);
+    // log.info(logHeader, 'inserting app selfApplicationDeploymentConfiguration',selfApplicationDeploymentConfiguration);
     await persistenceStoreController.upsertInstance("model", selfApplicationDeploymentConfiguration);
+    // log.info(logHeader, 'inserting app selfApplicationDeploymentConfiguration DONE');
     await persistenceStoreController.upsertInstance("model", selfApplicationModelBranch);
     await persistenceStoreController.upsertInstance("model", selfApplicationVersion);
     await persistenceStoreController.upsertInstance("model", selfApplicationStoreBasedConfiguration);

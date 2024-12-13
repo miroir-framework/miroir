@@ -369,7 +369,7 @@ export const ToolsPage: React.FC<any> = (
           referenceName: "newSelfApplicationUuid",
         },
       },
-      newDeployment: {
+      DeploymentConfiguration: {
         uuid: {
           transformerType: "parameterReference",
           referenceName: "newDeploymentUuid",
@@ -540,7 +540,7 @@ export const ToolsPage: React.FC<any> = (
           deployments: [
             {
               transformerType: "parameterReference",
-              referenceName: "newDeployment",
+              referenceName: "DeploymentConfiguration",
             },
           ],
         }
@@ -652,7 +652,7 @@ export const ToolsPage: React.FC<any> = (
               instances: [
                 {
                   transformerType: "parameterReference",
-                  referenceName: "newDeployment",
+                  referenceName: "DeploymentConfiguration",
                 },
               ],
             },

@@ -29,6 +29,7 @@ import entityDefinitionQueryVersionV1 from "../assets/miroir_model/54b9c72f-d4f3
 import entityDefinitionReportV1 from "../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json" assert { type: "json" };
 import entityDefinitionTest from "../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/d2842a84-3e66-43ee-ac58-7e13b95b01e8.json" assert { type: "json" };
 import transformerMenuV1 from "../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json" assert { type: "json" };
+import entityDefinitionSelfApplicationDeploymentConfiguration from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bd303ae8-6bce-4b44-a63c-815b9ebf728b.json' assert { type: "json" };
 
 
 
@@ -57,6 +58,7 @@ const miroirFundamentalJzodSchema =
     entityDefinitionMenu ,
     entityDefinitionQueryVersionV1,
     entityDefinitionReportV1,
+    entityDefinitionSelfApplicationDeploymentConfiguration,
     entityDefinitionTest,
   )
 ;

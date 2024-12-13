@@ -28,6 +28,7 @@ import {
   CompositeAction,
   CompositeActionDefinition,
   CompositeActionTemplate,
+  Deployment,
   DomainAction,
   EntityInstance,
   EntityInstanceCollection,
@@ -39,6 +40,7 @@ import {
   RunBoxedExtractorTemplateAction,
   RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+  SelfApplicationDeploymentConfiguration,
   TestAction_runTestCompositeAction,
   TestCompositeAction,
   TransactionalInstanceAction,
@@ -75,52 +77,66 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   }
 );
 
-
-// ################################################################################################
-async function resetAndInitMiroirAndApplicationDatabase(
-  domainController: DomainControllerInterface,
-  deployments: any[] // TODO: use Deployment Entity Type!
-) {
-  // const deployments = [adminConfigurationDeploymentLibrary, adminConfigurationDeploymentMiroir];
-  throw new Error("Not implemented");
-  // for (const d of deployments) {
-  //   await domainController.handleAction({
-  //     actionType: "modelAction",
-  //     actionName: "resetModel",
-  //     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-  //     deploymentUuid: d.uuid,
-  //   });
-  // }
-  // for (const d of deployments) {
-  //   await domainController.handleAction({
-  //     actionType: "modelAction",
-  //     actionName: "initModel",
-  //     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-  //     deploymentUuid: d.uuid,
-  //     params: {
-  //       dataStoreType: d.uuid == adminConfigurationDeploymentMiroir.uuid?"miroir":"app",
-  //       metaModel: defaultMiroirMetaModel,
-  //       application: selfApplicationMiroir,
-  //       applicationDeploymentConfiguration: d,
-  //       applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
-  //       applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
-  //       applicationVersion: selfApplicationVersionInitialMiroirVersion,
-  //     },
-  //   });
-  // }
-  // log.info(
-  //   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ resetAndInitMiroirAndApplicationDatabase APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-  // );
-  // for (const d of deployments) {
-  //   await domainController.handleAction({
-  //     actionType: "modelAction",
-  //     actionName: "rollback",
-  //     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-  //     deploymentUuid: d.uuid,
-  //   });
-  // }
+export interface DeploymentConfiguration {
+  adminConfigurationDeployment: EntityInstance,
+  selfApplicationDeployment: SelfApplicationDeploymentConfiguration,
 }
 
+export async function resetAndInitMiroirAndApplicationDatabase(
+  domainController: DomainControllerInterface,
+  // deployments: any[] // TODO: use Deployment Entity Type!
+  // adminConfigurationDeployments: Deployment[] // TODO: use Deployment Entity Type!
+  selfAdminConfigurationDeployments: SelfApplicationDeploymentConfiguration[] // TODO: use Deployment Entity Type!
+  // deployments: DeploymentConfiguration[] // TODO: use Deployment Entity Type!
+) {
+  // const deployments = [adminConfigurationDeploymentLibrary, adminConfigurationDeploymentMiroir];
+
+  for (const selfAdminConfigurationDeployment of selfAdminConfigurationDeployments) {
+    await domainController.handleAction({
+      actionType: "modelAction",
+      actionName: "resetModel",
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      deploymentUuid: selfAdminConfigurationDeployment.uuid,
+    });
+  }
+  for (const selfAdminConfigurationDeployment of selfAdminConfigurationDeployments) {
+    await domainController.handleAction({
+      actionType: "modelAction",
+      actionName: "initModel",
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      deploymentUuid: selfAdminConfigurationDeployment.uuid,
+      params: {
+        dataStoreType: selfAdminConfigurationDeployment.uuid == adminConfigurationDeploymentMiroir.uuid?"miroir":"app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
+        metaModel: defaultMiroirMetaModel,
+        application: selfApplicationMiroir,
+        selfApplicationDeploymentConfiguration: selfAdminConfigurationDeployment,
+        applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
+        applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
+        applicationVersion: selfApplicationVersionInitialMiroirVersion,
+      },
+    });
+  }
+  log.info(
+    "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ resetAndInitMiroirAndApplicationDatabase APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+  );
+  for (const d of selfAdminConfigurationDeployments) {
+    await domainController.handleAction({
+      actionType: "modelAction",
+      actionName: "rollback",
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      deploymentUuid: d.uuid,
+    });
+  }
+  return Promise.resolve(ACTION_OK);
+}
+export async function resetAndInitMiroirAndApplicationDatabaseNew(
+  domainController: DomainControllerInterface,
+  deployments: DeploymentConfiguration[] // TODO: use Deployment Entity Type!
+) {
+  // const mappedDeployments = deployments.map(d=>d.adminConfigurationDeployment);
+  const mappedDeployments = deployments.map(d=>d.selfApplicationDeployment);
+  return resetAndInitMiroirAndApplicationDatabase(domainController, mappedDeployments);
+}
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################

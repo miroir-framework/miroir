@@ -229,6 +229,8 @@ export {
   SqlDbStoreSectionConfiguration,
   IndexedDbStoreSectionConfiguration,
   FilesystemDbStoreSectionConfiguration,
+  SelfApplicationDeploymentConfiguration,
+  selfApplicationDeploymentConfiguration,
   StoreBasedConfiguration,
   storeBasedConfiguration,
   StoreSectionConfiguration,
@@ -507,7 +509,6 @@ export {
 } from './1_core/Application';
 export { } from './1_core/Report';
 export { ACTION_OK } from './1_core/constants';
-export { DomainController } from './3_controllers/DomainController';
 export { DomainInstanceUuidIndexToArray } from './1_core/DomainState';
 export {
   getDefaultValueForJzodSchema,
@@ -661,6 +662,12 @@ export {
   undoRedoHistorization,
 } from "./3_controllers/ConfigurationService";
 export {
+  resetAndInitMiroirAndApplicationDatabase,
+  resetAndInitMiroirAndApplicationDatabaseNew,
+  DeploymentConfiguration,
+  DomainController,
+} from "./3_controllers/DomainController";
+export {
   Endpoint
 } from './3_controllers/Endpoint';
 export {
@@ -672,10 +679,6 @@ export {
 export {
   ErrorModelStore
 } from './3_controllers/ErrorHandling/ErrorModelStore';
-export {
-  resetAndInitMiroirAndApplicationDatabase,
-  NewDeployment,
-} from './3_controllers/resetApplicationDatabase';
 export {
   storeActionOrBundleActionStoreRunner,
   modelActionStoreRunnerNotUsed,

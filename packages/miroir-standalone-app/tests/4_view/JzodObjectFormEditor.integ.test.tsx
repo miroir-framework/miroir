@@ -46,7 +46,8 @@ import {
   miroirFundamentalJzodSchemaUuid,
   transformerJzodSchema,
   entityDefinitionTest,
-  testEndpointVersionV1
+  testEndpointVersionV1,
+  entityDefinitionSelfApplicationDeploymentConfiguration
 } from "miroir-core";
 
 import {
@@ -109,6 +110,7 @@ const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
   entityDefinitionMenu  as EntityDefinition,
   entityDefinitionQueryVersionV1 as EntityDefinition,
   entityDefinitionReport as EntityDefinition,
+  entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition,
   entityDefinitionTest as EntityDefinition,
   // jzodSchemajzodMiroirBootstrapSchema as any,
 );

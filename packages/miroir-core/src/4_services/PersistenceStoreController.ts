@@ -22,6 +22,7 @@ import {
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+  SelfApplicationDeploymentConfiguration,
   StoreSectionConfiguration
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DataStoreApplicationType } from "../0_interfaces/3_controllers/ApplicationControllerInterface";
@@ -316,7 +317,8 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
         params.metaModel,
         params.dataStoreType,
         params.application,
-        params.applicationDeploymentConfiguration,
+        // params.applicationDeploymentConfiguration,
+        params.selfApplicationDeploymentConfiguration,
         params.applicationModelBranch,
         params.applicationVersion,
         params.applicationStoreBasedConfiguration
@@ -331,7 +333,8 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
         params.metaModel,
         "app",
         params.application,
-        params.applicationDeploymentConfiguration,
+        // params.applicationDeploymentConfiguration,
+        params.selfApplicationDeploymentConfiguration,
         params.applicationModelBranch,
         params.applicationVersion,
         params.applicationStoreBasedConfiguration
@@ -348,7 +351,8 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     metaModel:MetaModel,
     dataStoreType: DataStoreApplicationType,
     selfApplication: Application,
-    selfApplicationDeploymentConfiguration: EntityInstance,
+    // selfApplicationDeploymentConfiguration: EntityInstance,
+    selfApplicationDeploymentConfiguration: SelfApplicationDeploymentConfiguration,
     selfApplicationModelBranch: EntityInstance,
     selfApplicationVersion: EntityInstance,
     selfApplicationStoreBasedConfiguration: EntityInstance,

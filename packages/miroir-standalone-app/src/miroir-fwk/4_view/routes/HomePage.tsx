@@ -330,8 +330,11 @@ export const HomePage = (props: RootComponentProps) => {
       {/* Reset Application database */}
       <span>
         <button
-          onClick={
-            async () => resetAndInitMiroirAndApplicationDatabase.bind(domainController, [adminConfigurationDeploymentLibrary, adminConfigurationDeploymentMiroir] as any)
+          onClick={async () =>
+            resetAndInitMiroirAndApplicationDatabase.bind(domainController, [
+              adminConfigurationDeploymentLibrary,
+              adminConfigurationDeploymentMiroir,
+            ] as any)
           }
         >
           Reset Application database

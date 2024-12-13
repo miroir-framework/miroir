@@ -230,6 +230,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       entityDefinitionMenu as EntityDefinition,
       entityDefinitionQueryVersionV1 as EntityDefinition,
       entityDefinitionReport as EntityDefinition,
+      entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition,
       entityDefinitionTest as EntityDefinition,
       // jzodSchemajzodMiroirBootstrapSchema as any,
     );

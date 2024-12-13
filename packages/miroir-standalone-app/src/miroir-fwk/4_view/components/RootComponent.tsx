@@ -58,6 +58,7 @@ import {
   transformerMenuV1,
   undoRedoEndpointVersionV1,
   testEndpointVersionV1,
+  entityDefinitionSelfApplicationDeploymentConfiguration,
 } from "miroir-core";
 import { ReduxStateChanges } from "miroir-localcache-redux";
 
@@ -201,6 +202,7 @@ export const RootComponent = (props: RootComponentProps) => {
     entityDefinitionMenu  as EntityDefinition,
     entityDefinitionQueryVersionV1 as EntityDefinition,
     entityDefinitionReport as EntityDefinition,
+    entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition,
     entityDefinitionTest as EntityDefinition,
     // jzodSchemajzodMiroirBootstrapSchema as any,
   ),[]);

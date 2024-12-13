@@ -378,7 +378,7 @@ const testActions: Record<string, TestActionParams> = {
   //             referenceName: "newSelfApplicationUuid",
   //           },
   //         },
-  //         newDeployment: {
+  //         DeploymentConfiguration: {
   //           uuid: {
   //             transformerType: "parameterReference",
   //             referenceName: "newDeploymentUuid",
@@ -549,7 +549,7 @@ const testActions: Record<string, TestActionParams> = {
   //             deployments: [
   //               {
   //                 transformerType: "parameterReference",
-  //                 referenceName: "newDeployment",
+  //                 referenceName: "DeploymentConfiguration",
   //               },
   //             ],
   //           }
@@ -657,7 +657,7 @@ const testActions: Record<string, TestActionParams> = {
   //                 instances: [
   //                   {
   //                     transformerType: "parameterReference",
-  //                     referenceName: "newDeployment",
+  //                     referenceName: "DeploymentConfiguration",
   //                   },
   //                 ],
   //               },

@@ -3874,6 +3874,118 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "selfApplicationDeploymentConfiguration": {
+        "type": "object",
+        "definition": {
+          "uuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Uuid",
+                "editable": false
+              }
+            }
+          },
+          "parentName": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 2,
+                "defaultLabel": "Entity Name",
+                "editable": false
+              }
+            }
+          },
+          "parentUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 3,
+                "defaultLabel": "Entity Uuid",
+                "editable": false
+              }
+            }
+          },
+          "parentDefinitionVersionUuid": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 4,
+                "defaultLabel": "Entity Definition Version Uuid",
+                "editable": false
+              }
+            }
+          },
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 5,
+                "defaultLabel": "Name",
+                "editable": true
+              }
+            }
+          },
+          "defaultLabel": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 6,
+                "defaultLabel": "Default Label",
+                "editable": true
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 7,
+                "defaultLabel": "Description",
+                "editable": true
+              }
+            }
+          },
+          "application": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 8,
+                "defaultLabel": "Application",
+                "description": "The Application of the Branch.",
+                "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                "editable": false
+              }
+            }
+          },
+          "model": {
+            "type": "any",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 9,
+                "defaultLabel": "Application Deployment Model",
+                "editable": true
+              }
+            }
+          },
+          "data": {
+            "type": "any",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 10,
+                "defaultLabel": "Application Deployment Data",
+                "editable": true
+              }
+            }
+          }
+        }
+      },
       "miroirMenuItem": {
         "type": "object",
         "definition": {
@@ -8061,11 +8173,11 @@ export const miroirFundamentalJzodSchema = {
               "relativePath": "application"
             }
           },
-          "applicationDeploymentConfiguration": {
+          "selfApplicationDeploymentConfiguration": {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "entityInstance"
+              "relativePath": "selfApplicationDeploymentConfiguration"
             }
           },
           "applicationModelBranch": {
@@ -8194,11 +8306,11 @@ export const miroirFundamentalJzodSchema = {
                   "relativePath": "application"
                 }
               },
-              "applicationDeploymentConfiguration": {
+              "selfApplicationDeploymentConfiguration": {
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "entityInstance"
+                  "relativePath": "selfApplicationDeploymentConfiguration"
                 }
               },
               "applicationModelBranch": {
@@ -8560,11 +8672,11 @@ export const miroirFundamentalJzodSchema = {
                       "relativePath": "application"
                     }
                   },
-                  "applicationDeploymentConfiguration": {
+                  "selfApplicationDeploymentConfiguration": {
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "entityInstance"
+                      "relativePath": "selfApplicationDeploymentConfiguration"
                     }
                   },
                   "applicationModelBranch": {
@@ -16641,6 +16753,316 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplicationDeploymentConfiguration": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "carryOnObject"
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "uuid": {
+                "type": "union",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Uuid",
+                    "editable": false
+                  }
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Uuid",
+                        "editable": false
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "parentName": {
+                "type": "union",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 2,
+                    "defaultLabel": "Entity Name",
+                    "editable": false
+                  }
+                },
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Name",
+                        "editable": false
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "parentUuid": {
+                "type": "union",
+                "tag": {
+                  "value": {
+                    "id": 3,
+                    "defaultLabel": "Entity Uuid",
+                    "editable": false
+                  }
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 3,
+                        "defaultLabel": "Entity Uuid",
+                        "editable": false
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "parentDefinitionVersionUuid": {
+                "type": "union",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 4,
+                    "defaultLabel": "Entity Definition Version Uuid",
+                    "editable": false
+                  }
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 4,
+                        "defaultLabel": "Entity Definition Version Uuid",
+                        "editable": false
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "name": {
+                "type": "union",
+                "tag": {
+                  "value": {
+                    "id": 5,
+                    "defaultLabel": "Name",
+                    "editable": true
+                  }
+                },
+                "definition": [
+                  {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "id": 5,
+                        "defaultLabel": "Name",
+                        "editable": true
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "defaultLabel": {
+                "type": "union",
+                "tag": {
+                  "value": {
+                    "id": 6,
+                    "defaultLabel": "Default Label",
+                    "editable": true
+                  }
+                },
+                "definition": [
+                  {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "id": 6,
+                        "defaultLabel": "Default Label",
+                        "editable": true
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "description": {
+                "type": "union",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 7,
+                    "defaultLabel": "Description",
+                    "editable": true
+                  }
+                },
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 7,
+                        "defaultLabel": "Description",
+                        "editable": true
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "application": {
+                "type": "union",
+                "tag": {
+                  "value": {
+                    "id": 8,
+                    "defaultLabel": "Application",
+                    "description": "The Application of the Branch.",
+                    "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                    "editable": false
+                  }
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 8,
+                        "defaultLabel": "Application",
+                        "description": "The Application of the Branch.",
+                        "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                        "editable": false
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "model": {
+                "type": "union",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 9,
+                    "defaultLabel": "Application Deployment Model",
+                    "editable": true
+                  }
+                },
+                "definition": [
+                  {
+                    "type": "any",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 9,
+                        "defaultLabel": "Application Deployment Model",
+                        "editable": true
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "data": {
+                "type": "union",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 10,
+                    "defaultLabel": "Application Deployment Data",
+                    "editable": true
+                  }
+                },
+                "definition": [
+                  {
+                    "type": "any",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 10,
+                        "defaultLabel": "Application Deployment Data",
+                        "editable": true
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementVoid": {
         "type": "union",
         "definition": [
@@ -21541,10 +21963,10 @@ export const miroirFundamentalJzodSchema = {
                         },
                         "context": {}
                       },
-                      "applicationDeploymentConfiguration": {
+                      "selfApplicationDeploymentConfiguration": {
                         "type": "schemaReference",
                         "definition": {
-                          "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
+                          "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplicationDeploymentConfiguration"
                         },
                         "context": {}
                       },

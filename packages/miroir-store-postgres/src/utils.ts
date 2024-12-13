@@ -45,6 +45,7 @@ export const dataTypesMapping: { [type in string]: DataTypes.AbstractDataTypeCon
   uuid: DataTypes.STRING,
   date: DataTypes.DATE,
   schemaReference: DataTypes.JSONB, 
+  any: DataTypes.JSONB, 
 
   // ARRAY: DataTypes.JSONB, // OK?
   // BOOLEAN: DataTypes.BOOLEAN,
@@ -69,7 +70,7 @@ export function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
           type:
             (
               [
-                // "any",
+                "any",
                 // "bigint",
                 // "boolean",
                 "date",

@@ -1898,7 +1898,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           referenceName: "newSelfApplicationUuid",
         },
       },
-      newDeployment: {
+      DeploymentConfiguration: {
         uuid: {
           transformerType: "parameterReference",
           referenceName: "newDeploymentUuid",
@@ -2069,7 +2069,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           deployments: [
             {
               transformerType: "parameterReference",
-              referenceName: "newDeployment",
+              referenceName: "DeploymentConfiguration",
             },
           ],
         }
@@ -2177,7 +2177,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               instances: [
                 {
                   transformerType: "parameterReference",
-                  referenceName: "newDeployment",
+                  referenceName: "DeploymentConfiguration",
                 },
               ],
             },

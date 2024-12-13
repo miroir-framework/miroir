@@ -211,6 +211,7 @@ export function getMiroirFundamentalJzodSchema(
   entityDefinitionMenu: any,
   entityDefinitionQueryVersionV1: any,
   entityDefinitionReportV1: any,
+  entityDefinitionSelfApplicationDeploymentConfiguration: any,
   entityDefinitionTest: any
 ): any {
   // ): JzodSchema {
@@ -599,6 +600,7 @@ export function getMiroirFundamentalJzodSchema(
           (e: any) => e.definition.testType.definition == "testCase"
         ),
         test: entityDefinitionTest.jzodSchema as any,
+        selfApplicationDeploymentConfiguration: entityDefinitionSelfApplicationDeploymentConfiguration.jzodSchema as any,
         // application: entityDefinitionApplicationV1.jzodSchema as JzodObject,
         // applicationVersion: entityDefinitionApplicationVersionV1.jzodSchema as JzodObject,
         // bundle: entityDefinitionBundleV1.jzodSchema as JzodObject,
@@ -2390,6 +2392,7 @@ export function getMiroirFundamentalJzodSchema(
         // instanceUuidIndexUuidIndex: (miroirFundamentalJzodSchema as any).definition.context.instanceUuidIndexUuidIndex,
         entityInstancesUuidIndex: (miroirFundamentalJzodSchema as any).definition.context.entityInstancesUuidIndex,
         deployment: (miroirFundamentalJzodSchema as any).definition.context.deployment,
+        selfApplicationDeploymentConfiguration: (miroirFundamentalJzodSchema as any).definition.context.selfApplicationDeploymentConfiguration,
         // domain elements  ###########################################################
         // definition: [
         //   },
