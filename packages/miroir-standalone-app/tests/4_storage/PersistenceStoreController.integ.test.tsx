@@ -49,7 +49,8 @@ import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 import { setupServer } from "msw/node";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
-  createTestApplication,
+  createTestStore,
+  deploymentConfigurations,
   loadTestConfigFiles,
   miroirAfterEach,
   miroirBeforeAll,
@@ -101,7 +102,7 @@ beforeAll(
       }
     }
 
-    await createTestApplication(
+    await createTestStore(
       miroirConfig,
       domainController
     )
@@ -113,7 +114,7 @@ beforeAll(
 // ################################################################################################
 beforeEach(
   async  () => {
-    await miroirBeforeEach(miroirConfig, domainController, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
+    await miroirBeforeEach(miroirConfig, domainController, deploymentConfigurations, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
   }
 )
 

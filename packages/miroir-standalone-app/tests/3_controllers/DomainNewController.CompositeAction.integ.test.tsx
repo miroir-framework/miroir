@@ -19,6 +19,7 @@ import {
   CompositeAction,
   ConfigurationService,
   defaultLevels,
+  defaultMiroirMetaModel,
   DomainControllerInterface,
   entityAuthor,
   entityBook,
@@ -41,6 +42,13 @@ import {
   publisher3,
   Report,
   reportBookList,
+  SelfApplicationDeploymentConfiguration,
+  selfApplicationDeploymentLibrary,
+  selfApplicationDeploymentMiroir,
+  selfApplicationMiroir,
+  selfApplicationModelBranchMiroirMasterBranch,
+  selfApplicationStoreBasedConfigurationMiroir,
+  selfApplicationVersionInitialMiroirVersion,
   TestCompositeAction,
   TestCompositeActionTemplate,
   Uuid
@@ -57,6 +65,7 @@ import { miroirAppStartup } from '../../src/startup.js';
 import {
   addEntitiesAndInstances,
   chainVitestSteps,
+  createTestStore,
   loadTestConfigFiles,
   miroirAfterAll,
   miroirAfterEach,
@@ -117,7 +126,11 @@ beforeAll(
     } else {
       throw new Error("beforeAll failed initialization!");
     }
-    // }
+
+    // await createTestStore(
+    //   miroirConfig,
+    //   domainController
+    // )
 
     return Promise.resolve();
   }
@@ -129,49 +142,59 @@ beforeEach(
     await miroirBeforeEach(
       miroirConfig,
       domainController,
+      [
+        {
+          adminConfigurationDeployment: adminConfigurationDeploymentMiroir,
+          selfApplicationDeployment: selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+        },
+        // {
+        //   adminConfigurationDeployment: adminConfigurationDeploymentLibrary,
+        //   selfApplicationDeployment: selfApplicationDeploymentLibrary  as SelfApplicationDeploymentConfiguration,
+        // },
+      ],
       localMiroirPersistenceStoreController,
       localAppPersistenceStoreController
     );
-    await addEntitiesAndInstances(
-      localAppPersistenceStoreController,
-      domainController,
-      localCache,
-      miroirConfig,
-      adminConfigurationDeploymentLibrary,
-      [
-        {
-          entity: entityAuthor as MetaEntity,
-          entityDefinition: entityDefinitionAuthor as EntityDefinition,
-          instances: [
-            author1,
-            author2,
-            author3 as EntityInstance,
-          ]
-        },
-        {
-          entity: entityBook as MetaEntity,
-          entityDefinition: entityDefinitionBook as EntityDefinition,
-          instances: [
-            book1 as EntityInstance,
-            book2 as EntityInstance,
-            book3 as EntityInstance,
-            book4 as EntityInstance,
-            book5 as EntityInstance,
-            book6 as EntityInstance,
-          ]
-        },
-        {
-          entity: entityPublisher as MetaEntity,
-          entityDefinition: entityDefinitionPublisher as EntityDefinition,
-          instances: [
-            publisher1 as EntityInstance,
-            publisher2 as EntityInstance,
-            publisher3 as EntityInstance,
-          ]
-        }
-      ],
-      reportBookList as Report,
-    )
+  //   await addEntitiesAndInstances(
+  //     localAppPersistenceStoreController,
+  //     domainController,
+  //     localCache,
+  //     miroirConfig,
+  //     adminConfigurationDeploymentLibrary,
+  //     [
+  //       {
+  //         entity: entityAuthor as MetaEntity,
+  //         entityDefinition: entityDefinitionAuthor as EntityDefinition,
+  //         instances: [
+  //           author1,
+  //           author2,
+  //           author3 as EntityInstance,
+  //         ]
+  //       },
+  //       {
+  //         entity: entityBook as MetaEntity,
+  //         entityDefinition: entityDefinitionBook as EntityDefinition,
+  //         instances: [
+  //           book1 as EntityInstance,
+  //           book2 as EntityInstance,
+  //           book3 as EntityInstance,
+  //           book4 as EntityInstance,
+  //           book5 as EntityInstance,
+  //           book6 as EntityInstance,
+  //         ]
+  //       },
+  //       {
+  //         entity: entityPublisher as MetaEntity,
+  //         entityDefinition: entityDefinitionPublisher as EntityDefinition,
+  //         instances: [
+  //           publisher1 as EntityInstance,
+  //           publisher2 as EntityInstance,
+  //           publisher3 as EntityInstance,
+  //         ]
+  //       }
+  //     ],
+  //     reportBookList as Report,
+  //   )
   }
 )
 
@@ -215,7 +238,7 @@ afterAll(
 type TestActionParams = {
   testActionType: "testCompositeAction",
   deploymentUuid: Uuid,
-  compositeTestAction: TestCompositeAction,
+  testCompositeAction: TestCompositeAction,
 } 
 | {
   testActionType: "testCompositeActionTemplate",
@@ -223,12 +246,151 @@ type TestActionParams = {
   compositeTestActionTemplate: TestCompositeActionTemplate,
 } 
 
+const libraryEntitesAndInstances = [
+  {
+    entity: entityAuthor as MetaEntity,
+    entityDefinition: entityDefinitionAuthor as EntityDefinition,
+    instances: [
+      author1,
+      author2,
+      author3 as EntityInstance,
+    ]
+  },
+  {
+    entity: entityBook as MetaEntity,
+    entityDefinition: entityDefinitionBook as EntityDefinition,
+    instances: [
+      book1 as EntityInstance,
+      book2 as EntityInstance,
+      book3 as EntityInstance,
+      book4 as EntityInstance,
+      book5 as EntityInstance,
+      book6 as EntityInstance,
+    ]
+  },
+  {
+    entity: entityPublisher as MetaEntity,
+    entityDefinition: entityDefinitionPublisher as EntityDefinition,
+    instances: [
+      publisher1 as EntityInstance,
+      publisher2 as EntityInstance,
+      publisher3 as EntityInstance,
+    ]
+  }
+];
+
 const testActions: Record<string, TestActionParams> = {
   "get Entity Entity from Miroir": {
     testActionType: "testCompositeAction",
     deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-    compositeTestAction: {
+    testCompositeAction: {
       testType: "testCompositeAction",
+      beforeAll: {
+        actionType: "compositeAction",
+        actionLabel: "beforeAll",
+        actionName: "sequence",
+        definition: [
+          {
+            compositeActionType: "domainAction",
+            compositeActionStepLabel: "createLibraryStore",
+            domainAction: {
+              actionType: "storeManagementAction",
+              actionName: "createStore",
+              endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+              configuration: miroirConfig.client.emulateServer
+              ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid]
+              : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentLibrary.uuid]
+            },
+          },
+        ]
+      },
+      beforeEach: {
+        actionType: "compositeAction",
+        actionLabel: "beforeEach",
+        actionName: "sequence",
+        definition: [
+          {
+            compositeActionType: "domainAction",
+            compositeActionStepLabel: "resetLibraryStore",
+            domainAction: {
+              actionType: "modelAction",
+              actionName: "resetModel",
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+            }
+          },
+          {
+            compositeActionType: "domainAction",
+            compositeActionStepLabel: "initLibraryStore",
+            domainAction: {
+              actionType: "modelAction",
+              actionName: "initModel",
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              deploymentUuid: selfApplicationDeploymentLibrary.uuid,
+              params: {
+                dataStoreType: adminConfigurationDeploymentLibrary.uuid == adminConfigurationDeploymentMiroir.uuid?"miroir":"app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
+                metaModel: defaultMiroirMetaModel,
+                application: selfApplicationMiroir,
+                selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
+                applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
+                applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
+                applicationVersion: selfApplicationVersionInitialMiroirVersion,
+              },
+            }
+          },
+          {
+            compositeActionType: "domainAction",
+            compositeActionStepLabel: "initLibraryStore",
+            domainAction: {
+              actionType: "modelAction",
+              actionName: "rollback",
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+            }
+          },
+          {
+            compositeActionType: "domainAction",
+            compositeActionStepLabel: "CreateLibraryStoreEntities",
+            domainAction: {
+              actionType: "modelAction",
+              actionName: "createEntity",
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              entities: libraryEntitesAndInstances
+            }
+          },
+          {
+            compositeActionType: "domainAction",
+            compositeActionStepLabel: "CommitLibraryStoreEntities",
+            domainAction: {
+              actionType: "modelAction",
+              actionName: "commit",
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+            }
+          },
+          {
+            compositeActionType: "domainAction",
+            compositeActionStepLabel: "CreateLibraryStoreInstances",
+            domainAction: {
+              actionType: "instanceAction",
+              actionName: "createInstance",
+              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+              applicationSection: "data",
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+              objects: libraryEntitesAndInstances.map((e) => {
+                return {
+                  parentName: e.entity.name,
+                  parentUuid: e.entity.uuid,
+                  applicationSection: "data",
+                  instances: e.instances,
+                };
+              })
+            }
+          }
+        ]
+      },
       compositeAction: {
         actionType: "compositeAction",
         actionLabel: "selectEntityEntity",
@@ -746,7 +908,7 @@ describe.sequential("DomainNewController.CompositeAction.integ.test", () => {
         switch (testAction.testActionType) {
           case 'testCompositeAction': {
             const queryResult:ActionReturnType = await domainController.handleTestAction(
-              testAction.compositeTestAction,
+              testAction.testCompositeAction,
               {},
               localCache.currentModel(testAction.deploymentUuid)
             );

@@ -883,6 +883,10 @@ export type EntityDefinition = {
 };
 export type TestCompositeAction = {
     testType: "testCompositeAction";
+    beforeAll?: CompositeAction | undefined;
+    beforeEach?: CompositeAction | undefined;
+    afterEach?: CompositeAction | undefined;
+    afterAll?: CompositeAction | undefined;
     compositeAction: CompositeAction;
     testCaseAction: RunTestCaseCompositeAction;
 };
@@ -905,6 +909,10 @@ export type Test = {
     parentUuid: string;
     definition: {
         testType: "testCompositeAction";
+        beforeAll?: CompositeAction | undefined;
+        beforeEach?: CompositeAction | undefined;
+        afterEach?: CompositeAction | undefined;
+        afterAll?: CompositeAction | undefined;
         compositeAction: CompositeAction;
         testCaseAction: RunTestCaseCompositeAction;
     } | {
@@ -4065,10 +4073,10 @@ export const bundle: z.ZodType<Bundle> = z.object({uuid:z.string().uuid(), paren
 export const deployment: z.ZodType<Deployment> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), defaultLabel:z.string(), description:z.string().optional(), application:z.string().uuid(), bundle:z.string().uuid(), configuration:z.lazy(() =>storeUnitConfiguration).optional(), model:z.lazy(() =>jzodObject).optional(), data:z.lazy(() =>jzodObject).optional()}).strict();
 export const entity: z.ZodType<Entity> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), application:z.string().uuid().optional(), name:z.string(), author:z.string().uuid().optional(), description:z.string().optional()}).strict();
 export const entityDefinition: z.ZodType<EntityDefinition> = z.object({uuid:z.string().uuid(), parentName:z.string(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), entityUuid:z.string().uuid(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), description:z.string().optional(), defaultInstanceDetailsReportUuid:z.string().uuid().optional(), viewAttributes:z.array(z.string()).optional(), jzodSchema:z.lazy(() =>jzodObject)}).strict();
-export const testCompositeAction: z.ZodType<TestCompositeAction> = z.object({testType:z.literal("testCompositeAction"), compositeAction:z.lazy(() =>compositeAction), testCaseAction:z.lazy(() =>runTestCaseCompositeAction)}).strict();
+export const testCompositeAction: z.ZodType<TestCompositeAction> = z.object({testType:z.literal("testCompositeAction"), beforeAll:z.lazy(() =>compositeAction).optional(), beforeEach:z.lazy(() =>compositeAction).optional(), afterEach:z.lazy(() =>compositeAction).optional(), afterAll:z.lazy(() =>compositeAction).optional(), compositeAction:z.lazy(() =>compositeAction), testCaseAction:z.lazy(() =>runTestCaseCompositeAction)}).strict();
 export const testCompositeActionTemplate: z.ZodType<TestCompositeActionTemplate> = z.object({testType:z.literal("testCompositeActionTemplate"), compositeActionTemplate:z.lazy(() =>compositeActionTemplate), testCaseAction:z.lazy(() =>runTestCaseCompositeAction)}).strict();
 export const testCase: z.ZodType<TestCase> = z.object({testType:z.literal("testCase"), definition:z.object({resultAccessPath:z.array(z.string()).optional(), ignoreAttributes:z.array(z.string()).optional(), expectedValue:z.any()}).strict()}).strict();
-export const test: z.ZodType<Test> = z.object({uuid:z.string(), parentName:z.string().optional(), parentUuid:z.string(), definition:z.union([z.object({testType:z.literal("testCompositeAction"), compositeAction:z.lazy(() =>compositeAction), testCaseAction:z.lazy(() =>runTestCaseCompositeAction)}).strict(), z.object({testType:z.literal("testCompositeActionTemplate"), compositeActionTemplate:z.lazy(() =>compositeActionTemplate), testCaseAction:z.lazy(() =>runTestCaseCompositeAction)}).strict(), z.object({testType:z.literal("testCase"), definition:z.object({resultAccessPath:z.array(z.string()).optional(), ignoreAttributes:z.array(z.string()).optional(), expectedValue:z.any()}).strict()}).strict()])}).strict();
+export const test: z.ZodType<Test> = z.object({uuid:z.string(), parentName:z.string().optional(), parentUuid:z.string(), definition:z.union([z.object({testType:z.literal("testCompositeAction"), beforeAll:z.lazy(() =>compositeAction).optional(), beforeEach:z.lazy(() =>compositeAction).optional(), afterEach:z.lazy(() =>compositeAction).optional(), afterAll:z.lazy(() =>compositeAction).optional(), compositeAction:z.lazy(() =>compositeAction), testCaseAction:z.lazy(() =>runTestCaseCompositeAction)}).strict(), z.object({testType:z.literal("testCompositeActionTemplate"), compositeActionTemplate:z.lazy(() =>compositeActionTemplate), testCaseAction:z.lazy(() =>runTestCaseCompositeAction)}).strict(), z.object({testType:z.literal("testCase"), definition:z.object({resultAccessPath:z.array(z.string()).optional(), ignoreAttributes:z.array(z.string()).optional(), expectedValue:z.any()}).strict()}).strict()])}).strict();
 export const selfApplicationDeploymentConfiguration: z.ZodType<SelfApplicationDeploymentConfiguration> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), defaultLabel:z.string(), description:z.string().optional(), application:z.string().uuid(), model:z.any().optional(), data:z.any().optional()}).strict();
 export const miroirMenuItem: z.ZodType<MiroirMenuItem> = z.object({label:z.string(), section:z.lazy(() =>applicationSection), application:z.string(), reportUuid:z.string(), instanceUuid:z.string().optional(), icon:z.string()}).strict();
 export const menuItemArray: z.ZodType<MenuItemArray> = z.array(z.lazy(() =>miroirMenuItem));

@@ -951,6 +951,27 @@ export class DomainController implements DomainControllerInterface {
     // );
     // switch (testAction.actionName) {
     //   case "runTestCompositeAction": {
+
+    if (testAction.beforeAll) {
+      log.info("handleTestAction beforeAll", testAction.beforeAll.actionLabel, testAction.beforeAll);
+      const beforeAllResult = await this.handleCompositeAction(testAction.beforeAll, localActionParams, currentModel);
+      if (beforeAllResult?.status != "ok") {
+        log.error("Error on beforeAll", JSON.stringify(beforeAllResult, null, 2));
+      }
+    } else {
+      log.info("handleTestAction no beforeAll!");
+    }
+
+    if (testAction.beforeEach) {
+      log.info("handleTestAction beforeAll", testAction.beforeEach.actionLabel, testAction.beforeAll);
+      const beforeAllResult = await this.handleCompositeAction(testAction.beforeEach, localActionParams, currentModel);
+      if (beforeAllResult?.status != "ok") {
+        log.error("Error on beforeAll", JSON.stringify(beforeAllResult, null, 2));
+      }
+    } else {
+      log.info("handleTestAction no beforeAll!");
+    }
+
     const localCompositeAction: CompositeAction = {
       ...testAction.compositeAction,
       definition: [

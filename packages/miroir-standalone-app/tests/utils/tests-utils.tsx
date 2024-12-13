@@ -77,7 +77,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 // ################################################################################################
 const deployments = [adminConfigurationDeploymentMiroir, adminConfigurationDeploymentLibrary ];
 
-const deploymentConfigurations: DeploymentConfiguration[] = [
+export const deploymentConfigurations: DeploymentConfiguration[] = [
   {
     adminConfigurationDeployment: adminConfigurationDeploymentMiroir,
     selfApplicationDeployment: selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
@@ -330,7 +330,7 @@ export async function addEntitiesAndInstances(
   }
 }
 
-export async function createTestApplication(
+export async function createTestStore(
   miroirConfig: MiroirConfigClient,
   domainController: DomainControllerInterface,
 ) {
@@ -671,6 +671,7 @@ export async function miroirBeforeAll(
 export async function miroirBeforeEach(
   miroirConfig: MiroirConfigClient,
   domainController: DomainControllerInterface,
+  deploymentConfigurations: DeploymentConfiguration[],
   localMiroirPersistenceStoreController: PersistenceStoreControllerInterface,
   localAppPersistenceStoreController: PersistenceStoreControllerInterface,
 ):Promise<void> {

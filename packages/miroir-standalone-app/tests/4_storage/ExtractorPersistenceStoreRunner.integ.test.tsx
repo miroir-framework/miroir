@@ -52,7 +52,8 @@ import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
   addEntitiesAndInstances,
   chainVitestSteps,
-  createTestApplication,
+  createTestStore,
+  deploymentConfigurations,
   loadTestConfigFiles,
   miroirAfterEach,
   miroirBeforeAll,
@@ -105,7 +106,7 @@ beforeAll(
         throw new Error("beforeAll failed initialization!");
       }
     }
-    await createTestApplication(
+    await createTestStore(
       miroirConfig,
       domainController
     )
@@ -117,7 +118,7 @@ beforeAll(
 // ################################################################################################
 beforeEach(
   async  () => {
-    await miroirBeforeEach(miroirConfig, domainController, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
+    await miroirBeforeEach(miroirConfig, domainController, deploymentConfigurations, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
     await addEntitiesAndInstances(
       localAppPersistenceStoreController,
       domainController,

@@ -39,7 +39,8 @@ import {
 
 import {
   addEntitiesAndInstances,
-  createTestApplication,
+  createTestStore,
+  deploymentConfigurations,
   DisplayLoadingInfo,
   loadTestConfigFiles,
   miroirAfterAll,
@@ -122,7 +123,7 @@ beforeAll(
     } else {
       throw new Error("beforeAll failed initialization!");
     }
-    await createTestApplication(
+    await createTestStore(
       miroirConfig,
       domainController
     )
@@ -133,7 +134,7 @@ beforeAll(
 
 beforeEach(
   async () => {
-    await miroirBeforeEach(miroirConfig, domainController, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
+    await miroirBeforeEach(miroirConfig, domainController, deploymentConfigurations, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
   }
 )
 
