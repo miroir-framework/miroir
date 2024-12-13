@@ -29,6 +29,7 @@ import { LocalCache } from "miroir-localcache-redux";
 
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
 import {
+  createTestApplication,
   DisplayLoadingInfo,
   loadTestConfigFiles,
   miroirAfterAll,
@@ -103,6 +104,11 @@ beforeAll(
     } else {
       throw new Error("beforeAll failed initialization!");
     }
+    await createTestApplication(
+      miroirConfig,
+      domainController
+    )
+
   }
 )
 

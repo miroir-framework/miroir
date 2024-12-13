@@ -38,7 +38,8 @@ import {
   entityReport,
   ignorePostgresExtraAttributesOnList,
   selfApplicationDeploymentMiroir,
-  selfApplicationDeploymentLibrary
+  selfApplicationDeploymentLibrary,
+  DomainControllerInterface
 } from "miroir-core";
 
 
@@ -48,6 +49,7 @@ import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 import { setupServer } from "msw/node";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
+  createTestApplication,
   loadTestConfigFiles,
   miroirAfterEach,
   miroirBeforeAll,
@@ -57,6 +59,7 @@ import {
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
 let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface | undefined;
+let domainController: DomainControllerInterface;
 
 const env:any = (import.meta as any).env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
@@ -92,10 +95,16 @@ beforeAll(
           localAppPersistenceStoreController = wrapped.localAppPersistenceStoreController;
           persistenceStoreControllerManager = wrapped.persistenceStoreControllerManager;
         }
+        domainController = wrapped.domainController;
       } else {
         throw new Error("beforeAll failed initialization!");
       }
     }
+
+    await createTestApplication(
+      miroirConfig,
+      domainController
+    )
 
     return Promise.resolve();
   }
@@ -104,14 +113,14 @@ beforeAll(
 // ################################################################################################
 beforeEach(
   async  () => {
-    await miroirBeforeEach(miroirConfig, undefined, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
+    await miroirBeforeEach(miroirConfig, domainController, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
   }
 )
 
 // ################################################################################################
 afterEach(
   async () => {
-    await miroirAfterEach(miroirConfig, undefined, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
+    await miroirAfterEach(miroirConfig, domainController, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
   }
 )
 

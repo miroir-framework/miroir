@@ -39,6 +39,7 @@ import {
 
 import {
   addEntitiesAndInstances,
+  createTestApplication,
   DisplayLoadingInfo,
   loadTestConfigFiles,
   miroirAfterAll,
@@ -121,6 +122,10 @@ beforeAll(
     } else {
       throw new Error("beforeAll failed initialization!");
     }
+    await createTestApplication(
+      miroirConfig,
+      domainController
+    )
 
     return Promise.resolve();
   }

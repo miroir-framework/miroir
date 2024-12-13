@@ -53,6 +53,7 @@ import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
   addEntitiesAndInstances,
   chainVitestSteps,
+  createTestApplication,
   loadTestConfigFiles,
   miroirAfterEach,
   miroirBeforeAll,
@@ -106,6 +107,11 @@ beforeAll(
       }
     }
 
+    await createTestApplication(
+      miroirConfig,
+      domainController
+    )
+
     return Promise.resolve();
   }
 )
@@ -113,7 +119,7 @@ beforeAll(
 // ################################################################################################
 beforeEach(
   async  () => {
-    await miroirBeforeEach(miroirConfig, undefined, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
+    await miroirBeforeEach(miroirConfig, domainController, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
     await addEntitiesAndInstances(
       localAppPersistenceStoreController,
       domainController,
@@ -163,7 +169,7 @@ beforeEach(
 // ################################################################################################
 afterEach(
   async () => {
-    await miroirAfterEach(miroirConfig, undefined, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
+    await miroirAfterEach(miroirConfig, domainController, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
   }
 )
 
