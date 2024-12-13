@@ -143,6 +143,7 @@ afterAll(
     await miroirAfterAll(
       miroirConfig,
       domainController,
+      deploymentConfigurations, 
       localMiroirPersistenceStoreController,
       localAppPersistenceStoreController,
       localDataStoreServer

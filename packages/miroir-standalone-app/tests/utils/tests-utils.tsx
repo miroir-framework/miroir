@@ -689,43 +689,62 @@ export async function miroirAfterEach(
 export async function miroirAfterAll(
   miroirConfig: MiroirConfigClient,
   domainController: DomainControllerInterface,
+  deploymentConfigurations: DeploymentConfiguration[],
   localMiroirPersistenceStoreController: PersistenceStoreControllerInterface,
   localAppPersistenceStoreController: PersistenceStoreControllerInterface,
   localRestServer?: any /*SetupServerApi*/,
 ) {
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterAll');
-  const storeUnitConfigurationLibrary = miroirConfig.client.emulateServer
-    ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid]
-    : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentLibrary.uuid];
-  const storeUnitConfigurationMiroir = miroirConfig.client.emulateServer
-    ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
-    : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
-
   console.log('miroirAfterAll delete test stores.');
-  const deletedApplicationLibraryStore = await domainController?.handleAction(
-    {
+  for (const d of deploymentConfigurations) {
+    const storeUnitConfiguration = miroirConfig.client.emulateServer
+    ? miroirConfig.client.deploymentStorageConfig[d.adminConfigurationDeployment.uuid]
+    : miroirConfig.client.serverConfig.storeSectionConfiguration[d.adminConfigurationDeployment.uuid];
+    const deletedStore = await domainController.handleAction({
       actionType: "storeManagementAction",
       actionName: "deleteStore",
       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-      configuration: storeUnitConfigurationLibrary
+      deploymentUuid: d.adminConfigurationDeployment.uuid,
+      configuration: storeUnitConfiguration
+    });
+    if (deletedStore?.status != "ok") {
+      console.error('Error afterEach',JSON.stringify(deletedStore, null, 2));
     }
-  )
-  if (deletedApplicationLibraryStore?.status != "ok") {
-    console.error('Error afterEach',JSON.stringify(deletedApplicationLibraryStore, null, 2));
+  
   }
-  const deletedMiroirStore = await domainController?.handleAction(
-    {
-      actionType: "storeManagementAction",
-      actionName: "deleteStore",
-      endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-      deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-      configuration: storeUnitConfigurationMiroir
-    }
-  )
-  if (deletedMiroirStore?.status != "ok") {
-    console.error('Error afterEach',JSON.stringify(deletedMiroirStore, null, 2));
-  }
+
+  // const storeUnitConfigurationLibrary = miroirConfig.client.emulateServer
+  //   ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid]
+  //   : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentLibrary.uuid];
+  // const storeUnitConfigurationMiroir = miroirConfig.client.emulateServer
+  //   ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
+  //   : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
+
+  // console.log('miroirAfterAll delete test stores.');
+  // const deletedApplicationLibraryStore = await domainController?.handleAction(
+  //   {
+  //     actionType: "storeManagementAction",
+  //     actionName: "deleteStore",
+  //     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+  //     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+  //     configuration: storeUnitConfigurationLibrary
+  //   }
+  // )
+  // if (deletedApplicationLibraryStore?.status != "ok") {
+  //   console.error('Error afterEach',JSON.stringify(deletedApplicationLibraryStore, null, 2));
+  // }
+  // const deletedMiroirStore = await domainController?.handleAction(
+  //   {
+  //     actionType: "storeManagementAction",
+  //     actionName: "deleteStore",
+  //     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+  //     deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+  //     configuration: storeUnitConfigurationMiroir
+  //   }
+  // )
+  // if (deletedMiroirStore?.status != "ok") {
+  //   console.error('Error afterEach',JSON.stringify(deletedMiroirStore, null, 2));
+  // }
 
   if (!miroirConfig.client.emulateServer) {
     console.log('miroirAfterAll closing deployment:', adminConfigurationDeploymentMiroir.uuid); // TODO: really???

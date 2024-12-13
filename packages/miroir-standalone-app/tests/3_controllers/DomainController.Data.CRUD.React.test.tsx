@@ -134,19 +134,38 @@ beforeAll(
 
 beforeEach(
   async () => {
-    await miroirBeforeEach(miroirConfig, domainController, deploymentConfigurations, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
+    await miroirBeforeEach(
+      miroirConfig,
+      domainController,
+      deploymentConfigurations,
+      localMiroirPersistenceStoreController,
+      localAppPersistenceStoreController
+    );
   }
 )
 
 afterAll(
   async () => {
-    await miroirAfterAll(miroirConfig, domainController, localMiroirPersistenceStoreController,localAppPersistenceStoreController,localDataStoreServer);
+    await miroirAfterAll(
+      miroirConfig,
+      domainController,
+      deploymentConfigurations,
+      localMiroirPersistenceStoreController,
+      localAppPersistenceStoreController,
+      localDataStoreServer
+    );
   }
 )
 
 afterEach(
   async () => {
-    await miroirAfterEach(miroirConfig, domainController, deploymentConfigurations, localMiroirPersistenceStoreController, localAppPersistenceStoreController);
+    await miroirAfterEach(
+      miroirConfig,
+      domainController,
+      deploymentConfigurations,
+      localMiroirPersistenceStoreController,
+      localAppPersistenceStoreController
+    );
   }
 )
 

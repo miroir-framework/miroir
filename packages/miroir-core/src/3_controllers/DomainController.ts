@@ -1064,6 +1064,17 @@ export class DomainController implements DomainControllerInterface {
       } else {
         log.info("handleTestCompositeActionSuite no afterEach!");
       }
+
+      if (testAction.afterAll) {
+        log.info("handleTestCompositeActionSuite afterAll", testAction.afterAll.actionLabel, testAction.beforeAll);
+        const afterAllResult = await this.handleCompositeAction(testAction.afterAll, localActionParams, currentModel);
+        if (afterAllResult?.status != "ok") {
+          log.error("Error on afterAll", JSON.stringify(afterAllResult, null, 2));
+        }
+      } else {
+        log.info("handleTestCompositeActionSuite no afterAll!");
+      }
+  
     }
 
     return Promise.resolve(ACTION_OK);

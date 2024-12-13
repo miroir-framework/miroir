@@ -189,6 +189,16 @@ afterAll(
     await miroirAfterAll(
       miroirConfig,
       domainController,
+      [
+        {
+          adminConfigurationDeployment: adminConfigurationDeploymentMiroir,
+          selfApplicationDeployment: selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+        },
+        // {
+        //   adminConfigurationDeployment: adminConfigurationDeploymentLibrary,
+        //   selfApplicationDeployment: selfApplicationDeploymentLibrary  as SelfApplicationDeploymentConfiguration,
+        // },
+      ],
       localMiroirPersistenceStoreController,
       localAppPersistenceStoreController,
       localDataStoreServer
@@ -386,6 +396,26 @@ const testActions: Record<string, TestActionParams> = {
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             },
+          },
+        ],
+      },
+      afterAll: {
+        actionType: "compositeAction",
+        actionLabel: "afterEach",
+        actionName: "sequence",
+        definition: [
+          {
+            compositeActionType: "domainAction",
+            compositeActionStepLabel: "resetLibraryStore",
+            domainAction: {
+              actionType: "storeManagementAction",
+              actionName: "deleteStore",
+              endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+              configuration: miroirConfig.client.emulateServer
+              ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid]
+              : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentLibrary.uuid]
+            }
           },
         ],
       },
