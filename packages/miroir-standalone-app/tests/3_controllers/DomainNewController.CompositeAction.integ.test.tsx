@@ -50,6 +50,7 @@ import {
   selfApplicationStoreBasedConfigurationMiroir,
   selfApplicationVersionInitialMiroirVersion,
   TestCompositeAction,
+  TestCompositeActionSuite,
   TestCompositeActionTemplate,
   Uuid
 } from "miroir-core";
@@ -66,6 +67,7 @@ import {
   addEntitiesAndInstances,
   chainVitestSteps,
   createTestStore,
+  deploymentConfigurations,
   loadTestConfigFiles,
   miroirAfterAll,
   miroirAfterEach,
@@ -155,58 +157,28 @@ beforeEach(
       localMiroirPersistenceStoreController,
       localAppPersistenceStoreController
     );
-  //   await addEntitiesAndInstances(
-  //     localAppPersistenceStoreController,
-  //     domainController,
-  //     localCache,
-  //     miroirConfig,
-  //     adminConfigurationDeploymentLibrary,
-  //     [
-  //       {
-  //         entity: entityAuthor as MetaEntity,
-  //         entityDefinition: entityDefinitionAuthor as EntityDefinition,
-  //         instances: [
-  //           author1,
-  //           author2,
-  //           author3 as EntityInstance,
-  //         ]
-  //       },
-  //       {
-  //         entity: entityBook as MetaEntity,
-  //         entityDefinition: entityDefinitionBook as EntityDefinition,
-  //         instances: [
-  //           book1 as EntityInstance,
-  //           book2 as EntityInstance,
-  //           book3 as EntityInstance,
-  //           book4 as EntityInstance,
-  //           book5 as EntityInstance,
-  //           book6 as EntityInstance,
-  //         ]
-  //       },
-  //       {
-  //         entity: entityPublisher as MetaEntity,
-  //         entityDefinition: entityDefinitionPublisher as EntityDefinition,
-  //         instances: [
-  //           publisher1 as EntityInstance,
-  //           publisher2 as EntityInstance,
-  //           publisher3 as EntityInstance,
-  //         ]
-  //       }
-  //     ],
-  //     reportBookList as Report,
-  //   )
   }
 )
 
 // ################################################################################################
 afterEach(
   async () => {
-    await miroirAfterEach(
-      miroirConfig,
-      domainController,
-      localMiroirPersistenceStoreController,
-      localAppPersistenceStoreController
-    );
+    // await miroirAfterEach(
+    //   miroirConfig,
+    //   domainController,
+    //   [
+    //     {
+    //       adminConfigurationDeployment: adminConfigurationDeploymentMiroir,
+    //       selfApplicationDeployment: selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+    //     },
+    //     // {
+    //     //   adminConfigurationDeployment: adminConfigurationDeploymentLibrary,
+    //     //   selfApplicationDeployment: selfApplicationDeploymentLibrary  as SelfApplicationDeploymentConfiguration,
+    //     // },
+    //   ],
+    //   localMiroirPersistenceStoreController,
+    //   localAppPersistenceStoreController
+    // );
   }
 )
 
@@ -236,6 +208,11 @@ afterAll(
 // ##############################################################################################
 // ##############################################################################################
 type TestActionParams = {
+  testActionType: "testCompositeActionSuite",
+  deploymentUuid: Uuid,
+  testCompositeAction: TestCompositeActionSuite,
+} 
+| {
   testActionType: "testCompositeAction",
   deploymentUuid: Uuid,
   testCompositeAction: TestCompositeAction,
@@ -281,10 +258,11 @@ const libraryEntitesAndInstances = [
 
 const testActions: Record<string, TestActionParams> = {
   "get Entity Entity from Miroir": {
-    testActionType: "testCompositeAction",
+    testActionType: "testCompositeActionSuite",
     deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
     testCompositeAction: {
-      testType: "testCompositeAction",
+      testType: "testCompositeActionSuite",
+      // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
       beforeAll: {
         actionType: "compositeAction",
         actionLabel: "beforeAll",
@@ -299,11 +277,11 @@ const testActions: Record<string, TestActionParams> = {
               endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
               deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               configuration: miroirConfig.client.emulateServer
-              ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid]
-              : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentLibrary.uuid]
+                ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid]
+                : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentLibrary.uuid],
             },
           },
-        ]
+        ],
       },
       beforeEach: {
         actionType: "compositeAction",
@@ -318,7 +296,7 @@ const testActions: Record<string, TestActionParams> = {
               actionName: "resetModel",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            }
+            },
           },
           {
             compositeActionType: "domainAction",
@@ -329,7 +307,10 @@ const testActions: Record<string, TestActionParams> = {
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               deploymentUuid: selfApplicationDeploymentLibrary.uuid,
               params: {
-                dataStoreType: adminConfigurationDeploymentLibrary.uuid == adminConfigurationDeploymentMiroir.uuid?"miroir":"app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
+                dataStoreType:
+                  adminConfigurationDeploymentLibrary.uuid == adminConfigurationDeploymentMiroir.uuid
+                    ? "miroir"
+                    : "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
                 metaModel: defaultMiroirMetaModel,
                 application: selfApplicationMiroir,
                 selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
@@ -337,7 +318,7 @@ const testActions: Record<string, TestActionParams> = {
                 applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
                 applicationVersion: selfApplicationVersionInitialMiroirVersion,
               },
-            }
+            },
           },
           {
             compositeActionType: "domainAction",
@@ -347,7 +328,7 @@ const testActions: Record<string, TestActionParams> = {
               actionName: "rollback",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            }
+            },
           },
           {
             compositeActionType: "domainAction",
@@ -357,8 +338,8 @@ const testActions: Record<string, TestActionParams> = {
               actionName: "createEntity",
               deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              entities: libraryEntitesAndInstances
-            }
+              entities: libraryEntitesAndInstances,
+            },
           },
           {
             compositeActionType: "domainAction",
@@ -368,7 +349,7 @@ const testActions: Record<string, TestActionParams> = {
               actionName: "commit",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            }
+            },
           },
           {
             compositeActionType: "domainAction",
@@ -386,73 +367,98 @@ const testActions: Record<string, TestActionParams> = {
                   applicationSection: "data",
                   instances: e.instances,
                 };
-              })
-            }
-          }
-        ]
+              }),
+            },
+          },
+        ],
       },
-      compositeAction: {
+      afterEach: {
         actionType: "compositeAction",
-        actionLabel: "selectEntityEntity",
+        actionLabel: "afterEach",
         actionName: "sequence",
         definition: [
           {
             compositeActionType: "domainAction",
-            compositeActionStepLabel: "selectEntityEntity_refresh",
+            compositeActionStepLabel: "resetLibraryStore",
             domainAction: {
-              actionName: "rollback",
               actionType: "modelAction",
+              actionName: "resetModel",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             },
           },
-          {
-            compositeActionType: "runBoxedExtractorOrQueryAction",
-            compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
-            nameGivenToResult: "entityEntity",
-            query: {
-              actionType: "runBoxedExtractorOrQueryAction",
-              actionName: "runQuery",
-              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-              applicationSection: "model", // TODO: give only application section in individual queries?
-              deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-              query: {
-                queryType: "boxedQueryWithExtractorCombinerTransformer",
-                deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                pageParams: {
-                  currentDeploymentUuid: adminConfigurationDeploymentMiroir.uuid
-                },
-                queryParams: { },
-                contextResults: { },
-                extractors: {
-                  entity: {
-                    extractorOrCombinerType: "extractorForObjectByDirectReference",
-                    applicationSection: "model",
-                    parentName: "Entity",
-                    parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                    instanceUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  }
-                },
-              }
-            }
-          },
-        ]
+        ],
       },
-      testCaseAction: {
-        compositeActionType: "runTestCaseCompositeAction",
-        compositeActionStepLabel: "checkEntityEntity",
-        nameGivenToResult: "checkEntityEntity",
-        testCase: {
-          testType: "testCase",
-          definition: {
-            resultAccessPath: [ "entityEntity", "entity" ],
-            ignoreAttributes: [ "author" ],
-            expectedValue: entityEntity
-          }
-        }
-      }
-    }
+      testCompositeActions: [
+        {
+          testType: "testCompositeAction",
+          compositeAction: {
+            actionType: "compositeAction",
+            actionLabel: "selectEntityEntity",
+            actionName: "sequence",
+            definition: [
+              {
+                compositeActionType: "domainAction",
+                compositeActionStepLabel: "selectEntityEntity_refresh",
+                domainAction: {
+                  actionName: "rollback",
+                  actionType: "modelAction",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                },
+              },
+              {
+                compositeActionType: "runBoxedExtractorOrQueryAction",
+                compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+                nameGivenToResult: "entityEntity",
+                query: {
+                  actionType: "runBoxedExtractorOrQueryAction",
+                  actionName: "runQuery",
+                  endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  applicationSection: "model", // TODO: give only application section in individual queries?
+                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  query: {
+                    queryType: "boxedQueryWithExtractorCombinerTransformer",
+                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                    pageParams: {
+                      currentDeploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                    },
+                    queryParams: {},
+                    contextResults: {},
+                    extractors: {
+                      entity: {
+                        extractorOrCombinerType: "extractorForObjectByDirectReference",
+                        applicationSection: "model",
+                        parentName: "Entity",
+                        parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                        instanceUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                      },
+                    },
+                  },
+                },
+              },
+            ],
+          },
+          testCompositeActionAssertions: [
+            {
+              compositeActionType: "runTestCompositeActionAssertion",
+              compositeActionStepLabel: "checkEntityEntity",
+              nameGivenToResult: "checkEntityEntity",
+              testAssertion: {
+                testType: "testAssertion",
+                definition: {
+                  resultAccessPath: ["entityEntity", "entity"],
+                  ignoreAttributes: ["author"],
+                  expectedValue: entityEntity,
+                },
+              },
+            },
+          ],
+        },
+      ]
+    },
   },
+    // ]
   // "create new Application": {
   //   testActionType: "testCompositeAction",
   //   deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
@@ -890,7 +896,7 @@ const testActions: Record<string, TestActionParams> = {
   //     }
   //   }
   // }
-}
+};
 
 // TODO: duplicate test with ExtractorTemplatePersistenceStoreRunner.integ.test.tsx
 describe.sequential("DomainNewController.CompositeAction.integ.test", () => {
@@ -906,13 +912,22 @@ describe.sequential("DomainNewController.CompositeAction.integ.test", () => {
       {},
       async () => {
         switch (testAction.testActionType) {
-          case 'testCompositeAction': {
-            const queryResult:ActionReturnType = await domainController.handleTestAction(
+          case 'testCompositeActionSuite': {
+            const queryResult:ActionReturnType = await domainController.handleTestCompositeActionSuite(
               testAction.testCompositeAction,
               {},
               localCache.currentModel(testAction.deploymentUuid)
             );
-            console.log("test", fullTestName, ": queryResult=", JSON.stringify(queryResult, null, 2));
+            console.log("test testCompositeActionSuite", fullTestName, ": queryResult=", JSON.stringify(queryResult, null, 2));
+            return queryResult;
+          }
+          case 'testCompositeAction': {
+            const queryResult:ActionReturnType = await domainController.handleTestCompositeAction(
+              testAction.testCompositeAction,
+              {},
+              localCache.currentModel(testAction.deploymentUuid)
+            );
+            console.log("test testCompositeAction", fullTestName, ": queryResult=", JSON.stringify(queryResult, null, 2));
             return queryResult;
           }
           case 'testCompositeActionTemplate': {
@@ -998,11 +1013,11 @@ describe.sequential("DomainNewController.CompositeAction.integ.test", () => {
   //         testType: "testCompositeAction",
   //         compositeAction: localCompositeAction,
   //         testCaseAction: {
-  //           compositeActionType: "runTestCaseCompositeAction",
+  //           compositeActionType: "runTestCompositeActionAssertion",
   //           compositeActionStepLabel: "checkEntityEntity",
   //           nameGivenToResult: "checkEntityEntity",
-  //           testCase: {
-  //             testType: "testCase",
+  //           testAssertion: {
+  //             testType: "testAssertion",
   //             definition: {
   //               resultAccessPath: [ "entityEntity", "entity" ],
   //               ignoreAttributes: [ "author" ],
@@ -1011,7 +1026,7 @@ describe.sequential("DomainNewController.CompositeAction.integ.test", () => {
   //           }
   //         }
   //       }
-  //       const queryResult:ActionReturnType = await domainController.handleTestAction(
+  //       const queryResult:ActionReturnType = await domainController.handleTestCompositeAction(
   //         compositeTestAction,
   //         {},
   //         localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)

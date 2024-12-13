@@ -238,7 +238,7 @@ export function getMiroirFundamentalJzodSchema(
     (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
   )?.actionParameters.definition;
   const localRunTestCaseAction = localCompositeActionDefinition.definition.definition.definition.find(
-    (a: any) => a.definition?.compositeActionType?.definition == "runTestCaseCompositeAction"
+    (a: any) => a.definition?.compositeActionType?.definition == "runTestCompositeActionAssertion"
   );
   log.info("localCompositeActionDefinition", JSON.stringify(localCompositeActionDefinition, null, 2));
   log.info("localRunTestCaseAction", JSON.stringify(localRunTestCaseAction, null, 2));
@@ -593,11 +593,14 @@ export function getMiroirFundamentalJzodSchema(
         testCompositeAction: (entityDefinitionTest.jzodSchema as any).definition.definition.definition.find(
           (e: any) => e.definition.testType.definition == "testCompositeAction"
         ),
+        testCompositeActionSuite: (entityDefinitionTest.jzodSchema as any).definition.definition.definition.find(
+          (e: any) => e.definition.testType.definition == "testCompositeActionSuite"
+        ),
         testCompositeActionTemplate: (entityDefinitionTest.jzodSchema as any).definition.definition.definition.find(
           (e: any) => e.definition.testType.definition == "testCompositeActionTemplate"
         ),
-        testCase: (entityDefinitionTest.jzodSchema as any).definition.definition.definition.find(
-          (e: any) => e.definition.testType.definition == "testCase"
+        testAssertion: (entityDefinitionTest.jzodSchema as any).definition.definition.definition.find(
+          (e: any) => e.definition.testType.definition == "testAssertion"
         ),
         test: entityDefinitionTest.jzodSchema as any,
         selfApplicationDeploymentConfiguration: entityDefinitionSelfApplicationDeploymentConfiguration.jzodSchema as any,
@@ -2204,10 +2207,10 @@ export function getMiroirFundamentalJzodSchema(
         // extendedCompositeAction: domainEndpointVersionV1.definition.actions.find(
         //   (a: any) => a.actionParameters?.definition?.actionType?.definition == "extendedCompositeAction"
         // )?.actionParameters,
-        runTestCaseCompositeAction: domainEndpointVersionV1.definition.actions.find(
+        runTestCompositeActionAssertion: domainEndpointVersionV1.definition.actions.find(
           (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
         )?.actionParameters.definition.definition.definition.definition.find(
-          (a: any) => a.definition?.compositeActionType?.definition == "runTestCaseCompositeAction"
+          (a: any) => a.definition?.compositeActionType?.definition == "runTestCompositeActionAssertion"
         ),
         domainAction: {
           type: "union",
@@ -2368,7 +2371,7 @@ export function getMiroirFundamentalJzodSchema(
 
   // console.log("################## domainActionDefinitions", JSON.stringify(domainActionDefinitions, null, 2))
   console.log("################## miroirFundamentalJzodSchema", JSON.stringify(Object.keys(miroirFundamentalJzodSchema.definition.context), null, 2))
-  console.log("################## testCase", JSON.stringify((miroirFundamentalJzodSchema as any).definition.context.testCase, null, 2))
+  console.log("################## testAssertion", JSON.stringify((miroirFundamentalJzodSchema as any).definition.context.testAssertion, null, 2))
   console.log("################## testAction_runTestCase", JSON.stringify((miroirFundamentalJzodSchema as any).definition.context.testAction_runTestCase, null, 2))
 
   // const innerResolutionStore: Record<string, JzodReference> = {
@@ -2533,7 +2536,7 @@ export function getMiroirFundamentalJzodSchema(
         // domain elements
         // domainElementObject: (miroirFundamentalJzodSchema as any).definition.context.domainElementObject,
         // root elements
-        testCase: (miroirFundamentalJzodSchema as any).definition.context.testCase,
+        testAssertion: (miroirFundamentalJzodSchema as any).definition.context.testAssertion,
         testAction_runTestCase: (miroirFundamentalJzodSchema as any).definition.context.testAction_runTestCase,
         shippingBox: (miroirFundamentalJzodSchema as any).definition.context.shippingBox,
         boxedExtractorOrCombinerReturningObject: (miroirFundamentalJzodSchema as any).definition.context.boxedExtractorOrCombinerReturningObject,

@@ -200,14 +200,14 @@
                   {
                     "type": "object",
                     "definition": {
-                      "compositeActionType": { "type": "literal", "definition": "runTestCaseCompositeAction" },
+                      "compositeActionType": { "type": "literal", "definition": "runTestCompositeActionAssertion" },
                       "compositeActionStepLabel": { "type": "string", "optional": true },
                       "nameGivenToResult": { "type": "string" },
-                      "testCase": {
+                      "testAssertion": {
                         "type": "schemaReference",
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "testCase"
+                          "relativePath": "testAssertion"
                         }
                       }
                     }

@@ -59,7 +59,7 @@
             "definition": {
               "testType": {
                 "type": "literal",
-                "definition": "testCompositeAction"
+                "definition": "testCompositeActionSuite"
               },
               "beforeAll": {
                 "type": "schemaReference",
@@ -93,6 +93,41 @@
                   "relativePath": "compositeAction"
                 }
               },
+              "testCompositeActions": {
+                "type": "array",
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "testCompositeAction"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "testType": {
+                "type": "literal",
+                "definition": "testCompositeAction"
+              },
+              "beforeTestSetupAction": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeAction"
+                }
+              },
+              "afterTestCleanupAction": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeAction"
+                }
+              },
               "compositeAction": {
                 "type": "schemaReference",
                 "definition": {
@@ -100,11 +135,14 @@
                   "relativePath": "compositeAction"
                 }
               },
-              "testCaseAction": {
-                "type": "schemaReference",
+              "testCompositeActionAssertions": {
+                "type": "array",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "runTestCaseCompositeAction"
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "runTestCompositeActionAssertion"
+                  }
                 }
               }
             }
@@ -123,13 +161,15 @@
                   "relativePath": "compositeActionTemplate"
                 }
               },
-              "testCaseAction": {
+              "testCompositeActionAssertions": {
+                "type": "array",
+                "definition": {
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "runTestCaseCompositeAction"
+                  "relativePath": "runTestCompositeActionAssertion"
                 }
-              }
+              }}
             }
           },
           {
@@ -137,7 +177,7 @@
             "definition": {
               "testType": {
                 "type": "literal",
-                "definition": "testCase"
+                "definition": "testAssertion"
               },
               "definition": {
                 "type": "object",

@@ -3675,6 +3675,48 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "testCompositeAction"
           },
+          "beforeTestSetupAction": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "compositeAction"
+            }
+          },
+          "afterTestCleanupAction": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "compositeAction"
+            }
+          },
+          "compositeAction": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "compositeAction"
+            }
+          },
+          "testCompositeActionAssertions": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "runTestCompositeActionAssertion"
+              }
+            }
+          }
+        }
+      },
+      "testCompositeActionSuite": {
+        "type": "object",
+        "definition": {
+          "testType": {
+            "type": "literal",
+            "definition": "testCompositeActionSuite"
+          },
           "beforeAll": {
             "type": "schemaReference",
             "optional": true,
@@ -3707,18 +3749,14 @@ export const miroirFundamentalJzodSchema = {
               "relativePath": "compositeAction"
             }
           },
-          "compositeAction": {
-            "type": "schemaReference",
+          "testCompositeActions": {
+            "type": "array",
             "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "compositeAction"
-            }
-          },
-          "testCaseAction": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "runTestCaseCompositeAction"
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "testCompositeAction"
+              }
             }
           }
         }
@@ -3737,21 +3775,24 @@ export const miroirFundamentalJzodSchema = {
               "relativePath": "compositeActionTemplate"
             }
           },
-          "testCaseAction": {
-            "type": "schemaReference",
+          "testCompositeActionAssertions": {
+            "type": "array",
             "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "runTestCaseCompositeAction"
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "runTestCompositeActionAssertion"
+              }
             }
           }
         }
       },
-      "testCase": {
+      "testAssertion": {
         "type": "object",
         "definition": {
           "testType": {
             "type": "literal",
-            "definition": "testCase"
+            "definition": "testAssertion"
           },
           "definition": {
             "type": "object",
@@ -3830,7 +3871,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "testType": {
                     "type": "literal",
-                    "definition": "testCompositeAction"
+                    "definition": "testCompositeActionSuite"
                   },
                   "beforeAll": {
                     "type": "schemaReference",
@@ -3864,6 +3905,41 @@ export const miroirFundamentalJzodSchema = {
                       "relativePath": "compositeAction"
                     }
                   },
+                  "testCompositeActions": {
+                    "type": "array",
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "testCompositeAction"
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "testType": {
+                    "type": "literal",
+                    "definition": "testCompositeAction"
+                  },
+                  "beforeTestSetupAction": {
+                    "type": "schemaReference",
+                    "optional": true,
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "compositeAction"
+                    }
+                  },
+                  "afterTestCleanupAction": {
+                    "type": "schemaReference",
+                    "optional": true,
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "compositeAction"
+                    }
+                  },
                   "compositeAction": {
                     "type": "schemaReference",
                     "definition": {
@@ -3871,11 +3947,14 @@ export const miroirFundamentalJzodSchema = {
                       "relativePath": "compositeAction"
                     }
                   },
-                  "testCaseAction": {
-                    "type": "schemaReference",
+                  "testCompositeActionAssertions": {
+                    "type": "array",
                     "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "runTestCaseCompositeAction"
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "runTestCompositeActionAssertion"
+                      }
                     }
                   }
                 }
@@ -3894,11 +3973,14 @@ export const miroirFundamentalJzodSchema = {
                       "relativePath": "compositeActionTemplate"
                     }
                   },
-                  "testCaseAction": {
-                    "type": "schemaReference",
+                  "testCompositeActionAssertions": {
+                    "type": "array",
                     "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "runTestCaseCompositeAction"
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "runTestCompositeActionAssertion"
+                      }
                     }
                   }
                 }
@@ -3908,7 +3990,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "testType": {
                     "type": "literal",
-                    "definition": "testCase"
+                    "definition": "testAssertion"
                   },
                   "definition": {
                     "type": "object",
@@ -9210,7 +9292,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "testCase"
+              "relativePath": "testAssertion"
             }
           }
         }
@@ -10932,7 +11014,7 @@ export const miroirFundamentalJzodSchema = {
               "definition": {
                 "compositeActionType": {
                   "type": "literal",
-                  "definition": "runTestCaseCompositeAction"
+                  "definition": "runTestCompositeActionAssertion"
                 },
                 "compositeActionStepLabel": {
                   "type": "string",
@@ -10941,11 +11023,11 @@ export const miroirFundamentalJzodSchema = {
                 "nameGivenToResult": {
                   "type": "string"
                 },
-                "testCase": {
+                "testAssertion": {
                   "type": "schemaReference",
                   "definition": {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "testCase"
+                    "relativePath": "testAssertion"
                   }
                 }
               }
@@ -11128,7 +11210,7 @@ export const miroirFundamentalJzodSchema = {
                   "definition": {
                     "compositeActionType": {
                       "type": "literal",
-                      "definition": "runTestCaseCompositeAction"
+                      "definition": "runTestCompositeActionAssertion"
                     },
                     "compositeActionStepLabel": {
                       "type": "string",
@@ -11137,11 +11219,11 @@ export const miroirFundamentalJzodSchema = {
                     "nameGivenToResult": {
                       "type": "string"
                     },
-                    "testCase": {
+                    "testAssertion": {
                       "type": "schemaReference",
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "testCase"
+                        "relativePath": "testAssertion"
                       }
                     }
                   }
@@ -11151,12 +11233,12 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "runTestCaseCompositeAction": {
+      "runTestCompositeActionAssertion": {
         "type": "object",
         "definition": {
           "compositeActionType": {
             "type": "literal",
-            "definition": "runTestCaseCompositeAction"
+            "definition": "runTestCompositeActionAssertion"
           },
           "compositeActionStepLabel": {
             "type": "string",
@@ -11165,11 +11247,11 @@ export const miroirFundamentalJzodSchema = {
           "nameGivenToResult": {
             "type": "string"
           },
-          "testCase": {
+          "testAssertion": {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "testCase"
+              "relativePath": "testAssertion"
             }
           }
         }
@@ -11411,7 +11493,7 @@ export const miroirFundamentalJzodSchema = {
                       "definition": {
                         "compositeActionType": {
                           "type": "literal",
-                          "definition": "runTestCaseCompositeAction"
+                          "definition": "runTestCompositeActionAssertion"
                         },
                         "compositeActionStepLabel": {
                           "type": "string",
@@ -11420,11 +11502,11 @@ export const miroirFundamentalJzodSchema = {
                         "nameGivenToResult": {
                           "type": "string"
                         },
-                        "testCase": {
+                        "testAssertion": {
                           "type": "schemaReference",
                           "definition": {
                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "testCase"
+                            "relativePath": "testAssertion"
                           }
                         }
                       }
@@ -25230,7 +25312,7 @@ export const miroirFundamentalJzodSchema = {
                               "definition": [
                                 {
                                   "type": "literal",
-                                  "definition": "runTestCaseCompositeAction"
+                                  "definition": "runTestCompositeActionAssertion"
                                 },
                                 {
                                   "type": "schemaReference",
@@ -25270,10 +25352,10 @@ export const miroirFundamentalJzodSchema = {
                                 }
                               ]
                             },
-                            "testCase": {
+                            "testAssertion": {
                               "type": "schemaReference",
                               "definition": {
-                                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testCase"
+                                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
                               },
                               "context": {}
                             }
@@ -25637,7 +25719,7 @@ export const miroirFundamentalJzodSchema = {
                       "definition": [
                         {
                           "type": "literal",
-                          "definition": "runTestCaseCompositeAction"
+                          "definition": "runTestCompositeActionAssertion"
                         },
                         {
                           "type": "schemaReference",
@@ -25677,10 +25759,10 @@ export const miroirFundamentalJzodSchema = {
                         }
                       ]
                     },
-                    "testCase": {
+                    "testAssertion": {
                       "type": "schemaReference",
                       "definition": {
-                        "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testCase"
+                        "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
                       },
                       "context": {}
                     }
@@ -26150,7 +26232,7 @@ export const miroirFundamentalJzodSchema = {
                               "definition": [
                                 {
                                   "type": "literal",
-                                  "definition": "runTestCaseCompositeAction"
+                                  "definition": "runTestCompositeActionAssertion"
                                 },
                                 {
                                   "type": "schemaReference",
@@ -26190,10 +26272,10 @@ export const miroirFundamentalJzodSchema = {
                                 }
                               ]
                             },
-                            "testCase": {
+                            "testAssertion": {
                               "type": "schemaReference",
                               "definition": {
-                                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testCase"
+                                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
                               },
                               "context": {}
                             }
@@ -26220,7 +26302,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testCase": {
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion": {
         "type": "union",
         "definition": [
           {
@@ -26237,7 +26319,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": [
                   {
                     "type": "literal",
-                    "definition": "testCase"
+                    "definition": "testAssertion"
                   },
                   {
                     "type": "schemaReference",
@@ -26436,7 +26518,7 @@ export const miroirFundamentalJzodSchema = {
               "testToRun": {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testCase"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
                 },
                 "context": {}
               }

@@ -52,6 +52,7 @@ import {
 
 import {
   MiroirIntegrationTestEnvironment,
+  deploymentConfigurations,
   loadTestConfigFiles,
   miroirAfterAll,
   miroirAfterEach,
@@ -129,6 +130,7 @@ beforeEach(
     await miroirBeforeEach(
       miroirConfig,
       testEnvironment.domainController, // {} as DomainController,
+      deploymentConfigurations, 
       testEnvironment.localMiroirPersistenceStoreController,
       testEnvironment.localAppPersistenceStoreController
     );

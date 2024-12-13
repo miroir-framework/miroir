@@ -633,30 +633,6 @@ export async function miroirBeforeAll(
       console.error('Error miroirBeforeAll',JSON.stringify(createdMiroirStore, null, 2));
       throw new Error('Error miroirBeforeAll could not create Miroir Store: ' + JSON.stringify(createdMiroirStore, null, 2));
     }
-
-
-    // const configurationLibrary = miroirConfig.client.emulateServer
-    //   ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid]
-    //   : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentLibrary.uuid];
-    // try {
-    //   console.log("miroirBeforeAll: real server, sending remote storeManagementAction to server for test store creation")
-    //   const createdApplicationLibraryStore = await domainController?.handleAction(
-    //     {
-    //       actionType: "storeManagementAction",
-    //       actionName: "createStore",
-    //       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-    //       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-    //       // configuration: miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid]
-    //       configuration: configurationLibrary
-    //     }
-    //   )
-    //   if (createdApplicationLibraryStore?.status != "ok") {
-    //     console.error('Error miroirBeforeAll',JSON.stringify(createdApplicationLibraryStore, null, 2));
-    //     throw new Error('Error miroirBeforeAll could not create Library Store: ' + JSON.stringify(createdApplicationLibraryStore, null, 2));
-    //   }
-    // } catch (error) {
-    //   throw new Error("miroirBeforeEach could not create model and data stores " + error);
-    // }
     console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll DONE');
 
     return Promise.resolve(result);
@@ -692,6 +668,7 @@ export async function miroirBeforeEach(
 export async function miroirAfterEach(
   miroirConfig: MiroirConfigClient,
   domainController: DomainControllerInterface,
+  deploymentConfigurations: DeploymentConfiguration[],
   localMiroirPersistenceStoreController: PersistenceStoreControllerInterface,
   localAppPersistenceStoreController: PersistenceStoreControllerInterface,
 ):Promise<void> {

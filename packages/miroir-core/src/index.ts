@@ -323,6 +323,8 @@ export {
   testAction_runTestCompositeAction,
   TestCompositeAction,
   testCompositeAction,
+  TestCompositeActionSuite,
+  testCompositeActionSuite,
   TestCompositeActionTemplate,
   testCompositeActionTemplate,
 }

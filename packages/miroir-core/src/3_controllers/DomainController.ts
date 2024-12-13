@@ -43,6 +43,7 @@ import {
   SelfApplicationDeploymentConfiguration,
   TestAction_runTestCompositeAction,
   TestCompositeAction,
+  TestCompositeActionSuite,
   TransactionalInstanceAction,
   TransformerForRuntime,
   UndoRedoAction
@@ -932,7 +933,7 @@ export class DomainController implements DomainControllerInterface {
 
   // ##############################################################################################
   // TODO: not used, not tested!
-  async handleTestAction(
+  async handleTestCompositeAction(
     // testAction: TestAction_runTestCompositeAction,
     testAction: TestCompositeAction,
     actionParamValues: Record<string, any>,
@@ -941,10 +942,63 @@ export class DomainController implements DomainControllerInterface {
     const localActionParams = { ...actionParamValues };
     let localContext: Record<string, any> = { ...actionParamValues };
 
-    log.info("handleTestAction testAction", testAction, "localActionParams", localActionParams);
+    log.info("handleTestCompositeAction testAction", testAction, "localActionParams", localActionParams);
     // const resolved: any = resolveCompositeActionTemplate(compositeAction, localActionParams, currentModel);
 
-    log.info("handleTestAction compositeInstanceAction localActionParams", localActionParams);
+    log.info("handleTestCompositeAction compositeInstanceAction localActionParams", localActionParams);
+    // log.info(
+    //   "handleCompositeAction compositeInstanceAction resolvedCompositeActionDefinition",
+    //   JSON.stringify(resolved.resolvedCompositeActionDefinition, null, 2)
+    // );
+    // switch (testAction.actionName) {
+    //   case "runTestCompositeAction": {
+
+    if (testAction.beforeTestSetupAction) {
+      log.info("handleTestCompositeAction beforeAll", testAction.beforeTestSetupAction.actionLabel, testAction.beforeTestSetupAction);
+      const beforeAllResult = await this.handleCompositeAction(testAction.beforeTestSetupAction, localActionParams, currentModel);
+      if (beforeAllResult?.status != "ok") {
+        log.error("Error on beforeTestSetupAction", JSON.stringify(beforeAllResult, null, 2));
+      }
+    } else {
+      log.info("handleTestCompositeAction no beforeTestSetupAction!");
+    }
+
+    const localCompositeAction: CompositeAction = {
+      ...testAction.compositeAction,
+      definition: [
+        ...testAction.compositeAction.definition,
+        ...testAction.testCompositeActionAssertions
+      ],
+    }
+    const result = await this.handleCompositeAction(localCompositeAction, localActionParams, currentModel);
+
+    if (testAction.afterTestCleanupAction) {
+      log.info("handleTestCompositeAction afterTestCleanupAction", testAction.afterTestCleanupAction.actionLabel, testAction.afterTestCleanupAction);
+      const beforeAllResult = await this.handleCompositeAction(testAction.afterTestCleanupAction, localActionParams, currentModel);
+      if (beforeAllResult?.status != "ok") {
+        log.error("Error on afterTestCleanupAction", JSON.stringify(beforeAllResult, null, 2));
+      }
+    } else {
+      log.info("handleTestCompositeAction no afterTestCleanupAction!");
+    }
+
+    return Promise.resolve(ACTION_OK);
+  }
+  
+  // ##############################################################################################
+  async handleTestCompositeActionSuite(
+    // testAction: TestAction_runTestCompositeAction,
+    testAction: TestCompositeActionSuite,
+    actionParamValues: Record<string, any>,
+    currentModel: MetaModel
+  ): Promise<ActionVoidReturnType> {
+    const localActionParams = { ...actionParamValues };
+    let localContext: Record<string, any> = { ...actionParamValues };
+
+    log.info("handleTestCompositeActionSuite testAction", testAction, "localActionParams", localActionParams);
+    // const resolved: any = resolveCompositeActionTemplate(compositeAction, localActionParams, currentModel);
+
+    log.info("handleTestCompositeActionSuite compositeInstanceAction localActionParams", localActionParams);
     // log.info(
     //   "handleCompositeAction compositeInstanceAction resolvedCompositeActionDefinition",
     //   JSON.stringify(resolved.resolvedCompositeActionDefinition, null, 2)
@@ -953,201 +1007,65 @@ export class DomainController implements DomainControllerInterface {
     //   case "runTestCompositeAction": {
 
     if (testAction.beforeAll) {
-      log.info("handleTestAction beforeAll", testAction.beforeAll.actionLabel, testAction.beforeAll);
+      log.info("handleTestCompositeActionSuite beforeAll", testAction.beforeAll.actionLabel, testAction.beforeAll);
       const beforeAllResult = await this.handleCompositeAction(testAction.beforeAll, localActionParams, currentModel);
       if (beforeAllResult?.status != "ok") {
         log.error("Error on beforeAll", JSON.stringify(beforeAllResult, null, 2));
       }
     } else {
-      log.info("handleTestAction no beforeAll!");
+      log.info("handleTestCompositeActionSuite no beforeAll!");
     }
 
-    if (testAction.beforeEach) {
-      log.info("handleTestAction beforeAll", testAction.beforeEach.actionLabel, testAction.beforeAll);
-      const beforeAllResult = await this.handleCompositeAction(testAction.beforeEach, localActionParams, currentModel);
-      if (beforeAllResult?.status != "ok") {
-        log.error("Error on beforeAll", JSON.stringify(beforeAllResult, null, 2));
+    for (const testCompositeAction of testAction.testCompositeActions) {
+      if (testAction.beforeEach) {
+        log.info("handleTestCompositeActionSuite beforeEach", testAction.beforeEach.actionLabel, testAction.beforeAll);
+        const beforeAllResult = await this.handleCompositeAction(testAction.beforeEach, localActionParams, currentModel);
+        if (beforeAllResult?.status != "ok") {
+          log.error("handleTestCompositeActionSuite Error on beforeEach", JSON.stringify(beforeAllResult, null, 2));
+        }
+      } else {
+        log.info("handleTestCompositeActionSuite no beforeEach!");
       }
-    } else {
-      log.info("handleTestAction no beforeAll!");
+
+      if (testCompositeAction.beforeTestSetupAction) {
+        log.info("handleTestCompositeAction beforeAll", testCompositeAction.beforeTestSetupAction.actionLabel, testCompositeAction.beforeTestSetupAction);
+        const beforeTestResult = await this.handleCompositeAction(testCompositeAction.beforeTestSetupAction, localActionParams, currentModel);
+        if (beforeTestResult?.status != "ok") {
+          log.error("Error on beforeTestSetupAction", JSON.stringify(beforeTestResult, null, 2));
+        }
+      } else {
+        log.info("handleTestCompositeAction no beforeTestSetupAction!");
+      }
+
+      const localCompositeAction: CompositeAction = {
+        ...testCompositeAction.compositeAction,
+        definition: [
+          ...testCompositeAction.compositeAction.definition,
+          ...testCompositeAction.testCompositeActionAssertions
+        ],
+      }
+      if (testCompositeAction.afterTestCleanupAction) {
+        log.info("handleTestCompositeAction beforeAll", testCompositeAction.afterTestCleanupAction.actionLabel, testCompositeAction.afterTestCleanupAction);
+        const afterTestResult = await this.handleCompositeAction(testCompositeAction.afterTestCleanupAction, localActionParams, currentModel);
+        if (afterTestResult?.status != "ok") {
+          log.error("Error on beforeTestSetupAction", JSON.stringify(afterTestResult, null, 2));
+        }
+      } else {
+        log.info("handleTestCompositeAction no beforeTestSetupAction!");
+      }
+
+      const result = await this.handleCompositeAction(localCompositeAction, localActionParams, currentModel);
+      if (testAction.afterEach) {
+        log.info("handleTestCompositeActionSuite afterEach", testAction.afterEach.actionLabel, testAction.beforeAll);
+        const beforeAllResult = await this.handleCompositeAction(testAction.afterEach, localActionParams, currentModel);
+        if (beforeAllResult?.status != "ok") {
+          log.error("handleTestCompositeActionSuite Error on afterEach", JSON.stringify(beforeAllResult, null, 2));
+        }
+      } else {
+        log.info("handleTestCompositeActionSuite no afterEach!");
+      }
     }
 
-    const localCompositeAction: CompositeAction = {
-      ...testAction.compositeAction,
-      definition: [
-        ...testAction.compositeAction.definition,
-        testAction.testCaseAction
-      ],
-    }
-    // const result = await this.handleCompositeAction(testAction.compositeAction, localActionParams, currentModel);
-    const result = await this.handleCompositeAction(localCompositeAction, localActionParams, currentModel);
-    //   }
-    //   default: {
-    //     throw new Error("handleTestAction cannot handle action name for" + testAction.actionName);
-    //   }
-    // }
-    // for (const currentAction of testAction.definition) {
-    //   log.info(
-    //     "handleCompositeAction compositeInstanceAction currentAction",
-    //     // JSON.stringify(currentAction, null, 2),
-    //     currentAction,
-    //     "localContext keys",
-    //     Object.keys(localContext),
-    //     "localContext",
-    //     localContext
-    //   );
-    //   switch (currentAction.compositeActionType) {
-    //     case "compositeAction": {
-    //       log.info(
-    //         "handleCompositeAction compositeAction action to handle",
-    //         JSON.stringify(currentAction, null, 2)
-    //       );
-    //       const actionResult = await this.handleCompositeAction(
-    //         currentAction.compositeActionTemplate,
-    //         actionParamValues,
-    //         currentModel
-    //       );
-    //       break;
-    //     }
-    //     case "domainAction": {
-    //       log.info(
-    //         "handleCompositeAction domainAction action to handle",
-    //         JSON.stringify(currentAction.domainAction, null, 2)
-    //       );
-    //       const actionResult = await this.handleAction(currentAction.domainAction, currentModel);
-    //       if (actionResult?.status != "ok") {
-    //         log.error("Error on action", JSON.stringify(actionResult, null, 2));
-    //       }
-    //       break;
-    //     }
-    //     case "runBoxedQueryTemplateAction": {
-    //       log.info(
-    //         "handleCompositeActionTemplate boxedQueryTemplateAction to handle",
-    //         currentAction,
-    //         "with actionParamValues",
-    //         actionParamValues
-    //       );
-
-    //       const actionResult = await this.handleQueryTemplateActionForServerONLY(
-    //         currentAction.queryTemplate
-    //       );
-    //       if (actionResult?.status != "ok") {
-    //         log.error(
-    //           "Error on runBoxedQueryTemplateAction with nameGivenToResult",
-    //           currentAction.nameGivenToResult,
-    //           "query=",
-    //           JSON.stringify(actionResult, null, 2)
-    //         );
-    //       } else {
-    //         log.info(
-    //           "handleCompositeActionTemplate boxedQueryTemplateAction adding result to context as",
-    //           currentAction.nameGivenToResult,
-    //           "value",
-    //           actionResult
-    //         );
-    //         localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement.elementValue;
-    //       }
-    //       break;
-    //     }
-    //     case "runBoxedExtractorTemplateAction": {
-    //       log.info(
-    //         "handleCompositeAction resolved extractorTemplate action",
-    //         currentAction,
-    //         "with actionParamValues",
-    //         actionParamValues
-    //       );
-
-    //       const actionResult = await this.handleBoxedExtractorTemplateActionForServerONLY(
-    //         currentAction.queryTemplate
-    //       );
-    //       if (actionResult?.status != "ok") {
-    //         log.error(
-    //           "Error on runBoxedQueryTemplateAction with nameGivenToResult",
-    //           currentAction.nameGivenToResult,
-    //           "query=",
-    //           JSON.stringify(actionResult, null, 2)
-    //         );
-    //       } else {
-    //         log.info(
-    //           "handleCompositeActionTemplate extractorTemplate adding result to context as",
-    //           currentAction.nameGivenToResult,
-    //           "value",
-    //           actionResult
-    //         );
-    //         localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement.elementValue;
-    //       }
-    //       break;
-    //     }
-    //     case "runBoxedExtractorOrQueryAction": {
-    //       // throw new Error(
-    //       //   "handleCompositeAction can not handle query actions: " + JSON.stringify(currentAction)
-    //       // );
-
-    //       log.info(
-    //         "handleCompositeActionTemplate runBoxedExtractorOrQueryAction to handle",
-    //         currentAction,
-    //         "with actionParamValues",
-    //         actionParamValues
-    //       );
-
-    //       const actionResult = await this.handleQueryActionOrBoxedExtractorActionForServerONLY(
-    //         currentAction.query
-    //       );
-    //       if (actionResult?.status != "ok") {
-    //         log.error(
-    //           "Error on runBoxedExtractorOrQueryAction with nameGivenToResult",
-    //           currentAction.nameGivenToResult,
-    //           "query=",
-    //           JSON.stringify(actionResult, null, 2)
-    //         );
-    //       } else {
-    //         log.info(
-    //           "handleCompositeActionTemplate runBoxedExtractorOrQueryAction adding result to context as",
-    //           currentAction.nameGivenToResult,
-    //           "value",
-    //           JSON.stringify(actionResult, null, 2)
-    //         );
-    //         localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement.elementValue;
-    //       }
-    //       break;
-    //     }
-    //     case 'runBoxedQueryTemplateOrBoxedExtractorTemplateAction': {
-    //       throw new Error("handleCompositeAction can not handle query actions: " + JSON.stringify(currentAction));
-    //     }
-    //     case 'runTestCaseCompositeAction': {
-    //       if (!ConfigurationService.testImplementation) {
-    //         throw new Error(
-    //           "ConfigurationService.testImplementation is not set, please inject a test implementation using ConfigurationService.registerTestImplementation on startup if you want to run tests at runtime."
-    //         );
-    //       }
-    //       const preValueToTest = resolvePathOnObject(
-    //         localContext,
-    //         currentAction.testCase.definition.resultAccessPath ?? []
-    //       );
-    //       const valueToTest = Array.isArray(preValueToTest)
-    //           ? ignorePostgresExtraAttributesOnList(preValueToTest, currentAction.testCase.definition.ignoreAttributes??[])
-    //           : ignorePostgresExtraAttributesOnObject(preValueToTest, currentAction.testCase.definition.ignoreAttributes??[])
-    //       ;
-    //       log.info(
-    //         "handleCompositeAction runTestCaseCompositeAction to handle",
-    //         JSON.stringify(currentAction.testCase, null, 2),
-    //         "preValueToTest",
-    //         JSON.stringify(preValueToTest, null, 2),
-    //         "valueToTest",
-    //         JSON.stringify(valueToTest, null, 2)
-    //       );
-    //       ConfigurationService.testImplementation
-    //         .expect(valueToTest)
-    //         .toEqual(currentAction.testCase.definition.expectedValue);
-    //       log.info("handleCompositeAction runTestCaseCompositeAction test passed", currentAction.testCase);
-    //       break;
-    //     }
-    //     default: {
-    //       log.error("handleCompositeAction unknown compositeActionType", currentAction);
-    //       break;
-    //     }
-    //   }
-    // }
     return Promise.resolve(ACTION_OK);
   }
   
@@ -1298,7 +1216,7 @@ export class DomainController implements DomainControllerInterface {
         case 'runBoxedQueryTemplateOrBoxedExtractorTemplateAction': {
           throw new Error("handleCompositeAction can not handle query actions: " + JSON.stringify(currentAction));
         }
-        case 'runTestCaseCompositeAction': {
+        case 'runTestCompositeActionAssertion': {
           if (!ConfigurationService.testImplementation) {
             throw new Error(
               "ConfigurationService.testImplementation is not set, please inject a test implementation using ConfigurationService.registerTestImplementation on startup if you want to run tests at runtime."
@@ -1306,15 +1224,15 @@ export class DomainController implements DomainControllerInterface {
           }
           const preValueToTest = resolvePathOnObject(
             localContext,
-            currentAction.testCase.definition.resultAccessPath ?? []
+            currentAction.testAssertion.definition.resultAccessPath ?? []
           );
           const valueToTest = Array.isArray(preValueToTest)
-              ? ignorePostgresExtraAttributesOnList(preValueToTest, currentAction.testCase.definition.ignoreAttributes??[])
-              : ignorePostgresExtraAttributesOnObject(preValueToTest, currentAction.testCase.definition.ignoreAttributes??[])
+              ? ignorePostgresExtraAttributesOnList(preValueToTest, currentAction.testAssertion.definition.ignoreAttributes??[])
+              : ignorePostgresExtraAttributesOnObject(preValueToTest, currentAction.testAssertion.definition.ignoreAttributes??[])
           ;
           log.info(
-            "handleCompositeAction runTestCaseCompositeAction to handle",
-            JSON.stringify(currentAction.testCase, null, 2),
+            "handleCompositeAction runTestCompositeActionAssertion to handle",
+            JSON.stringify(currentAction.testAssertion, null, 2),
             "preValueToTest",
             JSON.stringify(preValueToTest, null, 2),
             "valueToTest",
@@ -1322,8 +1240,8 @@ export class DomainController implements DomainControllerInterface {
           );
           ConfigurationService.testImplementation
             .expect(valueToTest)
-            .toEqual(currentAction.testCase.definition.expectedValue);
-          log.info("handleCompositeAction runTestCaseCompositeAction test passed", currentAction.testCase);
+            .toEqual(currentAction.testAssertion.definition.expectedValue);
+          log.info("handleCompositeAction runTestCompositeActionAssertion test passed", currentAction.testAssertion);
           break;
         }
         default: {
