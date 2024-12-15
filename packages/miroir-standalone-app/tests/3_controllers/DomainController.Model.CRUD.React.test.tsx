@@ -1,22 +1,28 @@
 import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
-import { SetupWorkerApi } from "msw/browser";
 // import { SetupServerApi } from "msw/lib/node";
-import { SetupServerApi, setupServer } from "msw/node";
 
 import {
+  ActionReturnType,
+  CompositeAction,
   DomainAction,
+  DomainController,
   DomainControllerInterface,
+  Entity,
   EntityDefinition,
   EntityInstance,
-  PersistenceStoreControllerInterface,
+  InstanceAction,
+  JzodElement,
   MetaEntity,
   MiroirConfigClient,
-  MiroirContext,
+  MiroirContextInterface,
   MiroirLoggerFactory,
+  PersistenceStoreController,
+  PersistenceStoreControllerInterface,
+  PersistenceStoreControllerManagerInterface,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   author1,
@@ -25,33 +31,43 @@ import {
   book1,
   book2,
   book4,
+  book5,
+  book6,
   defaultLevels,
+  defaultMiroirMetaModel,
   entityAuthor,
   entityBook,
   entityDefinitionAuthor,
   entityDefinitionBook,
+  entityDefinitionPublisher,
   entityEntity,
+  entityEntityDefinition,
+  entityPublisher,
   entityReport,
   miroirCoreStartup,
-  JzodElement,
-  entityEntityDefinition,
-  Entity,
-  InstanceAction,
-  reportReportList
+  publisher1,
+  publisher2,
+  publisher3,
+  reportReportList,
+  selfApplicationDeploymentLibrary,
+  selfApplicationMiroir,
+  selfApplicationModelBranchMiroirMasterBranch,
+  selfApplicationStoreBasedConfigurationMiroir,
+  selfApplicationVersionInitialMiroirVersion
 } from "miroir-core";
 
-import { LocalCache } from "miroir-localcache-redux";
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
 import {
-  createTestStore,
-  deploymentConfigurations,
   DisplayLoadingInfo,
+  createLibraryTestStore,
+  deploymentConfigurations,
   loadTestConfigFiles,
   miroirAfterAll,
   miroirAfterEach,
   miroirBeforeAll,
   miroirBeforeEach,
-  renderWithProviders
+  renderWithProviders,
+  setupMiroirTest
 } from "../utils/tests-utils.js";
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
@@ -60,6 +76,7 @@ import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 
 import { loglevelnext } from '../../src/loglevelnextImporter.js';
+import { LocalCache } from "miroir-localcache-redux";
 
 const env:any = (import.meta as any).env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
@@ -78,11 +95,10 @@ console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
-let localDataStoreWorker: SetupWorkerApi | undefined;
-let localDataStoreServer: any /**SetupServerApi | undefined */;
-let localCache: LocalCache;
+let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
 let domainController: DomainControllerInterface;
-let miroirContext: MiroirContext;
+let localCache: LocalCache;
+let miroirContext: MiroirContextInterface;
 
 beforeAll(
   async () => {
@@ -92,11 +108,24 @@ beforeAll(
     miroirIndexedDbStoreSectionStartup();
     miroirPostgresStoreSectionStartup();
 
+    const {
+      persistenceStoreControllerManager: localpersistenceStoreControllerManager,
+      domainController: localdomainController,
+      localCache: locallocalCache,
+      miroirContext: localmiroirContext,
+    } = await setupMiroirTest(miroirConfig);
 
+    persistenceStoreControllerManager = localpersistenceStoreControllerManager;
+    domainController = localdomainController;
+    localCache = locallocalCache;
+    miroirContext = localmiroirContext;
+  
+    
     // Establish requests interception layer before all tests.
     const wrapped = await miroirBeforeAll(
       miroirConfig as MiroirConfigClient,
-      setupServer,
+      persistenceStoreControllerManager,
+      domainController,
     );
 
     if (wrapped) {
@@ -104,15 +133,10 @@ beforeAll(
         localMiroirPersistenceStoreController = wrapped.localMiroirPersistenceStoreController;
         localAppPersistenceStoreController = wrapped.localAppPersistenceStoreController;
       }
-      localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
-      localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
-      localCache = wrapped.localCache;
-      domainController = wrapped.domainController;
-      miroirContext = wrapped.miroirContext;
     } else {
       throw new Error("beforeAll failed initialization!");
     }
-    await createTestStore(
+    await createLibraryTestStore(
       miroirConfig,
       domainController
     )
@@ -126,15 +150,20 @@ beforeEach(
       miroirConfig,
       domainController,
       deploymentConfigurations, 
-      localMiroirPersistenceStoreController,
-      localAppPersistenceStoreController
+      // localMiroirPersistenceStoreController,
+      // localAppPersistenceStoreController
     );
   }
 )
 
 afterEach(
   async () => {
-    await miroirAfterEach(miroirConfig, domainController, deploymentConfigurations, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
+    await miroirAfterEach(
+      miroirConfig,
+      domainController,
+      deploymentConfigurations,
+      localCache,
+    );
   }
 )
 
@@ -144,12 +173,42 @@ afterAll(
       miroirConfig,
       domainController,
       deploymentConfigurations, 
-      localMiroirPersistenceStoreController,
-      localAppPersistenceStoreController,
-      localDataStoreServer
     );
   }
 )
+
+const libraryEntitesAndInstances = [
+  {
+    entity: entityAuthor as MetaEntity,
+    entityDefinition: entityDefinitionAuthor as EntityDefinition,
+    instances: [
+      author1,
+      author2,
+      author3 as EntityInstance,
+    ]
+  },
+  {
+    entity: entityBook as MetaEntity,
+    entityDefinition: entityDefinitionBook as EntityDefinition,
+    instances: [
+      book1 as EntityInstance,
+      book2 as EntityInstance,
+      // book3 as EntityInstance,
+      book4 as EntityInstance,
+      book5 as EntityInstance,
+      book6 as EntityInstance,
+    ]
+  },
+  {
+    entity: entityPublisher as MetaEntity,
+    entityDefinition: entityDefinitionPublisher as EntityDefinition,
+    instances: [
+      publisher1 as EntityInstance,
+      publisher2 as EntityInstance,
+      publisher3 as EntityInstance,
+    ]
+  }
+];
 
 describe.sequential(
   'DomainController.Model.CRUD.React',
@@ -186,13 +245,13 @@ describe.sequential(
                 actionName: "rollback",
                 deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              });
+              }, defaultMiroirMetaModel);
               await domainController.handleAction({
                 actionType: "modelAction",
                 actionName: "rollback",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              });
+              }, defaultMiroirMetaModel);
             }
           );
   
@@ -255,13 +314,13 @@ describe.sequential(
                 actionName: "rollback",
                 deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              });
+              }, localCache.currentModel(adminConfigurationDeploymentMiroir.uuid));
               await domainController.handleAction({
                 actionType: "modelAction",
                 actionName: "rollback",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              });
+              }, localCache.currentModel(adminConfigurationDeploymentMiroir.uuid));
             }
           );
   
@@ -336,7 +395,7 @@ describe.sequential(
                 actionName: "rollback",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              });
+              }, localCache.currentModel(adminConfigurationDeploymentMiroir.uuid));
             }
           );
   
@@ -395,13 +454,13 @@ describe.sequential(
                 actionName: "rollback",
                 deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              });
+              }, localCache.currentModel(adminConfigurationDeploymentMiroir.uuid));
               await domainController.handleAction({
                 actionType: "modelAction",
                 actionName: "rollback",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              });
+              }, localCache.currentModel(adminConfigurationDeploymentMiroir.uuid));
             }
           );
   
@@ -555,13 +614,13 @@ describe.sequential(
                 actionName: "rollback",
                 deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              });
+              }, localCache.currentModel(adminConfigurationDeploymentMiroir.uuid));
               await domainController.handleAction({
                 actionType: "modelAction",
                 actionName: "rollback",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              });
+              }, localCache.currentModel(adminConfigurationDeploymentMiroir.uuid));
             }
           );
 
@@ -632,7 +691,7 @@ describe.sequential(
                 actionName: "rollback",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              });
+              }, localCache.currentModel(adminConfigurationDeploymentMiroir.uuid));
             }
           );
           await act(()=>user.click(screen.getByRole('button')));
@@ -721,7 +780,7 @@ describe.sequential(
                 actionName: "rollback",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              });
+              }, localCache.currentModel(adminConfigurationDeploymentMiroir.uuid));
             }
           );
   
@@ -755,101 +814,101 @@ describe.sequential(
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.name}/>
           const user = userEvent.setup()
   
-          if (miroirConfig.client.emulateServer) {
-            await localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
-            await localAppPersistenceStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
-            // await localAppPersistenceStoreController?.upsertInstance('model', reportBookList as EntityInstance);
-            await localAppPersistenceStoreController?.upsertInstance('data', author1 as EntityInstance);
-            await localAppPersistenceStoreController?.upsertInstance('data', author2 as EntityInstance);
-            await localAppPersistenceStoreController?.upsertInstance('data', author3 as EntityInstance);
-            await localAppPersistenceStoreController?.upsertInstance('data', book1 as EntityInstance);
-            await localAppPersistenceStoreController?.upsertInstance('data', book2 as EntityInstance);
-            await localAppPersistenceStoreController?.upsertInstance('data', book4 as EntityInstance);
-          } else {  // remote server, cannot use localAppPersistenceStoreController to initiate store, using DomainController
-            const createActionAuthor: DomainAction = {
-              actionType: "modelAction",
-              actionName: "createEntity",
-              deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
-              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              entities: [
-                {
-                  entity: entityAuthor as Entity,
-                  entityDefinition: entityDefinitionAuthor as EntityDefinition,
-                }
-              ]
-            };
-            const createActionBook: DomainAction = {
-              actionType: "modelAction",
-              actionName: "createEntity",
-              deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
-              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              entities: [
-                {
-                  entity: entityBook as Entity,
-                  entityDefinition: entityDefinitionBook as EntityDefinition,
-                }
-              ]
-            };
-
-            await act(
-              async () => {
-                await domainController.handleAction(
-                  createActionAuthor,
-                  localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
-                );
-                await domainController.handleAction(
-                  createActionBook,
-                  localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
-                );
-                await domainController.handleAction(
-                  {
-                    actionName: "commit",
-                    actionType: "modelAction",
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          const beforeEachCompositeAction: CompositeAction = {
+            actionType: "compositeAction",
+            actionLabel: "beforeEach",
+            actionName: "sequence",
+            definition: [
+              {
+                compositeActionType: "domainAction",
+                compositeActionStepLabel: "resetLibraryStore",
+                domainAction: {
+                  actionType: "modelAction",
+                  actionName: "resetModel",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                },
+              },
+              {
+                compositeActionType: "domainAction",
+                compositeActionStepLabel: "initLibraryStore",
+                domainAction: {
+                  actionType: "modelAction",
+                  actionName: "initModel",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  deploymentUuid: selfApplicationDeploymentLibrary.uuid,
+                  params: {
+                    dataStoreType:
+                      adminConfigurationDeploymentLibrary.uuid == adminConfigurationDeploymentMiroir.uuid
+                        ? "miroir"
+                        : "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
+                    metaModel: defaultMiroirMetaModel,
+                    application: selfApplicationMiroir,
+                    selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
+                    applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
+                    applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
+                    applicationVersion: selfApplicationVersionInitialMiroirVersion,
                   },
-                  localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
-                );
-              }
-            );
-              
-            const createInstancesAction: InstanceAction = {
-              actionType: "instanceAction",
-              actionName: "createInstance",
-              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-              applicationSection: "data",
-              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-              objects: [
-                {
-                  parentName: entityAuthor.name,
-                  parentUuid: entityAuthor.uuid,
-                  applicationSection: "data",
-                  instances: [
-                    author1 as EntityInstance,
-                    author2 as EntityInstance,
-                    author3 as EntityInstance,
-                  ],
                 },
-                {
-                  parentName: entityBook.name,
-                  parentUuid: entityBook.uuid,
-                  applicationSection: "data",
-                  instances: [
-                    book1 as EntityInstance,
-                    book2 as EntityInstance,
-                    book4 as EntityInstance,
-                  ],
+              },
+              {
+                compositeActionType: "domainAction",
+                compositeActionStepLabel: "initLibraryStore",
+                domainAction: {
+                  actionType: "modelAction",
+                  actionName: "rollback",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 },
-              ],
-            };
-    
-            await act(
-              async () => {
-                await domainController.handleAction(createInstancesAction);
-              }
-            );
-          } // end if (miroirConfig.client.emulateServer)
-    
+              },
+              {
+                compositeActionType: "domainAction",
+                compositeActionStepLabel: "CreateLibraryStoreEntities",
+                domainAction: {
+                  actionType: "modelAction",
+                  actionName: "createEntity",
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  entities: libraryEntitesAndInstances,
+                },
+              },
+              {
+                compositeActionType: "domainAction",
+                compositeActionStepLabel: "CommitLibraryStoreEntities",
+                domainAction: {
+                  actionType: "modelAction",
+                  actionName: "commit",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                },
+              },
+              {
+                compositeActionType: "domainAction",
+                compositeActionStepLabel: "CreateLibraryStoreInstances",
+                domainAction: {
+                  actionType: "instanceAction",
+                  actionName: "createInstance",
+                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                  applicationSection: "data",
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  objects: libraryEntitesAndInstances.map((e) => {
+                    return {
+                      parentName: e.entity.name,
+                      parentUuid: e.entity.uuid,
+                      applicationSection: "data",
+                      instances: e.instances,
+                    };
+                  }),
+                },
+              },
+            ],
+          };
+          const queryResult:ActionReturnType = await domainController.handleCompositeAction(
+            beforeEachCompositeAction,
+            {},
+            defaultMiroirMetaModel
+          );
+          
           const {
             getByText,
             getAllByRole,
@@ -874,13 +933,13 @@ describe.sequential(
                 actionName: "rollback",
                 deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              });
+              }, defaultMiroirMetaModel);
               await domainController.handleAction({
                 actionType: "modelAction",
                 actionName: "rollback",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              });
+              }, defaultMiroirMetaModel);
             }
           );
   
@@ -952,7 +1011,7 @@ describe.sequential(
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 },
-                localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
+                defaultMiroirMetaModel
               );
             }
           );
@@ -978,7 +1037,7 @@ describe.sequential(
                 actionName: "rollback",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              });
+              }, defaultMiroirMetaModel);
             }
           );
   
@@ -1014,100 +1073,100 @@ describe.sequential(
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.name}/>
           const user = userEvent.setup()
   
-          if (miroirConfig.client.emulateServer) {
-            await localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
-            await localAppPersistenceStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
-            // await localAppPersistenceStoreController?.upsertInstance('model', reportBookList as EntityInstance);
-            await localAppPersistenceStoreController?.upsertInstance('data', author1 as EntityInstance);
-            await localAppPersistenceStoreController?.upsertInstance('data', author2 as EntityInstance);
-            await localAppPersistenceStoreController?.upsertInstance('data', author3 as EntityInstance);
-            await localAppPersistenceStoreController?.upsertInstance('data', book1 as EntityInstance);
-            await localAppPersistenceStoreController?.upsertInstance('data', book2 as EntityInstance);
-            await localAppPersistenceStoreController?.upsertInstance('data', book4 as EntityInstance);
-          } else {  // remote server, cannot use localAppPersistenceStoreController to initiate store, using DomainController
-            const createActionAuthor: DomainAction = {
-              actionType: "modelAction",
-              actionName: "createEntity",
-              deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
-              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              entities: [
-                {
-                  entity: entityAuthor as Entity,
-                  entityDefinition: entityDefinitionAuthor as EntityDefinition,
-                }
-              ]
-            };
-            const createActionBook: DomainAction = {
-              actionType: "modelAction",
-              actionName: "createEntity",
-              deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
-              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              entities: [
-                {
-                  entity: entityBook as Entity,
-                  entityDefinition: entityDefinitionBook as EntityDefinition,
-                }
-              ]
-            };
-
-            await act(
-              async () => {
-                await domainController.handleAction(
-                  createActionAuthor,
-                  localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
-                );
-                await domainController.handleAction(
-                  createActionBook,
-                  localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
-                );
-                await domainController.handleAction(
-                  {
-                    actionName: "commit",
-                    actionType: "modelAction",
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          const beforeEachCompositeAction: CompositeAction = {
+            actionType: "compositeAction",
+            actionLabel: "beforeEach",
+            actionName: "sequence",
+            definition: [
+              {
+                compositeActionType: "domainAction",
+                compositeActionStepLabel: "resetLibraryStore",
+                domainAction: {
+                  actionType: "modelAction",
+                  actionName: "resetModel",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                },
+              },
+              {
+                compositeActionType: "domainAction",
+                compositeActionStepLabel: "initLibraryStore",
+                domainAction: {
+                  actionType: "modelAction",
+                  actionName: "initModel",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  deploymentUuid: selfApplicationDeploymentLibrary.uuid,
+                  params: {
+                    dataStoreType:
+                      adminConfigurationDeploymentLibrary.uuid == adminConfigurationDeploymentMiroir.uuid
+                        ? "miroir"
+                        : "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
+                    metaModel: defaultMiroirMetaModel,
+                    application: selfApplicationMiroir,
+                    selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
+                    applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
+                    applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
+                    applicationVersion: selfApplicationVersionInitialMiroirVersion,
                   },
-                  localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
-                );
-              }
-            );
-              
-            const createInstancesAction: InstanceAction = {
-              actionType: "instanceAction",
-              actionName: "createInstance",
-              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-              applicationSection: "data",
-              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-              objects: [
-                {
-                  parentName: entityAuthor.name,
-                  parentUuid: entityAuthor.uuid,
-                  applicationSection: "data",
-                  instances: [
-                    author1 as EntityInstance,
-                    author2 as EntityInstance,
-                    author3 as EntityInstance,
-                  ],
                 },
-                {
-                  parentName: entityBook.name,
-                  parentUuid: entityBook.uuid,
-                  applicationSection: "data",
-                  instances: [
-                    book1 as EntityInstance,
-                    book2 as EntityInstance,
-                    book4 as EntityInstance,
-                  ],
+              },
+              {
+                compositeActionType: "domainAction",
+                compositeActionStepLabel: "initLibraryStore",
+                domainAction: {
+                  actionType: "modelAction",
+                  actionName: "rollback",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 },
-              ],
-            };
-    
-            await act(
-              async () => {
-                await domainController.handleAction(createInstancesAction);
-              }
-            );
-          } // end if (miroirConfig.client.emulateServer)
+              },
+              {
+                compositeActionType: "domainAction",
+                compositeActionStepLabel: "CreateLibraryStoreEntities",
+                domainAction: {
+                  actionType: "modelAction",
+                  actionName: "createEntity",
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  entities: libraryEntitesAndInstances,
+                },
+              },
+              {
+                compositeActionType: "domainAction",
+                compositeActionStepLabel: "CommitLibraryStoreEntities",
+                domainAction: {
+                  actionType: "modelAction",
+                  actionName: "commit",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                },
+              },
+              {
+                compositeActionType: "domainAction",
+                compositeActionStepLabel: "CreateLibraryStoreInstances",
+                domainAction: {
+                  actionType: "instanceAction",
+                  actionName: "createInstance",
+                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                  applicationSection: "data",
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  objects: libraryEntitesAndInstances.map((e) => {
+                    return {
+                      parentName: e.entity.name,
+                      parentUuid: e.entity.uuid,
+                      applicationSection: "data",
+                      instances: e.instances,
+                    };
+                  }),
+                },
+              },
+            ],
+          };
+          const queryResult:ActionReturnType = await domainController.handleCompositeAction(
+            beforeEachCompositeAction,
+            {},
+            defaultMiroirMetaModel
+          );
     
           const {
             getByText,
@@ -1133,13 +1192,13 @@ describe.sequential(
                 actionName: "rollback",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              });
+              }, localCache.currentModel(adminConfigurationDeploymentMiroir.uuid));
               await domainController.handleAction({
                 actionType: "modelAction",
                 actionName: "rollback",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              });
+              }, localCache.currentModel(adminConfigurationDeploymentMiroir.uuid));
             }
           );
   
@@ -1247,7 +1306,7 @@ describe.sequential(
                 actionName: "rollback",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              });
+              },localCache.currentModel(adminConfigurationDeploymentMiroir.uuid));
             }
           );
   
@@ -1309,7 +1368,7 @@ describe.sequential(
                 actionName: "rollback",
                 deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              });
+              },localCache.currentModel(adminConfigurationDeploymentMiroir.uuid));
             }
           );
   
@@ -1423,7 +1482,7 @@ describe.sequential(
                 actionName: "rollback",
                 deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              });
+              }, localCache.currentModel(adminConfigurationDeploymentMiroir.uuid));
             }
           );
   

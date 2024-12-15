@@ -12,11 +12,14 @@ import {
   EntityDefinition,
   MiroirConfigClient,
   MiroirContext,
+  MiroirContextInterface,
   MiroirLoggerFactory,
   PersistenceStoreControllerInterface,
+  PersistenceStoreControllerManagerInterface,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   defaultLevels,
+  defaultMiroirMetaModel,
   entityAuthor,
   entityBook,
   entityDefinitionAuthor,
@@ -29,7 +32,7 @@ import { LocalCache } from "miroir-localcache-redux";
 
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
 import {
-  createTestStore,
+  createLibraryTestStore,
   deploymentConfigurations,
   DisplayLoadingInfo,
   loadTestConfigFiles,
@@ -37,7 +40,8 @@ import {
   miroirAfterEach,
   miroirBeforeAll,
   miroirBeforeEach,
-  renderWithProviders
+  renderWithProviders,
+  setupMiroirTest
 } from "miroir-standalone-app/tests/utils/tests-utils";
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
@@ -80,32 +84,47 @@ miroirPostgresStoreSectionStartup();
 
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
-let localDataStoreServer: any /**SetupServerApi | undefined */;
-let localDataStoreWorker: SetupWorkerApi | undefined;
-let localCache: LocalCache;
+let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
 let domainController: DomainControllerInterface;
-let miroirContext: MiroirContext;
+let localCache: LocalCache;
+let miroirContext: MiroirContextInterface;
+
+// const {
+//   persistenceStoreControllerManager,
+//   domainController,
+//   localCache,
+//   miroirContext,
+// } = await setupMiroirTest(miroirConfig)
 
 beforeAll(
   async () => {
+
+    const {
+      persistenceStoreControllerManager: localpersistenceStoreControllerManager,
+      domainController: localdomainController,
+      localCache: locallocalCache,
+      miroirContext: localmiroirContext,
+    } = await setupMiroirTest(miroirConfig);
+
+    persistenceStoreControllerManager = localpersistenceStoreControllerManager;
+    domainController = localdomainController;
+    localCache = locallocalCache;
+    miroirContext = localmiroirContext;
+
     const wrapped = await miroirBeforeAll(
       miroirConfig as MiroirConfigClient,
-      setupServer,
+      persistenceStoreControllerManager,
+      domainController,
     );
     if (wrapped) {
       if (wrapped.localMiroirPersistenceStoreController && wrapped.localAppPersistenceStoreController) {
         localMiroirPersistenceStoreController = wrapped.localMiroirPersistenceStoreController;
         localAppPersistenceStoreController = wrapped.localAppPersistenceStoreController;
       }
-      localCache = wrapped.localCache;
-      miroirContext = wrapped.miroirContext;
-      domainController = wrapped.domainController;
-      localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
-      localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
     } else {
       throw new Error("beforeAll failed initialization!");
     }
-    await createTestStore(
+    await createLibraryTestStore(
       miroirConfig,
       domainController
     )
@@ -115,7 +134,11 @@ beforeAll(
 
 beforeEach(
   async () => {
-    await miroirBeforeEach(miroirConfig, domainController, deploymentConfigurations, localMiroirPersistenceStoreController, localAppPersistenceStoreController);
+    await miroirBeforeEach(
+      miroirConfig,
+      domainController,
+      deploymentConfigurations,
+    );
   }
 )
 
@@ -125,16 +148,18 @@ afterAll(
       miroirConfig,
       domainController,
       deploymentConfigurations, 
-      localMiroirPersistenceStoreController,
-      localAppPersistenceStoreController,
-      localDataStoreServer
     );
   }
 )
 
 afterEach(
   async () => {
-    await miroirAfterEach(miroirConfig, domainController, deploymentConfigurations, localMiroirPersistenceStoreController, localAppPersistenceStoreController);
+    await miroirAfterEach(
+      miroirConfig,
+      domainController,
+      deploymentConfigurations,
+      localCache,
+    );
   }
 )
 
@@ -179,13 +204,13 @@ describe.sequential(
                 actionName: "rollback",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
-              });
+              }, defaultMiroirMetaModel);
               await domainController.handleAction({
                 actionType: "modelAction",
                 actionName: "rollback",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
-              });
+              }, defaultMiroirMetaModel);
             }
           );
 
@@ -234,11 +259,11 @@ describe.sequential(
             async () => {
               await domainController.handleAction(
                 createAuthorAction,
-                localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
+                defaultMiroirMetaModel
               );
               await domainController.handleAction(
                 createBookAction,
-                localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
+                defaultMiroirMetaModel
               );
             }
           );
@@ -277,7 +302,7 @@ describe.sequential(
                 actionName: "undo",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid
-              });
+              }, defaultMiroirMetaModel);
             }
           );
   
@@ -311,7 +336,7 @@ describe.sequential(
                 actionName: "redo",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid
-              });
+              }, defaultMiroirMetaModel);
             }
           );
   
@@ -349,19 +374,19 @@ describe.sequential(
                 actionName: "undo",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid
-              });
+              }, defaultMiroirMetaModel);
               await domainController.handleAction({
                 actionType: "undoRedoAction",
                 actionName: "undo",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid
-              });
+              }, defaultMiroirMetaModel);
               await domainController.handleAction({
                 actionType: "undoRedoAction",
                 actionName: "redo",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid
-              });
+              }, defaultMiroirMetaModel);
             }
           );
       
@@ -390,7 +415,7 @@ describe.sequential(
                 actionName: "redo",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid
-              });
+              }, defaultMiroirMetaModel );
             }
           );
   
@@ -403,25 +428,25 @@ describe.sequential(
                 actionName: "undo",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid
-              });
+              }, defaultMiroirMetaModel);
               await domainController.handleAction({
                 actionType: "undoRedoAction",
                 actionName: "undo",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid
-              });
+              },  defaultMiroirMetaModel);
               await domainController.handleAction({
                 actionType: "undoRedoAction",
                 actionName: "undo",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid
-              });
+              }, defaultMiroirMetaModel);
               await domainController.handleAction({
                 actionType: "undoRedoAction",
                 actionName: "redo",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid
-              });
+              }, defaultMiroirMetaModel);
             }
           );
       
@@ -450,7 +475,7 @@ describe.sequential(
                 actionName: "redo",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid
-              });
+              }, defaultMiroirMetaModel);
             }
           );
   
@@ -463,7 +488,7 @@ describe.sequential(
                 actionName: "redo",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid
-              });
+              }, defaultMiroirMetaModel);
             }
           );
       
@@ -490,7 +515,7 @@ describe.sequential(
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 },
-                localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
+                defaultMiroirMetaModel
               );
             }
           );

@@ -6,7 +6,6 @@ import {
   ActionReturnType,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  ApplicationSection,
   author1,
   author2,
   author3,
@@ -16,7 +15,6 @@ import {
   book4,
   book5,
   book6,
-  CompositeAction,
   ConfigurationService,
   defaultLevels,
   defaultMiroirMetaModel,
@@ -29,7 +27,6 @@ import {
   entityDefinitionPublisher,
   entityEntity,
   EntityInstance,
-  entityMenu,
   entityPublisher,
   MetaEntity,
   MiroirConfigClient,
@@ -37,11 +34,10 @@ import {
   miroirCoreStartup,
   MiroirLoggerFactory,
   PersistenceStoreControllerInterface,
+  PersistenceStoreControllerManagerInterface,
   publisher1,
   publisher2,
   publisher3,
-  Report,
-  reportBookList,
   SelfApplicationDeploymentConfiguration,
   selfApplicationDeploymentLibrary,
   selfApplicationDeploymentMiroir,
@@ -64,25 +60,22 @@ import { setupServer, SetupServerApi } from "msw/node";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { miroirAppStartup } from '../../src/startup.js';
 import {
-  addEntitiesAndInstances,
   chainVitestSteps,
-  createTestStore,
-  deploymentConfigurations,
   loadTestConfigFiles,
   miroirAfterAll,
-  miroirAfterEach,
   miroirBeforeAll,
   miroirBeforeEach,
+  setupMiroirTest
 } from "../utils/tests-utils.js";
 
+let domainController: DomainControllerInterface;
 let localCache: LocalCache;
-let localDataStoreWorker: SetupWorkerApi | undefined;
-let localDataStoreServer: any /**SetupServerApi | undefined */;
+// let localDataStoreWorker: SetupWorkerApi | undefined;
+// let localDataStoreServer: any /**SetupServerApi | undefined */;
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
-// let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface | undefined;
-let domainController: DomainControllerInterface;
 let miroirContext: MiroirContext;
+let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
 
 const env:any = (import.meta as any).env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
@@ -108,31 +101,39 @@ beforeAll(
     miroirIndexedDbStoreSectionStartup();
     miroirPostgresStoreSectionStartup();
     ConfigurationService.registerTestImplementation({expect: expect as any});
-    // if (!miroirConfig.client.emulateServer) {
-    //   throw new Error("LocalPersistenceStoreController state do not make sense for real server configurations! Please use only 'emulateServer: true' configurations for this test.");
-    // } else {
+    const {
+      persistenceStoreControllerManager: localpersistenceStoreControllerManager,
+      domainController: localdomainController,
+      localCache: locallocalCache,
+      miroirContext: localmiroirContext,
+    } = await setupMiroirTest(miroirConfig);
+
+    persistenceStoreControllerManager = localpersistenceStoreControllerManager;
+    domainController = localdomainController;
+    localCache = locallocalCache;
+    miroirContext = localmiroirContext;
+
     const wrapped = await miroirBeforeAll(
+      // miroirConfig as MiroirConfigClient,
+      // setupServer,
       miroirConfig as MiroirConfigClient,
-      setupServer,
+      // setupServer,
+      persistenceStoreControllerManager,
+      domainController,
     );
     if (wrapped) {
       if (wrapped.localMiroirPersistenceStoreController && wrapped.localAppPersistenceStoreController) {
         localMiroirPersistenceStoreController = wrapped.localMiroirPersistenceStoreController;
         localAppPersistenceStoreController = wrapped.localAppPersistenceStoreController;
       }
-      localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
-      localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
-      localCache = wrapped.localCache;
-      domainController = wrapped.domainController;
-      miroirContext = wrapped.miroirContext;
+      // localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
+      // localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
+      // localCache = wrapped.localCache;
+      // domainController = wrapped.domainController;
+      // miroirContext = wrapped.miroirContext;
     } else {
       throw new Error("beforeAll failed initialization!");
     }
-
-    // await createTestStore(
-    //   miroirConfig,
-    //   domainController
-    // )
 
     return Promise.resolve();
   }
@@ -149,13 +150,9 @@ beforeEach(
           adminConfigurationDeployment: adminConfigurationDeploymentMiroir,
           selfApplicationDeployment: selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
         },
-        // {
-        //   adminConfigurationDeployment: adminConfigurationDeploymentLibrary,
-        //   selfApplicationDeployment: selfApplicationDeploymentLibrary  as SelfApplicationDeploymentConfiguration,
-        // },
       ],
-      localMiroirPersistenceStoreController,
-      localAppPersistenceStoreController
+      // localMiroirPersistenceStoreController,
+      // localAppPersistenceStoreController
     );
   }
 )
@@ -163,22 +160,6 @@ beforeEach(
 // ################################################################################################
 afterEach(
   async () => {
-    // await miroirAfterEach(
-    //   miroirConfig,
-    //   domainController,
-    //   [
-    //     {
-    //       adminConfigurationDeployment: adminConfigurationDeploymentMiroir,
-    //       selfApplicationDeployment: selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
-    //     },
-    //     // {
-    //     //   adminConfigurationDeployment: adminConfigurationDeploymentLibrary,
-    //     //   selfApplicationDeployment: selfApplicationDeploymentLibrary  as SelfApplicationDeploymentConfiguration,
-    //     // },
-    //   ],
-    //   localMiroirPersistenceStoreController,
-    //   localAppPersistenceStoreController
-    // );
   }
 )
 
@@ -199,9 +180,9 @@ afterAll(
         //   selfApplicationDeployment: selfApplicationDeploymentLibrary  as SelfApplicationDeploymentConfiguration,
         // },
       ],
-      localMiroirPersistenceStoreController,
-      localAppPersistenceStoreController,
-      localDataStoreServer
+      // localMiroirPersistenceStoreController,
+      // localAppPersistenceStoreController,
+      // localDataStoreServer
     );
     // try {
     //   await localMiroirPersistenceStoreController.close();

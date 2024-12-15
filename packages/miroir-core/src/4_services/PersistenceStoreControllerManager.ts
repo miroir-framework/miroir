@@ -120,7 +120,10 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
       log.info("addPersistenceStoreController for", deploymentUuid, "already exists, doing nothing!");
     } else {
       if (!config.admin) {
-       throw new Error("PersistenceStoreControllerManager addPersistenceStoreController could not find admin section in configuration " + JSON.stringify(config));
+       throw new Error(
+         "PersistenceStoreControllerManager addPersistenceStoreController could not find admin section in configuration " +
+           JSON.stringify(config)
+       );
       }
       const adminStoreFactory = this.adminStoreFactoryRegister.get(
         JSON.stringify({ storageType: config.admin.emulatedServerType })
@@ -143,7 +146,8 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
         "data",
         config.data
       )) as PersistenceStoreDataSectionInterface;
-      log.info("addPersistenceStoreController found dataStore", dataStore)
+      // log.info("addPersistenceStoreController found dataStore", dataStore)
+      log.info("addPersistenceStoreController found dataStore ok for deployment", deploymentUuid);
       const modelStore = (await storeSectionFactory(
         this.storeSectionFactoryRegister,
         "model",
@@ -152,6 +156,7 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
       )) as PersistenceStoreModelSectionInterface;
 
       this.persistenceStoreControllers[deploymentUuid] = new PersistenceStoreController(adminStore, modelStore, dataStore);
+      log.info("addPersistenceStoreController DONE for deployment", deploymentUuid);
 
     }
   }

@@ -1,13 +1,12 @@
 import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { SetupWorkerApi } from "msw/browser";
-import { setupServer, SetupServerApi } from "msw/node";
 import React from "react";
 import { describe, expect } from 'vitest';
 
 // import process from "process";
 
 import {
+  ActionReturnType,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   author1,
@@ -17,29 +16,42 @@ import {
   book2,
   book3,
   book4,
+  book5,
+  book6,
+  CompositeAction,
   defaultLevels,
-  DomainAction,
+  defaultMiroirMetaModel,
   DomainControllerInterface,
   entityAuthor,
   entityBook,
   EntityDefinition,
   entityDefinitionAuthor,
   entityDefinitionBook,
+  entityDefinitionPublisher,
   EntityInstance,
-  PersistenceStoreControllerInterface,
+  entityPublisher,
+  getLoggerName,
+  InstanceAction,
+  LoggerInterface,
   MetaEntity,
   MiroirConfigClient,
-  MiroirContext,
+  MiroirContextInterface,
   miroirCoreStartup,
   MiroirLoggerFactory,
-  reportBookList,
-  InstanceAction,
-  Report
+  PersistenceStoreControllerInterface,
+  PersistenceStoreControllerManagerInterface,
+  publisher1,
+  publisher2,
+  publisher3,
+  selfApplicationDeploymentLibrary,
+  selfApplicationMiroir,
+  selfApplicationModelBranchMiroirMasterBranch,
+  selfApplicationStoreBasedConfigurationMiroir,
+  selfApplicationVersionInitialMiroirVersion
 } from "miroir-core";
 
 import {
-  addEntitiesAndInstances,
-  createTestStore,
+  createLibraryTestStore,
   deploymentConfigurations,
   DisplayLoadingInfo,
   loadTestConfigFiles,
@@ -47,11 +59,11 @@ import {
   miroirAfterEach,
   miroirBeforeAll,
   miroirBeforeEach,
-  renderWithProviders
+  renderWithProviders,
+  setupMiroirTest
 } from "miroir-standalone-app/tests/utils/tests-utils";
 
 
-import { refreshAllInstancesTest } from "./DomainController.Data.CRUD.React.functions";
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
@@ -62,6 +74,8 @@ import { LocalCache } from "miroir-localcache-redux";
 import { TestUtilsTableComponent } from "../utils/TestUtilsTableComponent.js";
 
 import { loglevelnext } from '../../src/loglevelnextImporter.js';
+import { packageName } from "../../src/constants.js";
+import { cleanLevel } from "./constants.js";
 
 
 // jest intercepts logs, only console.log will produce test output
@@ -86,6 +100,14 @@ MiroirLoggerFactory.setEffectiveLoggerFactory(
   loggerOptions.specificLoggerOptions
 );
 
+const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.Data.CRUD.React");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
+  (value: LoggerInterface) => {
+    log = value;
+  }
+);
+
 console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 miroirAppStartup();
@@ -95,35 +117,43 @@ miroirIndexedDbStoreSectionStartup();
 miroirPostgresStoreSectionStartup();
 
 
-let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
-let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
-let localDataStoreServer: any /**SetupServerApi | undefined */;
-let localDataStoreWorker: SetupWorkerApi | undefined;
-let localCache: LocalCache;
 let domainController: DomainControllerInterface;
-let miroirContext: MiroirContext;
+let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
+let localCache: LocalCache;
+let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
+let miroirContext: MiroirContextInterface;
+let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
 
 beforeAll(
   async () => {
     // Establish requests interception layer before all tests.
+    const {
+      persistenceStoreControllerManager: localpersistenceStoreControllerManager,
+      domainController: localdomainController,
+      localCache: locallocalCache,
+      miroirContext: localmiroirContext,
+    } = await setupMiroirTest(miroirConfig);
+
+    persistenceStoreControllerManager = localpersistenceStoreControllerManager;
+    domainController = localdomainController;
+    localCache = locallocalCache;
+    miroirContext = localmiroirContext;
+
     const wrapped = await miroirBeforeAll(
       miroirConfig as MiroirConfigClient,
-      setupServer,
+      // setupServer,
+      persistenceStoreControllerManager,
+      domainController,
     );
     if (wrapped) {
       if (wrapped.localMiroirPersistenceStoreController && wrapped.localAppPersistenceStoreController) {
         localMiroirPersistenceStoreController = wrapped.localMiroirPersistenceStoreController;
         localAppPersistenceStoreController = wrapped.localAppPersistenceStoreController;
       }
-      localCache = wrapped.localCache;
-      miroirContext = wrapped.miroirContext;
-      domainController = wrapped.domainController;
-      localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
-      localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
     } else {
       throw new Error("beforeAll failed initialization!");
     }
-    await createTestStore(
+    await createLibraryTestStore(
       miroirConfig,
       domainController
     )
@@ -138,9 +168,135 @@ beforeEach(
       miroirConfig,
       domainController,
       deploymentConfigurations,
-      localMiroirPersistenceStoreController,
-      localAppPersistenceStoreController
     );
+    const libraryEntitesAndInstances = [
+      {
+        entity: entityAuthor as MetaEntity,
+        entityDefinition: entityDefinitionAuthor as EntityDefinition,
+        instances: [
+          author1,
+          author2,
+          author3 as EntityInstance,
+        ]
+      },
+      {
+        entity: entityBook as MetaEntity,
+        entityDefinition: entityDefinitionBook as EntityDefinition,
+        instances: [
+          book1 as EntityInstance,
+          book2 as EntityInstance,
+          // book3 as EntityInstance,
+          book4 as EntityInstance,
+          book5 as EntityInstance,
+          book6 as EntityInstance,
+        ]
+      },
+      {
+        entity: entityPublisher as MetaEntity,
+        entityDefinition: entityDefinitionPublisher as EntityDefinition,
+        instances: [
+          publisher1 as EntityInstance,
+          publisher2 as EntityInstance,
+          publisher3 as EntityInstance,
+        ]
+      }
+    ];
+    
+    const beforeEachCompositeAction: CompositeAction = {
+      actionType: "compositeAction",
+      actionLabel: "beforeEach",
+      actionName: "sequence",
+      definition: [
+        {
+          compositeActionType: "domainAction",
+          compositeActionStepLabel: "resetLibraryStore",
+          domainAction: {
+            actionType: "modelAction",
+            actionName: "resetModel",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+          },
+        },
+        {
+          compositeActionType: "domainAction",
+          compositeActionStepLabel: "initLibraryStore",
+          domainAction: {
+            actionType: "modelAction",
+            actionName: "initModel",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            deploymentUuid: selfApplicationDeploymentLibrary.uuid,
+            params: {
+              dataStoreType:
+                adminConfigurationDeploymentLibrary.uuid == adminConfigurationDeploymentMiroir.uuid
+                  ? "miroir"
+                  : "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
+              metaModel: defaultMiroirMetaModel,
+              application: selfApplicationMiroir,
+              selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
+              applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
+              applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
+              applicationVersion: selfApplicationVersionInitialMiroirVersion,
+            },
+          },
+        },
+        {
+          compositeActionType: "domainAction",
+          compositeActionStepLabel: "initLibraryStore",
+          domainAction: {
+            actionType: "modelAction",
+            actionName: "rollback",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+          },
+        },
+        {
+          compositeActionType: "domainAction",
+          compositeActionStepLabel: "CreateLibraryStoreEntities",
+          domainAction: {
+            actionType: "modelAction",
+            actionName: "createEntity",
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            entities: libraryEntitesAndInstances,
+          },
+        },
+        {
+          compositeActionType: "domainAction",
+          compositeActionStepLabel: "CommitLibraryStoreEntities",
+          domainAction: {
+            actionType: "modelAction",
+            actionName: "commit",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+          },
+        },
+        {
+          compositeActionType: "domainAction",
+          compositeActionStepLabel: "CreateLibraryStoreInstances",
+          domainAction: {
+            actionType: "instanceAction",
+            actionName: "createInstance",
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            applicationSection: "data",
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+            objects: libraryEntitesAndInstances.map((e) => {
+              return {
+                parentName: e.entity.name,
+                parentUuid: e.entity.uuid,
+                applicationSection: "data",
+                instances: e.instances,
+              };
+            }),
+          },
+        },
+      ],
+    };
+    const queryResult:ActionReturnType = await domainController.handleCompositeAction(
+      beforeEachCompositeAction,
+      {},
+      defaultMiroirMetaModel
+    );
+
   }
 )
 
@@ -150,9 +306,6 @@ afterAll(
       miroirConfig,
       domainController,
       deploymentConfigurations,
-      localMiroirPersistenceStoreController,
-      localAppPersistenceStoreController,
-      localDataStoreServer
     );
   }
 )
@@ -163,13 +316,13 @@ afterEach(
       miroirConfig,
       domainController,
       deploymentConfigurations,
-      localMiroirPersistenceStoreController,
-      localAppPersistenceStoreController
+      localCache,
     );
   }
 )
 
 const globalTimeOut = 10000;
+
 
 describe.sequential('DomainController.Data.CRUD.React',
   () => {
@@ -177,15 +330,69 @@ describe.sequential('DomainController.Data.CRUD.React',
     // ###########################################################################################
     it('Refresh all Instances',
       async() => {
-        await refreshAllInstancesTest(
-          miroirConfig,
-          localMiroirPersistenceStoreController,
-          localAppPersistenceStoreController,
-          localCache,
-          domainController,
-          miroirContext,
-        );
+        // await refreshAllInstancesTest(
+        //   miroirConfig,
+        //   localMiroirPersistenceStoreController,
+        //   localAppPersistenceStoreController,
+        //   localCache,
+        //   domainController,
+        //   miroirContext,
+        // );
+        // return Promise.resolve();
+        try {
+          log.info("Refresh all Instances start");
+          const displayLoadingInfo = <DisplayLoadingInfo />;
+          const user = userEvent.setup();
+      
+          const {
+            getByText,
+            getAllByRole,
+            // container
+          } = renderWithProviders(
+            <TestUtilsTableComponent
+              entityName={entityBook.name}
+              entityUuid={entityBook.uuid}
+              DisplayLoadingInfo={displayLoadingInfo}
+              deploymentUuid={adminConfigurationDeploymentLibrary.uuid}
+            />,
+            { store: localCache.getInnerStore() }
+          );
+      
+          log.info("Refresh all Instances setup is finished.")
+      
+          await act(async () => {
+            await domainController.handleAction({
+              actionType: "modelAction",
+              actionName: "rollback",
+              deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            }, defaultMiroirMetaModel);
+            await domainController.handleAction({
+              actionType: "modelAction",
+              actionName: "rollback",
+              deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            }, defaultMiroirMetaModel);
+          });
+      
+          log.info("Refresh all Instances start test", JSON.stringify(localCache.getState()));
+          
+          await act(()=>user.click(screen.getByRole("button")));
+      
+          await waitFor(() => {
+            getAllByRole(/step:1/);
+          }).then(() => {
+            expect(screen.queryByText(new RegExp(`${book3.uuid}`, "i"))).toBeNull(); // Et dans l'éternité je ne m'ennuierai pas
+            expect(getByText(new RegExp(`${book1.uuid}`, "i"))).toBeTruthy(); // The Bride Wore Black
+            expect(getByText(new RegExp(`${book2.uuid}`, "i"))).toBeTruthy(); // The Design of Everyday Things
+            expect(getByText(new RegExp(`${book4.uuid}`, "i"))).toBeTruthy(); // Rear Window
+          });
+        } catch (error) {
+          log.error("error during test", expect.getState().currentTestName, error);
+          expect(false).toBeTruthy();
+        }
         return Promise.resolve();
+      
       },
       globalTimeOut
     )
@@ -199,37 +406,6 @@ describe.sequential('DomainController.Data.CRUD.React',
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
           const user = userEvent.setup()
   
-          await addEntitiesAndInstances(
-            localAppPersistenceStoreController,
-            domainController,
-            localCache,
-            miroirConfig,
-            adminConfigurationDeploymentLibrary,
-            [
-              {
-                entity: entityAuthor as MetaEntity,
-                entityDefinition: entityDefinitionAuthor as EntityDefinition,
-                instances: [
-                  author1,
-                  author2,
-                  author3 as EntityInstance,
-                ],
-              },
-              {
-                entity: entityBook as MetaEntity,
-                entityDefinition: entityDefinitionBook as EntityDefinition,
-                instances: [
-                  book1 as EntityInstance,
-                  book2 as EntityInstance,
-                  // book3 as EntityInstance,
-                  book4 as EntityInstance,
-                ]
-              }
-            ],
-            reportBookList as Report,
-            act,
-          );
-
           const {
             getByText,
             getAllByRole,
@@ -253,13 +429,13 @@ describe.sequential('DomainController.Data.CRUD.React',
                 actionName: "rollback",
                 deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              });
+              }, localCache.currentModel(adminConfigurationDeploymentMiroir.uuid));
               await domainController.handleAction({
                 actionType: "modelAction",
                 actionName: "rollback",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              });
+              }, localCache.currentModel(adminConfigurationDeploymentLibrary.uuid));
             }
           );
           console.log('add Book step 1: done replace.')
@@ -325,7 +501,7 @@ describe.sequential('DomainController.Data.CRUD.React',
                 actionName: "rollback",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              });
+              }, localCache.currentModel(adminConfigurationDeploymentLibrary.uuid));
             }
           );
   
@@ -364,38 +540,6 @@ describe.sequential('DomainController.Data.CRUD.React',
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
           const user = userEvent.setup()
 
-          // TODO: replace with call to addEntitiesAndInstances
-          await addEntitiesAndInstances(
-            localAppPersistenceStoreController,
-            domainController,
-            localCache,
-            miroirConfig,
-            adminConfigurationDeploymentLibrary,
-            [
-              {
-                entity: entityAuthor as MetaEntity,
-                entityDefinition: entityDefinitionAuthor as EntityDefinition,
-                instances: [
-                  author1,
-                  author2,
-                  author3 as EntityInstance,
-                ],
-              },
-              {
-                entity: entityBook as MetaEntity,
-                entityDefinition: entityDefinitionBook as EntityDefinition,
-                instances: [
-                  book1 as EntityInstance,
-                  book2 as EntityInstance,
-                  book3 as EntityInstance,
-                  book4 as EntityInstance,
-                ]
-              }
-            ],
-            reportBookList as Report,
-            act,
-          );
-
           const {
             getByText,
             getAllByRole,
@@ -420,13 +564,13 @@ describe.sequential('DomainController.Data.CRUD.React',
                 actionName: "rollback",
                 deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              });
+              }, localCache.currentModel(adminConfigurationDeploymentMiroir.uuid));
               await domainController.handleAction({
                 actionType: "modelAction",
                 actionName: "rollback",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              });
+              }, localCache.currentModel(adminConfigurationDeploymentLibrary.uuid));
             }
           );
   
@@ -441,7 +585,8 @@ describe.sequential('DomainController.Data.CRUD.React',
               // expect(getByText(new RegExp(`${book3.uuid}`,'i'))).toBeTruthy() // Et dans l'éternité je ne m'ennuierai pas
               expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
               expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
-              expect(getByText(new RegExp(`${book3.uuid}`,'i'))).toBeTruthy() // Et dans l'éternité je ne m'ennuierai pas
+              expect(screen.queryByText(new RegExp(`${book3.uuid}`,'i'))).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
+              // expect(getByText(new RegExp(`${book3.uuid}`,'i'))).toBeTruthy() // Et dans l'éternité je ne m'ennuierai pas
               expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
             }
           );
@@ -454,7 +599,7 @@ describe.sequential('DomainController.Data.CRUD.React',
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             applicationSection: "data",
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            objects:[{parentName:book3.parentName,parentUuid:book3.parentUuid,applicationSection:'data', instances:[book3 as EntityInstance]}]
+            objects:[{parentName:book2.parentName,parentUuid:book2.parentUuid,applicationSection:'data', instances:[book2 as EntityInstance]}]
           };
   
           await act(
@@ -476,7 +621,8 @@ describe.sequential('DomainController.Data.CRUD.React',
           ).then(
             ()=> {
               expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
-              expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
+              // expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
+              expect(screen.queryByText(new RegExp(`${book2.uuid}`,'i'))).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
               expect(screen.queryByText(new RegExp(`${book3.uuid}`,'i'))).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
               expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
             }
@@ -491,7 +637,7 @@ describe.sequential('DomainController.Data.CRUD.React',
                 actionName: "rollback",
                 deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              });
+              }, defaultMiroirMetaModel);
             }
           );
 
@@ -507,7 +653,8 @@ describe.sequential('DomainController.Data.CRUD.React',
           ).then(
             ()=> {
               expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
-              expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
+              // expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
+              expect(screen.queryByText(new RegExp(`${book2.uuid}`,'i'))).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
               expect(screen.queryByText(new RegExp(`${book3.uuid}`,'i'))).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
               expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
             }
@@ -528,84 +675,6 @@ describe.sequential('DomainController.Data.CRUD.React',
 
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
           const user = userEvent.setup()
-
-          // await localDataStore.clear();
-          // await localDataStore.initModel();
-          if (miroirConfig.client.emulateServer) {
-            await localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
-            await localAppPersistenceStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
-            await localAppPersistenceStoreController?.upsertInstance('model', reportBookList as EntityInstance);
-            await localAppPersistenceStoreController?.upsertInstance('data', author1 as EntityInstance);
-            await localAppPersistenceStoreController?.upsertInstance('data', author2 as EntityInstance);
-            await localAppPersistenceStoreController?.upsertInstance('data', author3 as EntityInstance);
-            await localAppPersistenceStoreController?.upsertInstance('data', book1 as EntityInstance);
-            await localAppPersistenceStoreController?.upsertInstance('data', book2 as EntityInstance);
-            await localAppPersistenceStoreController?.upsertInstance('data', book3 as EntityInstance);
-            await localAppPersistenceStoreController?.upsertInstance('data', book4 as EntityInstance);
-          } else {
-            const createAction: DomainAction = {
-              actionType: "modelAction",
-              actionName: "createEntity",
-              deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
-              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              entities: [
-                {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
-                {entity:entityBook as MetaEntity, entityDefinition:entityDefinitionBook as EntityDefinition},
-              ],
-            };
-
-            await act(
-              async () => {
-                await domainController.handleAction(createAction, localCache.currentModel(adminConfigurationDeploymentLibrary.uuid));
-                await domainController.handleAction(
-                  {
-                    actionName: "commit",
-                    actionType: "modelAction",
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  },
-                  localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
-                );
-              }
-            );
-              
-            const createInstancesAction: InstanceAction = {
-              actionType: "instanceAction",
-              actionName: "createInstance",
-              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-              applicationSection: "data",
-              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-              objects: [
-                {
-                  parentName: entityAuthor.name,
-                  parentUuid: entityAuthor.uuid,
-                  applicationSection: "data",
-                  instances: [
-                    author1 as EntityInstance,
-                    author2 as EntityInstance,
-                    author3 as EntityInstance,
-                  ],
-                },
-                {
-                  parentName: entityBook.name,
-                  parentUuid: entityBook.uuid,
-                  applicationSection: "data",
-                  instances: [
-                    book1 as EntityInstance,
-                    book2 as EntityInstance,
-                    book3 as EntityInstance,
-                    book4 as EntityInstance,
-                  ],
-                },
-              ],
-            };
-    
-            await act(
-              async () => {
-                await domainController.handleAction(createInstancesAction);
-              }
-            );
-          }
 
           const {
             getByText,
@@ -631,7 +700,7 @@ describe.sequential('DomainController.Data.CRUD.React',
                 actionName: "rollback",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              });
+              }, localCache.currentModel(adminConfigurationDeploymentLibrary.uuid));
             }
           );
 
@@ -646,7 +715,8 @@ describe.sequential('DomainController.Data.CRUD.React',
               // expect(screen.queryByText(/caef8a59-39eb-48b5-ad59-a7642d3a1e8f/i)).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
               expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
               expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
-              expect(getByText(new RegExp(`${book3.uuid}`,'i'))).toBeTruthy() // Et dans l'éternité je ne m'ennuierai pas
+              // expect(getByText(new RegExp(`${book3.uuid}`,'i'))).toBeTruthy() // Et dans l'éternité je ne m'ennuierai pas
+              expect(screen.queryByText(new RegExp(`${book3.uuid}`,'i'))).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
               expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
             }
           );
@@ -700,7 +770,7 @@ describe.sequential('DomainController.Data.CRUD.React',
                 actionName: "rollback",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              });
+              }, defaultMiroirMetaModel);
             }
           );
 

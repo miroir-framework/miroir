@@ -85,10 +85,8 @@ export interface DeploymentConfiguration {
 
 export async function resetAndInitMiroirAndApplicationDatabase(
   domainController: DomainControllerInterface,
-  // deployments: any[] // TODO: use Deployment Entity Type!
-  // adminConfigurationDeployments: Deployment[] // TODO: use Deployment Entity Type!
-  selfAdminConfigurationDeployments: SelfApplicationDeploymentConfiguration[] // TODO: use Deployment Entity Type!
-  // deployments: DeploymentConfiguration[] // TODO: use Deployment Entity Type!
+  selfAdminConfigurationDeployments: SelfApplicationDeploymentConfiguration[], // TODO: use Deployment Entity Type!
+  // localCache: LocalCacheInterface,
 ) {
   // const deployments = [adminConfigurationDeploymentLibrary, adminConfigurationDeploymentMiroir];
 
@@ -98,7 +96,8 @@ export async function resetAndInitMiroirAndApplicationDatabase(
       actionName: "resetModel",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: selfAdminConfigurationDeployment.uuid,
-    });
+    }, defaultMiroirMetaModel);
+    // }, localCache.currentModel(selfAdminConfigurationDeployment.uuid));
   }
   for (const selfAdminConfigurationDeployment of selfAdminConfigurationDeployments) {
     await domainController.handleAction({
@@ -115,7 +114,8 @@ export async function resetAndInitMiroirAndApplicationDatabase(
         applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
         applicationVersion: selfApplicationVersionInitialMiroirVersion,
       },
-    });
+    }, defaultMiroirMetaModel);
+    // }, localCache.currentModel(selfAdminConfigurationDeployment.uuid));
   }
   log.info(
     "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ resetAndInitMiroirAndApplicationDatabase APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
@@ -126,13 +126,15 @@ export async function resetAndInitMiroirAndApplicationDatabase(
       actionName: "rollback",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: d.uuid,
-    });
+    }, defaultMiroirMetaModel);
+    // }, localCache.currentModel(d.uuid));
   }
   return Promise.resolve(ACTION_OK);
 }
 export async function resetAndInitMiroirAndApplicationDatabaseNew(
   domainController: DomainControllerInterface,
-  deployments: DeploymentConfiguration[] // TODO: use Deployment Entity Type!
+  deployments: DeploymentConfiguration[], // TODO: use Deployment Entity Type!
+  // localCache: LocalCacheInterface,
 ) {
   // const mappedDeployments = deployments.map(d=>d.adminConfigurationDeployment);
   const mappedDeployments = deployments.map(d=>d.selfApplicationDeployment);
@@ -1427,7 +1429,7 @@ export class DomainController implements DomainControllerInterface {
   }
 
   // ##############################################################################################
-  async handleAction(domainAction: DomainAction, currentModel: MetaModel): Promise<ActionVoidReturnType> {
+  async handleAction(domainAction: DomainAction, currentModel?: MetaModel): Promise<ActionVoidReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     // log.info(
     //   "handleAction",
@@ -1453,6 +1455,9 @@ export class DomainController implements DomainControllerInterface {
         break;
       }
       case "modelAction": {
+        if (!currentModel) {
+          throw new Error("DomainController handleAction for modelAction needs a currentModel argument");
+        }
         return this.handleModelAction(domainAction.deploymentUuid, domainAction, currentModel);
       }
       case "instanceAction": {
@@ -1509,6 +1514,9 @@ export class DomainController implements DomainControllerInterface {
         break;
       }
       case "undoRedoAction": {
+        if (!currentModel) {
+          throw new Error("DomainController handleAction for undoRedoAction needs a currentModel argument");
+        }
         return this.handleDomainUndoRedoAction(domainAction.deploymentUuid, domainAction, currentModel);
       }
       case "transactionalInstanceAction": {
