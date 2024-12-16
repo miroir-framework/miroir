@@ -19,7 +19,7 @@ import {
   RunBoxedExtractorTemplateAction,
   RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   AsyncBoxedExtractorOrQueryRunnerMap,
   ExtractorTemplateRunnerParamsForJzodSchema,
@@ -27,23 +27,23 @@ import {
   RecordOfJzodObject,
   SyncBoxedExtractorTemplateRunnerParams,
   SyncQueryTemplateRunnerParams
-} from "../0_interfaces/2_domain/ExtractorRunnerInterface";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { MiroirLoggerFactory } from "../4_services/Logger";
-import { packageName } from "../constants";
-import { getLoggerName } from "../tools";
-import { cleanLevel } from "./constants";
+} from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
+import { MiroirLoggerFactory } from "../4_services/Logger.js";
+import { packageName } from "../constants.js";
+import { getLoggerName } from "../tools.js";
+import { cleanLevel } from "./constants.js";
 import {
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
   handleBoxedExtractorAction,
   handleBoxedQueryAction,
   runQuery,
-} from "./QuerySelectors";
+} from "./QuerySelectors.js";
 import {
   resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList,
   resolveQueryTemplateWithExtractorCombinerTransformer
-} from "./Templates";
-import { transformer_InnerReference_resolve } from "./Transformers";
+} from "./Templates.js";
+import { transformer_InnerReference_resolve } from "./Transformers.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"QueryTemplateSelectors");
 let log:LoggerInterface = console as any as LoggerInterface;

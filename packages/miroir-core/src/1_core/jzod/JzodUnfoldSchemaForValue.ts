@@ -7,22 +7,22 @@ import {
   JzodSchema,
   JzodUnion,
   MetaModel
-} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-// import {miroirFundamentalJzodSchema} from "../0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema";
-// import miroirFundamentalJzodSchema from "../../dist/index";
+} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+// import {miroirFundamentalJzodSchema} from "../0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema.js";
+// import miroirFundamentalJzodSchema from "../../dist/index.js";
 // import { miroirFundamentalJzodSchema } from "miroir-core";
-// import { miroirFundamentalJzodSchema } from "../../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema";
-// import miroirFundamentalJzodSchema from "../../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema";
-// import * as f from "../../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema";
-// import {miroirFundamentalJzodSchema} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
-import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
-import { MiroirLoggerFactory } from "../../4_services/Logger";
-import { packageName } from "../../constants";
-import { getLoggerName } from "../../tools";
-import { cleanLevel } from "../constants";
+// import { miroirFundamentalJzodSchema } from "../../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema.js";
+// import miroirFundamentalJzodSchema from "../../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema.js";
+// import * as f from "../../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema.js";
+// import {miroirFundamentalJzodSchema} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema.js";
+import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface.js";
+import { MiroirLoggerFactory } from "../../4_services/Logger.js";
+import { packageName } from "../../constants.js";
+import { getLoggerName } from "../../tools.js";
+import { cleanLevel } from "../constants.js";
 
 // export const miroirFundamentalJzodSchema2 = miroirFundamentalJzodSchema;
-// import { miroirFundamentalJzodSchema } from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema";
+// import { miroirFundamentalJzodSchema } from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema.js";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"Jzod");

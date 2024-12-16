@@ -18,8 +18,8 @@ import {
   TestCompositeAction,
   TestCompositeActionSuite,
   TransactionalInstanceAction
-} from "../1_core/preprocessor-generated/miroirFundamentalType";
-import { PersistenceStoreLocalOrRemoteInterface } from "../4-services/PersistenceInterface";
+} from "../1_core/preprocessor-generated/miroirFundamentalType.js";
+import { PersistenceStoreLocalOrRemoteInterface } from "../4-services/PersistenceInterface.js";
 
 
 // #############################################################################################

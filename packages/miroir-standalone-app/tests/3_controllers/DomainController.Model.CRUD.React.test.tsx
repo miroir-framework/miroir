@@ -56,7 +56,7 @@ import {
   selfApplicationVersionInitialMiroirVersion
 } from "miroir-core";
 
-import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
+import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent.js";
 import {
   DisplayLoadingInfo,
   createLibraryTestStore,
@@ -70,7 +70,7 @@ import {
   setupMiroirTest
 } from "../utils/tests-utils.js";
 
-import { miroirAppStartup } from "miroir-standalone-app/src/startup";
+import { miroirAppStartup } from "miroir-standalone-app/src/startup.js";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
@@ -219,7 +219,7 @@ describe.sequential(
       async () => {
         console.log('Refresh all Entity definitions start');
         const displayLoadingInfo=<DisplayLoadingInfo/>
-        const user = userEvent.setup()
+        const user = (userEvent as any).setup()
   
         try {
           const {
@@ -285,7 +285,7 @@ describe.sequential(
           console.log('Add Entity then rollback start');
 
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.uuid}/>
-          const user = userEvent.setup()
+          const user = (userEvent as any).setup()
   
           // await localDataStore.clear();
           // await localDataStore.initModel(defaultMiroirMetaModel);
@@ -428,7 +428,7 @@ describe.sequential(
           console.log('Add Report definition then commit start');
 
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.uuid}/>
-          const user = userEvent.setup()
+          const user = (userEvent as any).setup()
 
           const {
             getByText,
@@ -605,7 +605,7 @@ describe.sequential(
         try {
           console.log('remove Author entity start');
           const displayLoadingInfo=<DisplayLoadingInfo/>
-          const user = userEvent.setup()
+          const user = (userEvent as any).setup()
 
           await act(
             async () => {
@@ -812,7 +812,7 @@ describe.sequential(
           console.log('update Author definition start');
 
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.name}/>
-          const user = userEvent.setup()
+          const user = (userEvent as any).setup()
   
           const beforeEachCompositeAction: CompositeAction = {
             actionType: "compositeAction",
@@ -1071,7 +1071,7 @@ describe.sequential(
           console.log('update Author definition start');
 
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.name}/>
-          const user = userEvent.setup()
+          const user = (userEvent as any).setup()
   
           const beforeEachCompositeAction: CompositeAction = {
             actionType: "compositeAction",
@@ -1342,7 +1342,7 @@ describe.sequential(
           console.log('Alter Miroir Model Report definition start');
 
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.name}/>
-          const user = userEvent.setup()
+          const user = (userEvent as any).setup()
   
           const {
             getByText,

@@ -1,10 +1,10 @@
-import { ComplexMenu, DomainElement, Menu, MiroirMenuItem, Transformer_menu_addItem } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { Step } from "../2_domain/Transformers";
-import { MiroirLoggerFactory } from "../4_services/Logger";
-import { packageName } from "../constants";
-import { getLoggerName } from "../tools";
-import { cleanLevel } from "./constants";
+import { ComplexMenu, DomainElement, Menu, MiroirMenuItem, Transformer_menu_addItem } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
+import { Step } from "../2_domain/Transformers.js";
+import { MiroirLoggerFactory } from "../4_services/Logger.js";
+import { packageName } from "../constants.js";
+import { getLoggerName } from "../tools.js";
+import { cleanLevel } from "./constants.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"Menu");
 let log:LoggerInterface = console as any as LoggerInterface;

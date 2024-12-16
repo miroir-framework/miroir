@@ -1,4 +1,4 @@
-import { ActionVoidReturnType } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { ActionVoidReturnType } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 export const cleanLevel = "1";
 

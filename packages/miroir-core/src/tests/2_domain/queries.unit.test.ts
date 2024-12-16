@@ -1,39 +1,39 @@
-import adminConfigurationDeploymentLibrary from "../../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
+import adminConfigurationDeploymentLibrary from "../../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json" assert { type: "json" };
 
-import { DomainState } from "../../0_interfaces/2_domain/DomainControllerInterface";
+import { DomainState } from "../../0_interfaces/2_domain/DomainControllerInterface.js";
 
 import {
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   BoxedQueryWithExtractorCombinerTransformer,
   DomainElementObject
-} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { DeploymentEntityState } from "../../0_interfaces/2_domain/DeploymentStateInterface";
+} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { DeploymentEntityState } from "../../0_interfaces/2_domain/DeploymentStateInterface.js";
 import {
   SyncQueryRunner,
   SyncQueryTemplateRunner
-} from "../../0_interfaces/2_domain/ExtractorRunnerInterface";
+} from "../../0_interfaces/2_domain/ExtractorRunnerInterface.js";
 import {
   getQueryRunnerParamsForDeploymentEntityState,
   GetQueryRunnerParamsForDeploymentEntityState,
   runQueryFromDeploymentEntityState
-} from "../../2_domain/DeploymentEntityStateQuerySelectors";
+} from "../../2_domain/DeploymentEntityStateQuerySelectors.js";
 import {
   GetQueryTemplateRunnerParamsForDeploymentEntityState,
   getQueryTemplateRunnerParamsForDeploymentEntityState,
   runQueryTemplateFromDeploymentEntityState
-} from "../../2_domain/DeploymentEntityStateQueryTemplateSelectors";
+} from "../../2_domain/DeploymentEntityStateQueryTemplateSelectors.js";
 import {
   GetQueryRunnerParamsForDomainState,
   getQueryRunnerParamsForDomainState,
   runQueryFromDomainState
-} from "../../2_domain/DomainStateQuerySelectors";
+} from "../../2_domain/DomainStateQuerySelectors.js";
 import {
   getQueryTemplateRunnerParamsForDomainState,
   GetSelectorParamsForQueryTemplateOnDomainStateType,
   runQueryTemplateFromDomainState
-} from "../../2_domain/DomainStateQueryTemplateSelector";
-import { domainStateToDeploymentEntityState, resolvePathOnObject } from "../../tools";
-import domainStateImport from "./domainState.json";
+} from "../../2_domain/DomainStateQueryTemplateSelector.js";
+import { domainStateToDeploymentEntityState, resolvePathOnObject } from "../../tools.js";
+import domainStateImport from "./domainState.json" assert { type: "json" };
 
 const domainState: DomainState = domainStateImport as DomainState;
 const deploymentEntityState: DeploymentEntityState = domainStateToDeploymentEntityState(domainState);

@@ -1,5 +1,5 @@
-import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
-import { EntityInstanceWithName } from "../0_interfaces/1_core/Instance";
+import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
+import { EntityInstanceWithName } from "../0_interfaces/1_core/Instance.js";
 import {
   ApplicationSection,
   EntityDefinition,
@@ -7,15 +7,15 @@ import {
   InstanceAction,
   MetaModel,
   ModelAction
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { MiroirLoggerFactory } from "../4_services/Logger";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
+import { MiroirLoggerFactory } from "../4_services/Logger.js";
 
-import entityEntity from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json";
-import entityEntityDefinition from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json";
-import { packageName } from "../constants";
-import { getLoggerName } from "../tools";
-import { cleanLevel } from "./constants";
+import entityEntity from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json" assert { type: "json" };
+import entityEntityDefinition from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json" assert { type: "json" };
+import { packageName } from "../constants.js";
+import { getLoggerName } from "../tools.js";
+import { cleanLevel } from "./constants.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ModelEntityActionTransformer");
 let log:LoggerInterface = console as any as LoggerInterface;

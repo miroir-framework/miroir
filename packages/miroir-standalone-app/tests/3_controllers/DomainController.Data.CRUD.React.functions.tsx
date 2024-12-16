@@ -62,7 +62,7 @@
 //   try {
 //     log.info("Refresh all Instances start");
 //     const displayLoadingInfo = <DisplayLoadingInfo />;
-//     const user = userEvent.setup();
+//     const user = (userEvent as any).setup();
 
 //     // await localDataStore.clear();
 //     // await localDataStore.initModel();

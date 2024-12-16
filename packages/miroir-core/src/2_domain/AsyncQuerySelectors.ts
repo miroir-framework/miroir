@@ -1,6 +1,6 @@
 // ################################################################################################
 
-import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
+import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import {
   ApplicationSection,
   DomainElement,
@@ -15,21 +15,21 @@ import {
   BoxedExtractorOrCombinerReturningObjectList,
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   BoxedQueryWithExtractorCombinerTransformer
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   AsyncBoxedExtractorOrQueryRunnerMap,
   AsyncBoxedExtractorRunnerParams,
   AsyncExtractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
   AsyncQueryRunnerParams
-} from "../0_interfaces/2_domain/ExtractorRunnerInterface";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { MiroirLoggerFactory } from "../4_services/Logger";
-import { packageName } from "../constants";
-import { getLoggerName } from "../tools";
-import { cleanLevel } from "./constants";
-import { applyExtractorForSingleObjectListToSelectedInstancesListInMemory, applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory, applyExtractorTransformerInMemory } from "./QuerySelectors";
-import { resolveExtractorTemplate } from "./Templates";
-import { applyTransformer } from "./Transformers";
+} from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
+import { MiroirLoggerFactory } from "../4_services/Logger.js";
+import { packageName } from "../constants.js";
+import { getLoggerName } from "../tools.js";
+import { cleanLevel } from "./constants.js";
+import { applyExtractorForSingleObjectListToSelectedInstancesListInMemory, applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory, applyExtractorTransformerInMemory } from "./QuerySelectors.js";
+import { resolveExtractorTemplate } from "./Templates.js";
+import { applyTransformer } from "./Transformers.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"AsyncQuerySelectors");
 let log:LoggerInterface = console as any as LoggerInterface;

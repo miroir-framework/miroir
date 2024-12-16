@@ -1,5 +1,5 @@
 {
-  "compilerOptions": {  
+  "compilerOptions": {
     "types": ["node", "jest"],
     "removeComments": true,
     "jsx": "react-jsx",

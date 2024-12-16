@@ -1,8 +1,8 @@
 import { ZodTypeAny } from "zod";
-import { DomainState } from "./0_interfaces/2_domain/DomainControllerInterface";
-import { DeploymentEntityState } from "./0_interfaces/2_domain/DeploymentStateInterface";
-import { getDeploymentEntityStateIndex } from "./2_domain/DeploymentEntityState";
-import { ApplicationSection } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { DomainState } from "./0_interfaces/2_domain/DomainControllerInterface.js";
+import { DeploymentEntityState } from "./0_interfaces/2_domain/DeploymentStateInterface.js";
+import { getDeploymentEntityStateIndex } from "./2_domain/DeploymentEntityState.js";
+import { ApplicationSection } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 export function stringTuple<T extends [string] | string[]>(...data: T): T {
   return data;

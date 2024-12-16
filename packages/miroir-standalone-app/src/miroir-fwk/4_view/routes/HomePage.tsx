@@ -254,7 +254,7 @@ export const HomePage = (props: RootComponentProps) => {
               actionName: "undo",
               endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
               deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-            });
+            }, defaultMiroirMetaModel);
           }}
         >
           undo
@@ -269,7 +269,7 @@ export const HomePage = (props: RootComponentProps) => {
               actionName: "redo",
               endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
               deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-            });
+            }, defaultMiroirMetaModel);
           }}
         >
           Redo
@@ -320,7 +320,7 @@ export const HomePage = (props: RootComponentProps) => {
               actionName: "rollback",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-            });
+            }, defaultMiroirMetaModel);
           }}
         >
           Rollback
@@ -349,7 +349,7 @@ export const HomePage = (props: RootComponentProps) => {
               actionName: "resetData",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            });
+            }, defaultMiroirMetaModel);
             log.info(
               "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETDATA FOR LIBRARY APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
             );
@@ -358,7 +358,7 @@ export const HomePage = (props: RootComponentProps) => {
               actionName: "rollback",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            });
+            }, defaultMiroirMetaModel);
           }}
         >
           Reset Library Application Data

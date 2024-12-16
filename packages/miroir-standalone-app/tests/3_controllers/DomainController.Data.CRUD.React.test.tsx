@@ -61,11 +61,11 @@ import {
   miroirBeforeEach,
   renderWithProviders,
   setupMiroirTest
-} from "miroir-standalone-app/tests/utils/tests-utils";
+} from "../utils/tests-utils.js"
 
 
 
-import { miroirAppStartup } from "miroir-standalone-app/src/startup";
+import { miroirAppStartup } from "../../src/startup.js";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
@@ -342,7 +342,7 @@ describe.sequential('DomainController.Data.CRUD.React',
         try {
           log.info("Refresh all Instances start");
           const displayLoadingInfo = <DisplayLoadingInfo />;
-          const user = userEvent.setup();
+          const user = (userEvent as any).setup();
       
           const {
             getByText,
@@ -404,7 +404,7 @@ describe.sequential('DomainController.Data.CRUD.React',
           console.log('Add Book instance then rollback start');
   
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
-          const user = userEvent.setup()
+          const user = (userEvent as any).setup()
   
           const {
             getByText,
@@ -538,7 +538,7 @@ describe.sequential('DomainController.Data.CRUD.React',
           console.log('Remove Book instance then rollback start');
   
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
-          const user = userEvent.setup()
+          const user = (userEvent as any).setup()
 
           const {
             getByText,
@@ -674,7 +674,7 @@ describe.sequential('DomainController.Data.CRUD.React',
           console.log('update Book instance start');
 
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
-          const user = userEvent.setup()
+          const user = (userEvent as any).setup()
 
           const {
             getByText,

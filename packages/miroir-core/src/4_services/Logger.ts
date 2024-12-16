@@ -4,7 +4,7 @@ import {
   LoggerFactoryInterface,
   LoggerInterface,
   SpecificLoggerOptionsMap
-} from "../0_interfaces/4-services/LoggerInterface";
+} from "../0_interfaces/4-services/LoggerInterface.js";
 
 // ################################################################################################
 export function templateLoggerOptionsFactory(

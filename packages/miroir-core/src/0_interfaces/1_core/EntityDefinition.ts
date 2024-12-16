@@ -1,8 +1,8 @@
 import { z } from "zod";
 
-import { EntityInstanceWithNameSchema } from "../../0_interfaces/1_core/Instance";
+import { EntityInstanceWithNameSchema } from "../../0_interfaces/1_core/Instance.js";
 
-// import { JzodElement } from "./preprocessor-generated/miroirFundamentalType";
+// import { JzodElement } from "./preprocessor-generated/miroirFundamentalType.js";
 
 
 // ##########################################################################################

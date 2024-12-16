@@ -2,9 +2,9 @@
 
 import {
   DomainElement
-} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { transformer_menu_AddItem } from "../../1_core/Menu";
-import { defaultTransformers } from "../../2_domain/Transformers";
+} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { transformer_menu_AddItem } from "../../1_core/Menu.js";
+import { defaultTransformers } from "../../2_domain/Transformers.js";
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
 

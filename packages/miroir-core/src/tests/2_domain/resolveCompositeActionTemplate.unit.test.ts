@@ -11,8 +11,8 @@ import {
   StoreUnitConfiguration,
   TransformerForBuild,
   TransformerForRuntime
-} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { transformer_apply } from "../../2_domain/Transformers";
+} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { transformer_apply } from "../../2_domain/Transformers.js";
 import {
   author1,
   author2,
@@ -35,8 +35,8 @@ import {
   ignorePostgresExtraAttributesOnList,
   MetaEntity,
   Uuid
-} from "../../index";
-import { resolveCompositeActionTemplate } from "../../2_domain/ResolveCompositeAction";
+} from "../../index.js";
+import { resolveCompositeActionTemplate } from "../../2_domain/ResolveCompositeAction.js";
 import { JzodObject } from "@miroir-framework/jzod-ts";
 import { transformer } from "zod";
 // const env:any = (import.meta as any).env

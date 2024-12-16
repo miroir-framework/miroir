@@ -4,19 +4,19 @@ import {
   ModelActionInitModel,
   ModelActionInitModelParams,
   StoreOrBundleAction
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { PersistenceStoreControllerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
-import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
-import { MiroirLoggerFactory } from "../4_services/Logger";
-import { packageName } from "../constants";
-import { getLoggerName } from "../tools";
-import { cleanLevel } from "./constants";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
+import { PersistenceStoreControllerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
+import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface.js";
+import { MiroirLoggerFactory } from "../4_services/Logger.js";
+import { packageName } from "../constants.js";
+import { getLoggerName } from "../tools.js";
+import { cleanLevel } from "./constants.js";
 
-import adminConfigurationDeploymentMiroir from "../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
+import adminConfigurationDeploymentMiroir from "../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json" assert { type: "json" };
 
-import { defaultMiroirMetaModel } from "../1_core/Model";
-import { ACTION_OK } from "../1_core/constants";
+import { defaultMiroirMetaModel } from "../1_core/Model.js";
+import { ACTION_OK } from "../1_core/constants.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "ActionRunner");
 let log: LoggerInterface = console as any as LoggerInterface;

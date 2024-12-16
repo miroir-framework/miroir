@@ -13,8 +13,8 @@ import {
   BoxedExtractorOrCombinerReturningObjectList,
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   BoxedQueryWithExtractorCombinerTransformer
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface.js";
 import {
   ExtractorRunnerParamsForJzodSchema,
   QueryRunnerMapForJzodSchema,
@@ -23,14 +23,14 @@ import {
   SyncBoxedExtractorRunnerParams,
   SyncQueryRunner,
   SyncQueryRunnerParams
-} from "../0_interfaces/2_domain/ExtractorRunnerInterface";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { MiroirLoggerFactory } from "../4_services/Logger";
-import entityEntityDefinition from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json";
-import { packageName } from "../constants";
-import { getLoggerName } from "../tools";
-import { cleanLevel } from "./constants";
-import { getDeploymentEntityStateIndex } from "./DeploymentEntityState";
+} from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
+import { MiroirLoggerFactory } from "../4_services/Logger.js";
+import entityEntityDefinition from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json" assert { type: "json" };
+import { packageName } from "../constants.js";
+import { getLoggerName } from "../tools.js";
+import { cleanLevel } from "./constants.js";
+import { getDeploymentEntityStateIndex } from "./DeploymentEntityState.js";
 import {
   extractEntityInstanceListWithObjectListExtractorInMemory,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
@@ -39,11 +39,11 @@ import {
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
   extractzodSchemaForSingleSelectQuery,
   runQuery
-} from "./QuerySelectors";
+} from "./QuerySelectors.js";
 import {
   runQueryTemplateWithExtractorCombinerTransformer
-} from "./QueryTemplateSelectors";
-import { transformer_InnerReference_resolve } from "./Transformers";
+} from "./QueryTemplateSelectors.js";
+import { transformer_InnerReference_resolve } from "./Transformers.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "DeploymentEntityStateQuerySelector");
 let log: LoggerInterface = console as any as LoggerInterface;

@@ -9,8 +9,8 @@ import {
   QueryByEntityUuidGetEntityDefinition,
   BoxedExtractorTemplateReturningObjectOrObjectList,
   BoxedQueryTemplateWithExtractorCombinerTransformer
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import {
   ExtractorTemplateRunnerParamsForJzodSchema,
   SyncBoxedExtractorOrQueryRunnerMap,
@@ -18,13 +18,13 @@ import {
   SyncBoxedExtractorTemplateRunnerParams,
   SyncQueryTemplateRunner,
   SyncQueryTemplateRunnerParams
-} from "../0_interfaces/2_domain/ExtractorRunnerInterface";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { MiroirLoggerFactory } from "../4_services/Logger";
-import { packageName } from "../constants";
-import { entityEntityDefinition } from "../index";
-import { getLoggerName } from "../tools";
-import { cleanLevel } from "./constants";
+} from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
+import { MiroirLoggerFactory } from "../4_services/Logger.js";
+import { packageName } from "../constants.js";
+import { entityEntityDefinition } from "../index.js";
+import { getLoggerName } from "../tools.js";
+import { cleanLevel } from "./constants.js";
 import {
   extractEntityInstanceListFromListQueryAndDomainState,
   extractEntityInstanceUuidIndexFromListQueryAndDomainState,
@@ -32,15 +32,15 @@ import {
   selectEntityInstanceFromObjectQueryAndDomainState,
   selectEntityInstanceListFromDomainState,
   selectEntityInstanceUuidIndexFromDomainState,
-} from "./DomainStateQuerySelectors";
-import { extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList } from "./QuerySelectors";
+} from "./DomainStateQuerySelectors.js";
+import { extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList } from "./QuerySelectors.js";
 import {
   extractFetchQueryTemplateJzodSchema,
   extractJzodSchemaForDomainModelQueryTemplate,
   extractWithBoxedExtractorTemplate,
   extractzodSchemaForSingleSelectQueryTemplate,
   runQueryTemplateWithExtractorCombinerTransformer
-} from "./QueryTemplateSelectors";
+} from "./QueryTemplateSelectors.js";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "DomainStateQueryTemplateSelector");

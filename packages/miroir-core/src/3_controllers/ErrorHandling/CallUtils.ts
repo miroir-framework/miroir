@@ -3,10 +3,10 @@ import {
   DomainElementType,
   LocalCacheAction,
   PersistenceAction,
-} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { ErrorLogServiceInterface, MError } from "../../0_interfaces/3_controllers/ErrorLogServiceInterface";
-import { LocalCacheInterface } from "../../0_interfaces/4-services/LocalCacheInterface";
-import { PersistenceStoreLocalOrRemoteInterface } from "../../0_interfaces/4-services/PersistenceInterface";
+} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { ErrorLogServiceInterface, MError } from "../../0_interfaces/3_controllers/ErrorLogServiceInterface.js";
+import { LocalCacheInterface } from "../../0_interfaces/4-services/LocalCacheInterface.js";
+import { PersistenceStoreLocalOrRemoteInterface } from "../../0_interfaces/4-services/PersistenceInterface.js";
 
 export class CallUtils {
   constructor(

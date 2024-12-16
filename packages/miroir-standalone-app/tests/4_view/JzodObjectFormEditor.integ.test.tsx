@@ -269,7 +269,7 @@ export interface RoleQuery {
 // ) {
 //   try {
 //     console.log('edit string attribute');
-//     const user = userEvent.setup()
+//     const user = (userEvent as any).setup()
 
 //     const listKey = "ROOT." + attributeName
 
@@ -349,7 +349,7 @@ describe(
     //     const expectedValue = "initialValue1";
     //     try {
     //       console.log('edit string attribute');
-    //       const user = userEvent.setup()
+    //       const user = (userEvent as any).setup()
       
       
     //       const {
@@ -406,7 +406,7 @@ describe(
     //     const expectedValue = ["value1", "value2", "value3"];
     //     try {
     //       console.log('edit string attribute');
-    //       const user = userEvent.setup()
+    //       const user = (userEvent as any).setup()
       
     //       const {
     //         getByText,
@@ -507,7 +507,7 @@ describe(
 
     //     try {
     //       console.log('edit discriminated union', objectJzodSchema);
-    //       const user = userEvent.setup()
+    //       const user = (userEvent as any).setup()
       
     //       const resolvedSchemaReturn: ResolvedJzodSchemaReturnType = resolveReferencesForJzodSchemaAndValueObject(
     //         miroirFundamentalJzodSchema,
@@ -623,7 +623,7 @@ describe(
 
     //     try {
     //       console.log('edit subdiscriminated union', objectJzodSchema);
-    //       const user = userEvent.setup()
+    //       const user = (userEvent as any).setup()
       
     //       const resolvedSchemaReturn: ResolvedJzodSchemaReturnType = resolveReferencesForJzodSchemaAndValueObject(
     //         miroirFundamentalJzodSchema,
@@ -739,7 +739,7 @@ describe(
 
         try {
           console.log('formJzodSchema', formJzodSchema);
-          const user = userEvent.setup()
+          const user = (userEvent as any).setup()
       
           await act(
             async () => {
@@ -893,7 +893,7 @@ describe(
     //   async () => {
     //     try {
     //       console.log('edit simpleType string form with validation');
-    //       const user = userEvent.setup()
+    //       const user = (userEvent as any).setup()
 
     //       const label = 'simpleElementString' 
     //       const {
@@ -951,7 +951,7 @@ describe(
     //   async () => {
     //     try {
     //       console.log(expect.getState().currentTestName);
-    //       const user = userEvent.setup()
+    //       const user = (userEvent as any).setup()
     //       await testEnvironment.localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
     //       await testEnvironment.localAppPersistenceStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
     //       await testEnvironment.localAppPersistenceStoreController?.upsertInstance('model', reportBookList as EntityInstance);

@@ -1,4 +1,4 @@
-import { HttpMethod } from "../1_core/Http";
+import { HttpMethod } from "../1_core/Http.js";
 import {
   ActionReturnType,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
@@ -6,10 +6,10 @@ import {
   EntityInstanceCollection,
   PersistenceAction,
   BoxedQueryWithExtractorCombinerTransformer
-} from "../1_core/preprocessor-generated/miroirFundamentalType";
-import { MError } from "../3_controllers/ErrorLogServiceInterface";
-import { LocalCacheInterface } from "./LocalCacheInterface";
-import { PersistenceStoreControllerManagerInterface } from "./PersistenceStoreControllerManagerInterface";
+} from "../1_core/preprocessor-generated/miroirFundamentalType.js";
+import { MError } from "../3_controllers/ErrorLogServiceInterface.js";
+import { LocalCacheInterface } from "./LocalCacheInterface.js";
+import { PersistenceStoreControllerManagerInterface } from "./PersistenceStoreControllerManagerInterface.js";
 
 
 // ################################################################################################

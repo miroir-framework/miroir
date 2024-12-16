@@ -28,9 +28,8 @@ import {
   entityReport,
   miroirCoreStartup
 } from "miroir-core";
-import { LocalCache } from "miroir-localcache-redux";
 
-import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
+import { TestUtilsTableComponent } from "../utils/TestUtilsTableComponent.js";
 import {
   createLibraryTestStore,
   deploymentConfigurations,
@@ -42,14 +41,17 @@ import {
   miroirBeforeEach,
   renderWithProviders,
   setupMiroirTest
-} from "miroir-standalone-app/tests/utils/tests-utils";
+} from "../utils/tests-utils.js";
 
-import { miroirAppStartup } from "miroir-standalone-app/src/startup";
+import { miroirAppStartup } from "../../src/startup.js";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 
-import { loglevelnext } from '../../src/loglevelnextImporter';
+import { loglevelnext } from '../../src/loglevelnextImporter.js';
+// import { LocalCache } from "../../../miroir-localcache-redux/dist";
+import { LocalCache } from "miroir-localcache-redux";
+// import { miroirConfig } from "miroir-core";
 
 
 
@@ -66,14 +68,14 @@ console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
 const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
 
-MiroirLoggerFactory.setEffectiveLoggerFactory(
-  loglevelnext,
-  (defaultLevels as any)[loggerOptions.defaultLevel],
-  loggerOptions.defaultTemplate,
-  loggerOptions.specificLoggerOptions
-);
+// MiroirLoggerFactory.setEffectiveLoggerFactory(
+//   loglevelnext,
+//   (defaultLevels as any)[loggerOptions.defaultLevel],
+//   loggerOptions.defaultTemplate,
+//   loggerOptions.specificLoggerOptions
+// );
 
-console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
+// console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 
 miroirAppStartup();
@@ -175,7 +177,7 @@ describe.sequential(
           console.log('Add 2 entity definitions then undo one then commit start');
   
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.name}/>
-          const user = userEvent.setup()
+          const user = (userEvent as any).setup()
 
           // await localDataStore.clear();
           // await localDataStore.initModel();

@@ -23,13 +23,13 @@ import {
   TransformerForRuntime_mustacheStringTemplate,
   TransformerForRuntime_object_alter,
   TransformerForRuntime_objectDynamicAccess
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { transformer_menu_AddItem } from "../1_core/Menu";
-import { MiroirLoggerFactory } from "../4_services/Logger";
-import { packageName } from "../constants";
-import { getLoggerName, resolvePathOnObject } from "../tools";
-import { cleanLevel } from "./constants";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
+import { transformer_menu_AddItem } from "../1_core/Menu.js";
+import { MiroirLoggerFactory } from "../4_services/Logger.js";
+import { packageName } from "../constants.js";
+import { getLoggerName, resolvePathOnObject } from "../tools.js";
+import { cleanLevel } from "./constants.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"Transformer");
 let log:LoggerInterface = console as any as LoggerInterface;

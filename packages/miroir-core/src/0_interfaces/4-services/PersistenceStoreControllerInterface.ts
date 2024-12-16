@@ -1,4 +1,4 @@
-import { Uuid } from '../1_core/EntityDefinition';
+import { Uuid } from "../1_core/EntityDefinition.js";
 
 import {
   ActionEntityInstanceCollectionReturnType,
@@ -24,8 +24,8 @@ import {
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   StoreManagementAction,
   StoreSectionConfiguration
-} from "../1_core/preprocessor-generated/miroirFundamentalType";
-import { DataStoreApplicationType } from '../3_controllers/ApplicationControllerInterface';
+} from "../1_core/preprocessor-generated/miroirFundamentalType.js";
+import { DataStoreApplicationType } from "../3_controllers/ApplicationControllerInterface.js";
 
 export type PersistenceStoreControllerAction =
   | InstanceAction

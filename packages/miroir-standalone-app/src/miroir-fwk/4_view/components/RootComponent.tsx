@@ -333,7 +333,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         actionName: "rollback",
                         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                         deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-                      });
+                      }, defaultMiroirMetaModel);
 
                       const subQueryName = "deployments";
                       const adminDeploymentsQuery: BoxedQueryTemplateWithExtractorCombinerTransformer = {
@@ -406,7 +406,7 @@ export const RootComponent = (props: RootComponentProps) => {
                           actionName: "rollback",
                           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                           deploymentUuid: c.uuid,
-                        });
+                        }, defaultMiroirMetaModel);
                       }
                     }}
                   >
@@ -420,7 +420,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         actionName: "rollback",
                         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                         deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-                      });
+                      }, defaultMiroirMetaModel);
                     }}
                   >
                     fetch Admin configuration from database
@@ -433,13 +433,13 @@ export const RootComponent = (props: RootComponentProps) => {
                         actionName: "remoteLocalCacheRollback",
                         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                         deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                      });
+                      }, defaultMiroirMetaModel);
                       await domainController.handleAction({
                         actionType: "modelAction",
                         actionName: "remoteLocalCacheRollback",
                         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                      });
+                      }, defaultMiroirMetaModel);
                     }}
                   >
                     Load server local cache

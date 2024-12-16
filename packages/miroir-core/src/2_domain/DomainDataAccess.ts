@@ -1,18 +1,18 @@
-import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition";
+import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import {
   DomainState,
   DomainStateMetaModelSelector,
   EntitiesDomainState,
   EntitiesDomainStateEntityInstanceArraySelector,
   EntitiesDomainStateInstanceSelector,
-} from "../0_interfaces/2_domain/DomainControllerInterface";
-import { DomainInstanceUuidIndexToArray } from "../1_core/DomainState";
+} from "../0_interfaces/2_domain/DomainControllerInterface.js";
+import { DomainInstanceUuidIndexToArray } from "../1_core/DomainState.js";
 
-import { defaultMiroirMetaModel } from "../1_core/Model";
+import { defaultMiroirMetaModel } from "../1_core/Model.js";
 
-import adminConfigurationDeploymentMiroir from "../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
-import entityReport from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json";
-import entityEntityDefinition from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json";
+import adminConfigurationDeploymentMiroir from "../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json" assert { type: "json" };
+import entityReport from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json" assert { type: "json" };
+import entityEntityDefinition from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json" assert { type: "json" };
 
 import {
   ApplicationVersion,
@@ -25,17 +25,17 @@ import {
   MetaModel,
   Report,
   StoreBasedConfiguration,
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { MiroirLoggerFactory } from "../4_services/Logger";
-import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
-import entityJzodSchema from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/5e81e1b9-38be-487c-b3e5-53796c57fccf.json';
-import entityStoreBasedConfiguration from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7990c0c9-86c3-40a1-a121-036c91b55ed7.json';
-import entitySelfApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
-import { packageName } from "../constants";
-import { entityMenu } from "../index";
-import { getLoggerName } from "../tools";
-import { cleanLevel } from "./constants";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
+import { MiroirLoggerFactory } from "../4_services/Logger.js";
+import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json' assert { type: "json" };
+import entityJzodSchema from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/5e81e1b9-38be-487c-b3e5-53796c57fccf.json' assert { type: "json" };
+import entityStoreBasedConfiguration from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7990c0c9-86c3-40a1-a121-036c91b55ed7.json' assert { type: "json" };
+import entitySelfApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json' assert { type: "json" };
+import { packageName } from "../constants.js";
+import { entityMenu } from "../index.js";
+import { getLoggerName } from "../tools.js";
+import { cleanLevel } from "./constants.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainDataAccess");
 let log:LoggerInterface = console as any as LoggerInterface;

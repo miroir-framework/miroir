@@ -1,24 +1,24 @@
 
 import { v4 as uuidv4 } from 'uuid';
 
-import { MetaEntity, Uuid } from '../0_interfaces/1_core/EntityDefinition';
+import { MetaEntity, Uuid } from '../0_interfaces/1_core/EntityDefinition.js';
 import {
   CRUDActionName,
   DomainControllerInterface,
   LocalCacheInfo
-} from "../0_interfaces/2_domain/DomainControllerInterface";
+} from "../0_interfaces/2_domain/DomainControllerInterface.js";
 
-import { MiroirContextInterface } from '../0_interfaces/3_controllers/MiroirContextInterface';
+import { MiroirContextInterface } from "../0_interfaces/3_controllers/MiroirContextInterface.js";
 import {
   LocalCacheInterface
-} from "../0_interfaces/4-services/LocalCacheInterface";
-import { PersistenceStoreLocalOrRemoteInterface } from '../0_interfaces/4-services/PersistenceInterface';
+} from "../0_interfaces/4-services/LocalCacheInterface.js";
+import { PersistenceStoreLocalOrRemoteInterface } from "../0_interfaces/4-services/PersistenceInterface.js";
 
 
-import adminConfigurationDeploymentMiroir from "../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
-import instanceConfigurationReference from '../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
-import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
-import entitySelfApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
+import adminConfigurationDeploymentMiroir from "../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json" assert { type: "json" };
+import instanceConfigurationReference from '../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json' assert { type: "json" };
+import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json' assert { type: "json" };
+import entitySelfApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json' assert { type: "json" };
 
 import {
   ActionReturnType,
@@ -47,14 +47,14 @@ import {
   TransactionalInstanceAction,
   TransformerForRuntime,
   UndoRedoAction
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface';
-import { ACTION_OK } from '../1_core/constants';
-import { defaultMiroirMetaModel, metaModelEntities, miroirModelEntities } from '../1_core/Model';
-import { resolveCompositeActionTemplate } from '../2_domain/ResolveCompositeAction';
-import { transformer_extended_apply } from '../2_domain/Transformers';
-import { MiroirLoggerFactory } from '../4_services/Logger';
-import { packageName } from '../constants';
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
+import { ACTION_OK } from "../1_core/constants.js";
+import { defaultMiroirMetaModel, metaModelEntities, miroirModelEntities } from "../1_core/Model.js";
+import { resolveCompositeActionTemplate } from "../2_domain/ResolveCompositeAction.js";
+import { transformer_extended_apply } from "../2_domain/Transformers.js";
+import { MiroirLoggerFactory } from "../4_services/Logger.js";
+import { packageName } from "../constants.js";
 import {
   ConfigurationService,
   ignorePostgresExtraAttributesOnList,
@@ -64,11 +64,11 @@ import {
   selfApplicationStoreBasedConfigurationMiroir,
   selfApplicationVersionInitialMiroirVersion,
   TestImplementation,
-} from "../index";
-import { getLoggerName, resolvePathOnObject } from '../tools';
-import { cleanLevel } from './constants';
-import { Endpoint } from './Endpoint';
-import { CallUtils } from './ErrorHandling/CallUtils';
+} from "../index.js";
+import { getLoggerName, resolvePathOnObject } from "../tools.js";
+import { cleanLevel } from "./constants.js";
+import { Endpoint } from "./Endpoint.js";
+import { CallUtils } from "./ErrorHandling/CallUtils.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController");
 let log:LoggerInterface = console as any as LoggerInterface;
