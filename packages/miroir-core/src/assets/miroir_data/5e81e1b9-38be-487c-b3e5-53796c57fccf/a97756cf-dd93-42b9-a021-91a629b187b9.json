@@ -895,7 +895,18 @@
             "definition": "runtime"
           },
           "referencedExtractor": {
-            "type": "string"
+            "type": "union",
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "transformerForRuntime"
+                }
+              }
+            ]
           }
         }
       },

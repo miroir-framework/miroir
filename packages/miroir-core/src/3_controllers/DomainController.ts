@@ -1048,7 +1048,11 @@ export class DomainController implements DomainControllerInterface {
       }
       if (testCompositeAction.afterTestCleanupAction) {
         log.info("handleTestCompositeAction beforeAll", testCompositeAction.afterTestCleanupAction.actionLabel, testCompositeAction.afterTestCleanupAction);
-        const afterTestResult = await this.handleCompositeAction(testCompositeAction.afterTestCleanupAction, localActionParams, currentModel);
+        const afterTestResult = await this.handleCompositeAction(
+          testCompositeAction.afterTestCleanupAction,
+          localActionParams,
+          currentModel
+        );
         if (afterTestResult?.status != "ok") {
           log.error("Error on beforeTestSetupAction", JSON.stringify(afterTestResult, null, 2));
         }
@@ -1235,13 +1239,31 @@ export class DomainController implements DomainControllerInterface {
               "ConfigurationService.testImplementation is not set, please inject a test implementation using ConfigurationService.registerTestImplementation on startup if you want to run tests at runtime."
             );
           }
+
+          const prePreValueToTest = currentAction.testAssertion.definition.resultTransformer
+            ? transformer_extended_apply(
+                "runtime",
+                "ROOT" /**WHAT?? */,
+                currentAction.testAssertion.definition.resultTransformer,
+                {},
+                localContext
+              )
+            : localContext;
+
           const preValueToTest = resolvePathOnObject(
-            localContext,
+            prePreValueToTest,
             currentAction.testAssertion.definition.resultAccessPath ?? []
           );
-          const valueToTest = Array.isArray(preValueToTest)
-              ? ignorePostgresExtraAttributesOnList(preValueToTest, currentAction.testAssertion.definition.ignoreAttributes??[])
-              : ignorePostgresExtraAttributesOnObject(preValueToTest, currentAction.testAssertion.definition.ignoreAttributes??[])
+  
+          const valueToTest = Array.isArray(prePreValueToTest)
+            ? ignorePostgresExtraAttributesOnList(
+                preValueToTest,
+                currentAction.testAssertion.definition.ignoreAttributes ?? []
+              )
+            : ignorePostgresExtraAttributesOnObject(
+                preValueToTest,
+                currentAction.testAssertion.definition.ignoreAttributes ?? []
+              );
           ;
           log.info(
             "handleCompositeAction runTestCompositeActionAssertion to handle",

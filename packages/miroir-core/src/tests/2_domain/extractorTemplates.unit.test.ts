@@ -6,9 +6,9 @@ import {
   BoxedQueryTemplateWithExtractorCombinerTransformer
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
-  resolveQueryTemplateWithExtractorCombinerTransformer
-} from "../../index.js";
-import { resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList } from "../../2_domain/Templates.js";
+  resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList,
+  resolveQueryTemplateWithExtractorCombinerTransformer,
+} from "../../2_domain/Templates.js";
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
 

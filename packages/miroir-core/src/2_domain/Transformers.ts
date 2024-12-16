@@ -761,7 +761,13 @@ export function transformer_dynamicObjectAccess_apply(
           if (!currentPathElement.transformerType) {
             throw new Error("transformer_dynamicObjectAccess_apply can not handle objects without transformerType");
           }
-          const key = defaultTransformers.transformer_extended_apply(step, "NO NAME", currentPathElement, queryParams, contextResults);
+          const key = defaultTransformers.transformer_extended_apply(
+            step,
+            "NO NAME",
+            currentPathElement,
+            queryParams,
+            contextResults
+          );
           if (key.elementType == "failure") {
             return {
               elementType: "failure",
@@ -842,12 +848,17 @@ export function innerTransformer_apply(
   // );
   switch (transformer.transformerType) {
     case "count": {
-      const resolvedReference = defaultTransformers.transformer_InnerReference_resolve(
-        step,
-        { transformerType: "contextReference", referenceName: transformer.referencedExtractor }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
-        queryParams,
-        contextResults
-      );
+
+      const resolvedReference =
+        typeof transformer.referencedExtractor == "string"
+          ? defaultTransformers.transformer_InnerReference_resolve(
+              step,
+              { transformerType: "contextReference", referenceName: transformer.referencedExtractor }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
+              queryParams,
+              contextResults
+            )
+          : innerTransformer_apply(step, label, transformer.referencedExtractor, queryParams, contextResults);
+          ;
 
       if (!["instanceUuidIndex", "object"].includes(resolvedReference.elementType)) {
         log.error(

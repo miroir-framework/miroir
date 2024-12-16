@@ -577,7 +577,13 @@ export async function handleBoxedQueryAction(
   runBoxedQueryAction: RunBoxedQueryAction,
   selectorMap: AsyncBoxedExtractorOrQueryRunnerMap
 ): Promise<ActionReturnType> {
-  log.info("handleBoxedQueryAction for", origin, "start", "runBoxedQueryAction", JSON.stringify(runBoxedQueryAction, null, 2));
+  log.info(
+    "handleBoxedQueryAction for",
+    origin,
+    "start",
+    "runBoxedQueryAction",
+    JSON.stringify(runBoxedQueryAction, null, 2)
+  );
   let queryResult: DomainElement;
   queryResult = await selectorMap.runQuery(
     {

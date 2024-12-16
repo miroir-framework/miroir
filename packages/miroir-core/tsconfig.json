@@ -1,13 +1,13 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "target": "ESNext",
     "module": "NodeNext",
     "moduleResolution": "nodenext",
+    "resolveJsonModule": true,
     "outDir": "dist/out-tsc",
     "declaration": true,
     "declarationDir": "dist/out-tsc/dts",
-    "target": "ESNext",
-    "resolveJsonModule": true,
     "rootDir": "./",
     "baseUrl": "./",
   },

@@ -371,20 +371,7 @@ describe("transformers.unit.test", () => {
             book5 as EntityInstance,
             book6 as EntityInstance,
           ]
-          // books: Object.fromEntries(
-          //   [
-          //     book1 as EntityInstance,
-          //     book2 as EntityInstance,
-          //     book3 as EntityInstance,
-          //     book4 as EntityInstance,
-          //     book5 as EntityInstance,
-          //     book6 as EntityInstance,
-          //   ].map((book: EntityInstance) => {
-          //     return [book.uuid, book];
-          //   })
-          // ),
         } // context
-        // undefined
       ).elementValue as string;
 
       console.log("################################ count books by author runtime transformer", testResult)
@@ -429,18 +416,6 @@ describe("transformers.unit.test", () => {
             book5 as EntityInstance,
             book6 as EntityInstance,
           ],
-          // books: Object.fromEntries(
-          //   [
-          //     book1 as EntityInstance,
-          //     book2 as EntityInstance,
-          //     book3 as EntityInstance,
-          //     book4 as EntityInstance,
-          //     book5 as EntityInstance,
-          //     book6 as EntityInstance,
-          //   ].map((book: EntityInstance) => {
-          //     return [book.uuid, book];
-          //   })
-          // ),
         } // context
         // undefined
       ).elementValue as string;

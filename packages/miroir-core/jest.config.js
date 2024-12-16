@@ -27,19 +27,25 @@ export default (path, options) =>({
   moduleFileExtensions:[
     "ts", "tsx", "js", "mjs", "cjs", "jsx", "json", "node"
   ],
+  "extensionsToTreatAsEsm": [".ts"],
+  "globals": {
+		"ts-jest": {
+			"useESM": true
+		}
+	},
   "transform": {
     "^.+\\.ts?$": [
       "ts-jest",
       {
         tsconfig: {
+          target: "ESNext",
+          module: "NodeNext",
+          moduleResolution: "NodeNext",
+          traceResolution: true,
           resolveJsonModule: true,
           esModuleInterop: true,
           allowSyntheticDefaultImports:true,
-          allowJs: true,
-          moduleResolution: "node",
-          module: "ESNext",
-          target: "ESNext",
-          traceResolution: true
+          allowJs: true
         },
       }
     ],

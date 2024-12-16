@@ -1,44 +1,28 @@
-import { v4 as uuidv4 } from "uuid";
 // import { describe, expect } from 'vitest';
 
+import { JzodObject } from "@miroir-framework/jzod-ts";
 import {
   CompositeActionTemplate,
-  DomainAction,
-  DomainElement,
   EntityInstance,
-  jzodSchema,
-  MetaModel,
-  StoreUnitConfiguration,
-  TransformerForBuild,
-  TransformerForRuntime
+  MetaModel
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { transformer_apply } from "../../2_domain/Transformers.js";
-import {
-  author1,
-  author2,
-  author3,
-  author4,
-  book1,
-  book2,
-  book3,
-  book4,
-  book5,
-  book6,
-  Country1,
-  Country2,
-  Country3,
-  Country4,
-  entityEntity,
-  entityEntityDefinition,
-  entityMenu,
-  entityReport,
-  ignorePostgresExtraAttributesOnList,
-  MetaEntity,
-  Uuid
-} from "../../index.js";
 import { resolveCompositeActionTemplate } from "../../2_domain/ResolveCompositeAction.js";
-import { JzodObject } from "@miroir-framework/jzod-ts";
-import { transformer } from "zod";
+
+import entityEntity from '../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json' assert { type: "json" };
+import entityEntityDefinition from '../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json' assert { type: "json" };
+import entityMenu from '../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/dde4c883-ae6d-47c3-b6df-26bc6e3c1842.json' assert { type: "json" };
+import entityReport from '../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json' assert { type: "json" };
+
+import { MetaEntity, Uuid } from "../../0_interfaces/1_core/EntityDefinition.js";
+
+// import {
+//   entityEntity,
+//   entityEntityDefinition,
+//   entityMenu,
+//   entityReport,
+//   MetaEntity,
+//   Uuid
+// } from "../../index.js";
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
 

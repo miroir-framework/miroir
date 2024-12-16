@@ -34,6 +34,10 @@ import {
   SelfApplicationDeploymentConfiguration,
   StoreOrBundleAction,
   StoreUnitConfiguration,
+  TestCompositeAction,
+  TestCompositeActionSuite,
+  TestCompositeActionTemplate,
+  Uuid,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   getLoggerName,
@@ -42,7 +46,12 @@ import {
   selfApplicationDeploymentLibrary,
   selfApplicationDeploymentMiroir
 } from "miroir-core";
-import { LocalCache, PersistenceReduxSaga, ReduxStoreWithUndoRedo, RestPersistenceClientAndRestClient } from 'miroir-localcache-redux';
+import {
+  LocalCache,
+  PersistenceReduxSaga,
+  ReduxStoreWithUndoRedo,
+  RestPersistenceClientAndRestClient,
+} from "miroir-localcache-redux";
 import { createMswRestServer } from 'miroir-server-msw-stub';
 import { setupServer } from 'msw/node';
 import path from 'path';
@@ -59,6 +68,28 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 );
 
 
+
+// ################################################################################################
+// ################################################################################################
+export type TestActionParams = {
+  testActionType: "testCompositeActionSuite",
+  deploymentUuid: Uuid,
+  testCompositeAction: TestCompositeActionSuite,
+} 
+| {
+  testActionType: "testCompositeAction",
+  deploymentUuid: Uuid,
+  testCompositeAction: TestCompositeAction,
+} 
+| {
+  testActionType: "testCompositeActionTemplate",
+  deploymentUuid: Uuid,
+  compositeTestActionTemplate: TestCompositeActionTemplate,
+} 
+
+
+
+// ################################################################################################
 // ################################################################################################
 const deployments = [adminConfigurationDeploymentMiroir, adminConfigurationDeploymentLibrary ];
 
@@ -147,7 +178,7 @@ export function renderWithProvidersWithContextProvider(
   return render(ui, { wrapper: Wrapper, ...renderOptions })
 }
 
-export class LoadingStateInterface {
+export interface LoadingStateInterface {
   loaded: boolean;
   step: number;
 }
@@ -401,7 +432,7 @@ export async function setupMiroirTest(
       localDataStoreServer.listen();
       console.warn(
         "tests-utils localDataStoreServer STARTED, listHandlers",
-        localDataStoreServer.listHandlers().map((h) => h.info.header)
+        localDataStoreServer.listHandlers().map((h: any) => h.info.header)
       );
     } else {
       throw new Error("tests-utils localDataStoreServer not found.");

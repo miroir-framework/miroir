@@ -119,7 +119,12 @@ export async function asyncApplyExtractorTransformerInMemory(
   actionRuntimeTransformer: ExtendedTransformerForRuntime,
   queryParams: Record<string, any>,
   newFetchedData: Record<string, any>,
-  extractors: Record<string, BoxedExtractorOrCombinerReturningObjectList | BoxedExtractorOrCombinerReturningObject | BoxedQueryWithExtractorCombinerTransformer>,
+  extractors: Record<
+    string,
+    | BoxedExtractorOrCombinerReturningObjectList
+    | BoxedExtractorOrCombinerReturningObject
+    | BoxedQueryWithExtractorCombinerTransformer
+  >
 ): Promise<DomainElement> {
   return Promise.resolve(applyExtractorTransformerInMemory(actionRuntimeTransformer, queryParams, newFetchedData));
 }
