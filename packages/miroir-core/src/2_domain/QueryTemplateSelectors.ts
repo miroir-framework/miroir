@@ -96,8 +96,6 @@ export async function handleBoxedExtractorTemplateAction(
   origin: string,
   boxedExtractorTemplateAction: RunBoxedExtractorTemplateAction,
   selectorMap: AsyncBoxedExtractorOrQueryRunnerMap,
-  // queryParams: Record<string, any>,
-  // contextResults: Record<string, any>
 ): Promise<ActionReturnType> {
   log.info(
     "handleBoxedExtractorTemplateAction for ",
@@ -105,12 +103,8 @@ export async function handleBoxedExtractorTemplateAction(
     "extractorTemplateAction",
     JSON.stringify(boxedExtractorTemplateAction, null, 2)
   );
-  // const resolvedQuery = resolveExtractorOrQueryTemplate( // TODO: separate aas resolvedQueryTemplate and resolvedExtractorTemplate
-  // const resolvedQuery = resolveExtractorTemplate( 
   const resolvedQuery = resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList( // TODO: separate aas resolvedQueryTemplate and resolvedExtractorTemplate
     boxedExtractorTemplateAction.query,
-    // {...boxedExtractorTemplateAction.query.pageParams, ...boxedExtractorTemplateAction.query.queryParams},
-    // boxedExtractorTemplateAction.query.contextResults,
   );
 
   const extractorAction: RunBoxedExtractorAction = {
@@ -137,14 +131,6 @@ export async function handleBoxedExtractorTemplateAction(
   return handleBoxedExtractorAction(
     origin,
     extractorAction,
-    // {
-    //   actionType: "runBoxedExtractorAction",
-    //   actionName: extractorTemplateAction.actionName,
-    //   deploymentUuid: extractorTemplateAction.deploymentUuid,
-    //   endpoint: extractorTemplateAction.endpoint,
-    //   applicationSection: extractorTemplateAction.applicationSection,
-    //   query: resolvedQuery as any,
-    // },
     selectorMap
   );
 }
@@ -161,22 +147,6 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
     "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
     JSON.stringify(queryTemplateOrExtractorTemplateAction, null, 2)
   );
-  // const resolvedQuery = resolveExtractorOrQueryTemplate( // TODO: separate aas resolvedQueryTemplate and resolvedExtractorTemplate
-  //   queryTemplateOrExtractorTemplateAction.query,
-  //   queryTemplateOrExtractorTemplateAction.query.pageParams,
-  //   queryTemplateOrExtractorTemplateAction.query.queryParams,
-  //   queryTemplateOrExtractorTemplateAction.query.contextResults,
-  //   queryTemplateOrExtractorTemplateAction.query.deploymentUuid,
-
-  // );
-  // log.info(
-  //   "handleBoxedExtractorTemplateOrQueryTemplateAction for ",
-  //   origin,
-  //   "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
-  //   JSON.stringify(queryTemplateOrExtractorTemplateAction, null, 2),
-  //   "resolvedQuery",
-  //   JSON.stringify(resolvedQuery, null, 2)
-  // );
 
   if ("queryType" in queryTemplateOrExtractorTemplateAction.query) {
     const resolvedQuery = resolveQueryTemplateWithExtractorCombinerTransformer( // TODO: separate aas resolvedQueryTemplate and resolvedExtractorTemplate
@@ -205,14 +175,6 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
     );
   } else {
     const localQuery = queryTemplateOrExtractorTemplateAction.query as BoxedExtractorTemplateReturningObjectOrObjectList;
-    // const resolvedQuery = resolveExtractorTemplateForExtractorOrCombinerReturningObjectOrObjectList( // TODO: separate aas resolvedQueryTemplate and resolvedExtractorTemplate
-    //   localQuery.select,
-    //   localQuery.pageParams,
-    //   localQuery.queryParams,
-    //   localQuery.contextResults,
-    //   localQuery.deploymentUuid,
-  
-    // );
     const resolvedQuery = resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList( // TODO: separate aas resolvedQueryTemplate and resolvedExtractorTemplate
       localQuery,
     );
@@ -245,66 +207,6 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
     );
 
   }
-  // switch (queryTemplateOrExtractorTemplateAction.query.queryType) {
-  //   case "boxedExtractorTemplateReturningObject":
-  //   case "boxedExtractorTemplateReturningObjectList": {
-  //     const resolvedQuery = resolveExtractorOrQueryTemplate( // TODO: separate aas resolvedQueryTemplate and resolvedExtractorTemplate
-  //       queryTemplateOrExtractorTemplateAction.query,
-  //       queryTemplateOrExtractorTemplateAction.query.pageParams,
-  //       queryTemplateOrExtractorTemplateAction.query.queryParams,
-  //       queryTemplateOrExtractorTemplateAction.query.contextResults,
-  //       queryTemplateOrExtractorTemplateAction.query.deploymentUuid,
-    
-  //     );
-  //     log.info(
-  //       "handleBoxedExtractorTemplateOrQueryTemplateAction for ",
-  //       origin,
-  //       "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
-  //       JSON.stringify(queryTemplateOrExtractorTemplateAction, null, 2),
-  //       "resolvedQuery",
-  //       JSON.stringify(resolvedQuery, null, 2)
-  //     );
-  //     const extractorAction: RunBoxedExtractorAction = {
-  //       actionType: "runBoxedExtractorAction",
-  //       actionName: queryTemplateOrExtractorTemplateAction.actionName,
-  //       deploymentUuid: queryTemplateOrExtractorTemplateAction.deploymentUuid,
-  //       endpoint: queryTemplateOrExtractorTemplateAction.endpoint,
-  //       applicationSection: queryTemplateOrExtractorTemplateAction.applicationSection,
-  //       query: resolvedQuery as any,
-  //     };
-  //     log.info(
-  //       "handleBoxedExtractorTemplateOrQueryTemplateAction for ",
-  //       origin,
-  //       "############################################# extractorAction",
-  //       JSON.stringify(extractorAction, null, 2),
-  //     );
-  //     return handleBoxedExtractorAction(
-  //       origin,
-  //       extractorAction,
-  //       selectorMap
-  //     );
-    
-  //   }
-  //   case "boxedQueryTemplateWithExtractorCombinerTransformer":{
-  //     return handleBoxedQueryAction(
-  //       origin,
-  //       {
-  //         actionType: "runBoxedQueryAction",
-  //         actionName: queryTemplateOrExtractorTemplateAction.actionName,
-  //         deploymentUuid: queryTemplateOrExtractorTemplateAction.deploymentUuid,
-  //         endpoint: queryTemplateOrExtractorTemplateAction.endpoint,
-  //         applicationSection: queryTemplateOrExtractorTemplateAction.applicationSection,
-  //         query: resolvedQuery as any,
-  //       },
-  //       selectorMap
-  //     );
-  //     break;
-  //   }
-  //   default: {
-  //     throw new Error("handleBoxedExtractorTemplateOrQueryTemplateAction: unknown queryType for query: " + JSON.stringify(queryTemplateOrExtractorTemplateAction.query));
-  //     break;
-  //   }
-  // }
 }
 
 // ################################################################################################
@@ -312,7 +214,6 @@ export const extractWithBoxedExtractorTemplate /**: SyncBoxedExtractorTemplateRu
   state: StateType,
   selectorParams: SyncBoxedExtractorTemplateRunnerParams<
     BoxedExtractorTemplateReturningObjectOrObjectList,
-  // ExtractorTemplateReturningObjectOrObjectList,
     StateType
   >
 ): DomainElement => {
@@ -320,29 +221,8 @@ export const extractWithBoxedExtractorTemplate /**: SyncBoxedExtractorTemplateRu
   if (!selectorParams.extractorRunnerMap) {
     throw new Error("extractWithBoxedExtractorTemplate requires extractorRunnerMap");
   }
-  const resolvedExtractor: BoxedExtractorOrCombinerReturningObjectOrObjectList = resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList(
-    selectorParams.extractorOrCombinerTemplate
-  );
-  // const resolvedExtractor: ExtractorOrCombinerReturningObjectOrObjectList = resolveExtractorTemplateForExtractorOrCombinerReturningObjectOrObjectList(
-  //   selectorParams.extractorOrCombinerTemplate.select,
-  //   selectorParams.extractorOrCombinerTemplate.pageParams,
-  //   selectorParams.extractorOrCombinerTemplate.queryParams,
-  //   selectorParams.extractorOrCombinerTemplate.contextResults,
-  //   selectorParams.extractorOrCombinerTemplate.deploymentUuid
-  // ); 
-  // const resolvedExtractor: BoxedQueryWithExtractorCombinerTransformer = resolveQueryTemplateWithExtractorCombinerTransformer(
-  //   selectorParams.extractorOrCombinerTemplate
-  // ); 
-
-  // const localSelectorParams: SyncBoxedExtractorRunnerParams<
-  //   BoxedExtractorTemplateReturningObjectOrObjectList,
-  //   // ExtractorOrCombinerReturningObjectOrObjectList,
-  //   StateType
-  // > = {
-  //     // extractorRunnerMap: {} as any,
-  //     extractorRunnerMap: selectorParams.extractorRunnerMap,
-  //     extractor: resolvedExtractor,
-  // }
+  const resolvedExtractor: BoxedExtractorOrCombinerReturningObjectOrObjectList =
+    resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList(selectorParams.extractorOrCombinerTemplate);
 
   return extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
     state,
@@ -352,17 +232,6 @@ export const extractWithBoxedExtractorTemplate /**: SyncBoxedExtractorTemplateRu
       extractor: resolvedExtractor,
     }
   )
-
-  // log.info(
-  //   "extractExtractor",
-  //   "query",
-  //   selectorParams,
-  //   "domainState",
-  //   deploymentEntityState,
-  //   "newFetchedData",
-  //   context
-  // );
-  // return result;
 };
 
 // ################################################################################################
@@ -378,9 +247,8 @@ export const runQueryTemplateWithExtractorCombinerTransformer = <StateType>(
   selectorParams: SyncQueryTemplateRunnerParams<StateType>,
 ): DomainElementObject => { 
 
-  const resolvedExtractor: BoxedQueryWithExtractorCombinerTransformer = resolveQueryTemplateWithExtractorCombinerTransformer(
-    selectorParams.extractorOrCombinerTemplate
-  ); 
+  const resolvedExtractor: BoxedQueryWithExtractorCombinerTransformer =
+    resolveQueryTemplateWithExtractorCombinerTransformer(selectorParams.extractorOrCombinerTemplate); 
 
   return runQuery(
     state,

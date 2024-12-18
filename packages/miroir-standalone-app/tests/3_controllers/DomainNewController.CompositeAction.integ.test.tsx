@@ -61,6 +61,7 @@ import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { miroirAppStartup } from '../../src/startup.js';
 import {
   chainVitestSteps,
+  createLibraryTestStore,
   loadTestConfigFiles,
   miroirAfterAll,
   miroirBeforeAll,
@@ -71,8 +72,6 @@ import {
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCache;
-// let localDataStoreWorker: SetupWorkerApi | undefined;
-// let localDataStoreServer: any /**SetupServerApi | undefined */;
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
 let miroirContext: MiroirContext;
@@ -127,6 +126,10 @@ beforeAll(
     } else {
       throw new Error("beforeAll failed initialization!");
     }
+    await createLibraryTestStore(
+      miroirConfig,
+      domainController
+    )
 
     return Promise.resolve();
   }
@@ -211,7 +214,7 @@ const libraryEntitesAndInstances = [
 ];
 
 const testActions: Record<string, TestActionParams> = {
-  "get Entity Entity from Miroir": {
+  "DomainNewController.CompositeAction.integ.test": {
     testActionType: "testCompositeActionSuite",
     deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
     testCompositeAction: {
@@ -363,8 +366,8 @@ const testActions: Record<string, TestActionParams> = {
           },
         ],
       },
-      testCompositeActions: [
-        {
+      testCompositeActions: {
+        "get Entity Entity from Miroir":{
           testType: "testCompositeAction",
           compositeAction: {
             actionType: "compositeAction",
@@ -429,7 +432,7 @@ const testActions: Record<string, TestActionParams> = {
             },
           ],
         },
-      ]
+      }
     },
   },
     // ]
@@ -686,7 +689,7 @@ const testActions: Record<string, TestActionParams> = {
   //           domainAction: {
   //             endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
   //             actionType: "storeManagementAction",
-  //             actionName: "resetAndInitMiroirAndApplicationDatabase",
+  //             actionName: "resetAndInitApplicationDeployment",
   //             deploymentUuid: "",
   //             deployments: [
   //               {
@@ -875,7 +878,8 @@ const testActions: Record<string, TestActionParams> = {
 // TODO: duplicate test with ExtractorTemplatePersistenceStoreRunner.integ.test.tsx
 describe.sequential("DomainNewController.CompositeAction.integ.test", () => {
   it.each(Object.entries(testActions))("test %s", async (currentTestName, testAction: TestActionParams) => {
-    // const fullTestName = describe.sequential.name + "/" + currentTestName
+    // Manually set the currentTestName
+    // expect.getState().currentTestName = `DomainNewController.CompositeAction.integ.test/${currentTestName}`;
     const fullTestName = expect.getState().currentTestName ?? "no test name";
     console.info("STARTING test:", fullTestName);
     // expect(currentTestName != undefined).toBeTruthy();

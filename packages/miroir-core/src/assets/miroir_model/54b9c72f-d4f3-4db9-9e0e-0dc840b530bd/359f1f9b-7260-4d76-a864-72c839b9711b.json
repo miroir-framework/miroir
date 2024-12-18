@@ -286,6 +286,23 @@
                 "type": "literal",
                 "definition": "extractorTemplateForObjectListByEntity"
               },
+              "orderBy": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "attributeName": {
+                    "type": "string"
+                  },
+                  "direction": {
+                    "type": "enum",
+                    "optional": true,
+                    "definition": [
+                      "ASC",
+                      "DESC"
+                    ]
+                  }
+                }
+              },
               "filter": {
                 "type": "object",
                 "optional": true,
@@ -318,6 +335,20 @@
                 "type": "literal",
                 "definition": "combinerByRelationReturningObjectList"
               },
+              "orderBy": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "attributeName": {
+                    "type": "string"
+                  },
+                  "direction": {
+                    "type": "enum",
+                    "optional": true,
+                    "definition": ["ASC", "DESC"]
+                  }
+                }
+              },
               "objectReference": {
                 "type": "schemaReference",
                 "definition": {
@@ -347,6 +378,20 @@
               "extractorTemplateType": {
                 "type": "literal",
                 "definition": "combinerByManyToManyRelationReturningObjectList"
+              },
+              "orderBy": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "attributeName": {
+                    "type": "string"
+                  },
+                  "direction": {
+                    "type": "enum",
+                    "optional": true,
+                    "definition": ["ASC", "DESC"]
+                  }
+                }
               },
               "objectListReference": {
                 "type": "schemaReference",
@@ -710,6 +755,20 @@
                 "type": "literal",
                 "definition": "extractorByEntityReturningObjectList"
               },
+              "orderBy": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "attributeName": {
+                    "type": "string"
+                  },
+                  "direction": {
+                    "type": "enum",
+                    "optional": true,
+                    "definition": ["ASC", "DESC"]
+                  }
+                }
+              },
               "filter": {
                 "type": "object",
                 "optional": true,
@@ -756,6 +815,20 @@
                 "type": "literal",
                 "definition": "combinerByRelationReturningObjectList"
               },
+              "orderBy": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "attributeName": {
+                    "type": "string"
+                  },
+                  "direction": {
+                    "type": "enum",
+                    "optional": true,
+                    "definition": ["ASC", "DESC"]
+                  }
+                }
+              },
               "objectReference": {
                 "type": "string"
               },
@@ -781,6 +854,20 @@
               "extractorOrCombinerType": {
                 "type": "literal",
                 "definition": "combinerByManyToManyRelationReturningObjectList"
+              },
+              "orderBy": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "attributeName": {
+                    "type": "string"
+                  },
+                  "direction": {
+                    "type": "enum",
+                    "optional": true,
+                    "definition": ["ASC", "DESC"]
+                  }
+                }
               },
               "objectListReference": {
                 "type": "string"
@@ -843,6 +930,20 @@
               "extractorOrCombinerType": {
                 "type": "literal",
                 "definition": "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList"
+              },
+              "orderBy": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "attributeName": {
+                    "type": "string"
+                  },
+                  "direction": {
+                    "type": "enum",
+                    "optional": true,
+                    "definition": ["ASC", "DESC"]
+                  }
+                }
               },
               "rootExtractorOrReference": {
                 "type": "union",

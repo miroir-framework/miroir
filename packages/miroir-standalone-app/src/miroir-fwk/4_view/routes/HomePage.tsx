@@ -34,7 +34,7 @@ import {
   reportEntityDetails,
   reportEntityList,
   reportReportList,
-  resetAndInitMiroirAndApplicationDatabase
+  resetAndInitApplicationDeployment
 } from "miroir-core";
 import { ReduxStateChanges } from "miroir-localcache-redux";
 
@@ -331,7 +331,7 @@ export const HomePage = (props: RootComponentProps) => {
       <span>
         <button
           onClick={async () =>
-            resetAndInitMiroirAndApplicationDatabase.bind(domainController, [
+            resetAndInitApplicationDeployment.bind(domainController, [
               adminConfigurationDeploymentLibrary,
               adminConfigurationDeploymentMiroir,
             ] as any)

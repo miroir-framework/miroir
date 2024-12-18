@@ -182,7 +182,7 @@ export function plainObjectToDomainElement(r:any): DomainElement {
 export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = (
   selectedInstancesList: DomainElementInstanceArrayOrFailed,
   query: BoxedExtractorOrCombinerReturningObjectList,
-) => {
+): DomainElementInstanceArrayOrFailed => {
   if (selectedInstancesList.elementType == "failure") {
     return selectedInstancesList;
     // throw new Error("applyExtractorForSingleObjectListToSelectedInstancesListInMemory selectedInstancesList.elementValue is undefined")
@@ -193,11 +193,19 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
       const filterTest = localQuery.filter
         ? new RegExp(localQuery.filter.value??"", "i") // TODO: check for correct type
         : undefined;
+      // TODO: implement orderBy.direction!
+      const sortFunction = localQuery.orderBy?(a: EntityInstance, b: EntityInstance) => {
+        return (a as any)[localQuery.orderBy?.attributeName ?? ""].localeCompare(
+          (b as any)[localQuery.orderBy?.attributeName ?? ""],
+          "en",
+          { sensitivity: "base" }
+        );
+      }: undefined;
       // log.info(
       //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory filter",
       //   JSON.stringify(localQuery.filter)
       // );
-      const result:DomainElementInstanceArrayOrFailed = localQuery.filter
+      const filteredResult:DomainElementInstanceArrayOrFailed = localQuery.filter
         ? {
             elementType: "instanceArray",
             elementValue: 
@@ -219,11 +227,13 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
           }
         : selectedInstancesList;
       ;
+      const orderResult = sortFunction?filteredResult.elementValue.sort(sortFunction):filteredResult.elementValue;
+
       // log.info(
       //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory  result",
       //   JSON.stringify(result, undefined, 2)
       // );
-      return result;
+      return {elementType: "instanceArray", elementValue: orderResult};
       break;
     }
     case "combinerByRelationReturningObjectList": {
@@ -352,6 +362,13 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
       //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory filter",
       //   JSON.stringify(localQuery.filter)
       // );
+      // CANNOT APPLY ORDER BY HERE, AS WE ARE WORKING ON AN INDEX
+      if (localQuery.orderBy) {
+        log.warn(
+          "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory orderBy not implemented for instanceUuidIndex, query=",
+          JSON.stringify(query, undefined, 2)
+        )
+      }
       const result:DomainElementInstanceUuidIndexOrFailed = localQuery.filter
         ? {
             elementType: "instanceUuidIndex",
@@ -402,6 +419,13 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
 
       // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByRelationReturningObjectList", JSON.stringify(selectedInstances))
       // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByRelationReturningObjectList", selectedInstances)
+      // CAN NOT APPLY FILTER HERE, AS WE ARE WORKING ON AN INDEX
+      if (relationQuery.orderBy) {
+        log.warn(
+          "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory orderBy not implemented for instanceUuidIndex, query=",
+          JSON.stringify(query, undefined, 2)
+        )
+      }
       return { "elementType": "instanceUuidIndex", "elementValue": Object.fromEntries(
         Object.entries(selectedInstancesUuidIndex.elementValue ?? {}).filter(
           (i: [string, EntityInstance]) => {
@@ -446,6 +470,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
                 Object.values(otherList).findIndex(
                   (v: any) => v[otherListAttribute] == (selectedInstancesEntry[1] as any)[rootListAttribute]
                 ) >= 0;
+                // CAN NOT APPLY FILTER HERE, AS WE ARE WORKING ON AN INDEX
                 return result;
               } else {
                 throw new Error(
@@ -478,7 +503,6 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
     }
   }
 };
-
 
 // ################################################################################################
 /**
@@ -550,7 +574,13 @@ export async function handleBoxedExtractorAction(
   runBoxedExtractorAction: RunBoxedExtractorAction,
   selectorMap: AsyncBoxedExtractorOrQueryRunnerMap
 ): Promise<ActionReturnType> {
-  log.info("handleBoxedExtractorAction for", origin, "start", "runBoxedExtractorAction", JSON.stringify(runBoxedExtractorAction, null, 2));
+  log.info(
+    "handleBoxedExtractorAction for",
+    origin,
+    "start",
+    "runBoxedExtractorAction",
+    JSON.stringify(runBoxedExtractorAction, null, 2)
+  );
   let queryResult: DomainElement;
   const extractor = runBoxedExtractorAction.query;
   queryResult = await selectorMap.extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
@@ -734,7 +764,11 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
               };
 
               // TODO: faking context results here! Should we send empty contextResults instead?
-              const resolvedQuery: ExtractorOrCombiner | QueryFailed = resolveExtractorTemplate(extractorOrCombiner.subQueryTemplate.query,innerQueryParams, innerQueryParams); 
+              const resolvedQuery: ExtractorOrCombiner | QueryFailed = resolveExtractorTemplate(
+                extractorOrCombiner.subQueryTemplate.query,
+                innerQueryParams,
+                innerQueryParams
+              ); 
         
               if ("QueryFailure" in resolvedQuery) {
                 return [

@@ -281,22 +281,10 @@ export function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRunner*/
               newFetchedData,
               pageParams,
               innerQueryParams,
-              // {
-              //   elementType: "object",
-              //   elementValue: {
-              //     ...queryParams.elementValue,
-              //     ...Object.fromEntries(
-              //       Object.entries(applyTransformer(query.subQueryTemplate.rootQueryObjectTransformer, entry[1])).map(
-              //         (e: [string, any]) => [e[0], { elementType: "instanceUuid", elementValue: e[1] }]
-              //       )
-              //     ),
-              //   },
-              // },
               extractorRunnerMap,
               deploymentUuid,
               extractors,
               resolvedQuery as ExtractorOrCombiner,
-              // query.subQueryTemplate.query
             ).then((result) => {
               return [entry[1].uuid, result];
             });
@@ -385,17 +373,12 @@ export const asyncExtractWithExtractor: AsyncExtractWithBoxedExtractorOrCombiner
  */
 
 export const asyncRunQuery = async (
-  // state: StateType,
   selectorParams: AsyncQueryRunnerParams,
 ): Promise<DomainElementObject> => {
 
   // log.info("########## asyncRunQuery begin, query", selectorParams);
 
 
-  // const context: DomainElementObject = {
-  //   elementType: "object",
-  //   elementValue: { ...selectorParams.extractor.contextResults.elementValue },
-  // };
   const context: Record<string, any> = {
     ...selectorParams.extractor.contextResults.elementValue ,
   };
@@ -428,13 +411,6 @@ export const asyncRunQuery = async (
     log.info("asyncRunQuery for extractor", result[0], "result", JSON.stringify(result[1], null, 2));
     context[result[0]] = result[1]; // does side effect!
   }
-  // await Promise.all(extractorsPromises).then((results) => {
-  //   results.forEach((result) => {
-  //     // context.elementValue[result[0]] = result[1]; // does side effect!
-  //     context[result[0]] = result[1]; // does side effect!
-  //   });
-  //   return context;
-  // });
 
   const combinerPromises = Object.entries(selectorParams.extractor.combiners ?? {})
   .map((query: [string, ExtractorOrCombiner]) => {
@@ -455,21 +431,11 @@ export const asyncRunQuery = async (
     });
   });
 
-  // for (const [key, value] of combinerPromises) {
-  //   const result = await value;
-  //   context.elementValue[key] = result; // does side effect!
-  // }
   for (const promise of combinerPromises) {
     const result = await promise;
     log.info("asyncRunQuery for combiner", result[0], "result", JSON.stringify(result[1], null, 2));
     context[result[0]] = result[1]; // does side effect!
   }
-  // await Promise.all(combinerPromises).then((results) => {
-  //   results.forEach((result) => {
-  //     context.elementValue[result[0]] = result[1]; // does side effect!
-  //   });
-  //   return context;
-  // });
 
 
   for (const transformer of Object.entries(selectorParams.extractor.runtimeTransformers ?? {})) {

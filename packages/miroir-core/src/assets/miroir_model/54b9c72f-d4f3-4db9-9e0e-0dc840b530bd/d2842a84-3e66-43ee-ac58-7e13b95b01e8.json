@@ -94,7 +94,7 @@
                 }
               },
               "testCompositeActions": {
-                "type": "array",
+                "type": "record",
                 "definition": {
                   "type": "schemaReference",
                   "definition": {

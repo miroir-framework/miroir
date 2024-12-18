@@ -664,7 +664,7 @@ export {
   undoRedoHistorization,
 } from "./3_controllers/ConfigurationService.js";
 export {
-  resetAndInitMiroirAndApplicationDatabase,
+  resetAndInitApplicationDeployment,
   resetAndInitMiroirAndApplicationDatabaseNew,
   DeploymentConfiguration,
   DomainController,

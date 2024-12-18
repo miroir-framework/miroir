@@ -86,15 +86,6 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     // ##############################################################################################
     sqlForExtractor(
       extractor: ExtractorOrCombiner
-        // Extractor
-        // | ExtractorOrCombinerReturningObject
-        // | ExtractorOrCombinerReturningObjectList
-        // // | CombinerByManyToManyRelationReturningObjectList
-        // // | ExtractorOrCombinerReturningObject
-        // // | ExtractorOrCombinerReturningObjectList
-        // | ExtractorWrapper
-        // | ExtractorForObjectByDirectReference
-        // | BoxedQueryWithExtractorCombinerTransformer
     ): RecursiveStringRecords {
       switch (extractor.extractorOrCombinerType) {
         case "extractorForObjectByDirectReference": {
@@ -123,9 +114,6 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     sqlForQuery(
       query:
         | BoxedExtractorOrCombinerReturningObjectOrObjectList
-        // | BoxedExtractorOrCombinerReturningObjectList
-        // | BoxedExtractorOrCombinerReturningObject
-        // | ExtractorWrapper
         | BoxedQueryWithExtractorCombinerTransformer
     ): RecursiveStringRecords {
       // log.info(this.logHeader, "sqlForExtractor called with parameter", "extractor", extractor);
@@ -140,7 +128,6 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       switch (query.queryType) {
         case "boxedExtractorOrCombinerReturningObjectList": {
           // TODO: use queryGenerator?
-          // where: { [filter.attribute]: { [Op.like]: "%" + filter.value + "%" } },
           switch (query.select.extractorOrCombinerType) {
             case "extractorByEntityReturningObjectList":{
               return (
@@ -212,72 +199,6 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       }
       return "SQL for extractor not implemented";
     }
-
-    // // ##############################################################################################
-    // sqlForExtractorTemplate(
-    //   extractor:
-    //     | BoxedExtractorTemplateReturningObjectList
-    //     | BoxedExtractorTemplateReturningObject
-    //     | ExtractorTemplateByExtractorWrapper
-    //     | BoxedQueryTemplateWithExtractorCombinerTransformer
-    // ): RecursiveStringRecords {
-    //   // log.info(this.logHeader, "sqlForExtractor called with parameter", "extractor", extractor);
-    //   // log.info(this.logHeader, "sqlForExtractor called with sequelize", this.sequelize);
-    //   // log.info(this.logHeader, "sqlForExtractor called with dialect", (this.sequelize as any).dialect);
-    //   // // log.info(this.logHeader, "sqlForExtractor called with queryGenerator", (this.sequelize as any).dialect.queryGenerator);
-    //   // // log.info(this.logHeader, "sqlForExtractor called with selectQuery", (this.sequelize as any).dialect.selectQuery);
-    //   // // log.info(this.logHeader, "sqlForExtractor called with queryInterface", this.sequelize.getQueryInterface());
-    //   // // log.info(this.logHeader, "sqlForExtractor called with dialect", (this.sequelize.getQueryInterface().queryGenerator as any).dialect);
-    //   // // log.info(this.logHeader, "sqlForExtractor called with queryGenerator", this.sequelize.getQueryInterface().queryGenerator);
-    //   // log.info(this.logHeader, "sqlForExtractor called with selectQuery", (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery);
-    //   switch (extractor.queryType) {
-    //     case "extractorTemplateForObjectListByEntity": {
-    //       // const result = (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery(extractor.parentUuid
-    //       //   , {
-    //       // // const result = (this.sequelize as any).dialect.queryGenerator.selectQuery(extractor.parentUuid, {
-    //       //   attributes: ["*"],
-    //       // }
-    //       // );
-    //       // log.info(this.logHeader, "sqlForExtractor", "boxedExtractorTemplateReturningObject", result);
-    //       if (extractor.parentName == undefined) {
-    //         throw new Error(
-    //           "sqlForExtractor can not handle queryTemplateType for extractor" + JSON.stringify(extractor)
-    //         );
-    //       }
-    //       // const parentUuid = 
-    //       // TODO: use queryGenerator?
-    //       return `SELECT * FROM "${this.schema}"."${extractor.parentName}"`;
-    //       // return result;
-    //       break;
-    //     }
-    //     case "boxedExtractorTemplateReturningObject": {
-    //       const result: string = (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery(
-    //         extractor.select.parentUuid,
-    //         {
-    //           attributes: ["*"],
-    //         }
-    //       );
-    //       log.info(this.logHeader, "sqlForExtractor", "boxedExtractorTemplateReturningObject", result);
-    //       // return "SELECT * FROM domainModel WHERE uuid = " + extractor.deploymentUuid;
-    //       return result;
-    //       break;
-    //     }
-    //     case "boxedQueryTemplateWithExtractorCombinerTransformer": {
-    //       return Object.fromEntries(
-    //         Object.entries(extractor.extractorTemplates ?? {}).map((e) => [e[0], this.sqlForExtractorTemplate(e[1])])
-    //       );
-    //       break;
-    //     }
-    //     case "extractorForObjectByDirectReference":
-    //     case "extractorWrapperReturningObject":
-    //     case "extractorWrapperReturningList":
-    //     default: {
-    //       return "SQL for extractor could not handle queryType for extractor" + extractor;
-    //       break;
-    //     }
-    //   }
-    //   return "SQL for extractor not implemented";
-    // }
 
     // #############################################################################################
     async handleQueryTemplateActionForServerONLY(query: RunBoxedQueryTemplateAction): Promise<ActionReturnType> {
@@ -372,6 +293,61 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           const sequelizeModel = this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel;
           rawResult = (await sequelizeModel?.findAll({
             where: { [filter.attribute]: { [Op.like]: "%" + filter.value + "%" } },
+          })) as unknown as EntityInstance[];
+          cleanResult = rawResult.map((i) => i["dataValues"]);
+          log.info("getInstancesWithFilter result", cleanResult);
+        } catch (e) {
+          log.warn(this.logHeader, "getInstancesWithFilter", "failed to fetch instances of entityUuid", parentUuid);
+          return {
+            status: "error",
+            error: {
+              errorType: "FailedToGetInstances",
+              errorMessage: `could not get instances for entity ${parentUuid}`,
+            },
+          };
+        }
+      } else {
+        log.warn(this.logHeader, "getInstancesWithFilter", "could not find entity in database: entityUuid", parentUuid);
+        return {
+          status: "error",
+          error: { errorType: "FailedToGetInstances", errorMessage: `could not find entity ${parentUuid}` },
+        };
+      }
+      // TODO: CORRECT APPLICATION SECTION
+      return Promise.resolve({
+        status: "ok",
+        returnedDomainElement: {
+          elementType: "entityInstanceCollection",
+          elementValue: { parentUuid, applicationSection: this.applicationSection, instances: cleanResult },
+        },
+      });
+    }
+
+    // ##############################################################################################
+    async getOrderedInstancesWithFilter(
+      parentUuid: string,
+      filter: {
+        attribute: string;
+        value: string;
+      },
+      orderBy: {
+        attributeName: string;
+        direction: "ASC" | "DESC";
+      }
+    ): Promise<ActionEntityInstanceCollectionReturnType> {
+      let rawResult: any[] = [];
+      let cleanResult: EntityInstance[] = [];
+      if (
+        this.sqlSchemaTableAccess &&
+        this.sqlSchemaTableAccess[parentUuid] &&
+        this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel
+      ) {
+        log.info("getInstancesWithFilter calling this.sqlEntities findall", parentUuid);
+        try {
+          const sequelizeModel = this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel;
+          rawResult = (await sequelizeModel?.findAll({
+            where: { [filter.attribute]: { [Op.like]: "%" + filter.value + "%" } },
+            order: [[orderBy.attributeName, orderBy.direction??"ASC"]],
           })) as unknown as EntityInstance[];
           cleanResult = rawResult.map((i) => i["dataValues"]);
           log.info("getInstancesWithFilter result", cleanResult);

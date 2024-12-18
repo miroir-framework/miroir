@@ -448,9 +448,9 @@ describe.sequential('DomainController.Data.CRUD.React',
             },
           ).then(
             ()=> {
-              expect(screen.queryByText(new RegExp(`${book3.uuid}`,'i'))).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
               expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
               expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
+              expect(screen.queryByText(new RegExp(`${book3.uuid}`,'i'))).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
               expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
             }
           );

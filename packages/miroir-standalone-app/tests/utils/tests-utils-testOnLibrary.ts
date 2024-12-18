@@ -21,6 +21,7 @@ import {
   publisher2,
   publisher3,
 } from "miroir-core";
+import { EntityInstanceCollection } from "miroir-core";
 import {
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
@@ -34,7 +35,12 @@ import {
 } from "miroir-core";
 import { miroirConfig } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-export const libraryEntitesAndInstances = [
+export type ApplicationEntitiesAndInstances = {
+  entity: MetaEntity;
+  entityDefinition: EntityDefinition;
+  instances: EntityInstance[];
+}[];
+export const libraryEntitesAndInstances: ApplicationEntitiesAndInstances  = [
   {
     entity: entityAuthor as MetaEntity,
     entityDefinition: entityDefinitionAuthor as EntityDefinition,
@@ -60,11 +66,13 @@ export const libraryEntitesAndInstances = [
 ];
 
 export function testOnLibrary_beforeAll(miroirConfig: MiroirConfigClient): CompositeAction {
+  throw new Error("Not implemented yet");
   return {
     actionType: "compositeAction",
     actionLabel: "beforeAll",
     actionName: "sequence",
     definition: [
+      // TODO: openStore first!jy
       {
         compositeActionType: "domainAction",
         compositeActionStepLabel: "createLibraryStore",
@@ -82,7 +90,10 @@ export function testOnLibrary_beforeAll(miroirConfig: MiroirConfigClient): Compo
   };
 }
 
-export function testOnLibrary_beforeEach(miroirConfig: MiroirConfigClient): CompositeAction {
+export function testOnLibrary_beforeEach(
+  miroirConfig: MiroirConfigClient,
+  libraryEntitesAndInstances: ApplicationEntitiesAndInstances
+): CompositeAction {
   return {
     actionType: "compositeAction",
     actionLabel: "beforeEach",
@@ -120,7 +131,7 @@ export function testOnLibrary_beforeEach(miroirConfig: MiroirConfigClient): Comp
       },
       {
         compositeActionType: "domainAction",
-        compositeActionStepLabel: "initLibraryStore",
+        compositeActionStepLabel: "refreshLocalCacheForLibraryStore",
         domainAction: {
           actionType: "modelAction",
           actionName: "rollback",

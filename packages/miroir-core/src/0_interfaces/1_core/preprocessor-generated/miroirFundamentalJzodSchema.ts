@@ -3763,7 +3763,7 @@ export const miroirFundamentalJzodSchema = {
             }
           },
           "testCompositeActions": {
-            "type": "array",
+            "type": "record",
             "definition": {
               "type": "schemaReference",
               "definition": {
@@ -3927,7 +3927,7 @@ export const miroirFundamentalJzodSchema = {
                     }
                   },
                   "testCompositeActions": {
-                    "type": "array",
+                    "type": "record",
                     "definition": {
                       "type": "schemaReference",
                       "definition": {
@@ -6307,6 +6307,23 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "extractorTemplateForObjectListByEntity"
           },
+          "orderBy": {
+            "type": "object",
+            "optional": true,
+            "definition": {
+              "attributeName": {
+                "type": "string"
+              },
+              "direction": {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "ASC",
+                  "DESC"
+                ]
+              }
+            }
+          },
           "filter": {
             "type": "object",
             "optional": true,
@@ -6342,6 +6359,23 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "combinerByRelationReturningObjectList"
           },
+          "orderBy": {
+            "type": "object",
+            "optional": true,
+            "definition": {
+              "attributeName": {
+                "type": "string"
+              },
+              "direction": {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "ASC",
+                  "DESC"
+                ]
+              }
+            }
+          },
           "objectReference": {
             "type": "schemaReference",
             "definition": {
@@ -6374,6 +6408,23 @@ export const miroirFundamentalJzodSchema = {
           "extractorTemplateType": {
             "type": "literal",
             "definition": "combinerByManyToManyRelationReturningObjectList"
+          },
+          "orderBy": {
+            "type": "object",
+            "optional": true,
+            "definition": {
+              "attributeName": {
+                "type": "string"
+              },
+              "direction": {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "ASC",
+                  "DESC"
+                ]
+              }
+            }
           },
           "objectListReference": {
             "type": "schemaReference",
@@ -6786,6 +6837,23 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "extractorByEntityReturningObjectList"
           },
+          "orderBy": {
+            "type": "object",
+            "optional": true,
+            "definition": {
+              "attributeName": {
+                "type": "string"
+              },
+              "direction": {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "ASC",
+                  "DESC"
+                ]
+              }
+            }
+          },
           "filter": {
             "type": "object",
             "optional": true,
@@ -6838,6 +6906,23 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "combinerByRelationReturningObjectList"
           },
+          "orderBy": {
+            "type": "object",
+            "optional": true,
+            "definition": {
+              "attributeName": {
+                "type": "string"
+              },
+              "direction": {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "ASC",
+                  "DESC"
+                ]
+              }
+            }
+          },
           "objectReference": {
             "type": "string"
           },
@@ -6865,6 +6950,23 @@ export const miroirFundamentalJzodSchema = {
           "extractorOrCombinerType": {
             "type": "literal",
             "definition": "combinerByManyToManyRelationReturningObjectList"
+          },
+          "orderBy": {
+            "type": "object",
+            "optional": true,
+            "definition": {
+              "attributeName": {
+                "type": "string"
+              },
+              "direction": {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "ASC",
+                  "DESC"
+                ]
+              }
+            }
           },
           "objectListReference": {
             "type": "string"
@@ -6937,6 +7039,23 @@ export const miroirFundamentalJzodSchema = {
           "extractorOrCombinerType": {
             "type": "literal",
             "definition": "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList"
+          },
+          "orderBy": {
+            "type": "object",
+            "optional": true,
+            "definition": {
+              "attributeName": {
+                "type": "string"
+              },
+              "direction": {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "ASC",
+                  "DESC"
+                ]
+              }
+            }
           },
           "rootExtractorOrReference": {
             "type": "union",
@@ -10064,7 +10183,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "actionName": {
                 "type": "literal",
-                "definition": "resetAndInitMiroirAndApplicationDatabase"
+                "definition": "resetAndInitApplicationDeployment"
               },
               "endpoint": {
                 "type": "literal",
@@ -24352,7 +24471,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": [
                   {
                     "type": "literal",
-                    "definition": "resetAndInitMiroirAndApplicationDatabase"
+                    "definition": "resetAndInitApplicationDeployment"
                   },
                   {
                     "type": "schemaReference",
@@ -27104,6 +27223,57 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
+              "orderBy": {
+                "optional": true,
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "attributeName": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "direction": {
+                        "type": "union",
+                        "optional": true,
+                        "definition": [
+                          {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "ASC",
+                              "DESC"
+                            ]
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOnObject"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              },
               "filter": {
                 "optional": true,
                 "type": "union",
@@ -27300,6 +27470,57 @@ export const miroirFundamentalJzodSchema = {
                     "type": "schemaReference",
                     "definition": {
                       "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "orderBy": {
+                "optional": true,
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "attributeName": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "direction": {
+                        "type": "union",
+                        "optional": true,
+                        "definition": [
+                          {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "ASC",
+                              "DESC"
+                            ]
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOnObject"
+                            }
+                          }
+                        ]
+                      }
                     }
                   }
                 ]
@@ -27746,6 +27967,57 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
+              "orderBy": {
+                "optional": true,
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "attributeName": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "direction": {
+                        "type": "union",
+                        "optional": true,
+                        "definition": [
+                          {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "ASC",
+                              "DESC"
+                            ]
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOnObject"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              },
               "objectReference": {
                 "type": "union",
                 "definition": [
@@ -27825,6 +28097,57 @@ export const miroirFundamentalJzodSchema = {
                     "type": "schemaReference",
                     "definition": {
                       "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "orderBy": {
+                "optional": true,
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "attributeName": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "direction": {
+                        "type": "union",
+                        "optional": true,
+                        "definition": [
+                          {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "ASC",
+                              "DESC"
+                            ]
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOnObject"
+                            }
+                          }
+                        ]
+                      }
                     }
                   }
                 ]
@@ -28916,6 +29239,57 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
+              "orderBy": {
+                "optional": true,
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "attributeName": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "direction": {
+                        "type": "union",
+                        "optional": true,
+                        "definition": [
+                          {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "ASC",
+                              "DESC"
+                            ]
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOnObject"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              },
               "objectListReference": {
                 "type": "schemaReference",
                 "definition": {
@@ -28994,6 +29368,57 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
+              "orderBy": {
+                "optional": true,
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "attributeName": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "direction": {
+                        "type": "union",
+                        "optional": true,
+                        "definition": [
+                          {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "ASC",
+                              "DESC"
+                            ]
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOnObject"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              },
               "filter": {
                 "optional": true,
                 "type": "union",
@@ -29067,6 +29492,57 @@ export const miroirFundamentalJzodSchema = {
                     "type": "schemaReference",
                     "definition": {
                       "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "orderBy": {
+                "optional": true,
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "attributeName": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "direction": {
+                        "type": "union",
+                        "optional": true,
+                        "definition": [
+                          {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "ASC",
+                              "DESC"
+                            ]
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "carryOnObject"
+                            }
+                          }
+                        ]
+                      }
                     }
                   }
                 ]

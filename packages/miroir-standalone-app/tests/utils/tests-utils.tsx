@@ -337,7 +337,17 @@ export async function createLibraryTestStore(
       }
     }
   )
-const createdApplicationLibraryStore = await domainController?.handleAction(
+  if (openMiroirStore?.status != "ok") {
+    console.error('Error createLibraryTestStore',JSON.stringify(openMiroirStore, null, 2));
+    throw new Error(
+      "Error createLibraryTestStore could not open Library Store: " +
+        JSON.stringify(openMiroirStore, null, 2)
+    );
+  } else {
+    console.log('createLibraryTestStore opened Library Store OK',JSON.stringify(openMiroirStore, null, 2));
+  }
+  
+  const createdApplicationLibraryStore = await domainController?.handleAction(
     {
       actionType: "storeManagementAction",
       actionName: "createStore",
@@ -352,6 +362,8 @@ const createdApplicationLibraryStore = await domainController?.handleAction(
       "Error createLibraryTestStore could not create Library Store: " +
         JSON.stringify(createdApplicationLibraryStore, null, 2)
     );
+  } else {
+    console.log('createLibraryTestStore created Library Store OK',JSON.stringify(createdApplicationLibraryStore, null, 2));
   }
 }
 
@@ -449,6 +461,28 @@ export async function setupMiroirTest(
 
 
 // ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 export interface BeforeAllReturnType {
   localMiroirPersistenceStoreController: PersistenceStoreControllerInterface | undefined,
   localAppPersistenceStoreController: PersistenceStoreControllerInterface | undefined,
@@ -465,71 +499,71 @@ export async function miroirBeforeAll(
   try {
 
 
-    if (!miroirConfig.client.emulateServer) {
-      console.warn('miroirBeforeAll: emulateServer is true in miroirConfig, a real server is used, tests results depend on the availability of the server.');
-      for (const c of Object.entries(miroirConfig.client.serverConfig.storeSectionConfiguration)) {
-        const openStoreAction: StoreOrBundleAction = {
-          actionType: "storeManagementAction",
-          actionName: "openStore",
-          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-          configuration: {
-            [c[0]]: c[1] as StoreUnitConfiguration,
-          },
-          deploymentUuid: c[0],
-        };
-        await domainController.handleAction(openStoreAction)
-      }
+    // if (!miroirConfig.client.emulateServer) {
+    //   console.warn('miroirBeforeAll: emulateServer is true in miroirConfig, a real server is used, tests results depend on the availability of the server.');
+    //   for (const c of Object.entries(miroirConfig.client.serverConfig.storeSectionConfiguration)) {
+    //     const openStoreAction: StoreOrBundleAction = {
+    //       actionType: "storeManagementAction",
+    //       actionName: "openStore",
+    //       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+    //       configuration: {
+    //         [c[0]]: c[1] as StoreUnitConfiguration,
+    //       },
+    //       deploymentUuid: c[0],
+    //     };
+    //     await domainController.handleAction(openStoreAction)
+    //   }
       
 
-      // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll DONE');
-      result = {
-        localMiroirPersistenceStoreController: undefined,
-        localAppPersistenceStoreController: undefined,
-      };
-    } else {
-      console.log("EMULATED SERVER, DATASTORE WILL BE ACCESSED DIRECTLY FROM NODEJS TEST ENVIRONMENT, NO SERVER WILL BE USED")
+    //   // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll DONE');
+    //   result = {
+    //     localMiroirPersistenceStoreController: undefined,
+    //     localAppPersistenceStoreController: undefined,
+    //   };
+    // } else {
+    //   console.log("EMULATED SERVER, DATASTORE WILL BE ACCESSED DIRECTLY FROM NODEJS TEST ENVIRONMENT, NO SERVER WILL BE USED")
 
-      log.info("miroirBeforeAll emulated server miroirConfig",JSON.stringify(miroirConfig, null, 2));
+    //   log.info("miroirBeforeAll emulated server miroirConfig",JSON.stringify(miroirConfig, null, 2));
 
-      // console.warn('miroirBeforeAll: emulateServer is true in miroirConfig, no server is used, persistent store layer is accessed directly by the client.');
-      // TODO: send openStore action instead?
-      for (const deployment of Object.entries(miroirConfig.client.deploymentStorageConfig)) {
-        log.info("miroirBeforeAll setting persistenceStoreController on manager",deployment[0])
-        await persistenceStoreControllerManager.addPersistenceStoreController(
-          deployment[0],
-          deployment[1]
-        );
-        log.info("miroirBeforeAll setting persistenceStoreController DONE on manager",deployment[0])
-      }
+    //   // console.warn('miroirBeforeAll: emulateServer is true in miroirConfig, no server is used, persistent store layer is accessed directly by the client.');
+    //   // TODO: send openStore action instead?
+    //   for (const deployment of Object.entries(miroirConfig.client.deploymentStorageConfig)) {
+    //     log.info("miroirBeforeAll setting persistenceStoreController on manager",deployment[0])
+    //     await persistenceStoreControllerManager.addPersistenceStoreController(
+    //       deployment[0],
+    //       deployment[1]
+    //     );
+    //     log.info("miroirBeforeAll setting persistenceStoreController DONE on manager",deployment[0])
+    //   }
 
-      log.info("miroirBeforeAll set persistenceStoreControllerManager on manager DONE");
-      const localMiroirPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
-        adminConfigurationDeploymentMiroir.uuid
-      );
-      const localAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
-        adminConfigurationDeploymentLibrary.uuid
-      );
+    //   log.info("miroirBeforeAll set persistenceStoreControllerManager on manager DONE");
+    //   const localMiroirPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
+    //     adminConfigurationDeploymentMiroir.uuid
+    //   );
+    //   const localAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
+    //     adminConfigurationDeploymentLibrary.uuid
+    //   );
 
-      if (!localMiroirPersistenceStoreController || !localAppPersistenceStoreController) {
-        throw new Error(
-          "could not find controller:" +
-            localMiroirPersistenceStoreController +
-            " " +
-            localAppPersistenceStoreController
-        );
-      } else {
-        // await startLocalPersistenceStoreControllers(localMiroirPersistenceStoreController, localAppPersistenceStoreController)
+    //   if (!localMiroirPersistenceStoreController || !localAppPersistenceStoreController) {
+    //     throw new Error(
+    //       "could not find controller:" +
+    //         localMiroirPersistenceStoreController +
+    //         " " +
+    //         localAppPersistenceStoreController
+    //     );
+    //   } else {
+    //     // await startLocalPersistenceStoreControllers(localMiroirPersistenceStoreController, localAppPersistenceStoreController)
 
-        log.info("miroirBeforeAll localMiroirPersistenceStoreController ok",adminConfigurationDeploymentMiroir.uuid)
-        log.info("miroirBeforeAll localAppPersistenceStoreController ok",adminConfigurationDeploymentLibrary.uuid)
-      }
+    //     log.info("miroirBeforeAll localMiroirPersistenceStoreController ok",adminConfigurationDeploymentMiroir.uuid)
+    //     log.info("miroirBeforeAll localAppPersistenceStoreController ok",adminConfigurationDeploymentLibrary.uuid)
+    //   }
 
-      // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.open',JSON.stringify(localMiroirPersistenceStoreController, circularReplacer()));
-      result = {
-        localMiroirPersistenceStoreController,
-        localAppPersistenceStoreController,
-      };
-    }
+    //   // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.open',JSON.stringify(localMiroirPersistenceStoreController, circularReplacer()));
+    //   result = {
+    //     localMiroirPersistenceStoreController,
+    //     localAppPersistenceStoreController,
+    //   };
+    // }
 
     const configurationMiroir = miroirConfig.client.emulateServer
       ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
@@ -567,6 +601,35 @@ export async function miroirBeforeAll(
       throw new Error('Error miroirBeforeAll could not create Miroir Store: ' + JSON.stringify(createdMiroirStore, null, 2));
     }
     console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll DONE');
+    log.info("miroirBeforeAll set persistenceStoreControllerManager on manager DONE");
+
+    const localMiroirPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
+      adminConfigurationDeploymentMiroir.uuid
+    );
+    // const localAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
+    //   adminConfigurationDeploymentLibrary.uuid
+    // );
+
+    // if (!localMiroirPersistenceStoreController || !localAppPersistenceStoreController) {
+    if (!localMiroirPersistenceStoreController) {
+      throw new Error(
+        "could not find controller:" +
+          localMiroirPersistenceStoreController
+          // + " " +
+          // localAppPersistenceStoreController
+      );
+    } else {
+      // await startLocalPersistenceStoreControllers(localMiroirPersistenceStoreController, localAppPersistenceStoreController)
+
+      log.info("miroirBeforeAll localMiroirPersistenceStoreController ok",adminConfigurationDeploymentMiroir.uuid)
+      // log.info("miroirBeforeAll localAppPersistenceStoreController ok",adminConfigurationDeploymentLibrary.uuid)
+    }
+
+    // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.open',JSON.stringify(localMiroirPersistenceStoreController, circularReplacer()));
+    result = {
+      localMiroirPersistenceStoreController,
+      // localAppPersistenceStoreController,
+    };
 
     return Promise.resolve(result);
   } catch (error) {

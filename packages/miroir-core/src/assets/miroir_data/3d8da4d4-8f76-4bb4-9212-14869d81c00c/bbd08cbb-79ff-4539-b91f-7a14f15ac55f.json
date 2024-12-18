@@ -98,7 +98,7 @@
             },
             "actionName": {
               "type": "literal",
-              "definition": "resetAndInitMiroirAndApplicationDatabase"
+              "definition": "resetAndInitApplicationDeployment"
             },
             "endpoint": {
               "type": "literal",

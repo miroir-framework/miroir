@@ -7,5 +7,5 @@ export interface TestImplementationExpect {
  * Interface for the test implementation
  */
 export interface TestImplementation {
-  expect(value: any): TestImplementationExpect;
+  expect(value: any, label?: string): TestImplementationExpect;
 }

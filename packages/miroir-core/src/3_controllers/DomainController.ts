@@ -83,7 +83,7 @@ export interface DeploymentConfiguration {
   selfApplicationDeployment: SelfApplicationDeploymentConfiguration,
 }
 
-export async function resetAndInitMiroirAndApplicationDatabase(
+export async function resetAndInitApplicationDeployment(
   domainController: DomainControllerInterface,
   selfAdminConfigurationDeployments: SelfApplicationDeploymentConfiguration[], // TODO: use Deployment Entity Type!
   // localCache: LocalCacheInterface,
@@ -108,6 +108,7 @@ export async function resetAndInitMiroirAndApplicationDatabase(
       params: {
         dataStoreType: selfAdminConfigurationDeployment.uuid == adminConfigurationDeploymentMiroir.uuid?"miroir":"app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
         metaModel: defaultMiroirMetaModel,
+        // TODO: this is wrong, application, application version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
         application: selfApplicationMiroir,
         selfApplicationDeploymentConfiguration: selfAdminConfigurationDeployment,
         applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
@@ -118,9 +119,10 @@ export async function resetAndInitMiroirAndApplicationDatabase(
     // }, localCache.currentModel(selfAdminConfigurationDeployment.uuid));
   }
   log.info(
-    "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ resetAndInitMiroirAndApplicationDatabase APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+    "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ resetAndInitApplicationDeployment APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
   );
   for (const d of selfAdminConfigurationDeployments) {
+    log.info("resetAndInitApplicationDeployment rollback for deployment", d.uuid);
     await domainController.handleAction({
       actionType: "modelAction",
       actionName: "rollback",
@@ -138,7 +140,7 @@ export async function resetAndInitMiroirAndApplicationDatabaseNew(
 ) {
   // const mappedDeployments = deployments.map(d=>d.adminConfigurationDeployment);
   const mappedDeployments = deployments.map(d=>d.selfApplicationDeployment);
-  return resetAndInitMiroirAndApplicationDatabase(domainController, mappedDeployments);
+  return resetAndInitApplicationDeployment(domainController, mappedDeployments);
 }
 // ################################################################################################
 // ################################################################################################
@@ -1018,7 +1020,10 @@ export class DomainController implements DomainControllerInterface {
       log.info("handleTestCompositeActionSuite no beforeAll!");
     }
 
-    for (const testCompositeAction of testAction.testCompositeActions) {
+    for (const testCompositeAction of Object.entries(testAction.testCompositeActions)) {
+
+      expect.getState().currentTestName = testCompositeAction[0];
+
       if (testAction.beforeEach) {
         log.info("handleTestCompositeActionSuite beforeEach", testAction.beforeEach.actionLabel, testAction.beforeAll);
         const beforeAllResult = await this.handleCompositeAction(testAction.beforeEach, localActionParams, currentModel);
@@ -1029,9 +1034,17 @@ export class DomainController implements DomainControllerInterface {
         log.info("handleTestCompositeActionSuite no beforeEach!");
       }
 
-      if (testCompositeAction.beforeTestSetupAction) {
-        log.info("handleTestCompositeAction beforeAll", testCompositeAction.beforeTestSetupAction.actionLabel, testCompositeAction.beforeTestSetupAction);
-        const beforeTestResult = await this.handleCompositeAction(testCompositeAction.beforeTestSetupAction, localActionParams, currentModel);
+      if (testCompositeAction[1].beforeTestSetupAction) {
+        log.info(
+          "handleTestCompositeAction beforeAll",
+          testCompositeAction[1].beforeTestSetupAction.actionLabel,
+          testCompositeAction[1].beforeTestSetupAction
+        );
+        const beforeTestResult = await this.handleCompositeAction(
+          testCompositeAction[1].beforeTestSetupAction,
+          localActionParams,
+          currentModel
+        );
         if (beforeTestResult?.status != "ok") {
           log.error("Error on beforeTestSetupAction", JSON.stringify(beforeTestResult, null, 2));
         }
@@ -1040,16 +1053,20 @@ export class DomainController implements DomainControllerInterface {
       }
 
       const localCompositeAction: CompositeAction = {
-        ...testCompositeAction.compositeAction,
+        ...testCompositeAction[1].compositeAction,
         definition: [
-          ...testCompositeAction.compositeAction.definition,
-          ...testCompositeAction.testCompositeActionAssertions
+          ...testCompositeAction[1].compositeAction.definition,
+          ...testCompositeAction[1].testCompositeActionAssertions
         ],
       }
-      if (testCompositeAction.afterTestCleanupAction) {
-        log.info("handleTestCompositeAction beforeAll", testCompositeAction.afterTestCleanupAction.actionLabel, testCompositeAction.afterTestCleanupAction);
+      if (testCompositeAction[1].afterTestCleanupAction) {
+        log.info(
+          "handleTestCompositeAction beforeAll",
+          testCompositeAction[1].afterTestCleanupAction.actionLabel,
+          testCompositeAction[1].afterTestCleanupAction
+        );
         const afterTestResult = await this.handleCompositeAction(
-          testCompositeAction.afterTestCleanupAction,
+          testCompositeAction[1].afterTestCleanupAction,
           localActionParams,
           currentModel
         );
@@ -1070,17 +1087,16 @@ export class DomainController implements DomainControllerInterface {
       } else {
         log.info("handleTestCompositeActionSuite no afterEach!");
       }
+    }
 
-      if (testAction.afterAll) {
-        log.info("handleTestCompositeActionSuite afterAll", testAction.afterAll.actionLabel, testAction.beforeAll);
-        const afterAllResult = await this.handleCompositeAction(testAction.afterAll, localActionParams, currentModel);
-        if (afterAllResult?.status != "ok") {
-          log.error("Error on afterAll", JSON.stringify(afterAllResult, null, 2));
-        }
-      } else {
-        log.info("handleTestCompositeActionSuite no afterAll!");
+    if (testAction.afterAll) {
+      log.info("handleTestCompositeActionSuite afterAll", testAction.afterAll.actionLabel, testAction.beforeAll);
+      const afterAllResult = await this.handleCompositeAction(testAction.afterAll, localActionParams, currentModel);
+      if (afterAllResult?.status != "ok") {
+        log.error("Error on afterAll", JSON.stringify(afterAllResult, null, 2));
       }
-  
+    } else {
+      log.info("handleTestCompositeActionSuite no afterAll!");
     }
 
     return Promise.resolve(ACTION_OK);
@@ -1255,7 +1271,7 @@ export class DomainController implements DomainControllerInterface {
             currentAction.testAssertion.definition.resultAccessPath ?? []
           );
   
-          const valueToTest = Array.isArray(prePreValueToTest)
+          const valueToTest = Array.isArray(preValueToTest)
             ? ignorePostgresExtraAttributesOnList(
                 preValueToTest,
                 currentAction.testAssertion.definition.ignoreAttributes ?? []
@@ -1268,13 +1284,18 @@ export class DomainController implements DomainControllerInterface {
           log.info(
             "handleCompositeAction runTestCompositeActionAssertion to handle",
             JSON.stringify(currentAction.testAssertion, null, 2),
+            // "preValueToTest typeof", typeof preValueToTest,
+            // "preValueToTest instanceof Array", preValueToTest instanceof Array,
+            "preValueToTest is array", Array.isArray(preValueToTest),
+            // "preValueToTest object proto is array", JSON.stringify(Object.prototype.toString.call(preValueToTest)),
+            // "preValueToTest constuctor is array", preValueToTest.constructor === Array,
             "preValueToTest",
             JSON.stringify(preValueToTest, null, 2),
             "valueToTest",
             JSON.stringify(valueToTest, null, 2)
           );
           ConfigurationService.testImplementation
-            .expect(valueToTest)
+            .expect(valueToTest, currentAction.nameGivenToResult)
             .toEqual(currentAction.testAssertion.definition.expectedValue);
           log.info("handleCompositeAction runTestCompositeActionAssertion test passed", currentAction.testAssertion);
           break;
@@ -1486,8 +1507,8 @@ export class DomainController implements DomainControllerInterface {
         return this.handleInstanceAction(domainAction.deploymentUuid, domainAction);
       }
       case "storeManagementAction": {
-        if (domainAction.actionName == "resetAndInitMiroirAndApplicationDatabase") {
-          await resetAndInitMiroirAndApplicationDatabase(this, domainAction.deployments);
+        if (domainAction.actionName == "resetAndInitApplicationDeployment") {
+          await resetAndInitApplicationDeployment(this, domainAction.deployments);
         } else {
           try {
             await this.callUtil.callPersistenceAction(

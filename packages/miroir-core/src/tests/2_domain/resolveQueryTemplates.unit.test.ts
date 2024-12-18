@@ -15,7 +15,7 @@ import {
 // console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 // describe.sequential("templatesDEFUNCT.unit.test", () => {
-describe("extractorTemplates.unit.test", () => {
+describe("resolveQueryTemplates.unit.test", () => {
 
   // ################################################################################################
   it("convert extractorOrCombinerTemplate to query with resolveQueryTemplateForBoxedExtractorOrCombinerReturningObjectOrObjectList", async () => { // TODO: test failure cases!

@@ -535,7 +535,7 @@ export const ToolsPage: React.FC<any> = (
         action: {
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           actionType: "storeManagementAction",
-          actionName: "resetAndInitMiroirAndApplicationDatabase",
+          actionName: "resetAndInitApplicationDeployment",
           deploymentUuid: "",
           deployments: [
             {
