@@ -54,9 +54,9 @@ import {
   MiroirIntegrationTestEnvironment,
   deploymentConfigurations,
   loadTestConfigFiles,
-  miroirAfterAll,
-  miroirAfterEach,
-  miroirBeforeEach,
+  deleteAndCloseApplicationDeployments,
+  resetApplicationDeployments,
+  miroirBeforeEach_resetAndInitApplicationDeployments,
   miroirIntegrationTestEnvironmentFactory,
   renderWithProviders,
   renderWithProvidersWithContextProvider
@@ -127,7 +127,7 @@ beforeAll(
 
 beforeEach(
   async () => {
-    await miroirBeforeEach(
+    await miroirBeforeEach_resetAndInitApplicationDeployments(
       miroirConfig,
       testEnvironment.domainController, // {} as DomainController,
       deploymentConfigurations, 
@@ -139,7 +139,7 @@ beforeEach(
 
 // afterAll(
 //   async () => {
-//     await miroirAfterAll(
+//     await deleteAndCloseApplicationDeployments(
 //       miroirConfig,
 //       testEnvironment.domainController,
 //       testEnvironment.localMiroirPersistenceStoreController,
@@ -151,7 +151,7 @@ beforeEach(
 
 // afterEach(
 //   async () => {
-//     await miroirAfterEach(
+//     await resetApplicationDeployments(
 //       miroirConfig,
 //       testEnvironment.domainController,
 //       testEnvironment.localMiroirPersistenceStoreController,

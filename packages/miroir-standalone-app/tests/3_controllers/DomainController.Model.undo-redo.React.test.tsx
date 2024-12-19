@@ -31,14 +31,14 @@ import {
 
 import { TestUtilsTableComponent } from "../utils/TestUtilsTableComponent.js";
 import {
-  createLibraryTestStore,
+  createLibraryDeploymentDEFUNCT,
   deploymentConfigurations,
   DisplayLoadingInfo,
   loadTestConfigFiles,
-  miroirAfterAll,
-  miroirAfterEach,
-  miroirBeforeAll,
-  miroirBeforeEach,
+  deleteAndCloseApplicationDeployments,
+  resetApplicationDeployments,
+  createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT,
+  miroirBeforeEach_resetAndInitApplicationDeployments,
   renderWithProviders,
   setupMiroirTest
 } from "../utils/tests-utils.js";
@@ -113,7 +113,7 @@ beforeAll(
     localCache = locallocalCache;
     miroirContext = localmiroirContext;
 
-    const wrapped = await miroirBeforeAll(
+    const wrapped = await createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT(
       miroirConfig as MiroirConfigClient,
       persistenceStoreControllerManager,
       domainController,
@@ -126,7 +126,7 @@ beforeAll(
     } else {
       throw new Error("beforeAll failed initialization!");
     }
-    await createLibraryTestStore(
+    await createLibraryDeploymentDEFUNCT(
       miroirConfig,
       domainController
     )
@@ -136,7 +136,7 @@ beforeAll(
 
 beforeEach(
   async () => {
-    await miroirBeforeEach(
+    await miroirBeforeEach_resetAndInitApplicationDeployments(
       miroirConfig,
       domainController,
       deploymentConfigurations,
@@ -146,7 +146,7 @@ beforeEach(
 
 afterAll(
   async () => {
-    await miroirAfterAll(
+    await deleteAndCloseApplicationDeployments(
       miroirConfig,
       domainController,
       deploymentConfigurations, 
@@ -156,10 +156,9 @@ afterAll(
 
 afterEach(
   async () => {
-    await miroirAfterEach(
-      miroirConfig,
-      domainController,
+    await resetApplicationDeployments(
       deploymentConfigurations,
+      domainController,
       localCache,
     );
   }

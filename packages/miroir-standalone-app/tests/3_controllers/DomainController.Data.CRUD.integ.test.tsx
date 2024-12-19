@@ -1,6 +1,3 @@
-import { act, getAllByRole, getByText, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import React from "react";
 import { describe, expect } from 'vitest';
 
 // import process from "process";
@@ -18,9 +15,7 @@ import {
   book4,
   book5,
   book6,
-  CompositeAction,
   defaultLevels,
-  defaultMiroirMetaModel,
   DomainControllerInterface,
   entityAuthor,
   entityBook,
@@ -28,61 +23,45 @@ import {
   entityDefinitionAuthor,
   entityDefinitionBook,
   entityDefinitionPublisher,
-  entityEntity,
   EntityInstance,
   entityPublisher,
   getLoggerName,
-  InstanceAction,
   LoggerInterface,
   MetaEntity,
-  MiroirConfigClient,
   MiroirContextInterface,
   miroirCoreStartup,
   MiroirLoggerFactory,
-  PersistenceStoreControllerInterface,
   PersistenceStoreControllerManagerInterface,
   publisher1,
   publisher2,
   publisher3,
   SelfApplicationDeploymentConfiguration,
-  selfApplicationDeploymentLibrary,
-  selfApplicationDeploymentMiroir,
-  selfApplicationMiroir,
-  selfApplicationModelBranchMiroirMasterBranch,
-  selfApplicationStoreBasedConfigurationMiroir,
-  selfApplicationVersionInitialMiroirVersion
+  selfApplicationDeploymentMiroir
 } from "miroir-core";
 
 import {
   chainVitestSteps,
-  createLibraryTestStore,
-  deploymentConfigurations,
-  DisplayLoadingInfo,
+  createDeploymentCompositeAction,
   loadTestConfigFiles,
-  miroirAfterAll,
-  miroirAfterEach,
-  miroirBeforeAll,
-  miroirBeforeEach,
-  renderWithProviders,
+  miroirBeforeEach_resetAndInitApplicationDeployments,
   setupMiroirTest,
   TestActionParams
-} from "../utils/tests-utils.js"
+} from "../utils/tests-utils.js";
 
 
 
-import { miroirAppStartup } from "../../src/startup.js";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
+import { miroirAppStartup } from "../../src/startup.js";
 
 import { LocalCache } from "miroir-localcache-redux";
-import { TestUtilsTableComponent } from "../utils/TestUtilsTableComponent.js";
 
-import { loglevelnext } from '../../src/loglevelnextImporter.js';
+import { ConfigurationService, defaultMiroirMetaModel } from "miroir-core";
 import { packageName } from "../../src/constants.js";
+import { loglevelnext } from '../../src/loglevelnextImporter.js';
+import { ApplicationEntitiesAndInstances, testOnLibrary_afterEach_deleteLibraryDeployment, testOnLibrary_afterEach_resetLibraryDeployment, testOnLibrary_resetInitAndAddTestDataToLibraryDeployment } from "../utils/tests-utils-testOnLibrary.js";
 import { cleanLevel } from "./constants.js";
-import { ApplicationEntitiesAndInstances, testOnLibrary_afterAll, testOnLibrary_afterEach, testOnLibrary_beforeAll, testOnLibrary_beforeEach } from "../utils/tests-utils-testOnLibrary.js";
-import { ConfigurationService } from "miroir-core";
 
 
 // jest intercepts logs, only console.log will produce test output
@@ -119,13 +98,13 @@ console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 
 let domainController: DomainControllerInterface;
-let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
+// let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
+// let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localCache: LocalCache;
-let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let miroirContext: MiroirContextInterface;
 let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
 
-export const libraryEntitiesAndInstances: ApplicationEntitiesAndInstances  = [
+export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances  = [
   {
     entity: entityAuthor as MetaEntity,
     entityDefinition: entityDefinitionAuthor as EntityDefinition,
@@ -172,23 +151,11 @@ beforeAll(
     localCache = locallocalCache;
     miroirContext = localmiroirContext;
 
-    const wrapped = await miroirBeforeAll(
-      miroirConfig as MiroirConfigClient,
-      persistenceStoreControllerManager,
-      domainController,
-    );
-    if (wrapped) {
-      if (wrapped.localMiroirPersistenceStoreController && wrapped.localAppPersistenceStoreController) {
-        localMiroirPersistenceStoreController = wrapped.localMiroirPersistenceStoreController;
-        localAppPersistenceStoreController = wrapped.localAppPersistenceStoreController;
-      }
-    } else {
-      throw new Error("beforeAll failed initialization!");
+    const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(miroirConfig, adminConfigurationDeploymentMiroir.uuid);
+    const createDeploymentResult = await domainController.handleCompositeAction(createMiroirDeploymentCompositeAction, defaultMiroirMetaModel);
+    if (createDeploymentResult.status !== "ok") {
+      throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
     }
-    await createLibraryTestStore(
-      miroirConfig,
-      domainController
-    )
 
     return Promise.resolve();
   }
@@ -196,7 +163,7 @@ beforeAll(
 
 beforeEach(
   async () => {
-    await miroirBeforeEach(
+    await miroirBeforeEach_resetAndInitApplicationDeployments(
       miroirConfig,
       domainController,
       [
@@ -211,7 +178,7 @@ beforeEach(
 
 // afterAll(
 //   async () => {
-//     await miroirAfterAll(
+//     await deleteAndCloseApplicationDeployments(
 //       miroirConfig,
 //       domainController,
 //       deploymentConfigurations,
@@ -228,10 +195,10 @@ const testActions: Record<string, TestActionParams> = {
     deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
     testCompositeAction: {
       testType: "testCompositeActionSuite",
-      // beforeAll: testOnLibrary_beforeAll(miroirConfig),
-      beforeEach: testOnLibrary_beforeEach(miroirConfig, libraryEntitiesAndInstances),
-      afterEach: testOnLibrary_afterEach(miroirConfig),
-      afterAll: testOnLibrary_afterAll(miroirConfig),
+      beforeAll: createDeploymentCompositeAction(miroirConfig, adminConfigurationDeploymentLibrary.uuid),
+      beforeEach: testOnLibrary_resetInitAndAddTestDataToLibraryDeployment(miroirConfig, libraryEntitiesAndInstancesWithoutBook3),
+      afterEach: testOnLibrary_afterEach_resetLibraryDeployment(miroirConfig),
+      afterAll: testOnLibrary_afterEach_deleteLibraryDeployment(miroirConfig),
       testCompositeActions: {
         "Refresh all Instances": {
           testType: "testCompositeAction",
@@ -308,7 +275,7 @@ const testActions: Record<string, TestActionParams> = {
                       transformerType: "contextReference",
                       interpolation: "runtime",
                       referencePath: ["entityBookList", "books"],
-                    }
+                    },
                   },
                   expectedValue: { count: 5 },
                 },
@@ -756,7 +723,7 @@ const testActions: Record<string, TestActionParams> = {
             },
           ],
         },
-        "Remove Book instance":{
+        "Remove Book instance": {
           testType: "testCompositeAction",
           compositeAction: {
             actionType: "compositeAction",
@@ -1016,6 +983,139 @@ const testActions: Record<string, TestActionParams> = {
             },
           ],
         },
+        "Update Book instance": {
+          testType: "testCompositeAction",
+          compositeAction: {
+            actionType: "compositeAction",
+            actionLabel: "AddBookInstanceThenRollback",
+            actionName: "sequence",
+            definition: [
+              {
+                compositeActionType: "domainAction",
+                compositeActionStepLabel: "refreshMiroirLocalCache",
+                domainAction: {
+                  actionName: "rollback",
+                  actionType: "modelAction",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                },
+              },
+              {
+                compositeActionType: "domainAction",
+                compositeActionStepLabel: "refreshLibraryLocalCache",
+                domainAction: {
+                  actionName: "rollback",
+                  actionType: "modelAction",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                },
+              },
+              {
+                compositeActionType: "domainAction",
+                compositeActionStepLabel: "deleteBook2",
+                domainAction: {
+                  actionType: "instanceAction",
+                  actionName: "updateInstance",
+                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                  applicationSection: "data",
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  objects: [
+                    {
+                      parentName: book4.parentName,
+                      parentUuid: book4.parentUuid,
+                      applicationSection: "data",
+                      instances: [
+                        Object.assign({}, book4, {
+                          name: "Tthe Bride Wore Blackk",
+                          author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                        }) as EntityInstance,
+                      ],
+                    },
+                  ],
+                },
+              },
+              {
+                compositeActionType: "runBoxedExtractorOrQueryAction",
+                compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+                nameGivenToResult: "entityBookList",
+                query: {
+                  actionType: "runBoxedExtractorOrQueryAction",
+                  actionName: "runQuery",
+                  endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  applicationSection: "model", // TODO: give only application section in individual queries?
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  query: {
+                    queryType: "boxedQueryWithExtractorCombinerTransformer",
+                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    pageParams: {
+                      currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    },
+                    queryParams: {},
+                    contextResults: {},
+                    extractors: {
+                      books: {
+                        extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                        applicationSection: "data",
+                        parentName: "Book",
+                        parentUuid: entityBook.uuid,
+                        orderBy: {
+                          attributeName: "uuid",
+                          direction: "ASC",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            ],
+          },
+          testCompositeActionAssertions: [
+            // TODO: test length of entityBookList.books!
+            {
+              compositeActionType: "runTestCompositeActionAssertion",
+              compositeActionStepLabel: "checkNumberOfBooks",
+              nameGivenToResult: "checkNumberOfBooks",
+              testAssertion: {
+                testType: "testAssertion",
+                definition: {
+                  resultAccessPath: ["elementValue", "0"],
+                  resultTransformer: {
+                    transformerType: "count",
+                    interpolation: "runtime",
+                    referencedExtractor: {
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referencePath: ["entityBookList", "books"],
+                    },
+                  },
+                  expectedValue: { count: 5 },
+                },
+              },
+            },
+            {
+              compositeActionType: "runTestCompositeActionAssertion",
+              compositeActionStepLabel: "checkEntityBooks",
+              nameGivenToResult: "checkEntityBooks",
+              testAssertion: {
+                testType: "testAssertion",
+                definition: {
+                  resultAccessPath: ["entityBookList", "books"],
+                  expectedValue: [
+                    // book3,
+                    Object.assign({}, book4, {
+                      name: "Tthe Bride Wore Blackk",
+                      author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                    }) as EntityInstance,
+                    book6,
+                    book5,
+                    book1,
+                    book2,
+                  ],
+                },
+              },
+            },
+          ],
+        },
       },
     },
   },
@@ -1076,460 +1176,5 @@ describe.sequential("DomainController.Data.CRUD.integ",
     );
   }, globalTimeOut);
 
-    // // ###########################################################################################
-    // it('Refresh all Instances',
-    //   async() => {
-    //     try {
-    //       log.info("Refresh all Instances start");
-    //       // const displayLoadingInfo = <DisplayLoadingInfo />;
-    //       // const user = (userEvent as any).setup();
-      
-    //       // const {
-    //       //   getByText,
-    //       //   getAllByRole,
-    //       //   // container
-    //       // } = renderWithProviders(
-    //       //   <TestUtilsTableComponent
-    //       //     entityName={entityBook.name}
-    //       //     entityUuid={entityBook.uuid}
-    //       //     DisplayLoadingInfo={displayLoadingInfo}
-    //       //     deploymentUuid={adminConfigurationDeploymentLibrary.uuid}
-    //       //   />,
-    //       //   { store: localCache.getInnerStore() }
-    //       // );
-      
-    //       log.info("Refresh all Instances setup is finished.")
-      
-    //       await act(async () => {
-    //         await domainController.handleAction({
-    //           actionType: "modelAction",
-    //           actionName: "rollback",
-    //           deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
-    //           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-    //         }, defaultMiroirMetaModel);
-    //         await domainController.handleAction({
-    //           actionType: "modelAction",
-    //           actionName: "rollback",
-    //           deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
-    //           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-    //         }, defaultMiroirMetaModel);
-    //       });
-      
-    //       log.info("Refresh all Instances start test", JSON.stringify(localCache.getState()));
-          
-    //       await act(()=>user.click(screen.getByRole("button")));
-      
-    //       await waitFor(() => {
-    //         getAllByRole(/step:1/);
-    //       }).then(() => {
-    //         expect(screen.queryByText(new RegExp(`${book3.uuid}`, "i"))).toBeNull(); // Et dans l'éternité je ne m'ennuierai pas
-    //         expect(getByText(new RegExp(`${book1.uuid}`, "i"))).toBeTruthy(); // The Bride Wore Black
-    //         expect(getByText(new RegExp(`${book2.uuid}`, "i"))).toBeTruthy(); // The Design of Everyday Things
-    //         expect(getByText(new RegExp(`${book4.uuid}`, "i"))).toBeTruthy(); // Rear Window
-    //       });
-    //     } catch (error) {
-    //       log.error("error during test", expect.getState().currentTestName, error);
-    //       expect(false).toBeTruthy();
-    //     }
-    //     return Promise.resolve();
-      
-    //   },
-    //   globalTimeOut
-    // )
-
-    // // ###########################################################################################
-    // it('Add Book instance then rollback',
-    //   async () => {
-    //     try {
-    //       console.log('Add Book instance then rollback start');
-  
-    //       const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
-    //       const user = (userEvent as any).setup()
-  
-    //       const {
-    //         getByText,
-    //         getAllByRole,
-    //         // container
-    //       } = renderWithProviders(
-    //         <TestUtilsTableComponent
-    //           entityUuid={entityBook.uuid}
-    //           DisplayLoadingInfo={displayLoadingInfo}
-    //           deploymentUuid={adminConfigurationDeploymentLibrary.uuid}
-    //         />
-    //         ,
-    //         {store:localCache.getInnerStore()}
-    //       );
-  
-    //       // ##########################################################################################################
-    //       console.log('add Book step 1: the Book must be absent in the local cache report list.')
-    //       await act(
-    //         async () => {
-    //           await domainController.handleAction({
-    //             actionType: "modelAction",
-    //             actionName: "rollback",
-    //             deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
-    //             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-    //           }, localCache.currentModel(adminConfigurationDeploymentMiroir.uuid));
-    //           await domainController.handleAction({
-    //             actionType: "modelAction",
-    //             actionName: "rollback",
-    //             deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
-    //             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-    //           }, localCache.currentModel(adminConfigurationDeploymentLibrary.uuid));
-    //         }
-    //       );
-    //       console.log('add Book step 1: done replace.')
-  
-    //       await act(()=>user.click(screen.getByRole('button')));
-  
-    //       await waitFor(
-    //         () => {
-    //           getAllByRole(/step:1/)
-    //         },
-    //       ).then(
-    //         ()=> {
-    //           expect(screen.queryByText(new RegExp(`${book3.uuid}`,'i'))).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
-    //           expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
-    //           expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
-    //           expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
-    //         }
-    //       );
-
-    //       // ##########################################################################################################
-    //       console.log('add Book instance step 2: the Book must then be present in the local cache report list.')
-    //       const createAction: InstanceAction = {
-    //         actionType: "instanceAction",
-    //         actionName: "createInstance",
-    //         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-    //         applicationSection: "data",
-    //         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-    //         objects:[{parentName:book3.parentName,parentUuid:book3.parentUuid,applicationSection:'data',instances:[book3 as EntityInstance]}]
-    //       };
-
-    //       await act(
-    //         async () => {
-    //           await domainController.handleAction(createAction);
-    //         }
-    //       );
-  
-    //       await act(()=>user.click(screen.getByRole('button')));
-  
-    //       console.log("domainController.currentTransaction()", domainController.currentTransaction());
-    //       // data operations are not transactional
-    //       expect(domainController.currentTransaction().length).toEqual(0);
-    //       // expect(domainController.currentTransaction()[0]).toEqual(createAction);
-  
-    //       await waitFor(
-    //         () => {
-    //           getAllByRole(/step:2/)
-    //         },
-    //       ).then(
-    //         ()=> {
-    //           expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
-    //           expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
-    //           expect(getByText(new RegExp(`${book3.uuid}`,'i'))).toBeTruthy() // Et dans l'éternité je ne m'ennuierai pas
-    //           expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
-    //         }
-    //       );
-
-    //       // ##########################################################################################################
-    //       console.log('add Book instance step 3: rollbacking/refreshing report list from remote store, added book must still be present in the report list.')
-    //       await act(
-    //         async () => {
-    //           await domainController.handleAction({
-    //             actionType: "modelAction",
-    //             actionName: "rollback",
-    //             deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
-    //             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-    //           }, localCache.currentModel(adminConfigurationDeploymentLibrary.uuid));
-    //         }
-    //       );
-  
-    //       await act(()=>user.click(screen.getByRole('button')));
-  
-    //       console.log("domainController.currentTransaction()", domainController.currentTransaction());
-    //       expect(domainController.currentTransaction().length).toEqual(0);
-  
-    //       await waitFor(
-    //         () => {
-    //           getAllByRole(/step:3/)
-    //         },
-    //       ).then(
-    //         ()=> {
-    //           expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
-    //           expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
-    //           expect(getByText(new RegExp(`${book3.uuid}`,'i'))).toBeTruthy() // Et dans l'éternité je ne m'ennuierai pas
-    //           expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
-    //         }
-    //       );
-    //     } catch (error) {
-    //       console.error('error during test',expect.getState().currentTestName,error);
-    //       expect(false).toBeTruthy();
-    //     }
-    //   }
-    // )
-
-    // // ###########################################################################################
-    // it('Remove Book instance then rollback',
-    //   async () => {
-
-    //     try {
-          
-    //       console.log('Remove Book instance then rollback start');
-  
-    //       const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
-    //       const user = (userEvent as any).setup()
-
-    //       const {
-    //         getByText,
-    //         getAllByRole,
-    //         // container
-    //       } = renderWithProviders(
-    //         <TestUtilsTableComponent
-    //           // parentName="Book"
-    //           entityUuid={entityBook.uuid}
-    //           DisplayLoadingInfo={displayLoadingInfo}
-    //           deploymentUuid={adminConfigurationDeploymentLibrary.uuid}
-    //         />
-    //         ,
-    //         {store:localCache.getInnerStore()}
-    //       );
-  
-    //       // ##########################################################################################################
-    //       console.log('Remove Book instance step 1: the Book must be present in the local cache report list.')
-    //       await act(
-    //         async () => {
-    //           await domainController.handleAction({
-    //             actionType: "modelAction",
-    //             actionName: "rollback",
-    //             deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
-    //             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-    //           }, localCache.currentModel(adminConfigurationDeploymentMiroir.uuid));
-    //           await domainController.handleAction({
-    //             actionType: "modelAction",
-    //             actionName: "rollback",
-    //             deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
-    //             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-    //           }, localCache.currentModel(adminConfigurationDeploymentLibrary.uuid));
-    //         }
-    //       );
-  
-    //       await act(()=>user.click(screen.getByRole('button')));
-  
-    //       await waitFor(
-    //         () => {
-    //           getAllByRole(/step:1/)
-    //         },
-    //       ).then(
-    //         ()=> {
-    //           // expect(getByText(new RegExp(`${book3.uuid}`,'i'))).toBeTruthy() // Et dans l'éternité je ne m'ennuierai pas
-    //           expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
-    //           expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
-    //           expect(screen.queryByText(new RegExp(`${book3.uuid}`,'i'))).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
-    //           // expect(getByText(new RegExp(`${book3.uuid}`,'i'))).toBeTruthy() // Et dans l'éternité je ne m'ennuierai pas
-    //           expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
-    //         }
-    //       );
-  
-    //       // ##########################################################################################################
-    //       console.log('remove Book instance step 2: the Book must then be absent from the local cache report list.')
-    //       const deleteAction: InstanceAction = {
-    //         actionType: "instanceAction",
-    //         actionName: "deleteInstance",
-    //         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-    //         applicationSection: "data",
-    //         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-    //         objects:[{parentName:book2.parentName,parentUuid:book2.parentUuid,applicationSection:'data', instances:[book2 as EntityInstance]}]
-    //       };
-  
-    //       await act(
-    //         async () => {
-    //           await domainController.handleAction(deleteAction);
-    //         }
-    //       );
-  
-    //       await act(()=>user.click(screen.getByRole('button')));
-  
-    //       console.log("domainController.currentTransaction()", domainController.currentTransaction());
-    //       // data operations are not transactional
-    //       expect(domainController.currentTransaction().length).toEqual(0);
-  
-    //       await waitFor(
-    //         () => {
-    //           getAllByRole(/step:2/)
-    //         },
-    //       ).then(
-    //         ()=> {
-    //           expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
-    //           // expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
-    //           expect(screen.queryByText(new RegExp(`${book2.uuid}`,'i'))).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
-    //           expect(screen.queryByText(new RegExp(`${book3.uuid}`,'i'))).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
-    //           expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
-    //         }
-    //       );
-
-    //       // ##########################################################################################################
-    //       console.log('Remove Book instance step 3: rollbacking/refreshing book list from remote store, removed book must still be absent from the report list.')
-    //       await act(
-    //         async () => {
-    //           await domainController.handleAction({
-    //             actionType: "modelAction",
-    //             actionName: "rollback",
-    //             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-    //             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-    //           }, defaultMiroirMetaModel);
-    //         }
-    //       );
-
-    //       await act(()=>user.click(screen.getByRole('button')));
-
-    //       console.log("domainController.currentTransaction()", domainController.currentTransaction());
-    //       expect(domainController.currentTransaction().length).toEqual(0);
-
-    //       await waitFor(
-    //         () => {
-    //           getAllByRole(/step:3/)
-    //         },
-    //       ).then(
-    //         ()=> {
-    //           expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
-    //           // expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
-    //           expect(screen.queryByText(new RegExp(`${book2.uuid}`,'i'))).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
-    //           expect(screen.queryByText(new RegExp(`${book3.uuid}`,'i'))).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
-    //           expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
-    //         }
-    //       );
-    //     } catch (error) {
-    //       console.error('error during test',expect.getState().currentTestName,error);
-    //       expect(false).toBeTruthy();
-    //     }
-    //   }
-    // )
-
-    // // ###########################################################################################
-    // it('Update Book instance then commit',
-    //   async () => {
-    //     try {
-          
-    //       console.log('update Book instance start');
-
-    //       const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
-    //       const user = (userEvent as any).setup()
-
-    //       const {
-    //         getByText,
-    //         getAllByRole,
-    //         // container
-    //       } = renderWithProviders(
-    //         <TestUtilsTableComponent
-    //           // parentName="Book"
-    //           entityUuid={entityBook.uuid}
-    //           DisplayLoadingInfo={displayLoadingInfo}
-    //           deploymentUuid={adminConfigurationDeploymentLibrary.uuid}
-    //         />
-    //         ,
-    //         {store:localCache.getInnerStore()}
-    //       );
-  
-    //       // ##########################################################################################################
-    //       console.log('Update Book instance step 1: loading initial configuration, book must be present in report list.')
-    //       await act(
-    //         async () => {
-    //           await domainController.handleAction({
-    //             actionType: "modelAction",
-    //             actionName: "rollback",
-    //             deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
-    //             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-    //           }, localCache.currentModel(adminConfigurationDeploymentLibrary.uuid));
-    //         }
-    //       );
-
-    //       await act(()=>user.click(screen.getByRole('button')));
-
-    //       await waitFor(
-    //         () => {
-    //           getAllByRole(/step:1/)
-    //         },
-    //       ).then(
-    //         ()=> {
-    //           // expect(screen.queryByText(/caef8a59-39eb-48b5-ad59-a7642d3a1e8f/i)).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
-    //           expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
-    //           expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
-    //           // expect(getByText(new RegExp(`${book3.uuid}`,'i'))).toBeTruthy() // Et dans l'éternité je ne m'ennuierai pas
-    //           expect(screen.queryByText(new RegExp(`${book3.uuid}`,'i'))).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
-    //           expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
-    //         }
-    //       );
-  
-    //       // ##########################################################################################################
-    //       console.log('Update Book instance step 2: update reportReportList, modified version must then be present in the report list.')
-    //       const updateAction: InstanceAction = {
-    //         actionType: "instanceAction",
-    //         actionName: "updateInstance",
-    //         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-    //         applicationSection: "data",
-    //         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-    //         objects: [
-    //           {
-    //             parentName: book4.parentName,
-    //             parentUuid: book4.parentUuid,
-    //             applicationSection:'data',
-    //             instances: [
-    //               Object.assign({},book4,{"name":"Tthe Bride Wore Blackk", "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17"}) as EntityInstance
-    //             ],
-    //           },
-    //         ],
-    //       };
-    //       await act(
-    //         async () => {
-    //           await domainController.handleAction(updateAction);
-    //         }
-    //       );
-  
-    //       // update does not generate any redo / undo
-    //       expect(domainController.currentTransaction().length).toEqual(0);
-  
-    //       await act(()=>user.click(screen.getByRole('button')));
-  
-    //       await waitFor(
-    //         () => {
-    //           getAllByRole(/step:2/)
-    //         },
-    //       ).then(
-    //         ()=> {
-    //           expect(screen.queryByText(/Tthe Bride Wore Blackk/i)).toBeTruthy() // Report List
-    //         }
-    //       );
-  
-    //       // ##########################################################################################################
-    //       console.log('Update Book instance step 3: refreshing book list from remote store, modified bool must still be present in the report list.')
-    //       await act(
-    //         async () => {
-    //           await domainController.handleAction({
-    //             actionType: "modelAction",
-    //             actionName: "rollback",
-    //             deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
-    //             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-    //           }, defaultMiroirMetaModel);
-    //         }
-    //       );
-
-    //       await act(()=>user.click(screen.getByRole('button')));
-
-    //       await waitFor(
-    //         () => {
-    //           getAllByRole(/step:3/)
-    //         },
-    //       ).then(
-    //         ()=> {
-    //           expect(screen.queryByText(/Tthe Bride Wore Blackk/i)).toBeTruthy() // Report List
-    //         }
-    //       );
-    //     } catch (error) {
-    //       console.error('error during test',expect.getState().currentTestName,error);
-    //       expect(false).toBeTruthy();
-    //     }
-    //   }
-    // )
   } //  end describe('DomainController.Data.CRUD.React',
 )

@@ -665,7 +665,7 @@ export {
 } from "./3_controllers/ConfigurationService.js";
 export {
   resetAndInitApplicationDeployment,
-  resetAndInitMiroirAndApplicationDatabaseNew,
+  resetAndInitApplicationDeploymentNew,
   DeploymentConfiguration,
   DomainController,
 } from "./3_controllers/DomainController.js";

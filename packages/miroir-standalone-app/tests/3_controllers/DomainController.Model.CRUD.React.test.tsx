@@ -59,13 +59,13 @@ import {
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent.js";
 import {
   DisplayLoadingInfo,
-  createLibraryTestStore,
+  createLibraryDeploymentDEFUNCT,
   deploymentConfigurations,
   loadTestConfigFiles,
-  miroirAfterAll,
-  miroirAfterEach,
-  miroirBeforeAll,
-  miroirBeforeEach,
+  deleteAndCloseApplicationDeployments,
+  resetApplicationDeployments,
+  createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT,
+  miroirBeforeEach_resetAndInitApplicationDeployments,
   renderWithProviders,
   setupMiroirTest
 } from "../utils/tests-utils.js";
@@ -122,7 +122,7 @@ beforeAll(
   
     
     // Establish requests interception layer before all tests.
-    const wrapped = await miroirBeforeAll(
+    const wrapped = await createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT(
       miroirConfig as MiroirConfigClient,
       persistenceStoreControllerManager,
       domainController,
@@ -136,7 +136,7 @@ beforeAll(
     } else {
       throw new Error("beforeAll failed initialization!");
     }
-    await createLibraryTestStore(
+    await createLibraryDeploymentDEFUNCT(
       miroirConfig,
       domainController
     )
@@ -146,7 +146,7 @@ beforeAll(
 
 beforeEach(
   async () => {
-    await miroirBeforeEach(
+    await miroirBeforeEach_resetAndInitApplicationDeployments(
       miroirConfig,
       domainController,
       deploymentConfigurations, 
@@ -158,10 +158,9 @@ beforeEach(
 
 afterEach(
   async () => {
-    await miroirAfterEach(
-      miroirConfig,
-      domainController,
+    await resetApplicationDeployments(
       deploymentConfigurations,
+      domainController,
       localCache,
     );
   }
@@ -169,7 +168,7 @@ afterEach(
 
 afterAll(
   async () => {
-    await miroirAfterAll(
+    await deleteAndCloseApplicationDeployments(
       miroirConfig,
       domainController,
       deploymentConfigurations, 

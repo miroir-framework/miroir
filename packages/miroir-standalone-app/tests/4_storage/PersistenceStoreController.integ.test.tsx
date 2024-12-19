@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import { describe, expect } from 'vitest';
 
 // import { miroirFileSystemStoreSectionStartup } from "../dist/bundle";
@@ -6,6 +5,7 @@ import {
   ACTION_OK,
   ActionReturnType,
   ActionVoidReturnType,
+  DomainControllerInterface,
   DomainElementType,
   EntityDefinition,
   EntityInstance,
@@ -18,49 +18,43 @@ import {
   ModelActionRenameEntity,
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManagerInterface,
+  SelfApplicationDeploymentConfiguration,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  selfApplicationLibrary,
-  selfApplicationMiroir,
-  selfApplicationModelBranchLibraryMasterBranch,
-  selfApplicationModelBranchMiroirMasterBranch,
-  selfApplicationStoreBasedConfigurationLibrary,
-  selfApplicationStoreBasedConfigurationMiroir,
-  selfApplicationVersionInitialMiroirVersion,
-  selfApplicationVersionLibraryInitialVersion,
   author1,
   defaultLevels,
-  defaultMiroirMetaModel,
   entityAuthor,
   entityDefinitionAuthor,
   entityEntity,
   entityEntityDefinition,
   entityReport,
   ignorePostgresExtraAttributesOnList,
-  selfApplicationDeploymentMiroir,
   selfApplicationDeploymentLibrary,
-  DomainControllerInterface
+  selfApplicationDeploymentMiroir
 } from "miroir-core";
 
 
+import { MiroirContext } from 'miroir-core';
+import { LocalCache } from 'miroir-localcache-redux';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
-import { setupServer } from "msw/node";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
-  createTestStore,
+  createDeploymentGetPersistenceStoreController,
+  deleteAndCloseApplicationDeployments,
   deploymentConfigurations,
   loadTestConfigFiles,
-  miroirAfterEach,
-  miroirBeforeAll,
-  miroirBeforeEach,
+  miroirBeforeEach_resetAndInitApplicationDeployments,
+  setupMiroirTest
 } from "../utils/tests-utils.js";
 
+let domainController: DomainControllerInterface;
+let localCache: LocalCache;
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
+let miroirContext: MiroirContext;
 let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface | undefined;
-let domainController: DomainControllerInterface;
 
 const env:any = (import.meta as any).env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
@@ -77,65 +71,79 @@ MiroirLoggerFactory.setEffectiveLoggerFactory(
 console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 // ################################################################################################
-beforeAll(
-  async () => {
-    // Establish requests interception layer before all tests.
-    miroirFileSystemStoreSectionStartup();
-    miroirIndexedDbStoreSectionStartup();
-    miroirPostgresStoreSectionStartup();
-    if (!miroirConfig.client.emulateServer) {
-      throw new Error("LocalPersistenceStoreController state do not make sense for real server configurations! Please use only 'emulateServer: true' configurations for this test.");
-    } else {
-      const wrapped = await miroirBeforeAll(
-        miroirConfig as MiroirConfigClient,
-        setupServer,
-      );
-      if (wrapped) {
-        if (wrapped.localMiroirPersistenceStoreController && wrapped.localAppPersistenceStoreController) {
-          localMiroirPersistenceStoreController = wrapped.localMiroirPersistenceStoreController;
-          localAppPersistenceStoreController = wrapped.localAppPersistenceStoreController;
-          persistenceStoreControllerManager = wrapped.persistenceStoreControllerManager;
-        }
-        domainController = wrapped.domainController;
-      } else {
-        throw new Error("beforeAll failed initialization!");
-      }
-    }
+beforeAll(async () => {
+  // Establish requests interception layer before all tests.
+  miroirFileSystemStoreSectionStartup();
+  miroirIndexedDbStoreSectionStartup();
+  miroirPostgresStoreSectionStartup();
+  if (!miroirConfig.client.emulateServer) {
+    throw new Error(
+      "LocalPersistenceStoreController state do not make sense for real server configurations! Please use only 'emulateServer: true' configurations for this test."
+    );
+  } else {
+    const {
+      persistenceStoreControllerManager: localpersistenceStoreControllerManager,
+      domainController: localdomainController,
+      localCache: locallocalCache,
+      miroirContext: localmiroirContext,
+    } = await setupMiroirTest(miroirConfig);
 
-    await createTestStore(
-      miroirConfig,
+    persistenceStoreControllerManager = localpersistenceStoreControllerManager;
+    domainController = localdomainController;
+    localCache = locallocalCache;
+    miroirContext = localmiroirContext;
+
+    localMiroirPersistenceStoreController = await createDeploymentGetPersistenceStoreController(
+      miroirConfig as MiroirConfigClient,
+      adminConfigurationDeploymentMiroir.uuid,
+      persistenceStoreControllerManager,
       domainController
-    )
+    );
+    localAppPersistenceStoreController = await createDeploymentGetPersistenceStoreController(
+      miroirConfig as MiroirConfigClient,
+      adminConfigurationDeploymentLibrary.uuid,
+      persistenceStoreControllerManager,
+      domainController
+    );
 
     return Promise.resolve();
   }
-)
+});
 
 // ################################################################################################
 beforeEach(
   async  () => {
-    await miroirBeforeEach(miroirConfig, domainController, deploymentConfigurations, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
+    await miroirBeforeEach_resetAndInitApplicationDeployments(domainController, deploymentConfigurations);
   }
 )
 
-// ################################################################################################
-afterEach(
-  async () => {
-    await miroirAfterEach(miroirConfig, domainController, deploymentConfigurations, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
-  }
-)
+// // ################################################################################################
+// afterEach(
+//   async () => {
+//     await resetApplicationDeployments(deploymentConfigurations, domainController, undefined);
+//   }
+// )
 
 // ################################################################################################
 afterAll(
   async () => {
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterAll")
-    try {
-      await localMiroirPersistenceStoreController.close();
-      await localAppPersistenceStoreController.close();
-    } catch (error) {
-      console.error('Error afterAll',error);
-    }
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done miroirAfterAll")
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
+    await deleteAndCloseApplicationDeployments(
+      miroirConfig,
+      domainController,
+      [
+        {
+          adminConfigurationDeployment: adminConfigurationDeploymentMiroir,
+          selfApplicationDeployment: selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+        },
+        {
+          adminConfigurationDeployment: adminConfigurationDeploymentLibrary,
+          selfApplicationDeployment: selfApplicationDeploymentLibrary as SelfApplicationDeploymentConfiguration,
+        },
+      ],
+    );
+
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
   }
 )
 
@@ -204,78 +212,79 @@ const chainVitestSteps = async (
 
 describe.sequential("PersistenceStoreController.unit.test", () => {
 
-  // ################################################################################################
-  it("Create miroir2 store", async () => { // TODO: test failure cases!
-      if (miroirConfig.client.emulateServer) {
-        console.log("Create miroir2 store START")
-        const testResult: ActionReturnType = await localMiroirPersistenceStoreController.createStore(
-          miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].model
-        );
-        const testResult2: ActionReturnType = await localMiroirPersistenceStoreController.createStore(
-          miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].data
-        );
-        //cleanup
-        const testResult3: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(
-          miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].model
-        );
-        const testResult4: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(
-          miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].data
-        );
-        // test
-        expect(testResult).toEqual(ACTION_OK)
-        expect(testResult2).toEqual(ACTION_OK)
-        expect(testResult3).toEqual(ACTION_OK)
-        expect(testResult4).toEqual(ACTION_OK)
-        console.log("Create miroir2 store END")
-      } else {
-        expect(false, "could not test store creation, configuration can not specify to use a real server, only emulated server makes sense in this case")
-      }
-    }
-  );
+  // // ################################################################################################
+  // TODO: rephrase as deployment of a module that is not yet deployed, neither miroir nor library
+  // it("Create miroir2 store", async () => { // TODO: test failure cases!
+  //     if (miroirConfig.client.emulateServer) {
+  //       console.log("Create miroir2 store START")
+  //       const testResult: ActionReturnType = await localMiroirPersistenceStoreController.createStore(
+  //         miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].model
+  //       );
+  //       const testResult2: ActionReturnType = await localMiroirPersistenceStoreController.createStore(
+  //         miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].data
+  //       );
+  //       //cleanup
+  //       const testResult3: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(
+  //         miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].model
+  //       );
+  //       const testResult4: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(
+  //         miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].data
+  //       );
+  //       // test
+  //       expect(testResult).toEqual(ACTION_OK)
+  //       expect(testResult2).toEqual(ACTION_OK)
+  //       expect(testResult3).toEqual(ACTION_OK)
+  //       expect(testResult4).toEqual(ACTION_OK)
+  //       console.log("Create miroir2 store END")
+  //     } else {
+  //       expect(false, "could not test store creation, configuration can not specify to use a real server, only emulated server makes sense in this case")
+  //     }
+  //   }
+  // );
 
-  // ################################################################################################
-  it("deploy Miroir and Library modules.", async () => {
-    if (miroirConfig.client.emulateServer) {
-      if (persistenceStoreControllerManager) {
-        const newMiroirDeploymentUuid = uuidv4();
-        const newLibraryDeploymentUuid = uuidv4();
-
-        const deployMiroir = await persistenceStoreControllerManager.deployModule(
-          localMiroirPersistenceStoreController,
-          newMiroirDeploymentUuid,
-          miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid],
-          {
-            metaModel: defaultMiroirMetaModel,
-            dataStoreType: 'miroir',
-            application: selfApplicationMiroir,
-            applicationDeploymentConfiguration: selfApplicationDeploymentMiroir, //adminConfigurationDeploymentMiroir,
-            applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
-            applicationVersion: selfApplicationVersionInitialMiroirVersion,
-            applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
-          }
-        );
-        const deployApp = await persistenceStoreControllerManager.deployModule(
-          localMiroirPersistenceStoreController,
-          newLibraryDeploymentUuid,
-          miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid],
-          {
-            metaModel: defaultMiroirMetaModel,
-            dataStoreType: 'app',
-            application: selfApplicationLibrary,
-            applicationDeploymentConfiguration: selfApplicationDeploymentLibrary, //adminConfigurationDeploymentLibrary,
-            applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
-            applicationVersion: selfApplicationVersionLibraryInitialVersion,
-            applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,
-          }
-        );
-        expect(deployMiroir).toEqual( ACTION_OK )
-        expect(deployApp).toEqual( ACTION_OK )
-      }
-    } else {
-      expect(false, "could not test module deployment, configuration can not specify to use a real server, only emulated server makes sense in this case")
-    }
-    expect(true).toEqual(true);
-  },10000);
+  // // ################################################################################################
+  // TODO: rephrase as deployment of a module that is not yet deployed, neither miroir nor library
+  // it("deploy Miroir and Library modules.", async () => {
+  //   if (miroirConfig.client.emulateServer) {
+  //     if (persistenceStoreControllerManager) {
+  //       const newMiroirDeploymentUuid = uuidv4();
+  //       const newLibraryDeploymentUuid = uuidv4();
+  //       const deployMiroir = await persistenceStoreControllerManager.deployModule(
+  //         localMiroirPersistenceStoreController,
+  //         newMiroirDeploymentUuid,
+  //         miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid],
+  //         {
+  //           metaModel: defaultMiroirMetaModel,
+  //           dataStoreType: 'miroir',
+  //           application: selfApplicationMiroir,
+  //           applicationDeploymentConfiguration: selfApplicationDeploymentMiroir, //adminConfigurationDeploymentMiroir,
+  //           applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
+  //           applicationVersion: selfApplicationVersionInitialMiroirVersion,
+  //           applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
+  //         }
+  //       );
+  //       const deployApp = await persistenceStoreControllerManager.deployModule(
+  //         localMiroirPersistenceStoreController,
+  //         newLibraryDeploymentUuid,
+  //         miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid],
+  //         {
+  //           metaModel: defaultMiroirMetaModel,
+  //           dataStoreType: 'app',
+  //           application: selfApplicationLibrary,
+  //           applicationDeploymentConfiguration: selfApplicationDeploymentLibrary, //adminConfigurationDeploymentLibrary,
+  //           applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
+  //           applicationVersion: selfApplicationVersionLibraryInitialVersion,
+  //           applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,
+  //         }
+  //       );
+  //       expect(deployMiroir).toEqual( ACTION_OK )
+  //       expect(deployApp).toEqual( ACTION_OK )
+  //     }
+  //   } else {
+  //     expect(false, "could not test module deployment, configuration can not specify to use a real server, only emulated server makes sense in this case")
+  //   }
+  //   expect(true).toEqual(true);
+  // },10000);
 
   // ################################################################################################
   it("get Entity instance: the Report Entity", async () => {
@@ -323,6 +332,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
     await chainVitestSteps(
       "actualTest_getInstancesAndCheckResult",
       {},
+      // async () => localAppPersistenceStoreController.getInstances("model",entityEntity.uuid),
       async () => localAppPersistenceStoreController.getInstances("model",entityEntity.uuid),
       // (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
       undefined, // expected result transformation

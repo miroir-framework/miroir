@@ -55,17 +55,17 @@ import { miroirAppStartup } from '../../src/startup.js';
 import {
   addEntitiesAndInstances,
   chainVitestSteps,
-  createLibraryTestStore,
+  createLibraryDeploymentDEFUNCT,
   deploymentConfigurations,
   loadTestConfigFiles,
-  miroirAfterAll,
-  miroirAfterEach,
-  miroirBeforeAll,
-  miroirBeforeEach,
+  deleteAndCloseApplicationDeployments,
+  resetApplicationDeployments,
+  createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT,
+  miroirBeforeEach_resetAndInitApplicationDeployments,
   setupMiroirTest
 } from "../utils/tests-utils.js";
 import { selfApplicationDeploymentLibrary } from 'miroir-core';
-import { testOnLibrary_beforeEach } from '../utils/tests-utils-testOnLibrary.js';
+import { ApplicationEntitiesAndInstances, testOnLibrary_resetInitAndAddTestDataToLibraryDeployment } from '../utils/tests-utils-testOnLibrary.js';
 import { defaultMiroirMetaModel } from 'miroir-core';
 
 let domainController: DomainControllerInterface;
@@ -88,6 +88,31 @@ MiroirLoggerFactory.setEffectiveLoggerFactory(
 );
 
 console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
+
+export const libraryEntitiesAndInstances: ApplicationEntitiesAndInstances  = [
+  {
+    entity: entityAuthor as MetaEntity,
+    entityDefinition: entityDefinitionAuthor as EntityDefinition,
+    instances: [author1, author2, author3 as EntityInstance],
+  },
+  {
+    entity: entityBook as MetaEntity,
+    entityDefinition: entityDefinitionBook as EntityDefinition,
+    instances: [
+      book1 as EntityInstance,
+      book2 as EntityInstance,
+      // book3 as EntityInstance,
+      book4 as EntityInstance,
+      book5 as EntityInstance,
+      book6 as EntityInstance,
+    ],
+  },
+  {
+    entity: entityPublisher as MetaEntity,
+    entityDefinition: entityDefinitionPublisher as EntityDefinition,
+    instances: [publisher1 as EntityInstance, publisher2 as EntityInstance, publisher3 as EntityInstance],
+  },
+];
 
 // ################################################################################################
 beforeAll(
@@ -117,23 +142,21 @@ beforeAll(
     localCache = locallocalCache;
     miroirContext = localmiroirContext;
 
-    const wrapped = await miroirBeforeAll(
+    const wrapped = await createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT(
       miroirConfig as MiroirConfigClient,
       persistenceStoreControllerManager,
       domainController
     );
     if (wrapped) {
-      // if (wrapped.localMiroirPersistenceStoreController && wrapped.localAppPersistenceStoreController) {
       if (wrapped.localMiroirPersistenceStoreController) {
         localMiroirPersistenceStoreController = wrapped.localMiroirPersistenceStoreController;
-        // localAppPersistenceStoreController = wrapped.localAppPersistenceStoreController;
       } else {
         throw new Error("beforeAll failed localMiroirPersistenceStoreController initialization!");
       }
     } else {
       throw new Error("beforeAll failed initialization!");
     }
-    await createLibraryTestStore(miroirConfig, domainController);
+    await createLibraryDeploymentDEFUNCT(miroirConfig, domainController);
 
     const tmplocalAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
       adminConfigurationDeploymentLibrary.uuid
@@ -150,7 +173,7 @@ beforeAll(
 // ################################################################################################
 beforeEach(
   async  () => {
-    await miroirBeforeEach(
+    await miroirBeforeEach_resetAndInitApplicationDeployments(
       miroirConfig,
       domainController,
       [
@@ -165,48 +188,8 @@ beforeEach(
       ],
     );
     console.log("beforeEach done");
-    // await addEntitiesAndInstances(
-    //   localAppPersistenceStoreController,
-    //   domainController,
-    //   localCache,
-    //   miroirConfig,
-    //   adminConfigurationDeploymentLibrary,
-    //   [
-    //     {
-    //       entity: entityAuthor as MetaEntity,
-    //       entityDefinition: entityDefinitionAuthor as EntityDefinition,
-    //       instances: [
-    //         author1,
-    //         author2,
-    //         author3 as EntityInstance,
-    //       ]
-    //     },
-    //     {
-    //       entity: entityBook as MetaEntity,
-    //       entityDefinition: entityDefinitionBook as EntityDefinition,
-    //       instances: [
-    //         book1 as EntityInstance,
-    //         book2 as EntityInstance,
-    //         book3 as EntityInstance,
-    //         book4 as EntityInstance,
-    //         book5 as EntityInstance,
-    //         book6 as EntityInstance,
-    //       ]
-    //     },
-    //     {
-    //       entity: entityPublisher as MetaEntity,
-    //       entityDefinition: entityDefinitionPublisher as EntityDefinition,
-    //       instances: [
-    //         publisher1 as EntityInstance,
-    //         publisher2 as EntityInstance,
-    //         publisher3 as EntityInstance,
-    //       ]
-    //     }
-    //   ],
-    //   reportBookList as Report,
-    // )
     const initResult:ActionReturnType = await domainController.handleCompositeAction(
-      testOnLibrary_beforeEach(miroirConfig),
+      testOnLibrary_resetInitAndAddTestDataToLibraryDeployment(miroirConfig, libraryEntitiesAndInstances),
       {},
       defaultMiroirMetaModel
     );
@@ -219,10 +202,9 @@ beforeEach(
 // ################################################################################################
 afterEach(
   async () => {
-    await miroirAfterEach(
-      miroirConfig,
-      domainController,
+    await resetApplicationDeployments(
       deploymentConfigurations,
+      domainController,
       localCache,
     );
   }
@@ -231,8 +213,8 @@ afterEach(
 // ################################################################################################
 afterAll(
   async () => {
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterAll")
-    await miroirAfterAll(
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
+    await deleteAndCloseApplicationDeployments(
       miroirConfig,
       domainController,
       [
@@ -242,7 +224,7 @@ afterAll(
         },
       ],
     );
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done miroirAfterAll")
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
 
   }
 )

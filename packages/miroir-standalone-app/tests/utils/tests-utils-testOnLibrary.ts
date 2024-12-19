@@ -1,4 +1,6 @@
 import {
+  adminConfigurationDeploymentLibrary,
+  adminConfigurationDeploymentMiroir,
   author1,
   author2,
   author3,
@@ -7,6 +9,8 @@ import {
   book4,
   book5,
   book6,
+  CompositeAction,
+  defaultMiroirMetaModel,
   entityAuthor,
   entityBook,
   EntityDefinition,
@@ -20,27 +24,19 @@ import {
   publisher1,
   publisher2,
   publisher3,
-} from "miroir-core";
-import { EntityInstanceCollection } from "miroir-core";
-import {
-  adminConfigurationDeploymentLibrary,
-  adminConfigurationDeploymentMiroir,
-  CompositeAction,
-  defaultMiroirMetaModel,
   selfApplicationDeploymentLibrary,
   selfApplicationMiroir,
   selfApplicationModelBranchMiroirMasterBranch,
   selfApplicationStoreBasedConfigurationMiroir,
   selfApplicationVersionInitialMiroirVersion,
 } from "miroir-core";
-import { miroirConfig } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export type ApplicationEntitiesAndInstances = {
   entity: MetaEntity;
   entityDefinition: EntityDefinition;
   instances: EntityInstance[];
 }[];
-export const libraryEntitesAndInstances: ApplicationEntitiesAndInstances  = [
+export const libraryEntitesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances  = [
   {
     entity: entityAuthor as MetaEntity,
     entityDefinition: entityDefinitionAuthor as EntityDefinition,
@@ -65,32 +61,7 @@ export const libraryEntitesAndInstances: ApplicationEntitiesAndInstances  = [
   },
 ];
 
-export function testOnLibrary_beforeAll(miroirConfig: MiroirConfigClient): CompositeAction {
-  throw new Error("Not implemented yet");
-  return {
-    actionType: "compositeAction",
-    actionLabel: "beforeAll",
-    actionName: "sequence",
-    definition: [
-      // TODO: openStore first!jy
-      {
-        compositeActionType: "domainAction",
-        compositeActionStepLabel: "createLibraryStore",
-        domainAction: {
-          actionType: "storeManagementAction",
-          actionName: "createStore",
-          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-          configuration: miroirConfig.client.emulateServer
-            ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid]
-            : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentLibrary.uuid],
-        },
-      },
-    ],
-  };
-}
-
-export function testOnLibrary_beforeEach(
+export function testOnLibrary_resetInitAndAddTestDataToLibraryDeployment(
   miroirConfig: MiroirConfigClient,
   libraryEntitesAndInstances: ApplicationEntitiesAndInstances
 ): CompositeAction {
@@ -183,7 +154,7 @@ export function testOnLibrary_beforeEach(
   };
 }
 
-export function testOnLibrary_afterEach(miroirConfig: MiroirConfigClient): CompositeAction {
+export function testOnLibrary_afterEach_resetLibraryDeployment(miroirConfig: MiroirConfigClient): CompositeAction {
   return {
     actionType: "compositeAction",
     actionLabel: "afterEach",
@@ -202,7 +173,7 @@ export function testOnLibrary_afterEach(miroirConfig: MiroirConfigClient): Compo
     ],
   };
 }
-export function testOnLibrary_afterAll(miroirConfig: MiroirConfigClient): CompositeAction {
+export function testOnLibrary_afterEach_deleteLibraryDeployment(miroirConfig: MiroirConfigClient): CompositeAction {
   return {
     actionType: "compositeAction",
     actionLabel: "afterEach",
@@ -210,7 +181,7 @@ export function testOnLibrary_afterAll(miroirConfig: MiroirConfigClient): Compos
     definition: [
       {
         compositeActionType: "domainAction",
-        compositeActionStepLabel: "resetLibraryStore",
+        compositeActionStepLabel: "deleteLibraryStore",
         domainAction: {
           actionType: "storeManagementAction",
           actionName: "deleteStore",

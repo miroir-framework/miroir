@@ -1,4 +1,3 @@
-import { SetupWorkerApi } from 'msw/browser';
 import { describe, expect } from 'vitest';
 
 // import { miroirFileSystemStoreSectionStartup } from "../dist/bundle";
@@ -44,11 +43,7 @@ import {
   selfApplicationMiroir,
   selfApplicationModelBranchMiroirMasterBranch,
   selfApplicationStoreBasedConfigurationMiroir,
-  selfApplicationVersionInitialMiroirVersion,
-  TestCompositeAction,
-  TestCompositeActionSuite,
-  TestCompositeActionTemplate,
-  Uuid
+  selfApplicationVersionInitialMiroirVersion
 } from "miroir-core";
 
 
@@ -56,24 +51,24 @@ import { LocalCache } from 'miroir-localcache-redux';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
-import { setupServer, SetupServerApi } from "msw/node";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { miroirAppStartup } from '../../src/startup.js';
 import {
   chainVitestSteps,
-  createLibraryTestStore,
+  createLibraryDeploymentDEFUNCT,
   loadTestConfigFiles,
-  miroirAfterAll,
-  miroirBeforeAll,
-  miroirBeforeEach,
+  deleteAndCloseApplicationDeployments,
+  createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT,
+  miroirBeforeEach_resetAndInitApplicationDeployments,
   setupMiroirTest,
-  TestActionParams
+  TestActionParams,
+  createDeploymentCompositeAction
 } from "../utils/tests-utils.js";
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCache;
-let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
-let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
+// let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
+// let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
 let miroirContext: MiroirContext;
 let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
 
@@ -113,23 +108,11 @@ beforeAll(
     localCache = locallocalCache;
     miroirContext = localmiroirContext;
 
-    const wrapped = await miroirBeforeAll(
-      miroirConfig as MiroirConfigClient,
-      persistenceStoreControllerManager,
-      domainController,
-    );
-    if (wrapped) {
-      if (wrapped.localMiroirPersistenceStoreController && wrapped.localAppPersistenceStoreController) {
-        localMiroirPersistenceStoreController = wrapped.localMiroirPersistenceStoreController;
-        localAppPersistenceStoreController = wrapped.localAppPersistenceStoreController;
-      }
-    } else {
-      throw new Error("beforeAll failed initialization!");
+    const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(miroirConfig, adminConfigurationDeploymentMiroir.uuid);
+    const createDeploymentResult = await domainController.handleCompositeAction(createMiroirDeploymentCompositeAction, defaultMiroirMetaModel);
+    if (createDeploymentResult.status !== "ok") {
+      throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
     }
-    await createLibraryTestStore(
-      miroirConfig,
-      domainController
-    )
 
     return Promise.resolve();
   }
@@ -138,7 +121,7 @@ beforeAll(
 // ################################################################################################
 beforeEach(
   async  () => {
-    await miroirBeforeEach(
+    await miroirBeforeEach_resetAndInitApplicationDeployments(
       miroirConfig,
       domainController,
       [
@@ -160,8 +143,8 @@ afterEach(
 // ################################################################################################
 afterAll(
   async () => {
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterAll")
-    await miroirAfterAll(
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
+    await deleteAndCloseApplicationDeployments(
       miroirConfig,
       domainController,
       [
@@ -171,7 +154,7 @@ afterAll(
         },
       ],
     );
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done miroirAfterAll")
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
   }
 )
 
@@ -220,26 +203,28 @@ const testActions: Record<string, TestActionParams> = {
     testCompositeAction: {
       testType: "testCompositeActionSuite",
       // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-      beforeAll: {
-        actionType: "compositeAction",
-        actionLabel: "beforeAll",
-        actionName: "sequence",
-        definition: [
-          {
-            compositeActionType: "domainAction",
-            compositeActionStepLabel: "createLibraryStore",
-            domainAction: {
-              actionType: "storeManagementAction",
-              actionName: "createStore",
-              endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-              configuration: miroirConfig.client.emulateServer
-                ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid]
-                : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentLibrary.uuid],
-            },
-          },
-        ],
-      },
+      beforeAll: createDeploymentCompositeAction(miroirConfig, adminConfigurationDeploymentLibrary.uuid),
+      
+      // beforeAll: {
+      //   actionType: "compositeAction",
+      //   actionLabel: "beforeAll",
+      //   actionName: "sequence",
+      //   definition: [
+      //     {
+      //       compositeActionType: "domainAction",
+      //       compositeActionStepLabel: "createLibraryStore",
+      //       domainAction: {
+      //         actionType: "storeManagementAction",
+      //         actionName: "createStore",
+      //         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+      //         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      //         configuration: miroirConfig.client.emulateServer
+      //           ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid]
+      //           : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentLibrary.uuid],
+      //       },
+      //     },
+      //   ],
+      // },
       beforeEach: {
         actionType: "compositeAction",
         actionLabel: "beforeEach",

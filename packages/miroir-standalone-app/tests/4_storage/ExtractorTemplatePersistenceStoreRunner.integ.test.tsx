@@ -56,9 +56,9 @@ import {
   createTestStore,
   deploymentConfigurations,
   loadTestConfigFiles,
-  miroirAfterEach,
-  miroirBeforeAll,
-  miroirBeforeEach,
+  resetApplicationDeployments,
+  createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT,
+  miroirBeforeEach_resetAndInitApplicationDeployments,
 } from "../utils/tests-utils.js";
 
 let localCache: LocalCache;
@@ -91,7 +91,7 @@ beforeAll(
     if (!miroirConfig.client.emulateServer) {
       throw new Error("LocalPersistenceStoreController state do not make sense for real server configurations! Please use only 'emulateServer: true' configurations for this test.");
     } else {
-      const wrapped = await miroirBeforeAll(
+      const wrapped = await createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT(
         miroirConfig as MiroirConfigClient,
         setupServer,
       );
@@ -120,7 +120,7 @@ beforeAll(
 // ################################################################################################
 beforeEach(
   async  () => {
-    await miroirBeforeEach(miroirConfig, domainController, deploymentConfigurations, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
+    await miroirBeforeEach_resetAndInitApplicationDeployments(miroirConfig, domainController, deploymentConfigurations, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
     await addEntitiesAndInstances(
       localAppPersistenceStoreController,
       domainController,
@@ -170,21 +170,21 @@ beforeEach(
 // ################################################################################################
 afterEach(
   async () => {
-    await miroirAfterEach(miroirConfig, domainController, deploymentConfigurations, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
+    await resetApplicationDeployments(deploymentConfigurations, domainController, localCache);
   }
 )
 
 // ################################################################################################
 afterAll(
   async () => {
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterAll")
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
     try {
       await localMiroirPersistenceStoreController.close();
       await localAppPersistenceStoreController.close();
     } catch (error) {
       console.error('Error afterAll',error);
     }
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done miroirAfterAll")
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
   }
 )
 

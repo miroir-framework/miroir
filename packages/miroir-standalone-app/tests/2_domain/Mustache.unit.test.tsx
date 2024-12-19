@@ -43,10 +43,10 @@ import {
   addEntitiesAndInstances,
   DisplayLoadingInfo,
   loadTestConfigFiles,
-  miroirAfterAll,
-  miroirAfterEach,
-  miroirBeforeAll,
-  miroirBeforeEach,
+  deleteAndCloseApplicationDeployments,
+  resetApplicationDeployments,
+  createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT,
+  miroirBeforeEach_resetAndInitApplicationDeployments,
   renderWithProviders
 } from "miroir-standalone-app/tests/utils/tests-utils";
 
@@ -107,7 +107,7 @@ import { log } from "console";
 // beforeAll(
 //   async () => {
 //     // Establish requests interception layer before all tests.
-//     const wrapped = await miroirBeforeAll(
+//     const wrapped = await createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT(
 //       miroirConfig as MiroirConfigClient,
 //       setupServer,
 //     );
@@ -131,19 +131,19 @@ import { log } from "console";
 
 // beforeEach(
 //   async () => {
-//     await miroirBeforeEach(miroirConfig, domainController, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
+//     await miroirBeforeEach_resetAndInitApplicationDeployments(miroirConfig, domainController, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
 //   }
 // )
 
 // afterAll(
 //   async () => {
-//     await miroirAfterAll(miroirConfig, domainController, localMiroirPersistenceStoreController,localAppPersistenceStoreController,localDataStoreServer);
+//     await deleteAndCloseApplicationDeployments(miroirConfig, domainController, localMiroirPersistenceStoreController,localAppPersistenceStoreController,localDataStoreServer);
 //   }
 // )
 
 // afterEach(
 //   async () => {
-//     await miroirAfterEach(miroirConfig, domainController, localMiroirPersistenceStoreController, localAppPersistenceStoreController);
+//     await resetApplicationDeployments(miroirConfig, domainController, localMiroirPersistenceStoreController, localAppPersistenceStoreController);
 //   }
 // )
 
