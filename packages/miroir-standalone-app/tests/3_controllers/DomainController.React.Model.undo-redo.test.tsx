@@ -137,7 +137,6 @@ beforeAll(
 beforeEach(
   async () => {
     await miroirBeforeEach_resetAndInitApplicationDeployments(
-      miroirConfig,
       domainController,
       deploymentConfigurations,
     );

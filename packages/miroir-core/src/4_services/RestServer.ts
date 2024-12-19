@@ -37,6 +37,7 @@ import {
 } from "../2_domain/DomainStateQueryTemplateSelector.js";
 import { extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList } from "../2_domain/QuerySelectors.js";
 import { extractWithBoxedExtractorTemplate, runQueryTemplateWithExtractorCombinerTransformer } from "../2_domain/QueryTemplateSelectors.js";
+import { defaultMiroirMetaModel } from "../1_core/Model.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RestServer");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -229,22 +230,27 @@ export async function restActionHandler(
     }
     case "modelAction": 
     case "instanceAction": {
-      const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
-      const domainController = persistenceStoreControllerManager.getServerDomainController();
-      if (!localPersistenceStoreController) {
-        throw new Error("could not find controller for deployment: " + action.deploymentUuid);
-      }
       if (useDomainControllerToHandleModelAndInstanceActions) {
         // we are on the server, the action has been received from remote client
-        const result = await domainController.handleAction(action)
-        return continuationFunction(response)(result)
+        const domainController = persistenceStoreControllerManager.getServerDomainController();
+        if (action.actionType == "modelAction") {
+          const result = await domainController.handleAction(action,defaultMiroirMetaModel)
+          return continuationFunction(response)(result)
+        } else {
+          const result = await domainController.handleAction(action)
+          return continuationFunction(response)(result)
+        }
       } else {
         /**
          * we are on the client:
          * - the RestServerStub emulates the client,
          * - the client has direct access to the persistence store (which is emulated, too)
          *  */ 
-        const result = await localPersistenceStoreController.handleAction(action)
+        const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
+        if (!localPersistenceStoreController) {
+          throw new Error("could not find controller for deployment: " + action.deploymentUuid);
+        }
+          const result = await localPersistenceStoreController.handleAction(action)
         return continuationFunction(response)(result)
       }
       break;
@@ -306,7 +312,8 @@ export async function queryActionHandler(
     return continuationFunction(response)(result)
   } else {
     // we're on the client, called by RestServerStub
-    // uses the local cache, needs to have done a Model "rollback" action on the client//, or a Model "remoteLocalCacheRollback" action on the server
+    // uses the local cache, needs to have done a Model "rollback" action on the client
+    //, or a Model "remoteLocalCacheRollback" action on the server
     const domainState: DomainState = localCache.getDomainState();
     const extractorRunnerMapOnDomainState = getDomainStateExtractorRunnerMap();
     log.info("RestServer queryActionHandler runBoxedExtractorOrQueryAction=", JSON.stringify(runBoxedExtractorOrQueryAction, undefined, 2))
@@ -388,7 +395,9 @@ export async function queryTemplateActionHandler(
     // we are on the server, the action has been received from remote client
     // switch (runBoxedQueryTemplateOrBoxedExtractorTemplateAction.deploymentUuid) {
     // const result = await domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(runBoxedQueryTemplateOrBoxedExtractorTemplateAction)
-    const result = await domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(runBoxedQueryTemplateOrBoxedExtractorTemplateAction)
+    const result = await domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
+      runBoxedQueryTemplateOrBoxedExtractorTemplateAction
+    );
     log.info(
       "RestServer queryTemplateActionHandler used adminConfigurationDeploymentMiroir domainController result=",
       JSON.stringify(result, undefined, 2)
@@ -399,7 +408,10 @@ export async function queryTemplateActionHandler(
     // uses the local cache, needs to have done a Model "rollback" action on the client//, or a Model "remoteLocalCacheRollback" action on the server
     const domainState: DomainState = localCache.getDomainState();
     const extractorRunnerMapOnDomainState = getSelectorMapForTemplate();
-    log.info("RestServer queryTemplateActionHandler runBoxedQueryTemplateOrBoxedExtractorTemplateAction=", JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction, undefined, 2))
+    log.info(
+      "RestServer queryTemplateActionHandler runBoxedQueryTemplateOrBoxedExtractorTemplateAction=",
+      JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction, undefined, 2)
+    );
     log.info("RestServer queryTemplateActionHandler domainState=", JSON.stringify(domainState, undefined, 2))
     let queryResult: DomainElement = undefined as any as DomainElement;
 
@@ -408,16 +420,22 @@ export async function queryTemplateActionHandler(
       case "boxedExtractorTemplateReturningObjectList": {
         queryResult = extractWithBoxedExtractorTemplate(
           domainState,
-          getExtractorTemplateRunnerParamsForDomainState(runBoxedQueryTemplateOrBoxedExtractorTemplateAction.query, extractorRunnerMapOnDomainState)
-        )
+          getExtractorTemplateRunnerParamsForDomainState(
+            runBoxedQueryTemplateOrBoxedExtractorTemplateAction.query,
+            extractorRunnerMapOnDomainState
+          )
+        );
     
         break;
       }
       case "boxedQueryTemplateWithExtractorCombinerTransformer":
         queryResult = runQueryTemplateWithExtractorCombinerTransformer(
           domainState,
-          getQueryTemplateRunnerParamsForDomainState(runBoxedQueryTemplateOrBoxedExtractorTemplateAction.query, extractorRunnerMapOnDomainState)
-        )
+          getQueryTemplateRunnerParamsForDomainState(
+            runBoxedQueryTemplateOrBoxedExtractorTemplateAction.query,
+            extractorRunnerMapOnDomainState
+          )
+        );
             
         break;
     

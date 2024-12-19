@@ -154,7 +154,7 @@ export function testOnLibrary_resetInitAndAddTestDataToLibraryDeployment(
   };
 }
 
-export function testOnLibrary_afterEach_resetLibraryDeployment(miroirConfig: MiroirConfigClient): CompositeAction {
+export function testOnLibrary_resetLibraryDeployment(miroirConfig: MiroirConfigClient): CompositeAction {
   return {
     actionType: "compositeAction",
     actionLabel: "afterEach",
@@ -173,7 +173,7 @@ export function testOnLibrary_afterEach_resetLibraryDeployment(miroirConfig: Mir
     ],
   };
 }
-export function testOnLibrary_afterEach_deleteLibraryDeployment(miroirConfig: MiroirConfigClient): CompositeAction {
+export function testOnLibrary_deleteLibraryDeployment(miroirConfig: MiroirConfigClient): CompositeAction {
   return {
     actionType: "compositeAction",
     actionLabel: "afterEach",

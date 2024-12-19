@@ -56,7 +56,7 @@ export class CallUtils {
    * convert errors to exceptions for controllers using store controllers,
    * allowing them to interrupt their control flow without testing systematically for errors
    */
-  async callPersistenceAction(
+  async callRemotePersistenceAction(
     context: { [k: string]: any },
     continuation: {
       resultTransformation?: (action: ActionReturnType, context: { [k: string]: any }) => any;

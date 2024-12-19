@@ -15,7 +15,6 @@ import {
   book4,
   book5,
   book6,
-  defaultLevels,
   DomainControllerInterface,
   entityAuthor,
   entityBook,
@@ -25,12 +24,9 @@ import {
   entityDefinitionPublisher,
   EntityInstance,
   entityPublisher,
-  getLoggerName,
-  LoggerInterface,
   MetaEntity,
   MiroirContextInterface,
   miroirCoreStartup,
-  MiroirLoggerFactory,
   PersistenceStoreControllerManagerInterface,
   publisher1,
   publisher2,
@@ -58,11 +54,25 @@ import { miroirAppStartup } from "../../src/startup.js";
 import { LocalCache } from "miroir-localcache-redux";
 
 import { ConfigurationService, defaultMiroirMetaModel } from "miroir-core";
-import { packageName } from "../../src/constants.js";
-import { loglevelnext } from '../../src/loglevelnextImporter.js';
-import { ApplicationEntitiesAndInstances, testOnLibrary_afterEach_deleteLibraryDeployment, testOnLibrary_afterEach_resetLibraryDeployment, testOnLibrary_resetInitAndAddTestDataToLibraryDeployment } from "../utils/tests-utils-testOnLibrary.js";
-import { cleanLevel } from "./constants.js";
+import {
+  ApplicationEntitiesAndInstances,
+  testOnLibrary_deleteLibraryDeployment,
+  testOnLibrary_resetLibraryDeployment,
+  testOnLibrary_resetInitAndAddTestDataToLibraryDeployment,
+} from "../utils/tests-utils-testOnLibrary.js";
 
+
+const env:any = (import.meta as any).env
+console.log("@@@@@@@@@@@@@@@@@@ env", env);
+
+const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
+
+// MiroirLoggerFactory.setEffectiveLoggerFactory(
+//   loglevelnext,
+//   (defaultLevels as any)[loggerOptions.defaultLevel],
+//   loggerOptions.defaultTemplate,
+//   loggerOptions.specificLoggerOptions
+// );
 
 // jest intercepts logs, only console.log will produce test output
 // const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.Data.CRUD.React");
@@ -73,33 +83,10 @@ import { cleanLevel } from "./constants.js";
 //   }
 // );
 
-
-const env:any = (import.meta as any).env
-console.log("@@@@@@@@@@@@@@@@@@ env", env);
-
-const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
-
-MiroirLoggerFactory.setEffectiveLoggerFactory(
-  loglevelnext,
-  (defaultLevels as any)[loggerOptions.defaultLevel],
-  loggerOptions.defaultTemplate,
-  loggerOptions.specificLoggerOptions
-);
-
-const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.Data.CRUD.React");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-  (value: LoggerInterface) => {
-    log = value;
-  }
-);
-
 console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 
 let domainController: DomainControllerInterface;
-// let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
-// let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localCache: LocalCache;
 let miroirContext: MiroirContextInterface;
 let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
@@ -161,10 +148,10 @@ beforeAll(
   }
 )
 
+// TODO: move it in TestCompositeAction.beforeEach
 beforeEach(
   async () => {
     await miroirBeforeEach_resetAndInitApplicationDeployments(
-      miroirConfig,
       domainController,
       [
         {
@@ -197,8 +184,8 @@ const testActions: Record<string, TestActionParams> = {
       testType: "testCompositeActionSuite",
       beforeAll: createDeploymentCompositeAction(miroirConfig, adminConfigurationDeploymentLibrary.uuid),
       beforeEach: testOnLibrary_resetInitAndAddTestDataToLibraryDeployment(miroirConfig, libraryEntitiesAndInstancesWithoutBook3),
-      afterEach: testOnLibrary_afterEach_resetLibraryDeployment(miroirConfig),
-      afterAll: testOnLibrary_afterEach_deleteLibraryDeployment(miroirConfig),
+      afterEach: testOnLibrary_resetLibraryDeployment(miroirConfig),
+      afterAll: testOnLibrary_deleteLibraryDeployment(miroirConfig),
       testCompositeActions: {
         "Refresh all Instances": {
           testType: "testCompositeAction",
@@ -251,6 +238,10 @@ const testActions: Record<string, TestActionParams> = {
                         applicationSection: "data",
                         parentName: "Book",
                         parentUuid: entityBook.uuid,
+                        orderBy: {
+                          attributeName: "uuid",
+                          direction: "ASC",
+                        },
                       },
                     },
                   },
@@ -283,61 +274,20 @@ const testActions: Record<string, TestActionParams> = {
             },
             {
               compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBook1",
-              nameGivenToResult: "checkEntityBook1",
+              compositeActionStepLabel: "checkEntityBooks",
+              nameGivenToResult: "checkEntityBooks",
               testAssertion: {
                 testType: "testAssertion",
                 definition: {
-                  resultAccessPath: ["entityBookList", "books", "0"],
-                  expectedValue: book1,
-                },
-              },
-            },
-            {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBook2",
-              nameGivenToResult: "checkEntityBook2",
-              testAssertion: {
-                testType: "testAssertion",
-                definition: {
-                  resultAccessPath: ["entityBookList", "books", "1"],
-                  expectedValue: book2,
-                },
-              },
-            },
-            {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBook4",
-              nameGivenToResult: "checkEntityBook4",
-              testAssertion: {
-                testType: "testAssertion",
-                definition: {
-                  resultAccessPath: ["entityBookList", "books", "2"],
-                  expectedValue: book4,
-                },
-              },
-            },
-            {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBook4",
-              nameGivenToResult: "checkEntityBook5",
-              testAssertion: {
-                testType: "testAssertion",
-                definition: {
-                  resultAccessPath: ["entityBookList", "books", "3"],
-                  expectedValue: book5,
-                },
-              },
-            },
-            {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBook4",
-              nameGivenToResult: "checkEntityBook6",
-              testAssertion: {
-                testType: "testAssertion",
-                definition: {
-                  resultAccessPath: ["entityBookList", "books", "4"],
-                  expectedValue: book6,
+                  resultAccessPath: ["entityBookList", "books"],
+                  expectedValue: [
+                    // book3,
+                    book4,
+                    book6,
+                    book5,
+                    book1,
+                    book2,
+                  ],
                 },
               },
             },
@@ -419,18 +369,6 @@ const testActions: Record<string, TestActionParams> = {
                         },
                       },
                     },
-                    // runtimeTransformers: {
-                    //   sortedBooks: {
-                    //     transformerType: "mapperListToList",
-                    //     interpolation: "runtime",
-                    //     referencedExtractor: "books",
-                    //     orderBy: "uuid",
-                    //     elementTransformer: "books"
-                    //     // sortParams: {
-                    //     //   sortField: "title",
-                    //     //   sortDirection: "asc",
-                    //     // }
-                    // }
                   },
                 },
               },
@@ -461,73 +399,20 @@ const testActions: Record<string, TestActionParams> = {
             },
             {
               compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBook1",
-              nameGivenToResult: "checkEntityBook1",
+              compositeActionStepLabel: "checkEntityBooks",
+              nameGivenToResult: "checkEntityBooks",
               testAssertion: {
                 testType: "testAssertion",
                 definition: {
-                  resultAccessPath: ["entityBookList", "books", "0"],
-                  expectedValue: book3,
-                },
-              },
-            },
-            {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBook2",
-              nameGivenToResult: "checkEntityBook2",
-              testAssertion: {
-                testType: "testAssertion",
-                definition: {
-                  resultAccessPath: ["entityBookList", "books", "1"],
-                  expectedValue: book4,
-                },
-              },
-            },
-            {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBook3",
-              nameGivenToResult: "checkEntityBook3",
-              testAssertion: {
-                testType: "testAssertion",
-                definition: {
-                  resultAccessPath: ["entityBookList", "books", "2"],
-                  expectedValue: book6,
-                },
-              },
-            },
-            {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBook4",
-              nameGivenToResult: "checkEntityBook4",
-              testAssertion: {
-                testType: "testAssertion",
-                definition: {
-                  resultAccessPath: ["entityBookList", "books", "3"],
-                  expectedValue: book5,
-                },
-              },
-            },
-            {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBook5",
-              nameGivenToResult: "checkEntityBook5",
-              testAssertion: {
-                testType: "testAssertion",
-                definition: {
-                  resultAccessPath: ["entityBookList", "books", "4"],
-                  expectedValue: book1,
-                },
-              },
-            },
-            {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBook6",
-              nameGivenToResult: "checkEntityBook6",
-              testAssertion: {
-                testType: "testAssertion",
-                definition: {
-                  resultAccessPath: ["entityBookList", "books", "5"],
-                  expectedValue: book2,
+                  resultAccessPath: ["entityBookList", "books"],
+                  expectedValue: [
+                    book3,
+                    book4,
+                    book6,
+                    book5,
+                    book1,
+                    book2,
+                  ],
                 },
               },
             },
@@ -609,18 +494,6 @@ const testActions: Record<string, TestActionParams> = {
                         },
                       },
                     },
-                    // runtimeTransformers: {
-                    //   sortedBooks: {
-                    //     transformerType: "mapperListToList",
-                    //     interpolation: "runtime",
-                    //     referencedExtractor: "books",
-                    //     orderBy: "uuid",
-                    //     elementTransformer: "books"
-                    //     // sortParams: {
-                    //     //   sortField: "title",
-                    //     //   sortDirection: "asc",
-                    //     // }
-                    // }
                   },
                 },
               },
@@ -651,73 +524,20 @@ const testActions: Record<string, TestActionParams> = {
             },
             {
               compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBook1",
-              nameGivenToResult: "checkEntityBook1",
+              compositeActionStepLabel: "checkEntityBooks",
+              nameGivenToResult: "checkEntityBooks",
               testAssertion: {
                 testType: "testAssertion",
                 definition: {
-                  resultAccessPath: ["entityBookList", "books", "0"],
-                  expectedValue: book3,
-                },
-              },
-            },
-            {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBook2",
-              nameGivenToResult: "checkEntityBook2",
-              testAssertion: {
-                testType: "testAssertion",
-                definition: {
-                  resultAccessPath: ["entityBookList", "books", "1"],
-                  expectedValue: book4,
-                },
-              },
-            },
-            {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBook3",
-              nameGivenToResult: "checkEntityBook3",
-              testAssertion: {
-                testType: "testAssertion",
-                definition: {
-                  resultAccessPath: ["entityBookList", "books", "2"],
-                  expectedValue: book6,
-                },
-              },
-            },
-            {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBook4",
-              nameGivenToResult: "checkEntityBook4",
-              testAssertion: {
-                testType: "testAssertion",
-                definition: {
-                  resultAccessPath: ["entityBookList", "books", "3"],
-                  expectedValue: book5,
-                },
-              },
-            },
-            {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBook5",
-              nameGivenToResult: "checkEntityBook5",
-              testAssertion: {
-                testType: "testAssertion",
-                definition: {
-                  resultAccessPath: ["entityBookList", "books", "4"],
-                  expectedValue: book1,
-                },
-              },
-            },
-            {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBook6",
-              nameGivenToResult: "checkEntityBook6",
-              testAssertion: {
-                testType: "testAssertion",
-                definition: {
-                  resultAccessPath: ["entityBookList", "books", "5"],
-                  expectedValue: book2,
+                  resultAccessPath: ["entityBookList", "books"],
+                  expectedValue: [
+                    book3,
+                    book4,
+                    book6,
+                    book5,
+                    book1,
+                    book2,
+                  ],
                 },
               },
             },

@@ -119,8 +119,8 @@ miroirPostgresStoreSectionStartup();
 
 let domainController: DomainControllerInterface;
 let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
-let localCache: LocalCache;
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
+let localCache: LocalCache;
 let miroirContext: MiroirContextInterface;
 let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
 
@@ -141,7 +141,6 @@ beforeAll(
 
     const wrapped = await createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT(
       miroirConfig as MiroirConfigClient,
-      // setupServer,
       persistenceStoreControllerManager,
       domainController,
     );
@@ -165,7 +164,6 @@ beforeAll(
 beforeEach(
   async () => {
     await miroirBeforeEach_resetAndInitApplicationDeployments(
-      miroirConfig,
       domainController,
       deploymentConfigurations,
     );
@@ -313,7 +311,6 @@ afterAll(
 afterEach(
   async () => {
     await resetApplicationDeployments(
-      // miroirConfig,
       deploymentConfigurations,
       domainController,
       localCache,
@@ -330,15 +327,6 @@ describe.sequential('DomainController.Data.CRUD.React',
     // ###########################################################################################
     it('Refresh all Instances',
       async() => {
-        // await refreshAllInstancesTest(
-        //   miroirConfig,
-        //   localMiroirPersistenceStoreController,
-        //   localAppPersistenceStoreController,
-        //   localCache,
-        //   domainController,
-        //   miroirContext,
-        // );
-        // return Promise.resolve();
         try {
           log.info("Refresh all Instances start");
           const displayLoadingInfo = <DisplayLoadingInfo />;

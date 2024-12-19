@@ -236,7 +236,7 @@ export class DomainController implements DomainControllerInterface {
     // non-transactional modification: perform the changes immediately on the remote datastore (thereby commited)
 
     // The same action is performed on the local cache and on the remote store for Data Instances.
-    await this.callUtil.callPersistenceAction(
+    await this.callUtil.callRemotePersistenceAction(
       {}, // context
       {}, // context update
       // deploymentUuid,
@@ -288,7 +288,7 @@ export class DomainController implements DomainControllerInterface {
             log.info("handleModelAction reloading current configuration from local PersistenceStore DONE!");
           } else {
             // if the domain controller is deployed on the client, we send the "remoteLocalCacheRollback" action to the server
-            await this.callUtil.callPersistenceAction(
+            await this.callUtil.callRemotePersistenceAction(
               {}, // context
               {}, // context update
               modelAction
@@ -307,7 +307,7 @@ export class DomainController implements DomainControllerInterface {
           if (modelAction.transactional == false) {
             // the modelAction is not transactional, we update the persistentStore directly
             log.warn("handleModelAction running for non-transactional action!");
-            await this.callUtil.callPersistenceAction(
+            await this.callUtil.callRemotePersistenceAction(
               {}, // context
               {}, // context update
               modelAction
@@ -324,7 +324,7 @@ export class DomainController implements DomainControllerInterface {
         case "resetModel":
         case "resetData":
         case "initModel": {
-          await this.callUtil.callPersistenceAction(
+          await this.callUtil.callRemotePersistenceAction(
             {}, // context
             {}, // context update
             modelAction
@@ -373,7 +373,7 @@ export class DomainController implements DomainControllerInterface {
             };
 
             // in the case of the Miroir app, this should be done in the 'data' section
-            await this.callUtil.callPersistenceAction(
+            await this.callUtil.callRemotePersistenceAction(
               {}, // context
               {}, // context update
               // deploymentUuid,
@@ -394,7 +394,7 @@ export class DomainController implements DomainControllerInterface {
                 case "transactionalInstanceAction": {
                   // const localReplayAction: LocalCacheTransactionalInstanceActionWithDeployment = replayAction;
                   //  log.warn("handleModelAction commit ignored transactional action" + replayAction)
-                  await this.callUtil.callPersistenceAction(
+                  await this.callUtil.callRemotePersistenceAction(
                     {}, // context
                     {}, // context update
                     {
@@ -411,7 +411,7 @@ export class DomainController implements DomainControllerInterface {
                   break;
                 }
                 case "modelAction": {
-                  await this.callUtil.callPersistenceAction(
+                  await this.callUtil.callRemotePersistenceAction(
                     {}, // context
                     {}, // context update
                     {
@@ -487,7 +487,7 @@ export class DomainController implements DomainControllerInterface {
                   objects: [updatedConfiguration],
                 };
                 // TODO: in the case of the Miroir app, this should be in the 'data'section
-                return this.callUtil.callPersistenceAction(
+                return this.callUtil.callRemotePersistenceAction(
                   {}, // context
                   {}, // context update
                   newStoreBasedConfiguration
@@ -529,7 +529,7 @@ export class DomainController implements DomainControllerInterface {
     log.info("DomainController loadConfigurationFromRemoteDataStore called for deployment", deploymentUuid);
     try {
       await this.callUtil
-        .callPersistenceAction(
+        .callRemotePersistenceAction(
           {}, // context
           {
             addResultToContextAsName: "dataEntitiesFromModelSection",
@@ -602,7 +602,7 @@ export class DomainController implements DomainControllerInterface {
               JSON.stringify(e, undefined, 2)
             );
             await this.callUtil
-              .callPersistenceAction(
+              .callRemotePersistenceAction(
                 {}, // context
                 {
                   addResultToContextAsName: "entityInstanceCollection",
@@ -719,7 +719,7 @@ export class DomainController implements DomainControllerInterface {
         // JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction)
         runBoxedExtractorOrQueryAction
       );
-      const result = await this.callUtil.callPersistenceAction(
+      const result = await this.callUtil.callRemotePersistenceAction(
         // what if it is a REAL persistence store?? exception?
         {}, // context
         {
@@ -784,7 +784,7 @@ export class DomainController implements DomainControllerInterface {
         // JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction)
         runBoxedQueryTemplateAction
       );
-      const result = await this.callUtil.callPersistenceAction(
+      const result = await this.callUtil.callRemotePersistenceAction(
         // what if it is a REAL persistence store?? exception?
         {}, // context
         {
@@ -849,7 +849,7 @@ export class DomainController implements DomainControllerInterface {
         // JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction)
         runBoxedExtractorTemplateAction
       );
-      const result = await this.callUtil.callPersistenceAction(
+      const result = await this.callUtil.callRemotePersistenceAction(
         // what if it is a REAL persistence store?? exception?
         {}, // context
         {
@@ -914,7 +914,7 @@ export class DomainController implements DomainControllerInterface {
         // JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction)
         runBoxedQueryTemplateOrBoxedExtractorTemplateAction
       );
-      const result = await this.callUtil.callPersistenceAction(
+      const result = await this.callUtil.callRemotePersistenceAction(
         // what if it is a REAL persistence store?? exception?
         {}, // context
         {
@@ -1515,7 +1515,7 @@ export class DomainController implements DomainControllerInterface {
           await resetAndInitApplicationDeployment(this, domainAction.deployments);
         } else {
           try {
-            await this.callUtil.callPersistenceAction(
+            await this.callUtil.callRemotePersistenceAction(
               {}, // context
               {}, // context update
               // deploymentUuid,
@@ -1539,7 +1539,7 @@ export class DomainController implements DomainControllerInterface {
       }
       case "bundleAction": {
         try {
-          await this.callUtil.callPersistenceAction(
+          await this.callUtil.callRemotePersistenceAction(
             {}, // context
             {}, // context update
             // deploymentUuid,

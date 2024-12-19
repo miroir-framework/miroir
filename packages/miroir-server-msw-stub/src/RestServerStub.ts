@@ -10,7 +10,7 @@ import {
   getLoggerName,
   LocalCacheInterface
 } from "miroir-core";
-import { cleanLevel, packageName } from "./constants";
+import { cleanLevel, packageName } from "./constants.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RestServerStub");
 let log:LoggerInterface = console as any as LoggerInterface;

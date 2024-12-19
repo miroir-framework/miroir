@@ -30,7 +30,6 @@ import {
   entityStoreBasedConfiguration,
   ignorePostgresExtraAttributesOnList,
   ignorePostgresExtraAttributesOnObject,
-  ignorePostgresExtraAttributesOnRecord,
   MetaEntity,
   MiroirConfigClient,
   MiroirLoggerFactory,
@@ -44,28 +43,29 @@ import {
 } from "miroir-core";
 
 
+import { MiroirContext } from 'miroir-core';
 import { LocalCache } from 'miroir-localcache-redux';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
-import { setupServer } from "msw/node";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
   addEntitiesAndInstances,
   chainVitestSteps,
-  createTestStore,
+  createDeploymentGetPersistenceStoreController,
   deploymentConfigurations,
   loadTestConfigFiles,
-  resetApplicationDeployments,
-  createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT,
   miroirBeforeEach_resetAndInitApplicationDeployments,
+  resetApplicationDeployments,
+  setupMiroirTest
 } from "../utils/tests-utils.js";
 
+let domainController: DomainControllerInterface;
 let localCache: LocalCache;
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
+let miroirContext: MiroirContext;
 let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface | undefined;
-let domainController: DomainControllerInterface;
 
 const env:any = (import.meta as any).env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
@@ -88,30 +88,43 @@ beforeAll(
     miroirFileSystemStoreSectionStartup();
     miroirIndexedDbStoreSectionStartup();
     miroirPostgresStoreSectionStartup();
-    if (!miroirConfig.client.emulateServer) {
-      throw new Error("LocalPersistenceStoreController state do not make sense for real server configurations! Please use only 'emulateServer: true' configurations for this test.");
-    } else {
-      const wrapped = await createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT(
-        miroirConfig as MiroirConfigClient,
-        setupServer,
-      );
-      if (wrapped) {
-        if (wrapped.localMiroirPersistenceStoreController && wrapped.localAppPersistenceStoreController) {
-          localCache = wrapped.localCache;
-          domainController = wrapped.domainController;
-          localMiroirPersistenceStoreController = wrapped.localMiroirPersistenceStoreController;
-          localAppPersistenceStoreController = wrapped.localAppPersistenceStoreController;
-          persistenceStoreControllerManager = wrapped.persistenceStoreControllerManager;
-        }
-      } else {
-        throw new Error("beforeAll failed initialization!");
-      }
-    }
+  if (!miroirConfig.client.emulateServer) {
+    throw new Error(
+      "LocalPersistenceStoreController state do not make sense for real server configurations! Please use only 'emulateServer: true' configurations for this test."
+    );
+  } else {
+    const {
+      persistenceStoreControllerManager: localpersistenceStoreControllerManager,
+      domainController: localdomainController,
+      localCache: locallocalCache,
+      miroirContext: localmiroirContext,
+    } = await setupMiroirTest(miroirConfig);
 
-    await createTestStore(
-      miroirConfig,
+    persistenceStoreControllerManager = localpersistenceStoreControllerManager;
+    domainController = localdomainController;
+    localCache = locallocalCache;
+    miroirContext = localmiroirContext;
+
+    localMiroirPersistenceStoreController = await createDeploymentGetPersistenceStoreController(
+      miroirConfig as MiroirConfigClient,
+      adminConfigurationDeploymentMiroir.uuid,
+      persistenceStoreControllerManager,
       domainController
-    )
+    );
+    localAppPersistenceStoreController = await createDeploymentGetPersistenceStoreController(
+      miroirConfig as MiroirConfigClient,
+      adminConfigurationDeploymentLibrary.uuid,
+      persistenceStoreControllerManager,
+      domainController
+    );
+
+    return Promise.resolve();
+  }
+
+    // await createTestStore(
+    //   miroirConfig,
+    //   domainController
+    // )
 
     return Promise.resolve();
   }
@@ -120,7 +133,10 @@ beforeAll(
 // ################################################################################################
 beforeEach(
   async  () => {
-    await miroirBeforeEach_resetAndInitApplicationDeployments(miroirConfig, domainController, deploymentConfigurations, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
+    await miroirBeforeEach_resetAndInitApplicationDeployments(
+      domainController,
+      deploymentConfigurations,
+    );
     await addEntitiesAndInstances(
       localAppPersistenceStoreController,
       domainController,
@@ -291,7 +307,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       },
       (a) =>
         ignorePostgresExtraAttributesOnList(
-          (a as any).returnedDomainElement.elementValue.entities.sort((a, b) => a.name.localeCompare(b.name)),
+          (a as any).returnedDomainElement.elementValue.entities.sort((a: any, b: any) => a.name.localeCompare(b.name)),
           ["author"]
         ),
       // (a) => (a as any).returnedDomainElement.elementValue.entities.elementValue,
@@ -347,7 +363,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       },
       (a) =>
         ignorePostgresExtraAttributesOnList(
-          (a as any).returnedDomainElement.elementValue.entities.sort((a, b) => a.name.localeCompare(b.name)),
+          (a as any).returnedDomainElement.elementValue.entities.sort((a: any, b: any) => a.name.localeCompare(b.name)),
           ["author"]
         ),
       undefined, // name to give to result
@@ -732,7 +748,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       (a) => {
         // console.log("ICI!!!");
         const result = ignorePostgresExtraAttributesOnList(
-          (a as any).returnedDomainElement.elementValue.booksOfAuthor.sort((a, b) => a.name.localeCompare(b.name))
+          (a as any).returnedDomainElement.elementValue.booksOfAuthor.sort((a: any, b: any) => a.name.localeCompare(b.name))
         );
         console.log("CORRECTED result", JSON.stringify(result, null, 2));
         return result;
