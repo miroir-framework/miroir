@@ -1,5 +1,4 @@
 export { LocalCache } from "./4_services/LocalCache.js";
-// export {  } from "./4_services/LocalCache/LocalCacheSlice";
 export {
   getLocalCacheKeysDeploymentSectionEntitiesList,
   getDeploymentUuidListFromLocalCacheKeys,
@@ -62,5 +61,7 @@ export {
 export {
   PersistenceReduxSaga,
   PersistenceSagaGenReturnType,
+  PersistenceReduxSagaParams,
 } from "./4_services/persistence/PersistenceReduxSaga.js";
 export { RestPersistenceClientAndRestClient } from "./4_services/persistence/RestPersistenceClientAndRestClient.js";
+export { setupMiroirDomainController } from "./sagaTools.js";

@@ -397,15 +397,6 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
         },
       });
     }
-    // if (dataEntities.returnedDomainElement?.elementType != "entityInstanceCollection" || dataEntityDefinitions.returnedDomainElement?.elementType != "entityInstanceCollection") {
-    //   return Promise.resolve({
-    //     status: "error",
-    //     error: {
-    //       errorType: "FailedToGetInstances",
-    //       errorMessage: `bootFromPersistedState for entities wrong element type, expected "instanceArray", got getInstances(${entityEntity.uuid}) elementType: ${dataEntities.returnedDomainElement?.elementType}, getInstances(${entityEntityDefinition.uuid}) elementType: ${dataEntityDefinitions.returnedDomainElement?.elementType}`,
-    //     },
-    //   });
-    // }
 
     const dataBootFromPersistedState = await this.dataStoreSection.bootFromPersistedState(
       (dataEntities.returnedDomainElement?.elementValue.instances as Entity[]).filter((e) => ["Entity", "EntityDefinition"].indexOf(e.name) == -1), // for Miroir application only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table

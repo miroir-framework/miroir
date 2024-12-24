@@ -126,6 +126,7 @@ beforeAll(
     miroirIndexedDbStoreSectionStartup();
     miroirPostgresStoreSectionStartup();
     ConfigurationService.registerTestImplementation({expect: expect as any});
+
     const {
       persistenceStoreControllerManager: localpersistenceStoreControllerManager,
       domainController: localdomainController,
@@ -222,7 +223,7 @@ const testActions: Record<string, TestActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "model", // TODO: give only application section in individual queries?
+                  applicationSection: "data", // TODO: give only application section in individual queries?
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   query: {
                     queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -347,7 +348,7 @@ const testActions: Record<string, TestActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "model", // TODO: give only application section in individual queries?
+                  applicationSection: "data", // TODO: give only application section in individual queries?
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   query: {
                     queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -472,7 +473,7 @@ const testActions: Record<string, TestActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "model", // TODO: give only application section in individual queries?
+                  applicationSection: "data", // TODO: give only application section in individual queries?
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   query: {
                     queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -597,7 +598,7 @@ const testActions: Record<string, TestActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "model", // TODO: give only application section in individual queries?
+                  applicationSection: "data", // TODO: give only application section in individual queries?
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   query: {
                     queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -732,7 +733,7 @@ const testActions: Record<string, TestActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "model", // TODO: give only application section in individual queries?
+                  applicationSection: "data", // TODO: give only application section in individual queries?
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   query: {
                     queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -832,7 +833,7 @@ const testActions: Record<string, TestActionParams> = {
               },
               {
                 compositeActionType: "domainAction",
-                compositeActionStepLabel: "deleteBook2",
+                compositeActionStepLabel: "updateBook2",
                 domainAction: {
                   actionType: "instanceAction",
                   actionName: "updateInstance",
@@ -862,7 +863,7 @@ const testActions: Record<string, TestActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "model", // TODO: give only application section in individual queries?
+                  applicationSection: "data", // TODO: give only application section in individual queries?
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   query: {
                     queryType: "boxedQueryWithExtractorCombinerTransformer",

@@ -12,7 +12,9 @@ import { MiroirContextInterface } from "../0_interfaces/3_controllers/MiroirCont
 import {
   LocalCacheInterface
 } from "../0_interfaces/4-services/LocalCacheInterface.js";
-import { PersistenceStoreLocalOrRemoteInterface } from "../0_interfaces/4-services/PersistenceInterface.js";
+import {
+  PersistenceStoreLocalOrRemoteInterface
+} from "../0_interfaces/4-services/PersistenceInterface.js";
 
 
 import adminConfigurationDeploymentMiroir from "../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json" assert { type: "json" };
@@ -28,7 +30,6 @@ import {
   CompositeAction,
   CompositeActionDefinition,
   CompositeActionTemplate,
-  Deployment,
   DomainAction,
   EntityInstance,
   EntityInstanceCollection,
@@ -41,7 +42,6 @@ import {
   RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   SelfApplicationDeploymentConfiguration,
-  TestAction_runTestCompositeAction,
   TestCompositeAction,
   TestCompositeActionSuite,
   TransactionalInstanceAction,
@@ -62,8 +62,7 @@ import {
   selfApplicationMiroir,
   selfApplicationModelBranchMiroirMasterBranch,
   selfApplicationStoreBasedConfigurationMiroir,
-  selfApplicationVersionInitialMiroirVersion,
-  TestImplementation,
+  selfApplicationVersionInitialMiroirVersion
 } from "../index.js";
 import { getLoggerName, resolvePathOnObject } from "../tools.js";
 import { cleanLevel } from "./constants.js";
@@ -78,11 +77,13 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   }
 );
 
+// ################################################################################################
 export interface DeploymentConfiguration {
   adminConfigurationDeployment: EntityInstance,
   selfApplicationDeployment: SelfApplicationDeploymentConfiguration,
 }
 
+// ################################################################################################
 export async function resetAndInitApplicationDeployment(
   domainController: DomainControllerInterface,
   selfAdminConfigurationDeployments: SelfApplicationDeploymentConfiguration[], // TODO: use Deployment Entity Type!
@@ -134,7 +135,6 @@ export async function resetAndInitApplicationDeployment(
 export async function resetAndInitApplicationDeploymentNew(
   domainController: DomainControllerInterface,
   deployments: DeploymentConfiguration[], // TODO: use Deployment Entity Type!
-  // localCache: LocalCacheInterface,
 ) {
   // const mappedDeployments = deployments.map(d=>d.adminConfigurationDeployment);
   const mappedDeployments = deployments.map(d=>d.selfApplicationDeployment);

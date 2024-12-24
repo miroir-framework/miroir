@@ -275,7 +275,6 @@ const testActions: Record<string, TestActionParams> = {
             },
           ],
         },
-        TODO: entity Book seems to exist although no commit was performed
         "Add Entity Author and Commit": {
           testType: "testCompositeAction",
           compositeAction: {

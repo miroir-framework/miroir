@@ -7,8 +7,10 @@ import {
   LoggerFactoryInterface,
   LoggerInterface,
   MiroirConfigServer,
+  MiroirContext,
   MiroirLoggerFactory,
   PersistenceStoreControllerManager,
+  RestClient,
   SpecificLoggerOptionsMap,
   StoreOrBundleAction,
   StoreUnitConfiguration,
@@ -28,7 +30,7 @@ import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 
 import { readFileSync } from 'fs';
 import log from 'loglevelnext';
-import { LocalCache, PersistenceReduxSaga } from 'miroir-localcache-redux';
+import { LocalCache, PersistenceReduxSaga, RestPersistenceClientAndRestClient, setupMiroirDomainController } from 'miroir-localcache-redux';
 
 const packageName = "server"
 const cleanLevel = "5"
@@ -83,30 +85,25 @@ miroirFileSystemStoreSectionStartup();
 miroirIndexedDbStoreSectionStartup();
 miroirPostgresStoreSectionStartup();
 
-
-
-// const client: RestClient = new RestClient(fetch);
-// const persistenceClientAndRestClient = new RestPersistenceClientAndRestClient("", client);
-
-const localCache: LocalCache = new LocalCache();
-
+const miroirContext = new MiroirContext(miroirConfig);
 
 const persistenceStoreControllerManager = new PersistenceStoreControllerManager(
   ConfigurationService.adminStoreFactoryRegister,
   ConfigurationService.StoreSectionFactoryRegister,
 );
 
-const persistenceSaga: PersistenceReduxSaga = new PersistenceReduxSaga(
+const {
+  localCache,
+  domainController,
+  persistenceSaga,
+} = await setupMiroirDomainController(
+  "server",
+  miroirContext, 
   {
     persistenceStoreAccessMode: "local",
-    localPersistenceStoreControllerManager: persistenceStoreControllerManager,
+    localPersistenceStoreControllerManager: persistenceStoreControllerManager
   }
-);
-
-persistenceSaga.run(localCache)
-
-persistenceStoreControllerManager.setPersistenceStoreLocalOrRemote(persistenceSaga); // useless?
-persistenceStoreControllerManager.setLocalCache(localCache);
+); // even when emulating server, we use remote persistence store, since MSW makes it appear as if we are using a remote server.
 
 // open all configured stores
 for (const c of Object.entries(configurations)) {

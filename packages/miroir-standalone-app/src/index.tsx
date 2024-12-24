@@ -34,7 +34,7 @@ import {
 } from "miroir-core";
 import { createMswRestServer } from "miroir-server-msw-stub";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
-import { PersistenceReduxSaga, LocalCache, RestPersistenceClientAndRestClient } from "miroir-localcache-redux";
+import { PersistenceReduxSaga, LocalCache, RestPersistenceClientAndRestClient, setupMiroirDomainController } from "miroir-localcache-redux";
 
 import { loglevelnext } from './loglevelnextImporter.js';
 import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage.js";
@@ -47,12 +47,12 @@ import { miroirAppStartup } from "./startup.js";
 import { packageName } from "./constants.js";
 import { cleanLevel } from "./miroir-fwk/4_view/constants.js";
 
-import miroirConfigEmulatedServerIndexedDb from "./assets/miroirConfig-emulatedServer-IndexedDb.json";
-import miroirConfigRealServerFilesystemGit from "./assets/miroirConfig-realServer-filesystem-git.json";
-import miroirConfigRealServerFilesystemTmp from "./assets/miroirConfig-realServer-filesystem-tmp.json";
-import miroirConfigRealServerIndexedDb from "./assets/miroirConfig-realServer-indexedDb.json";
-import miroirConfigRealServerSql from "./assets/miroirConfig-realServer-sql.json";
-import miroirConfig from "./assets/miroirConfig.json";
+import miroirConfigEmulatedServerIndexedDb from "./assets/miroirConfig-emulatedServer-IndexedDb.json" assert { type: "json" };
+import miroirConfigRealServerFilesystemGit from "./assets/miroirConfig-realServer-filesystem-git.json" assert { type: "json" };
+import miroirConfigRealServerFilesystemTmp from "./assets/miroirConfig-realServer-filesystem-tmp.json" assert { type: "json" };
+import miroirConfigRealServerIndexedDb from "./assets/miroirConfig-realServer-indexedDb.json" assert { type: "json" };
+import miroirConfigRealServerSql from "./assets/miroirConfig-realServer-sql.json" assert { type: "json" };
+import miroirConfig from "./assets/miroirConfig.json" assert { type: "json" };
 import { ToolsPage } from "./miroir-fwk/4_view/routes/Tools.js";
 import { ConceptPage } from "./miroir-fwk/4_view/routes/Concept.js";
 
@@ -252,7 +252,7 @@ const themeParams = {
 };
 
 // ###################################################################################
-async function start(root:Root) {
+async function startWebApp(root:Root) {
   // Start our mock API server
   // const mServer: IndexedDbObjectStore = new IndexedDbObjectStore(miroirConfig.rootApiUrl);
 
@@ -272,32 +272,25 @@ async function start(root:Root) {
       client
     );
 
-    const localCache: LocalCache = new LocalCache();
-
-
     const persistenceStoreControllerManager = new PersistenceStoreControllerManager(
       ConfigurationService.adminStoreFactoryRegister,
       ConfigurationService.StoreSectionFactoryRegister,
     );
 
-    const persistenceSaga: PersistenceReduxSaga = new PersistenceReduxSaga(
+    const {
+      localCache,
+      domainController,
+      persistenceSaga,
+    } = setupMiroirDomainController(
+      "client",
+      miroirContext, 
       {
         persistenceStoreAccessMode: "remote",
-        remotePersistenceStoreRestClient: persistenceClientAndRestClient
+        localPersistenceStoreControllerManager: persistenceStoreControllerManager,
+        remotePersistenceStoreRestClient: persistenceClientAndRestClient,
       }
     );
-
-    persistenceSaga.run(localCache)
-
-    // TODO: domainController instance is also created in PersistenceStoreControllerManager. Isn't it redundant?
-    const domainController: DomainControllerInterface = new DomainController(
-      "client", // we are on the client, we have to send "remoteLocalCacheRollback" actions to the (remote) persistenceStore
-      miroirContext,
-      localCache, // implements LocalCacheInterface
-      persistenceSaga, // implements PersistenceStoreLocalOrRemoteInterface
-      new Endpoint(localCache)
-    );
-
+  
     // ################################################
     if (currentMiroirConfig.client.emulateServer) {
       const {
@@ -364,5 +357,5 @@ async function start(root:Root) {
 
 if (container) {
   const root = createRoot(container);
-  start(root);
+  startWebApp(root);
 }
