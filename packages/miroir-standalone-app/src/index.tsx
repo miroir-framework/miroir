@@ -277,13 +277,9 @@ async function startWebApp(root:Root) {
       ConfigurationService.StoreSectionFactoryRegister,
     );
 
-    const {
-      localCache,
-      domainController,
-      persistenceSaga,
-    } = setupMiroirDomainController(
-      "client",
+    const domainController = await setupMiroirDomainController(
       miroirContext, 
+      "client",
       {
         persistenceStoreAccessMode: "remote",
         localPersistenceStoreControllerManager: persistenceStoreControllerManager,
@@ -301,7 +297,6 @@ async function startWebApp(root:Root) {
         'browser',
         restServerDefaultHandlers,
         persistenceStoreControllerManager,
-        localCache,
         setupWorker
       );
   
@@ -335,7 +330,7 @@ async function startWebApp(root:Root) {
       <StrictMode>
         <ThemeProvider theme={theme}>
           <StyledEngineProvider injectFirst>
-            <Provider store={localCache.getInnerStore()}>
+            <Provider store={domainController.getLocalCache().getInnerStore()}>
               <MiroirContextReactProvider miroirContext={miroirContext} domainController={domainController}>
                 <RouterProvider router={router} />
                 {/* <RootComponent/> */}

@@ -59,13 +59,11 @@ export async function restMethodGetHandler
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
-  localCache: LocalCacheInterface,
   method: HttpMethod | undefined, // unused!
   effectiveUrl: string, // log only, to remove?
   body: HttpRequestBodyFormat | undefined, // unused!
   params: any,
 ) {
-  // const localParams = params ?? request.params;
   log.info(
     "restMethodGetHandler get CRUD/ called using",
     "method",
@@ -141,7 +139,6 @@ export async function restMethodsPostPutDeleteHandler(
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
-  localCache: LocalCacheInterface,
   method: HttpMethod,
   effectiveUrl: string, // log only, to remove?
   body: HttpRequestBodyFormat,
@@ -205,7 +202,6 @@ export async function restActionHandler(
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
-  localCache: LocalCacheInterface,
   method: HttpMethod,
   effectiveUrl: string, // log only, to remove?
   body: HttpRequestBodyFormat,
@@ -268,7 +264,6 @@ export async function queryActionHandler(
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
-  localCache: LocalCacheInterface,
   method: HttpMethod,
   effectiveUrl: string, // log only, to remove?
   body: HttpRequestBodyFormat,
@@ -314,7 +309,7 @@ export async function queryActionHandler(
     // we're on the client, called by RestServerStub
     // uses the local cache, needs to have done a Model "rollback" action on the client
     //, or a Model "remoteLocalCacheRollback" action on the server
-    const domainState: DomainState = localCache.getDomainState();
+    const domainState: DomainState = domainController.getDomainState();
     const extractorRunnerMapOnDomainState = getDomainStateExtractorRunnerMap();
     log.info("RestServer queryActionHandler runBoxedExtractorOrQueryAction=", JSON.stringify(runBoxedExtractorOrQueryAction, undefined, 2))
     log.info("RestServer queryActionHandler domainState=", JSON.stringify(domainState, undefined, 2))
@@ -360,7 +355,6 @@ export async function queryTemplateActionHandler(
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
-  localCache: LocalCacheInterface,
   method: HttpMethod,
   effectiveUrl: string, // log only, to remove?
   body: HttpRequestBodyFormat,
@@ -406,7 +400,7 @@ export async function queryTemplateActionHandler(
   } else {
     // we're on the client, called by RestServerStub
     // uses the local cache, needs to have done a Model "rollback" action on the client//, or a Model "remoteLocalCacheRollback" action on the server
-    const domainState: DomainState = localCache.getDomainState();
+    const domainState: DomainState = domainController.getDomainState();
     const extractorRunnerMapOnDomainState = getSelectorMapForTemplate();
     log.info(
       "RestServer queryTemplateActionHandler runBoxedQueryTemplateOrBoxedExtractorTemplateAction=",

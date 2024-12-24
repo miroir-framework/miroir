@@ -33,11 +33,8 @@ export type RestMethodHandler =  (
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
-  localCache: LocalCacheInterface,
-  // method: HttpMethod | undefined, // unused!
   method: HttpMethod, // unused!
   effectiveUrl: string, // log only, to remove?
-  // body: HttpRequestBodyFormat | undefined, // unused!
   body: HttpRequestBodyFormat, // unused!
   params: any,
 ) => Promise<any>;

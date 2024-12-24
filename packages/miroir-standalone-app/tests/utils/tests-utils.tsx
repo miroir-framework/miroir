@@ -370,54 +370,6 @@ export interface MiroirIntegrationTestEnvironment {
   miroirContext: MiroirContext,
 }
 
-// export async function setupMiroirDomainController(
-//   miroirConfig: MiroirConfigClient,
-//   miroirContext: MiroirContext,
-//   persistenceClientAndRestClient: RestPersistenceClientAndRestClientInterface,
-// ): Promise<{
-//   // localMiroirPersistenceStoreController: PersistenceStoreControllerInterface,
-//   // localAppPersistenceStoreController: PersistenceStoreControllerInterface,
-//   localCache: LocalCache,
-//   domainController: DomainControllerInterface,
-//   // miroirContext: MiroirContext,
-//   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
-// }> {
-//   const localCache: LocalCache = new LocalCache();
-  
-  
-//   const persistenceStoreControllerManager = new PersistenceStoreControllerManager(
-//     ConfigurationService.adminStoreFactoryRegister,
-//     ConfigurationService.StoreSectionFactoryRegister,
-//   );
-  
-  
-//   persistenceStoreControllerManager.setLocalCache(localCache);
-  
-//   const persistenceSaga: PersistenceReduxSaga = new PersistenceReduxSaga(
-//     // even for emulateServer, we use remote persistence store, since MSW makes it appear as if we are using a remote server.
-//     {
-//       persistenceStoreAccessMode: "remote",
-//       remotePersistenceStoreRestClient: persistenceClientAndRestClient,
-//     }
-//   );
-  
-//   persistenceSaga.run(localCache)
-//   persistenceStoreControllerManager.setPersistenceStoreLocalOrRemote(persistenceSaga); // useless?
-  
-//   const domainController = new DomainController(
-//     "client", // we are on the client, we have to use persistenceStore to execute (remote) Queries
-//     miroirContext,
-//     localCache, // implements LocalCacheInterface
-//     persistenceSaga, // implements PersistenceStoreLocalOrRemoteInterface
-//     new Endpoint(localCache)
-//   );
-//   return {
-//     localCache,
-//     persistenceStoreControllerManager,
-//     domainController,
-//   }
-// }
-
 // ################################################################################################
 export async function setupMiroirTest(
   miroirConfig: MiroirConfigClient,
@@ -435,13 +387,9 @@ export async function setupMiroirTest(
     ConfigurationService.StoreSectionFactoryRegister
   );
 
-  const {
-    localCache,
-    domainController,
-    persistenceSaga,
-  } = setupMiroirDomainController(
-    "client",
+  const domainController = await setupMiroirDomainController(
     miroirContext, 
+    "client",
     {
       persistenceStoreAccessMode: "remote",
       localPersistenceStoreControllerManager: persistenceStoreControllerManager,
@@ -462,7 +410,6 @@ export async function setupMiroirTest(
         "nodejs",
         restServerDefaultHandlers,
         persistenceStoreControllerManager,
-        localCache,
         setupServer
       );
       localDataStoreWorker = localDataStoreWorkertmp as any;
@@ -480,7 +427,6 @@ export async function setupMiroirTest(
         // "tests-utils localDataStoreServer starting, listHandlers",
         // localDataStoreServer.listHandlers().map((h) => h.info.header)
       );
-      // await localDataStoreServer.listen();
       localDataStoreServer.listen();
       console.warn(
         "tests-utils localDataStoreServer STARTED, listHandlers",
@@ -494,7 +440,7 @@ export async function setupMiroirTest(
   return {
     persistenceStoreControllerManager,
     domainController,
-    localCache,
+    localCache: domainController.getLocalCache(),
     miroirContext,
   };
 }

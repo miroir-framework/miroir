@@ -5,6 +5,7 @@ import { MetaEntity, Uuid } from '../0_interfaces/1_core/EntityDefinition.js';
 import {
   CRUDActionName,
   DomainControllerInterface,
+  DomainState,
   LocalCacheInfo
 } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 
@@ -176,6 +177,16 @@ export class DomainController implements DomainControllerInterface {
     return this.localCache.currentInfo();
   }
 
+  // ###############################################################################
+  getDomainState():DomainState {
+    return this.localCache.getDomainState();
+  }
+  
+  // ###############################################################################
+  getLocalCache():LocalCacheInterface {
+    return this.localCache;
+  }
+  
   // ##############################################################################################
   // converts a Domain transactional action into a set of local cache actions and remote store actions
   async handleDomainUndoRedoAction(
@@ -1515,12 +1526,17 @@ export class DomainController implements DomainControllerInterface {
           await resetAndInitApplicationDeployment(this, domainAction.deployments);
         } else {
           try {
-            await this.callUtil.callRemotePersistenceAction(
-              {}, // context
-              {}, // context update
-              // deploymentUuid,
-              domainAction
-            );
+            if (this.domainControllerIsDeployedOn == "server") {
+              await this.persistenceStore.handlePersistenceAction(
+                domainAction
+              );
+            } else {
+              await this.callUtil.callRemotePersistenceAction(
+                {}, // context
+                {}, // context update
+                domainAction
+              );
+            }
           } catch (error) {
             log.warn(
               "DomainController handleAction caught exception when handling",

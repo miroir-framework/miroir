@@ -34,7 +34,6 @@ export class RestServerStub {
     private rootApiUrl: string,
     restServerHandlers: RestServiceHandler[],
     persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
-    localCache: LocalCacheInterface,
     miroirConfig: MiroirConfigClient,
   ) {
     log.info(
@@ -65,7 +64,6 @@ export class RestServerStub {
               (response: any) => (localData: any) => HttpResponse.json(localData),
               undefined /* response object provided by Express Rest interface, which is not needed by MSW, that uses class HttpResponse*/,
               persistenceStoreControllerManager,
-              localCache,
               restService.method /* method */,
               this.rootApiUrl + restService.url,
               body, // body

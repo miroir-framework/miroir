@@ -14,11 +14,11 @@ import {
   RunBoxedExtractorTemplateAction,
   RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-  TestAction_runTestCompositeAction,
   TestCompositeAction,
   TestCompositeActionSuite,
   TransactionalInstanceAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
+import { LocalCacheInterface } from "../4-services/LocalCacheInterface.js";
 import { PersistenceStoreLocalOrRemoteInterface } from "../4-services/PersistenceInterface.js";
 
 
@@ -167,4 +167,6 @@ export interface DomainControllerInterface {
   currentTransaction(): (TransactionalInstanceAction | ModelAction)[];
   currentLocalCacheInfo(): LocalCacheInfo;
   getRemoteStore(): PersistenceStoreLocalOrRemoteInterface;
+  getDomainState():DomainState;
+  getLocalCache():LocalCacheInterface; // TODO: this is a temporary solution to allow the use of the local cache in the webapp.
 }

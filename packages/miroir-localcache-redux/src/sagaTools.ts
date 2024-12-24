@@ -5,19 +5,15 @@ import {
 
 import { call } from "typed-redux-saga";
 import PersistenceReduxSaga, { PersistenceReduxSagaParams, PersistenceSagaGenReturnType } from "./4_services/persistence/PersistenceReduxSaga.js";
-import { LocalCacheInterface, MiroirConfigClient, MiroirContext, RestPersistenceClientAndRestClientInterface, DomainControllerInterface, PersistenceStoreControllerManagerInterface, PersistenceStoreControllerManager, ConfigurationService, DomainController, Endpoint } from "miroir-core";
+import { LocalCacheInterface, MiroirConfigClient, MiroirContext, RestPersistenceClientAndRestClientInterface, DomainControllerInterface, PersistenceStoreControllerManagerInterface, PersistenceStoreControllerManager, ConfigurationService, DomainController, Endpoint, PersistenceStoreLocalOrRemoteInterface } from "miroir-core";
 import { LocalCache } from "./4_services/LocalCache.js";
 
 // ################################################################################################
 export function setupMiroirDomainController(
-  domainControllerIsDeployedOn: "server" | "client",
   miroirContext: MiroirContext,
+  domainControllerIsDeployedOn: "server" | "client",
   persistenceReduxSagaParams: PersistenceReduxSagaParams,
-): {
-  localCache: LocalCacheInterface,
-  domainController: DomainControllerInterface,
-  persistenceSaga: PersistenceReduxSaga, // TODO: do not expose the persistenceSaga (used by server only)
-} {
+): DomainControllerInterface {
   const localCache: LocalCache = new LocalCache();
   
   const persistenceSaga: PersistenceReduxSaga = new PersistenceReduxSaga(
@@ -29,19 +25,13 @@ export function setupMiroirDomainController(
   persistenceReduxSagaParams.localPersistenceStoreControllerManager.setPersistenceStoreLocalOrRemote(persistenceSaga); // useless?
 
   const domainController = new DomainController(
-    // "client", // we are on the client, we have to use persistenceStore to execute (remote) Queries
     domainControllerIsDeployedOn,
     miroirContext,
     localCache, // implements LocalCacheInterface
     persistenceSaga, // implements PersistenceStoreLocalOrRemoteInterface
     new Endpoint(localCache)
   );
-  return {
-    localCache,
-    // persistenceStoreControllerManager,
-    domainController,
-    persistenceSaga,
-  }
+  return domainController
 }
 
 // ###############################################################################

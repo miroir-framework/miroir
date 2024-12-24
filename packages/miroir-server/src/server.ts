@@ -92,13 +92,9 @@ const persistenceStoreControllerManager = new PersistenceStoreControllerManager(
   ConfigurationService.StoreSectionFactoryRegister,
 );
 
-const {
-  localCache,
-  domainController,
-  persistenceSaga,
-} = await setupMiroirDomainController(
-  "server",
+const domainController = await setupMiroirDomainController(
   miroirContext, 
+  "server",
   {
     persistenceStoreAccessMode: "local",
     localPersistenceStoreControllerManager: persistenceStoreControllerManager
@@ -116,7 +112,7 @@ for (const c of Object.entries(configurations)) {
     },
     deploymentUuid: c[0],
   };
-  await persistenceSaga.handlePersistenceAction(openStoreAction)
+  await domainController.handleAction(openStoreAction)
 }
 
 
@@ -134,7 +130,6 @@ for (const op of restServerDefaultHandlers) {
           (response: any) => response.json.bind(response),
           response,
           persistenceStoreControllerManager,
-          localCache,
           op.method,
           request.originalUrl,
           body,

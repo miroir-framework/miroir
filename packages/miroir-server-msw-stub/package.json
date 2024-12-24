@@ -3,8 +3,8 @@
   "private": true,
   "version": "0.0.0",
   "description": "The Miroir stub implementation of the server, that can be used by any client for serverless deployment.",
-  "main": "dist/bundle.js",
-  "types": "dist/bundle.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "type": "module",
   "dependencies": {
     "miroir-core": "*",
@@ -23,6 +23,26 @@
     "tsconfig-paths": "^4.1.2",
     "tsup": "^8.0.1",
     "typescript": "^4.9.4"
+  },
+  "tsup": {
+    "dts": true,
+    "clean": false,
+    "bundle": true,
+    "treeshake": true,
+    "target": "node20",
+    "format": [
+      "esm"
+    ],
+    "entry": [
+      "src/index.ts"
+    ]
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
   },
   "scripts": {
     "watch": "lerna watch --scope='miroir-localcache-redux' --include-dependencies -- lerna run build --scope='miroir-localcache-redux'",
