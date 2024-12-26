@@ -59,12 +59,12 @@ export function getPersistenceActionReduxEventNames(persistenceActionNames:strin
 //#########################################################################################
 //# SLICE
 //#########################################################################################
-export type PersistenceReduxSagaParams = {
+export type PersistenceStoreAccessParams = {
   persistenceStoreAccessMode: "local",
   localPersistenceStoreControllerManager: PersistenceStoreControllerManagerInterface
 } | {
   persistenceStoreAccessMode: "remote",
-  localPersistenceStoreControllerManager: PersistenceStoreControllerManagerInterface // TODO: remove, saga should not have access to local store controller when persistenceStoreAccessMode is remote
+  localPersistenceStoreControllerManager: PersistenceStoreControllerManagerInterface // TODO: remove, remote saga should not have access to local store controller when persistenceStoreAccessMode is remote
   remotePersistenceStoreRestClient: RestPersistenceClientAndRestClientInterface
 };
 
@@ -82,7 +82,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
   private localCache: LocalCache | undefined;
 
   constructor( // TODO: either remoteStoreNetworkClient or persistenceStoreControllerManager must be defined, not both! Force this distinction in the constructor.
-    private params: PersistenceReduxSagaParams,
+    private params: PersistenceStoreAccessParams,
   ) {}
 
   //#########################################################################################
@@ -327,7 +327,6 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                   }
                 }
                 break;
-
               }
               case 'runBoxedQueryTemplateAction': {
                 const localPersistenceStoreController =
@@ -393,9 +392,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
             // indirect access to a remote storeController through the network
             // log.info("handlePersistenceAction calling remoteStoreNetworkClient on action",JSON.stringify(action));
             const clientResult: RestClientCallReturnType = yield* call(() =>
-              (
-                localParams.remotePersistenceStoreRestClient
-              ).handleNetworkPersistenceAction(action)
+              localParams.remotePersistenceStoreRestClient.handleNetworkPersistenceAction(action)
             );
             log.debug("handlePersistenceAction from remoteStoreNetworkClient received clientResult", clientResult);
 
@@ -417,14 +414,26 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                 break;
               }
               case "runBoxedExtractorOrQueryAction": {
-                log.info("handlePersistenceAction runBoxedExtractorOrQueryAction received from remoteStoreNetworkClient clientResult", JSON.stringify(clientResult, undefined, 2));
-                log.debug("handlePersistenceAction runBoxedExtractorOrQueryAction remoteStoreNetworkClient received status", clientResult.status);
+                log.info(
+                  "handlePersistenceAction runBoxedExtractorOrQueryAction received from remoteStoreNetworkClient clientResult",
+                  JSON.stringify(clientResult, undefined, 2)
+                );
+                log.debug(
+                  "handlePersistenceAction runBoxedExtractorOrQueryAction remoteStoreNetworkClient received status",
+                  clientResult.status
+                );
                 return yield clientResult.data;
                 break;
               }
               case "runBoxedQueryTemplateOrBoxedExtractorTemplateAction": {
-                log.info("handlePersistenceAction runBoxedQueryTemplateOrBoxedExtractorTemplateAction received from remoteStoreNetworkClient clientResult", clientResult);
-                log.debug("handlePersistenceAction runBoxedQueryTemplateOrBoxedExtractorTemplateAction remoteStoreNetworkClient received result", clientResult.status);
+                log.info(
+                  "handlePersistenceAction runBoxedQueryTemplateOrBoxedExtractorTemplateAction received from remoteStoreNetworkClient clientResult",
+                  clientResult
+                );
+                log.debug(
+                  "handlePersistenceAction runBoxedQueryTemplateOrBoxedExtractorTemplateAction remoteStoreNetworkClient received result",
+                  clientResult.status
+                );
                 return yield clientResult.data;
                 break;
               }
@@ -432,8 +441,14 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
               case 'runBoxedQueryAction':
               case 'runBoxedQueryTemplateAction':
               case 'runBoxedExtractorTemplateAction': {
-                log.info("handlePersistenceAction runBoxedExtractorAction received from remoteStoreNetworkClient clientResult", clientResult);
-                log.debug("handlePersistenceAction runBoxedExtractorAction remoteStoreNetworkClient received result", clientResult.status);
+                log.info(
+                  "handlePersistenceAction runBoxedExtractorAction received from remoteStoreNetworkClient clientResult",
+                  clientResult
+                );
+                log.debug(
+                  "handlePersistenceAction runBoxedExtractorAction remoteStoreNetworkClient received result",
+                  clientResult.status
+                );
                 return yield clientResult.data;
                 break;
               }

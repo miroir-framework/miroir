@@ -94,7 +94,6 @@ const persistenceStoreControllerManager = new PersistenceStoreControllerManager(
 
 const domainController = await setupMiroirDomainController(
   miroirContext, 
-  "server",
   {
     persistenceStoreAccessMode: "local",
     localPersistenceStoreControllerManager: persistenceStoreControllerManager

@@ -28,7 +28,7 @@ import { generateRestServiceResponse } from "./RestTools.js";
 import { cleanLevel } from "./constants.js";
 
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.js";
-import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface.js";
+import { defaultMiroirMetaModel } from "../1_core/Model.js";
 import { getDomainStateExtractorRunnerMap, getExtractorRunnerParamsForDomainState, getQueryRunnerParamsForDomainState } from "../2_domain/DomainStateQuerySelectors.js";
 import {
   getExtractorTemplateRunnerParamsForDomainState,
@@ -37,7 +37,6 @@ import {
 } from "../2_domain/DomainStateQueryTemplateSelector.js";
 import { extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList } from "../2_domain/QuerySelectors.js";
 import { extractWithBoxedExtractorTemplate, runQueryTemplateWithExtractorCombinerTransformer } from "../2_domain/QueryTemplateSelectors.js";
-import { defaultMiroirMetaModel } from "../1_core/Model.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RestServer");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -53,6 +52,19 @@ function wrapResults(instances: any[]): HttpResponseBodyFormat {
 }
 
 // ################################################################################################
+/**
+ * is it still used?
+ * TODO: use domainController to handle model and instance actions, not persistenceStoreControllerManager
+ * @param useDomainControllerToHandleModelAndInstanceActions 
+ * @param continuationFunction 
+ * @param response 
+ * @param persistenceStoreControllerManager 
+ * @param method 
+ * @param effectiveUrl 
+ * @param body 
+ * @param params 
+ * @returns 
+ */
 export async function restMethodGetHandler
 (
   useDomainControllerToHandleModelAndInstanceActions: boolean,
@@ -109,10 +121,20 @@ export async function restMethodGetHandler
         const getInstancesFunction = targetPersistenceStoreController.getInstances.bind(targetPersistenceStoreController);
         const results: ActionReturnType = await getInstancesFunction(section, parentUuid)
         if (results.status != "ok") {
-          throw new Error("restMethodGetHandler could not get instances for parentUuid: " + parentUuid + " error " + JSON.stringify(results.error));
+          throw new Error(
+            "restMethodGetHandler could not get instances for parentUuid: " +
+              parentUuid +
+              " error " +
+              JSON.stringify(results.error)
+          );
         }
         if (results.returnedDomainElement?.elementType != "entityInstanceCollection") {
-          throw new Error("restMethodGetHandler wrong returnType for instances of parentUuid: " + parentUuid + "returned" + results.returnedDomainElement);
+          throw new Error(
+            "restMethodGetHandler wrong returnType for instances of parentUuid: " +
+              parentUuid +
+              "returned" +
+              results.returnedDomainElement
+          );
         }
         
         log.info("restMethodGetHandler found results", results.returnedDomainElement.elementValue.instances)
@@ -134,6 +156,18 @@ export async function restMethodGetHandler
 }
 
 // ################################################################################################
+/**
+ * is it still used?
+ * @param useDomainControllerToHandleModelAndInstanceActions 
+ * @param continuationFunction 
+ * @param response 
+ * @param persistenceStoreControllerManager 
+ * @param method 
+ * @param effectiveUrl 
+ * @param body 
+ * @param params 
+ * @returns 
+ */
 export async function restMethodsPostPutDeleteHandler(
   useDomainControllerToHandleModelAndInstanceActions: boolean,
   continuationFunction: (response:any) =>(arg0: any) => any,
@@ -288,14 +322,7 @@ export async function queryActionHandler(
     "RestServer queryActionHandler runBoxedExtractorOrQueryAction",
     JSON.stringify(runBoxedExtractorOrQueryAction, undefined, 2)
   );
-  const deploymentUuid = runBoxedExtractorOrQueryAction.deploymentUuid
-  const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
-    deploymentUuid
-  );
   const domainController = persistenceStoreControllerManager.getServerDomainController();
-  if (!localPersistenceStoreController) {
-    throw new Error("RestServer could not find controller for deployment:" + deploymentUuid);
-  }
   if (useDomainControllerToHandleModelAndInstanceActions) {
     // we are on the server, the action has been received from remote client
     // switch (runBoxedQueryTemplateOrBoxedExtractorTemplateAction.deploymentUuid) {
@@ -308,7 +335,7 @@ export async function queryActionHandler(
   } else {
     // we're on the client, called by RestServerStub
     // uses the local cache, needs to have done a Model "rollback" action on the client
-    //, or a Model "remoteLocalCacheRollback" action on the server
+    // or a Model "remoteLocalCacheRollback" action on the server
     const domainState: DomainState = domainController.getDomainState();
     const extractorRunnerMapOnDomainState = getDomainStateExtractorRunnerMap();
     log.info("RestServer queryActionHandler runBoxedExtractorOrQueryAction=", JSON.stringify(runBoxedExtractorOrQueryAction, undefined, 2))
@@ -364,31 +391,23 @@ export async function queryTemplateActionHandler(
 
   /**
    * shall a query be executed based on the state of the localCache, or fetching state from a PersistenceStore?
-   * 
+   *
    * go through the DomainController? (would be better, wouldn't it?)
-   * 
+   *
    * when the implementation accesses the localCache, the implementation is based on selectors
-   * 
+   *
    * when the implementation uses the persistenceStore, it could:
    * - load the required data in the localCache (select) then execute in the localCache (filter, aggregation)
    * - execute on the persistent store (sql)
-   * 
+   *
    */
-  // const query: BoxedQueryTemplateWithExtractorCombinerTransformer = body.query as BoxedQueryTemplateWithExtractorCombinerTransformer ;
-  const runBoxedQueryTemplateOrBoxedExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction = body as RunBoxedQueryTemplateOrBoxedExtractorTemplateAction ;
+  const runBoxedQueryTemplateOrBoxedExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction =
+    body as RunBoxedQueryTemplateOrBoxedExtractorTemplateAction;
 
-  const deploymentUuid = runBoxedQueryTemplateOrBoxedExtractorTemplateAction.deploymentUuid
-  const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
-    deploymentUuid
-  );
   const domainController = persistenceStoreControllerManager.getServerDomainController();
-  if (!localPersistenceStoreController) {
-    throw new Error("RestServer could not find controller for deployment:" + deploymentUuid);
-  }
   if (useDomainControllerToHandleModelAndInstanceActions) {
     // we are on the server, the action has been received from remote client
     // switch (runBoxedQueryTemplateOrBoxedExtractorTemplateAction.deploymentUuid) {
-    // const result = await domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(runBoxedQueryTemplateOrBoxedExtractorTemplateAction)
     const result = await domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
       runBoxedQueryTemplateOrBoxedExtractorTemplateAction
     );
@@ -396,17 +415,18 @@ export async function queryTemplateActionHandler(
       "RestServer queryTemplateActionHandler used adminConfigurationDeploymentMiroir domainController result=",
       JSON.stringify(result, undefined, 2)
     );
-    return continuationFunction(response)(result)
+    return continuationFunction(response)(result);
   } else {
     // we're on the client, called by RestServerStub
-    // uses the local cache, needs to have done a Model "rollback" action on the client//, or a Model "remoteLocalCacheRollback" action on the server
+    // uses the local cache, needs to have done a Model "rollback" action on the client
+    // or a Model "remoteLocalCacheRollback" action on the server
     const domainState: DomainState = domainController.getDomainState();
     const extractorRunnerMapOnDomainState = getSelectorMapForTemplate();
     log.info(
       "RestServer queryTemplateActionHandler runBoxedQueryTemplateOrBoxedExtractorTemplateAction=",
       JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction, undefined, 2)
     );
-    log.info("RestServer queryTemplateActionHandler domainState=", JSON.stringify(domainState, undefined, 2))
+    log.info("RestServer queryTemplateActionHandler domainState=", JSON.stringify(domainState, undefined, 2));
     let queryResult: DomainElement = undefined as any as DomainElement;
 
     switch (runBoxedQueryTemplateOrBoxedExtractorTemplateAction.query.queryType) {
@@ -419,7 +439,6 @@ export async function queryTemplateActionHandler(
             extractorRunnerMapOnDomainState
           )
         );
-    
         break;
       }
       case "boxedQueryTemplateWithExtractorCombinerTransformer":
@@ -430,17 +449,17 @@ export async function queryTemplateActionHandler(
             extractorRunnerMapOnDomainState
           )
         );
-            
+
         break;
-    
+
       default:
         break;
     }
-    const result:ActionReturnType = {
+    const result: ActionReturnType = {
       status: "ok",
-      returnedDomainElement: queryResult
-    }
-    log.info("RestServer queryTemplateActionHandler used local cache result=", JSON.stringify(result, undefined,2))
+      returnedDomainElement: queryResult,
+    };
+    log.info("RestServer queryTemplateActionHandler used local cache result=", JSON.stringify(result, undefined, 2));
 
     return continuationFunction(response)(result);
   }

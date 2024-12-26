@@ -45,7 +45,6 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
   constructor(
     private adminStoreFactoryRegister: AdminStoreFactoryRegister,
     private storeSectionFactoryRegister: StoreSectionFactoryRegister,
-    // private localCache: LocalCacheInterface,
   ) {}
 
   // ################################################################################################
@@ -102,7 +101,8 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
       // TODO: domainController instance is also created in index.tsx and test-utils.tsx (the overall setup sequence). Isn't it redundant?
       // TODO: THIS IS OVERLOADED BY EACH CALL TO addPersistenceStoreController!
       this.domainController = new DomainController(
-        "server", // we are on the server, use localCache for queries upon receiving "remoteLocalCacheRollback" action
+        // "server", // we are on the server, use localCache for queries upon receiving "remoteLocalCacheRollback" action
+        "local", // we are on the server, use localCache for queries upon receiving "remoteLocalCacheRollback" action
         new MiroirContext(),
         this.localCache, // implements LocalCacheInterface
         this.persistenceStoreLocalOrRemote, // implements PersistenceStoreLocalOrRemoteInterface, instance of PersistenceReduxSaga

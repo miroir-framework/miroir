@@ -154,7 +154,7 @@ export class DomainController implements DomainControllerInterface {
   private callUtil: CallUtils;
 
   constructor(
-    private domainControllerIsDeployedOn: "server" | "client",
+    private persistenceStoreAccessMode: "local" | "remote",
     private miroirContext: MiroirContextInterface,
     private localCache: LocalCacheInterface,
     private persistenceStore: PersistenceStoreLocalOrRemoteInterface, // instance of PersistenceReduxSaga
@@ -292,7 +292,7 @@ export class DomainController implements DomainControllerInterface {
     try {
       switch (modelAction.actionName) {
         case "remoteLocalCacheRollback": {
-          if (this.domainControllerIsDeployedOn == "server") {
+          if (this.persistenceStoreAccessMode == "local") {
             // if the domain controller is deployed on the server, we refresh the local cache from the remote store
             log.info("handleModelAction reloading current configuration from local PersistenceStore!");
             await this.loadConfigurationFromPersistenceStore(deploymentUuid);
@@ -708,7 +708,7 @@ export class DomainController implements DomainControllerInterface {
       JSON.stringify((runBoxedExtractorOrQueryAction as any)["objects"], null, 2)
     );
 
-    if (this.domainControllerIsDeployedOn == "server") {
+    if (this.persistenceStoreAccessMode == "local") {
       /**
        * we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
        */
@@ -771,7 +771,7 @@ export class DomainController implements DomainControllerInterface {
       JSON.stringify((runBoxedQueryTemplateAction as any)["objects"], null, 2)
     );
 
-    if (this.domainControllerIsDeployedOn == "server") {
+    if (this.persistenceStoreAccessMode == "local") {
       /**
        * we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
        */
@@ -836,7 +836,7 @@ export class DomainController implements DomainControllerInterface {
       JSON.stringify((runBoxedExtractorTemplateAction as any)["objects"], null, 2)
     );
 
-    if (this.domainControllerIsDeployedOn == "server") {
+    if (this.persistenceStoreAccessMode == "remote") {
       /**
        * we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
        */
@@ -901,7 +901,7 @@ export class DomainController implements DomainControllerInterface {
       JSON.stringify((runBoxedQueryTemplateOrBoxedExtractorTemplateAction as any)["objects"], null, 2)
     );
 
-    if (this.domainControllerIsDeployedOn == "server") {
+    if (this.persistenceStoreAccessMode == "local") {
       /**
        * we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
        */
@@ -1526,7 +1526,7 @@ export class DomainController implements DomainControllerInterface {
           await resetAndInitApplicationDeployment(this, domainAction.deployments);
         } else {
           try {
-            if (this.domainControllerIsDeployedOn == "server") {
+            if (this.persistenceStoreAccessMode == "local") {
               await this.persistenceStore.handlePersistenceAction(
                 domainAction
               );

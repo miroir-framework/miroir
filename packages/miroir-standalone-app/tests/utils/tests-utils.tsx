@@ -389,7 +389,6 @@ export async function setupMiroirTest(
 
   const domainController = await setupMiroirDomainController(
     miroirContext, 
-    "client",
     {
       persistenceStoreAccessMode: "remote",
       localPersistenceStoreControllerManager: persistenceStoreControllerManager,

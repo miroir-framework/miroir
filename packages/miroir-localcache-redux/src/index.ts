@@ -61,7 +61,7 @@ export {
 export {
   PersistenceReduxSaga,
   PersistenceSagaGenReturnType,
-  PersistenceReduxSagaParams,
+  PersistenceStoreAccessParams,
 } from "./4_services/persistence/PersistenceReduxSaga.js";
 export { RestPersistenceClientAndRestClient } from "./4_services/persistence/RestPersistenceClientAndRestClient.js";
 export { setupMiroirDomainController } from "./sagaTools.js";

@@ -1,46 +1,40 @@
 import { createTheme, StyledEngineProvider, ThemeProvider } from "@mui/material";
 import { blue } from "@mui/material/colors";
+import 'material-icons/iconfont/material-icons.css';
 import { setupWorker } from 'msw/browser';
-import { StrictMode, useMemo } from "react";
+import { StrictMode } from "react";
 import { createRoot, Root } from "react-dom/client";
 import { Provider } from "react-redux";
 import {
   createBrowserRouter,
   RouterProvider
 } from "react-router-dom";
-import 'material-icons/iconfont/material-icons.css';
 
 import {
-  adminConfigurationDeploymentLibrary,
-  adminConfigurationDeploymentMiroir,
   ConfigurationService,
   defaultLevels,
-  DomainController,
-  DomainControllerInterface,
-  Endpoint,
   getLoggerName,
   LoggerInterface,
   MiroirConfigClient,
   MiroirContext,
   miroirCoreStartup,
   MiroirLoggerFactory,
-  PersistenceStoreLocalOrRemoteInterface,
+  PersistenceStoreControllerManager,
   RestClient,
   restServerDefaultHandlers,
   SpecificLoggerOptionsMap,
-  PersistenceStoreControllerManager,
-  StoreUnitConfiguration,
-  StoreOrBundleAction
+  StoreOrBundleAction,
+  StoreUnitConfiguration
 } from "miroir-core";
+import { RestPersistenceClientAndRestClient, setupMiroirDomainController } from "miroir-localcache-redux";
 import { createMswRestServer } from "miroir-server-msw-stub";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
-import { PersistenceReduxSaga, LocalCache, RestPersistenceClientAndRestClient, setupMiroirDomainController } from "miroir-localcache-redux";
 
 import { loglevelnext } from './loglevelnextImporter.js';
 import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage.js";
-import { HomePage } from "./miroir-fwk/4_view/routes/HomePage.js";
 import { MiroirContextReactProvider } from "./miroir-fwk/4_view/MiroirContextReactProvider.js";
 import { RootComponent } from "./miroir-fwk/4_view/components/RootComponent.js";
+import { HomePage } from "./miroir-fwk/4_view/routes/HomePage.js";
 import { ReportPage } from "./miroir-fwk/4_view/routes/ReportPage.js";
 import { miroirAppStartup } from "./startup.js";
 
@@ -53,8 +47,8 @@ import miroirConfigRealServerFilesystemTmp from "./assets/miroirConfig-realServe
 import miroirConfigRealServerIndexedDb from "./assets/miroirConfig-realServer-indexedDb.json" assert { type: "json" };
 import miroirConfigRealServerSql from "./assets/miroirConfig-realServer-sql.json" assert { type: "json" };
 import miroirConfig from "./assets/miroirConfig.json" assert { type: "json" };
-import { ToolsPage } from "./miroir-fwk/4_view/routes/Tools.js";
 import { ConceptPage } from "./miroir-fwk/4_view/routes/Concept.js";
+import { ToolsPage } from "./miroir-fwk/4_view/routes/Tools.js";
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
   // "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
@@ -279,7 +273,6 @@ async function startWebApp(root:Root) {
 
     const domainController = await setupMiroirDomainController(
       miroirContext, 
-      "client",
       {
         persistenceStoreAccessMode: "remote",
         localPersistenceStoreControllerManager: persistenceStoreControllerManager,
