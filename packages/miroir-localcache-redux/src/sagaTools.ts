@@ -3,21 +3,29 @@ import {
   implementPromiseAction
 } from "@teroneko/redux-saga-promise";
 
+import {
+  DomainController,
+  DomainControllerInterface,
+  Endpoint,
+  MiroirContext
+} from "miroir-core";
 import { call } from "typed-redux-saga";
-import PersistenceReduxSaga, { PersistenceStoreAccessParams, PersistenceSagaGenReturnType } from "./4_services/persistence/PersistenceReduxSaga.js";
-import { LocalCacheInterface, MiroirConfigClient, MiroirContext, RestPersistenceClientAndRestClientInterface, DomainControllerInterface, PersistenceStoreControllerManagerInterface, PersistenceStoreControllerManager, ConfigurationService, DomainController, Endpoint, PersistenceStoreLocalOrRemoteInterface } from "miroir-core";
 import { LocalCache } from "./4_services/LocalCache.js";
+import PersistenceReduxSaga, {
+  PersistenceSagaGenReturnType,
+  PersistenceStoreAccessParams,
+} from "./4_services/persistence/PersistenceReduxSaga.js";
 
 // ################################################################################################
 export function setupMiroirDomainController(
   miroirContext: MiroirContext,
   persistenceReduxSagaParams: PersistenceStoreAccessParams,
 ): DomainControllerInterface {
-  const localCache: LocalCache = new LocalCache();
-  
   const persistenceSaga: PersistenceReduxSaga = new PersistenceReduxSaga(
     persistenceReduxSagaParams
   );
+  
+  const localCache: LocalCache = new LocalCache(persistenceSaga);
   
   persistenceReduxSagaParams.localPersistenceStoreControllerManager.setLocalCache(localCache);
   persistenceSaga.run(localCache)

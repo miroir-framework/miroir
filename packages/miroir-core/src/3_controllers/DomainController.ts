@@ -1527,7 +1527,7 @@ export class DomainController implements DomainControllerInterface {
         } else {
           try {
             if (this.persistenceStoreAccessMode == "local") {
-              await this.persistenceStore.handlePersistenceAction(
+              await this.persistenceStore.handleLocalStoreOrBundleAction(
                 domainAction
               );
             } else {

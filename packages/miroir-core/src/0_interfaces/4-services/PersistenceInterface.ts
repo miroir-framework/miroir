@@ -5,7 +5,8 @@ import {
   EntityInstance,
   EntityInstanceCollection,
   PersistenceAction,
-  BoxedQueryWithExtractorCombinerTransformer
+  BoxedQueryWithExtractorCombinerTransformer,
+  StoreOrBundleAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 import { MError } from "../3_controllers/ErrorLogServiceInterface.js";
 import { LocalCacheInterface } from "./LocalCacheInterface.js";
@@ -91,6 +92,9 @@ export default {};
 export declare interface PersistenceStoreLocalOrRemoteInterface {
   handlePersistenceAction(
     action: PersistenceAction
+  ): Promise<ActionReturnType>;
+  handleLocalStoreOrBundleAction(
+    action: StoreOrBundleAction
   ): Promise<ActionReturnType>;
 }
 

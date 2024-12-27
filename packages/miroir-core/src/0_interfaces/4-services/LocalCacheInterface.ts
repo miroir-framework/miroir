@@ -9,6 +9,7 @@ import {
   MetaModel,
   ModelAction,
   ModelActionReplayableAction,
+  PersistenceAction,
   TransactionalInstanceAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 

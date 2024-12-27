@@ -5,7 +5,6 @@ import { configureStore } from '@reduxjs/toolkit';
 import {
   promiseMiddleware
 } from "@teroneko/redux-saga-promise";
-import sagaMiddleware from 'redux-saga';
 
 
 import {
@@ -38,6 +37,7 @@ import {
 import {
   createUndoRedoReducer,
 } from "./localCache/UndoRedoReducer.js";
+import PersistenceReduxSaga from './persistence/PersistenceReduxSaga.js';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"LocalCache");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -100,28 +100,25 @@ function exceptionToActionReturnType(f:()=>void): ActionReturnType {
 // ###############################################################################
 /**
  * Local store implementation using Redux.
+ * Facade to the Redux store, with undo/redo capabilities.
  * 
  */
-// export class LocalCache implements StoreInterface {
 export class LocalCache implements LocalCacheInterface {
-  public innerReduxStore: ReduxStoreWithUndoRedo;
+  private innerReduxStore: ReduxStoreWithUndoRedo;
   private staticReducers: ReduxReducerWithUndoRedoInterface;
-  public sagaMiddleware: any;
 
   // ###############################################################################
   constructor(
-    // public persistenceReduxSaga: PersistenceReduxSaga
+    private persistenceStore: PersistenceReduxSaga,
   ) {
     this.staticReducers = createUndoRedoReducer(LocalCacheSlice.reducer);
-
-    this.sagaMiddleware = (sagaMiddleware as any)();
 
     const ignoredActionsList = [
       "handlePersistenceAction",
       ...localCacheSliceGeneratedActionNames,
     ];
 
-    log.info("LocalCache ignoredActionsList", ignoredActionsList);
+    log.info("LocalCache constructor ignoredActionsList=", ignoredActionsList);
     this.innerReduxStore = configureStore({
       reducer: this.staticReducers as any, // TODO: determine real type! now it says state parameter can be ReduxStoreWithUndoRedo | undefined. How could it be undefined?
       middleware: (getDefaultMiddleware) => {
@@ -134,7 +131,7 @@ export class LocalCache implements LocalCacheInterface {
           }
         )
         .concat(promiseMiddleware)
-        .concat(this.sagaMiddleware)
+        .concat(this.persistenceStore.getSagaMiddleware())
       },
     });
   } //end constructor
@@ -156,7 +153,6 @@ export class LocalCache implements LocalCacheInterface {
 
   // ###############################################################################
   public currentInfo(): LocalCacheInfo {
-    // this.sagaMiddleware.run(this.rootSaga.bind(this));
     return {
       localCacheSize: roughSizeOfObject(this.innerReduxStore.getState().presentModelSnapshot),
     };
@@ -183,7 +179,7 @@ export class LocalCache implements LocalCacheInterface {
   // ###############################################################################
   handleLocalCacheAction(action: LocalCacheAction): ActionReturnType {
     log.info("LocalCache handleAction", action);
-    
+
     const result:ActionReturnType = exceptionToActionReturnType(() =>
       this.innerReduxStore.dispatch(
         LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleAction](
@@ -193,6 +189,14 @@ export class LocalCache implements LocalCacheInterface {
     );
     log.info("LocalCache handleAction result=", result);
     return result;
+  }
+
+  // ###############################################################################
+  // used only by PersistenceReduxSaga.handlePersistenceAction
+  async dispatch(
+    dispatchParam: any // TODO: give exact type!
+  ): Promise<ActionReturnType> {
+    return this.innerReduxStore.dispatch(dispatchParam);
   }
 
   // ###############################################################################
