@@ -11,7 +11,7 @@ import { PersistenceStoreLocalOrRemoteInterface } from "../../0_interfaces/4-ser
 export class CallUtils {
   constructor(
     private errorLogService: ErrorLogServiceInterface,
-    private localCache: LocalCacheInterface,
+    // private localCache: LocalCacheInterface,
     private persistenceStore: PersistenceStoreLocalOrRemoteInterface
   ) {}
 
@@ -30,7 +30,9 @@ export class CallUtils {
     },
     action: LocalCacheAction
   ): Promise<Record<string, any>> {
-    const result: ActionReturnType = this.localCache.handleLocalCacheAction(action);
+    // const result: ActionReturnType = this.localCache.handleLocalCacheAction(action);
+    const result: ActionReturnType = this.persistenceStore.handleLocalCacheAction(action);
+    
     console.log("callLocalCacheAction received result", result);
     if (result && result["status"] == "error") {
       //ensure the proper persistence of errors in the local storage, for it to be accessible by view components.
@@ -66,6 +68,12 @@ export class CallUtils {
     },
     action: PersistenceAction
   ): Promise<Record<string, any>> {
+    console.log("CallUtils callPersistenceAction called with",
+      // context,
+      // continuation, 
+      "action",
+      JSON.stringify(action, null, 2)
+    );
     const result: ActionReturnType = await this.persistenceStore.handlePersistenceAction(action);
     console.log("CallUtils callPersistenceAction received result", result);
     if (result["status"] == "error") {

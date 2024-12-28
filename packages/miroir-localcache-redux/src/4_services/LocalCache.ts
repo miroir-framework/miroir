@@ -109,7 +109,7 @@ export class LocalCache implements LocalCacheInterface {
 
   // ###############################################################################
   constructor(
-    private persistenceStore: PersistenceReduxSaga,
+    persistenceStore: PersistenceReduxSaga,
   ) {
     this.staticReducers = createUndoRedoReducer(LocalCacheSlice.reducer);
 
@@ -131,7 +131,7 @@ export class LocalCache implements LocalCacheInterface {
           }
         )
         .concat(promiseMiddleware)
-        .concat(this.persistenceStore.getSagaMiddleware())
+        .concat(persistenceStore.getSagaMiddleware())
       },
     });
   } //end constructor
@@ -193,7 +193,7 @@ export class LocalCache implements LocalCacheInterface {
 
   // ###############################################################################
   // used only by PersistenceReduxSaga.handlePersistenceAction
-  async dispatch(
+  async dispatchToReduxStore(
     dispatchParam: any // TODO: give exact type!
   ): Promise<ActionReturnType> {
     return this.innerReduxStore.dispatch(dispatchParam);

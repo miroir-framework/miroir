@@ -24,7 +24,8 @@ import {
   PersistenceStoreControllerInterface,
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   BoxedQueryWithExtractorCombinerTransformer,
-  StoreOrBundleAction
+  StoreOrBundleAction,
+  LocalCacheAction
 } from "miroir-core";
 import { handlePromiseActionForSaga } from 'src/sagaTools.js';
 import { packageName } from '../../constants.js';
@@ -123,13 +124,26 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
   }
 
   // ###############################################################################
+  handleLocalCacheAction(action: LocalCacheAction): ActionReturnType {
+    if (!this.localCache) {
+      throw new Error(
+        "PersistenceReduxSaga handleLocalCacheAction localCache not defined yet, please execute instance method PersistenceReduxSaga.run(LocalCache) before calling handleLocalCacheAction!"
+      );
+    }
+    const result: ActionReturnType = this.localCache.handleLocalCacheAction(action);
+    // log.info("PersistenceReduxSaga handleLocalCacheAction", action, "returned", result)
+    return result;
+    // return Promise.resolve(result);
+  }
+  
+  // ###############################################################################
   async handlePersistenceAction(action: PersistenceAction): Promise<ActionReturnType> {
     if (!this.localCache) {
       throw new Error(
         "PersistenceReduxSaga handlePersitentAction localCache not defined yet, please execute instance method PersistenceReduxSaga.run(LocalCache) before calling handlePersistenceAction!"
       );
     }
-    const result: ActionReturnType = await this.localCache.dispatch(
+    const result: ActionReturnType = await this.localCache.dispatchToReduxStore(
       this.persistenceActionReduxSaga.handlePersistenceAction.creator({action})
     );
     // log.info("LocalCache handleRemoteStoreModelAction", action, "returned", result)
@@ -137,19 +151,21 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
   }
   
   // ###############################################################################
-  async handleLocalStoreOrBundleAction(action: StoreOrBundleAction): Promise<ActionReturnType> {
+  async handleStoreOrBundleActionForLocalStore(action: StoreOrBundleAction): Promise<ActionReturnType> {
     if (!this.localCache) {
       throw new Error(
         "PersistenceReduxSaga handlePersitentAction localCache not defined yet, please execute instance method PersistenceReduxSaga.run(LocalCache) before calling handlePersistenceAction!"
       );
     }
-    const result: ActionReturnType = await this.localCache.dispatch(
-      this.persistenceActionReduxSaga.handleLocalStoreOrBundleAction.creator({action})
+    const result: ActionReturnType = await this.localCache.dispatchToReduxStore(
+      this.persistenceActionReduxSaga.handleStoreOrBundleActionForLocalStore.creator({action})
     );
-    // log.info("LocalCache handleLocalStoreOrBundleAction", action, "returned", result)
+    // log.info("LocalCache handleStoreOrBundleActionForLocalStore", action, "returned", result)
     return Promise.resolve(result);
   }
   
+  // ###############################################################################
+  // ###############################################################################
   // ###############################################################################
   async handlePersistenceActionForLocalCache(action: PersistenceAction): Promise<ActionReturnType> {
     if (!this.localCache) {
@@ -157,27 +173,28 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         "PersistenceReduxSaga handlePersistenceActionForLocalCache localCache not defined yet, please execute instance method PersistenceReduxSaga.run(LocalCache) before calling handlePersistenceAction!"
       );
     }
-    const result: ActionReturnType = await this.localCache.dispatch(
+    const result: ActionReturnType = await this.localCache.dispatchToReduxStore(
       this.persistenceActionReduxSaga.handlePersistenceActionForLocalCache.creator({action})
     );
     // log.info("LocalCache handlePersistenceActionForLocalCache", action, "returned", result)
     return Promise.resolve(result);
   }
   
-  // ###############################################################################
   async handlePersistenceActionForRemoteStore(action: PersistenceAction): Promise<ActionReturnType> {
     if (!this.localCache) {
       throw new Error(
         "PersistenceReduxSaga handlePersistenceActionForRemoteStore localCache not defined yet, please execute instance method PersistenceReduxSaga.run(LocalCache) before calling handlePersistenceAction!"
       );
     }
-    const result: ActionReturnType = await this.localCache.dispatch(
+    const result: ActionReturnType = await this.localCache.dispatchToReduxStore(
       this.persistenceActionReduxSaga.handlePersistenceActionForLocalCache.creator({action})
     );
     // log.info("LocalCache handlePersistenceActionForRemoteStore", action, "returned", result)
     return Promise.resolve(result);
   }
   
+  // ###############################################################################
+  // ###############################################################################
   // ###############################################################################
   public* innerHandlePersistenceActionForLocalCache(
     action: PersistenceAction,
@@ -204,7 +221,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       case "storeManagementAction":
       case "bundleAction": {
         throw new Error(
-          "PersistenceActionReduxSaga handlePersistenceAction should not be used to handle action " + JSON.stringify(action) + " please use handleLocalStoreOrBundleAction instead!"
+          "PersistenceActionReduxSaga handlePersistenceAction should not be used to handle action " + JSON.stringify(action) + " please use handleStoreOrBundleActionForLocalStore instead!"
         );
         // const result = yield* call(() =>
         //   storeActionOrBundleActionStoreRunner(
@@ -519,13 +536,13 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       >;
       generator: (a: any) => PersistenceSagaGenReturnType;
     },
-    handleLocalStoreOrBundleAction: {
-      name: "handleLocalStoreOrBundleAction";
+    handleStoreOrBundleActionForLocalStore: {
+      name: "handleStoreOrBundleActionForLocalStore";
       creator: SagaPromiseActionCreator<
         any,
         any,
-        "handleLocalStoreOrBundleAction",
-        ActionCreatorWithPayload<any, "handleLocalStoreOrBundleAction">
+        "handleStoreOrBundleActionForLocalStore",
+        ActionCreatorWithPayload<any, "handleStoreOrBundleActionForLocalStore">
       >;
       generator: (a: any) => PersistenceSagaGenReturnType;
     };
@@ -570,7 +587,6 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
               yield *
               this.innerHandlePersistenceActionForLocalCache(
                 action,
-                // this.params.localPersistenceStoreControllerManager,
                 localPersistenceStoreController
               )
             );
@@ -671,12 +687,12 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         }
       }.bind(this),
     },
-    handleLocalStoreOrBundleAction: {
-      name: "handleLocalStoreOrBundleAction",
+    handleStoreOrBundleActionForLocalStore: {
+      name: "handleStoreOrBundleActionForLocalStore",
       creator: promiseActionFactory<ActionReturnType>().create<
         { action: StoreOrBundleAction },
-        "handleLocalStoreOrBundleAction"
-      >("handleLocalStoreOrBundleAction"),
+        "handleStoreOrBundleActionForLocalStore"
+      >("handleStoreOrBundleActionForLocalStore"),
       generator: function* (
         this: PersistenceReduxSaga,
         p: PayloadAction<{ action: StoreOrBundleAction }>
@@ -691,7 +707,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
             )
           );
         } catch (e: any) {
-          log.error("handleLocalStoreOrBundleAction exception", e);
+          log.error("handleStoreOrBundleActionForLocalStore exception", e);
           const result: ActionReturnType = {
             status: "error",
             error: {

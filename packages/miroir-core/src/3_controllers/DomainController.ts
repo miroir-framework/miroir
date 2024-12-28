@@ -116,7 +116,6 @@ export async function resetAndInitApplicationDeployment(
         applicationVersion: selfApplicationVersionInitialMiroirVersion,
       },
     }, defaultMiroirMetaModel);
-    // }, localCache.currentModel(selfAdminConfigurationDeployment.uuid));
   }
   log.info(
     "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ resetAndInitApplicationDeployment APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
@@ -129,7 +128,6 @@ export async function resetAndInitApplicationDeployment(
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: d.uuid,
     }, defaultMiroirMetaModel);
-    // }, localCache.currentModel(d.uuid));
   }
   return Promise.resolve(ACTION_OK);
 }
@@ -153,16 +151,8 @@ export async function resetAndInitApplicationDeploymentNew(
 export class DomainController implements DomainControllerInterface {
   private callUtil: CallUtils;
 
-  constructor(
-    private persistenceStoreAccessMode: "local" | "remote",
-    private miroirContext: MiroirContextInterface,
-    private localCache: LocalCacheInterface,
-    private persistenceStore: PersistenceStoreLocalOrRemoteInterface, // instance of PersistenceReduxSaga
-    private endpoint: Endpoint
-  ) {
-    this.callUtil = new CallUtils(miroirContext.errorLogService, localCache, persistenceStore);
-  }
 
+  // ##############################################################################################
   // TODO: remove? only used in commented code in index.tsx
   getRemoteStore(): PersistenceStoreLocalOrRemoteInterface {
     return this.persistenceStore;
@@ -178,15 +168,15 @@ export class DomainController implements DomainControllerInterface {
   }
 
   // ###############################################################################
-  getDomainState():DomainState {
+  getDomainState(): DomainState {
     return this.localCache.getDomainState();
   }
-  
+
   // ###############################################################################
-  getLocalCache():LocalCacheInterface {
+  getLocalCache(): LocalCacheInterface {
     return this.localCache;
   }
-  
+
   // ##############################################################################################
   // converts a Domain transactional action into a set of local cache actions and remote store actions
   async handleDomainUndoRedoAction(
@@ -367,7 +357,6 @@ export class DomainController implements DomainControllerInterface {
               previousVersion: currentModel?.configuration[0]?.definition?.currentApplicationVersion,
               branch: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // TODO: this is wrong, application, application version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
               application: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // TODO: this is wrong, application, application version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
-              // modelStructureMigration: this.localCache.currentTransaction(),
             };
 
             log.debug(
@@ -713,7 +702,10 @@ export class DomainController implements DomainControllerInterface {
        * we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
        */
 
-      const result: ActionReturnType = await this.persistenceStore.handlePersistenceAction(runBoxedExtractorOrQueryAction);
+      // const result: ActionReturnType = await this.persistenceStore.handlePersistenceAction(runBoxedExtractorOrQueryAction);
+      const result: ActionReturnType = await this.persistenceStore.handlePersistenceActionForLocalCache(
+        runBoxedExtractorOrQueryAction
+      );
       log.info(
         "DomainController handleQueryActionOrBoxedExtractorActionForServerONLY runBoxedExtractorOrQueryAction callPersistenceAction Result=",
         result
@@ -776,13 +768,8 @@ export class DomainController implements DomainControllerInterface {
        * we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
        */
 
-      const result: ActionReturnType = await this.persistenceStore.handlePersistenceAction(
-        runBoxedQueryTemplateAction
-      );
-      log.info(
-        "DomainController handleQueryTemplateActionForServerONLY callPersistenceAction Result=",
-        result
-      );
+      const result: ActionReturnType = await this.persistenceStore.handlePersistenceAction(runBoxedQueryTemplateAction);
+      log.info("DomainController handleQueryTemplateActionForServerONLY callPersistenceAction Result=", result);
       return result;
     } else {
       // we're on the client, the query is sent to the server for execution.
@@ -804,10 +791,7 @@ export class DomainController implements DomainControllerInterface {
         }, // continuation
         runBoxedQueryTemplateAction
       );
-      log.info(
-        "handleQueryTemplateActionForServerONLY callPersistenceAction Result=",
-        result
-      );
+      log.info("handleQueryTemplateActionForServerONLY callPersistenceAction Result=", result);
       return result["dataEntitiesFromModelSection"];
     }
 
@@ -869,10 +853,7 @@ export class DomainController implements DomainControllerInterface {
         }, // continuation
         runBoxedExtractorTemplateAction
       );
-      log.info(
-        "handleBoxedExtractorTemplateActionForServerONLY callPersistenceAction Result=",
-        result
-      );
+      log.info("handleBoxedExtractorTemplateActionForServerONLY callPersistenceAction Result=", result);
       return result["dataEntitiesFromModelSection"];
     }
 
@@ -967,8 +948,16 @@ export class DomainController implements DomainControllerInterface {
     //   case "runTestCompositeAction": {
 
     if (testAction.beforeTestSetupAction) {
-      log.info("handleTestCompositeAction beforeAll", testAction.beforeTestSetupAction.actionLabel, testAction.beforeTestSetupAction);
-      const beforeAllResult = await this.handleCompositeAction(testAction.beforeTestSetupAction, localActionParams, currentModel);
+      log.info(
+        "handleTestCompositeAction beforeAll",
+        testAction.beforeTestSetupAction.actionLabel,
+        testAction.beforeTestSetupAction
+      );
+      const beforeAllResult = await this.handleCompositeAction(
+        testAction.beforeTestSetupAction,
+        localActionParams,
+        currentModel
+      );
       if (beforeAllResult?.status != "ok") {
         log.error("Error on beforeTestSetupAction", JSON.stringify(beforeAllResult, null, 2));
       }
@@ -978,16 +967,21 @@ export class DomainController implements DomainControllerInterface {
 
     const localCompositeAction: CompositeAction = {
       ...testAction.compositeAction,
-      definition: [
-        ...testAction.compositeAction.definition,
-        ...testAction.testCompositeActionAssertions
-      ],
-    }
+      definition: [...testAction.compositeAction.definition, ...testAction.testCompositeActionAssertions],
+    };
     const result = await this.handleCompositeAction(localCompositeAction, localActionParams, currentModel);
 
     if (testAction.afterTestCleanupAction) {
-      log.info("handleTestCompositeAction afterTestCleanupAction", testAction.afterTestCleanupAction.actionLabel, testAction.afterTestCleanupAction);
-      const beforeAllResult = await this.handleCompositeAction(testAction.afterTestCleanupAction, localActionParams, currentModel);
+      log.info(
+        "handleTestCompositeAction afterTestCleanupAction",
+        testAction.afterTestCleanupAction.actionLabel,
+        testAction.afterTestCleanupAction
+      );
+      const beforeAllResult = await this.handleCompositeAction(
+        testAction.afterTestCleanupAction,
+        localActionParams,
+        currentModel
+      );
       if (beforeAllResult?.status != "ok") {
         log.error("Error on afterTestCleanupAction", JSON.stringify(beforeAllResult, null, 2));
       }
@@ -997,7 +991,7 @@ export class DomainController implements DomainControllerInterface {
 
     return Promise.resolve(ACTION_OK);
   }
-  
+
   // ##############################################################################################
   async handleTestCompositeActionSuite(
     // testAction: TestAction_runTestCompositeAction,
@@ -1030,23 +1024,33 @@ export class DomainController implements DomainControllerInterface {
     }
 
     for (const testCompositeAction of Object.entries(testAction.testCompositeActions)) {
-
       // expect.getState().currentTestName = testCompositeAction[0];
-      log.info("ppppppppppppppppppppppppp handleTestCompositeActionSuite test", testCompositeAction[0],"beforeEach");
+      log.info("ppppppppppppppppppppppppp handleTestCompositeActionSuite test", testCompositeAction[0], "beforeEach");
 
       if (testAction.beforeEach) {
         log.info("handleTestCompositeActionSuite beforeEach", testAction.beforeEach.actionLabel, testAction.beforeAll);
-        const beforeAllResult = await this.handleCompositeAction(testAction.beforeEach, localActionParams, currentModel);
+        const beforeAllResult = await this.handleCompositeAction(
+          testAction.beforeEach,
+          localActionParams,
+          currentModel
+        );
         if (beforeAllResult?.status != "ok") {
-          log.error("handleTestCompositeActionSuite", testCompositeAction[0],"Error on beforeEach", JSON.stringify(beforeAllResult, null, 2));
+          log.error(
+            "handleTestCompositeActionSuite",
+            testCompositeAction[0],
+            "Error on beforeEach",
+            JSON.stringify(beforeAllResult, null, 2)
+          );
         }
       } else {
-        log.info("handleTestCompositeActionSuite", testCompositeAction[0],"no beforeEach!");
+        log.info("handleTestCompositeActionSuite", testCompositeAction[0], "no beforeEach!");
       }
 
       if (testCompositeAction[1].beforeTestSetupAction) {
         log.info(
-          "handleTestCompositeAction", testCompositeAction[0],"beforeAll",
+          "handleTestCompositeAction",
+          testCompositeAction[0],
+          "beforeAll",
           testCompositeAction[1].beforeTestSetupAction.actionLabel,
           testCompositeAction[1].beforeTestSetupAction
         );
@@ -1056,22 +1060,29 @@ export class DomainController implements DomainControllerInterface {
           currentModel
         );
         if (beforeTestResult?.status != "ok") {
-          log.error("handleTestCompositeAction", testCompositeAction[0],"Error on beforeTestSetupAction", JSON.stringify(beforeTestResult, null, 2));
+          log.error(
+            "handleTestCompositeAction",
+            testCompositeAction[0],
+            "Error on beforeTestSetupAction",
+            JSON.stringify(beforeTestResult, null, 2)
+          );
         }
       } else {
-        log.info("handleTestCompositeAction", testCompositeAction[0],"no beforeTestSetupAction!");
+        log.info("handleTestCompositeAction", testCompositeAction[0], "no beforeTestSetupAction!");
       }
 
       const localCompositeAction: CompositeAction = {
         ...testCompositeAction[1].compositeAction,
         definition: [
           ...testCompositeAction[1].compositeAction.definition,
-          ...testCompositeAction[1].testCompositeActionAssertions
+          ...testCompositeAction[1].testCompositeActionAssertions,
         ],
-      }
+      };
       if (testCompositeAction[1].afterTestCleanupAction) {
         log.info(
-          "handleTestCompositeAction", testCompositeAction[0],"afterTestCleanupAction",
+          "handleTestCompositeAction",
+          testCompositeAction[0],
+          "afterTestCleanupAction",
           testCompositeAction[1].afterTestCleanupAction.actionLabel,
           testCompositeAction[1].afterTestCleanupAction
         );
@@ -1081,21 +1092,37 @@ export class DomainController implements DomainControllerInterface {
           currentModel
         );
         if (afterTestResult?.status != "ok") {
-          log.error("handleTestCompositeAction", testCompositeAction[0],"Error on beforeTestSetupAction", JSON.stringify(afterTestResult, null, 2));
+          log.error(
+            "handleTestCompositeAction",
+            testCompositeAction[0],
+            "Error on beforeTestSetupAction",
+            JSON.stringify(afterTestResult, null, 2)
+          );
         }
       } else {
-        log.info("handleTestCompositeAction", testCompositeAction[0],"no afterTestSetupAction!");
+        log.info("handleTestCompositeAction", testCompositeAction[0], "no afterTestSetupAction!");
       }
 
       const result = await this.handleCompositeAction(localCompositeAction, localActionParams, currentModel);
       if (testAction.afterEach) {
-        log.info("handleTestCompositeActionSuite", testCompositeAction[0],"afterEach", testAction.afterEach.actionLabel, testAction.beforeAll);
+        log.info(
+          "handleTestCompositeActionSuite",
+          testCompositeAction[0],
+          "afterEach",
+          testAction.afterEach.actionLabel,
+          testAction.beforeAll
+        );
         const beforeAllResult = await this.handleCompositeAction(testAction.afterEach, localActionParams, currentModel);
         if (beforeAllResult?.status != "ok") {
-          log.error("handleTestCompositeActionSuite", testCompositeAction[0],"Error on afterEach", JSON.stringify(beforeAllResult, null, 2));
+          log.error(
+            "handleTestCompositeActionSuite",
+            testCompositeAction[0],
+            "Error on afterEach",
+            JSON.stringify(beforeAllResult, null, 2)
+          );
         }
       } else {
-        log.info("handleTestCompositeActionSuite", testCompositeAction[0],"no afterEach!");
+        log.info("handleTestCompositeActionSuite", testCompositeAction[0], "no afterEach!");
       }
     }
 
@@ -1111,7 +1138,7 @@ export class DomainController implements DomainControllerInterface {
 
     return Promise.resolve(ACTION_OK);
   }
-  
+
   // ##############################################################################################
   // TODO: not used, not tested!
   async handleCompositeAction(
@@ -1144,10 +1171,7 @@ export class DomainController implements DomainControllerInterface {
       );
       switch (currentAction.compositeActionType) {
         case "compositeAction": {
-          log.info(
-            "handleCompositeAction compositeAction action to handle",
-            JSON.stringify(currentAction, null, 2)
-          );
+          log.info("handleCompositeAction compositeAction action to handle", JSON.stringify(currentAction, null, 2));
           actionResult = await this.handleCompositeAction(
             currentAction.compositeAction,
             actionParamValues,
@@ -1174,9 +1198,7 @@ export class DomainController implements DomainControllerInterface {
             actionParamValues
           );
 
-          actionResult = await this.handleQueryTemplateActionForServerONLY(
-            currentAction.queryTemplate
-          );
+          actionResult = await this.handleQueryTemplateActionForServerONLY(currentAction.queryTemplate);
           if (actionResult?.status != "ok") {
             log.error(
               "Error on runBoxedQueryTemplateAction with nameGivenToResult",
@@ -1203,9 +1225,7 @@ export class DomainController implements DomainControllerInterface {
             actionParamValues
           );
 
-          actionResult = await this.handleBoxedExtractorTemplateActionForServerONLY(
-            currentAction.queryTemplate
-          );
+          actionResult = await this.handleBoxedExtractorTemplateActionForServerONLY(currentAction.queryTemplate);
           if (actionResult?.status != "ok") {
             log.error(
               "Error on runBoxedQueryTemplateAction with nameGivenToResult",
@@ -1236,9 +1256,7 @@ export class DomainController implements DomainControllerInterface {
             actionParamValues
           );
 
-          actionResult = await this.handleQueryActionOrBoxedExtractorActionForServerONLY(
-            currentAction.query
-          );
+          actionResult = await this.handleQueryActionOrBoxedExtractorActionForServerONLY(currentAction.query);
           if (actionResult?.status != "ok") {
             log.error(
               "Error on runBoxedExtractorOrQueryAction with nameGivenToResult",
@@ -1257,10 +1275,10 @@ export class DomainController implements DomainControllerInterface {
           }
           break;
         }
-        case 'runBoxedQueryTemplateOrBoxedExtractorTemplateAction': {
+        case "runBoxedQueryTemplateOrBoxedExtractorTemplateAction": {
           throw new Error("handleCompositeAction can not handle query actions: " + JSON.stringify(currentAction));
         }
-        case 'runTestCompositeActionAssertion': {
+        case "runTestCompositeActionAssertion": {
           if (!ConfigurationService.testImplementation) {
             throw new Error(
               "ConfigurationService.testImplementation is not set, please inject a test implementation using ConfigurationService.registerTestImplementation on startup if you want to run tests at runtime."
@@ -1281,7 +1299,7 @@ export class DomainController implements DomainControllerInterface {
             prePreValueToTest,
             currentAction.testAssertion.definition.resultAccessPath ?? []
           );
-  
+
           const valueToTest = Array.isArray(preValueToTest)
             ? ignorePostgresExtraAttributesOnList(
                 preValueToTest,
@@ -1291,13 +1309,13 @@ export class DomainController implements DomainControllerInterface {
                 preValueToTest,
                 currentAction.testAssertion.definition.ignoreAttributes ?? []
               );
-          ;
           log.info(
             "handleCompositeAction runTestCompositeActionAssertion to handle",
             JSON.stringify(currentAction.testAssertion, null, 2),
             // "preValueToTest typeof", typeof preValueToTest,
             // "preValueToTest instanceof Array", preValueToTest instanceof Array,
-            "preValueToTest is array", Array.isArray(preValueToTest),
+            "preValueToTest is array",
+            Array.isArray(preValueToTest),
             // "preValueToTest object proto is array", JSON.stringify(Object.prototype.toString.call(preValueToTest)),
             // "preValueToTest constuctor is array", preValueToTest.constructor === Array,
             "preValueToTest",
@@ -1317,8 +1335,12 @@ export class DomainController implements DomainControllerInterface {
         }
       }
       if (actionResult?.status != "ok") {
-        log.error("handleCompositeAction error", JSON.stringify(actionResult, null, 2), "on action", JSON.stringify(currentAction, null, 2));
-        
+        log.error(
+          "handleCompositeAction error",
+          JSON.stringify(actionResult, null, 2),
+          "on action",
+          JSON.stringify(currentAction, null, 2)
+        );
       }
     }
     return Promise.resolve(ACTION_OK);
@@ -1420,9 +1442,7 @@ export class DomainController implements DomainControllerInterface {
             actionParamValues
           );
 
-          const actionResult = await this.handleQueryTemplateActionForServerONLY(
-            currentAction.queryTemplate
-          );
+          const actionResult = await this.handleQueryTemplateActionForServerONLY(currentAction.queryTemplate);
           if (actionResult?.status != "ok") {
             log.error("Error on query", JSON.stringify(actionResult, null, 2));
           } else {
@@ -1448,9 +1468,7 @@ export class DomainController implements DomainControllerInterface {
             actionParamValues
           );
 
-          const actionResult = await this.handleBoxedExtractorTemplateActionForServerONLY(
-            currentAction.queryTemplate
-          );
+          const actionResult = await this.handleBoxedExtractorTemplateActionForServerONLY(currentAction.queryTemplate);
           if (actionResult?.status != "ok") {
             log.error(
               "Error on runBoxedExtractorTemplateAction with nameGivenToResult",
@@ -1486,6 +1504,92 @@ export class DomainController implements DomainControllerInterface {
     return Promise.resolve(ACTION_OK);
   }
 
+  // ##############################################################################################
+  private actionHandler: ActionHandler;
+
+  getActionHandler(
+    domainAction: DomainAction,
+    actionHandlerKind: ActionHandlerKind,
+    currentModel?: MetaModel
+  ): AsyncHandlerFunction {
+    const levels = {
+      1: {
+        actionType: domainAction.actionType,
+        actionName: (domainAction as any).actionName,
+        actionHandlerKind: actionHandlerKind,
+      },
+      2: {
+        actionType: domainAction.actionType,
+        actionName: (domainAction as any).actionName,
+        actionHandlerKind: "*",
+      },
+      3: {
+        actionType: domainAction.actionType,
+        actionName: "*",
+        actionHandlerKind: actionHandlerKind,
+      },
+      4: {
+        actionType: domainAction.actionType,
+        actionName: "*",
+        actionHandlerKind: "*",
+      }
+    }
+    for (const l of Object.entries(levels)) {
+      if (
+        this.actionHandler[l[1].actionType] &&
+        this.actionHandler[l[1].actionType][l[1].actionName] &&
+        (this.actionHandler[l[1].actionType][l[1].actionName] as any)[l[1].actionHandlerKind]
+      ) {
+        const levelhandler = (this.actionHandler[l[1].actionType][l[1].actionName] as any)[l[1].actionHandlerKind];
+        log.info(
+          "DomainController getActionHandler using level", l[0], "for actionType=" +
+            domainAction.actionType +
+            " actionName=" +
+            (domainAction as any).actionName +
+            " actionHandlerKind=" +
+            actionHandlerKind
+        );
+        return levelhandler;
+      }
+    }
+
+    throw new Error(
+      "DomainController getActionHandler could not find handler for actionType=" + domainAction.actionType + " actionName=" + (domainAction as any).actionName
+    );
+  }
+
+  // ##############################################################################################
+  callActionHandler(
+    domainAction: DomainAction,
+    actionHandlerKind: ActionHandlerKind,
+    currentModel: MetaModel | undefined,
+    ...actionHandlerArgs: any[]
+  ): Promise<ActionReturnType> {
+    const actionHandler = this.getActionHandler(domainAction, actionHandlerKind, currentModel);
+    return actionHandler(...actionHandlerArgs);
+  }
+
+  // ##############################################################################################
+  constructor(
+    private persistenceStoreAccessMode: "local" | "remote",
+    private miroirContext: MiroirContextInterface,
+    private localCache: LocalCacheInterface,
+    private persistenceStore: PersistenceStoreLocalOrRemoteInterface, // instance of PersistenceReduxSaga
+    private endpoint: Endpoint
+  ) {
+    this.callUtil = new CallUtils(miroirContext.errorLogService, persistenceStore);
+    this.actionHandler = {
+      storeManagementAction: {
+        resetAndInitApplicationDeployment: { "*": resetAndInitApplicationDeployment },
+        "*": {
+          local: this.persistenceStore.handleStoreOrBundleActionForLocalStore.bind(this.persistenceStore),
+          remote: this.callUtil.callRemotePersistenceAction.bind(this.callUtil),
+        },
+      },
+    };
+  
+  }
+  
   // ##############################################################################################
   async handleAction(domainAction: DomainAction, currentModel?: MetaModel): Promise<ActionVoidReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
@@ -1523,19 +1627,28 @@ export class DomainController implements DomainControllerInterface {
       }
       case "storeManagementAction": {
         if (domainAction.actionName == "resetAndInitApplicationDeployment") {
-          await resetAndInitApplicationDeployment(this, domainAction.deployments);
+          await this.callActionHandler(domainAction, "*", currentModel, this, domainAction.deployments);
         } else {
           try {
-            if (this.persistenceStoreAccessMode == "local") {
-              await this.persistenceStore.handleLocalStoreOrBundleAction(
-                domainAction
-              );
-            } else {
-              await this.callUtil.callRemotePersistenceAction(
-                {}, // context
-                {}, // context update
-                domainAction
-              );
+            switch (this.persistenceStoreAccessMode) {
+              case "local": {
+                await this.callActionHandler(domainAction, "local", currentModel, domainAction);
+                break;
+              }
+              case "remote": {
+                await this.callActionHandler(domainAction, "remote", currentModel, {}, {}, domainAction);
+                break;
+              }
+              default: {
+                log.error(
+                  "DomainController handleAction storeManagementAction unknown persistenceStoreAccessMode",
+                  this.persistenceStoreAccessMode
+                );
+                throw new Error(
+                  "DomainController handleAction storeManagementAction unknown persistenceStoreAccessMode " + this.persistenceStoreAccessMode
+                );
+                break;
+              }
             }
           } catch (error) {
             log.warn(
@@ -1609,4 +1722,18 @@ export class DomainController implements DomainControllerInterface {
     }
     return Promise.resolve(ACTION_OK);
   }
-}
+} // class DomainController
+
+type AsyncHandlerFunction = (...props: any[]) => Promise<ActionVoidReturnType>
+type AsyncHandlerClosure = () => Promise<ActionVoidReturnType>
+
+/**
+ * actionType -> actionName -> handler
+ * in the end, shall be:
+ * actionType -> actionName -> {compositeAction, compositeActionParams}
+ * also, the allowed actionNames shall be different for each actionType, depending on the actionType
+ */
+// export type ActionHandler= Record<string, Record<string, (domainAction: DomainAction, currentModel?: MetaModel) => Promise<ActionVoidReturnType>>>;
+export type ActionHandlerKind = "local" | "remote" | "*";
+export type ActionHandler = Record<string, Record<string, { [K in ActionHandlerKind]?: any }>>;
+
