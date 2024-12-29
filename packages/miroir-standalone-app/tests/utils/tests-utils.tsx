@@ -201,12 +201,13 @@ export function createDeploymentCompositeAction(
     throw new Error(`Configuration for deployment ${deploymentUuid} not found in ${JSON.stringify(miroirConfig, null, 2)}`);
   };
 
+  log.info("createDeploymentCompositeAction deploymentConfiguration", deploymentUuid, deploymentConfiguration);
   return {
     actionType: "compositeAction",
     actionLabel: "beforeAll",
     actionName: "sequence",
     definition: [
-      // TODO: openStore first!jy
+      // TODO: openStore first!
       {
         compositeActionType: "domainAction",
         compositeActionStepLabel: "openStore",

@@ -147,6 +147,12 @@ export async function storeActionOrBundleActionStoreRunner(
           },
         };
       }
+      log.info(
+        "storeActionOrBundleActionStoreRunner createStore for deployment",
+        action.deploymentUuid,
+        "DONE!",
+        persistenceStoreControllerManager.getPersistenceStoreControllers()
+      );
       break;
     }
     case "deleteStore": {

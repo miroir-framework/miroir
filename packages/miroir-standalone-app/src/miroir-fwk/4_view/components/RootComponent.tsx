@@ -170,6 +170,10 @@ export const RootComponent = (props: RootComponentProps) => {
   const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   const miroirConfig = context.miroirContext.getMiroirConfig();
 
+  if (miroirConfig && miroirConfig.miroirConfigType != "client") {
+    throw new Error("RootComponent: miroirConfig.miroirConfigType != 'client' " + JSON.stringify(miroirConfig));
+  }
+
   // ##############################################################################################
   const displayedDeploymentUuid = context.deploymentUuid;
   const setDisplayedDeploymentUuid = context.setDeploymentUuid;

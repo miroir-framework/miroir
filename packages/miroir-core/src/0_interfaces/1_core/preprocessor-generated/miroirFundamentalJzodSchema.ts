@@ -5849,6 +5849,10 @@ export const miroirFundamentalJzodSchema = {
       "miroirConfigClient": {
         "type": "object",
         "definition": {
+          "miroirConfigType": {
+            "type": "literal",
+            "definition": "client"
+          },
           "client": {
             "type": "union",
             "definition": [
@@ -5873,6 +5877,10 @@ export const miroirFundamentalJzodSchema = {
       "miroirConfigServer": {
         "type": "object",
         "definition": {
+          "miroirConfigType": {
+            "type": "literal",
+            "definition": "server"
+          },
           "server": {
             "type": "object",
             "definition": {

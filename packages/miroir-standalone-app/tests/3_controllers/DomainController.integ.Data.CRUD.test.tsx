@@ -120,6 +120,7 @@ export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInst
 beforeAll(
   async () => {
     // Establish requests interception layer before all tests.
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll");
     miroirAppStartup();
     miroirCoreStartup();
     miroirFileSystemStoreSectionStartup();
@@ -144,6 +145,7 @@ beforeAll(
     if (createDeploymentResult.status !== "ok") {
       throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
     }
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll DONE");
 
     return Promise.resolve();
   }
@@ -178,9 +180,9 @@ const globalTimeOut = 10000;
 // const globalTimeOut = 10^9;
 
 const testActions: Record<string, TestActionParams> = {
-  "DomainController.Data.CRUD.integ": {
+  "DomainController.integ.Data.CRUD": {
     testActionType: "testCompositeActionSuite",
-    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
     testCompositeAction: {
       testType: "testCompositeActionSuite",
       beforeAll: createDeploymentCompositeAction(miroirConfig, adminConfigurationDeploymentLibrary.uuid),
@@ -910,6 +912,7 @@ const testActions: Record<string, TestActionParams> = {
                     },
                   },
                   expectedValue: { count: 5 },
+                  // expectedValue: { count: 6 },
                 },
               },
             },

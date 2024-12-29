@@ -7,9 +7,8 @@ import {
   ActionReturnType,
   LocalCacheAction,
   MetaModel,
-  ModelAction,
   ModelActionReplayableAction,
-  PersistenceAction,
+  RunBoxedExtractorOrQueryAction,
   TransactionalInstanceAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
@@ -33,4 +32,5 @@ export declare interface LocalCacheInterface
 
   // ##############################################################################################
   handleLocalCacheAction(action:LocalCacheAction):ActionReturnType;
+  runBoxedExtractorOrQueryAction(action:RunBoxedExtractorOrQueryAction):ActionReturnType;
 }

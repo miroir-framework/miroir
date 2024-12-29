@@ -10,8 +10,13 @@ import {
 import {
   ACTION_OK,
   ActionReturnType,
+  DomainElement,
   DomainState,
+  extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
+  getDomainStateExtractorRunnerMap,
+  getExtractorRunnerParamsForDomainState,
   getLoggerName,
+  getQueryRunnerParamsForDomainState,
   LocalCacheAction,
   LocalCacheInfo,
   LocalCacheInterface,
@@ -19,6 +24,8 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   ModelActionReplayableAction,
+  runBoxedExtractorOrQueryAction,
+  RunBoxedExtractorOrQueryAction,
   TransactionalInstanceAction
 } from "miroir-core";
 import { packageName } from '../constants.js';
@@ -190,6 +197,46 @@ export class LocalCache implements LocalCacheInterface {
     log.info("LocalCache handleAction result=", result);
     return result;
   }
+
+  // ###############################################################################
+  runBoxedExtractorOrQueryAction(action:RunBoxedExtractorOrQueryAction):ActionReturnType {
+    // const domainState: DomainState = domainController.getDomainState();
+    const domainState: DomainState = this.getDomainState();
+
+     const extractorRunnerMapOnDomainState = getDomainStateExtractorRunnerMap();
+     log.info("LocalCache action=", JSON.stringify(action, undefined, 2))
+     // log.info("RestServer queryActionHandler domainState=", JSON.stringify(domainState, undefined, 2))
+     let queryResult: DomainElement = undefined as any as DomainElement;
+     switch (action.query.queryType) {
+       case "boxedExtractorOrCombinerReturningObject":
+       case "boxedExtractorOrCombinerReturningObjectList": {
+         queryResult = extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
+           domainState,
+           getExtractorRunnerParamsForDomainState(action.query, extractorRunnerMapOnDomainState)
+         );
+         break;
+       }
+       case "boxedQueryWithExtractorCombinerTransformer": {
+         queryResult = extractorRunnerMapOnDomainState.runQuery(
+           domainState,
+           getQueryRunnerParamsForDomainState(action.query, extractorRunnerMapOnDomainState)
+         );
+         break;
+       }
+       default:
+         break;
+     }
+     const result:ActionReturnType = {
+       status: "ok",
+       returnedDomainElement: queryResult
+     }
+     log.info("RestServer queryActionHandler used local cache result=", JSON.stringify(result, undefined,2))
+  
+     return result;
+    //  return continuationFunction(response)(result);
+     
+  }
+
 
   // ###############################################################################
   // used only by PersistenceReduxSaga.handlePersistenceAction

@@ -34,7 +34,7 @@ export const generateRestServiceResponse = async (
   method: (...params: any)=>Promise<HttpResponseBodyFormat>, // async method, returns promise
   returnJsonResultContinuation:(a:any)=>any,
 ) => {
-  log.info('generateRestServiceResponse called with params',params);
+  // log.info('generateRestServiceResponse called with params',params);
   
   let localData: HttpResponseBodyFormat = {instances:[]};
   let paramVals: string[] = [];
@@ -61,7 +61,7 @@ export const generateRestServiceResponse = async (
     // localData = instances;
   }
 
-  log.trace("generateRestServiceResponse received", localData);
+  // log.info("generateRestServiceResponse received", localData);
   // log.info("##################################### end: ",HttpMethod, url);
   return localData?returnJsonResultContinuation(localData):[];
 }

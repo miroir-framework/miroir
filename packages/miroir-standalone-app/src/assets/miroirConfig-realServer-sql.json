@@ -1,5 +1,6 @@
 {
-"client": {
+  "miroirConfigType": "client",
+  "client": {
     "emulateServer": false,
     "serverConfig":{
       "rootApiUrl":"http://localhost:3080",

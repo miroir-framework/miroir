@@ -5,10 +5,9 @@ import {
   LoggerInterface,
   MiroirConfigClient,
   MiroirLoggerFactory,
-  RestServiceHandler,
   PersistenceStoreControllerManagerInterface,
-  getLoggerName,
-  LocalCacheInterface
+  RestServiceHandler,
+  getLoggerName
 } from "miroir-core";
 import { cleanLevel, packageName } from "./constants.js";
 
@@ -61,6 +60,7 @@ export class RestServerStub {
           try {
             const result = await restService.handler(
               false, // useDomainControllerToHandleModelAndInstanceActions: since we're emulating the REST server, we have direct access the persistenceStore, do not use the domainController
+              // true, // useDomainControllerToHandleModelAndInstanceActions: the domainController knows whether it has access to the persistenceStore or not, and will use the appropriate access method, depending on the query. 
               (response: any) => (localData: any) => HttpResponse.json(localData),
               undefined /* response object provided by Express Rest interface, which is not needed by MSW, that uses class HttpResponse*/,
               persistenceStoreControllerManager,

@@ -98,6 +98,7 @@ export declare interface PersistenceStoreLocalOrRemoteInterface {
     action: StoreOrBundleAction
   ): Promise<ActionReturnType>;
   handlePersistenceActionForLocalCache(action: PersistenceAction): Promise<ActionReturnType>;
+  handlePersistenceActionForLocalPersistenceStore(action: PersistenceAction): Promise<ActionReturnType>;
   handlePersistenceActionForRemoteStore(action: PersistenceAction): Promise<ActionReturnType>;
   handleLocalCacheAction(action: LocalCacheAction): ActionReturnType;
 }

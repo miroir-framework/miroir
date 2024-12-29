@@ -1,5 +1,6 @@
 
 {
+  "miroirConfigType": "client",
   "client": {
     "emulateServer": false,
     "serverConfig":{

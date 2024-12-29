@@ -544,6 +544,22 @@ export {
   // getReportSectionTargetEntityUuid,
 } from './1_core/Report.js';
 export {
+  extractEntityJzodSchemaFromDeploymentEntityState,
+  selectEntityInstanceFromDeploymentEntityState,
+  selectEntityInstanceUuidIndexFromDeploymentEntityState,
+  selectEntityInstanceListFromDeploymentEntityState,
+  getDeploymentEntityStateJzodSchemaSelectorMap,
+  getDeploymentEntityStateSelectorMap,
+  GetQueryRunnerParamsForDeploymentEntityState,
+  getQueryRunnerParamsForDeploymentEntityState,
+  runQueryFromDeploymentEntityState,
+} from './2_domain/DeploymentEntityStateQuerySelectors.js';
+export {
+  getDeploymentEntityStateJzodSchemaSelectorTemplateMap,
+  getDeploymentEntityStateSelectorTemplateMap,
+  getExtractorTemplateRunnerParamsForDeploymentEntityState,
+} from './2_domain/DeploymentEntityStateQueryTemplateSelectors.js';
+export {
   selectEntityInstances,
   selectEntityInstancesFromJzodAttribute,
   selectEntityUuidFromJzodAttribute,
@@ -557,6 +573,9 @@ export {
   getDomainStateJzodSchemaExtractorRunnerMap,
   getDomainStateExtractorRunnerMap,
   getExtractorRunnerParamsForDomainState,
+  GetQueryRunnerParamsForDomainState,
+  getQueryRunnerParamsForDomainState,
+  GetExtractorRunnerParamsForDomainState,
   extractWithExtractorOrCombinerReturningObjectOrObjectListFromDomainState,
   innerSelectElementFromQueryAndDomainState,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
@@ -577,22 +596,6 @@ export {
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
   selectEntityJzodSchemaFromDomainStateNewForTemplate
 } from './2_domain/DomainStateQueryTemplateSelector.js';
-export {
-  extractEntityJzodSchemaFromDeploymentEntityState,
-  selectEntityInstanceFromDeploymentEntityState,
-  selectEntityInstanceUuidIndexFromDeploymentEntityState,
-  selectEntityInstanceListFromDeploymentEntityState,
-  getDeploymentEntityStateJzodSchemaSelectorMap,
-  getDeploymentEntityStateSelectorMap,
-  GetQueryRunnerParamsForDeploymentEntityState,
-  getQueryRunnerParamsForDeploymentEntityState,
-  runQueryFromDeploymentEntityState,
-} from './2_domain/DeploymentEntityStateQuerySelectors.js';
-export {
-  getDeploymentEntityStateJzodSchemaSelectorTemplateMap,
-  getDeploymentEntityStateSelectorTemplateMap,
-  getExtractorTemplateRunnerParamsForDeploymentEntityState,
-} from './2_domain/DeploymentEntityStateQueryTemplateSelectors.js';
 export {
   ExtractorTemplateRunnerInMemory
 } from './2_domain/ExtractorTemplateRunnerInMemory.js';

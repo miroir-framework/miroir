@@ -12,7 +12,7 @@ export class CallUtils {
   constructor(
     private errorLogService: ErrorLogServiceInterface,
     // private localCache: LocalCacheInterface,
-    private persistenceStore: PersistenceStoreLocalOrRemoteInterface
+    private persistenceStoreLocalOrRemote: PersistenceStoreLocalOrRemoteInterface
   ) {}
 
   // ######################################################################################
@@ -30,8 +30,8 @@ export class CallUtils {
     },
     action: LocalCacheAction
   ): Promise<Record<string, any>> {
-    // const result: ActionReturnType = this.localCache.handleLocalCacheAction(action);
-    const result: ActionReturnType = this.persistenceStore.handleLocalCacheAction(action);
+    // asynchronous although it is not necessary, only to keep the same signature as callRemotePersistenceAction
+    const result: ActionReturnType = this.persistenceStoreLocalOrRemote.handleLocalCacheAction(action);
     
     console.log("callLocalCacheAction received result", result);
     if (result && result["status"] == "error") {
@@ -68,13 +68,21 @@ export class CallUtils {
     },
     action: PersistenceAction
   ): Promise<Record<string, any>> {
-    console.log("CallUtils callPersistenceAction called with",
-      // context,
-      // continuation, 
-      "action",
-      JSON.stringify(action, null, 2)
-    );
-    const result: ActionReturnType = await this.persistenceStore.handlePersistenceAction(action);
+    if (action.actionType !== "modelAction" || action.actionName !== "initModel") {
+      console.log("CallUtils callPersistenceAction called with",
+        // context,
+        // continuation, 
+        "action",
+        JSON.stringify(action, null, 2)
+      );
+    } else {
+      console.log("CallUtils callPersistenceAction called with",
+        "action",
+        action.actionType,
+        action.actionName
+      );
+    }
+    const result: ActionReturnType = await this.persistenceStoreLocalOrRemote.handlePersistenceAction(action);
     console.log("CallUtils callPersistenceAction received result", result);
     if (result["status"] == "error") {
       //ensure the proper persistence of errors in the local storage, for it to be accessible by view components.

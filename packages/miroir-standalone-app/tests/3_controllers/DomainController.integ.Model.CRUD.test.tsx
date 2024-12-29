@@ -122,6 +122,7 @@ export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInst
 beforeAll(
   async () => {
     // Establish requests interception layer before all tests.
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll");
     miroirAppStartup();
     miroirCoreStartup();
     miroirFileSystemStoreSectionStartup();
@@ -145,6 +146,7 @@ beforeAll(
     if (createDeploymentResult.status !== "ok") {
       throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
     }
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll DONE");
 
     return Promise.resolve();
   }
@@ -180,7 +182,7 @@ const globalTimeOut = 10000;
 const testActions: Record<string, TestActionParams> = {
   "DomainController.Model.CRUD.integ": {
     testActionType: "testCompositeActionSuite",
-    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
     testCompositeAction: {
       testType: "testCompositeActionSuite",
       beforeAll: createDeploymentCompositeAction(miroirConfig, adminConfigurationDeploymentLibrary.uuid),
@@ -518,6 +520,11 @@ const testActions: Record<string, TestActionParams> = {
             },
           ],
         },
+
+
+
+
+
         // TODO: test intermediate state, after addition of Author Entity but before commit or rollback
         // Entity count shall be 1 when query is performed on local cache
         // Entity count shall be 0 when query is performed on remote server
