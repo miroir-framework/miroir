@@ -74,6 +74,11 @@
               "type": "uuid",
               "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
             },
+            "queryExecutionStrategy": {
+              "type": "enum",
+              "optional": true,
+              "definition": ["localCacheOrFail", "localCacheOrFetch", "ServerCache", "storage"]
+            },
             "query": {
               "type": "union",
               "definition": [

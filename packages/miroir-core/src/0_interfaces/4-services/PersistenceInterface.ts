@@ -9,6 +9,7 @@ import {
   StoreOrBundleAction,
   LocalCacheAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
+import { DomainControllerInterface } from "../2_domain/DomainControllerInterface.js";
 import { MError } from "../3_controllers/ErrorLogServiceInterface.js";
 import { LocalCacheInterface } from "./LocalCacheInterface.js";
 import { PersistenceStoreControllerManagerInterface } from "./PersistenceStoreControllerManagerInterface.js";
@@ -35,6 +36,7 @@ export type RestMethodHandler =  (
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
+  domainController: DomainControllerInterface,
   method: HttpMethod, // unused!
   effectiveUrl: string, // log only, to remove?
   body: HttpRequestBodyFormat, // unused!

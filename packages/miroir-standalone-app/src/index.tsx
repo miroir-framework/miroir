@@ -266,7 +266,7 @@ async function startWebApp(root:Root) {
       client
     );
 
-    const persistenceStoreControllerManager = new PersistenceStoreControllerManager(
+    const persistenceStoreControllerManagerForClient = new PersistenceStoreControllerManager(
       ConfigurationService.adminStoreFactoryRegister,
       ConfigurationService.StoreSectionFactoryRegister,
     );
@@ -275,13 +275,26 @@ async function startWebApp(root:Root) {
       miroirContext, 
       {
         persistenceStoreAccessMode: "remote",
-        localPersistenceStoreControllerManager: persistenceStoreControllerManager,
+        localPersistenceStoreControllerManager: persistenceStoreControllerManagerForClient,
         remotePersistenceStoreRestClient: persistenceClientAndRestClient,
       }
     );
   
     // ################################################
     if (currentMiroirConfig.client.emulateServer) {
+      const persistenceStoreControllerManagerForEmulatedServer = new PersistenceStoreControllerManager(
+        ConfigurationService.adminStoreFactoryRegister,
+        ConfigurationService.StoreSectionFactoryRegister,
+      );
+      const domainControllerForEmulatedServer = await setupMiroirDomainController(
+        miroirContext, 
+        {
+          persistenceStoreAccessMode: "local",
+          localPersistenceStoreControllerManager: persistenceStoreControllerManagerForEmulatedServer,
+          // remotePersistenceStoreRestClient: persistenceClientAndRestClient,
+        }
+      ); // even when emulating server, we use remote persistence store, since MSW makes it appear as if we are using a remote server.
+  
       const {
         localDataStoreWorker, // browser
         localDataStoreServer, // nodejs
@@ -289,7 +302,8 @@ async function startWebApp(root:Root) {
         currentMiroirConfig,
         'browser',
         restServerDefaultHandlers,
-        persistenceStoreControllerManager,
+        persistenceStoreControllerManagerForEmulatedServer,
+        domainControllerForEmulatedServer,
         setupWorker
       );
   

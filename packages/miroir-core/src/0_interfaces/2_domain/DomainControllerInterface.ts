@@ -82,7 +82,7 @@ export type EntityInstancesUuidIndexEntityInstanceArraySelector = (entityInstanc
 // ###################################################################################
 export interface DomainControllerInterface {
   // handleAction(deploymentUuid: Uuid, action: DomainAction, currentModel?: MetaModel): Promise<void>;
-  handleQueryActionOrBoxedExtractorActionForServerONLY(
+  handleQueryActionOrBoxedExtractorAction(
     action: RunBoxedExtractorOrQueryAction,
     currentModel?: MetaModel
   ): Promise<ActionReturnType>;
@@ -168,5 +168,6 @@ export interface DomainControllerInterface {
   currentLocalCacheInfo(): LocalCacheInfo;
   getRemoteStore(): PersistenceStoreLocalOrRemoteInterface;
   getDomainState():DomainState;
+  getPersistenceStoreAccessMode(): "local" | "remote";
   getLocalCache():LocalCacheInterface; // TODO: this is a temporary solution to allow the use of the local cache in the webapp.
 }

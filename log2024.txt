@@ -1,0 +1,3280 @@
+commit 501c5edc99181ab2d90972eb621ce9acc0bda0a8
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Dec 29 23:19:26 2024 +0100
+
+    REFACTOR: in DomainController.handleQueryActionOrBoxedExtractorAction, using LocalCache by default to run queries, instead of callRemotePersistenceAction.
+
+ 24 files changed, 887 insertions(+), 581 deletions(-)
+
+commit 0743034458e362e8503dfb9d4b84802cd9d0faea
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Dec 28 17:55:37 2024 +0100
+
+    REFACTOR: in DomainController, add callActionHandler and use it for storeManagementActions
+
+ 6 files changed, 279 insertions(+), 125 deletions(-)
+
+commit 0178862ff4e1473e9a9c291099575bbc7e848a39
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Dec 27 17:57:17 2024 +0100
+
+    REFACTOR: in PersistenceReduxSaga, add handleLocalStoreOrBundleAction
+
+ 7 files changed, 348 insertions(+), 114 deletions(-)
+
+commit 4d75773565096462735851247ec28d946c31a513
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Dec 26 20:16:19 2024 +0100
+
+    REFACTOR: in PersistenceReduxSaga, clearly separate local cache and remote store access cases.
+
+ 1 file changed, 322 insertions(+), 319 deletions(-)
+
+commit f4e1f058850f8f8a7a9f5e6ef8be2d9367094a09
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Dec 26 18:45:24 2024 +0100
+
+    REFACTOR: DomainController constructor uses persistenceStoreAccessMode instead of domainControllerIsDeployedOn
+
+ 10 files changed, 114 insertions(+), 87 deletions(-)
+
+commit adc95a009d1a66d0848ae3c0303928ec94251bab
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Dec 24 12:22:21 2024 +0100
+
+    REFACTOR: setupMiroirDomainController does not return LocalCache anymore, only DomainController. Removed LocalCache from RestService handlers, they use the domainController only. Added getLocalCache method to DomainHandler, used in webapp index.tsx.
+
+ 12 files changed, 66 insertions(+), 114 deletions(-)
+
+commit d43a32679e9f84ee348175600248785017055687
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Dec 24 10:42:12 2024 +0100
+
+    REFACTOR: factor out local cache / saga / domain controller creation in miroir-localcache-redux/setupMiroirDomainController to rationalize the startup sequence.
+
+ 14 files changed, 1391 insertions(+), 1322 deletions(-)
+
+commit b8f05cd398430e6b7e6a0b55f42bd50cadf52d77
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Dec 19 23:23:17 2024 +0100
+
+    REFACTOR: refactor existing tests to elicit test interface #39. Partial refactor of DomainController.React.Model.CRUD.test to DomainController.integ.Model.CRUD.test, using testCompositeActionSuite.
+
+ 12 files changed, 2224 insertions(+), 1278 deletions(-)
+
+commit f541780d607f7561ca615edf8442df2eaf9eebc7
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Dec 19 18:12:32 2024 +0100
+
+    REFACTOR: refactor existing tests to elicit test interface #39. Refactor beforeAll, beforeEach, afterEach, afterAll of test-utils, to factor them out in a testCompositeActionSuite, eventually.
+
+ 15 files changed, 589 insertions(+), 1105 deletions(-)
+
+commit 47ee45fd22819c2b649b89f24ad973e25dfb961b
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Dec 18 23:06:08 2024 +0100
+
+    FEATURE: add run-time Tests #16. Create  DomainController.Data.CRUD.integ.test using TestCompositeActionSuite, that will replace DomainController.Data.CRUD.React.test. The new test does not depend on React, either.
+
+ 22 files changed, 2804 insertions(+), 1715 deletions(-)
+
+commit cc78f5769c921aa1e8f353b97722c8ef4680e207
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Dec 16 22:52:20 2024 +0100
+
+    FEATURE: add run-time Tests #16. Allow to use transformers in runTestCompositeActionAssertion, make "count" transformer recursive (using sub-transformer), migrate first test case of DomainController.Data.React to DomainController.Data.integ, using "testCompositeActionSuite". Using Vitest for tests in miroir-core.
+
+ 26 files changed, 1595 insertions(+), 1472 deletions(-)
+
+commit ecd432a225edb0f262352dd6a80d3b7bef478cdb
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Dec 16 12:29:08 2024 +0100
+
+    use nodeNext module resolution: fix relative path imports and json file imports
+
+ 92 files changed, 1291 insertions(+), 1287 deletions(-)
+
+commit 31b09932aac764f50b48d285b6e3abee0191d48b
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Dec 15 14:04:01 2024 +0100
+
+    REFACTOR: refactor existing tests to elicit test interface #39. Refactor miroir-standalone-app integration tests and test-utils.tsx to use CompositeActions for test setup and teardown.
+
+ 8 files changed, 1081 insertions(+), 1047 deletions(-)
+
+commit fc9869e61f6f446b138e3a89167e47b34dee106d
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Dec 13 17:56:50 2024 +0100
+
+    REFACTOR: refactor existing tests to elicit test interface #39. Refactor beforeAll, beforeEach, afterEach, afterAll of existing tests, to factor them out in a testCompositeActionSuite, eventually.
+
+ 6 files changed, 110 insertions(+), 29 deletions(-)
+
+commit 3ce5972b573b3724ca3fefd25d1a60ef10750fb7
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Dec 13 17:33:06 2024 +0100
+
+    FEATURE: add run-time Tests #16. Add testCompositeActionSuite type.
+
+ 18 files changed, 510 insertions(+), 453 deletions(-)
+
+commit 2e8d5b642b17c04e0b914190e914b8886262ba88
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Dec 13 15:34:29 2024 +0100
+
+    REFACTOR: refactor existing tests to elicit test interface #39. add beforeAll, beforeEach, afterEach, afterAll to TestCompositeAction (works with 1 test case only for the moment)
+
+ 12 files changed, 359 insertions(+), 64 deletions(-)
+
+commit 762c8f8cab0d9f29cde58ee5baa6e190c8f17c83
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Dec 13 11:45:56 2024 +0100
+
+    REFACTOR: refactor existing tests to elicit test interface #39. Remove app store creation from miroirBeforeAll in test-utils.tsx, it shall be created by each (integ) test case.
+
+ 7 files changed, 207 insertions(+), 94 deletions(-)
+
+commit ea8015be850968c2a8d7cf20a40c341763ef2061
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Dec 13 10:47:21 2024 +0100
+
+    REFACTOR: refactor existing tests to elicit test interface #39. Simplify miroirBeforeEach in test-ubils.tsx
+
+ 25 files changed, 590 insertions(+), 236 deletions(-)
+
+commit 87b7c85e9abd1b6dbbfde2be767df3c33549c577
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Dec 12 19:32:18 2024 +0100
+
+    REFACTOR: clean-up in test-utils.miroirBeforeAll
+
+ 3 files changed, 150 insertions(+), 134 deletions(-)
+
+commit e50be4f772a8fb48633dddfb13459b921face4f8
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Dec 12 18:05:54 2024 +0100
+
+    REFACTOR: coreect test-utils, to create stores only in miroirBeforeAll (not in miroirBeforeEach)
+
+ 1 file changed, 71 insertions(+), 52 deletions(-)
+
+commit e6c019c6c46ee58ea55eaa9c60a80b49946091b1
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Dec 12 17:34:28 2024 +0100
+
+    FEATURE: add run-time Tests #16. Add TestCompositeActionTemplate type.
+
+ 12 files changed, 609 insertions(+), 92 deletions(-)
+
+commit 159c894e401f0d5036717080cc90e3acdf1a498b
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Dec 12 14:02:34 2024 +0100
+
+    REFACTOR: refactor existing tests to elicit test interface #39. use array of JSON tests definitions in DomainNewController.CompositeAction.integ.test.
+
+ 1 file changed, 202 insertions(+), 157 deletions(-)
+
+commit 20f663a679cfcdee1630d1f45b9d2ecfe22bb1a1
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Dec 11 20:59:37 2024 +0100
+
+    FEATURE: add run-time Tests #16. Use handleTestAction for TestCompositeAction in DomainNewController.CompositeAction.integ.test.
+
+ 12 files changed, 406 insertions(+), 357 deletions(-)
+
+commit accffb75e98dee88d804484d07c766350e797421
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Dec 11 18:02:29 2024 +0100
+
+    FEATURE: add run-time Tests #16. Added Test Entity, refactored DomainController and DomainNewController.CompositeAction.integ.test to execute TestCases within CompositeActions, requiring to pass a TestImplementation to ConfigurationService on startup to be able to execute TestCases.
+
+ 19 files changed, 1486 insertions(+), 147 deletions(-)
+
+commit 9004b0058f3d343bc81135c970dbb2bc85a77148
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Dec 10 17:26:45 2024 +0100
+
+    create "Concept" page, add "Test" entity in Miroir app
+
+ 19 files changed, 1259 insertions(+), 294 deletions(-)
+
+commit b968232bc7986bca84144fabb59c13dfd1cf0cb7
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Dec 10 10:34:43 2024 +0100
+
+    REFACTOR: add handleCompositeAction at DomainController level and prepare integ tests for it.
+
+ 8 files changed, 1378 insertions(+), 28 deletions(-)
+
+commit 41a5f34418c85eda994864f9f15ff3483c66d26e
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Dec 9 13:14:43 2024 +0100
+
+    REFACTOR: rename RunQueryAction to RunBoxedQueryAction
+
+ 25 files changed, 118 insertions(+), 137 deletions(-)
+
+commit 652c83e9073dcee60094bf86dd33af89e882bd80
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Dec 9 12:40:00 2024 +0100
+
+    TEST: in miroir-standalone-app, rename tests to better identify tests that are based on the React framework (and thus linked to it)
+
+ 11 files changed, 55 insertions(+), 59 deletions(-)
+
+commit e716af4e085929219dbbb4746e009bf484108ca1
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Dec 9 11:52:21 2024 +0100
+
+    REFACTOR: rename QueryWithExtractorCombinerTransformer to BoxedQueryWithExtractorCombinerTransformer
+
+ 26 files changed, 115 insertions(+), 115 deletions(-)
+
+commit 48aaf0d5d5becb04dde265eb803c1b5ef5953798
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Dec 7 23:13:20 2024 +0100
+
+    REFACTOR: rename queryTemplate to boxedAueryTemplate
+
+ 42 files changed, 374 insertions(+), 374 deletions(-)
+
+commit cb370b64f8e174c36be3fe3e7eae7ee63aa8bdef
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Dec 7 12:29:46 2024 +0100
+
+    REFACTOR: rename queryType to extractorTemplateType in extractor templates
+
+ 3 files changed, 378 insertions(+), 78 deletions(-)
+
+commit 91b5a3730f0f692a138d5367364ba1838b021b1f
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Dec 6 17:33:23 2024 +0100
+
+    REFACTOR: rename queryType to extractorTemplateType in extractor templates
+
+ 34 files changed, 185 insertions(+), 119 deletions(-)
+
+commit db64680e789574255f04d8e294ae7ef521273979
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Dec 5 18:09:59 2024 +0100
+
+    REFACTOR: rename queryType to extractorTemplateType in extractor templates
+
+ 101 files changed, 3368 insertions(+), 1479 deletions(-)
+
+commit 94d443bc64fcdf5cc163deb7dfe691a2e99a39de
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Dec 4 19:50:41 2024 +0100
+
+    REFACTOR: split handleQueryTemplateOrExtractorTemplateAction into handleQueryTemplateAction and handleExtractorTemplateAction
+
+ 16 files changed, 435 insertions(+), 281 deletions(-)
+
+commit e939899e591c1e509944da1673156e66086361ed
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Dec 4 13:14:57 2024 +0100
+
+    REFACTOR: split handleQueryTemplateOrExtractorTemplateAction into handleExtractorTemplateAction and handleQueryAction
+
+ 23 files changed, 459 insertions(+), 288 deletions(-)
+
+commit 1e7827c966433819176d5542e10109640df5a4db
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Dec 3 23:18:02 2024 +0100
+
+    REFACTOR: remove redundant handleExtractorOrQueryAction
+
+ 22 files changed, 274 insertions(+), 266 deletions(-)
+
+commit 5a8502424896294bacc4ed4c50c2f205b338c3c7
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Dec 3 19:56:50 2024 +0100
+
+    REFACTOR: split handleExtractorOrQueryAction into handleExtractorAction and handleQueryAction
+
+ 30 files changed, 1553 insertions(+), 433 deletions(-)
+
+commit 0dc411a97c8aa862ccbf49ef6f91d0028e073050
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Dec 3 18:38:41 2024 +0100
+
+    REFACTOR: rename queryForExtractor[...] types to boxedExtractor[...],
+
+ 18 files changed, 202 insertions(+), 246 deletions(-)
+
+commit 440507331e0c2b3145aec0624811fcbdf88c107d
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Dec 3 17:06:38 2024 +0100
+
+    REFACTOR: streamline QueryRunner and QueryTemplateRunner types, removing the type parameter which could only take value QueryTemplateWithExtractorCombinerTransformer
+
+ 16 files changed, 101 insertions(+), 136 deletions(-)
+
+commit c67919bc287fd25519806a2b0640cfc1a24dc5bd
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Dec 3 13:40:31 2024 +0100
+
+    REFACTOR: separate ExtractorOrQueryTemplateRunner into ExtractorTemplateRunner and QueryTemplateRunner; separate ExtractorOrQueryRunner into ExtractorRunner and QueryRunner. Rename selectSelectorParams to selectMiroirQueryTemplateSelectorParams
+
+ 24 files changed, 450 insertions(+), 644 deletions(-)
+
+commit f8bc82378ab6ced461cc1bd0958346e9586aa2d5
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Dec 1 17:43:43 2024 +0100
+
+    REFACTOR: rename extractWithManyExtractorTemplates to runQueryTemplateWithExtractorCombinerTransforme, separating extractors from queries
+
+ 49 files changed, 779 insertions(+), 407 deletions(-)
+
+commit 2c214fb55cc82093157bfd8d545dc00a532a6ac9
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Nov 30 11:30:31 2024 +0100
+
+    REFACTOR: rename extractWithExtractor to extractWithExtractorOrCombinerReturningObjectOrObjectList and queryDEFUNCT to miroirQuery
+
+ 25 files changed, 386 insertions(+), 287 deletions(-)
+
+commit 2c6739d3bcb6f5a191c10eeff13c777cb46aa29e
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Nov 29 13:29:38 2024 +0100
+
+    REFACTOR: rename domainModelQueryJzodSchemaParams to queryJzodSchemaParams
+
+ 27 files changed, 185 insertions(+), 172 deletions(-)
+
+commit 8c9c42a50c1e6545e582139bced97cc844f1bfa3
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Nov 29 12:41:57 2024 +0100
+
+    REFACTOR: rename SyncQueryRunner and related types to SyncExtractorOrQueryRunner
+
+ 26 files changed, 378 insertions(+), 370 deletions(-)
+
+commit a8d558f1cd5fd2c1304fee70fec6f0f6f19001d7
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Nov 29 12:02:35 2024 +0100
+
+    REFACTOR: remove queryContextReference, correct the name of some Query definitions
+
+ 14 files changed, 156 insertions(+), 490 deletions(-)
+
+commit 3508e881b9f5cb1fd757f82326d5aa47c8417071
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Nov 28 19:33:53 2024 +0100
+
+    REFACTOR: remove unused QueryTemplate references (queryTemplateContextReference, queryContextReference, queryTemplateConstant...) and related definitions for improved clarity
+
+ 8 files changed, 35 insertions(+), 452 deletions(-)
+
+commit a416431841366df560a405ae81006cf3a0336ded
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Nov 28 19:07:53 2024 +0100
+
+    REFACTOR: rename QueryTemplate to ExtractorOrCombinerTemplate and update related references for consistency in action handling
+
+ 21 files changed, 216 insertions(+), 215 deletions(-)
+
+commit 9c55dd745fa145f2b332408450bf437c595d22a5
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Nov 28 18:21:12 2024 +0100
+
+    REFACTOR: update action type naming for better clarity in query handling. Replace "queryTemplateAction" with "runQueryTemplateOrExtractorTemplateAction" and adjust related references across components and JSON definitions.
+
+ 46 files changed, 540 insertions(+), 774 deletions(-)
+
+commit e262ff9f4d49c89911c17391ea7107617cd5d518
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Nov 28 16:24:03 2024 +0100
+
+    REFACTOR: update naming conventions for better clarity in Extractors and Queries. Replace "Extractor" with "Query" in relevant components and JSON definitions. Remove redundant "combiner_wrapperReturningObject" and "combiner_wrapperReturningList" from ExtractorOrCombiner. Renamed "extractWithManyExtractors" function as "runQuery".
+
+ 34 files changed, 740 insertions(+), 1007 deletions(-)
+
+commit de55713657a7bbad832c71b1fdfcf4ff11717e09
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Nov 26 16:07:37 2024 +0100
+
+    REFACTOR: renamings to ensure better separation of Extractors and Queries. In Extractors and combiners, use "extractorOrCombinerType" instead of "queryType"
+
+ 24 files changed, 263 insertions(+), 227 deletions(-)
+
+commit ed60e8201cccee75f71d27ad813f71b5f6af3649
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Nov 25 21:38:14 2024 +0100
+
+    REFACTOR: renamings to ensure better separation of Extractors and Queries. In Extractors and combiners, use "extractorOrCombinerType" instead of "queryType"
+
+ 21 files changed, 1168 insertions(+), 979 deletions(-)
+
+commit 91fd649c825ce4c2af7a66b76eafe16f42045856
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Nov 25 13:37:37 2024 +0100
+
+    REFACTOR: renamings to ensure better separation of Extractors and Queries
+
+ 34 files changed, 1598 insertions(+), 1598 deletions(-)
+
+commit 6a254f8fc4d0d7561d6f4cdef20e07228d53f64d
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Nov 24 22:11:14 2024 +0100
+
+    REFACTOR: renamings to ensure better separation of Extractors and Queries
+
+ 32 files changed, 402 insertions(+), 401 deletions(-)
+
+commit 49df70d0f5435a690dc1d3fccb47d187a8c5956e
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Nov 24 21:06:31 2024 +0100
+
+    REFACTOR: renamings to ensure better separation of Extractors and (Extractor)Combiners
+
+ 37 files changed, 1412 insertions(+), 1690 deletions(-)
+
+commit 17a715b73ace1fa71ff1516a5934b64d030408e8
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Nov 24 12:17:25 2024 +0100
+
+    REFACTOR: refactor existing tests to elicit test interface #39
+
+ 20 files changed, 272 insertions(+), 176 deletions(-)
+
+commit 05869999e5fe088d9bacc810787ec9e1c1fa71bd
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Nov 23 14:05:08 2024 +0100
+
+    REFACTOR: migrate extractWithExtractorFromDomainState.unit.test.ts to extractWithExtractorFromDomainStateForTemplate.unit.test.ts. Tests for extractor Templates and plain extractors are done in extractWithExtractorFromDomainStateForTemplate.unit.test.ts.
+
+ 3 files changed, 450 insertions(+), 737 deletions(-)
+
+commit 5c948bc7cfdb14a1353b8f05a522ba290d90a94e
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Nov 23 12:35:18 2024 +0100
+
+    REFACTOR: migrating miroir-core extractWithExtractorFromDomainStateForTemplate tests to interpretation of plain js object. Adding domainStateToDeploymentEntityState.unit.test.
+
+ 4 files changed, 4791 insertions(+), 641 deletions(-)
+
+commit 89a895bce4a314101f8c097aa17a9b0d9186b11e
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Nov 22 18:37:42 2024 +0100
+
+    bugfix: handle "combinerForObjectByRelation" combiner in QuerySelector (was commented out)
+
+ 15 files changed, 139 insertions(+), 204 deletions(-)
+
+commit 3b1df2b236770cf5b125aca5c3b3423bc180280f
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Nov 21 18:23:07 2024 +0100
+
+    FEATURE: allow to compose CompositeActions #38. Stop using references to (js) identifiers to build actions and queries in importer.tsx, use only Transformer parameter and context  references in actions and queries.
+
+ 2 files changed, 148 insertions(+), 52 deletions(-)
+
+commit 0bdc85ee4fb24d012152554dea5c29100be90798
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Nov 21 12:04:41 2024 +0100
+
+    FEATURE: allow to compose CompositeActions #38. Improve splitEntity in importer.tsx, allow parentUuid in QueryTemplates to be a simple string (and not only a transformer_InnerReference)
+
+ 17 files changed, 2402 insertions(+), 449 deletions(-)
+
+commit 0042939b56b12c8b11b37f6d6f10e471c4f63cdc
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Nov 16 11:59:36 2024 +0100
+
+    FEATURE: allow to compose CompositeActions #38. Using temporary solution in importer.tsx, creating composed action using code from distinct actions (could be a prelude to a "composeActions" function?)
+
+ 12 files changed, 563 insertions(+), 350 deletions(-)
+
+commit bb7d110ffa2ae65b6afcb72a77761567a0d1f5a3
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Nov 8 12:45:02 2024 +0100
+
+    FEATURE: allow to compose CompositeActions #38. Correct CompositeAction type, separating QueryActions from QueryTemplateActions
+
+ 11 files changed, 560 insertions(+), 265 deletions(-)
+
+commit 70adb4145f9d291fe67c102260972d2dd55490cb
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Nov 7 18:47:09 2024 +0100
+
+    FEATURE: allow to compose CompositeActions #38. Allowing to send QueryActions to Server (handled via handleQueryForServerONLY, beforehand only QueryTemplateActions could be handled by Server)
+
+ 10 files changed, 224 insertions(+), 93 deletions(-)
+
+commit 13a2c625021d41f0a9dcd398013837531aefac0b
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Nov 7 17:15:29 2024 +0100
+
+    FEATURE: allow to compose CompositeActions #38.
+
+ 9 files changed, 2014 insertions(+), 712 deletions(-)
+
+commit 2d033fff756ecee2dd3132836f88a925f6e8fe3f
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Nov 6 11:25:29 2024 +0100
+
+    FEATURE: execute Queries on relational database #10. Run extractorForRecordOfExtractors in memory by default, implement constantObject Transformer on postgres.
+
+ 7 files changed, 104 insertions(+), 40 deletions(-)
+
+commit cb3171117f8694a6b9c9a43c1455bcfcb4be8efc
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Nov 5 12:47:18 2024 +0100
+
+    REFACTOR: correct miroir-core tests, especially transformers.unit.test
+
+ 9 files changed, 632 insertions(+), 687 deletions(-)
+
+commit dfce806a2f4e87ea2ca819519c230e1d4fada199
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Nov 4 11:55:32 2024 +0100
+
+    FEATURE: execute Queries on relational database #10. Renamings to clarify query structure (emtractors, combiners, transformers). Implement listPickElement| for SQL.
+
+ 66 files changed, 896 insertions(+), 720 deletions(-)
+
+commit 54b470fc42bc102dfe99a07328e0117e5f1eccd7
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Oct 28 22:14:21 2024 +0100
+
+    FEATURE: execute Queries on relational database #10. Have ExtractorPersistenceStoreRunner.integ.test combiner test pass on Postgres (partial implementation).
+
+ 4 files changed, 882 insertions(+), 1280 deletions(-)
+
+commit 7243ab30540ae30dd655d68ede5e2ec6e51c789e
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Oct 28 17:26:23 2024 +0100
+
+    FEATURE: execute Queries on relational database #10. Enable the execution of "fullObjectTemplate", "innerFullObjectTemplate" and "mapperListToList" combiners on Postgres (partial implementation).
+
+ 39 files changed, 2289 insertions(+), 1210 deletions(-)
+
+commit 513e2eb60761aec4c75c6cde22d6496876f703d4
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Oct 24 11:36:38 2024 +0200
+
+    FEATURE: execute Queries on relational database #10. Enable the execution of "selectObjectByDirectReference" combiner on Postgres (imperfect implementation).
+
+ 4 files changed, 327 insertions(+), 65 deletions(-)
+
+commit 0f04c6574cc8ddb337f6f3273392258a35f05cef
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Oct 23 17:16:40 2024 +0200
+
+    FEATURE: execute Queries on relational database #10. Enable the execution of "fullObjectTemplate" Transformer on Postgres (imperfect implementation).
+
+ 4 files changed, 1132 insertions(+), 1062 deletions(-)
+
+commit f99313fcb4356218cc252237dfb88bd3160ec097
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Oct 22 19:39:42 2024 +0200
+
+    REFACTOR: petty renaming & make tests work with Jest transpiling (ts) for miroir-core and miroir-store-postgres. Reworked TS type generation in miroir-code (packages/miroir-core/tmp/buildTools/generate-ts-types.ts)
+
+ 106 files changed, 1714 insertions(+), 42889 deletions(-)
+
+commit 6ab0c3256e59177302de256882e3d2b122090f28
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Oct 17 21:51:45 2024 +0200
+
+    REFACTOR: in Server.queryTemplateActionHandler, use extractWithExtractorTemplate to execute queryTemplateAction
+
+ 7 files changed, 49 insertions(+), 65 deletions(-)
+
+commit 08c8f5e939c1460d138f26c6208b94699158871e
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Oct 17 19:29:07 2024 +0200
+
+    REFACTOR: factoring out implementations of handleQueryTemplateForServerONLY into miroir-core QueryTemplateSelector.handleQueryTemplateAction and QuerySelector.handleQueryAction
+
+ 23 files changed, 191 insertions(+), 362 deletions(-)
+
+commit a41ea5643711c8f0345843553bd10784801ce60e
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Oct 17 16:34:56 2024 +0200
+
+    REFACTOR: in ExtractorRunnerInterface, remove AsyncExtractorTemplateRunnerMap and SyncExtractorTemplateRunnerMap, which are identical to AsyncExtractorRunnerMap and SyncExtractorRunnerMap
+
+ 7 files changed, 79 insertions(+), 81 deletions(-)
+
+commit f9bd9919ab6243401dccbc8a92146c37ad41a75b
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Oct 17 16:07:59 2024 +0200
+
+    REFACTOR: remove use of extractWithManyExtractorTemplates from JzodObjectEditor and ReportSectionListDisplay
+
+ 6 files changed, 115 insertions(+), 132 deletions(-)
+
+commit e6df27b954cf3d86d8a325398dc3f5fc90d33ee8
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Oct 17 12:10:16 2024 +0200
+
+    REFACTOR: make it clear that the server handles only QueryTemplateActions, not QueryActions
+
+ 2 files changed, 10 insertions(+), 10 deletions(-)
+
+commit 7a26b9bb2f51e1d8eb1e68616b0c2b63501e593b
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Oct 17 12:00:56 2024 +0200
+
+    cosmetic
+
+ 3 files changed, 85 insertions(+), 77 deletions(-)
+
+commit 2c38b449ad98932838f1cb4949943995a217237a
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Oct 17 11:37:07 2024 +0200
+
+    REFACTOR: removing function DeploymentEntityStateQueryTemplateSelector.selectEntityInstanceUuidIndexFromDeploymentEntityStateForTemplate
+
+ 4 files changed, 2 insertions(+), 152 deletions(-)
+
+commit 55f2feac6fdd7828dd32e301a63376a764f2f9d3
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Oct 17 11:31:16 2024 +0200
+
+    REFACTOR: cleaning up type ExtractorRunnerInterface.SyncExtractorTemplateRunnerMap and removing function DomainStateQueryTemplateSelector.selectEntityInstanceUuidIndexFromDomainStateForTemplate
+
+ 10 files changed, 25 insertions(+), 184 deletions(-)
+
+commit 80b2d8af0e36083e775e4062023e8e3457a713da
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Oct 17 10:42:24 2024 +0200
+
+    REFACTOR: cleaning up QueryTemplateSelectors (removing applyExtractorTemplateForSingleObjectListToSelectedInstancesUuidIndexInMemoryDEFUNCT & others)
+
+ 11 files changed, 13 insertions(+), 239 deletions(-)
+
+commit f6ed35f0e5d4a60372d1a3c27e0f8958b619d334
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Oct 16 21:47:59 2024 +0200
+
+    REFACTOR: cleaning DeploymentEntityStateQueryTemplateSelectors (removing function selectEntityInstanceFromDeploymentEntityStateForTemplate)
+
+ 11 files changed, 21 insertions(+), 561 deletions(-)
+
+commit b61d99abb1592f16636cb4ef38c926f9ffb75574
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Oct 16 21:04:24 2024 +0200
+
+    REFACTOR: cleaning DomainStateQueryTemplateSelector
+
+ 4 files changed, 230 insertions(+), 231 deletions(-)
+
+commit 8197cf77d541cac4eabd9e5660508341cbf4f63f
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Oct 16 19:28:52 2024 +0200
+
+    REFACTOR: cleaning type ExtractorRunnerInterface.AsyncExtractorTemplateRunnerMap
+
+ 3 files changed, 32 insertions(+), 125 deletions(-)
+
+commit 00817527cd2325e9c0ac27ba51ed2faf96321007
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Oct 16 19:10:39 2024 +0200
+
+    REFACTOR: cleaning type ExtractorRunnerInterface.AsyncExtractorRunnerMap and ExtractorRunnerInterface.SyncExtractorTemplateRunnerMap
+
+ 14 files changed, 22 insertions(+), 118 deletions(-)
+
+commit 474617476f0229a477fc295b3ca891a783e4f695
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Oct 16 17:32:13 2024 +0200
+
+    REFACTOR: cleaning type ExtractorRunnerInterface.SyncExtractorRunnerMap
+
+ 5 files changed, 5 insertions(+), 57 deletions(-)
+
+commit 1b95e9d6808fc958e39546e911f2599d6e32ac76
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Oct 16 17:12:39 2024 +0200
+
+    REFACTOR: removing template-specific implementations from SqlDbExtractorTemplateRunner, AsyncQueryTemplateSelectors, and QueryTemplateSelectors.
+
+ 8 files changed, 50 insertions(+), 690 deletions(-)
+
+commit e3bf37111ce0fc82f369d5b37e9a54239c526f63
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Oct 16 11:51:33 2024 +0200
+
+    REFACTOR: removing QueryTemplateSelector.innerSelectElementFromQueryTemplateDEFUNCT implementation.
+
+ 2 files changed, 233 insertions(+), 329 deletions(-)
+
+commit 7c55de222db67c3021397bb8940571190e2f0e16
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Oct 16 10:18:19 2024 +0200
+
+    REFACTOR: renamings, preparing for removing "Template" extractor implementations.
+
+ 13 files changed, 228 insertions(+), 240 deletions(-)
+
+commit 7d185d69e03863019c90340c1ee24d7952cf0c6b
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Oct 15 15:26:59 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Cleanup: remove native interpretation of Templates in miroir-store-filesystem and miroir-store-indexedDb.
+
+ 12 files changed, 57 insertions(+), 779 deletions(-)
+
+commit c3f3e092921a5f6e7b2c56d06f7dea227d91252e
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Oct 15 12:15:16 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Cleanup: remove native interpretation of Templates in miroir-store-sql.
+
+ 2 files changed, 24 insertions(+), 624 deletions(-)
+
+commit 87a91323bea75aefb8eafada2fe4408ea3f52e05
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Oct 15 11:52:58 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Cleanup: remove native interpretation of Templates in miroir-store-sql.
+
+ 1 file changed, 33 insertions(+), 8 deletions(-)
+
+commit 2db6724aa1d864de21a54838e2f3ec8b249e010f
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Oct 15 11:48:25 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Cleanup: remove native interpretation of Templates in miroir-store-sql.
+
+ 5 files changed, 68 insertions(+), 21 deletions(-)
+
+commit 35efa8d63891229a4ca9cfb875a6ddf8f487aa1b
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Oct 15 10:18:50 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Cleanup: remove native interpretation of Templates in miroir-store-xxxx. Correct format of filter for queryExtractObjectListByEntity query.
+
+ 14 files changed, 215 insertions(+), 46 deletions(-)
+
+commit 19dcce3b36608900237fffb07014a3e9f35f93cc
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Oct 14 17:02:58 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Migrate Importer.tsx splitEntity to compositeAction
+
+ 1 file changed, 16 insertions(+), 19 deletions(-)
+
+commit 4aba763eec03e09ec76bc3d853a9f162a4a3ceec
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Oct 11 17:01:26 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Migrate Importer.tsx splitEntity to compositeAction
+
+ 31 files changed, 2456 insertions(+), 2267 deletions(-)
+
+commit bef74cd9f4614e8a6b18853c7e4c28be4cc80922
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Oct 8 22:59:38 2024 +0200
+
+    push Transformers to 1st class citizen and create Menu Transformer, with miroir-core implementation #36. Add TransformerDefinition Entity Definition and Implement transformer_menu_AddItem Transformer in miroir-core/Menu.ts
+
+ 29 files changed, 2839 insertions(+), 1663 deletions(-)
+
+commit f13174992cfcb2f6a39896405f7e4ff6bf24ecca
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Oct 4 21:24:17 2024 +0200
+
+    push Transformers to 1st class citizen and create Menu Transformer, with miroir-core implementation #36. Rename "templateType" to "transformerType"
+
+ 67 files changed, 2250 insertions(+), 2061 deletions(-)
+
+commit 3fcd031e0a943e28b235878a33a26b0ecac6500a
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Oct 3 23:41:28 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Adding transformer_objectDynamicAccess and migrating Importer update SplittedEntity instances to compositeAction using objectDynamicAccess capability.
+
+ 16 files changed, 3935 insertions(+), 1194 deletions(-)
+
+commit 5597d1e69b04ea78905927f14359f47bc848dd73
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Sep 30 15:31:33 2024 +0200
+
+    BUGFIX: correct transformer_apply for path references. Fixed Imported until creation of Municipality instances.
+
+ 8 files changed, 692 insertions(+), 452 deletions(-)
+
+commit 6b09a6170e81ddb8a38428bb217240dc225b5b4c
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Sep 28 15:16:03 2024 +0200
+
+    REFACTOR: move mustacheStringTemplate to transformer_innerReference ( as transformer_mustacheStringTemplate)
+
+ 9 files changed, 277 insertions(+), 61 deletions(-)
+
+commit 7bd992ae1c219185ba2a1b0ede07c0b5b0659225
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Sep 27 10:28:56 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Adding transformer_constantObject to protect transformer_InnerReferences within a Query Template.
+
+ 11 files changed, 292 insertions(+), 245 deletions(-)
+
+commit 7682d005aa8832e44ebcff51423b1c71df06f09c
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Sep 26 10:27:36 2024 +0200
+
+    BUGFIX: correct resolveReferencesForJzodSchemaAndValueObject to handle (a limited form of) discriminated unions of unions. In ReportView, converting Report Templates before display, do not use useDeploymentEntityStateJzodSchemaSelectorForTemplate. Fixed display for some details reports.
+
+ 23 files changed, 7220 insertions(+), 6708 deletions(-)
+
+commit 67d83b540d2fa17df71911ede53ff99b1310bb5a
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Sep 24 22:37:27 2024 +0200
+
+    bugfix: correct Templates.resolveQueryTemplate function
+
+ 14 files changed, 484 insertions(+), 372 deletions(-)
+
+commit e4442b359e79810aab4927a723efa617a1aa843d
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Sep 23 23:27:01 2024 +0200
+
+    REFACTOR: use queryTemplates for queryCombiner subQueries (schema named 'querySelectByQueryCombiner"). Separate Extractor from ExtractorTemplate unit tests.
+
+ 22 files changed, 1404 insertions(+), 482 deletions(-)
+
+commit 6c1c833663a5df3c807a7acde59f621c8fed90a7
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Sep 16 23:35:00 2024 +0200
+
+    refactor: remove uses of resolveContextReference
+
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+commit 9b97aaecb46a2fa389b24ea78bf7ed84d1b69191
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Sep 16 23:29:43 2024 +0200
+
+    refactor: remove uses of resolveContextReference
+
+ 17 files changed, 115 insertions(+), 296 deletions(-)
+
+commit 7e103c0c82ad69f83d374d35f215d4d909f52637
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Sep 16 22:08:58 2024 +0200
+
+    REFACTOR: use transformer_InnerReference_resolve instead of resolveContextReference
+
+ 14 files changed, 72 insertions(+), 576 deletions(-)
+
+commit da646f456ff55f376af1837aec05e32a660de7d4
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Sep 16 17:58:43 2024 +0200
+
+    REFACTOR: the "parentUuid" attribute of QueryTemplates becomes transformer_contextReference (instead of template_innerReference).
+
+ 52 files changed, 349 insertions(+), 246 deletions(-)
+
+commit 75ae78f0023b0dd3e6d7d6ef29111fea11c00235
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Sep 16 16:50:12 2024 +0200
+
+    REFACTOR: for query "selectObjectListByManyToManyRelation", objectReference becomes transformer_contextReference.
+
+ 8 files changed, 81 insertions(+), 41 deletions(-)
+
+commit 1e7adadba1acfdb0259b62715b07c3f9b3357493
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Sep 16 12:08:54 2024 +0200
+
+    REFACTOR: for query "selectObjectListByRelation", objectReference becomes transformer_contextReference.
+
+ 9 files changed, 23 insertions(+), 17 deletions(-)
+
+commit 5d32de8b95cb3291eb5e6ccf768637c58bce1e30
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Sep 12 14:04:35 2024 +0200
+
+    REFACTOR: for query "selectObjectByRelation", objectReference becomes transformer_InnerReference, and filter in queryTemplateExtractObjectListByEntity uses a constant string transformer, too.
+
+ 15 files changed, 102 insertions(+), 57 deletions(-)
+
+commit 098cac81773e3f778e3cfe5c57cba803a8918e9c
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Sep 11 22:08:31 2024 +0200
+
+    renaming: handleQueryTemplate --> handleQueryTemplateForServerONLY
+
+ 29 files changed, 932 insertions(+), 1045 deletions(-)
+
+commit 0adaa1b8dcf5b02150c93f995237e27828fd9d34
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Sep 11 16:45:17 2024 +0200
+
+    REFACTOR: migrate Report extractors with queryType="selectObjectByDirectReference" to using transformerReference for instanceUuid attribute.
+
+ 30 files changed, 1812 insertions(+), 1048 deletions(-)
+
+commit a120d236a08bdd6eb0f32e721738fed03694d7ad
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Sep 10 17:14:09 2024 +0200
+
+    REFACTOR: enable use of extractors (instead of extractorTemplates) and combiners (instead of combinerTemplates) in Reports. (NO REPORT MIGRATION YET)
+
+ 38 files changed, 2667 insertions(+), 894 deletions(-)
+
+commit 43aae26bfb40284709ae362c13d84ed0f5fc51f4
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Sep 9 22:39:10 2024 +0200
+
+    REFACTOR: use entityStateSelector instead of entityStateSelectorTemplate to fetch available Menus in SidebarSection.tsx
+
+ 3 files changed, 42 insertions(+), 22 deletions(-)
+
+commit 00102079cae5a72c5d5f72bd15cb0debf8f2d036
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Sep 9 19:38:20 2024 +0200
+
+    REFACTOR: make current uses of queryTemplates or extractorTemplates explicit.
+
+ 59 files changed, 397 insertions(+), 406 deletions(-)
+
+commit ebff5dec0b75b642c850c5730fef09665b922288
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Sep 9 16:09:34 2024 +0200
+
+    REFACTOR: separate handleQueryTemplate and handleQuery in DomainController / PersistenceStoreController, and ExtractorRunners: fix implementation for handleQuery, test case for
+
+ 13 files changed, 614 insertions(+), 366 deletions(-)
+
+commit cab38979edb9434d28e9d6a8ee8d4c148b88d432
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Sep 7 19:06:39 2024 +0200
+
+    REFACTOR: separate handleQueryTemplate and handleQuery in DomainController / PersistenceStoreController, and ExtractorRunners. Fix web interface
+
+ 17 files changed, 295 insertions(+), 228 deletions(-)
+
+commit 030a04079ab4de6a6e106e286648c1bc76d51daa
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Sep 7 11:08:35 2024 +0200
+
+    REFACTOR: separate handleQueryTemplate and handleQuery in DomainController / PersistenceStoreController, and ExtractorRunners. Test with ExtractorPersistenceStroeRunner.integ.test.
+
+ 52 files changed, 5060 insertions(+), 1161 deletions(-)
+
+commit 85a3ba35bdfc7a49b3ad665e1af73f9d92fc992b
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Sep 6 15:48:16 2024 +0200
+
+    REFACTOR: create distinct extractorRunner (that use MiroirQuery) from extractorTemplateRunners (that use QueryTemplate). Only extractorRunners shall be used in the end, as extractorTemplateRunners are redundant with the use of Transformers, that can be used to generate extractors/MiroirQueries, instead of ExtractorTemplates/QueryTemplates.
+
+ 23 files changed, 1026 insertions(+), 196 deletions(-)
+
+commit f1ce015ed3372b8a7d9d6332ce807ca1a5010356
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Sep 6 13:37:31 2024 +0200
+
+    REFACTOR: separate create extractorTemplates (that use QueryTemplate) from extractors (that use MiroirQuery). Only extractors shall be used in the end, as extractorTemplates/QueryTemplates are redundant with Transformers.
+
+ 33 files changed, 1670 insertions(+), 1168 deletions(-)
+
+commit 44ab6eb5c9586b92bf65da163416e1d1c99baf3a
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Sep 5 20:08:21 2024 +0200
+
+    REFACTOR: create MiroirQuery to replace QueryTemplate, which is not needed anymore now that transformers can be used to generate (Miroir)Queries
+
+ 50 files changed, 1586 insertions(+), 574 deletions(-)
+
+commit bcb460a86cc45261d47964adb0a677f9d4a0d723
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Sep 5 16:36:56 2024 +0200
+
+    REFACTOR: use Record<string, any> instead of DomainElement for queryParams and contextResults of QuerySelector, Extractors and Transformers. Improved erros information given when executing query, extractor, combiner or transformer. Applied renamings.
+
+ 52 files changed, 2161 insertions(+), 1796 deletions(-)
+
+commit 0f692be37df38689fc7f23cceeb960868b3db0b4
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Sep 4 14:42:57 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Transformers are used for action manipulation(build time) and during query execution for data manipulation (run time). Split transformerForBuild and TransformerForRuntime in transformerJzodSchema, using DomainController.handleCompositeActionTemplate in Tools.tsx and Importer.tsx, renamed Templates.ts to Transformers.ts.
+
+ 32 files changed, 10870 insertions(+), 10014 deletions(-)
+
+commit 86a135c1152a6c3ddd185e4e2499d1504270233e
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Aug 27 21:51:42 2024 +0200
+
+    REFACTOR: renamings and removing state from AsyncQuerySelector / ExtractorRunnerInterface
+
+ 14 files changed, 304 insertions(+), 324 deletions(-)
+
+commit 76439e12c1a99315f6332b13b5ab83e415d0064c
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Aug 27 17:41:39 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Refactor to remove spurious indirection level in handling of runtimeTransformers in runtimeTransformers (its type QueryExtractorRuntimeTransformer is replaced by RuntimeTransformer).
+
+ 11 files changed, 385 insertions(+), 426 deletions(-)
+
+commit 2738e5df125fb67d18796bb59df6f63dede5f2a6
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Aug 27 12:27:01 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Refactor handling of runtimeTransformers in sqlDbExtractorRunner: allow only QueryExtractorTransformers as runtimeTransformers (and not MiroirSelectQueriesRecord). Also, QueryExtractorTransformers are not part of MiroirSelectQueriesRecord anymore.
+
+ 15 files changed, 445 insertions(+), 399 deletions(-)
+
+commit 8678b9dd1b454d70f85c4f6f09c21a481dde6eec
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Aug 27 10:34:05 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Refactor handling of runtimeTransformers in sqlDbExtractorRunner: allow only QueryExtractorTransformers as runtimeTransformers (and not MiroirSelectQueriesRecord). Also, QueryExtractorTransformers are not part of MiroirSelectQueriesRecord anymore.
+
+ 10 files changed, 160 insertions(+), 291 deletions(-)
+
+commit acf96b844188ebc96da671141e7812423df0193d
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Aug 27 08:43:56 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Implement handling of runtimeTransformers in sqlDbExtractorRunner
+
+ 1 file changed, 60 insertions(+), 1 deletion(-)
+
+commit 410dc4c5a6ea74e7d76cdabb3ca59314883cd6fa
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Aug 26 22:20:38 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Add combiner anr runtimeTransformers to reports, and handle them in QuerySelector. Combiners specify joins and runtimeTransformers aggregations (unique & count, w/ group by for now)
+
+ 25 files changed, 1706 insertions(+), 551 deletions(-)
+
+commit cc7020313441223c9e3edad37b484a269dfc65fe
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Aug 23 10:23:17 2024 +0200
+
+    REFACTOR: on the server side, have DomainController use persistenceStore.handlePersistenceAction to handle queries, removing redundant local interpretation of domainModelSingleExtractor and extractorForRecordOfExtractors. Clarify structure of fullObjectTemplate Transformer.
+
+ 28 files changed, 398 insertions(+), 316 deletions(-)
+
+commit c5446c09a8f4d3d51b870951c4ab329b24009540
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Aug 21 19:53:11 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. implement ExtractorRunner orderBy for extractorTransformer on Postgres as SQL query (select ... ORDER BY) and in-memory in QuerySelector.
+
+ 6 files changed, 73 insertions(+), 20 deletions(-)
+
+commit ef7f7640829217914b706ac6f65a882273357d84
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Aug 21 17:28:02 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. implement ExtractorRunner for extractorTransformer gouped count on Postgres as SQL query (select COUNT GROUP BY) and in-memory in QuerySelector.
+
+ 5 files changed, 163 insertions(+), 171 deletions(-)
+
+commit 3cb78a94f09afefe6b3214da5c26100253d3115b
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Aug 21 13:36:02 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. implement ExtractorRunner for extractorTransformer count on Postgres as SQL query (select COUNT).
+
+ 18 files changed, 1293 insertions(+), 1339 deletions(-)
+
+commit d567e299263e0b9768842d539eaa5eb5db620ee5
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Aug 20 21:30:20 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. implement ExtractorRunner for extractorTransformer (uniqueness) on Postgres as SQL query (select DISTINCT).
+
+ 24 files changed, 409 insertions(+), 304 deletions(-)
+
+commit fe5eec9665a925a125f93a7706980f6710122d24
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Aug 17 14:20:39 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Test ExtractorRunner for extractorTransformer (uniqueness) on indexedDb, filesystem and sql (in-memory implementation).
+
+ 29 files changed, 1353 insertions(+), 612 deletions(-)
+
+commit 8b30124c0feb527e08d80f6ee3412d64d25c0ea8
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Aug 16 19:09:04 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Tentatively implemented filtering on database (SQL "where" / "like" clause) for SqlDbExtractorRunner, used by handleQuery for a "extractObjectListByEntity" QueryAction.
+
+ 4 files changed, 502 insertions(+), 327 deletions(-)
+
+commit 9508ec1064540740e9ba02958d38961046b4a29c
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Aug 16 12:25:12 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Replacing ExtractorRunner in indexedDb, and filesystem implementations by common implementation ExtractorRunnerInMemory in miroir-core.
+
+ 9 files changed, 111 insertions(+), 131 deletions(-)
+
+commit d62def65c6539abb21ebff2c64a8ed6677f66c2f
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Aug 15 22:45:20 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Test ExtractorRunner.handleQuery for filtered Object Lists on indexedDb, filesystem and postgres implementations (in-memory filtering).
+
+ 1 file changed, 84 insertions(+), 69 deletions(-)
+
+commit 8ee0ebcdd7a992e9e560b9e08ce21e9acd2501fa
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Aug 15 19:05:52 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Use in-memory ExtractorRunner.handleQuery for indexedDb, filesystem and postgres implementations. Some refactorings / renamings around DomainController, PersistenceReduxSaga, PersistenceStoreController, PersistenceStoreControllerManager.
+
+ 42 files changed, 959 insertions(+), 561 deletions(-)
+
+commit b377cddd528c7a11d562802c4bf27e69e130b697
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Aug 14 11:47:11 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Refactoring to prepare for the use of ExtractorRunners in DomainController/PersistenceStoreController: renamings.
+
+ 47 files changed, 669 insertions(+), 289 deletions(-)
+
+commit de05d827a2ff5425999f3c193a0ad08006afa74b
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Aug 12 23:00:33 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Allow the "runQuery" queryAction to use "domainModelSingleExtractor" queries, and allow such actions in handleQuery (DomainController, QuerySelectors, IndexedDbExtractorRunner).
+
+ 13 files changed, 557 insertions(+), 180 deletions(-)
+
+commit f9227035e6e16492a5d2250bbf91f0cd2e4f1056
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Aug 12 18:44:55 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Implemented IndexedDbExtractorRunner and PersistenceStoreExtractorRunner.test, which uses async versions of QuerySelectors.
+
+ 22 files changed, 2904 insertions(+), 1857 deletions(-)
+
+commit 16e5c0a68dcba2fcaf584e5d18999f0c79f93332
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Aug 8 22:16:52 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Implemented most simple extractorTransformer for uniqueness of attribute value over a set of objects.
+
+ 6 files changed, 945 insertions(+), 685 deletions(-)
+
+commit 28cbf9f4e2a4233c8a3e3f95c0b4cd96e9e52e48
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Aug 6 23:15:52 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Implemented most simple regexp match filter for extractObjectListByEntity queries in QuerySelector
+
+ 38 files changed, 423 insertions(+), 242 deletions(-)
+
+commit 424a5f74617dbfefdce879657112bcfc3b960561
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Aug 6 00:21:28 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. refactor fetchQuery attribute to "extractors" in Reports, so that "pure" extraction and join extraction are handled separately. Migrated all reports to new format.
+
+ 10 files changed, 14 insertions(+), 19 deletions(-)
+
+commit 0f08404b2776e1a0c1d44226378aba84f1805dc9
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Aug 6 00:05:17 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. refactor fetchQuery attribute to "extractors" in Reports, so that "pure" extraction and join extraction are handled separately. Migrated all reports to new format.
+
+ 46 files changed, 1806 insertions(+), 808 deletions(-)
+
+commit b9012a8a35f04c7e391913be4c565a53b1ac3030
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Aug 3 22:20:42 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28.  refactor fetchQuery attribute of Extractor, to remove spurious "select" inner object.
+
+ 49 files changed, 804 insertions(+), 942 deletions(-)
+
+commit 21ce81bfd38106b162c2aad7ce940ac023f11660
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Aug 2 23:30:23 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28.  refactor queryTemplates to explicit usage of constants for Uuid or Objects.
+
+ 60 files changed, 929 insertions(+), 905 deletions(-)
+
+commit 113ed9f4789a18a462d4196b0ae89aff8af0bd45
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Aug 1 23:10:13 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28.  Implement basic Extractor / Query Action handlers in miroir-store-indexedDb
+
+ 15 files changed, 1067 insertions(+), 129 deletions(-)
+
+commit b69432692b2432645705c614b8e11cf742918e8f
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Jul 30 22:19:10 2024 +0200
+
+    REFACTOR: Queries and Extractors renamings and clean-up. Corrected build params.
+
+ 54 files changed, 1653 insertions(+), 1485 deletions(-)
+
+commit 350b1ade195cacd673b81d60f5d577888d3520f4
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Jul 28 23:51:58 2024 +0200
+
+    REFACTOR: Queries and Extractors renamings and clean-up.
+
+ 25 files changed, 275 insertions(+), 272 deletions(-)
+
+commit 0c9206ca321baaa295c512b6b9102a30fd94bd88
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Jul 28 19:45:41 2024 +0200
+
+    REFACTOR: Queries and Extractors renamings and clean-up.
+
+ 32 files changed, 880 insertions(+), 939 deletions(-)
+
+commit 932c30a47bcd7be8774c249ab9201c683b17119d
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Jul 26 23:13:21 2024 +0200
+
+    Creation of Extractors (distinct from Queries): Renamings
+
+ 30 files changed, 398 insertions(+), 415 deletions(-)
+
+commit 4465f4d8d74efb7ff52ccd45b8c1639b526d6ae0
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Jul 25 22:18:56 2024 +0200
+
+    REFACTOR: factor out common aspects of Queries, Endpoint Implementations, and Transformers #35. Step 1: revise DomainElements and narrow down return types for basic Entity Queries
+
+ 16 files changed, 2516 insertions(+), 1963 deletions(-)
+
+commit 2ea719c6d92138c88b5bdabb380e77819d17b4ef
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Jul 24 13:16:05 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28.  Add CompositeInstanceActionTemplate action type and DomainController.handleInstanceActionTemplate handler.
+
+ 8 files changed, 1816 insertions(+), 437 deletions(-)
+
+commit 164ce14e49ddfc34c0613128f9fcc2d222bb7471
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Jul 22 16:10:19 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Migrate Importer.splitEntity actions to CompositeAction (partially).
+
+ 2 files changed, 266 insertions(+), 249 deletions(-)
+
+commit 62c9a0416f58766f3950c8a313d64e73c2200666
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Jul 21 12:59:16 2024 +0200
+
+    migrate to Jzod 0.8.0: use "tag" instead of "extra" for bootstrapped JzodSchema extension. Step 2: replace "extra" values with "tag" values. Also renames EntityApplication as EntitySelfApplication, entityApplicationVersion as entitySelfApplicationVersion, entityApplicationModelBranch as entitySelfApplicationModelBranch, entityApplicationDeploymentConfiguration as entitySelfApplicationDeploymentConfiguration
+
+ 78 files changed, 6536 insertions(+), 5977 deletions(-)
+
+commit 82d5690d8ea6629ab569afa4a524ac854a203ded
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Jul 18 17:03:01 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Migrate Importer.splitEntity actions to CompositeAction (partially).
+
+ 1 file changed, 617 insertions(+), 445 deletions(-)
+
+commit c2ff1a452e339ed1061ed82bddc8e4adaf630111
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Jul 18 17:00:35 2024 +0200
+
+    migrate to Jzod 0.8.0: use "tag" instead of "extra" for bootstrapped JzodSchema extension. Step 1: add "tag" definition (copy / paste from Jzod)
+
+ 20 files changed, 11108 insertions(+), 9784 deletions(-)
+
+commit d5be9ab61c0cdcaa7a8e666773674845e96a0eac
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Jul 7 22:20:36 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Using proper template (TS) types for ActionHandler.implementation.compositeActionTemplate. Allowing the use of QueryActions and DomainActions in a CompositeAction.
+
+ 9 files changed, 16179 insertions(+), 1307 deletions(-)
+
+commit 36781505dfb560703a5bc9f1146ada7508541c12
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Jul 3 18:33:08 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Migrate Importer.submit to ActionHandler, first part.
+
+ 13 files changed, 941 insertions(+), 917 deletions(-)
+
+commit c4f78b5a783d1a661b84c0668c370573ea4b9547
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Jul 2 16:35:31 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Replace ActionTemplateSchema by ActionHandler, which has separate "interface" and "implementation" sections. Implementation is given as CompositeAction Template, interpreted in Tools.tsx to produce a CompositeAction, which is run by DomainController.
+
+ 10 files changed, 1154 insertions(+), 1225 deletions(-)
+
+commit 003dfdb39b3508c51c12829cf5f2bd489f791bef
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Jun 27 19:18:50 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Define precise type for compositeAction definition, that is an array of ObjectTemplate references (referencing the actions defined in templatesDEFUNCT)
+
+ 12 files changed, 1174 insertions(+), 221 deletions(-)
+
+commit 9c0d614f0da19246a53cb38fb6fdfdbe60c4abb5
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Jun 21 10:35:43 2024 +0200
+
+    technical: using tsup for build miroir-store-indexedDb, using moduleResolution=nodeNext, meaning ".js" is added to imports
+
+ 76 files changed, 423 insertions(+), 318 deletions(-)
+
+commit 175b34297e9ed4e7a48fb3b97fce721deec8aac0
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Jun 20 22:20:56 2024 +0200
+
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Preparing for ActionTemplates, added definition for CarryOn types in miroirFundamentalJzodSchema
+
+ 15 files changed, 657 insertions(+), 549 deletions(-)
+
+commit 34493039976f3f100a12cdf35b49db25ee5d50ee
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Jun 14 12:06:45 2024 +0200
+
+    refactor: added templateJzodSchema for DomainActionCompositeSequence
+
+ 18 files changed, 482 insertions(+), 287 deletions(-)
+
+commit 0a379d12b43e9f0998902128573a5d247304e056
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Jun 13 09:57:35 2024 +0200
+
+    miroir-standalone-app refactoring: using "moduleResolution": "NodeNext" in tsconfig.json implies renaming imports to include ".ts"
+
+ 26 files changed, 148 insertions(+), 133 deletions(-)
+
+commit b1028485546ca11958397246cc99a140e80d475b
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Jun 12 21:28:33 2024 +0200
+
+    migrate to Jzod 0.7.0: abandon "simpleType" Jzod schema definitions #32. Removing Leftover "simpleType" uses.
+
+ 11 files changed, 221 insertions(+), 197 deletions(-)
+
+commit 69a52ab0ca9056e3f203befe246fa8a43067c9d1
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Jun 12 17:08:40 2024 +0200
+
+    migrate to Jzod 0.7.0: abandon "simpleType" Jzod schema definitions #32. Removing all "simpleType" uses.
+
+ 35 files changed, 1009 insertions(+), 1690 deletions(-)
+
+commit de6dd50e7c409817e0cfd8f1a8ac27730f5eac39
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Jun 10 18:20:25 2024 +0200
+
+    Form / JzodElementEditor: allow to extend an Entity Instance based on the Entity's known structure #29. Allow edition of a Record's attributes.
+
+ 14 files changed, 1398 insertions(+), 819 deletions(-)
+
+commit cbc202ce940e3cba7fafd0376cfd9ab68bb2b5c1
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Jun 6 13:34:12 2024 +0200
+
+    Form / JzodElementEditor: allow to extend an Entity Instance based on the Entity's known structure #29. Improve object and array indentation in JzodObjectEditor.
+
+ 1 file changed, 17 insertions(+), 11 deletions(-)
+
+commit a5c29e18464ca3e5c0c61c9fa256932878ea1e74
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Jun 6 13:08:21 2024 +0200
+
+    Form / JzodElementEditor: allow to extend an Entity Instance based on the Entity's known structure #29. Adding capability to remove optional object's attributes in JzodObjectEditor.
+
+ 6 files changed, 394 insertions(+), 249 deletions(-)
+
+commit 8ab8e1c0170e6d6d8214524cbc2c862037cd11a9
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Jun 3 18:54:27 2024 +0200
+
+    migrate to Jzod 0.7.0: abandon "simpleType" Jzod schema definitions #32. Step 1: dealing with numbers & booleans in JzodObjectEditor.
+
+ 4 files changed, 104 insertions(+), 108 deletions(-)
+
+commit 4f651bdf4b22dff3e3ee91470ac010677155f1ef
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Jun 3 16:21:07 2024 +0200
+
+    BUG: implement display as Select combobox of enum-typed attributes and entity uuids for edition (JzodObjectEditor) #3. Dealing with Entity Uuids through "targetEntity" "extra" property of Report Query and Definition.
+
+ 8 files changed, 157 insertions(+), 86 deletions(-)
+
+commit cbd3dbaab302f6f179bde99394cb5b9aa25d33e6
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Jun 3 12:24:39 2024 +0200
+
+    migrate to Jzod 0.7.0: abandon "simpleType" Jzod schema definitions #32. Resolve "extend" clause in JzodObject when computing default value.
+
+ 10 files changed, 311 insertions(+), 71 deletions(-)
+
+commit 4c650bbf2dc200aa5d9e08e6469e24c6501235f9
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Jun 2 22:53:26 2024 +0200
+
+    migrate to Jzod 0.7.0: abandon "simpleType" Jzod schema definitions #32. Step 1: dealing with strings only in JzodObjectEditor, and migrating entities of Library application.
+
+ 40 files changed, 917 insertions(+), 2301 deletions(-)
+
+commit 71893a148109ab22211142d85b992e4e37874617
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Jun 2 19:29:18 2024 +0200
+
+    migrate to Jzod 0.7.0: abandon "simpleType" Jzod schema definitions #32. Step 1: dealing with strings only in JzodObjectEditor, and migrating entities of Library application.
+
+ 17 files changed, 1206 insertions(+), 738 deletions(-)
+
+commit a400906e4ba76dd92a89add6577e2210846a958d
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Jun 1 11:53:30 2024 +0200
+
+    migrate to jzod and jzod-ts 0.7.0. Cleanup direct dependencies to jzod-ts. Cosmetic improvements.
+
+ 27 files changed, 218 insertions(+), 107 deletions(-)
+
+commit dfc7e75b9fbbeec9f46713b92849cdea35a644a4
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu May 30 21:04:53 2024 +0200
+
+    Form / JzodElementEditor: allow to extend an Entity Instance based on the Entity's known structure #29. correct proposed values for subDiscriminator.
+
+ 7 files changed, 623 insertions(+), 253 deletions(-)
+
+commit 706f195a7ed4bb7d1fc4c016c2400d79f1989e00
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed May 29 18:12:05 2024 +0200
+
+    Form / JzodElementEditor: allow to extend an Entity Instance based on the Entity's known structure #29. Add some automated tests for JzodElementEditor.
+
+ 10 files changed, 976 insertions(+), 450 deletions(-)
+
+commit d3841abca3e9dfde86be168574bf908364bcb9e6
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon May 27 16:32:21 2024 +0200
+
+    Form / JzodElementEditor: allow to extend an Entity Instance based on the Entity's known structure #29. Properly handle discriminated unions and subDiscriminated unions.
+
+ 2 files changed, 353 insertions(+), 599 deletions(-)
+
+commit 07c4bad4afa01f87e5d6a143edbbc369193bf4ff
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat May 25 18:48:42 2024 +0200
+
+    Form / JzodElementEditor: allow to extend an Entity Instance based on the Entity's known structure #29. For discriminated unions, take subDiscriminator into account.
+
+ 3 files changed, 211 insertions(+), 103 deletions(-)
+
+commit 34e1ec520d3b8fc7d8ca6bbedb04c934eaa6c0f2
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri May 24 18:51:30 2024 +0200
+
+    Form / JzodElementEditor: allow to extend an Entity Instance based on the Entity's known structure #29. For discriminated unions, allow to choose the branch based on the union's definition.
+
+ 3 files changed, 253 insertions(+), 54 deletions(-)
+
+commit 80d2c92f2b4b27b6c5ffcc9afaec053dc6301eac
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu May 23 16:32:33 2024 +0200
+
+    Form / JzodElementEditor: allow to extend an Entity Instance based on the Entity's known structure #29. First try: a (+) button is added below the existing object's attribute, that allow to create the optional attributes in the order of appearance, by clicking repeatedly on the button.
+
+ 13 files changed, 4484 insertions(+), 162 deletions(-)
+
+commit 52b0083de0480bd8c365185f91bc36da3f5a2da1
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon May 20 22:22:20 2024 +0200
+
+    Form / JzodElementEditor: allow to extend an Entity Instance based on the Entity's known structure #29. Displaying the attributes of an object next to it in JzodElementEditor. It implies keeping the "theoretic", "unfolded" Jzod schema additionally to the resolved schema deduced from the instance's structure.
+
+ 9 files changed, 7416 insertions(+), 693 deletions(-)
+
+commit 66c7f0cbc094bb6669aad8803e983c3b0e459380
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed May 15 12:58:51 2024 +0200
+
+    EXPERIMENT: create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Use composite sequence Action in miroir-standalone-app/importer.tsx / createEntity.
+
+ 2 files changed, 247 insertions(+), 139 deletions(-)
+
+commit 792496485f5db3d54f93d8256390c90cb839300f
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue May 14 21:01:54 2024 +0200
+
+    EXPERIMENT: create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Use only 1 (composite sequence) Action in Tools.submit.
+
+ 1 file changed, 356 insertions(+), 447 deletions(-)
+
+commit 770dd4463225762d730e65c7f9fff8b4c48c5a14
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue May 14 17:50:14 2024 +0200
+
+    EXPERIMENT: create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Use Action Templates for compositeAction.definition, centralizing Template resolution for Tools.submit.
+
+ 5 files changed, 267 insertions(+), 479 deletions(-)
+
+commit b74bb8dc97b6760e2dbea2387890c442f299ec66
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue May 14 15:01:57 2024 +0200
+
+    EXPERIMENT: create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Add domainAction/compositeAction, and migrate all Tools.submit actions to use only one (sequence) compositeAction.
+
+ 6 files changed, 254 insertions(+), 16 deletions(-)
+
+commit a5a48e78cffcf22ab97ef8934a62ea0944338788
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue May 14 11:07:46 2024 +0200
+
+    EXPERIMENT: create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Migrate all Tools.submit actions to use only Action Templates.
+
+ 9 files changed, 768 insertions(+), 119 deletions(-)
+
+commit bb079eeca77b3f55554fe08d6dc9d076a932d539
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue May 14 11:05:48 2024 +0200
+
+    EXPERIMENT: create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Add Mustache support to miroir-core/Templates.
+
+ 3 files changed, 159 insertions(+), 126 deletions(-)
+
+commit 84307c4441eb1caf1bde59a3c4a1ef18a851236a
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun May 12 22:21:50 2024 +0200
+
+    EXPERIMENT: create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Creates the miroir-core/Templates, allowing to generate an object from a template, used to generate Actions.
+
+ 8 files changed, 676 insertions(+), 187 deletions(-)
+
+commit 9490a9435cc929d2c34aa87ab09f65931e4f2208
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon May 6 17:05:26 2024 +0200
+
+    EXPERIMENT: extract new Entity as unique values of an attribute of an existing Entity (create model-level actions) #27
+
+ 19 files changed, 752 insertions(+), 360 deletions(-)
+
+commit 401162dcc33ca6e2b21715ad883f0d648d0d7b29
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Apr 25 13:05:44 2024 +0200
+
+    EXPERIMENT: create & deploy a new Application #26. StoreAction "openStore" only opens one store, given by action.deploymentUuid.
+
+ 10 files changed, 142 insertions(+), 107 deletions(-)
+
+commit da62a14211e507587160422af63170a4d5c5c753
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Apr 24 22:44:10 2024 +0200
+
+    EXPERIMENT: create & deploy a new Application #26. Make importer work on Test1 Application / Deployment
+
+ 1 file changed, 16 insertions(+), 16 deletions(-)
+
+commit 98b01fb53bc81b2802362c791cc630cfc310fb40
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Apr 24 22:29:20 2024 +0200
+
+    EXPERIMENT: create & deploy a new Application #26. Make importer work on Test1 Application / Deployment
+
+ 13 files changed, 268 insertions(+), 139 deletions(-)
+
+commit 0777221974fad757fd9a19f99a2b1ec38de39c5c
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Apr 24 17:48:10 2024 +0200
+
+    EXPERIMENT: create & deploy a new Application #26. Add selfApplication attribute to (Self)Application Entity
+
+ 13 files changed, 77 insertions(+), 44 deletions(-)
+
+commit d183cfe88a60073b1dd1bd6917409416a9b91185
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Apr 24 16:18:26 2024 +0200
+
+    EXPERIMENT: create & deploy a new Application #26. Replace references to self-deployment applicationDeploymentMiroir by references to Admin application configuration adminConfigurationDeploymentMiroir
+
+ 30 files changed, 178 insertions(+), 181 deletions(-)
+
+commit 84bbbdc7622c109edec5be83316bb1b1adc99ea9
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Apr 24 16:01:01 2024 +0200
+
+    EXPERIMENT: create & deploy a new Application #26. Replace references to self-deployment applicationDeploymentLibrary by references to Admin application configuration adminConfigurationDeploymentLibrary
+
+ 30 files changed, 325 insertions(+), 325 deletions(-)
+
+commit 098dfeab186dd2d6c445941a6e4e4194650914b0
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Apr 24 12:41:13 2024 +0200
+
+    EXPERIMENT: create & deploy a new Application #26. Limit dependencies on specific "Library" application: removed applicationDeploymentLibrary.uuid occurrences from miroir-core
+
+ 19 files changed, 291 insertions(+), 450 deletions(-)
+
+commit 8b0d3376c256576d3948b5f67f1b3c906e6596a0
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Apr 23 17:50:36 2024 +0200
+
+    EXPERIMENT: create & deploy a new Application #26. Added Bundle and Deployment Entities to Admin application.
+
+ 31 files changed, 408 insertions(+), 90 deletions(-)
+
+commit dd4245eaf231212c8f0fabbb4d3067d71f13cce9
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Apr 22 18:51:35 2024 +0200
+
+    EXPERIMENT: create & deploy a new Application #26. Allow to display Application/Deployment dependent Menu. Created MenuSection in miroir-standalone-app for such purpose.
+
+ 20 files changed, 524 insertions(+), 214 deletions(-)
+
+commit e45e1c57aba4c9acd0fda9db925acfff85662b02
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Apr 22 14:53:21 2024 +0200
+
+    EXPERIMENT: create & deploy a new Application #26. Added "Admin" application, renamed Meta-model "Application" to "SelfApplication"
+
+ 34 files changed, 664 insertions(+), 72 deletions(-)
+
+commit 3a1bf030b249dd8588632b5fbe8b95fd96acde64
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Apr 20 16:09:06 2024 +0200
+
+    EXPERIMENT: create & deploy a new Application #26. Remove coupling to Miroir/Library application in MiroirConfigClient (no more "miroirServerConfig" and "appServerConfig"), to allow any number of applications in configuration.
+
+ 34 files changed, 545 insertions(+), 2185 deletions(-)
+
+commit a1c3e4e690aa4a20519f5897ed1502717171a4b2
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Apr 20 09:52:44 2024 +0200
+
+    EXPERIMENT: create & deploy a new Application #26. Allow to create a new store from the Tools page.
+
+ 6 files changed, 502 insertions(+), 44 deletions(-)
+
+commit 8f40b1958a7acd3d274f8328d03a663de7e44e8f
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Apr 19 12:41:49 2024 +0200
+
+    TESTS: realServer postgres DomainController tests do not drop / create "miroir" and "library" schemas #24
+
+ 10 files changed, 191 insertions(+), 13 deletions(-)
+
+commit e51a1f9c4566cdc3c505387454c5a9236a7d0c63
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Apr 18 15:35:58 2024 +0200
+
+    feature: add "hello world!" tools page, refactor: (re-)organise React Components
+
+ 30 files changed, 201 insertions(+), 180 deletions(-)
+
+commit 58dbf16308f69daa01821a1f2dc8e6bbae8c0ad2
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Apr 18 14:20:57 2024 +0200
+
+    bugfix: add "application" attribute to Reports
+
+ 33 files changed, 269 insertions(+), 113 deletions(-)
+
+commit 8ff79c297fa9236b216ba4675df090e6de777def
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Apr 17 16:54:28 2024 +0200
+
+    EXPERIMENT: SPLIT an Entity in 2 entities #25
+
+ 11 files changed, 839 insertions(+), 164 deletions(-)
+
+commit b32880ce8a7afa7af94861e8e5a3786f0fb3dfd2
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Apr 16 15:02:59 2024 +0200
+
+    BUG #6: fix Excel sheet import
+
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+commit 93bdbc6232cacb88c8767f659e58a0e8113aaeb7
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Apr 16 12:46:27 2024 +0200
+
+    feature #21: allow to DELETE an instance from the client GUI. Separated handleQueryAction from handleAction in DomainController. remove deleteCascade implementation from LocalCacheSlice (miroir-localCache-redux) and PersistenceStore.
+
+ 11 files changed, 3 insertions(+), 355 deletions(-)
+
+commit 174f6bcb896018129d40ad8ba9c69e80ceeebcc7
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Apr 16 10:39:58 2024 +0200
+
+    feature #21: allow to DELETE an instance from the client GUI. Separated handleQueryAction from handleAction in DomainController. Implemented deleteCascade in 2 places: in LocalCacheSlice (miroir-localCache-redux) and in scripts.ts (miroir-standalone-app).
+
+ 24 files changed, 859 insertions(+), 320 deletions(-)
+
+commit fb3e71d0613b7e05b61904cfa9044a217769142d
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Apr 11 12:42:56 2024 +0200
+
+    refactor #23: enable use of DomainSelector functions on LocalCache state (current DeploymentEntityState). Replace selectors in DomainStateQuerySelectors that do not directly access the DomainState by corresponding selectors in QuerySelectors.ts. Remove uses of legacy types from DomainStateQuerySelectorInterface.
+
+ 14 files changed, 217 insertions(+), 841 deletions(-)
+
+commit 7042969732b0984201b245dc89b4d78fe8007017
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Apr 11 10:26:42 2024 +0200
+
+    refactor #23: enable use of DomainSelector functions on LocalCache state (current DeploymentEntityState). Move TypeState-agnostic selectors to QuerySelectors.ts, remove use of useDomainStateJzodSchemaSelector from RootReportSectionView.
+
+ 9 files changed, 787 insertions(+), 750 deletions(-)
+
+commit 53fab30b88cf204756b8b5d49e52905c7335e428
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Apr 10 20:24:44 2024 +0200
+
+    refactor #23: enable use of DomainSelector functions on LocalCache state (current DeploymentEntityState). Generalize types for useDeploymentEntityStateQuerySelector, by making the StateType (DeploymentEntityState) a parameter, so that selectors that do not depend on the state type can be used on different state types STEP 2, remove old type uses.
+
+ 10 files changed, 99 insertions(+), 134 deletions(-)
+
+commit f56e581c44e64f19ed24eb92839e4a9316e95f6a
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Apr 10 18:56:29 2024 +0200
+
+    refactor #23: enable use of DomainSelector functions on LocalCache state (current DeploymentEntityState). Generalize types for useDeploymentEntityStateQuerySelector, by making the StateType (DeploymentEntityState) a parameter, so that selectors that do not depend on the state type can be used on different state types.
+
+ 10 files changed, 202 insertions(+), 202 deletions(-)
+
+commit 7551ab63dbed3341988313072b7a9f642dea6a2e
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Apr 10 16:16:21 2024 +0200
+
+    refactor #23: enable use of DomainSelector functions on LocalCache state (current DeploymentEntityState). Replace useDomainStateQuerySelector by useDeploymentEntityStateQuerySelector in ReportSectionListDisplay.
+
+ 5 files changed, 58 insertions(+), 22 deletions(-)
+
+commit 11421c707baf707df3bf4654165bcffd78cd3bc3
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Apr 10 12:11:21 2024 +0200
+
+    refactor #23: enable use of DomainSelector functions on LocalCache state (current DeploymentEntityState). Replace useDomainStateQuerySelector by useDeploymentEntityStateQuerySelector in RootReportSectionView.
+
+ 8 files changed, 167 insertions(+), 159 deletions(-)
+
+commit 2569b89ac749d5f0b5302b07a42fd7cffb719888
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Apr 10 10:24:34 2024 +0200
+
+    refactor #23: enable use of DomainSelector functions on LocalCache state (current DeploymentEntityState). Add DeploymentEntityStateQuerySelectors in miroir core, add corresponding hook (useDeploymentEntityStateQuerySelector) in miroir-standalone-app, replace useDomainStateQuerySelector by useDeploymentEntityStateQuerySelector in Sidebar.
+
+ 13 files changed, 1472 insertions(+), 172 deletions(-)
+
+commit 66644c511c2739554653ac788ba0e78b24136763
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Apr 9 18:07:39 2024 +0200
+
+    refactor #23: enable use of DomainSelector functions on LocalCache state (current DeploymentEntityState). Replace useCurrentModelOld with useCurrentModel, which selectors are based on DeploymentEntityState
+
+ 13 files changed, 82 insertions(+), 353 deletions(-)
+
+commit 4ac61463ef39d6a638c354d31256a299c94378f0
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Apr 9 15:44:28 2024 +0200
+
+    refactor #23: enable use of DomainSelector functions on LocalCache state (current DeploymentEntityState). Renamings (approach phase)
+
+ 13 files changed, 87 insertions(+), 89 deletions(-)
+
+commit 468256ed25a2538f8f7df8db5d232c52711ae6c2
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Apr 9 14:37:44 2024 +0200
+
+    make miroir-standalone-app DomainController integration tests pass again.
+
+ 8 files changed, 243 insertions(+), 90 deletions(-)
+
+commit 547064901abcb744b60e21dbd17dee409beb68d4
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Apr 9 10:25:31 2024 +0200
+
+    refactor #23: enable use of DomainSelector functions on LocalCache state (current DeploymentEntityState). Moved DeploymentEntityState to miroir-core, removed used of reselect library from miroir-core (createdSelector disappeared from DomainSelector). Created getMemoizedSelectorMap in DomainStateSelector in miroir-localcache-redux
+
+ 22 files changed, 424 insertions(+), 290 deletions(-)
+
+commit 85147526eae54a0e3976ab1dabe4dd31e48a1933
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Apr 8 16:12:01 2024 +0200
+
+    issue #21: FEATURE: allow to DELETE an instance from the client GUI. Adding the deleteInstanceWithCascade action on LocalCache and PersistentStores Stpe 1 (interface only, implementation identical to deleteInstance action)
+
+ 16 files changed, 426 insertions(+), 53 deletions(-)
+
+commit 92de6941deb6432239199ee1ea177ff39426ae36
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Apr 7 19:31:24 2024 +0200
+
+    issue #21: FEATURE: allow to DELETE an instance from the client GUI
+
+ 8 files changed, 406 insertions(+), 120 deletions(-)
+
+commit 57a24667b49b492a410c79a23796f041cbb9320f
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Apr 7 11:53:15 2024 +0200
+
+    refactor: reduce the number of refreshes upon reload in miroir-standalone-app #20. Step 4: use createSelector for selectEntityInstanceUuidIndexFromLocalCache. Upon refresh, logs are down from ~2500 to ~600.
+
+ 6 files changed, 71 insertions(+), 192 deletions(-)
+
+commit 1af67d316aa645fcc4547d7e9383d29aab6fc516
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Apr 6 18:04:07 2024 +0200
+
+    refactor: reduce the number of refreshes upon reload in miroir-standalone-app #20. Step 3: using LocalCacheSliceStateEntityZone in LocalCacheSliceSelector (selectDomainStatePlain, selectEntityInstanceUuidIndexFromLocalCacheEntityZone, and applyDomainStateSelectorNew). Refreshes of Menu (Sidebar) down from ~100 per fetch to 16.
+
+ 18 files changed, 554 insertions(+), 293 deletions(-)
+
+commit a31591dba42df5f9e3d22e3a8a66b12b8be9b614
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Apr 6 13:35:24 2024 +0200
+
+    refactor: reduce the number of refreshes upon reload in miroir-standalone-app #20. Step 2: alter LocalCacheSliceState structure, with "loading", "current", and "status" attributes. No impact on GUI refresh yet.
+
+ 7 files changed, 2775 insertions(+), 2745 deletions(-)
+
+commit 21d12b55211b64258064055add1dc492428ab518
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Apr 6 09:35:59 2024 +0200
+
+    refactor: reduce the number of refreshes upon reload in miroir-standalone-app #20. Step 1: rename replaceLocalCache action to loadNewInstancesInLocalCache, perform some clean-up.
+
+ 12 files changed, 107 insertions(+), 158 deletions(-)
+
+commit f53f3170d3ca11cbf9a4c242a87a5f21a909b9b2
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Apr 6 07:18:20 2024 +0200
+
+    refactor: in miroir-standalone-app, clean-up astray uses of getMiroirFundamentalJzodSchema
+
+ 6 files changed, 28 insertions(+), 181 deletions(-)
+
+commit d7891b805d5950c4e6aba7526d4b963b21708d01
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Apr 6 07:00:26 2024 +0200
+
+    refactor: push miroirFundamentalJzodSchema to MiroirContext (avoid some prop drilling in ReportSectionListDisplay and MTableComponent)
+
+ 8 files changed, 92 insertions(+), 106 deletions(-)
+
+commit 96be34c216f170da36b32eca763ffcae244f3b51
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Apr 6 06:30:29 2024 +0200
+
+    refactoring: better handle error cases in RootReportSection
+
+ 4 files changed, 218 insertions(+), 225 deletions(-)
+
+commit a42dfbb48ca8feec789f8138096e0862f7bf6684
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Apr 5 19:16:39 2024 +0200
+
+    refactor: push DeploymentUuidToReportsEntitiesDefinitionsMapping to miroir-core, and use it in HomePage, ReportPage.
+
+ 9 files changed, 311 insertions(+), 250 deletions(-)
+
+commit 842ddef9724a05c150b9a64d79fb97cd42b0e0b1
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Apr 5 16:33:22 2024 +0200
+
+    add ReportDetails, EntityDetails and EntityDefinitionDetails reports to display details of a Report, Entity, or EntityDefinition #19
+
+ 10 files changed, 171 insertions(+), 29 deletions(-)
+
+commit 39119afc444a5afb86b50760cf27ae93902d1629
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Apr 5 11:18:05 2024 +0200
+
+    add ReportDetails report to display details of a Report #19
+
+ 14 files changed, 323 insertions(+), 306 deletions(-)
+
+commit 0cb7e7e4f999f721896117574cc67d2920823342
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Apr 4 12:34:27 2024 +0200
+
+    refactor and cleanup: renaming DomainSelectorNew to DomainSelector + log management (reduction).
+
+ 18 files changed, 324 insertions(+), 466 deletions(-)
+
+commit f92d007a5372668d37636f39e887ae564090eea7
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Apr 4 11:08:12 2024 +0200
+
+    Bugfix: allow GUI editor for Reports (editor for Reports does not work #18)
+
+ 18 files changed, 560 insertions(+), 1188 deletions(-)
+
+commit 5a1a04747ded0730d9bae483b284c20bdaf88870
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Apr 3 11:45:32 2024 +0200
+
+    Bugfix: to enable the display of the Library Application Reports, use the pageParams applicationSection in DomainSelectorNew when creating the singleSelectQuery that is executed.
+
+ 2 files changed, 16 insertions(+), 5 deletions(-)
+
+commit f0f80404b4678992879e00bc79ca26a860fa76be
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Apr 3 11:41:21 2024 +0200
+
+    Issue #17: allow the use of "any" in EntityDefinition jzodSchemas. Temporary patch removing "any" attributes from EntityDefinitions, until they are allowed.
+
+ 2 files changed, 7 insertions(+), 7 deletions(-)
+
+commit 3acdaa1df9f6853564fbec7aa2a43a1aaa2ed947
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Apr 2 11:03:00 2024 +0200
+
+    GUI: allowing to choose from a select list for attributes with an extra.TargetEntity value
+
+ 6 files changed, 165 insertions(+), 62 deletions(-)
+
+commit 1af0825da17e17ce005b2a5d4bac21521efc1433
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Apr 1 12:14:33 2024 +0200
+
+    GUI: display FK attributes as select with all FK elements as choice (1 level, not recursive). Regression: reorder of fields or array items does not work.
+
+ 7 files changed, 222 insertions(+), 206 deletions(-)
+
+commit a7ea93c33a98ed89099d8120c4cec9dd710356af
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Mar 31 23:57:44 2024 +0200
+
+    Setting all existing objectListReportSection report sections to be sorted by Entity Instance name
+
+ 24 files changed, 52 insertions(+), 30 deletions(-)
+
+commit 008f9d0a35995b06104ecbae74d27209ce99296b
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Mar 31 23:41:21 2024 +0200
+
+    GUI: enabling sortByAttribute on report section with type objectListReportSection
+
+ 17 files changed, 241 insertions(+), 450 deletions(-)
+
+commit 7c12d616fcf642ff41731334e6d6624fcf2d1464
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Mar 31 22:05:57 2024 +0200
+
+    adding User to library app
+
+ 15 files changed, 319 insertions(+), 7 deletions(-)
+
+commit b3a804dca14d8f918d9446c7ff91c2e9cb264ccd
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Mar 31 17:15:53 2024 +0200
+
+    Bugfix: make importer work again
+
+ 3 files changed, 69 insertions(+), 46 deletions(-)
+
+commit beaddc13f1f48b9f3a4d55cf2af2b071b488726c
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Mar 30 21:33:14 2024 +0100
+
+    GUI: displaying Instance name by default for FK reference attributes, in any array of instances
+
+ 9 files changed, 168 insertions(+), 167 deletions(-)
+
+commit 00ce2d62058dd86367a5c154b7309f8890f537ef
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Mar 29 16:55:16 2024 +0100
+
+    Using codemirror to display & edit JSON contents of an Instance
+
+ 5 files changed, 149 insertions(+), 122 deletions(-)
+
+commit 450b6491cae8d8cb77bd34fbf0496f0c8c09ed89
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Mar 28 19:08:20 2024 +0100
+
+    GUI: for resolveReferencesForJzodSchemaAndValueObject, adding treatment for Object.extend clause, using subDiscriminator for union types (because of JzodSimpleTypes)
+
+ 9 files changed, 2185 insertions(+), 9622 deletions(-)
+
+commit d623b5401ac2da3d477ad8c090eb80f94a7d27ab
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Mar 27 15:39:26 2024 +0100
+
+    GUI: enhancing JzodElemenEditor so that arrays can be displayed
+
+ 9 files changed, 917 insertions(+), 298 deletions(-)
+
+commit 743a4268f2ed4fee52ce96d662c93ebd0b34484a
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Mar 26 19:41:39 2024 +0100
+
+    GUI: allowing edition / creation of simple Entity Instance (Book)
+
+ 5 files changed, 453 insertions(+), 319 deletions(-)
+
+commit a1ad27c3648b4d05c0e438a008dd7e8f6e2be7d6
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Mar 26 10:30:40 2024 +0100
+
+    GUI: migrating to Formik step 1, issue #1: "Refresh error on Forms using react-hook-forms"
+
+ 21 files changed, 2937 insertions(+), 1275 deletions(-)
+
+commit 7c97164ab2fc01129b6df65de66a9a0cb702b5df
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Mar 25 08:40:25 2024 +0100
+
+    GUI: enable Sections in Menus
+
+ 8 files changed, 608 insertions(+), 211 deletions(-)
+
+commit 07adcac6c1c8950553ea29e2eb253d26bac7590f
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Mar 24 20:22:59 2024 +0100
+
+    Followup to github upload: Init README.md cleanup & fix some compilation issues
+
+ 9 files changed, 41866 insertions(+), 11 deletions(-)
+
+commit 3b1b2c40375be73b7b2e63b9898a069a5e9b90d4
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Mar 24 13:04:10 2024 +0100
+
+    add home page link in nav bar
+
+ 3 files changed, 61 insertions(+), 33 deletions(-)
+
+commit cfd85b7bf1f48df48debd4e177b65bd5736585d2
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Mar 24 10:21:17 2024 +0100
+
+    GUI: in MTableCompontent, display details report for instance of Entity when the name of the instance is clicked.
+
+ 7 files changed, 118 insertions(+), 58 deletions(-)
+
+commit 57eb5ad88449b67c99aeb1ea63ac1c11d3a1aa29
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Mar 24 08:03:12 2024 +0100
+
+    GUI: fix TableComponent refresh
+
+ 1 file changed, 14 insertions(+), 3 deletions(-)
+
+commit 2bc73521cfc56421a83682afcbc699b729aa9b4b
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Mar 24 08:02:55 2024 +0100
+
+    GUI: fix TableComponent refresh
+
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+commit 827bd1499fe8b3b587476b48c7aed8f109afbd10
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Mar 23 12:30:00 2024 +0100
+
+    Model: added defaultInstanceDetailsReportUuid to EntityDefinition, use the link in MTableComponent to redirect on cell table click
+
+ 19 files changed, 238 insertions(+), 117 deletions(-)
+
+commit cd4bc168cc45b4c537a547308073c65646af110b
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Mar 22 11:37:48 2024 +0100
+
+    GUI: providing displayedValue and rawValuet to JzodElementEditor (used in cell Renderers). Not thoroughly tested yet.
+
+ 6 files changed, 129 insertions(+), 69 deletions(-)
+
+commit 7da6257c689d836b0c433c68abbab28822d194e7
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Mar 21 22:16:51 2024 +0100
+
+    GUI: bugfix for JzodElementEditor (works~ again)
+
+ 13 files changed, 290 insertions(+), 71 deletions(-)
+
+commit 2a311c9a00585962f8d30cf99afcd1d31195e31a
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Mar 21 17:57:03 2024 +0100
+
+    GUI: add labels to Report sections
+
+ 16 files changed, 31 insertions(+), 15 deletions(-)
+
+commit e69233a4db83162b057ab9e71289eb247ea54e05
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Mar 21 17:43:26 2024 +0100
+
+    GUI: have EntityDefinition.viewAttributes specify order of columns for List Reports. Improved "Tools" column. Migrated to ag-grid 31.
+
+ 17 files changed, 220 insertions(+), 69 deletions(-)
+
+commit 3670cb47125c5653a5fff922b1ba7b3147bff90c
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Mar 21 12:09:17 2024 +0100
+
+    mash-up: implementing resolveReferencesForJzodSchemaAndValueObject for objects and arrays, recovering Test entity to test JzodElementEditor (there are issues in it)
+
+ 14 files changed, 1106 insertions(+), 651 deletions(-)
+
+commit 7b8f39718f1a748774c3ffa13c8b2e7e02696bb9
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Mar 18 22:16:48 2024 +0100
+
+    mash-up: avoid using import of json files in miroir-core, and implementing resolveReferencesForJzodSchemaAndValueObject for edition of Jzod schemas
+
+ 23 files changed, 2391 insertions(+), 307 deletions(-)
+
+commit f95498bade7815fe45343550acc06c8dd26fe262
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Mar 18 09:53:26 2024 +0100
+
+    GUI: correct JzodElementEditor phase 1, added treatment for record types to  resolveReferencesForJzodSchemaAndValueObject.
+
+ 2 files changed, 275 insertions(+), 86 deletions(-)
+
+commit 6afcda09d88a94e1e854bcf1570a1933a6d2abf6
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Mar 17 21:56:06 2024 +0100
+
+    GUI: correct JzodElementEditor phase 1, add resolveReferencesForJzodSchemaAndValueObject to Jzod.ts, with tests for very simple recursive object schema.
+
+ 20 files changed, 15523 insertions(+), 317 deletions(-)
+
+commit 01a046437f714290a3cc06d85024c05536ee918e
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Mar 14 18:20:30 2024 +0100
+
+    added icon to menu definition item, fixed display of JzodElementEditor for elements of MTableComponent.
+
+ 12 files changed, 198 insertions(+), 123 deletions(-)
+
+commit a95aba0dfae2e1476217c8fb3687cb7e9fc64a5c
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Mar 14 12:05:05 2024 +0100
+
+    GUI: allowing icons on menu items
+
+ 12 files changed, 228 insertions(+), 102 deletions(-)
+
+commit dde17cecc8936e0baa3de4ec171f776a6744fba2
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Mar 14 09:30:16 2024 +0100
+
+    Refactoring DomainSelector to memoize selectors: step 2, memoize Jzod Schema selectors (does not help in reducing number of refreshes upon rollback, yet)
+
+ 12 files changed, 347 insertions(+), 107 deletions(-)
+
+commit 5443061d052f95ac423bc00a0ec26503918a3fc0
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Mar 13 19:11:32 2024 +0100
+
+    Refactoring DomainSelector to memoize selectors: step 1, create DomainSelectorNew (that can receive an array of memoized selectors as parameter), migrate miroir-core tests to DomainSelectorNew.
+
+ 16 files changed, 1188 insertions(+), 126 deletions(-)
+
+commit bb8b7a04f8d79fe8a4505a161db8e3fd7516e1c3
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Mar 11 18:50:40 2024 +0100
+
+    added the Menu Entity, the defaultMiroirMenu, displaying default Miroir Menu when data is loaded in LocalCache
+
+ 14 files changed, 321 insertions(+), 70 deletions(-)
+
+commit d2a085eeb2de3489d53c5dcc6a898f18e2244a11
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Mar 11 13:34:36 2024 +0100
+
+    GUI: added some links to sidebar
+
+ 3 files changed, 59 insertions(+), 10 deletions(-)
+
+commit 4dc5161682ceb626e0edbb51b148496b4ac56a1f
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Mar 9 13:12:54 2024 +0100
+
+    MQL: adding queryEndpoint and persitenceEndpoint, added the remoteLocalCacheRollback action to load data in the server's local cache, added DomainController.handleQueryAction and REST post  "query" call to execute queries remotely. Also added LocalCache.getDomainState.
+
+ 31 files changed, 588 insertions(+), 168 deletions(-)
+
+commit fac5e54ac7693954e15f85ccd57f23799e89990e
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Mar 6 17:53:07 2024 +0100
+
+    MQL: move types from DomainSelectorInterface to miroirFundamentalJzodSchema
+
+ 7 files changed, 544 insertions(+), 150 deletions(-)
+
+commit 599151555e13a7dfaccdd36a20246022501bc5d4
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Mar 6 14:06:22 2024 +0100
+
+    DomainController: use ActionVoidReturnType for handleAction return type
+
+ 2 files changed, 21 insertions(+), 25 deletions(-)
+
+commit f90f8380507f325b50e795ebc3af6e516f4a7582
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Mar 6 11:26:29 2024 +0100
+
+    MQL: enabling transational/non-transaction modelActions, as only non-transactional modelActions can be executed by the server, when the client perfomes a commit. The localCache on the server is used only as a cache, not a transactional undo/redo cache. Introduced ModelActionReplayableAction, which are the only ModelActions than can be replayed upon commit. Fixed tests-utils for real server use.
+
+ 11 files changed, 106 insertions(+), 41 deletions(-)
+
+commit 0f48c6c2579bd68b5229efbccccf3e0acd476aa0
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Mar 5 10:05:52 2024 +0100
+
+    Renamings (StoreController -> PersistenceStoreController, ReduxStore -> LocalCache etc.). Added getDomainController to PersistenceStoreControllerManagerInterface, to use domainController in RestServer using the LocalCache
+
+ 44 files changed, 730 insertions(+), 687 deletions(-)
+
+commit 301365a680dc1ee6644ccdf4b5003003e828b314
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Mar 4 22:04:09 2024 +0100
+
+    architecture: preparing use of reduxStore on the server side, adding experimental use in RestServer.ts, line 226
+
+ 15 files changed, 195 insertions(+), 103 deletions(-)
+
+commit 949b3aafdf9c864948d3149d9f637a3acb15e07c
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Mar 4 10:29:14 2024 +0100
+
+    architecture: preparing use of reduxStore to the server side (not used yet)
+
+ 21 files changed, 209 insertions(+), 162 deletions(-)
+
+commit 78efed4c38eeae8883167a5bf35a73a2ae2af2c0
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Mar 3 13:00:02 2024 +0100
+
+    removing "deploymentUuid" parameter from CallPersistenceAction / handlePersistenceAction interface
+
+ 11 files changed, 61 insertions(+), 58 deletions(-)
+
+commit 6149df03d486f86882acdff9154b1d60fe004e25
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Mar 3 12:01:07 2024 +0100
+
+    Remove useless parameter "fname" from "callLocalCacheAction" and "callPersistenceAction" helpers
+
+ 2 files changed, 11 insertions(+), 27 deletions(-)
+
+commit e94e49c46a280034d470e0f52151d2e068493df6
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Mar 3 11:54:49 2024 +0100
+
+    cleanup & renamings: RemoteStoreRestAccessReduxSaga -> PersistenceActionReduxSaga
+
+ 25 files changed, 158 insertions(+), 240 deletions(-)
+
+commit 99958cfcf22b20060875b3bbe18346a8e50422c9
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Mar 2 22:58:36 2024 +0100
+
+    cleanup: remove handler for "modelWithDeployment" REST route, renames "miroirWithDeployment" REST route to "CRUD"
+
+ 2 files changed, 7 insertions(+), 46 deletions(-)
+
+commit c733592e4f79c1128c6a73b09756adb2c4293490
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Mar 2 22:48:33 2024 +0100
+
+    Using RemoteStoreNetworkRestClient.restMethodActionHandler and StoreController.handleAction for ModelActions
+
+ 5 files changed, 39 insertions(+), 119 deletions(-)
+
+commit e049e221241021e9194ed113c844c7178ff7c0c2
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Mar 2 20:52:27 2024 +0100
+
+    DomainController: using "handleRemoteStoreAction" instead of "handleRemoteStoreCRUDAction" for instance actions (thus adding restMethodActionHandler to RestServer.ts
+
+ 10 files changed, 214 insertions(+), 105 deletions(-)
+
+commit eb75611111440c6db2945c51c518d9ef882fb5ae
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Mar 2 17:37:34 2024 +0100
+
+    Add handleAction to StoreController, rename storeAction to storeManagementAction
+
+ 15 files changed, 227 insertions(+), 158 deletions(-)
+
+commit 09721166027fafda4758ef6410408c34ff8f6ae7
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Mar 2 11:33:03 2024 +0100
+
+    MQL: allow many-to-many joins (selectObjectListByManyToManyRelation) to use attribute for join criterion of both root list elements and referenced list elements
+
+ 4 files changed, 111 insertions(+), 64 deletions(-)
+
+commit a8dcf13863d6ce2f6cfee1735d8cb34f3e2f454c
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Mar 1 20:53:12 2024 +0100
+
+    MQL: implemented a very naive first version of many-to-many join (selectObjectListByManyToManyRelation)
+
+ 6 files changed, 244 insertions(+), 109 deletions(-)
+
+commit 4b12f081357dc728e3beb1af434b1e8acbc32215
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Mar 1 17:21:26 2024 +0100
+
+    cleanup: simplification of the server (just 1 file)
+
+ 11 files changed, 27 insertions(+), 232 deletions(-)
+
+commit 30287b1facd40e0093ddd671ce863ecbacb70c9a
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Feb 29 23:39:41 2024 +0100
+
+    View: create Drawer.tsx, use Grid for Layout, have open/close Drawer with adjusting AppBar and Main
+
+ 7 files changed, 463 insertions(+), 499 deletions(-)
+
+commit 38d1a9ded041530cc1daf9eaea9b6568e8ae4c97
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Feb 29 14:57:09 2024 +0100
+
+    remove "Test" fake Entity
+
+ 5 files changed, 179 insertions(+), 22 deletions(-)
+
+commit 0cd3d194a8b0da3ebb78cc1e3aa2ac62ea215ca0
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Feb 28 21:48:15 2024 +0100
+
+    fixes for interactive tests
+
+ 12 files changed, 139 insertions(+), 227 deletions(-)
+
+commit 48791eb98467e44420f74c72e952963d9ee6cade
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Feb 28 16:22:24 2024 +0100
+
+    In RemoteStoreInterface, remove handleNetworkRemoteStoreCRUDAction, handleNetworkRemoteStoreModelEntityAction, handleNetworkRemoteStoreOrBundleAction. Only handleNetworkRemoteStoreAction is left.
+
+ 3 files changed, 3 insertions(+), 173 deletions(-)
+
+commit ac9e5d3f9dcc98a1f377fa20a214e7f361b77a06
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Feb 28 16:12:33 2024 +0100
+
+    RemoteStoreInterface: remove handleRemoteStoreRestCRUDAction, handleRemoteStoreModelAction, handleRemoteStoreActionOrBundleAction. Only handleRemoteStoreAction is left.
+
+ 4 files changed, 140 insertions(+), 203 deletions(-)
+
+commit 80b8eef64043d2572d9e07db6a579ae8ac2f4393
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Feb 28 16:02:17 2024 +0100
+
+    DomainController: only use handleRemoteStoreAction
+
+ 7 files changed, 45 insertions(+), 39 deletions(-)
+
+commit a72aa07398090c4524d92ae38af659a5fcdf7cbf
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Feb 28 13:25:41 2024 +0100
+
+    MQL: adding ApplicationSection to RemoteStoreCRUDAction
+
+ 8 files changed, 127 insertions(+), 22 deletions(-)
+
+commit 2bdbe91be1dc28d283a0933f21e1458193057aba
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Feb 28 10:18:21 2024 +0100
+
+    DomainControllerInterface: remove deploymentUuid parameter from handleAction function
+
+ 15 files changed, 1196 insertions(+), 1223 deletions(-)
+
+commit c2a6575d7714dc2ad3b38fadeea67b7f5374cb4b
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Feb 28 09:55:21 2024 +0100
+
+    added test for transactionalInstanceAction
+
+ 4 files changed, 1180 insertions(+), 1003 deletions(-)
+
+commit 0716f1ea587289f1bd4a9c907cda0db3e2d73d78
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Feb 28 08:32:25 2024 +0100
+
+    DomainControllerInterface: remove handleDomainTransactionalInstanceAction
+
+ 2 files changed, 29 insertions(+), 65 deletions(-)
+
+commit b2e5e1e25a8aff81bd72d9847b8b49f19f2f7e7d
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Feb 28 08:18:21 2024 +0100
+
+    renaming: handleDomainAction -> handleAction
+
+ 15 files changed, 130 insertions(+), 130 deletions(-)
+
+commit 2e7a4ff4600580f207e4930b9a4e75582c780e5f
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Feb 28 08:05:04 2024 +0100
+
+    MQL: use DomainAction from Endpoint, not from DomainControllerInterface (where it is now removed)
+
+ 5 files changed, 4 insertions(+), 52 deletions(-)
+
+commit a5e755391bae474ca5ac8ca80f938a6b58305a3e
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Feb 28 07:53:15 2024 +0100
+
+    MQL: replace LocalCacheInterface.LocalCacheTransactionalInstanceActionSchema by transactionalInstanceAction
+
+ 11 files changed, 42 insertions(+), 84 deletions(-)
+
+commit 377aba260f5fbdfd9fa64fca3eb186fc57b2ff52
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Feb 28 07:25:59 2024 +0100
+
+    MQL: replace DomainControllerInterface.domainTransactionalInstanceActionSchema by transactionalInstanceAction
+
+ 11 files changed, 50 insertions(+), 100 deletions(-)
+
+commit 03684ebacce686391a0f531406a14e4402ee0744
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Feb 28 06:29:36 2024 +0100
+
+    MQL:  remove DomainUndoRedoAction from DomainAction, replace with UndoRedoAction
+
+ 5 files changed, 107 insertions(+), 41 deletions(-)
+
+commit 4068c0dcd8f390f59612923f1e3544eed1337101
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Feb 27 22:11:33 2024 +0100
+
+    MQL: add DomainEndpoint, remove DomainNonTransactionalInstanceAction from DomainAction, replace with InstanceAction
+
+ 14 files changed, 416 insertions(+), 395 deletions(-)
+
+commit 3a53e1dff3143a41e291708e991106b7b7826c20
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Feb 27 19:41:09 2024 +0100
+
+    MQL: adding LocalCacheEndpoint, using only handleAction on LocalCacheSlice, which takes a LocalCacheAction as argument.
+
+ 12 files changed, 392 insertions(+), 407 deletions(-)
+
+commit 09e4453c2589b23648558c4b4c8c1c01fbc8dc32
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Feb 26 18:23:24 2024 +0100
+
+    MQL: in LocalCacheInterface remove LocalCacheUndoRedoAction
+
+ 7 files changed, 4 insertions(+), 131 deletions(-)
+
+commit ee04304fa58e9077beac8aa0bad503cb6fc31ac4
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Feb 26 18:18:49 2024 +0100
+
+    MQL: in LocalCacheInterface handleUndoRedoAction now uses UndoRedoAction (from Endpoint 71c04f8e-c687-4ea7-9a19-bc98d796c389)
+
+ 9 files changed, 137 insertions(+), 69 deletions(-)
+
+commit 2326e9572699d2023fdb2c112c8fefb990c40ab7
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Feb 26 17:54:33 2024 +0100
+
+    MQL: renamings for LocalCacheInterface, handleLocalCacheModelAction -> handleModelAction, handleLocalCacheInstanceAction -> handleInstanceAction, handleLocalCacheUndoRedoAction -> handleUndoRedoAction
+
+ 7 files changed, 51 insertions(+), 53 deletions(-)
+
+commit d06ac8bc339e713fda93ae1afab3900f3f9fcb6e
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Feb 26 17:47:32 2024 +0100
+
+    MQL: LocalCacheInterface.handleLocalCacheModelAction now use ModelAction instead of LocalCacheModelActionWithDeployment
+
+ 10 files changed, 280 insertions(+), 302 deletions(-)
+
+commit 194c945d790eb33452509f3e65acc2ea166516eb
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Feb 26 17:06:19 2024 +0100
+
+    MQL: add deploymentUuid to ModelAction
+
+ 16 files changed, 272 insertions(+), 55 deletions(-)
+
+commit e4340338fac3ed099601915405976665dbe2d275
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Feb 26 16:21:01 2024 +0100
+
+    MQL: replace LocalCacheInstanceAction by InstanceAction
+
+ 8 files changed, 90 insertions(+), 99 deletions(-)
+
+commit 593bfe814ef9f204d1dd2edc879cc427d18e1551
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Feb 26 15:46:09 2024 +0100
+
+    MQL: remove deploymentUuid from LocalCacheInstanceActionWithDeployment, rename LocalCacheInstanceActionWithDeployment to LocalCacheInstanceAction
+
+ 8 files changed, 62 insertions(+), 64 deletions(-)
+
+commit 86f84da927584581031147241328da58aad786b4
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Feb 26 15:25:12 2024 +0100
+
+    MQL: rename LocalCacheUndoRedoActionWithDeployment as LocalCacheUndoRedoAction
+
+ 6 files changed, 15 insertions(+), 18 deletions(-)
+
+commit 2a31f55b73d6a22156b0eddf5e5bc28cdba4ed61
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Feb 26 15:19:43 2024 +0100
+
+    MQL: remove LocalCacheUndoRedoAction, replaced by LocalCacheUndoRedoActionWithDeployment
+
+ 5 files changed, 83 insertions(+), 89 deletions(-)
+
+commit 2dc908cfaf9866814c73d9eec16d29650522cd02
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Feb 26 14:59:16 2024 +0100
+
+    MQL: remove LocalCacheSlice.handleLocalCacheTransactionalInstanceAction
+
+ 3 files changed, 20 insertions(+), 50 deletions(-)
+
+commit b3059000bfe1da2c7b009817db2d9e8b5efe27ba
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Feb 26 12:54:36 2024 +0100
+
+    MQL: for currentTransaction actions, use LocalCacheTransactionalInstanceActionWithDeployment instead of DomainTransactionalAction
+
+ 17 files changed, 185 insertions(+), 298 deletions(-)
+
+commit 013bb046bf7e4b543a5bd2610023e0fd818160d9
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Feb 26 11:05:59 2024 +0100
+
+    MQL: use instanceCUDAction in domainTransactionalActionForUpdateMetaModelInstanceSchema
+
+ 11 files changed, 188 insertions(+), 86 deletions(-)
+
+commit 71f00f2e9b67b9bd6c56c9e17d535acee12ce8fd
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Feb 25 19:14:52 2024 +0100
+
+    MQL: rename domainDataNonTransactionalCUDActionSchema as domainNonTransactionalInstanceActionSchema, and use instanceAction in definition. Remove DomainDataNonTransactionalCUDAction from LocalCacheTransactionalAction (instanceAction is now used instead)
+
+ 13 files changed, 401 insertions(+), 341 deletions(-)
+
+commit 4b3865dea63c917c6d66ee1f5ccc0bccf575fcc3
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Feb 25 18:05:04 2024 +0100
+
+    Cleanup: remove instanceCUDAction and LocalCacheInstanceCUDActionWithDeploymentSchema, which are not used anymore
+
+ 11 files changed, 27 insertions(+), 222 deletions(-)
+
+commit 606c1428ddc3374db3cedc1c3ac31adb33a9397d
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Feb 25 16:58:24 2024 +0100
+
+    MQL: remove DomainController handle for DomainTransactionalAction.modelActionUpdateEntity, which is not used
+
+ 3 files changed, 15 insertions(+), 76 deletions(-)
+
+commit 2cc2eec538bb28ac059697aa66f5ac25622d64e1
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Feb 25 16:43:09 2024 +0100
+
+    MQL: Stop using WrappedTransactionalModelActionEntityUpdate DomainTransactionalActions, modelActions are first-rank DomainActions now
+
+ 10 files changed, 227 insertions(+), 324 deletions(-)
+
+commit d477d43386c6b6f9c0fd7edb6e81e90503f754f8
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Feb 25 15:47:00 2024 +0100
+
+    MQL: separate handleLocalCacheUndoRedoAction from handleLocalCacheTransactionalAction. Remove unused DomainTransactionalReplayableAction.
+
+ 8 files changed, 61 insertions(+), 33 deletions(-)
+
+commit 7b9330fab2b4dbe3ec2d4804bb0c2fbfdba2bc15
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Feb 25 13:29:11 2024 +0100
+
+    MQL: separate DomainUndoRedoAction from DomainTransactionalAction
+
+ 8 files changed, 154 insertions(+), 26 deletions(-)
+
+commit adc3762ea2c4b836cfe03b631d51a3c5a30a0486
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Feb 25 12:11:47 2024 +0100
+
+    MQL: remove ModelAction from LocalCacheTransactionalAction
+
+ 6 files changed, 86 insertions(+), 105 deletions(-)
+
+commit 02cef6b037aa8fe2c528459f5fac1e7cabae5089
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Feb 24 21:22:34 2024 +0100
+
+    MQL: renamings DomainDataCUDAction -> DomainDataNonTransactionalCUDAction
+
+ 13 files changed, 64 insertions(+), 127 deletions(-)
+
+commit abe4a7e123c6af877f433f6a1de0fb193985fe7c
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Feb 24 19:16:21 2024 +0100
+
+    MQL: remove LocalCacheInterface.createInstance (not used)
+
+ 3 files changed, 61 insertions(+), 85 deletions(-)
+
+commit 31c8c084b903c9d8b33f88efbdfdae2d9718d86c
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Feb 24 19:07:22 2024 +0100
+
+    MQL: in LocalCacheSlice, for handleEndpointAction use handleLocalCacheInstanceActionWithDeployment
+
+ 5 files changed, 57 insertions(+), 183 deletions(-)
+
+commit 771ddcc885763e9370f4020c9c8401b133b76c06
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Feb 24 18:44:51 2024 +0100
+
+    MQL: replace modelActionToLocalCacheInstanceCUDAction by modelActionToLocalCacheInstanceAction
+
+ 5 files changed, 11 insertions(+), 249 deletions(-)
+
+commit fd3d82abe99d4d84ef01328afa4947b45d03f395
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Feb 24 17:41:14 2024 +0100
+
+    MQL: use handleLocalCacheInstanceAction instead of handleLocalCacheCUDAction
+
+ 8 files changed, 445 insertions(+), 233 deletions(-)
+
+commit 94e74ea2782571285b1f61ed945d5ca6a6f93a24
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Feb 24 17:01:56 2024 +0100
+
+    MQL: add handleLocalCacheInstanceAction, use handleLocalCacheInstanceAction instead of handleLocalCacheCUDAction
+
+ 13 files changed, 439 insertions(+), 74 deletions(-)
+
+commit 347ba4fd28666ea41176cff1c891b4fa74171f3c
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Feb 23 15:44:47 2024 +0100
+
+    rename "miroirAction" to "storeOrBundleAction", "handleRemoteAction" to "handleRemoteStoreActionOrBundleAction"
+
+ 12 files changed, 36 insertions(+), 96 deletions(-)
+
+commit 7f0c3f6854948128ee8d5f1c185c5f781d715b74
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Feb 23 11:02:57 2024 +0100
+
+    rename ActionRunner to restActionRunnerImplementation
+
+ 3 files changed, 15 insertions(+), 15 deletions(-)
+
+commit 73c8c1a6e0da1a287fa04b749f5ed50c24d49d02
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Feb 23 10:56:12 2024 +0100
+
+    rename "updateEntity" to "modelActionUpdateEntity"
+
+ 13 files changed, 30 insertions(+), 30 deletions(-)
+
+commit 845ec8f57c0b6bc45709b1ba6d13fa3c452d03e6
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Feb 22 18:23:27 2024 +0100
+
+    MQL: renamings!
+
+ 15 files changed, 91 insertions(+), 102 deletions(-)
+
+commit 3be6cd3650ced8387a820a482cc93e88b36c684e
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Feb 21 19:16:30 2024 +0100
+
+    cleanup: renamings (LocalCacheCUDActionWithDeployment ->LocalCacheInstanceCUDActionWithDeployment, DomainTransactionalActionUpdateEntity -> DomainTransactionalActionForModelAction)
+
+ 10 files changed, 77 insertions(+), 97 deletions(-)
+
+commit 4d2b94624ea501c5242d02b3516c0f2447788e74
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Feb 21 16:48:07 2024 +0100
+
+    cleanup: rename DomainTransactionalAction types, remoce ModelUpdateInterface.ts
+
+ 9 files changed, 84 insertions(+), 190 deletions(-)
+
+commit 1461ac2524357ac16966b92e8bccd032d6d0bc1a
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Feb 21 16:03:39 2024 +0100
+
+    cleanup: removed DomainTransactionalActionWithCUDUpdate & co.
+
+ 22 files changed, 194 insertions(+), 248 deletions(-)
+
+commit e13c980fcca1399e678e2f1b36d79559d8563f70
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Feb 20 11:21:00 2024 +0100
+
+    cleanup: removed renameEntity (the old one based on WrappedTransactionalEntityUpdateWithCUDUpdate), removed ActionRunner.applyModelEntityUpdate
+
+ 22 files changed, 85 insertions(+), 350 deletions(-)
+
+commit 9e48ca403e0220203b000d1504cda98b709a7f1e
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Feb 19 19:43:30 2024 +0100
+
+    MQL: createEntity modelAction now takes "entities" as parameter
+
+ 18 files changed, 209 insertions(+), 411 deletions(-)
+
+commit 50b0e5489af3a9fa17b9a3d9be33d80fb2ec3cbc
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Feb 19 18:36:58 2024 +0100
+
+    in LocalStoreController.unit.test, use dropEntity for "delete Author Entity" test, rename type ModelEntityUpdate to ModelActionEntityUpdate
+
+ 10 files changed, 27 insertions(+), 53 deletions(-)
+
+commit bb002b20b345a4ce4053063b2d0ba4edb2a60cdb
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Feb 19 18:20:23 2024 +0100
+
+    MQL: implement alterEntityAttribute interpretation on LocalCacheSlice, remote interpretation through actionRunner
+
+ 7 files changed, 1305 insertions(+), 1217 deletions(-)
+
+commit 0c915d6516804ff762e8b511f7c88df53f2f5522
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Feb 18 10:54:42 2024 +0100
+
+    MQL: refactor alterEntityAttribute with addColumns and removeColumns parameters
+
+ 11 files changed, 848 insertions(+), 575 deletions(-)
+
+commit 311d50bedc09ff9ae6c49362ba6de9f0f11e3feb
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Feb 16 22:03:11 2024 +0100
+
+    MQL: implement alterEntityAttribute for attribute rename and definition update on filesystem store
+
+ 7 files changed, 71 insertions(+), 119 deletions(-)
+
+commit 15b4c46cb8f3556c20cbf726896d7bea6275453c
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Feb 15 19:05:02 2024 +0100
+
+    MQL: implement alterEntityAttribute for attribute rename on filesystem store
+
+ 12 files changed, 1016 insertions(+), 1011 deletions(-)
+
+commit 2d7d0e9b6e7e5e70648afd9f3642598e4bd843f9
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Feb 15 10:08:51 2024 +0100
+
+    removing handleRemoteStoreOLDModelAction and modelOLDActionRunner.
+
+ 9 files changed, 198 insertions(+), 196 deletions(-)
+
+commit 15826ca14f44b71ebd71e7e7261a0f49f1f3a77b
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Feb 11 23:25:36 2024 +0100
+
+    Preparing for modelAction alterEntityAttribute: remove hard-coded types from EntityAttribute and EntityAttributePartial from EntityDefinition.ts. Using Jzod 0.6.2.
+
+ 11 files changed, 365 insertions(+), 97 deletions(-)
+
+commit a677cc8505e99e1254ccf17a507f3effff7b415f
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Feb 11 17:51:33 2024 +0100
+
+    replaced DomainTransactionalAction "updateEntity" action "createEntity" by modelAction "createEntity"
+
+ 8 files changed, 86 insertions(+), 125 deletions(-)
+
+commit 05791f2e1bdc04506c05a98168c8263c2f40cfdd
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Feb 11 17:08:16 2024 +0100
+
+    replaced DomainTransactionalAction "updateEntity" action "DeleteEntity" by modelAction "dropEntity"
+
+ 17 files changed, 1396 insertions(+), 1062 deletions(-)
+
+commit d2a456cec2b950560dfabd080ecd33f1480f9085
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Feb 11 12:55:03 2024 +0100
+
+    using StoreController.renameEntityClean through handleRemoteStoreModelAction for replay of DomainTransactionalAction during commit.
+
+ 2 files changed, 833 insertions(+), 829 deletions(-)
+
+commit be6a6ffa4f829ee3e0adf8948c22d1dfebc0c0a4
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Feb 10 22:36:31 2024 +0100
+
+    added StoreController.renameEntityClean that will replace renameEntity (the former now depends on ModelAction, not a hard-coded type). Creating / dropping schemas during tests, instead of clearing their contents.
+
+ 34 files changed, 438 insertions(+), 195 deletions(-)
+
+commit 050378363e4904e0830c6cc9224bad20890d4e56
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Feb 10 12:35:02 2024 +0100
+
+    stop using handleRemoteStoreOLDModelAction for DomainTransactionalAction "updateEntity" action, with modelEntityUpdate.updateActionName = "DeleteEntity"
+
+ 9 files changed, 129 insertions(+), 512 deletions(-)
+
+commit 46b5ea0dfaff8180c68d11c6e85bb8aac35cdc6b
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Feb 9 18:48:10 2024 +0100
+
+    correct ActionRunner.initModel wrong type for params was assumed
+
+ 2 files changed, 145 insertions(+), 124 deletions(-)
+
+commit 08814ac640f31347f9fb1a506a0a4a9e602821c7
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Feb 9 18:12:10 2024 +0100
+
+    Move commit and rollback from DomainTransactionalAction to ModelAction
+
+ 19 files changed, 796 insertions(+), 327 deletions(-)
+
+commit 408c916ce668bbcdb318aec1eca6611745ead3e5
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Feb 9 15:11:57 2024 +0100
+
+    Replace DomainTransactionalResetDataAction with ModelActionResetData
+
+ 5 files changed, 40 insertions(+), 56 deletions(-)
+
+commit 436239759ef9a7734b9fb651f0979054e66db969
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Feb 4 18:17:28 2024 +0100
+
+    Replace DomainTransactionalResetModelAction with ModelActionResetModel
+
+ 12 files changed, 53 insertions(+), 79 deletions(-)
+
+commit 48bafb0812b783ce56fe3c1ea2ee4e7dc48d8dbd
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Feb 4 17:32:08 2024 +0100
+
+    Adding ModelActionInitModel to DomainAction, removing DomainModelInitAction
+
+ 8 files changed, 175 insertions(+), 22 deletions(-)
+
+commit 5c8b4dc9936b1c50c46254dab0d06beb34a18302
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Feb 4 13:23:06 2024 +0100
+
+    Moved "resetModel", "resetData" and "initModel" from RemoteStoreOLDModelAction to RemoteStodeAction. Moving types StoreBasedConfiguration, jzodSchema and MetaModel (formerly MiroirApplicationModel) to miroirFundamentalJzodSchema
+
+ 41 files changed, 531 insertions(+), 218 deletions(-)
+
+commit 9114d1e1fcca2932a4fcf03af541e3ffcf810ba3
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Feb 3 12:10:11 2024 +0100
+
+    DomainController: using CallUtils chaining for managing / abstracting the stream of sync / async calls
+
+ 2 files changed, 298 insertions(+), 301 deletions(-)
+
+commit 1e37eaa52c48cd6a124fc80d7b76079c8a4ea6a7
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Feb 2 18:16:36 2024 +0100
+
+    DomainController: using CallUtils for managing / abstracting the stream of sync / async calls
+
+ 4 files changed, 171 insertions(+), 220 deletions(-)
+
+commit b0b566c80ac3daffa7208d0622c14534322fbbbb
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Feb 2 15:50:13 2024 +0100
+
+    DomainController: chaining sync and async calls with "then"
+
+ 3 files changed, 210 insertions(+), 83 deletions(-)
+
+commit d69c3da2089306e0cb3bb133249d283a40279da4
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Feb 2 10:12:27 2024 +0100
+
+    LocalCacheInterface: handleAction operations return ActionReturnType
+
+ 6 files changed, 134 insertions(+), 61 deletions(-)
+
+commit b8978bd76a765642a3eb624030e7124687115488
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Feb 1 16:49:36 2024 +0100
+
+    DomainController: use ErrorUtils.callAction for all remoteStore calls.
+
+ 1 file changed, 62 insertions(+), 66 deletions(-)
+
+commit 8416dff68910c78e99b63b00df8c9953d856fec6
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Feb 1 15:38:51 2024 +0100
+
+    Have RemoteStoreInterface operations return ActionReturnType, not RemoteStoreActionReturnType
+
+ 13 files changed, 321 insertions(+), 180 deletions(-)
+
+commit b9d296cb13f0e2ccfe1a90ed3577a75e72ce4c49
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Feb 1 09:33:50 2024 +0100
+
+    use correct return type for renameEntity, dropEntity, createEntity
+
+ 6 files changed, 26 insertions(+), 24 deletions(-)
+
+commit 25bc49f3451faeda26db423e16e698ffe4bd6bb7
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Jan 23 23:36:07 2024 +0100
+
+    StoreControllerInterface: have side-effect-inducing operations use ActionVoidReturnType
+
+ 16 files changed, 173 insertions(+), 149 deletions(-)
+
+commit 181ccc9db9f87c4cfd65140b1018337bc27ebe6b
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Jan 23 12:51:51 2024 +0100
+
+    change type of StoreController.upsertInstance, deleteInstance, deleteInstances to ActionVoidReturnType
+
+ 13 files changed, 121 insertions(+), 58 deletions(-)
+
+commit 1656275fd71ed45769e3e92b84f5786860f28ebd
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Jan 23 12:05:38 2024 +0100
+
+    Narrow type of StoreController.getInstance to ActionEntityInstanceReturnType
+
+ 12 files changed, 80 insertions(+), 35 deletions(-)
+
+commit bdcd69bc9b817e828a8a2d7cad425e17283bfeb1
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Jan 23 11:48:08 2024 +0100
+
+    Narrow type of StoreController.getInstances to ActionEntityInstanceCollectionReturnType
+
+ 21 files changed, 167 insertions(+), 168 deletions(-)
+
+commit ae6d2726a474849aa204487ad7214c73126d3559
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Jan 23 10:23:41 2024 +0100
+
+    converting storeController.getInstances to ActionReturnType
+
+ 42 files changed, 1011 insertions(+), 335 deletions(-)
+
+commit fa37f92474909366b276bec6931a20a44bcd6a58
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Jan 18 10:16:19 2024 +0100
+
+    bugfix: correcting reports following evolution of query format (parentUuid migrated to reference format)
+
+ 16 files changed, 82 insertions(+), 32 deletions(-)
+
+commit 5ceb104c1fc09f598b55ff693144af00685951e3
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Jan 17 12:23:51 2024 +0100
+
+    have StoreController.getInstance return ActionReturnType
+
+ 31 files changed, 811 insertions(+), 520 deletions(-)
+
+commit 248c98d54d8c9db29e2188491b5e99586d67259d
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Jan 16 16:22:39 2024 +0100
+
+    returning value of ActionReturnType in store actions, and taking ActionReturnType into account in LocalStoreController.unit.test
+
+ 22 files changed, 323 insertions(+), 346 deletions(-)
+
+commit 5505bf8524c068a5018016c15d2153c68795de76
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Jan 16 12:30:01 2024 +0100
+
+    adding ActionReturnType for StoreController createStore and deleteStore actions
+
+ 16 files changed, 356 insertions(+), 475 deletions(-)
+
+commit e90bed1f7873c045ff6091414dc155b6e5d6ebe5
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Jan 15 13:14:06 2024 +0100
+
+    adding StoreControllerManager.deployModule, added adminStore to StoreController
+
+ 12 files changed, 465 insertions(+), 309 deletions(-)
+
+commit d35d0404be143f809f8c14f629a26379bc9ddf44
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Jan 13 16:37:42 2024 +0100
+
+    Bundle/Application DSL: adding AdminStore to miroir-store-filesystem, miroir-store-indexedDb, miroir-store-postgres
+
+ 58 files changed, 706 insertions(+), 385 deletions(-)
+
+commit 587ae372f079649f8b773214df1fabe4175edef2
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Jan 12 19:56:53 2024 +0100
+
+    Preparation to create AdminStoreInterface(for createStore and deleteStore operations): fixing tests for sql backend, creating AbstractStoreInterface for only open/close operations, and SqlDbStore class implementing this interface.
+
+ 24 files changed, 260 insertions(+), 78 deletions(-)
+
+commit 61bc490f3605dffbfe10bc4cc0763920483b4c1a
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Jan 10 21:45:46 2024 +0100
+
+    renamings: EndpointVersion -> Endpoint, QueryVersion -> Query
+
+ 12 files changed, 57 insertions(+), 36 deletions(-)
+
+commit a50489cfe2f5ffa47a8ed38fcb8ccbea81677cdd
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Jan 10 18:13:04 2024 +0100
+
+    MQL: added QueryCombiner, added Transformer!
+
+ 7 files changed, 353 insertions(+), 78 deletions(-)
+
+commit 551422915fa31caab39c1429cc2b6a11009ed61e
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Jan 9 19:04:08 2024 +0100
+
+    removed initialization for removed Endpoint and Query Entities (only EndpointVersion and QueryVersion remain)
+
+ 12 files changed, 56 insertions(+), 81 deletions(-)
+
+commit bdb17feec2bc5b1eb5a61d71e3377b1df52e0509
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Jan 9 18:18:54 2024 +0100
+
+    MQL: rename resultsFromQuery to DomainElement (and co.); using DomainElementObject for pageParams and QueryParams (instead of "any").
+
+ 17 files changed, 520 insertions(+), 440 deletions(-)
+
+commit 49494e65e6889aa7b6c5828c6ff4c69b183d2da7
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Jan 9 12:15:04 2024 +0100
+
+    MQL: using queryObjectReference for instanceUuid in
+    SelectRootQuery
+
+ 13 files changed, 313 insertions(+), 221 deletions(-)
+
+commit 77065371f2f203ba0cc568e5698f7131879fa355
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Jan 9 09:42:08 2024 +0100
+
+    MQL: removed SelectObjectByUuidQuery, replaced by selectObjectByDirectReference
+
+ 4 files changed, 179 insertions(+), 179 deletions(-)
+
+commit 5cafd472ffae93e4c1404921b84ea3bd9ab9355f
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Jan 8 18:29:17 2024 +0100
+
+    Removing spurious Query and Endpoint Entities, only QueryVersion and EndpointVersion are necessary.
+
+ 10 files changed, 34 insertions(+), 207 deletions(-)
+
+commit 7392b6a1811cae2f7dfb5d05843843806c064b33
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Jan 8 17:46:41 2024 +0100
+
+    MQL: added applicationSection to MiroirFetchQuery, values "Data" by default (when not specified)
+
+ 6 files changed, 467 insertions(+), 395 deletions(-)
+
+commit c8add4443b3c6d685b82554820a9e74be308a375
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Jan 8 12:37:26 2024 +0100
+
+    MQL: remove selectObjectByParameterValue, replaced by selectObjectByDirectReference. Improved queryFailure cases for not resolvable or undefined references.
+
+ 13 files changed, 144 insertions(+), 116 deletions(-)
+
+commit 7ab1c441917fa70fb90cfecf2f6a33dcbf391288
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Jan 7 22:03:05 2024 +0100
+
+    MQL: added SelectObjectByDirectReferenceQuery, cleanupResultsFromQuery and useDomainStateCleanSelector
+
+ 13 files changed, 524 insertions(+), 366 deletions(-)
+
+commit 1e4ea30801072ae33d97ea68188fc128b1d798bf
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Jan 7 16:39:27 2024 +0100
+
+    MQL: allow DomainStateSelector to return ResultsFromQueryObject, and not only ResultsFromQuery
+
+ 5 files changed, 48 insertions(+), 21 deletions(-)
+
+commit 49494c96c82c044d5ada6cbeecdefeb98dcf541c
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Jan 7 14:51:21 2024 +0100
+
+    cosmetic: calls to log.log() become log.info()
+
+ 49 files changed, 224 insertions(+), 224 deletions(-)
+
+commit b58c81df2d891f478181be9f3e63b03e19e30469
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sun Jan 7 14:46:39 2024 +0100
+
+    MQL: reshaped ResultsFromQuery and ResultsFromQueryObject to include returned type information and FailureReason (when relevant), refactored DomainSelectors accordingly.
+
+ 17 files changed, 730 insertions(+), 584 deletions(-)
+
+commit ba0bb57ed2b25101465a433d0fa100d6e1f8661a
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Jan 6 18:28:03 2024 +0100
+
+    MQL: using QueryFailed instead of throwing exceptions in DomainSelectors
+
+ 8 files changed, 511 insertions(+), 385 deletions(-)
+
+commit 73e749a906f4b83cb9cbd7c5924b9dd45753633f
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Sat Jan 6 15:12:44 2024 +0100
+
+    MQL: allow query to return literal value; in DomainManyQueries group all query parts in "fetchQuery" attribute
+
+ 31 files changed, 293 insertions(+), 238 deletions(-)
+
+commit b3dbffce71a92dea1f9bec5f846c2a82fe3c67e7
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Jan 5 21:47:13 2024 +0100
+
+    removed "result" section from miroirFetchQuery, moved corresponding query-formatting capabilities to miroirSelectQuery
+
+ 6 files changed, 160 insertions(+), 133 deletions(-)
+
+commit 91e775bf81d96f19a057619ecdfaf101d82b72d4
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Jan 5 19:01:09 2024 +0100
+
+    MQL: allowing queryContextReference in miroirSelectQuery
+
+ 6 files changed, 157 insertions(+), 70 deletions(-)
+
+commit 42f035ca0b69b29cec57b7ba7d9e911977e0fb6d
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Jan 5 16:27:43 2024 +0100
+
+    MQL: adding custom-built result (MiroirQueryResult) to MiroirFetchQuery
+
+ 9 files changed, 196 insertions(+), 40 deletions(-)
+
+commit 55c8d8ac5328afd8e62029f237f61309fe9dcb2c
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Jan 5 12:44:00 2024 +0100
+
+    MQL: use objectReference in selectObjectByRelationQuery
+
+ 5 files changed, 111 insertions(+), 92 deletions(-)
+
+commit 2b50ddfd036d0b6a1de6cecd4fb5c5ffca3e41ef
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Jan 5 11:58:10 2024 +0100
+
+    MQL: introduce queryObjectReference Jzod Schema, use queryObjectReference in selectObjectListByRelationQuery Jzod Schema
+
+ 8 files changed, 159 insertions(+), 53 deletions(-)
+
+commit d6707c76ff6c2071ffbf8c1fa19d407bb61454d9
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Fri Jan 5 10:33:50 2024 +0100
+
+    MQL: selectObjectList are now selectObjectListByEntity or selectObjectListByRelation
+
+ 12 files changed, 28 insertions(+), 28 deletions(-)
+
+commit aafeb93de6e27efe15925111a78118ce2fff6d25
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Jan 4 19:04:02 2024 +0100
+
+    MQL: separate ObjectList queries in selectObjectListByEntity and selectObjectListByOtherWay
+
+ 31 files changed, 209 insertions(+), 200 deletions(-)
+
+commit 21aa7df40e1da8c74042835a8292008f85ded450
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Jan 4 18:26:17 2024 +0100
+
+    MQL: selectObject queries are "selectObjectByUuid", "selectObjectByFetchedObjectRelation", "selectObjectByParameterValue"
+
+ 30 files changed, 190 insertions(+), 122 deletions(-)
+
+commit 9db44cb1f81497cba6b0793306aef7237cc1d1a2
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Thu Jan 4 16:44:54 2024 +0100
+
+    MQL: separate selectObjectByUuidQuery from selectObjectByOtherWayQuery
+
+ 14 files changed, 269 insertions(+), 114 deletions(-)
+
+commit ed7abc53690954998bca83209697ccc50e6b102c
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Jan 3 13:04:10 2024 +0100
+
+    adding initial version (not usable) of bundleProducer query
+
+ 9 files changed, 104 insertions(+), 30 deletions(-)
+
+commit af1cf0743b8da4f77de43b314cda928982498e51
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Jan 3 09:31:03 2024 +0100
+
+    renaming "type" as "queryType" in Queries
+
+ 28 files changed, 73 insertions(+), 66 deletions(-)
+
+commit c4e4759569d6e8a4c28149f7a3246ad610ea75e2
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Wed Jan 3 07:34:37 2024 +0100
+
+    creating Query and QueryVersion Entities
+
+ 7 files changed, 327 insertions(+), 321 deletions(-)
+
+commit ff398cd6ea1b689553d67975c3e1339bc2157797
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Jan 2 18:45:25 2024 +0100
+
+    removed file miroir-core/.../server-generated.ts, all type definitions are moved to file miroirFundamentalJzodSchemas.ts
+
+ 20 files changed, 561 insertions(+), 346 deletions(-)
+
+commit db7bb63080a713fcc9cb21697364bbbfc1a869a9
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Jan 2 13:21:46 2024 +0100
+
+    in DomainSelectorInterface, separate getSingleSelectQuery from getSingleSelectQueryJzodSchema, use "queryType" for query types instead of "type". Cleanup in miroir-core package.json file.
+
+ 22 files changed, 99 insertions(+), 176 deletions(-)
+
+commit 98b57c138a7eed9322e7de2e9da04902b501a006
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Tue Jan 2 08:41:26 2024 +0100
+
+    building miroir-core with tsup, polyfilling crypto in miroir-standalone-app
+
+ 5 files changed, 44 insertions(+), 10 deletions(-)
+
+commit dcd7eb7c207cb2e25bc1dcd0b9a4583034420266
+Author: Miroir Framework <miroir-framework@protonmail.com>
+Date:   Mon Jan 1 19:31:46 2024 +0100
+
+    adding MiroirCustomQueryParams
+
+ 10 files changed, 197 insertions(+), 75 deletions(-)

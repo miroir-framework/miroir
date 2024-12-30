@@ -27,15 +27,13 @@ import { MiroirLoggerFactory } from "./Logger.js";
 import { generateRestServiceResponse } from "./RestTools.js";
 import { cleanLevel } from "./constants.js";
 
-import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.js";
+import { DomainControllerInterface, DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { defaultMiroirMetaModel } from "../1_core/Model.js";
-import { getDomainStateExtractorRunnerMap, getExtractorRunnerParamsForDomainState, getQueryRunnerParamsForDomainState } from "../2_domain/DomainStateQuerySelectors.js";
 import {
   getExtractorTemplateRunnerParamsForDomainState,
   getQueryTemplateRunnerParamsForDomainState,
   getSelectorMapForTemplate
 } from "../2_domain/DomainStateQueryTemplateSelector.js";
-import { extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList } from "../2_domain/QuerySelectors.js";
 import { extractWithBoxedExtractorTemplate, runQueryTemplateWithExtractorCombinerTransformer } from "../2_domain/QueryTemplateSelectors.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RestServer");
@@ -71,6 +69,7 @@ export async function restMethodGetHandler
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
+  domainController: DomainControllerInterface,
   method: HttpMethod | undefined, // unused!
   effectiveUrl: string, // log only, to remove?
   body: HttpRequestBodyFormat | undefined, // unused!
@@ -173,6 +172,7 @@ export async function restMethodsPostPutDeleteHandler(
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
+  domainController: DomainControllerInterface,
   method: HttpMethod,
   effectiveUrl: string, // log only, to remove?
   body: HttpRequestBodyFormat,
@@ -236,6 +236,7 @@ export async function restActionHandler(
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
+  domainController: DomainControllerInterface,
   method: HttpMethod,
   effectiveUrl: string, // log only, to remove?
   body: HttpRequestBodyFormat,
@@ -262,7 +263,7 @@ export async function restActionHandler(
     case "instanceAction": {
       if (useDomainControllerToHandleModelAndInstanceActions) {
         // we are on the server, the action has been received from remote client
-        const domainController = persistenceStoreControllerManager.getServerDomainController();
+        // const domainController = persistenceStoreControllerManager.getServerDomainControllerDEFUNCT();
         if (action.actionType == "modelAction") {
           const result = await domainController.handleAction(action,defaultMiroirMetaModel)
           return continuationFunction(response)(result)
@@ -298,6 +299,7 @@ export async function queryActionHandler(
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
+  domainController: DomainControllerInterface,
   method: HttpMethod,
   effectiveUrl: string, // log only, to remove?
   body: HttpRequestBodyFormat,
@@ -317,67 +319,71 @@ export async function queryActionHandler(
    * - execute on the persistent store (sql)
    * 
    */
+  // const domainController = persistenceStoreControllerManager.getServerDomainControllerDEFUNCT();
   const runBoxedExtractorOrQueryAction: RunBoxedExtractorOrQueryAction = body as RunBoxedExtractorOrQueryAction;
   log.info(
-    "RestServer queryActionHandler runBoxedExtractorOrQueryAction",
+    "RestServer queryActionHandler",
+    domainController.getPersistenceStoreAccessMode(),+
+    "runBoxedExtractorOrQueryAction=",
+    // "useDomainControllerToHandleModelAndInstanceActions",
+    // useDomainControllerToHandleModelAndInstanceActions,
     JSON.stringify(runBoxedExtractorOrQueryAction, undefined, 2)
   );
-  const domainController = persistenceStoreControllerManager.getServerDomainController();
-  if (useDomainControllerToHandleModelAndInstanceActions) {
-    // we are on the server, the action has been received from remote client
-    // switch (runBoxedQueryTemplateOrBoxedExtractorTemplateAction.deploymentUuid) {
-    const result = await domainController.handleQueryActionOrBoxedExtractorActionForServerONLY(runBoxedExtractorOrQueryAction)
-    log.info(
-      "RestServer queryActionHandler used adminConfigurationDeploymentMiroir domainController result=",
-      JSON.stringify(result, undefined, 2)
-    );
-    return continuationFunction(response)(result)
-  } else {
+  // if (useDomainControllerToHandleModelAndInstanceActions) {
+  //   // we are on the server, the action has been received from remote client
+  //   // switch (runBoxedQueryTemplateOrBoxedExtractorTemplateAction.deploymentUuid) {
+  //   const result = await domainController.handleQueryActionOrBoxedExtractorAction(runBoxedExtractorOrQueryAction)
+  //   log.info(
+  //     "RestServer queryActionHandler used adminConfigurationDeploymentMiroir domainController result=",
+  //     JSON.stringify(result, undefined, 2)
+  //   );
+  //   return continuationFunction(response)(result)
+  // } else {
     // we're on the client, called by RestServerStub
     // uses the local cache, needs to have done a Model "rollback" action on the client
     // or a Model "remoteLocalCacheRollback" action on the server
 
     // USING THE LOCAL CACHE OR THE LOCAL PERSISTENCE STORE 
     // SHALL BE DETERMINED BY DOMAINCONTROLLER DEPENDING ON THE QUERY
-    const result = await domainController.handleQueryActionOrBoxedExtractorActionForServerONLY(runBoxedExtractorOrQueryAction)
+    const result = await domainController.handleQueryActionOrBoxedExtractorAction(runBoxedExtractorOrQueryAction)
     log.info(
       "RestServer queryActionHandler used domainController result=",
       JSON.stringify(result, undefined, 2)
     );
     return continuationFunction(response)(result)
 
-    // const domainState: DomainState = domainController.getDomainState();
-    // const extractorRunnerMapOnDomainState = getDomainStateExtractorRunnerMap();
-    // log.info("RestServer queryActionHandler runBoxedExtractorOrQueryAction=", JSON.stringify(runBoxedExtractorOrQueryAction, undefined, 2))
-    // // log.info("RestServer queryActionHandler domainState=", JSON.stringify(domainState, undefined, 2))
-    // let queryResult: DomainElement = undefined as any as DomainElement;
-    // switch (runBoxedExtractorOrQueryAction.query.queryType) {
-    //   case "boxedExtractorOrCombinerReturningObject":
-    //   case "boxedExtractorOrCombinerReturningObjectList": {
-    //     queryResult = extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
-    //       domainState,
-    //       getExtractorRunnerParamsForDomainState(runBoxedExtractorOrQueryAction.query, extractorRunnerMapOnDomainState)
-    //     );
-    //     break;
-    //   }
-    //   case "boxedQueryWithExtractorCombinerTransformer": {
-    //     queryResult = extractorRunnerMapOnDomainState.runQuery(
-    //       domainState,
-    //       getQueryRunnerParamsForDomainState(runBoxedExtractorOrQueryAction.query, extractorRunnerMapOnDomainState)
-    //     );
-    //     break;
-    //   }
-    //   default:
-    //     break;
-    // }
-    // const result:ActionReturnType = {
-    //   status: "ok",
-    //   returnedDomainElement: queryResult
-    // }
-    // log.info("RestServer queryActionHandler used local cache result=", JSON.stringify(result, undefined,2))
+  //   // const domainState: DomainState = domainController.getDomainState();
+  //   // const extractorRunnerMapOnDomainState = getDomainStateExtractorRunnerMap();
+  //   // log.info("RestServer queryActionHandler runBoxedExtractorOrQueryAction=", JSON.stringify(runBoxedExtractorOrQueryAction, undefined, 2))
+  //   // // log.info("RestServer queryActionHandler domainState=", JSON.stringify(domainState, undefined, 2))
+  //   // let queryResult: DomainElement = undefined as any as DomainElement;
+  //   // switch (runBoxedExtractorOrQueryAction.query.queryType) {
+  //   //   case "boxedExtractorOrCombinerReturningObject":
+  //   //   case "boxedExtractorOrCombinerReturningObjectList": {
+  //   //     queryResult = extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
+  //   //       domainState,
+  //   //       getExtractorRunnerParamsForDomainState(runBoxedExtractorOrQueryAction.query, extractorRunnerMapOnDomainState)
+  //   //     );
+  //   //     break;
+  //   //   }
+  //   //   case "boxedQueryWithExtractorCombinerTransformer": {
+  //   //     queryResult = extractorRunnerMapOnDomainState.runQuery(
+  //   //       domainState,
+  //   //       getQueryRunnerParamsForDomainState(runBoxedExtractorOrQueryAction.query, extractorRunnerMapOnDomainState)
+  //   //     );
+  //   //     break;
+  //   //   }
+  //   //   default:
+  //   //     break;
+  //   // }
+  //   // const result:ActionReturnType = {
+  //   //   status: "ok",
+  //   //   returnedDomainElement: queryResult
+  //   // }
+  //   // log.info("RestServer queryActionHandler used local cache result=", JSON.stringify(result, undefined,2))
 
-    // return continuationFunction(response)(result);
-  }
+  //   // return continuationFunction(response)(result);
+  // }
 }
 
 // ################################################################################################
@@ -387,6 +393,7 @@ export async function queryTemplateActionHandler(
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
+  domainController: DomainControllerInterface,
   method: HttpMethod,
   effectiveUrl: string, // log only, to remove?
   body: HttpRequestBodyFormat,
@@ -409,7 +416,7 @@ export async function queryTemplateActionHandler(
   const runBoxedQueryTemplateOrBoxedExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction =
     body as RunBoxedQueryTemplateOrBoxedExtractorTemplateAction;
 
-  const domainController = persistenceStoreControllerManager.getServerDomainController();
+  // const domainController = persistenceStoreControllerManager.getServerDomainControllerDEFUNCT();
   if (useDomainControllerToHandleModelAndInstanceActions) {
     // we are on the server, the action has been received from remote client
     // switch (runBoxedQueryTemplateOrBoxedExtractorTemplateAction.deploymentUuid) {

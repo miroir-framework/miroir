@@ -1,6 +1,7 @@
 import { HttpResponse, http } from "msw";
 
 import {
+  DomainControllerInterface,
   HttpRequestBodyFormat,
   LoggerInterface,
   MiroirConfigClient,
@@ -33,6 +34,7 @@ export class RestServerStub {
     private rootApiUrl: string,
     restServerHandlers: RestServiceHandler[],
     persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
+    domainController: DomainControllerInterface,
     miroirConfig: MiroirConfigClient,
   ) {
     log.info(
@@ -64,6 +66,7 @@ export class RestServerStub {
               (response: any) => (localData: any) => HttpResponse.json(localData),
               undefined /* response object provided by Express Rest interface, which is not needed by MSW, that uses class HttpResponse*/,
               persistenceStoreControllerManager,
+              domainController,
               restService.method /* method */,
               this.rootApiUrl + restService.url,
               body, // body

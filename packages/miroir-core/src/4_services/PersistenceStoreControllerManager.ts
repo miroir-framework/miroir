@@ -85,32 +85,8 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
    * USED ONLY ON THE SERVER SIDE, INCLUDING EMULATED SIDE, FOR NOW.
    * @returns 
    */
-  getServerDomainController(): DomainControllerInterface {
-    if (this.domainController) {
-      return this.domainController;
-    } else {
-      if (!this.localCache || !this.persistenceStoreLocalOrRemote) {
-        throw new Error(
-          "PersistenceStoreControllerManager getLocalCache no localCache or persitenceStore yet! localCache=" +
-            this.localCache +
-            " persistenceStore=" +
-            this.persistenceStoreLocalOrRemote
-        );
-      }
-
-      // TODO: domainController instance is also created in index.tsx and test-utils.tsx (the overall setup sequence). Isn't it redundant?
-      // TODO: THIS IS OVERLOADED BY EACH CALL TO addPersistenceStoreController!
-      this.domainController = new DomainController(
-        // "server", // we are on the server, use localCache for queries upon receiving "remoteLocalCacheRollback" action
-        "local", // we are on the server, use localCache for queries upon receiving "remoteLocalCacheRollback" action
-        new MiroirContext(),
-        this.localCache, // implements LocalCacheInterface
-        this.persistenceStoreLocalOrRemote, // implements PersistenceStoreLocalOrRemoteInterface, instance of PersistenceReduxSaga
-        new Endpoint(this.localCache)
-      );
-      return this.domainController;
-      // throw new Error("PersistenceStoreControllerManager getServerDomainController no domainController yet!");
-    }
+  getServerDomainControllerDEFUNCT(): DomainControllerInterface {
+    throw new Error("PersistenceStoreControllerManager getServerDomainControllerDEFUNCT not implemented yet!");
   }
 
   // ################################################################################################

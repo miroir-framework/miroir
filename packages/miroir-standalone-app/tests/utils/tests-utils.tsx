@@ -372,6 +372,10 @@ export interface MiroirIntegrationTestEnvironment {
 }
 
 // ################################################################################################
+/**
+ * @param miroirConfig 
+ * @returns 
+ */
 export async function setupMiroirTest(
   miroirConfig: MiroirConfigClient,
 ) {
@@ -383,16 +387,21 @@ export async function setupMiroirTest(
     client
   );
 
-  const persistenceStoreControllerManager = new PersistenceStoreControllerManager(
+  const persistenceStoreControllerManagerForClient = new PersistenceStoreControllerManager(
     ConfigurationService.adminStoreFactoryRegister,
     ConfigurationService.StoreSectionFactoryRegister
   );
 
-  const domainController = await setupMiroirDomainController(
+  const persistenceStoreControllerManagerForServer = new PersistenceStoreControllerManager(
+    ConfigurationService.adminStoreFactoryRegister,
+    ConfigurationService.StoreSectionFactoryRegister
+  );
+
+  const domainControllerForClient = await setupMiroirDomainController(
     miroirContext, 
     {
       persistenceStoreAccessMode: "remote",
-      localPersistenceStoreControllerManager: persistenceStoreControllerManager,
+      localPersistenceStoreControllerManager: persistenceStoreControllerManagerForClient,
       remotePersistenceStoreRestClient: persistenceClientAndRestClient,
     }
   ); // even when emulating server, we use remote persistence store, since MSW makes it appear as if we are using a remote server.
@@ -401,6 +410,15 @@ export async function setupMiroirTest(
     let localDataStoreWorker: SetupWorkerApi | undefined;
     let localDataStoreServer: any /**SetupServerApi | undefined */;
 
+    const domainControllerForServer = await setupMiroirDomainController(
+      miroirContext, 
+      {
+        persistenceStoreAccessMode: "local",
+        localPersistenceStoreControllerManager: persistenceStoreControllerManagerForServer,
+        // remotePersistenceStoreRestClient: persistenceClientAndRestClient,
+      }
+    ); // even when emulating server, we use remote persistence store, since MSW makes it appear as if we are using a remote server.
+  
     try {
       const {
         localDataStoreWorker: localDataStoreWorkertmp, // browser
@@ -409,7 +427,8 @@ export async function setupMiroirTest(
         miroirConfig,
         "nodejs",
         restServerDefaultHandlers,
-        persistenceStoreControllerManager,
+        persistenceStoreControllerManagerForServer,
+        domainControllerForServer,
         setupServer
       );
       localDataStoreWorker = localDataStoreWorkertmp as any;
@@ -438,9 +457,9 @@ export async function setupMiroirTest(
   }
 
   return {
-    persistenceStoreControllerManager,
-    domainController,
-    localCache: domainController.getLocalCache(),
+    persistenceStoreControllerManager: persistenceStoreControllerManagerForClient,
+    domainController: domainControllerForClient,
+    localCache: domainControllerForClient.getLocalCache(),
     miroirContext,
   };
 }

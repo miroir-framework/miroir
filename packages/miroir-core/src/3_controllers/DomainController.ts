@@ -152,6 +152,9 @@ export class DomainController implements DomainControllerInterface {
   private callUtil: CallUtils;
 
 
+  getPersistenceStoreAccessMode(): "local" | "remote" {
+    return this.persistenceStoreAccessMode;
+  }
   // ##############################################################################################
   // TODO: remove? only used in commented code in index.tsx
   getRemoteStore(): PersistenceStoreLocalOrRemoteInterface {
@@ -402,24 +405,31 @@ export class DomainController implements DomainControllerInterface {
   // used in Importer.tsx
   // used in scripts.ts
   // used in tests
-  async handleQueryActionOrBoxedExtractorActionForServerONLY(
+  async handleQueryActionOrBoxedExtractorAction(
     runBoxedExtractorOrQueryAction: RunBoxedExtractorOrQueryAction
   ): Promise<ActionReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     log.info(
-    "handleQueryActionOrBoxedExtractorActionForServerONLY",
+    "handleQueryActionOrBoxedExtractorAction",
       // "deploymentUuid",
       // runBoxedExtractorOrQueryAction.deploymentUuid,
-      "persistenceStoreAccessMode",
+      "persistenceStoreAccessMode=",
       this.persistenceStoreAccessMode,
-      "actionName",
+      "actionName=",
       (runBoxedExtractorOrQueryAction as any).actionName,
-      "actionType",
+      "actionType=",
       runBoxedExtractorOrQueryAction?.actionType,
-      "objects",
+      "queryExecutionStrategy=",
+      runBoxedExtractorOrQueryAction.queryExecutionStrategy,
+      "objects=",
       JSON.stringify((runBoxedExtractorOrQueryAction as any)["objects"], null, 2)
     );
 
+    /**
+     * TODO: if the query is contaioned whithin a transactional action, it shall only access the localCache
+     * if a query is contained whithin a composite action, then it shall access only the persistent storage (?)
+     * handle the case of transactionInstanceActions...
+     */
     if (this.persistenceStoreAccessMode == "local") {
       /**
        * we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
@@ -432,7 +442,7 @@ export class DomainController implements DomainControllerInterface {
       //   runBoxedExtractorOrQueryAction
       // );
       log.info(
-        "DomainController handleQueryActionOrBoxedExtractorActionForServerONLY runBoxedExtractorOrQueryAction callPersistenceAction Result=",
+        "DomainController handleQueryActionOrBoxedExtractorAction runBoxedExtractorOrQueryAction callPersistenceAction Result=",
         result
       );
       return result;
@@ -442,26 +452,62 @@ export class DomainController implements DomainControllerInterface {
       // principle: the scripts using transactional (thus Model) actions are limited to localCache access
       // while non-transactional accesses are limited to persistence store access (does this make sense?)
       // in both cases this enforces only the most up-to-date data is accessed.
-      log.info(
-        "DomainController handleQueryActionOrBoxedExtractorActionForServerONLY runBoxedExtractorOrQueryAction sending query to server for execution",
-        // JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction)
-        runBoxedExtractorOrQueryAction
-      );
-      // const result = await this.callUtil.callRemotePersistenceAction(
-      //   // what if it is a REAL persistence store?? exception?
-      //   {}, // context
-      //   {
-      //     addResultToContextAsName: "dataEntitiesFromModelSection",
-      //     expectedDomainElementType: "entityInstanceCollection",
-      //   }, // continuation
+      // log.info(
+      //   "DomainController handleQueryActionOrBoxedExtractorAction runBoxedExtractorOrQueryAction executing query",
+      //   "strategy",
+      //   runBoxedExtractorOrQueryAction.queryExecutionStrategy,
+      //   // JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction)
       //   runBoxedExtractorOrQueryAction
       // );
-      const result = await this.persistenceStoreLocalOrRemote.handlePersistenceActionForLocalCache(runBoxedExtractorOrQueryAction)
-      log.info(
-        "handleQueryActionOrBoxedExtractorActionForServerONLY runBoxedExtractorOrQueryAction callPersistenceAction Result=",
-        result
-      );
-      return result;
+      const executionStrategy = runBoxedExtractorOrQueryAction.queryExecutionStrategy??"localCacheOrFail";
+      switch (executionStrategy) {
+        case "ServerCache":
+        case "localCacheOrFetch": {
+          throw new Error(
+            "DomainController handleQueryActionOrBoxedExtractorAction could not handle queryExecutionStrategy " +
+              runBoxedExtractorOrQueryAction.queryExecutionStrategy
+          );
+        }
+        case "localCacheOrFail": {
+          const result = await this.persistenceStoreLocalOrRemote.handlePersistenceActionForLocalCache(runBoxedExtractorOrQueryAction)
+          log.info(
+            "handleQueryActionOrBoxedExtractorAction runBoxedExtractorOrQueryAction callPersistenceAction Result=",
+            result
+          );
+          return result;
+        }
+        case "storage": {
+          const result = await this.persistenceStoreLocalOrRemote.handlePersistenceActionForRemoteStore(runBoxedExtractorOrQueryAction);
+          // const result = await this.callUtil.callRemotePersistenceAction(
+          //   // what if it is a REAL persistence store?? exception?
+          //   {}, // context
+          //   {
+          //     addResultToContextAsName: "dataEntitiesFromModelSection",
+          //     expectedDomainElementType: "entityInstanceCollection",
+          //   }, // continuation
+          //   runBoxedExtractorOrQueryAction
+          // );
+          log.info(
+            "handleQueryActionOrBoxedExtractorAction runBoxedExtractorOrQueryAction callPersistenceAction Result=",
+            result
+          );
+          return result;
+          // break;
+        }
+        default: {
+          throw new Error(
+            "DomainController handleQueryActionOrBoxedExtractorAction unknown queryExecutionStrategy " +
+              runBoxedExtractorOrQueryAction.queryExecutionStrategy
+          );
+          break;
+        }
+      }
+      // const result = await this.persistenceStoreLocalOrRemote.handlePersistenceActionForLocalCache(runBoxedExtractorOrQueryAction)
+      // log.info(
+      //   "handleQueryActionOrBoxedExtractorAction runBoxedExtractorOrQueryAction callPersistenceAction Result=",
+      //   result
+      // );
+      // return result;
       // return result["dataEntitiesFromModelSection"];
     }
 
@@ -654,6 +700,15 @@ export class DomainController implements DomainControllerInterface {
 
   // ##############################################################################################
   // TODO: not used, not tested!
+  /**
+   * TestCompositeActions shall allow access to both localCache and persistence store, unlike CompositeActions
+   * which are limited to persistence store access. The target is that CompositeActoins have to be replayable!
+   * 
+   * @param testAction 
+   * @param actionParamValues 
+   * @param currentModel 
+   * @returns 
+   */
   async handleTestCompositeAction(
     // testAction: TestAction_runTestCompositeAction,
     testAction: TestCompositeAction,
@@ -979,7 +1034,7 @@ export class DomainController implements DomainControllerInterface {
             actionParamValues
           );
 
-          actionResult = await this.handleQueryActionOrBoxedExtractorActionForServerONLY(currentAction.query);
+          actionResult = await this.handleQueryActionOrBoxedExtractorAction(currentAction.query);
           if (actionResult?.status != "ok") {
             log.error(
               "Error on runBoxedExtractorOrQueryAction with nameGivenToResult",
@@ -1313,6 +1368,7 @@ export class DomainController implements DomainControllerInterface {
   // ##############################################################################################
   constructor(
     private persistenceStoreAccessMode: "local" | "remote",
+    // public persistenceStoreAccessMode: "local" | "remote",
     private miroirContext: MiroirContextInterface,
     private localCache: LocalCacheInterface,
     private persistenceStoreLocalOrRemote: PersistenceStoreLocalOrRemoteInterface, // instance of PersistenceReduxSaga

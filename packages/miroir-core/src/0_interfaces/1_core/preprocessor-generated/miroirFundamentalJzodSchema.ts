@@ -10832,6 +10832,16 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
+          "queryExecutionStrategy": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "localCacheOrFail",
+              "localCacheOrFetch",
+              "ServerCache",
+              "storage"
+            ]
+          },
           "query": {
             "type": "union",
             "definition": [
@@ -28315,6 +28325,28 @@ export const miroirFundamentalJzodSchema = {
                         "editable": false
                       }
                     }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "queryExecutionStrategy": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "enum",
+                    "optional": true,
+                    "definition": [
+                      "localCacheOrFail",
+                      "localCacheOrFetch",
+                      "ServerCache",
+                      "storage"
+                    ]
                   },
                   {
                     "type": "schemaReference",

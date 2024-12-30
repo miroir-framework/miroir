@@ -9,7 +9,8 @@ import {
   RestServiceHandler,
   PersistenceStoreControllerManagerInterface,
   getLoggerName,
-  LocalCacheInterface
+  LocalCacheInterface,
+  DomainControllerInterface
 } from "miroir-core";
 
 import { RestServerStub } from "./RestServerStub.js";
@@ -36,6 +37,7 @@ export async function createMswRestServer(
   platformType: "browser" | "nodejs",
   restServerHandlers: RestServiceHandler[],
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
+  domainController: DomainControllerInterface,
   createRestServiceFromHandlers: (...handlers: Array<RequestHandler>) => any
 ):Promise<CreateMswRestServerReturnType>  {
   log.info("createMswRestServer", "platformType", platformType, "miroirConfig", miroirConfig);
@@ -47,6 +49,7 @@ export async function createMswRestServer(
       miroirConfig.client.rootApiUrl,
       restServerHandlers,
       persistenceStoreControllerManager,
+      domainController,
       miroirConfig,
     );
     log.warn("######################### createMswRestServer handling operations", restServerHandlers);

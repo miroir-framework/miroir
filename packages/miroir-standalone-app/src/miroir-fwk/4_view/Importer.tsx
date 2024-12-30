@@ -2314,12 +2314,12 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           templates: {
             ...createNewApplication.templates,
             ...actionHandlerCreateFountainEntity.templates,
-            // ...(actionSplitFountainEntity as any).templates,
+            ...(actionSplitFountainEntity as any).templates,
           },
           definition: [
             ...(createNewApplication as any).definition,
             ...(actionHandlerCreateFountainEntity as any).definition,
-            // ...(actionSplitFountainEntity as any).definition,
+            ...(actionSplitFountainEntity as any).definition,
           ]
         }
 

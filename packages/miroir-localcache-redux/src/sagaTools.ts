@@ -17,6 +17,13 @@ import PersistenceReduxSaga, {
 } from "./4_services/persistence/PersistenceReduxSaga.js";
 
 // ################################################################################################
+/**
+ * BEWARE: DOES SIDE EFFECTS ON @private persistenceReduxSagaParams
+ * 
+ * @param miroirContext 
+ * @param persistenceReduxSagaParams 
+ * @returns 
+ */
 export function setupMiroirDomainController(
   miroirContext: MiroirContext,
   persistenceReduxSagaParams: PersistenceStoreAccessParams,

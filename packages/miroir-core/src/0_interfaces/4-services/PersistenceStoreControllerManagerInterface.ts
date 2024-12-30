@@ -15,7 +15,7 @@ export interface PersistenceStoreControllerManagerInterface {
   setPersistenceStoreLocalOrRemote(p: PersistenceStoreLocalOrRemoteInterface):void;
   getLocalCache(): LocalCacheInterface;
   setLocalCache(l: LocalCacheInterface):void ;
-  getServerDomainController(): DomainControllerInterface;
+  getServerDomainControllerDEFUNCT(): DomainControllerInterface;
 
   // PersistenceStoreController-related functionalities
   getPersistenceStoreControllers(): string[];
