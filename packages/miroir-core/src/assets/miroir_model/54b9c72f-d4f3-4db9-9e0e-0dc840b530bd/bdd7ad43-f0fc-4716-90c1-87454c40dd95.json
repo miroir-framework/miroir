@@ -122,6 +122,24 @@
         "optional": true,
         "definition": {
           "type": "string"
+        },
+        "tag": {
+          "value": {
+            "id": 10,
+            "defaultLabel": "Attributes to display by default",
+            "editable": true
+          }
+        }
+      },
+      "icon": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 11,
+            "defaultLabel": "Icon used to represent instances of this Entity",
+            "editable": true
+          }
         }
       },
       "jzodSchema": {
@@ -132,7 +150,7 @@
         },
         "tag": {
           "value": {
-            "id": 11,
+            "id": 12,
             "defaultLabel": "Jzod Schema",
             "editable": true
           }
