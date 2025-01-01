@@ -67,7 +67,7 @@ console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
 const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
 
-// MiroirLoggerFactory.setEffectiveLoggerFactory(
+// MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
 //   loglevelnext,
 //   (defaultLevels as any)[loggerOptions.defaultLevel],
 //   loggerOptions.defaultTemplate,
@@ -946,7 +946,7 @@ const testActions: Record<string, TestActionParams> = {
 };
 
 
-describe.sequential("DomainController.Data.CRUD.integ",
+describe.sequential("DomainController.integ.Data.CRUD",
   () => {
   it.each(Object.entries(testActions))("test %s", async (currentTestName, testAction: TestActionParams) => {
     // const fullTestName = describe.sequential.name + "/" + currentTestName

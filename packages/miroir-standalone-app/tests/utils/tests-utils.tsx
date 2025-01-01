@@ -2,6 +2,8 @@ import type { RenderOptions } from '@testing-library/react';
 import { render } from '@testing-library/react';
 import { expect } from 'vitest';
 
+import { setupServer } from 'msw/node';
+
 import { SetupWorkerApi } from 'msw/browser';
 import * as React from 'react';
 import { FC, PropsWithChildren, createContext, useState } from 'react';
@@ -30,6 +32,8 @@ import {
   PersistenceStoreControllerManager,
   PersistenceStoreControllerManagerInterface,
   RestClient,
+  RestClientInterface,
+  RestPersistenceClientAndRestClientInterface,
   SelfApplicationDeploymentConfiguration,
   TestCompositeAction,
   TestCompositeActionSuite,
@@ -44,15 +48,16 @@ import {
   selfApplicationDeploymentLibrary,
   selfApplicationDeploymentMiroir
 } from "miroir-core";
+import { RestClientStub } from 'miroir-core/src/4_services/RestClientStub';
 import {
   LocalCache,
   ReduxStoreWithUndoRedo,
-  RestPersistenceClientAndRestClient,
+  // RestPersistenceClientAndRestClient,
   setupMiroirDomainController
 } from "miroir-localcache-redux";
 import { createMswRestServer } from 'miroir-server-msw-stub';
-import { setupServer } from 'msw/node';
 import path from 'path';
+import { RestPersistenceClientAndRestClient } from '../../../miroir-localcache-redux/dist';
 import { packageName } from '../../src/constants';
 import { MiroirContextReactProvider } from '../../src/miroir-fwk/4_view/MiroirContextReactProvider';
 import { cleanLevel } from '../../src/miroir-fwk/4_view/constants';
@@ -371,6 +376,54 @@ export interface MiroirIntegrationTestEnvironment {
   miroirContext: MiroirContext,
 }
 
+// // ################################################################################################
+// export async function createRestServerStub(
+//   miroirConfig: MiroirConfigClient,
+//   platformType: "browser" | "nodejs",
+//   restServerHandlers: RestServiceHandler[],
+//   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
+//   domainController: DomainControllerInterface,
+//   // createRestServiceFromHandlers: (...handlers: Array<RequestHandler>) => any
+// ):Promise<{restServerStub: RestServerStub}>  {
+//   log.info("createMswRestServer", "platformType", platformType, "miroirConfig", miroirConfig);
+//   log.info("createMswRestServer process.browser", (process as any)["browser"]);
+
+//   if (miroirConfig.client.emulateServer) {
+
+//     const restServerStub: RestServerStub = new RestMswServerStub(
+//       miroirConfig.client.rootApiUrl,
+//       restServerHandlers,
+//       persistenceStoreControllerManager,
+//       domainController,
+//       miroirConfig,
+//     );
+//     log.warn("######################### createMswRestServer handling operations", restServerHandlers);
+
+//     let localDataStoreWorker: SetupWorkerApi | undefined = undefined;
+//     let localDataStoreServer: any /*SetupServerApi*/ | undefined = undefined;
+//     if (platformType == "browser") {
+//       localDataStoreWorker = createRestServiceFromHandlers(...restServerStub.handlers);
+//     }
+//     if (platformType == "nodejs") {
+//       localDataStoreServer = createRestServiceFromHandlers(...restServerStub.handlers);
+//     }
+
+//     return Promise.resolve({
+//       localDataStoreWorker,
+//       localDataStoreServer,
+//     });
+//   } else {
+//     // log.warn("createMswRestServer non-emulated server will be queried on", miroirConfig.client.serverConfig.rootApiUrl);
+//     throw new Error("createMswRestServer called for non-emulated server, this is a bug." + JSON.stringify(miroirConfig));
+//     // return Promise.resolve({
+//     //   localMiroirPersistenceStoreController: undefined,
+//     //   localAppPersistenceStoreController: undefined,
+//     //   localDataStoreWorker: undefined,
+//     //   localDataStoreServer: undefined,
+//     // });
+//   }
+// }
+
 // ################################################################################################
 /**
  * @param miroirConfig 
@@ -381,18 +434,33 @@ export async function setupMiroirTest(
 ) {
   const miroirContext = new MiroirContext(miroirConfig);
 
-  const client: RestClient = new RestClient(fetch);
-  const persistenceClientAndRestClient = new RestPersistenceClientAndRestClient(
-    miroirConfig.client.emulateServer ? miroirConfig.client.rootApiUrl : miroirConfig.client.serverConfig.rootApiUrl,
-    client
-  );
+  let client: RestClientInterface | undefined = undefined;
+  let remotePersistenceStoreRestClient: RestPersistenceClientAndRestClientInterface | undefined = undefined;
+  if (miroirConfig.client.emulateServer) {
+    client = new RestClientStub(
+      miroirConfig.client.rootApiUrl,
+    );
+    remotePersistenceStoreRestClient = new RestPersistenceClientAndRestClient(
+      miroirConfig.client.rootApiUrl,
+      client
+    );
+
+  } else {
+    client = new RestClient(fetch);
+    remotePersistenceStoreRestClient = new RestPersistenceClientAndRestClient(
+      miroirConfig.client.serverConfig.rootApiUrl,
+      client
+    );
+  }
+
+  if (!client) {
+    throw new Error("tests-utils setupMiroirTest could not create client");
+  }
+  if (!remotePersistenceStoreRestClient) {
+    throw new Error("tests-utils setupMiroirTest could not create remotePersistenceStoreRestClient");
+  }
 
   const persistenceStoreControllerManagerForClient = new PersistenceStoreControllerManager(
-    ConfigurationService.adminStoreFactoryRegister,
-    ConfigurationService.StoreSectionFactoryRegister
-  );
-
-  const persistenceStoreControllerManagerForServer = new PersistenceStoreControllerManager(
     ConfigurationService.adminStoreFactoryRegister,
     ConfigurationService.StoreSectionFactoryRegister
   );
@@ -402,58 +470,66 @@ export async function setupMiroirTest(
     {
       persistenceStoreAccessMode: "remote",
       localPersistenceStoreControllerManager: persistenceStoreControllerManagerForClient,
-      remotePersistenceStoreRestClient: persistenceClientAndRestClient,
+      remotePersistenceStoreRestClient,
     }
   ); // even when emulating server, we use remote persistence store, since MSW makes it appear as if we are using a remote server.
 
   if (miroirConfig.client.emulateServer) {
-    let localDataStoreWorker: SetupWorkerApi | undefined;
-    let localDataStoreServer: any /**SetupServerApi | undefined */;
+    // let localDataStoreWorker: SetupWorkerApi | undefined;
+    // let localDataStoreServer: any /**SetupServerApi | undefined */;
+    const persistenceStoreControllerManagerForServer = new PersistenceStoreControllerManager(
+      ConfigurationService.adminStoreFactoryRegister,
+      ConfigurationService.StoreSectionFactoryRegister
+    );
 
     const domainControllerForServer = await setupMiroirDomainController(
       miroirContext, 
       {
         persistenceStoreAccessMode: "local",
         localPersistenceStoreControllerManager: persistenceStoreControllerManagerForServer,
-        // remotePersistenceStoreRestClient: persistenceClientAndRestClient,
       }
     ); // even when emulating server, we use remote persistence store, since MSW makes it appear as if we are using a remote server.
-  
-    try {
-      const {
-        localDataStoreWorker: localDataStoreWorkertmp, // browser
-        localDataStoreServer: localDataStoreServertmp, // nodejs
-      } = await createMswRestServer(
-        miroirConfig,
-        "nodejs",
-        restServerDefaultHandlers,
-        persistenceStoreControllerManagerForServer,
-        domainControllerForServer,
-        setupServer
-      );
-      localDataStoreWorker = localDataStoreWorkertmp as any;
-      localDataStoreServer = localDataStoreServertmp;
-    } catch (error) {
-      console.error(
-        "tests-utils createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT could not create MSW Rest server: " +
-          error
-      );
-      throw error;
-    }
-    if (localDataStoreServer) {
-      console.warn(
-        "tests-utils localDataStoreServer starting"
-        // "tests-utils localDataStoreServer starting, listHandlers",
-        // localDataStoreServer.listHandlers().map((h) => h.info.header)
-      );
-      localDataStoreServer.listen();
-      console.warn(
-        "tests-utils localDataStoreServer STARTED, listHandlers",
-        localDataStoreServer.listHandlers().map((h: any) => h.info.header)
-      );
-    } else {
-      throw new Error("tests-utils localDataStoreServer not found.");
-    }
+
+    (client as RestClientStub).setServerDomainController(domainControllerForServer);
+    (client as RestClientStub).setPersistenceStoreControllerManager(persistenceStoreControllerManagerForServer);
+
+    // TODO: this creates a msw server, which is not needed for RestClientStub
+    // try {
+    //   const {
+    //     localDataStoreWorker: localDataStoreWorkertmp, // browser
+    //     localDataStoreServer: localDataStoreServertmp, // nodejs
+    //   } = await createMswRestServer(
+    //     miroirConfig,
+    //     "nodejs",
+    //     restServerDefaultHandlers,
+    //     persistenceStoreControllerManagerForServer,
+    //     domainControllerForServer,
+    //     setupServer
+    //   );
+    //   localDataStoreWorker = localDataStoreWorkertmp as any;
+    //   localDataStoreServer = localDataStoreServertmp;
+    // } catch (error) {
+    //   console.error(
+    //     "tests-utils createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT could not create MSW Rest server: " +
+    //       error
+    //   );
+    //   throw error;
+    // }
+    // if (localDataStoreServer) {
+    //   console.warn(
+    //     "tests-utils localDataStoreServer starting"
+    //     // "tests-utils localDataStoreServer starting, listHandlers",
+    //     // localDataStoreServer.listHandlers().map((h) => h.info.header)
+    //   );
+    //   // localDataStoreServer.listen({ onUnhandledRequest: 'bypass' });
+    //   localDataStoreServer.listen();
+    //   console.warn(
+    //     "tests-utils localDataStoreServer STARTED, listHandlers",
+    //     localDataStoreServer.listHandlers().map((h: any) => h.info.header)
+    //   );
+    // } else {
+    //   throw new Error("tests-utils localDataStoreServer not found.");
+    // }
   }
 
   return {
@@ -672,7 +748,7 @@ export async function loadTestConfigFiles(env:any) {
     logConfig = await loadTestSingleConfigFile(env.VITE_MIROIR_LOG_CONFIG_FILENAME??"specificLoggersConfig_warn");
     console.log("@@@@@@@@@@@@@@@@@@ log config file contents:", miroirConfig)
   
-    // MiroirLoggerFactory.setEffectiveLoggerFactory(
+    // MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
     //   loglevelnext,
     //   defaultLevels[logConfig.defaultLevel],
     //   logConfig.defaultTemplate,

@@ -53,10 +53,10 @@ export declare type RestServiceHandler = {
 
 // ################################################################################################
 export interface RestClientInterface {
-  get(endpoint: string, customConfig?: any): Promise<RestClientCallReturnType>;
-  post(endpoint: string, body: any, customConfig?: any): Promise<RestClientCallReturnType>;
-  put(endpoint: string, body: any, customConfig?: any): Promise<RestClientCallReturnType>;
-  delete(endpoint: string, body: any, customConfig?: any): Promise<RestClientCallReturnType>;
+  get(rawUrl:string, endpoint: string, customConfig?: any): Promise<RestClientCallReturnType>;
+  post(rawUrl:string, endpoint: string, body: any, customConfig?: any): Promise<RestClientCallReturnType>;
+  put(rawUrl:string, endpoint: string, body: any, customConfig?: any): Promise<RestClientCallReturnType>;
+  delete(rawUrl:string, endpoint: string, body: any, customConfig?: any): Promise<RestClientCallReturnType>;
 }
 
 // ################################################################################################

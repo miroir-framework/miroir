@@ -80,7 +80,7 @@ import { log } from "console";
 
 // const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
 
-// MiroirLoggerFactory.setEffectiveLoggerFactory(
+// MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
 //   loglevelnext,
 //   (defaultLevels as any)[loggerOptions.defaultLevel],
 //   loggerOptions.defaultTemplate,

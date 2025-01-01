@@ -12,7 +12,7 @@ import {
 } from "miroir-core";
 import { cleanLevel, packageName } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"RestServerStub");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"RestMswServerStub");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;
@@ -27,7 +27,7 @@ const serializePost = (post: any) => ({
 });
 
 // ##################################################################################
-export class RestServerStub {
+export class RestMswServerStub {
   public handlers: any[];
 
   constructor(
@@ -46,19 +46,33 @@ export class RestServerStub {
 
     this.handlers = restServerHandlers.map(
       (restService:RestServiceHandler)=> (http as any)[restService.method](this.rootApiUrl + restService.url,
-        async (p:{ request: any/* StrictRequest<DefaultBodyType> */, params: any /*PathParams*/}) => {
+        // async (p:{ request: any /*StrictRequest<any>*/, params: any /*PathParams*/}) => {
+        async (p:{ request: any /*StrictRequest<any>*/, params: any /*PathParams*/}) => {
+        // async (p:{ request: any/* StrictRequest<DefaultBodyType> */, params: any /*PathParams*/}) => {
           const { request, params} = p;
-          // log.info("RestServerStub received request",h.method, h.rootApiUrl + h.url,"request", request, "params", params);
+          // log.info("RestMswServerStub received request",restService.method, this.rootApiUrl + restService.url,"request", request, "params", params);
+          log.info(
+            "RestMswServerStub received request",
+            restService.method,
+            this.rootApiUrl + restService.url,
+            "body",
+            await request.text(),
+            "params",
+            params
+          );
           
           let body: HttpRequestBodyFormat = {}
           if (restService.method !== "get") {
             try {
               body = (await request.json()) as HttpRequestBodyFormat;
+              // body = (await request.formData()) as HttpRequestBodyFormat;
             } catch (e) {
-              log.error("RestServerStub could not read body for", restService.method,restService.url,":",e);
+              const errorBody = (await request.text()) as HttpRequestBodyFormat;
+              log.info("RestMswServerStub received request",restService.method, this.rootApiUrl + restService.url,"request", request, "params", params, "errorBody", errorBody);
+              log.error("RestMswServerStub could not read body for", restService.method,restService.url,":",e);
             }
           }
-          // log.info("RestServerStub received request",h.method, h.rootApiUrl + h.url, "body", body);
+          // log.info("RestMswServerStub received request",h.method, h.rootApiUrl + h.url, "body", body);
           try {
             const result = await restService.handler(
               false, // useDomainControllerToHandleModelAndInstanceActions: since we're emulating the REST server, we have direct access the persistenceStore, do not use the domainController
@@ -74,7 +88,7 @@ export class RestServerStub {
             );
             return result;
           } catch (error) {
-            log.warn("RestServerStub get handler", "rootApiUrl", rootApiUrl, "failed with error", error);
+            log.warn("RestMswServerStub get handler", "rootApiUrl", rootApiUrl, "failed with error", error);
             return Promise.resolve(undefined);
           }
         }

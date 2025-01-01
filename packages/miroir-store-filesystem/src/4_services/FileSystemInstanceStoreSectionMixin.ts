@@ -229,19 +229,29 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     // #############################################################################################
     deleteInstance(entityUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
       const filePath = path.join(this.directory, entityUuid, fullName(instance.uuid));
-      if (fs.existsSync(filePath)) {
-        fs.rmSync(filePath);
-      } else {
-        log.debug(
-          "deleteInstance could not find file to delete:",
-          filePath,
-          "entityUuid",
-          entityUuid,
-          "instance",
-          instance
-        );
+      try {
+        if (fs.existsSync(filePath)) {
+          fs.rmSync(filePath);
+        } else {
+          log.debug(
+            "deleteInstance could not find file to delete:",
+            filePath,
+            "entityUuid",
+            entityUuid,
+            "instance",
+            instance
+          );
+        }
+        return Promise.resolve(ACTION_OK);
+      } catch (error) {
+        return Promise.resolve({
+          status: "error",
+          error: {
+            errorType: "FailedToDeployModule",
+            errorMessage: `failed to delete instance ${instance.uuid} of entity ${entityUuid}`,
+          },
+        });
       }
-      return Promise.resolve(ACTION_OK);
     }
   // };
   };

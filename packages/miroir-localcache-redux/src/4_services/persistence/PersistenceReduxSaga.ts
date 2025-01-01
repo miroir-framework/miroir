@@ -32,7 +32,7 @@ import { packageName } from '../../constants.js';
 import { LocalCache } from '../LocalCache.js';
 import { cleanLevel } from '../constants.js';
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"PersistenceActionReduxSaga");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"PersistenceReduxSaga");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   (value: LoggerInterface) => {
@@ -686,7 +686,10 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
             );
           }
           if (this.params.persistenceStoreAccessMode == "remote") {
-            return yield* this.innerHandlePersistenceActionForRemoteStore(action, this.params.remotePersistenceStoreRestClient);
+            return (
+              yield *
+              this.innerHandlePersistenceActionForRemoteStore(action, this.params.remotePersistenceStoreRestClient)
+            );
           }
 
           throw new Error( // this should never happen

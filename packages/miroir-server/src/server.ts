@@ -10,7 +10,6 @@ import {
   MiroirContext,
   MiroirLoggerFactory,
   PersistenceStoreControllerManager,
-  RestClient,
   SpecificLoggerOptionsMap,
   StoreOrBundleAction,
   StoreUnitConfiguration,
@@ -29,8 +28,8 @@ import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 
 import { readFileSync } from 'fs';
-import log from 'loglevelnext';
-import { LocalCache, PersistenceReduxSaga, RestPersistenceClientAndRestClient, setupMiroirDomainController } from 'miroir-localcache-redux';
+import log from 'loglevelnext'; // TODO: use this? or plain "console" log?
+import { setupMiroirDomainController } from 'miroir-localcache-redux';
 
 const packageName = "server"
 const cleanLevel = "5"
@@ -44,7 +43,7 @@ const specificLoggerOptions: SpecificLoggerOptionsMap = {
 
 const loglevelnext: LoggerFactoryInterface = log as any as LoggerFactoryInterface;
 
-MiroirLoggerFactory.setEffectiveLoggerFactory(
+MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
   loglevelnext,
   defaultLevels.INFO,
   "[{{time}}] {{level}} ({{name}}) -",
@@ -129,6 +128,7 @@ for (const op of restServerDefaultHandlers) {
           (response: any) => response.json.bind(response),
           response,
           persistenceStoreControllerManager,
+          domainController,
           op.method,
           request.originalUrl,
           body,

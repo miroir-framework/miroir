@@ -7,10 +7,10 @@ import {
 } from "../0_interfaces/4-services/LoggerInterface.js";
 
 // ################################################################################################
-export function templateLoggerOptionsFactory(
+export function templateLogLevelOptionsFactory(
+  loggerName: string,
   level: number | string,
   template: string,
-  loggerName: string
 ): LogLevelOptions {
   return {
     level: level,
@@ -37,7 +37,7 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
         loggerName: string,
         logLevel?: string | number,
         template?: string,
-    },
+      },
       resolve: (value: LoggerInterface | PromiseLike<LoggerInterface>) => void;
     };
   } = {};
@@ -45,28 +45,28 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
   constructor() {}
 
   // ###################################
-  private static getOptionsFromMap(
+  private static getLogLevelOptionsFromMap(
     loggerName: string,
     logLevel?: string | number,
     template?: string,
   ): LogLevelOptions {
     const result =  MiroirLoggerFactory.specificLoggerOptionsMap && MiroirLoggerFactory.specificLoggerOptionsMap[loggerName]
-      ? templateLoggerOptionsFactory(
+      ? templateLogLevelOptionsFactory(
+          loggerName,
           logLevel ?? MiroirLoggerFactory.specificLoggerOptionsMap[loggerName].level ?? MiroirLoggerFactory.defaultLogLevel,
           template ?? MiroirLoggerFactory.specificLoggerOptionsMap[loggerName].template ?? MiroirLoggerFactory.defaultTemplate,
-          loggerName
         )
-      : templateLoggerOptionsFactory(
+      : templateLogLevelOptionsFactory(
+          loggerName,
           logLevel ?? MiroirLoggerFactory.defaultLogLevel,
           template ?? MiroirLoggerFactory.defaultTemplate,
-          loggerName
         );
     // console.log("MiroirLoggerFactory getOptionsFromMap result",loggerName,logLevel, template,MiroirLoggerFactory.specificLoggerOptionsMap, result);
     return result;
   }
 
   // ###################################
-  static setEffectiveLoggerFactory(
+  static setEffectiveLoggerFactoryWithLogLevelNext(
     effectiveLoggerFactory: LoggerFactoryInterface,
     defaultLogLevel: string | number,
     defaultTemplate: string,
@@ -77,7 +77,11 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
     MiroirLoggerFactory.defaultTemplate = defaultTemplate;
     MiroirLoggerFactory.specificLoggerOptionsMap = specificLoggerOptionsMap;
     for (const l of Object.entries(MiroirLoggerFactory.waitingLoggers)) {
-      l[1].resolve(effectiveLoggerFactory.create(MiroirLoggerFactory.getOptionsFromMap(l[0], l[1].options?.logLevel,l[1].options?.template)));
+      l[1].resolve(
+        effectiveLoggerFactory.create(
+          MiroirLoggerFactory.getLogLevelOptionsFromMap(l[0], l[1].options?.logLevel, l[1].options?.template)
+        )
+      );
     }
   }
 
@@ -94,6 +98,7 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
       const getLoggerResult = new Promise<LoggerInterface>((resolve) => {
         // console.log("MiroirLoggerFactory.create received effective logger for", loggerName);
 
+        // TODO: MiroirLoggerFactory.waitingLoggers could be accessed concurrently, so it should be protected??
         delete MiroirLoggerFactory.waitingLoggers[loggerName];
         MiroirLoggerFactory.waitingLoggers = {
           ...MiroirLoggerFactory.waitingLoggers,
@@ -105,7 +110,7 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
       // console.log("MiroirLoggerFactory.create asked for logger", loggerName, "when root logger is known, ok.");
 
       result = Promise.resolve(
-        MiroirLoggerFactory.effectiveLoggerFactory?.create(MiroirLoggerFactory.getOptionsFromMap(loggerName, logLevel, template))
+        MiroirLoggerFactory.effectiveLoggerFactory?.create(MiroirLoggerFactory.getLogLevelOptionsFromMap(loggerName, logLevel, template))
       );
     }
     // return result.then((value)=>{testLogger(loggerName,value); return value})

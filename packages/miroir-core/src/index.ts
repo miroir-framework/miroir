@@ -696,7 +696,7 @@ export { CallUtils } from './3_controllers/ErrorHandling/CallUtils.js';
 export { MiroirContext } from './3_controllers/MiroirContext.js';
 export {
   MiroirLoggerFactory,
-  templateLoggerOptionsFactory,
+  templateLogLevelOptionsFactory as templateLoggerOptionsFactory,
   testLogger
 } from './4_services/Logger.js';
 export {

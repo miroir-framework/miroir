@@ -92,18 +92,31 @@ export class FileSystemStoreSection
   // #############################################################################################
   dropStorageSpaceForInstancesOfEntity(entityUuid: string): Promise<ActionVoidReturnType> {
     const entityInstancesPath = path.join(this.directory, entityUuid);
-    if (fs.existsSync(entityInstancesPath)) {
-      fs.rmSync(entityInstancesPath, { recursive: true, force: true });
-    } else {
-      log.debug(
-        this.logHeader,
-        "dropStorageSpaceForInstancesOfEntity storage space does not exist for",
-        entityUuid,
-        "entityInstancesPath",
-        entityInstancesPath
-      );
+    try {
+      if (fs.existsSync(entityInstancesPath)) {
+        fs.rmSync(entityInstancesPath, { recursive: true, force: true });
+      } else {
+        log.debug(
+          this.logHeader,
+          "dropStorageSpaceForInstancesOfEntity storage space does not exist for",
+          entityUuid,
+          "entityInstancesPath",
+          entityInstancesPath
+        );
+      }
+      return Promise.resolve(ACTION_OK);
+    } catch (error) {
+      return Promise.resolve({ status: "error", error: {
+        errorType: "FailedToDeployModule",
+        errorMessage: "dropStorageSpaceForInstancesOfEntity error:" + error,
+        // error: {
+        //   errorMessage: error
+        // }
+        // error: error,
+        // entityUuid: entityUuid,
+        // entityInstancesPath: entityInstancesPath,
+      } });
     }
-    return Promise.resolve(ACTION_OK);
   }
 
   // #############################################################################################

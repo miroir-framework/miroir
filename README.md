@@ -18,6 +18,11 @@ go to the created directory, and download dependencies:
 $ npm install
 ```
 
+For local dependencies on Jzod:
+```sh
+$ npm link @miroir-framework/jzod-ts @miroir-framework/jzod
+```
+
 build the client and server (shell):
 
 ```sh

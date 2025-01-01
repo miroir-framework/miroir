@@ -13,7 +13,7 @@ import {
   DomainControllerInterface
 } from "miroir-core";
 
-import { RestServerStub } from "./RestServerStub.js";
+import { RestMswServerStub } from "./RestMswServerStub.js";
 import { cleanLevel, packageName } from "./constants.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"createMswRestServer");
@@ -45,35 +45,40 @@ export async function createMswRestServer(
 
   if (miroirConfig.client.emulateServer) {
 
-    const restServerStub: RestServerStub = new RestServerStub(
-      miroirConfig.client.rootApiUrl,
-      restServerHandlers,
-      persistenceStoreControllerManager,
-      domainController,
-      miroirConfig,
-    );
-    log.warn("######################### createMswRestServer handling operations", restServerHandlers);
+    // const restServerStub: RestMswServerStub = new RestMswServerStub(
+    //   miroirConfig.client.rootApiUrl,
+    //   restServerHandlers,
+    //   persistenceStoreControllerManager,
+    //   domainController,
+    //   miroirConfig,
+    // );
+    // log.warn("######################### createMswRestServer handling operations", restServerHandlers);
 
-    let localDataStoreWorker: SetupWorkerApi | undefined = undefined;
-    let localDataStoreServer: any /*SetupServerApi*/ | undefined = undefined;
-    if (platformType == "browser") {
-      localDataStoreWorker = createRestServiceFromHandlers(...restServerStub.handlers);
-    }
-    if (platformType == "nodejs") {
-      localDataStoreServer = createRestServiceFromHandlers(...restServerStub.handlers);
-    }
+    // let localDataStoreWorker: SetupWorkerApi | undefined = undefined;
+    // let localDataStoreServer: any /*SetupServerApi*/ | undefined = undefined;
+    // if (platformType == "browser") {
+    //   localDataStoreWorker = createRestServiceFromHandlers(...restServerStub.handlers);
+    // }
+    // if (platformType == "nodejs") {
+    //   localDataStoreServer = createRestServiceFromHandlers(...restServerStub.handlers);
+    // }
 
+    // return Promise.resolve({
+    //   localDataStoreWorker,
+    //   localDataStoreServer,
+    // });
     return Promise.resolve({
-      localDataStoreWorker,
-      localDataStoreServer,
-    });
-  } else {
-    log.warn("createMswRestServer non-emulated server will be queried on", miroirConfig.client.serverConfig.rootApiUrl);
-    return Promise.resolve({
-      localMiroirPersistenceStoreController: undefined,
-      localAppPersistenceStoreController: undefined,
       localDataStoreWorker: undefined,
       localDataStoreServer: undefined,
     });
+  } else {
+    // log.warn("createMswRestServer non-emulated server will be queried on", miroirConfig.client.serverConfig.rootApiUrl);
+    throw new Error("createMswRestServer called for non-emulated server, this is a bug." + JSON.stringify(miroirConfig));
+    // return Promise.resolve({
+    //   localMiroirPersistenceStoreController: undefined,
+    //   localAppPersistenceStoreController: undefined,
+    //   localDataStoreWorker: undefined,
+    //   localDataStoreServer: undefined,
+    // });
   }
 }

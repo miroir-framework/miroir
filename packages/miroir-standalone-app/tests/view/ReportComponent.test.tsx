@@ -18,7 +18,7 @@
 //   RestClient,
 // } from "miroir-core";
 // import {
-//   RestServerStub,
+//   RestMswServerStub,
 //   PersistenceReduxSaga,
 //   LocalCache,
 //   RestPersistenceClientAndRestClient,
@@ -38,7 +38,7 @@
 // miroirAppStartup();
 // miroirCoreStartup();
 
-// const mServer: RestServerStub = new RestServerStub(miroirConfig.rootApiUrl);
+// const mServer: RestMswServerStub = new RestMswServerStub(miroirConfig.rootApiUrl);
 // const worker = setupServer(...mServer.handlers)
 
 // const client:RestClient = new RestClient(fetch);

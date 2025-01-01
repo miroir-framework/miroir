@@ -1,6 +1,6 @@
 export {
-  RestServerStub,
-} from './RestServerStub.js';
+  RestMswServerStub,
+} from './RestMswServerStub.js';
 export {
   createMswRestServer,
   CreateMswRestServerReturnType,

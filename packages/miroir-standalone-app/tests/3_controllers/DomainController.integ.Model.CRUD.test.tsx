@@ -6,6 +6,7 @@ import {
   ActionReturnType,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
+  defaultLevels,
   DomainControllerInterface,
   entityAuthor,
   EntityDefinition,
@@ -14,9 +15,12 @@ import {
   entityEntityDefinition,
   EntityInstance,
   entityPublisher,
+  getLoggerName,
+  LoggerInterface,
   MetaEntity,
   MiroirContextInterface,
   miroirCoreStartup,
+  MiroirLoggerFactory,
   PersistenceStoreControllerManagerInterface,
   publisher1,
   publisher2,
@@ -50,28 +54,35 @@ import {
   testOnLibrary_resetInitAndAddTestDataToLibraryDeployment,
   testOnLibrary_resetLibraryDeployment,
 } from "../utils/tests-utils-testOnLibrary.js";
+import { packageName } from 'miroir-core/src/constants.js';
+// import { loglevelnext } from '../../src/loglevelnextImporter.js';
+import { cleanLevel } from './constants.js';
+import { LoggerFactoryInterface } from 'miroir-core';
+import { loglevelnext } from '../../src/loglevelnextImporter.js';
 
 
 const env:any = (import.meta as any).env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
+console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
 const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
 
-// MiroirLoggerFactory.setEffectiveLoggerFactory(
-//   loglevelnext,
-//   (defaultLevels as any)[loggerOptions.defaultLevel],
-//   loggerOptions.defaultTemplate,
-//   loggerOptions.specificLoggerOptions
-// );
+MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
+  loglevelnext,
+  // console as any as LoggerFactoryInterface,
+  (defaultLevels as any)[loggerOptions.defaultLevel],
+  loggerOptions.defaultTemplate,
+  loggerOptions.specificLoggerOptions
+);
 
 // jest intercepts logs, only console.log will produce test output
-// const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.Data.CRUD.React");
-// let log:LoggerInterface = console as any as LoggerInterface;
-// MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-//   (value: LoggerInterface) => {
-//     log = value;
-//   }
-// );
+const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.integ.Model.CRUD");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
+  (value: LoggerInterface) => {
+    log = value;
+  }
+);
 
 console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
@@ -174,7 +185,7 @@ const columnForTestDefinition: JzodElement = {
 // delete (entityDefinitionPublisherWithoutIcon as any).icon;
 
 const testActions: Record<string, TestActionParams> = {
-  "DomainController.Model.CRUD.integ": {
+  "DomainController.integ.Model.CRUD": {
     testActionType: "testCompositeActionSuite",
     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
     testCompositeAction: {
@@ -208,336 +219,336 @@ const testActions: Record<string, TestActionParams> = {
       afterEach: testOnLibrary_resetLibraryDeployment(miroirConfig),
       afterAll: testOnLibrary_deleteLibraryDeployment(miroirConfig),
       testCompositeActions: {
-        // "Refresh all Instances": {
-        //   testType: "testCompositeAction",
-        //   compositeAction: {
-        //     actionType: "compositeAction",
-        //     actionLabel: "testLibraryBooks",
-        //     actionName: "sequence",
-        //     definition: [
-        //       {
-        //         compositeActionType: "domainAction",
-        //         compositeActionStepLabel: "refreshMiroirLocalCache",
-        //         domainAction: {
-        //           actionName: "rollback",
-        //           actionType: "modelAction",
-        //           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        //           deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-        //         },
-        //       },
-        //       {
-        //         compositeActionType: "domainAction",
-        //         compositeActionStepLabel: "refreshLibraryLocalCache",
-        //         domainAction: {
-        //           actionName: "rollback",
-        //           actionType: "modelAction",
-        //           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        //           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-        //         },
-        //       },
-        //       {
-        //         compositeActionType: "runBoxedExtractorOrQueryAction",
-        //         compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
-        //         nameGivenToResult: "libraryEntityList",
-        //         query: {
-        //           actionType: "runBoxedExtractorOrQueryAction",
-        //           actionName: "runQuery",
-        //           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-        //           applicationSection: "model", // TODO: give only application section in individual queries?
-        //           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-        //           query: {
-        //             queryType: "boxedQueryWithExtractorCombinerTransformer",
-        //             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-        //             pageParams: {
-        //               currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-        //             },
-        //             queryParams: {},
-        //             contextResults: {},
-        //             extractors: {
-        //               entities: {
-        //                 extractorOrCombinerType: "extractorByEntityReturningObjectList",
-        //                 applicationSection: "model",
-        //                 parentName: entityEntity.name,
-        //                 parentUuid: entityEntity.uuid,
-        //                 orderBy: {
-        //                   attributeName: "name",
-        //                   direction: "ASC",
-        //                 },
-        //               },
-        //             },
-        //           },
-        //         },
-        //       },
-        //     ],
-        //   },
-        //   testCompositeActionAssertions: [
-        //     // TODO: test length of entityBookList.books!
-        //     {
-        //       compositeActionType: "runTestCompositeActionAssertion",
-        //       compositeActionStepLabel: "checkNumberOfEntitiesInLibraryApplicationDeployment",
-        //       nameGivenToResult: "checkNumberOfEntities",
-        //       testAssertion: {
-        //         testType: "testAssertion",
-        //         definition: {
-        //           resultAccessPath: ["elementValue", "0"],
-        //           resultTransformer: {
-        //             transformerType: "count",
-        //             interpolation: "runtime",
-        //             referencedExtractor: {
-        //               transformerType: "contextReference",
-        //               interpolation: "runtime",
-        //               referencePath: ["libraryEntityList", "entities"],
-        //             },
-        //           },
-        //           expectedValue: { count: 1 },
-        //         },
-        //       },
-        //     },
-        //   ],
-        // },
-        // "Add Entity Author and Commit": {
-        //   testType: "testCompositeAction",
-        //   compositeAction: {
-        //     actionType: "compositeAction",
-        //     actionLabel: "AddBookInstanceThenRollback",
-        //     actionName: "sequence",
-        //     definition: [
-        //       {
-        //         compositeActionType: "domainAction",
-        //         compositeActionStepLabel: "refreshMiroirLocalCache",
-        //         domainAction: {
-        //           actionName: "rollback",
-        //           actionType: "modelAction",
-        //           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        //           deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-        //         },
-        //       },
-        //       {
-        //         compositeActionType: "domainAction",
-        //         compositeActionStepLabel: "refreshLibraryLocalCache",
-        //         domainAction: {
-        //           actionName: "rollback",
-        //           actionType: "modelAction",
-        //           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        //           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-        //         },
-        //       },
-        //       {
-        //         compositeActionType: "domainAction",
-        //         compositeActionStepLabel: "addEntityAuthor",
-        //         domainAction: {
-        //           actionType: "modelAction",
-        //           actionName: "createEntity",
-        //           deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
-        //           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        //           entities: [
-        //             {
-        //               entity: entityAuthor as Entity,
-        //               entityDefinition: entityDefinitionAuthor as EntityDefinition,
-        //             }
-        //           ]
-        //         },
-        //       },
-        //       {
-        //         compositeActionType: "domainAction",
-        //         compositeActionStepLabel: "commitLibraryLocalCache",
-        //         domainAction: {
-        //           actionName: "commit",
-        //           actionType: "modelAction",
-        //           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        //           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-        //         },
-        //       },
-        //       {
-        //         // performs query on local cache for emulated server, and on server for remote server
-        //         compositeActionType: "runBoxedExtractorOrQueryAction",
-        //         compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
-        //         nameGivenToResult: "libraryEntityList",
-        //         query: {
-        //           actionType: "runBoxedExtractorOrQueryAction",
-        //           actionName: "runQuery",
-        //           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-        //           applicationSection: "model", // TODO: give only application section in individual queries?
-        //           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-        //           query: {
-        //             queryType: "boxedQueryWithExtractorCombinerTransformer",
-        //             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-        //             pageParams: {
-        //               currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-        //             },
-        //             queryParams: {},
-        //             contextResults: {},
-        //             extractors: {
-        //               entities: {
-        //                 extractorOrCombinerType: "extractorByEntityReturningObjectList",
-        //                 applicationSection: "model",
-        //                 parentName: entityEntity.name,
-        //                 parentUuid: entityEntity.uuid,
-        //                 orderBy: {
-        //                   attributeName: "name",
-        //                   direction: "ASC",
-        //                 },
-        //               },
-        //             },
-        //           },
-        //         },
-        //       },
-        //     ],
-        //   },
-        //   testCompositeActionAssertions: [
-        //     // TODO: test length of entityBookList.books!
-        //     {
-        //       compositeActionType: "runTestCompositeActionAssertion",
-        //       compositeActionStepLabel: "checkNumberOfBooks",
-        //       nameGivenToResult: "checkNumberOfEntities",
-        //       testAssertion: {
-        //         testType: "testAssertion",
-        //         definition: {
-        //           resultAccessPath: ["elementValue", "0"],
-        //           resultTransformer: {
-        //             transformerType: "count",
-        //             interpolation: "runtime",
-        //             referencedExtractor: {
-        //               transformerType: "contextReference",
-        //               interpolation: "runtime",
-        //               referencePath: ["libraryEntityList", "entities"],
-        //             },
-        //           },
-        //           expectedValue: { count: 2 },
-        //         },
-        //       },
-        //     },
-        //     {
-        //       compositeActionType: "runTestCompositeActionAssertion",
-        //       compositeActionStepLabel: "checkEntityBooks",
-        //       nameGivenToResult: "checkEntityList",
-        //       testAssertion: {
-        //         testType: "testAssertion",
-        //         definition: {
-        //           resultAccessPath: ["libraryEntityList", "entities"],
-        //           ignoreAttributes: [ "author" ],
-        //           expectedValue: [
-        //             entityAuthor,
-        //             entityPublisher,
-        //           ],
-        //         },
-        //       },
-        //     },
-        //   ],
-        // },
-        // "Add Entity Author then rollback": {
-        //   testType: "testCompositeAction",
-        //   compositeAction: {
-        //     actionType: "compositeAction",
-        //     actionLabel: "AddBookInstanceThenRollback",
-        //     actionName: "sequence",
-        //     definition: [
-        //       {
-        //         compositeActionType: "domainAction",
-        //         compositeActionStepLabel: "refreshMiroirLocalCache",
-        //         domainAction: {
-        //           actionName: "rollback",
-        //           actionType: "modelAction",
-        //           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        //           deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-        //         },
-        //       },
-        //       {
-        //         compositeActionType: "domainAction",
-        //         compositeActionStepLabel: "refreshLibraryLocalCache",
-        //         domainAction: {
-        //           actionName: "rollback",
-        //           actionType: "modelAction",
-        //           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        //           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-        //         },
-        //       },
-        //       {
-        //         compositeActionType: "domainAction",
-        //         compositeActionStepLabel: "addEntityAuthor",
-        //         domainAction: {
-        //           actionType: "modelAction",
-        //           actionName: "createEntity",
-        //           deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
-        //           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        //           entities: [
-        //             {
-        //               entity: entityAuthor as Entity,
-        //               entityDefinition: entityDefinitionAuthor as EntityDefinition,
-        //             }
-        //           ]
-        //         },
-        //       },
-        //       {
-        //         compositeActionType: "domainAction",
-        //         compositeActionStepLabel: "refreshLibraryLocalCache2",
-        //         domainAction: {
-        //           actionName: "rollback",
-        //           actionType: "modelAction",
-        //           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        //           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-        //         },
-        //       },
-        //       {
-        //         compositeActionType: "runBoxedExtractorOrQueryAction",
-        //         compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
-        //         nameGivenToResult: "libraryEntityList",
-        //         query: {
-        //           actionType: "runBoxedExtractorOrQueryAction",
-        //           actionName: "runQuery",
-        //           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-        //           applicationSection: "model", // TODO: give only application section in individual queries?
-        //           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-        //           query: {
-        //             queryType: "boxedQueryWithExtractorCombinerTransformer",
-        //             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-        //             pageParams: {
-        //               currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-        //             },
-        //             queryParams: {},
-        //             contextResults: {},
-        //             extractors: {
-        //               entities: {
-        //                 extractorOrCombinerType: "extractorByEntityReturningObjectList",
-        //                 applicationSection: "model",
-        //                 parentName: entityEntity.name,
-        //                 parentUuid: entityEntity.uuid,
-        //                 orderBy: {
-        //                   attributeName: "name",
-        //                   direction: "ASC",
-        //                 },
-        //               },
-        //             },
-        //           },
-        //         },
-        //       },
-        //     ],
-        //   },
-        //   testCompositeActionAssertions: [
-        //     // TODO: test length of entityBookList.books!
-        //     {
-        //       compositeActionType: "runTestCompositeActionAssertion",
-        //       compositeActionStepLabel: "checkNumberOfBooks",
-        //       nameGivenToResult: "checkNumberOfEntities",
-        //       testAssertion: {
-        //         testType: "testAssertion",
-        //         definition: {
-        //           resultAccessPath: ["elementValue", "0"],
-        //           resultTransformer: {
-        //             transformerType: "count",
-        //             interpolation: "runtime",
-        //             referencedExtractor: {
-        //               transformerType: "contextReference",
-        //               interpolation: "runtime",
-        //               referencePath: ["libraryEntityList", "entities"],
-        //             },
-        //           },
-        //           expectedValue: { count: 1 },
-        //         },
-        //       },
-        //     },
-        //   ],
-        // },
+        "Refresh all Instances": {
+          testType: "testCompositeAction",
+          compositeAction: {
+            actionType: "compositeAction",
+            actionLabel: "testLibraryBooks",
+            actionName: "sequence",
+            definition: [
+              {
+                compositeActionType: "domainAction",
+                compositeActionStepLabel: "refreshMiroirLocalCache",
+                domainAction: {
+                  actionName: "rollback",
+                  actionType: "modelAction",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                },
+              },
+              {
+                compositeActionType: "domainAction",
+                compositeActionStepLabel: "refreshLibraryLocalCache",
+                domainAction: {
+                  actionName: "rollback",
+                  actionType: "modelAction",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                },
+              },
+              {
+                compositeActionType: "runBoxedExtractorOrQueryAction",
+                compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+                nameGivenToResult: "libraryEntityList",
+                query: {
+                  actionType: "runBoxedExtractorOrQueryAction",
+                  actionName: "runQuery",
+                  endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  applicationSection: "model", // TODO: give only application section in individual queries?
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  query: {
+                    queryType: "boxedQueryWithExtractorCombinerTransformer",
+                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    pageParams: {
+                      currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    },
+                    queryParams: {},
+                    contextResults: {},
+                    extractors: {
+                      entities: {
+                        extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                        applicationSection: "model",
+                        parentName: entityEntity.name,
+                        parentUuid: entityEntity.uuid,
+                        orderBy: {
+                          attributeName: "name",
+                          direction: "ASC",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            ],
+          },
+          testCompositeActionAssertions: [
+            // TODO: test length of entityBookList.books!
+            {
+              compositeActionType: "runTestCompositeActionAssertion",
+              compositeActionStepLabel: "checkNumberOfEntitiesInLibraryApplicationDeployment",
+              nameGivenToResult: "checkNumberOfEntities",
+              testAssertion: {
+                testType: "testAssertion",
+                definition: {
+                  resultAccessPath: ["elementValue", "0"],
+                  resultTransformer: {
+                    transformerType: "count",
+                    interpolation: "runtime",
+                    referencedExtractor: {
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referencePath: ["libraryEntityList", "entities"],
+                    },
+                  },
+                  expectedValue: { count: 1 },
+                },
+              },
+            },
+          ],
+        },
+        "Add Entity Author and Commit": {
+          testType: "testCompositeAction",
+          compositeAction: {
+            actionType: "compositeAction",
+            actionLabel: "AddBookInstanceThenRollback",
+            actionName: "sequence",
+            definition: [
+              {
+                compositeActionType: "domainAction",
+                compositeActionStepLabel: "refreshMiroirLocalCache",
+                domainAction: {
+                  actionName: "rollback",
+                  actionType: "modelAction",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                },
+              },
+              {
+                compositeActionType: "domainAction",
+                compositeActionStepLabel: "refreshLibraryLocalCache",
+                domainAction: {
+                  actionName: "rollback",
+                  actionType: "modelAction",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                },
+              },
+              {
+                compositeActionType: "domainAction",
+                compositeActionStepLabel: "addEntityAuthor",
+                domainAction: {
+                  actionType: "modelAction",
+                  actionName: "createEntity",
+                  deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  entities: [
+                    {
+                      entity: entityAuthor as Entity,
+                      entityDefinition: entityDefinitionAuthor as EntityDefinition,
+                    }
+                  ]
+                },
+              },
+              {
+                compositeActionType: "domainAction",
+                compositeActionStepLabel: "commitLibraryLocalCache",
+                domainAction: {
+                  actionName: "commit",
+                  actionType: "modelAction",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                },
+              },
+              {
+                // performs query on local cache for emulated server, and on server for remote server
+                compositeActionType: "runBoxedExtractorOrQueryAction",
+                compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+                nameGivenToResult: "libraryEntityList",
+                query: {
+                  actionType: "runBoxedExtractorOrQueryAction",
+                  actionName: "runQuery",
+                  endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  applicationSection: "model", // TODO: give only application section in individual queries?
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  query: {
+                    queryType: "boxedQueryWithExtractorCombinerTransformer",
+                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    pageParams: {
+                      currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    },
+                    queryParams: {},
+                    contextResults: {},
+                    extractors: {
+                      entities: {
+                        extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                        applicationSection: "model",
+                        parentName: entityEntity.name,
+                        parentUuid: entityEntity.uuid,
+                        orderBy: {
+                          attributeName: "name",
+                          direction: "ASC",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            ],
+          },
+          testCompositeActionAssertions: [
+            // TODO: test length of entityBookList.books!
+            {
+              compositeActionType: "runTestCompositeActionAssertion",
+              compositeActionStepLabel: "checkNumberOfBooks",
+              nameGivenToResult: "checkNumberOfEntities",
+              testAssertion: {
+                testType: "testAssertion",
+                definition: {
+                  resultAccessPath: ["elementValue", "0"],
+                  resultTransformer: {
+                    transformerType: "count",
+                    interpolation: "runtime",
+                    referencedExtractor: {
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referencePath: ["libraryEntityList", "entities"],
+                    },
+                  },
+                  expectedValue: { count: 2 },
+                },
+              },
+            },
+            {
+              compositeActionType: "runTestCompositeActionAssertion",
+              compositeActionStepLabel: "checkEntityBooks",
+              nameGivenToResult: "checkEntityList",
+              testAssertion: {
+                testType: "testAssertion",
+                definition: {
+                  resultAccessPath: ["libraryEntityList", "entities"],
+                  ignoreAttributes: [ "author" ],
+                  expectedValue: [
+                    entityAuthor,
+                    entityPublisher,
+                  ],
+                },
+              },
+            },
+          ],
+        },
+        "Add Entity Author then rollback": {
+          testType: "testCompositeAction",
+          compositeAction: {
+            actionType: "compositeAction",
+            actionLabel: "AddBookInstanceThenRollback",
+            actionName: "sequence",
+            definition: [
+              {
+                compositeActionType: "domainAction",
+                compositeActionStepLabel: "refreshMiroirLocalCache",
+                domainAction: {
+                  actionName: "rollback",
+                  actionType: "modelAction",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                },
+              },
+              {
+                compositeActionType: "domainAction",
+                compositeActionStepLabel: "refreshLibraryLocalCache",
+                domainAction: {
+                  actionName: "rollback",
+                  actionType: "modelAction",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                },
+              },
+              {
+                compositeActionType: "domainAction",
+                compositeActionStepLabel: "addEntityAuthor",
+                domainAction: {
+                  actionType: "modelAction",
+                  actionName: "createEntity",
+                  deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  entities: [
+                    {
+                      entity: entityAuthor as Entity,
+                      entityDefinition: entityDefinitionAuthor as EntityDefinition,
+                    }
+                  ]
+                },
+              },
+              {
+                compositeActionType: "domainAction",
+                compositeActionStepLabel: "refreshLibraryLocalCache2",
+                domainAction: {
+                  actionName: "rollback",
+                  actionType: "modelAction",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                },
+              },
+              {
+                compositeActionType: "runBoxedExtractorOrQueryAction",
+                compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+                nameGivenToResult: "libraryEntityList",
+                query: {
+                  actionType: "runBoxedExtractorOrQueryAction",
+                  actionName: "runQuery",
+                  endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  applicationSection: "model", // TODO: give only application section in individual queries?
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  query: {
+                    queryType: "boxedQueryWithExtractorCombinerTransformer",
+                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    pageParams: {
+                      currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    },
+                    queryParams: {},
+                    contextResults: {},
+                    extractors: {
+                      entities: {
+                        extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                        applicationSection: "model",
+                        parentName: entityEntity.name,
+                        parentUuid: entityEntity.uuid,
+                        orderBy: {
+                          attributeName: "name",
+                          direction: "ASC",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            ],
+          },
+          testCompositeActionAssertions: [
+            // TODO: test length of entityBookList.books!
+            {
+              compositeActionType: "runTestCompositeActionAssertion",
+              compositeActionStepLabel: "checkNumberOfBooks",
+              nameGivenToResult: "checkNumberOfEntities",
+              testAssertion: {
+                testType: "testAssertion",
+                definition: {
+                  resultAccessPath: ["elementValue", "0"],
+                  resultTransformer: {
+                    transformerType: "count",
+                    interpolation: "runtime",
+                    referencedExtractor: {
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referencePath: ["libraryEntityList", "entities"],
+                    },
+                  },
+                  expectedValue: { count: 1 },
+                },
+              },
+            },
+          ],
+        },
         "Add Entity Author then test before commit or rollback": {
           testType: "testCompositeAction",
           compositeAction: {
@@ -581,19 +592,9 @@ const testActions: Record<string, TestActionParams> = {
                   ]
                 },
               },
-              // {
-              //   compositeActionType: "domainAction",
-              //   compositeActionStepLabel: "refreshLibraryLocalCache2",
-              //   domainAction: {
-              //     actionName: "rollback",
-              //     actionType: "modelAction",
-              //     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              //     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-              //   },
-              // },
               {
                 compositeActionType: "runBoxedExtractorOrQueryAction",
-                compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+                compositeActionStepLabel: "calculateNewEntityDefinionAndReportsFromLocalCache",
                 nameGivenToResult: "libraryEntityListFromLocalCache",
                 query: {
                   actionType: "runBoxedExtractorOrQueryAction",
@@ -627,7 +628,7 @@ const testActions: Record<string, TestActionParams> = {
               },
               {
                 compositeActionType: "runBoxedExtractorOrQueryAction",
-                compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+                compositeActionStepLabel: "calculateNewEntityDefinionAndReportsFromPersistentStore",
                 nameGivenToResult: "libraryEntityListFromPersistentStore",
                 query: {
                   actionType: "runBoxedExtractorOrQueryAction",
@@ -1221,7 +1222,7 @@ const testActions: Record<string, TestActionParams> = {
 };
 
 
-describe.sequential("DomainController.Data.CRUD.integ",
+describe.sequential("DomainController.integ.Model.CRUD",
   () => {
   it.each(Object.entries(testActions))("test %s", async (currentTestName, testAction: TestActionParams) => {
     // const fullTestName = describe.sequential.name + "/" + currentTestName

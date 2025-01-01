@@ -58,7 +58,7 @@ const specificLoggerOptions: SpecificLoggerOptionsMap = {
   // "4_miroir-redux_LocalCacheSlice": {template:"[{{time}}] {{level}} ({{name}}) -"},
 }
 
-MiroirLoggerFactory.setEffectiveLoggerFactory(
+MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
   loglevelnext,
   defaultLevels.INFO,
   "[{{time}}] {{level}} ({{name}})# ",

@@ -291,7 +291,7 @@ packages/miroir-react/src/index.tsx 3
 packages/miroir-server-msw-stub/src/constants.ts 1
 packages/miroir-server-msw-stub/src/createMswRestServer.ts 76
 packages/miroir-server-msw-stub/src/index.ts 7
-packages/miroir-server-msw-stub/src/RestServerStub.ts 81
+packages/miroir-server-msw-stub/src/RestMswServerStub.ts 81
 packages/miroir-server/src/assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/1c0495fe-a227-48a9-bd26-a1f2eebc1064.json 21
 packages/miroir-server/src/assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json 23
 packages/miroir-server/src/server.ts 152

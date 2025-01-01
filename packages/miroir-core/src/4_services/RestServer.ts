@@ -55,7 +55,7 @@ function wrapResults(instances: any[]): HttpResponseBodyFormat {
  * TODO: use domainController to handle model and instance actions, not persistenceStoreControllerManager
  * @param useDomainControllerToHandleModelAndInstanceActions 
  * @param continuationFunction 
- * @param response 
+ * @param responseHandler 
  * @param persistenceStoreControllerManager 
  * @param method 
  * @param effectiveUrl 
@@ -67,7 +67,7 @@ export async function restMethodGetHandler
 (
   useDomainControllerToHandleModelAndInstanceActions: boolean,
   continuationFunction: (response:any) =>(arg0: any) => any,
-  response: any,
+  responseHandler: any,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
   domainController: DomainControllerInterface,
   method: HttpMethod | undefined, // unused!
@@ -112,7 +112,7 @@ export async function restMethodGetHandler
   );
 
   try {
-    return generateRestServiceResponse(
+    const result = generateRestServiceResponse(
       { section, parentUuid },
       ["section", "parentUuid"],
       [],
@@ -136,11 +136,13 @@ export async function restMethodGetHandler
           );
         }
         
-        log.info("restMethodGetHandler found results", results.returnedDomainElement.elementValue.instances)
+        // log.info("restMethodGetHandler found results", results.returnedDomainElement.elementValue.instances)
         return wrapResults(results.returnedDomainElement.elementValue.instances);
       },
-      continuationFunction(response)
+      continuationFunction(responseHandler)
     );
+    // log.debug("restMethodGetHandler get CRUD/ result", JSON.stringify(result, undefined, 2));
+    return Promise.resolve(result);
   } catch (error) {
     console.warn(
       "restMethodGetHandler get url",
@@ -242,10 +244,10 @@ export async function restActionHandler(
   body: HttpRequestBodyFormat,
   params: any,
 ):Promise<void> {
-  const actionName: string =
-  typeof params["actionName"] == "string" ? params["actionName"] : params["actionName"][0];
+  // console.log("restActionHandler called with params", params, "body", body);
+  const actionName: string = typeof params["actionName"] == "string" ? params["actionName"] : params["actionName"][0];
 
-  log.debug("restActionRunner params", params, "body", body);
+  // log.debug("restActionRunner params", params, "body", body);
 
   const action: StoreOrBundleAction | InstanceAction | ModelAction = body as StoreOrBundleAction | InstanceAction | ModelAction ;
   switch (action.actionType) {
@@ -274,7 +276,7 @@ export async function restActionHandler(
       } else {
         /**
          * we are on the client:
-         * - the RestServerStub emulates the client,
+         * - the RestMswServerStub emulates the client,
          * - the client has direct access to the persistence store (which is emulated, too)
          *  */ 
         const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
@@ -339,7 +341,7 @@ export async function queryActionHandler(
   //   );
   //   return continuationFunction(response)(result)
   // } else {
-    // we're on the client, called by RestServerStub
+    // we're on the client, called by RestMswServerStub
     // uses the local cache, needs to have done a Model "rollback" action on the client
     // or a Model "remoteLocalCacheRollback" action on the server
 
@@ -429,7 +431,7 @@ export async function queryTemplateActionHandler(
     );
     return continuationFunction(response)(result);
   } else {
-    // we're on the client, called by RestServerStub
+    // we're on the client, called by RestMswServerStub
     // uses the local cache, needs to have done a Model "rollback" action on the client
     // or a Model "remoteLocalCacheRollback" action on the server
     const domainState: DomainState = domainController.getDomainState();

@@ -17,14 +17,14 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 
 // ################################################################################################
 /**
- * calls the async method {@link method} and returns the result or calls {@link returnJsonResultContinuation} with the result, if a continuation is provided.
+ * calls the async method {@link method} and returns the result or calls {@link applyJsonResultContinuation} with the result, if a continuation is provided.
  * @param params 
  * @param paramNames 
  * @param instances 
  * @param HttpMethod 
  * @param url 
  * @param method 
- * @param returnJsonResultContinuation 
+ * @param applyJsonResultContinuation 
  * @returns 
  */
 export const generateRestServiceResponse = async (
@@ -32,7 +32,7 @@ export const generateRestServiceResponse = async (
   paramNames:string[],
   instances:EntityInstance[],
   method: (...params: any)=>Promise<HttpResponseBodyFormat>, // async method, returns promise
-  returnJsonResultContinuation:(a:any)=>any,
+  applyJsonResultContinuation:(a:any)=>any,
 ) => {
   // log.info('generateRestServiceResponse called with params',params);
   
@@ -61,8 +61,8 @@ export const generateRestServiceResponse = async (
     // localData = instances;
   }
 
-  // log.info("generateRestServiceResponse received", localData);
+  // log.debug("generateRestServiceResponse received", localData);
   // log.info("##################################### end: ",HttpMethod, url);
-  return localData?returnJsonResultContinuation(localData):[];
+  return localData?applyJsonResultContinuation(localData):[];
 }
 
