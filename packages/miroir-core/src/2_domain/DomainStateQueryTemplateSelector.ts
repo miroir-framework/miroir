@@ -23,7 +23,7 @@ import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { entityEntityDefinition } from "../index.js";
-import { getLoggerName } from "../tools.js";
+import { getLoggerName } from "../4_services/Logger.js"
 import { cleanLevel } from "./constants.js";
 import {
   extractEntityInstanceListFromListQueryAndDomainState,

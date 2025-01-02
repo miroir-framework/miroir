@@ -18,7 +18,7 @@ import {
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../../4_services/Logger.js";
 import { packageName } from "../../constants.js";
-import { getLoggerName } from "../../tools.js";
+import { getLoggerName } from "../../4_services/Logger.js"
 import { cleanLevel } from "../constants.js";
 
 // export const miroirFundamentalJzodSchema2 = miroirFundamentalJzodSchema;
@@ -728,7 +728,7 @@ export function resolveJzodSchemaReferenceInContext(
     : { type: "object", definition: absoluteReferenceTargetJzodSchema };
 
 
-    console.log(
+    log.info(
       "resolveJzodSchemaReferenceInContext for reference",
       "absolutePath",
       jzodReference.definition.absolutePath,

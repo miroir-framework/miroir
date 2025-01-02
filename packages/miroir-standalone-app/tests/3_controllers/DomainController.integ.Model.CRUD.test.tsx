@@ -1227,7 +1227,7 @@ describe.sequential("DomainController.integ.Model.CRUD",
   it.each(Object.entries(testActions))("test %s", async (currentTestName, testAction: TestActionParams) => {
     // const fullTestName = describe.sequential.name + "/" + currentTestName
     const fullTestName = expect.getState().currentTestName ?? "no test name";
-    console.info("STARTING test:", fullTestName);
+    log.info("STARTING test:", fullTestName);
     // expect(currentTestName != undefined).toBeTruthy();
     // expect(testParams.testAssertions).toBeDefined();
 

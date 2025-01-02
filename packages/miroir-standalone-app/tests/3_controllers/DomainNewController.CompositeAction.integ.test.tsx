@@ -27,6 +27,8 @@ import {
   entityEntity,
   EntityInstance,
   entityPublisher,
+  getLoggerName,
+  LoggerInterface,
   MetaEntity,
   MiroirConfigClient,
   MiroirContext,
@@ -64,6 +66,8 @@ import {
   TestActionParams,
   createDeploymentCompositeAction
 } from "../utils/tests-utils.js";
+import { packageName } from 'miroir-core/src/constants.js';
+import { cleanLevel } from './constants.js';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCache;
@@ -83,7 +87,13 @@ MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
   loggerOptions.defaultTemplate,
   loggerOptions.specificLoggerOptions
 );
-
+const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainNewController.CompositeAction.integ.test");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
+  (value: LoggerInterface) => {
+    log = value;
+  }
+);
 console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 // ################################################################################################
@@ -407,6 +417,7 @@ const testActions: Record<string, TestActionParams> = {
               nameGivenToResult: "checkEntityEntity",
               testAssertion: {
                 testType: "testAssertion",
+                testLabel: "checkEntityEntity",
                 definition: {
                   resultAccessPath: ["entityEntity", "entity"],
                   ignoreAttributes: ["author"],
@@ -865,7 +876,7 @@ describe.sequential("DomainNewController.CompositeAction.integ.test", () => {
     // Manually set the currentTestName
     // expect.getState().currentTestName = `DomainNewController.CompositeAction.integ.test/${currentTestName}`;
     const fullTestName = expect.getState().currentTestName ?? "no test name";
-    console.info("STARTING test:", fullTestName);
+    log.info("STARTING test:", fullTestName);
     // expect(currentTestName != undefined).toBeTruthy();
     // expect(testParams.testAssertions).toBeDefined();
 

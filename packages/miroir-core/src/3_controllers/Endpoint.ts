@@ -4,7 +4,7 @@ import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterf
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
-import { getLoggerName } from "../tools.js";
+import { getLoggerName } from "../4_services/Logger.js"
 import { cleanLevel } from "./constants.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController");

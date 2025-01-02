@@ -4,7 +4,7 @@
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { RestClientCallReturnType, RestClientInterface } from "../0_interfaces/4-services/PersistenceInterface.js";
 import { packageName } from "../constants.js";
-import { getLoggerName } from "../tools.js";
+import { getLoggerName } from "../4_services/Logger.js"
 import { MiroirLoggerFactory } from "./Logger.js";
 import { cleanLevel } from "./constants.js";
 

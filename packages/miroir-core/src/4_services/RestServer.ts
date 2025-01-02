@@ -22,7 +22,7 @@ import {
 
 import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface.js";
 import { packageName } from "../constants.js";
-import { getLoggerName } from "../tools.js";
+import { getLoggerName } from "../4_services/Logger.js"
 import { MiroirLoggerFactory } from "./Logger.js";
 import { generateRestServiceResponse } from "./RestTools.js";
 import { cleanLevel } from "./constants.js";

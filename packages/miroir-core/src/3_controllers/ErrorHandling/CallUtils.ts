@@ -6,7 +6,19 @@ import {
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { ErrorLogServiceInterface, MError } from "../../0_interfaces/3_controllers/ErrorLogServiceInterface.js";
 import { LocalCacheInterface } from "../../0_interfaces/4-services/LocalCacheInterface.js";
+import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface.js";
 import { PersistenceStoreLocalOrRemoteInterface } from "../../0_interfaces/4-services/PersistenceInterface.js";
+import { getLoggerName, MiroirLoggerFactory } from "../../4_services/Logger.js";
+import { packageName } from "../../constants.js";
+import { cleanLevel } from "../constants.js";
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"CallUtils");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
+  (logger: LoggerInterface) => {
+    log = logger;
+  }
+);
 
 export class CallUtils {
   constructor(
@@ -33,7 +45,7 @@ export class CallUtils {
     // asynchronous although it is not necessary, only to keep the same signature as callRemotePersistenceAction
     const result: ActionReturnType = this.persistenceStoreLocalOrRemote.handleLocalCacheAction(action);
     
-    console.log("callLocalCacheAction received result", result);
+    log.info("callLocalCacheAction received result", result);
     if (result && result["status"] == "error") {
       //ensure the proper persistence of errors in the local storage, for it to be accessible by view components.
       // Problem: what if the local storage is not accessible? => store it in a in-memory effect.
@@ -69,21 +81,21 @@ export class CallUtils {
     action: PersistenceAction
   ): Promise<Record<string, any>> {
     if (action.actionType !== "modelAction" || action.actionName !== "initModel") {
-      console.log("CallUtils callPersistenceAction called with",
+      log.info("CallUtils callPersistenceAction called with",
         // context,
         // continuation, 
         "action",
         JSON.stringify(action, null, 2)
       );
     } else {
-      console.log("CallUtils callPersistenceAction called with",
+      log.info("CallUtils callPersistenceAction called with",
         "action",
         action.actionType,
         action.actionName
       );
     }
     const result: ActionReturnType = await this.persistenceStoreLocalOrRemote.handlePersistenceAction(action);
-    console.log("CallUtils callPersistenceAction received result", result);
+    log.info("CallUtils callPersistenceAction received result", result);
     if (result["status"] == "error") {
       //ensure the proper persistence of errors in the local storage, for it to be accessible by view components.
       // Problem: what if the local storage is not accessible? => store it in a in-memory effect.
@@ -91,8 +103,8 @@ export class CallUtils {
       this.errorLogService.pushError(error);
       throw error;
     } else {
-      console.log("CallUtils callPersistenceAction ok", result);
-      console.log("CallUtils callPersistenceAction continuation", continuation);
+      log.info("CallUtils callPersistenceAction ok", result);
+      log.info("CallUtils callPersistenceAction continuation", continuation);
       const transformedResult = continuation.resultTransformation
         ? continuation.resultTransformation(result, context)
         : result;

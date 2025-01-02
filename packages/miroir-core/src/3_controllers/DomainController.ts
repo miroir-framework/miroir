@@ -65,16 +65,18 @@ import {
   selfApplicationStoreBasedConfigurationMiroir,
   selfApplicationVersionInitialMiroirVersion
 } from "../index.js";
-import { getLoggerName, resolvePathOnObject } from "../tools.js";
+import { resolvePathOnObject } from "../tools.js";
+import { getLoggerName } from "../4_services/Logger.js"
 import { cleanLevel } from "./constants.js";
 import { Endpoint } from "./Endpoint.js";
 import { CallUtils } from "./ErrorHandling/CallUtils.js";
+import { TestEnvironment } from '../4_services/TestEnvironment.js';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-  (value: LoggerInterface) => {
-    log = value;
+  (logger: LoggerInterface) => {
+    log = logger;
   }
 );
 
@@ -358,7 +360,6 @@ export class DomainController implements DomainControllerInterface {
                     actionName: "loadNewInstancesInLocalCache",
                     deploymentUuid,
                     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                    // objects: instances,
                     objects: [latestInstances],
                   }
                 )
@@ -784,140 +785,163 @@ export class DomainController implements DomainControllerInterface {
     let localContext: Record<string, any> = { ...actionParamValues };
 
     log.info("handleTestCompositeActionSuite testAction", testAction, "localActionParams", Object.keys(localActionParams));
-    // const resolved: any = resolveCompositeActionTemplate(compositeAction, localActionParams, currentModel);
 
-    // log.info("handleTestCompositeActionSuite compositeInstanceAction localActionParams", localActionParams);
-    // log.info(
-    //   "handleCompositeAction compositeInstanceAction resolvedCompositeActionDefinition",
-    //   JSON.stringify(resolved.resolvedCompositeActionDefinition, null, 2)
-    // );
-    // switch (testAction.actionName) {
-    //   case "runTestCompositeAction": {
 
-    if (testAction.beforeAll) {
-      log.info("handleTestCompositeActionSuite beforeAll", testAction.beforeAll.actionLabel, testAction.beforeAll);
-      const beforeAllResult = await this.handleCompositeAction(testAction.beforeAll, localActionParams, currentModel);
-      if (beforeAllResult?.status != "ok") {
-        log.error("Error on beforeAll", JSON.stringify(beforeAllResult, null, 2));
-      }
-    } else {
-      log.info("handleTestCompositeActionSuite no beforeAll!");
-    }
+    try {
+      TestEnvironment.setTestSuite(testAction.testLabel);
 
-    for (const testCompositeAction of Object.entries(testAction.testCompositeActions)) {
-      // expect.getState().currentTestName = testCompositeAction[0];
-      log.info("ppppppppppppppppppppppppp handleTestCompositeActionSuite test", testCompositeAction[0], "beforeEach");
-
-      if (testAction.beforeEach) {
-        log.info("handleTestCompositeActionSuite beforeEach", testAction.beforeEach.actionLabel, testAction.beforeEach);
-        const beforeAllResult = await this.handleCompositeAction(
-          testAction.beforeEach,
-          localActionParams,
-          currentModel
-        );
+      if (testAction.beforeAll) {
+        TestEnvironment.setTest("beforeAll");
+        log.info("handleTestCompositeActionSuite beforeAll", testAction.beforeAll.actionLabel, testAction.beforeAll);
+        const beforeAllResult = await this.handleCompositeAction(testAction.beforeAll, localActionParams, currentModel);
         if (beforeAllResult?.status != "ok") {
-          log.error(
-            "handleTestCompositeActionSuite",
-            testCompositeAction[0],
-            "Error on beforeEach",
-            JSON.stringify(beforeAllResult, null, 2)
-          );
+          log.error("Error on beforeAll", JSON.stringify(beforeAllResult, null, 2));
         }
+        TestEnvironment.setTest(undefined);
       } else {
-        log.info("handleTestCompositeActionSuite", testCompositeAction[0], "no beforeEach!");
+        log.info("handleTestCompositeActionSuite no beforeAll!");
       }
-
-      if (testCompositeAction[1].beforeTestSetupAction) {
-        log.info(
-          "handleTestCompositeAction",
-          testCompositeAction[0],
-          "beforeTestSetupAction",
-          testCompositeAction[1].beforeTestSetupAction.actionLabel,
-          testCompositeAction[1].beforeTestSetupAction
-        );
-        const beforeTestResult = await this.handleCompositeAction(
-          testCompositeAction[1].beforeTestSetupAction,
-          localActionParams,
-          currentModel
-        );
-        if (beforeTestResult?.status != "ok") {
-          log.error(
+  
+      for (const testCompositeAction of Object.entries(testAction.testCompositeActions)) {
+        // expect.getState().currentTestName = testCompositeAction[0];
+        log.info("ppppppppppppppppppppppppp handleTestCompositeActionSuite test", testCompositeAction[0], "beforeEach");
+  
+        if (testAction.beforeEach) {
+          log.info("handleTestCompositeActionSuite beforeEach", testAction.beforeEach.actionLabel, testAction.beforeEach);
+          TestEnvironment.setTest(testCompositeAction[1].testLabel + ".beforeEach");
+          const beforeAllResult = await this.handleCompositeAction(
+            testAction.beforeEach,
+            localActionParams,
+            currentModel
+          );
+          if (beforeAllResult?.status != "ok") {
+            log.error(
+              "handleTestCompositeActionSuite",
+              testCompositeAction[0],
+              "Error on beforeEach",
+              JSON.stringify(beforeAllResult, null, 2)
+            );
+          }
+          TestEnvironment.setTest(undefined);
+        } else {
+          log.info("handleTestCompositeActionSuite", testCompositeAction[0], "no beforeEach!");
+        }
+  
+        if (testCompositeAction[1].beforeTestSetupAction) {
+          TestEnvironment.setTest(testCompositeAction[1].testLabel + ".beforeTestSetupAction");
+          log.info(
             "handleTestCompositeAction",
             testCompositeAction[0],
-            "Error on beforeTestSetupAction",
-            JSON.stringify(beforeTestResult, null, 2)
+            "beforeTestSetupAction",
+            testCompositeAction[1].beforeTestSetupAction.actionLabel,
+            testCompositeAction[1].beforeTestSetupAction
           );
+          const beforeTestResult = await this.handleCompositeAction(
+            testCompositeAction[1].beforeTestSetupAction,
+            localActionParams,
+            currentModel
+          );
+          if (beforeTestResult?.status != "ok") {
+            log.error(
+              "handleTestCompositeAction",
+              testCompositeAction[0],
+              "Error on beforeTestSetupAction",
+              JSON.stringify(beforeTestResult, null, 2)
+            );
+          }
+          TestEnvironment.setTest(undefined);
+        } else {
+          log.info("handleTestCompositeAction", testCompositeAction[0], "no beforeTestSetupAction!");
         }
-      } else {
-        log.info("handleTestCompositeAction", testCompositeAction[0], "no beforeTestSetupAction!");
-      }
+  
+        const localCompositeAction: CompositeAction = {
+          ...testCompositeAction[1].compositeAction,
+          definition: [
+            ...testCompositeAction[1].compositeAction.definition,
+            ...testCompositeAction[1].testCompositeActionAssertions,
+          ],
+        };
+        TestEnvironment.setTest(testCompositeAction[1].testLabel);
+        const result = await this.handleCompositeAction(localCompositeAction, localActionParams, currentModel);
+        TestEnvironment.setTest(undefined);
 
-      const localCompositeAction: CompositeAction = {
-        ...testCompositeAction[1].compositeAction,
-        definition: [
-          ...testCompositeAction[1].compositeAction.definition,
-          ...testCompositeAction[1].testCompositeActionAssertions,
-        ],
-      };
-      if (testCompositeAction[1].afterTestCleanupAction) {
-        log.info(
-          "handleTestCompositeAction",
-          testCompositeAction[0],
-          "afterTestCleanupAction",
-          testCompositeAction[1].afterTestCleanupAction.actionLabel,
-          testCompositeAction[1].afterTestCleanupAction
-        );
-        const afterTestResult = await this.handleCompositeAction(
-          testCompositeAction[1].afterTestCleanupAction,
-          localActionParams,
-          currentModel
-        );
-        if (afterTestResult?.status != "ok") {
-          log.error(
+        if (testCompositeAction[1].afterTestCleanupAction) {
+          TestEnvironment.setTest(testCompositeAction[1].testLabel + ".afterTestCleanupAction");
+          log.info(
             "handleTestCompositeAction",
             testCompositeAction[0],
-            "Error on beforeTestSetupAction",
-            JSON.stringify(afterTestResult, null, 2)
+            "afterTestCleanupAction",
+            testCompositeAction[1].afterTestCleanupAction.actionLabel,
+            testCompositeAction[1].afterTestCleanupAction
           );
+          const afterTestResult = await this.handleCompositeAction(
+            testCompositeAction[1].afterTestCleanupAction,
+            localActionParams,
+            currentModel
+          );
+          if (afterTestResult?.status != "ok") {
+            log.error(
+              "handleTestCompositeAction",
+              testCompositeAction[0],
+              "Error on beforeTestSetupAction",
+              JSON.stringify(afterTestResult, null, 2)
+            );
+          }
+          TestEnvironment.setTest(undefined);
+        } else {
+          log.info("handleTestCompositeAction", testCompositeAction[0], "no afterTestSetupAction!");
         }
-      } else {
-        log.info("handleTestCompositeAction", testCompositeAction[0], "no afterTestSetupAction!");
-      }
-
-      const result = await this.handleCompositeAction(localCompositeAction, localActionParams, currentModel);
-      if (testAction.afterEach) {
-        log.info(
-          "handleTestCompositeActionSuite",
-          testCompositeAction[0],
-          "afterEach",
-          testAction.afterEach.actionLabel,
-          testAction.beforeAll
-        );
-        const beforeAllResult = await this.handleCompositeAction(testAction.afterEach, localActionParams, currentModel);
-        if (beforeAllResult?.status != "ok") {
-          log.error(
+  
+        if (testAction.afterEach) {
+          TestEnvironment.setTest(testCompositeAction[1].testLabel + ".afterEach");
+          log.info(
             "handleTestCompositeActionSuite",
             testCompositeAction[0],
-            "Error on afterEach",
-            JSON.stringify(beforeAllResult, null, 2)
+            "afterEach",
+            testAction.afterEach.actionLabel,
+            testAction.beforeAll
           );
+          const beforeAllResult = await this.handleCompositeAction(testAction.afterEach, localActionParams, currentModel);
+          if (beforeAllResult?.status != "ok") {
+            log.error(
+              "handleTestCompositeActionSuite",
+              testCompositeAction[0],
+              "Error on afterEach",
+              JSON.stringify(beforeAllResult, null, 2)
+            );
+          }
+          TestEnvironment.setTest(undefined);
+        } else {
+          log.info("handleTestCompositeActionSuite", testCompositeAction[0], "no afterEach!");
         }
+      }
+  
+      if (testAction.afterAll) {
+        TestEnvironment.setTest("afterAll");
+        log.info("handleTestCompositeActionSuite afterAll", testAction.afterAll.actionLabel, testAction.beforeAll);
+        const afterAllResult = await this.handleCompositeAction(testAction.afterAll, localActionParams, currentModel);
+        if (afterAllResult?.status != "ok") {
+          log.error("Error on afterAll", JSON.stringify(afterAllResult, null, 2));
+        }
+        TestEnvironment.setTest(undefined);
       } else {
-        log.info("handleTestCompositeActionSuite", testCompositeAction[0], "no afterEach!");
+        log.info("handleTestCompositeActionSuite no afterAll!");
       }
+      return Promise.resolve(ACTION_OK);
+    } catch (error) {
+      log.error("handleTestCompositeActionSuite caught error", error);
+      return Promise.resolve({
+        status: "error",
+        error: {
+          errorType: "FailedToDeployModule",
+          errorMessage: "handleTestCompositeActionSuite caught error: "+ JSON.stringify(error, null, 2),
+        }
+      });
+    } finally {
+      TestEnvironment.reset();
     }
 
-    if (testAction.afterAll) {
-      log.info("handleTestCompositeActionSuite afterAll", testAction.afterAll.actionLabel, testAction.beforeAll);
-      const afterAllResult = await this.handleCompositeAction(testAction.afterAll, localActionParams, currentModel);
-      if (afterAllResult?.status != "ok") {
-        log.error("Error on afterAll", JSON.stringify(afterAllResult, null, 2));
-      }
-    } else {
-      log.info("handleTestCompositeActionSuite no afterAll!");
-    }
 
-    return Promise.resolve(ACTION_OK);
   }
 
   // ##############################################################################################
@@ -943,8 +967,6 @@ export class DomainController implements DomainControllerInterface {
         // currentAction,
         "localContext keys",
         Object.keys(localContext),
-        // "localContext",
-        // localContext
       );
       switch (currentAction.compositeActionType) {
         case "compositeAction": {

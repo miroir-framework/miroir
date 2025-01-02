@@ -17,9 +17,8 @@ import { applyCarryOnSchema, applyCarryOnSchemaOnLevel, forgeCarryOnReferenceNam
 //   extractorOrCombinerTemplateRecord,
 // } from "../preprocessor-generated/miroirFundamentalType.js";
 import { cleanLevel } from "../../../1_core/constants.js";
-import { MiroirLoggerFactory } from "../../../4_services/Logger.js";
+import { getLoggerName, MiroirLoggerFactory } from "../../../4_services/Logger.js";
 import { packageName } from "../../../constants.js";
-import { getLoggerName } from "../../../tools.js";
 import { LoggerInterface } from "../../4-services/LoggerInterface.js";
 // import {
 //   extractorOrCombinerReturningObject,

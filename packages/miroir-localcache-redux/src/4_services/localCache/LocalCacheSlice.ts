@@ -311,10 +311,24 @@ function loadNewEntityInstancesInLocalCache(
     state
   );
 
-    (state as any).loading[instanceCollectionEntityIndex] = sliceEntityAdapter.setAll(
-      (state as any).loading[instanceCollectionEntityIndex],
-      instanceCollection.instances
-    );
+  // gets rid of most warnings: "A non-serializable value was detected in the state"
+  const serializableInstances = instanceCollection.instances.map((i: EntityInstance) =>
+    (i as any)["createdAt"]
+      ? {
+          ...i,
+          createdAt: new Date((i as any)["createdAt"]).getTime(), // for instances tha are stored in a postgres database. What about other date attributes?
+          updatedAt: new Date((i as any)["updatedAt"]).getTime(),
+        }
+      : i
+  );
+
+  // log.info('loadNewEntityInstancesInLocalCache loading instances',deploymentUuid,section,serializableInstances);
+
+  (state as any).loading[instanceCollectionEntityIndex] = sliceEntityAdapter.setAll(
+    (state as any).loading[instanceCollectionEntityIndex],
+    // instanceCollection.instances
+    serializableInstances
+  );
   // log.info("loadNewInstancesInLocalCache returned state", JSON.stringify(state))
 }
 

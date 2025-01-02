@@ -3663,6 +3663,24 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "definition": {
               "type": "string"
+            },
+            "tag": {
+              "value": {
+                "id": 10,
+                "defaultLabel": "Attributes to display by default",
+                "editable": true
+              }
+            }
+          },
+          "icon": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 11,
+                "defaultLabel": "Icon used to represent instances of this Entity",
+                "editable": true
+              }
             }
           },
           "jzodSchema": {
@@ -3673,7 +3691,7 @@ export const miroirFundamentalJzodSchema = {
             },
             "tag": {
               "value": {
-                "id": 11,
+                "id": 12,
                 "defaultLabel": "Jzod Schema",
                 "editable": true
               }
@@ -3687,6 +3705,9 @@ export const miroirFundamentalJzodSchema = {
           "testType": {
             "type": "literal",
             "definition": "testCompositeAction"
+          },
+          "testLabel": {
+            "type": "string"
           },
           "beforeTestSetupAction": {
             "type": "schemaReference",
@@ -3729,6 +3750,9 @@ export const miroirFundamentalJzodSchema = {
           "testType": {
             "type": "literal",
             "definition": "testCompositeActionSuite"
+          },
+          "testLabel": {
+            "type": "string"
           },
           "beforeAll": {
             "type": "schemaReference",
@@ -3781,6 +3805,9 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "testCompositeActionTemplate"
           },
+          "testLabel": {
+            "type": "string"
+          },
           "compositeActionTemplate": {
             "type": "schemaReference",
             "definition": {
@@ -3806,6 +3833,9 @@ export const miroirFundamentalJzodSchema = {
           "testType": {
             "type": "literal",
             "definition": "testAssertion"
+          },
+          "testLabel": {
+            "type": "string"
           },
           "definition": {
             "type": "object",
@@ -3894,6 +3924,9 @@ export const miroirFundamentalJzodSchema = {
                     "type": "literal",
                     "definition": "testCompositeActionSuite"
                   },
+                  "testLabel": {
+                    "type": "string"
+                  },
                   "beforeAll": {
                     "type": "schemaReference",
                     "optional": true,
@@ -3945,6 +3978,9 @@ export const miroirFundamentalJzodSchema = {
                     "type": "literal",
                     "definition": "testCompositeAction"
                   },
+                  "testLabel": {
+                    "type": "string"
+                  },
                   "beforeTestSetupAction": {
                     "type": "schemaReference",
                     "optional": true,
@@ -3987,6 +4023,9 @@ export const miroirFundamentalJzodSchema = {
                     "type": "literal",
                     "definition": "testCompositeActionTemplate"
                   },
+                  "testLabel": {
+                    "type": "string"
+                  },
                   "compositeActionTemplate": {
                     "type": "schemaReference",
                     "definition": {
@@ -4012,6 +4051,9 @@ export const miroirFundamentalJzodSchema = {
                   "testType": {
                     "type": "literal",
                     "definition": "testAssertion"
+                  },
+                  "testLabel": {
+                    "type": "string"
                   },
                   "definition": {
                     "type": "object",
@@ -16519,6 +16561,50 @@ export const miroirFundamentalJzodSchema = {
                           }
                         }
                       ]
+                    },
+                    "tag": {
+                      "value": {
+                        "id": 10,
+                        "defaultLabel": "Attributes to display by default",
+                        "editable": true
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "id": 10,
+                    "defaultLabel": "Attributes to display by default",
+                    "editable": true
+                  }
+                }
+              },
+              "icon": {
+                "type": "union",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 11,
+                    "defaultLabel": "Icon used to represent instances of this Entity",
+                    "editable": true
+                  }
+                },
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 11,
+                        "defaultLabel": "Icon used to represent instances of this Entity",
+                        "editable": true
+                      }
                     }
                   },
                   {
@@ -16536,7 +16622,7 @@ export const miroirFundamentalJzodSchema = {
                 },
                 "tag": {
                   "value": {
-                    "id": 11,
+                    "id": 12,
                     "defaultLabel": "Jzod Schema",
                     "editable": true
                   }
@@ -26486,6 +26572,20 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "literal",
                     "definition": "testAssertion"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "testLabel": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
                   },
                   {
                     "type": "schemaReference",

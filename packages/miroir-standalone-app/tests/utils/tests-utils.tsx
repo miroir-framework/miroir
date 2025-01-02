@@ -76,16 +76,19 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 // ################################################################################################
 export type TestActionParams = {
   testActionType: "testCompositeActionSuite",
+  testActionLabel: string,
   deploymentUuid: Uuid,
   testCompositeAction: TestCompositeActionSuite,
 } 
 | {
   testActionType: "testCompositeAction",
+  testActionLabel: string,
   deploymentUuid: Uuid,
   testCompositeAction: TestCompositeAction,
 } 
 | {
   testActionType: "testCompositeActionTemplate",
+  testActionLabel: string,
   deploymentUuid: Uuid,
   compositeTestActionTemplate: TestCompositeActionTemplate,
 } 
@@ -574,7 +577,7 @@ export async function createDeploymentGetPersistenceStoreController(
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
   domainController: DomainControllerInterface,
 ):Promise< PersistenceStoreControllerInterface > {
-  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ createDeploymentGetPersistenceStoreController started');
+  log.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ createDeploymentGetPersistenceStoreController started');
   let result:any = undefined;
   try {
     const createLocalDeploymentCompositeAction = createDeploymentCompositeAction(miroirConfig, deploymentUuid);
@@ -584,7 +587,7 @@ export async function createDeploymentGetPersistenceStoreController(
       console.error('Error createDeploymentGetPersistenceStoreController',JSON.stringify(createDeploymentResult, null, 2));
       throw new Error('Error createDeploymentGetPersistenceStoreController could not create Miroir Deployment: ' + JSON.stringify(createDeploymentResult, null, 2));
     }
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll_createDeploymentGetPersistenceController DONE');
+    log.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll_createDeploymentGetPersistenceController DONE');
     log.info("createDeploymentGetPersistenceStoreController set persistenceStoreControllerManager on manager DONE");
 
     const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
@@ -612,7 +615,7 @@ export async function createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
   domainController: DomainControllerInterface,
 ):Promise< BeforeAllReturnType | undefined > {
-  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT started');
+  log.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT started');
   let result:any = undefined;
   const localMiroirPersistenceStoreController = await createDeploymentGetPersistenceStoreController(
     miroirConfig,
@@ -630,13 +633,13 @@ export async function miroirBeforeEach_resetAndInitApplicationDeployments(
   deploymentConfigurations: DeploymentConfiguration[],
 ):Promise<void> {
   
-  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach_resetAndInitApplicationDeployments');
+  log.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach_resetAndInitApplicationDeployments');
     await resetAndInitApplicationDeploymentNew(domainController, deploymentConfigurations);
     // console.trace("miroirBeforeEach_resetAndInitApplicationDeployments miroir model state", await localMiroirPersistenceStoreController.getModelState());
     // console.trace("miroirBeforeEach_resetAndInitApplicationDeployments miroir data state", await localMiroirPersistenceStoreController.getDataState());
     // console.trace("miroirBeforeEach_resetAndInitApplicationDeployments library app model state", await localAppPersistenceStoreController.getModelState());
     // console.trace("miroirBeforeEach_resetAndInitApplicationDeployments library app data state", await localAppPersistenceStoreController.getDataState());
-  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done miroirBeforeEach_resetAndInitApplicationDeployments');
+  log.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done miroirBeforeEach_resetAndInitApplicationDeployments');
   document.body.innerHTML = '';
 
   return Promise.resolve();
@@ -648,7 +651,7 @@ export async function resetApplicationDeployments(
   domainController: DomainControllerInterface,
   localCache: LocalCache,
 ):Promise<void> {
-  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ resetApplicationDeployments');
+  log.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ resetApplicationDeployments');
   for (const d of deploymentConfigurations) {
     await domainController.handleAction({
       actionType: "modelAction",
@@ -657,7 +660,7 @@ export async function resetApplicationDeployments(
       deploymentUuid: d.adminConfigurationDeployment.uuid,
     }, localCache?localCache.currentModel(d.adminConfigurationDeployment.uuid):defaultMiroirMetaModel);
   }
-  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done afterEach');
+  log.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done afterEach');
   return Promise.resolve();
 }
 
@@ -667,8 +670,8 @@ export async function deleteAndCloseApplicationDeployments(
   domainController: DomainControllerInterface,
   deploymentConfigurations: DeploymentConfiguration[],
 ) {
-  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments');
-  console.log('deleteAndCloseApplicationDeployments delete test stores.');
+  log.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments');
+  log.info('deleteAndCloseApplicationDeployments delete test stores.');
   for (const d of deploymentConfigurations) {
     const storeUnitConfiguration = miroirConfig.client.emulateServer
     ? miroirConfig.client.deploymentStorageConfig[d.adminConfigurationDeployment.uuid]
@@ -687,7 +690,7 @@ export async function deleteAndCloseApplicationDeployments(
   }
 
   // if (!miroirConfig.client.emulateServer) {
-    console.log('deleteAndCloseApplicationDeployments closing deployment:', adminConfigurationDeploymentMiroir.uuid); // TODO: really???
+    log.info('deleteAndCloseApplicationDeployments closing deployment:', adminConfigurationDeploymentMiroir.uuid); // TODO: really???
     // const remoteStore:PersistenceStoreLocalOrRemoteInterface = domainController.getRemoteStore();
     for (const d of deploymentConfigurations) {
       // const storeUnitConfiguration = miroirConfig.client.emulateServer
@@ -702,10 +705,10 @@ export async function deleteAndCloseApplicationDeployments(
       if (deletedStore?.status != "ok") {
         console.error('Error afterAll',JSON.stringify(deletedStore, null, 2));
       } else {
-        console.log('deleteAndCloseApplicationDeployments closing deployment:', d.adminConfigurationDeployment.uuid, "DONE!"); // TODO: really???
+        log.info('deleteAndCloseApplicationDeployments closing deployment:', d.adminConfigurationDeployment.uuid, "DONE!"); // TODO: really???
       }
     }
-  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done afterAll');
+  log.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done afterAll');
   return Promise.resolve();
 }
 
@@ -738,7 +741,7 @@ export async function loadTestConfigFiles(env:any) {
   let miroirConfig:MiroirConfigClient
   if (env.VITE_MIROIR_TEST_CONFIG_FILENAME) {
     miroirConfig = await loadTestSingleConfigFile(env.VITE_MIROIR_TEST_CONFIG_FILENAME??"");
-    console.log("@@@@@@@@@@@@@@@@@@ config file contents:", miroirConfig)
+    log.info("@@@@@@@@@@@@@@@@@@ config file contents:", miroirConfig)
   } else {
     throw new Error("Environment variable VITE_MIROIR_TEST_CONFIG_FILENAME not found. Tests must find this variable, pointing to a valid test configuration file");
   }
@@ -746,7 +749,7 @@ export async function loadTestConfigFiles(env:any) {
   let logConfig:any
   if (env.VITE_MIROIR_LOG_CONFIG_FILENAME) {
     logConfig = await loadTestSingleConfigFile(env.VITE_MIROIR_LOG_CONFIG_FILENAME??"specificLoggersConfig_warn");
-    console.log("@@@@@@@@@@@@@@@@@@ log config file contents:", miroirConfig)
+    log.info("@@@@@@@@@@@@@@@@@@ log config file contents:", miroirConfig)
   
     // MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
     //   loglevelnext,
@@ -772,14 +775,14 @@ export const chainVitestSteps = async (
   expectedDomainElementType?: DomainElementType,
   expectedValue?: any,
 ): Promise<{[k:string]: any}> => {
-  console.log(
+  log.info(
     "########################################### chainTestAsyncDomainCalls",
     stepName,
     "previousResult:",
     JSON.stringify(context, undefined, 2)
   );
   const domainElement = await functionCallingActionToTest();
-  console.log(
+  log.info(
     "########################################### chainTestAsyncDomainCalls",
     stepName,
     "result:",
@@ -793,7 +796,7 @@ export const chainVitestSteps = async (
       ? domainElement?.returnedDomainElement?.elementValue
       : undefined;
 
-    console.log(
+    log.info(
       "########################################### chainTestAsyncDomainCalls",
       stepName,
       "testResult that will be compared",
@@ -815,7 +818,7 @@ export const chainVitestSteps = async (
       }
     } else {
      // no test to be done 
-     console.log(
+     log.info(
        "########################################### chainTestAsyncDomainCalls",
        stepName,
        "no test done because expectedDomainElementType is undefined",
@@ -823,7 +826,7 @@ export const chainVitestSteps = async (
      );
     }
   } else {
-    console.log(
+    log.info(
       "########################################### chainTestAsyncDomainCalls",
       stepName,
       "error:",
@@ -834,7 +837,7 @@ export const chainVitestSteps = async (
       domainElement.error?.errorType ?? "no errorType" + ": " + domainElement.error?.errorMessage ?? "no errorMessage"
     ).toEqual("ok");
   }
-  console.log(
+  log.info(
     "########################################### chainTestAsyncDomainCalls",
     stepName,
     "testResult:",

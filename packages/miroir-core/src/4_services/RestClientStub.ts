@@ -7,17 +7,20 @@ import { RestClientCallReturnType, RestClientInterface } from "../0_interfaces/4
 import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface.js";
 import { DomainController } from "../3_controllers/DomainController.js";
 import { packageName } from "../constants.js";
-import { getLoggerName } from "../tools.js";
+import { getLoggerName } from "../4_services/Logger.js"
 import { MiroirLoggerFactory } from "./Logger.js";
 import { PersistenceStoreController } from "./PersistenceStoreController.js";
 import { PersistenceStoreControllerManager } from "./PersistenceStoreControllerManager.js";
 import { restServerDefaultHandlers } from "./RestServer.js";
 import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"RestClientStub");
+// const loggerName: string = getLoggerName(packageName, cleanLevel,"RestClientStub");
+const loggerName: string = getLoggerName(packageName, 1,"RestClientStub");
 let log:LoggerInterface = console as any as LoggerInterface;
+// let log:LoggerInterface = undefined as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   (value: LoggerInterface) => {
+    console.log("RestClientStub: logger assigned!");
     log = value;
   }
 );
@@ -30,7 +33,9 @@ export class RestClientStub implements RestClientInterface {
   private persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface | undefined;
   private serverDomainController: DomainControllerInterface | undefined;
 
-  constructor(private rootApiUrl: string) {}
+  constructor(private rootApiUrl: string) {
+
+  }
 
   setPersistenceStoreControllerManager(persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface) {
     this.persistenceStoreControllerManager = persistenceStoreControllerManager;
@@ -103,7 +108,8 @@ export class RestClientStub implements RestClientInterface {
         }
       );
 
-      log.debug("RestClientStub inner result", JSON.stringify(result, undefined, 2));
+      // log.debug("RestClientStub inner result", JSON.stringify(result, undefined, 2));
+      log.info("RestClientStub inner result", JSON.stringify(result, undefined, 2));
       return { // simulating response to a REST call
         status: 200,
         data: result,

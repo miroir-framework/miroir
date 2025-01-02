@@ -61,6 +61,9 @@
                 "type": "literal",
                 "definition": "testCompositeActionSuite"
               },
+              "testLabel": {
+                "type": "string"
+              },
               "beforeAll": {
                 "type": "schemaReference",
                 "optional": true,
@@ -112,6 +115,9 @@
                 "type": "literal",
                 "definition": "testCompositeAction"
               },
+              "testLabel": {
+                "type": "string"
+              },
               "beforeTestSetupAction": {
                 "type": "schemaReference",
                 "optional": true,
@@ -154,6 +160,9 @@
                 "type": "literal",
                 "definition": "testCompositeActionTemplate"
               },
+              "testLabel": {
+                "type": "string"
+              },
               "compositeActionTemplate": {
                 "type": "schemaReference",
                 "definition": {
@@ -178,6 +187,9 @@
               "testType": {
                 "type": "literal",
                 "definition": "testAssertion"
+              },
+              "testLabel": {
+                "type": "string"
               },
               "definition": {
                 "type": "object",

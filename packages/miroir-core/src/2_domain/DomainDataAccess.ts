@@ -34,7 +34,7 @@ import entityStoreBasedConfiguration from '../assets/miroir_model/16dbfe28-e1d7-
 import entitySelfApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json' assert { type: "json" };
 import { packageName } from "../constants.js";
 import { entityMenu } from "../index.js";
-import { getLoggerName } from "../tools.js";
+import { getLoggerName } from "../4_services/Logger.js"
 import { cleanLevel } from "./constants.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainDataAccess");

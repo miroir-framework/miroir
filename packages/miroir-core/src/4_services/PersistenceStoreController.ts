@@ -38,7 +38,7 @@ import {
 // import { applyModelEntityUpdate } from "../3_controllers/ActionRunner.js";
 import { modelInitialize } from "../3_controllers/ModelInitializer.js";
 import { packageName } from "../constants.js";
-import { getLoggerName } from "../tools.js";
+import { getLoggerName } from "../4_services/Logger.js"
 import { MiroirLoggerFactory } from "./Logger.js";
 import { cleanLevel } from "./constants.js";
 

@@ -5,7 +5,17 @@ import {
   LoggerInterface,
   SpecificLoggerOptionsMap
 } from "../0_interfaces/4-services/LoggerInterface.js";
+import { TestEnvironment } from "./TestEnvironment.js";
 
+export function getLoggerName(
+  packageName: string,
+  cleanLevel: string,
+  functionalityName: string,
+) {
+  return `${cleanLevel}_${packageName}_${functionalityName}`
+}
+
+const testSeparator = "-";
 // ################################################################################################
 export function templateLogLevelOptionsFactory(
   loggerName: string,
@@ -18,7 +28,10 @@ export function templateLogLevelOptionsFactory(
     prefix: {
       level: (opts) => `${opts.level}`,
       name: (opts) => opts.logger.name,
-      template: template,
+      testSuite: (opts) => TestEnvironment.getTestSuite() ?? "*",
+      test: (opts) => testSeparator + (TestEnvironment.getTest() ? TestEnvironment.getTest():"*"),
+      testAssertion: (opts) => testSeparator + (TestEnvironment.getTestAssertion() ? TestEnvironment.getTestAssertion(): "*"),
+      template: "##{{testSuite}}{{test}}{{testAssertion}}## " + template ,
       time: () => new Date().toTimeString().split(" ")[0],
     },
   };
@@ -77,6 +90,7 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
     MiroirLoggerFactory.defaultTemplate = defaultTemplate;
     MiroirLoggerFactory.specificLoggerOptionsMap = specificLoggerOptionsMap;
     for (const l of Object.entries(MiroirLoggerFactory.waitingLoggers)) {
+      console.log("MiroirLoggerFactory.create resolving logger", l[0], "with", JSON.stringify(l[1].options));
       l[1].resolve(
         effectiveLoggerFactory.create(
           MiroirLoggerFactory.getLogLevelOptionsFromMap(l[0], l[1].options?.logLevel, l[1].options?.template)
@@ -86,6 +100,13 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
   }
 
   // ###################################
+  /**
+   * TODO: why is this async?
+   * @param loggerName 
+   * @param logLevel 
+   * @param template 
+   * @returns 
+   */
   static async asyncCreateLogger(
     loggerName: string, 
     logLevel?: string | number,

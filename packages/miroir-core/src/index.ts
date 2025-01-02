@@ -696,8 +696,8 @@ export { CallUtils } from './3_controllers/ErrorHandling/CallUtils.js';
 export { MiroirContext } from './3_controllers/MiroirContext.js';
 export {
   MiroirLoggerFactory,
-  templateLogLevelOptionsFactory as templateLoggerOptionsFactory,
-  testLogger
+  testLogger,
+  getLoggerName, 
 } from './4_services/Logger.js';
 export {
   PersistenceStoreController,
@@ -725,7 +725,7 @@ export {
   ignorePostgresExtraAttributesOnRecord,
 } from './4_services/otherTools.js';
 export { miroirCoreStartup } from './startup.js';
-export { stringTuple, circularReplacer, getLoggerName, resolvePathOnObject } from './tools.js';
+export { stringTuple, circularReplacer, resolvePathOnObject } from './tools.js';
 
 import entityEndpointVersion from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3d8da4d4-8f76-4bb4-9212-14869d81c00c.json' assert { type: "json" };
 import entityEntity from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json' assert { type: "json" };
