@@ -17,7 +17,7 @@ import { applyCarryOnSchema, applyCarryOnSchemaOnLevel, forgeCarryOnReferenceNam
 //   extractorOrCombinerTemplateRecord,
 // } from "../preprocessor-generated/miroirFundamentalType.js";
 import { cleanLevel } from "../../../1_core/constants.js";
-import { getLoggerName, MiroirLoggerFactory } from "../../../4_services/Logger.js";
+import { MiroirLoggerFactory } from "../../../4_services/Logger.js";
 import { packageName } from "../../../constants.js";
 import { LoggerInterface } from "../../4-services/LoggerInterface.js";
 // import {
@@ -28,15 +28,13 @@ import { LoggerInterface } from "../../4-services/LoggerInterface.js";
 //   transformerForRuntime_list_pickElement,
 //   testActionRunTest,
 // } from "../preprocessor-generated/miroirFundamentalType.js";
-import { optional } from "zod";
 // import { entityDefinitionTest } from "../../...js";
 // import { Endpoint } from "../../../3_controllers/Endpoint.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel, "getMiroirFundamentalJzodSchema");
 let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "getMiroirFundamentalJzodSchema")
+).then((logger: LoggerInterface) => {log = logger});
 
 export const miroirFundamentalJzodSchemaUuid = "fe9b7d99-f216-44de-bb6e-60e1a1ebb739";
 /**

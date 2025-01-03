@@ -14,16 +14,13 @@ import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import entityEntity from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json" assert { type: "json" };
 import entityEntityDefinition from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json" assert { type: "json" };
 import { packageName } from "../constants.js";
-import { getLoggerName } from "../4_services/Logger.js"
 import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"ModelEntityActionTransformer");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-  (value: LoggerInterface) => {
-    log = value;
-  }
-);
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ModelEntityActionTransformer")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 export class ModelEntityActionTransformer{
 
@@ -139,7 +136,12 @@ export class ModelEntityActionTransformer{
 
         const currentEntity = currentModel.entities.find(e=>e.uuid==modelAction.entityUuid);
         const currentEntityDefinition = currentModel.entityDefinitions.find(e=>e.uuid==modelAction.entityDefinitionUuid);
-        log.info("modelActionToLocalCacheInstanceAction alterEntityAttribute found currentEntity ", currentEntity, "currentEntityDefinition", currentEntityDefinition);
+        // log.info(
+        //   "modelActionToLocalCacheInstanceAction alterEntityAttribute found currentEntity ",
+        //   currentEntity,
+        //   "currentEntityDefinition",
+        //   currentEntityDefinition
+        // );
         if (currentEntity && currentEntityDefinition) {
           // const localEntityDefinition: EntityDefinition = currentEntityDefinition.returnedDomainElement.elementValue as EntityDefinition;
           const localEntityJzodSchemaDefinition =

@@ -1,24 +1,22 @@
 import {
-  ApplicationDeploymentConfiguration,
   ApplicationSection,
   EntityInstancesUuidIndex,
   LoggerInterface,
   MiroirLoggerFactory,
-  Uuid,
-  getLoggerName
+  Uuid
 } from "miroir-core";
 import { Link, useNavigate } from 'react-router-dom';
 
-import { useEntityInstanceUuidIndexFromLocalCache } from "../ReduxHooks.js";
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../constants.js";
+import { useEntityInstanceUuidIndexFromLocalCache } from "../ReduxHooks.js";
 
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"EntityInstanceLink");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "EntityInstanceLink")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 
 export interface EntityInstanceLinkProps {

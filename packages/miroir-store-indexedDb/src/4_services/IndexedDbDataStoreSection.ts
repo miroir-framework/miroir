@@ -1,23 +1,21 @@
 import {
-  DataStoreApplicationType,
+  ActionEntityInstanceCollectionReturnType,
   EntityInstanceCollection,
-  PersistenceStoreDataSectionInterface,
   LoggerInterface,
   MiroirLoggerFactory,
-  getLoggerName,
-  ActionEntityInstanceCollectionReturnType
+  PersistenceStoreDataSectionInterface
 } from "miroir-core";
-import { MixedIndexedDbInstanceStoreSection } from "./IndexedDbInstanceStoreSectionMixin.js";
 import { IndexedDb } from "./IndexedDb.js";
+import { MixedIndexedDbInstanceStoreSection } from "./IndexedDbInstanceStoreSectionMixin.js";
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"IndexedDbDataStoreSection");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "IndexedDbDataStoreSection")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 export class IndexedDbDataStoreSection extends MixedIndexedDbInstanceStoreSection implements PersistenceStoreDataSectionInterface {
 

@@ -1,21 +1,18 @@
 import {
   ACTION_OK,
-  PersistenceStoreAbstractInterface,
-  ActionReturnType,
   ActionVoidReturnType,
   LoggerInterface,
   MiroirLoggerFactory,
-  getLoggerName,
+  PersistenceStoreAbstractInterface
 } from "miroir-core";
 import { packageName } from "../constants.js";
 import { IndexedDb } from "./IndexedDb.js";
 import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel, "IndexedDbStore");
 let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "IndexedDbStore")
+).then((logger: LoggerInterface) => {log = logger});
 
 export class IndexedDbStore implements PersistenceStoreAbstractInterface {
   // public indexedDbStoreName: string;

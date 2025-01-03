@@ -2,17 +2,15 @@ import { EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/mi
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { HttpResponseBodyFormat } from "../0_interfaces/4-services/PersistenceInterface.js";
 import { packageName } from "../constants.js";
-import { getLoggerName } from "../4_services/Logger.js"
+
 import { MiroirLoggerFactory } from "./Logger.js";
 import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"RestTools");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-  (value: LoggerInterface) => {
-    log = value;
-  }
-);
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RestTools")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 
 // ################################################################################################

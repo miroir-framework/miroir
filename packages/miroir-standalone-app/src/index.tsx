@@ -13,7 +13,6 @@ import {
 import {
   ConfigurationService,
   defaultLevels,
-  getLoggerName,
   LoggerInterface,
   MiroirConfigClient,
   MiroirContext,
@@ -65,11 +64,10 @@ MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
   specificLoggerOptions
 );
 
-const loggerName: string = getLoggerName(packageName, cleanLevel, "index.tsx");
 let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "index.tsx")
+).then((logger: LoggerInterface) => {log = logger});
 
 const miroirConfigFiles: {[k: string]: MiroirConfigClient} = {
   "miroirConfigEmulatedServerIndexedDb": miroirConfigEmulatedServerIndexedDb as MiroirConfigClient,

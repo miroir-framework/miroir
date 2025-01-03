@@ -1,15 +1,13 @@
 import * as fs from "fs";
-import * as path from "path";
 
-import { ACTION_OK, PersistenceStoreAbstractInterface, ActionReturnType, ActionVoidReturnType, ApplicationSection, LoggerInterface, MiroirLoggerFactory, getLoggerName } from "miroir-core";
+import { ACTION_OK, ActionVoidReturnType, ApplicationSection, LoggerInterface, MiroirLoggerFactory, PersistenceStoreAbstractInterface } from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel, "SqlDbStore");
 let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SqlDbStore")
+).then((logger: LoggerInterface) => {log = logger});
 
 export class FileSystemStore implements PersistenceStoreAbstractInterface {
   // ##############################################################################################

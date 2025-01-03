@@ -3,8 +3,6 @@ import * as path from "path";
 
 import {
   ACTION_OK,
-  PersistenceStoreEntitySectionAbstractInterface,
-  PersistenceStoreInstanceSectionAbstractInterface,
   ActionEntityInstanceCollectionReturnType,
   ActionEntityInstanceReturnType,
   ActionVoidReturnType,
@@ -17,9 +15,10 @@ import {
   ModelActionAlterEntityAttribute,
   ModelActionRenameEntity,
   PersistenceStoreDataSectionInterface,
+  PersistenceStoreEntitySectionAbstractInterface,
+  PersistenceStoreInstanceSectionAbstractInterface,
   entityEntity,
-  entityEntityDefinition,
-  getLoggerName
+  entityEntityDefinition
 } from "miroir-core";
 import { FileSystemInstanceStoreSectionMixin, MixedFileSystemInstanceStoreSection } from "./FileSystemInstanceStoreSectionMixin.js";
 import { FileSystemStoreSection } from "./FileSystemStoreSection.js";
@@ -28,11 +27,11 @@ import { FileSystemStoreSection } from "./FileSystemStoreSection.js";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"FileSystemEntityStoreMixin");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "FileSystemEntityStoreMixin")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 export const MixedFileSystemDbEntityAndInstanceStoreSection = FileSystemDbEntityStoreSectionMixin(
   FileSystemInstanceStoreSectionMixin(FileSystemStoreSection)

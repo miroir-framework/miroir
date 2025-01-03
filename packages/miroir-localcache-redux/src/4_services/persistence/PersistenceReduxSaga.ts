@@ -3,42 +3,39 @@ import {
   SagaPromiseActionCreator,
   promiseActionFactory
 } from "@teroneko/redux-saga-promise";
+import sagaMiddleware from 'redux-saga';
 import { AllEffect, CallEffect, Effect, all as allEffect } from 'redux-saga/effects';
 import { all, call, takeEvery } from "typed-redux-saga";
-import sagaMiddleware from 'redux-saga';
 
 import {
   ACTION_OK,
   ActionReturnType,
+  BoxedExtractorOrCombinerReturningObjectOrObjectList,
+  BoxedQueryWithExtractorCombinerTransformer,
   EntityInstance,
+  LocalCacheAction,
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceAction,
-  PersistenceStoreLocalOrRemoteInterface,
   PersistenceStoreControllerAction,
+  PersistenceStoreControllerInterface,
   PersistenceStoreControllerManagerInterface,
+  PersistenceStoreLocalOrRemoteInterface,
   RestClientCallReturnType,
   RestPersistenceClientAndRestClientInterface,
-  getLoggerName,
-  storeActionOrBundleActionStoreRunner,
-  PersistenceStoreControllerInterface,
-  BoxedExtractorOrCombinerReturningObjectOrObjectList,
-  BoxedQueryWithExtractorCombinerTransformer,
   StoreOrBundleAction,
-  LocalCacheAction
+  storeActionOrBundleActionStoreRunner
 } from "miroir-core";
 import { handlePromiseActionForSaga } from 'src/sagaTools.js';
 import { packageName } from '../../constants.js';
 import { LocalCache } from '../LocalCache.js';
 import { cleanLevel } from '../constants.js';
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"PersistenceReduxSaga");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-  (value: LoggerInterface) => {
-    log = value;
-  }
-);
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PersistenceReduxSaga")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 

@@ -1,14 +1,15 @@
 import { ICellEditorParams } from "ag-grid-community";
-import { getLoggerName, LoggerInterface, MiroirLoggerFactory } from "miroir-core";
-import { useState, useRef, forwardRef, useImperativeHandle } from "react";
+import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
+
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"SimpleEditor");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SimpleEditor")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 
 export default forwardRef((props:ICellEditorParams, ref) => {

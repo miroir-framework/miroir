@@ -1,38 +1,36 @@
 import {
   ActionReturnType,
   asyncApplyExtractorTransformerInMemory,
+  AsyncBoxedExtractorOrQueryRunnerMap,
   asyncExtractEntityInstanceListWithObjectListExtractor,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
-  AsyncBoxedExtractorOrQueryRunnerMap,
   asyncExtractWithExtractor,
   asyncRunQuery,
   DomainState,
   ExtractorTemplatePersistenceStoreRunner,
-  QueryTemplateRunnerMapForJzodSchema,
-  getLoggerName,
+  handleBoxedExtractorTemplateAction,
   handleBoxedExtractorTemplateOrQueryTemplateAction,
+  handleQueryTemplateAction,
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreInstanceSectionAbstractInterface,
+  QueryTemplateRunnerMapForJzodSchema,
+  RunBoxedExtractorTemplateAction,
+  RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   selectEntityJzodSchemaFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
-  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
-  RunBoxedExtractorTemplateAction,
-  handleQueryTemplateAction,
-  RunBoxedQueryTemplateAction,
-  handleBoxedExtractorTemplateAction
+  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate
 } from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 import { FileSystemExtractorRunner } from "./FileSystemExtractorRunner.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel, "FilesystemExtractorRunner");
 let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "FilesystemExtractorRunner")
+).then((logger: LoggerInterface) => {log = logger});
 
 export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersistenceStoreRunner {
   private logHeader: string;

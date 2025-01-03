@@ -15,7 +15,6 @@ import {
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
   getDomainStateExtractorRunnerMap,
   getExtractorRunnerParamsForDomainState,
-  getLoggerName,
   getQueryRunnerParamsForDomainState,
   LocalCacheAction,
   LocalCacheInfo,
@@ -24,7 +23,6 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   ModelActionReplayableAction,
-  runBoxedExtractorOrQueryAction,
   RunBoxedExtractorOrQueryAction,
   TransactionalInstanceAction
 } from "miroir-core";
@@ -46,13 +44,11 @@ import {
 } from "./localCache/UndoRedoReducer.js";
 import PersistenceReduxSaga from './persistence/PersistenceReduxSaga.js';
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"LocalCache");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-  (value: LoggerInterface) => {
-    log = value;
-  }
-);
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "LocalCache")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 // ################################################################################################
 function roughSizeOfObject( object: any ) {

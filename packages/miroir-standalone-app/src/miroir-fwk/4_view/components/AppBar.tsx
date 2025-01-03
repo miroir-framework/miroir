@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import AdbIcon from '@mui/icons-material/Adb';
 import MenuIcon from '@mui/icons-material/Menu';
 import { default as MuiAppBar, AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
@@ -12,21 +11,22 @@ import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
+import { useState } from 'react';
 
-import { LoggerInterface, MiroirLoggerFactory, MiroirMenuItem, getLoggerName } from 'miroir-core';
+import { LoggerInterface, MiroirLoggerFactory, MiroirMenuItem } from 'miroir-core';
 
-import { packageName } from '../../../constants.js';
-import { cleanLevel } from '../constants.js';
-import { SidebarWidth } from './SidebarSection.js';
 import { useTheme } from '@emotion/react';
 import { Icon } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
+import { packageName } from '../../../constants.js';
+import { cleanLevel } from '../constants.js';
+import { SidebarWidth } from './SidebarSection.js';
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"ResponsiveAppBar");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ResponsiveAppBar")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 const MyAvatar = Avatar as any; // TODO: correct typing error
 const MyBox = Box as any;

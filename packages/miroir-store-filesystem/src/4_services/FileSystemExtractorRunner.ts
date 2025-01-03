@@ -3,13 +3,15 @@ import {
   ActionReturnType,
   ApplicationSection,
   asyncApplyExtractorTransformerInMemory,
-  asyncExtractEntityInstanceListWithObjectListExtractor,
-  asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   AsyncBoxedExtractorOrQueryRunnerMap,
   AsyncBoxedExtractorRunner,
   AsyncBoxedExtractorRunnerParams,
+  asyncExtractEntityInstanceListWithObjectListExtractor,
+  asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   asyncExtractWithExtractor,
   asyncRunQuery,
+  BoxedExtractorOrCombinerReturningObject,
+  BoxedExtractorOrCombinerReturningObjectList,
   DomainElement,
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceArrayOrFailed,
@@ -17,30 +19,25 @@ import {
   DomainState,
   ExtractorOrCombinerReturningObject,
   ExtractorOrQueryPersistenceStoreRunner,
-  getLoggerName,
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreInstanceSectionAbstractInterface,
-  BoxedExtractorOrCombinerReturningObject,
-  BoxedExtractorOrCombinerReturningObjectList,
   QueryRunnerMapForJzodSchema,
-  RunBoxedExtractorOrQueryAction,
+  RunBoxedExtractorAction,
+  RunBoxedQueryAction,
   selectEntityJzodSchemaFromDomainStateNew,
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
-  transformer_InnerReference_resolve,
-  RunBoxedQueryAction,
-  RunBoxedExtractorAction
+  transformer_InnerReference_resolve
 } from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel, "FilesystemExtractorRunner");
 let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "FilesystemExtractorRunner")
+).then((logger: LoggerInterface) => {log = logger});
 
 export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceStoreRunner {
   private logHeader: string;

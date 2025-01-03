@@ -18,7 +18,6 @@ import {
   adminConfigurationDeploymentMiroir,
   // adminConfigurationDeploymentTest1,
   defaultLevels,
-  getLoggerName,
   miroirCoreStartup,
   restServerDefaultHandlers
 } from "miroir-core";
@@ -43,12 +42,12 @@ const specificLoggerOptions: SpecificLoggerOptionsMap = {
 
 const loglevelnext: LoggerFactoryInterface = log as any as LoggerFactoryInterface;
 
-MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
-  loglevelnext,
-  defaultLevels.INFO,
-  "[{{time}}] {{level}} ({{name}}) -",
-  specificLoggerOptions,
-);
+// MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
+//   loglevelnext,
+//   defaultLevels.INFO,
+//   "[{{time}}] {{level}} ({{name}}) -",
+//   specificLoggerOptions,
+// );
 
 const configurations = {
   [adminConfigurationDeploymentAdmin.uuid]: adminConfigurationDeploymentAdmin.configuration as StoreUnitConfiguration,
@@ -58,15 +57,14 @@ const configurations = {
 }
 
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"Server");
-let myLogger:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-  (value: LoggerInterface) => {
-    myLogger = value;
-  }
-);
+let myLogger: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Server")
+).then((logger: LoggerInterface) => {myLogger = logger});
 
-const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server.json', import.meta.url)).toString());
+const configFileContents = JSON.parse(
+  readFileSync(new URL("../config/miroirConfig.server.json", import.meta.url)).toString()
+);
 
 
 const miroirConfig:MiroirConfigServer = configFileContents as MiroirConfigServer;
@@ -83,6 +81,13 @@ miroirCoreStartup();
 miroirFileSystemStoreSectionStartup();
 miroirIndexedDbStoreSectionStartup();
 miroirPostgresStoreSectionStartup();
+
+MiroirLoggerFactory.startRegisteredLoggers(
+  loglevelnext,
+  (defaultLevels as any)[(miroirConfig as any).server.defaultLevel],
+  (miroirConfig as any).server.defaultTemplate,
+  (miroirConfig as any).server.specificLoggerOptions
+);
 
 const miroirContext = new MiroirContext(miroirConfig);
 

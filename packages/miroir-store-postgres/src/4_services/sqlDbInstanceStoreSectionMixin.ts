@@ -1,50 +1,37 @@
 // import { sql } from '@sequelize/postgres';
 
 import {
-  EntityInstance,
-  PersistenceStoreInstanceSectionAbstractInterface,
-  LoggerInterface,
-  MiroirLoggerFactory,
-  getLoggerName,
-  ActionReturnType,
+  ACTION_OK,
   ActionEntityInstanceCollectionReturnType,
   ActionEntityInstanceReturnType,
+  ActionReturnType,
   ActionVoidReturnType,
-  ACTION_OK,
-  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-  BoxedExtractorTemplateReturningObjectList,
-  BoxedQueryTemplateWithExtractorCombinerTransformer,
-  BoxedExtractorTemplateReturningObject,
-  ExtractorTemplateByExtractorWrapper,
-  BoxedExtractorOrCombinerReturningObjectList,
-  BoxedExtractorOrCombinerReturningObject,
-  ExtractorWrapper,
-  BoxedQueryWithExtractorCombinerTransformer,
-  RunBoxedExtractorOrQueryAction,
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
-  ExtractorOrCombinerReturningObject,
-  ExtractorOrCombinerReturningObjectList,
-  Extractor,
+  BoxedQueryWithExtractorCombinerTransformer,
+  EntityInstance,
   ExtractorOrCombiner,
+  LoggerInterface,
+  MiroirLoggerFactory,
+  PersistenceStoreInstanceSectionAbstractInterface,
   RunBoxedExtractorAction,
+  RunBoxedExtractorTemplateAction,
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
-  RunBoxedExtractorTemplateAction,
+  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
 } from "miroir-core";
 import { MixableSqlDbStoreSection, SqlDbStoreSection } from "./SqlDbStoreSection";
 
+import { Op } from "sequelize";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
-import { Op } from "sequelize";
-import { RecursiveStringRecords, SqlDbExtractTemplateRunner } from "./SqlDbQueryTemplateRunner";
 import { SqlDbQueryRunner } from "./SqlDbQueryRunner";
+import { RecursiveStringRecords, SqlDbExtractTemplateRunner } from "./SqlDbQueryTemplateRunner";
 
 const consoleLog: any = console.log.bind(console, packageName, cleanLevel, "SqlDbInstanceStoreSectionMixin");
-const loggerName: string = getLoggerName(packageName, cleanLevel, "SqlDbInstanceStoreSectionMixin");
 let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SqlDbInstanceStoreSectionMixin")
+).then((logger: LoggerInterface) => {log = logger});
 
 export const MixedSqlDbInstanceStoreSection = SqlDbInstanceStoreSectionMixin(SqlDbStoreSection);
 

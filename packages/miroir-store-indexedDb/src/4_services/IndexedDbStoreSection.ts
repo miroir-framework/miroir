@@ -1,26 +1,21 @@
 import {
-  DataStoreApplicationType,
+  ACTION_OK,
+  ActionVoidReturnType,
   EntityDefinition,
-  PersistenceStoreAbstractSectionInterface,
-  StorageSpaceHandlerInterface,
   LoggerInterface,
   MetaEntity,
   MiroirLoggerFactory,
-  getLoggerName,
-  ActionReturnType,
-  ActionVoidReturnType,
-  ACTION_OK
+  PersistenceStoreAbstractSectionInterface,
+  StorageSpaceHandlerInterface
 } from "miroir-core";
 import { packageName } from "../constants.js";
-import { IndexedDb } from "./IndexedDb.js";
 import { cleanLevel } from "./constants.js";
 import { IndexedDbStore } from "./IndexedDbStore.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel, "IndexedDbStoreSection");
 let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "IndexedDbStoreSection")
+).then((logger: LoggerInterface) => {log = logger});
 
 type GConstructor<T = {}> = new (...args: any[]) => T;
 

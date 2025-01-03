@@ -5,20 +5,16 @@ import {
   PersistenceAction,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { ErrorLogServiceInterface, MError } from "../../0_interfaces/3_controllers/ErrorLogServiceInterface.js";
-import { LocalCacheInterface } from "../../0_interfaces/4-services/LocalCacheInterface.js";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface.js";
 import { PersistenceStoreLocalOrRemoteInterface } from "../../0_interfaces/4-services/PersistenceInterface.js";
-import { getLoggerName, MiroirLoggerFactory } from "../../4_services/Logger.js";
+import { MiroirLoggerFactory } from "../../4_services/Logger.js";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"CallUtils");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-  (logger: LoggerInterface) => {
-    log = logger;
-  }
-);
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "CallUtils")
+).then((logger: LoggerInterface) => {log = logger});
 
 export class CallUtils {
   constructor(

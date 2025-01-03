@@ -1,15 +1,15 @@
 import { ICellRendererParams } from "ag-grid-community";
-import { LoggerInterface, MiroirLoggerFactory, getLoggerName } from "miroir-core";
+import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 import { memo } from "react";
 import { packageName } from "../../../constants.js";
-import { TableComponentRow } from "./MTableComponentInterface.js";
 import { cleanLevel } from "../constants.js";
+import { TableComponentRow } from "./MTableComponentInterface.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"EntityInstanceCellRenderer");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "EntityInstanceCellRenderer")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 // ################################################################################################
 export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams<TableComponentRow>) => {

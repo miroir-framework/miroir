@@ -1,22 +1,20 @@
 import {
   ACTION_OK,
-  PersistenceStoreAbstractInterface,
   ActionVoidReturnType,
   ApplicationSection,
   LoggerInterface,
   MiroirLoggerFactory,
-  getLoggerName
+  PersistenceStoreAbstractInterface
 } from "miroir-core";
 import { Sequelize } from "sequelize";
 import { packageName } from "../constants";
 import { EntityUuidIndexedSequelizeModel } from "../utils";
 import { cleanLevel } from "./constants";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel, "SqlDbStore");
 let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SqlDbStore")
+).then((logger: LoggerInterface) => {log = logger});
 
 export class SqlDbStore implements PersistenceStoreAbstractInterface {
   public sqlSchemaTableAccess: EntityUuidIndexedSequelizeModel = {};

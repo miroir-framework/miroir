@@ -1,5 +1,9 @@
 import {
   ApplicationSection,
+  BoxedExtractorOrCombinerReturningObject,
+  BoxedExtractorOrCombinerReturningObjectList,
+  BoxedExtractorOrCombinerReturningObjectOrObjectList,
+  BoxedQueryWithExtractorCombinerTransformer,
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceArrayOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
@@ -8,11 +12,7 @@ import {
   EntityDefinition,
   ExtractorOrCombinerReturningObject,
   JzodObject,
-  QueryByEntityUuidGetEntityDefinition,
-  BoxedExtractorOrCombinerReturningObject,
-  BoxedExtractorOrCombinerReturningObjectList,
-  BoxedExtractorOrCombinerReturningObjectOrObjectList,
-  BoxedQueryWithExtractorCombinerTransformer
+  QueryByEntityUuidGetEntityDefinition
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface.js";
 import {
@@ -28,7 +28,6 @@ import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import entityEntityDefinition from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json" assert { type: "json" };
 import { packageName } from "../constants.js";
-import { getLoggerName } from "../4_services/Logger.js"
 import { cleanLevel } from "./constants.js";
 import { getDeploymentEntityStateIndex } from "./DeploymentEntityState.js";
 import {
@@ -45,11 +44,10 @@ import {
 } from "./QueryTemplateSelectors.js";
 import { transformer_InnerReference_resolve } from "./Transformers.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel, "DeploymentEntityStateQuerySelector");
 let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DeploymentEntityStateQuerySelector")
+).then((logger: LoggerInterface) => {log = logger});
 
 
 // ################################################################################################

@@ -9,6 +9,7 @@ export default defineConfig({
   build: {
     // Relative to the root
     outDir: '../dist',
+    target: 'esnext',
     // rollupOptions: {
     //   external: ["process"]
     // },

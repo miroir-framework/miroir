@@ -29,16 +29,13 @@ import { transformer_menu_AddItem } from "../1_core/Menu.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { resolvePathOnObject } from "../tools.js";
-import { getLoggerName } from "../4_services/Logger.js"
 import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"Transformer");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-  (value: LoggerInterface) => {
-    log = value;
-  }
-);
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Transformer")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 export type ActionTemplate = any;
 export type Step = "build" | "runtime";

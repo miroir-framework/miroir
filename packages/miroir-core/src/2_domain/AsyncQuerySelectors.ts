@@ -3,6 +3,10 @@
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import {
   ApplicationSection,
+  BoxedExtractorOrCombinerReturningObject,
+  BoxedExtractorOrCombinerReturningObjectList,
+  BoxedExtractorOrCombinerReturningObjectOrObjectList,
+  BoxedQueryWithExtractorCombinerTransformer,
   DomainElement,
   DomainElementInstanceArrayOrFailed,
   DomainElementInstanceUuidIndexOrFailed,
@@ -10,11 +14,7 @@ import {
   EntityInstance,
   ExtendedTransformerForRuntime,
   ExtractorOrCombiner,
-  QueryFailed,
-  BoxedExtractorOrCombinerReturningObject,
-  BoxedExtractorOrCombinerReturningObjectList,
-  BoxedExtractorOrCombinerReturningObjectOrObjectList,
-  BoxedQueryWithExtractorCombinerTransformer
+  QueryFailed
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   AsyncBoxedExtractorOrQueryRunnerMap,
@@ -25,19 +25,16 @@ import {
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
-import { getLoggerName } from "../4_services/Logger.js"
 import { cleanLevel } from "./constants.js";
 import { applyExtractorForSingleObjectListToSelectedInstancesListInMemory, applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory, applyExtractorTransformerInMemory } from "./QuerySelectors.js";
 import { resolveExtractorTemplate } from "./Templates.js";
 import { applyTransformer } from "./Transformers.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"AsyncQuerySelectors");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-  (value: LoggerInterface) => {
-    log = value;
-  }
-);
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "AsyncQuerySelectors")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 const emptyAsyncSelectorMap:AsyncBoxedExtractorOrQueryRunnerMap = {
   extractorType: "async",

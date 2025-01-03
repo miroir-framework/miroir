@@ -1,9 +1,10 @@
 import { ICellRendererParams } from 'ag-grid-community';
-import { getLoggerName, LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
+import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
+
+import { Icon } from '@mui/material';
 import React, { memo, useMemo } from 'react';
 import { packageName } from '../../../constants';
 import { cleanLevel } from '../constants';
-import { Icon } from '@mui/material';
 
 // export default (props) => {
 //   const image = props.value === 'Male' ? 'male.png' : 'female.png';
@@ -16,11 +17,11 @@ import { Icon } from '@mui/material';
 //   );
 // };
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"GenderCellRenderer");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "GenderCellRenderer")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 export const ToolsCellRenderer: React.MemoExoticComponent<(props: ICellRendererParams) => JSX.Element> = memo(
   (props: ICellRendererParams) => {

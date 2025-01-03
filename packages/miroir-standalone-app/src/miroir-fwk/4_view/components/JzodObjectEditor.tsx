@@ -27,7 +27,6 @@ import {
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
-  BoxedQueryWithExtractorCombinerTransformer,
   ResolvedJzodSchemaReturnType,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
@@ -39,7 +38,6 @@ import {
   dummyDomainManyQueryWithDeploymentUuid,
   getApplicationSection,
   getDefaultValueForJzodSchemaWithResolution,
-  getLoggerName,
   getQueryRunnerParamsForDeploymentEntityState,
   resolvePathOnObject,
   resolveReferencesForJzodSchemaAndValueObject,
@@ -53,11 +51,11 @@ import { useMiroirContextService, useMiroirContextformHelperState } from "../Mir
 import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from '../ReduxHooks.js';
 
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"JzodObjectEditor");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodObjectEditor")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 export const noValue = { uuid: "31f3a03a-f150-416d-9315-d3a752cb4eb4", name: "no value", parentUuid: "" } as EntityInstance;
 

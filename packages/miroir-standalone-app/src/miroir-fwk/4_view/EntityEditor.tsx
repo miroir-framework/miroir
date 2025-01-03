@@ -1,14 +1,15 @@
 import { ICellEditorParams } from "ag-grid-community";
-import { getLoggerName, LoggerInterface, MiroirLoggerFactory } from "miroir-core";
-import { KeyboardEvent, forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
+
+import { forwardRef, KeyboardEvent, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"EntityEditor");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "EntityEditor")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 // backspace starts the editor on Windows
 const KEY_BACKSPACE = 'Backspace';

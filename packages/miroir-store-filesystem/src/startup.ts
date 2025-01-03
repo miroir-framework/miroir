@@ -1,28 +1,27 @@
 import {
   ApplicationSection,
   ConfigurationService,
-  StoreSectionConfiguration,
+  ErrorAdminStore,
   ErrorDataStore,
   ErrorModelStore,
-  PersistenceStoreDataSectionInterface,
-  PersistenceStoreModelSectionInterface,
   LoggerInterface,
   MiroirLoggerFactory,
-  getLoggerName,
   PersistenceStoreAdminSectionInterface,
-  ErrorAdminStore,
+  PersistenceStoreDataSectionInterface,
+  PersistenceStoreModelSectionInterface,
+  StoreSectionConfiguration
 } from "miroir-core";
+import { FileSystemAdminStore } from "./4_services/FileSystemAdminStore.js";
 import { FileSystemDataStoreSection } from "./4_services/FileSystemDataStoreSection.js";
 import { FileSystemModelStoreSection } from "./4_services/FileSystemModelStoreSection.js";
 import { cleanLevel } from "./4_services/constants";
 import { packageName } from "./constants";
-import { FileSystemAdminStore } from "./4_services/FileSystemAdminStore.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"startup");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "startup")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 export function miroirFileSystemStoreSectionStartup() {
   ConfigurationService.registerAdminStoreFactory(

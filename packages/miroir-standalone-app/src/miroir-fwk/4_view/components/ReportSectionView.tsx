@@ -3,7 +3,6 @@ import { useMemo } from 'react';
 import {
   ApplicationDeploymentConfiguration,
   ApplicationSection,
-  DeploymentEntityState,
   DomainElementObject,
   Entity,
   EntityDefinition,
@@ -12,23 +11,22 @@ import {
   RecordOfJzodObject,
   ReportSection,
   RootReport,
-  Uuid,
-  getLoggerName
+  Uuid
 } from "miroir-core";
 
 
 
-import { packageName, deployments } from '../../../constants.js';
+import { deployments, packageName } from '../../../constants.js';
 import { useMiroirContextService } from '../MiroirContextReactProvider.js';
 import { cleanLevel } from '../constants.js';
 import { ReportSectionEntityInstance } from './ReportSectionEntityInstance.js';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportSectionView");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionView")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 export interface ReportSectionViewProps {
   applicationSection: ApplicationSection,

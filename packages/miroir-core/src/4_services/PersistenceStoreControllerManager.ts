@@ -14,26 +14,21 @@ import {
   ActionVoidReturnType,
   StoreUnitConfiguration
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface.js";
+import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
+import { PersistenceStoreLocalOrRemoteInterface } from "../0_interfaces/4-services/PersistenceInterface.js";
 import { ACTION_OK } from "../1_core/constants.js";
+import { DomainController } from "../3_controllers/DomainController.js";
 import { packageName } from "../constants.js";
-import { getLoggerName } from "../4_services/Logger.js"
 import { MiroirLoggerFactory } from "./Logger.js";
 import { cleanLevel } from "./constants.js";
-import { PersistenceStoreLocalOrRemoteInterface } from "../0_interfaces/4-services/PersistenceInterface.js";
-import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface.js";
-import { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface.js";
-import { DomainController } from "../3_controllers/DomainController.js";
-import { Endpoint } from "../3_controllers/Endpoint.js";
-import { MiroirContext } from "../3_controllers/MiroirContext.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"PersistenceStoreControllerManager");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-  (value: LoggerInterface) => {
-    log = value;
-  }
-);
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PersistenceStoreControllerManager")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 // ################################################################################################
 export class PersistenceStoreControllerManager implements PersistenceStoreControllerManagerInterface {

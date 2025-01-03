@@ -1,31 +1,30 @@
 import * as React from "react";
 
-import { 
-  ApplicationSection, 
-  EntityDefinition, 
-  EntityInstance, 
+import {
+  ApplicationSection,
+  Entity,
+  EntityDefinition,
+  entityDefinitionEntity,
+  entityDefinitionEntityDefinition,
+  entityEntity,
+  entityEntityDefinition,
+  EntityInstance,
   EntityInstanceWithName,
   JzodElement,
-  MetaEntity, 
-  LocalCacheExtractor, 
-  Report, 
-  Uuid, 
-  entityDefinitionEntity, 
-  entityDefinitionEntityDefinition, 
-  entityEntity, 
-  entityEntityDefinition,
+  LocalCacheExtractor,
   LoggerInterface,
-  MiroirLoggerFactory,
-  getLoggerName,
+  MetaEntity,
   MetaModel,
-  Entity,
+  MiroirLoggerFactory,
+  Report,
+  Uuid
 } from 'miroir-core';
-import { ReduxStateWithUndoRedo, selectInstanceArrayForDeploymentSectionEntity, selectModelForDeploymentFromReduxState } from "miroir-localcache-redux";
+import { ReduxStateWithUndoRedo, selectInstanceArrayForDeploymentSectionEntity } from "miroir-localcache-redux";
 import { useSelector } from "react-redux";
 
-import { useCurrentModel } from "../../src/miroir-fwk/4_view/ReduxHooks";
 import { packageName } from "../../src/constants";
 import { cleanLevel } from "../../src/miroir-fwk/4_view/constants";
+import { useCurrentModel } from "../../src/miroir-fwk/4_view/ReduxHooks";
 export interface MiroirReportComponentProps {
   entityName?: string;
   entityUuid: string;
@@ -34,13 +33,11 @@ export interface MiroirReportComponentProps {
   instancesApplicationSection?: ApplicationSection;
 };
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"TestUtilsTableComponent");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-  (value: LoggerInterface) => {
-    log = value;
-  }
-);
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TestUtilsTableComponent")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 
 export const TestUtilsTableComponent = (

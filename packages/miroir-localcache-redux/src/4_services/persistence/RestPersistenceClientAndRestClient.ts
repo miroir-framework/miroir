@@ -3,11 +3,10 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceAction,
-  RestPersistenceAction,
-  RestPersistenceClientAndRestClientInterface,
   RestClientCallReturnType,
   RestClientInterface,
-  getLoggerName
+  RestPersistenceAction,
+  RestPersistenceClientAndRestClientInterface
 } from "miroir-core";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../constants.js";
@@ -20,13 +19,11 @@ export const actionHttpMethods: { [P in string]: HttpMethod } = {
   delete: "delete",
 };
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"RestPersistenceClientAndRestClient");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-  (value: LoggerInterface) => {
-    log = value;
-  }
-);
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RestPersistenceClientAndRestClient")
+).then((logger: LoggerInterface) => {log = logger});
+
 /**
  * Facade / decorator for restClient and GraphQL client.
  * Resolves a DomainNonTransactionalInstanceAction into a network query, using the proper protocol / address.

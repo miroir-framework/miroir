@@ -1,24 +1,22 @@
 import {
   ActionReturnType,
   ApplicationSection,
+  BoxedQueryTemplateWithExtractorCombinerTransformer,
   DomainControllerInterface,
   DomainElementObject,
-  BoxedQueryTemplateWithExtractorCombinerTransformer,
   EntityDefinition,
   EntityInstance,
   InstanceAction,
   LoggerInterface,
-  MiroirLoggerFactory,
-  getLoggerName
+  MiroirLoggerFactory
 } from "miroir-core";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel, "Scripts");
 let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Scripts")
+).then((logger: LoggerInterface) => {log = logger});
 
 export const splitEntity = async (p: {
   domainController: DomainControllerInterface,

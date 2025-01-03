@@ -5,25 +5,15 @@ import { DomainControllerInterface } from "../0_interfaces/2_domain/DomainContro
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { RestClientCallReturnType, RestClientInterface } from "../0_interfaces/4-services/PersistenceInterface.js";
 import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface.js";
-import { DomainController } from "../3_controllers/DomainController.js";
 import { packageName } from "../constants.js";
-import { getLoggerName } from "../4_services/Logger.js"
 import { MiroirLoggerFactory } from "./Logger.js";
-import { PersistenceStoreController } from "./PersistenceStoreController.js";
-import { PersistenceStoreControllerManager } from "./PersistenceStoreControllerManager.js";
 import { restServerDefaultHandlers } from "./RestServer.js";
 import { cleanLevel } from "./constants.js";
 
-// const loggerName: string = getLoggerName(packageName, cleanLevel,"RestClientStub");
-const loggerName: string = getLoggerName(packageName, 1,"RestClientStub");
-let log:LoggerInterface = console as any as LoggerInterface;
-// let log:LoggerInterface = undefined as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-  (value: LoggerInterface) => {
-    console.log("RestClientStub: logger assigned!");
-    log = value;
-  }
-);
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RestClientStub")
+).then((logger: LoggerInterface) => {log = logger});
 
 // ##############################################################################################
 /**
@@ -79,15 +69,14 @@ export class RestClientStub implements RestClientInterface {
         "body",
         body
       );
-      log.info("RestClientStub for header", method, "rawUrl=", rawUrl, "endpoint=", endpoint, "sending body=", body);
+      // log.info("RestClientStub for header", method, "rawUrl=", rawUrl, "endpoint=", endpoint, "sending body=", body);
       const methodToCall = restServerDefaultHandlers.find((h) => h.method == method.toLowerCase() && h.url == rawUrl);
 
       if (!methodToCall) {
         throw new Error(`RestClientStub: No handler found for ${method} ${rawUrl}`);
       }
 
-      log.info("RestClientStub methodToCall", methodToCall);
-      // log.info("RestClientStub en", methodToCall);
+      // log.info("RestClientStub methodToCall", methodToCall);
       const result = await methodToCall.handler(
         false, // useDomainControllerToHandleModelAndInstanceActions: since we're emulating the REST server, we have direct access the persistenceStore, do not use the domainController
         // true, // useDomainControllerToHandleModelAndInstanceActions: the domainController knows whether it has access to the persistenceStore or not, and will use the appropriate access method, depending on the query.
@@ -108,24 +97,13 @@ export class RestClientStub implements RestClientInterface {
         }
       );
 
-      // log.debug("RestClientStub inner result", JSON.stringify(result, undefined, 2));
-      log.info("RestClientStub inner result", JSON.stringify(result, undefined, 2));
+      // log.info("RestClientStub inner result", JSON.stringify(result, undefined, 2));
       return { // simulating response to a REST call
         status: 200,
         data: result,
         headers: new Headers(),
         url: this.rootApiUrl + endpoint,
       };
-
-      // if (response.ok) {
-      //   return {
-      //     status: response.status,
-      //     data,
-      //     headers: response.headers,
-      //     url: response.url,
-      //   };
-      // }
-      // throw new Error(response.statusText);
     } catch (err: any) {
       return Promise.reject(err.message ? err.message : data);
     }

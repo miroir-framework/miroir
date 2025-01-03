@@ -1,8 +1,5 @@
 import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { SetupWorkerApi } from "msw/browser";
-import { SetupServerApi, setupServer } from "msw/node";
-import React from "react";
 import { describe, expect } from 'vitest';
 
 import {
@@ -11,14 +8,11 @@ import {
   Entity,
   EntityDefinition,
   MiroirConfigClient,
-  MiroirContext,
   MiroirContextInterface,
-  MiroirLoggerFactory,
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManagerInterface,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  defaultLevels,
   defaultMiroirMetaModel,
   entityAuthor,
   entityBook,
@@ -31,49 +25,31 @@ import {
 
 import { TestUtilsTableComponent } from "../utils/TestUtilsTableComponent.js";
 import {
-  createLibraryDeploymentDEFUNCT,
-  deploymentConfigurations,
   DisplayLoadingInfo,
-  loadTestConfigFiles,
-  deleteAndCloseApplicationDeployments,
-  resetApplicationDeployments,
+  createLibraryDeploymentDEFUNCT,
   createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT,
+  deleteAndCloseApplicationDeployments,
+  deploymentConfigurations,
+  loadTestConfigFiles,
   miroirBeforeEach_resetAndInitApplicationDeployments,
   renderWithProviders,
+  resetApplicationDeployments,
   setupMiroirTest
 } from "../utils/tests-utils.js";
 
-import { miroirAppStartup } from "../../src/startup.js";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
+import { miroirAppStartup } from "../../src/startup.js";
 
-import { loglevelnext } from '../../src/loglevelnextImporter.js';
-// import { LocalCache } from "../../../miroir-localcache-redux/dist";
 import { LocalCache } from "miroir-localcache-redux";
-// import { miroirConfig } from "miroir-core";
 
 
-
-// const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.Model.undo-redo.React");
-// let log:LoggerInterface = console as any as LoggerInterface;
-// MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-//   (value: LoggerInterface) => {
-//     log = value;
-//   }
-// );
 
 const env:any = (import.meta as any).env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
 const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
-
-// MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
-//   loglevelnext,
-//   (defaultLevels as any)[loggerOptions.defaultLevel],
-//   loggerOptions.defaultTemplate,
-//   loggerOptions.specificLoggerOptions
-// );
 
 // console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 

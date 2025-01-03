@@ -3,21 +3,18 @@
 
 import { StorageType } from "../0_interfaces/1_core/StorageConfiguration.js";
 import { TestImplementation } from "../0_interfaces/1_core/TestImplementation.js";
-import { ApplicationSection, StoreSectionConfiguration } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { ApplicationSection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { PersistenceStoreAdminSectionFactory, AdminStoreFactoryRegister, PersistenceStoreAdminSectionInterface, PersistenceStoreDataOrModelSectionInterface, PersistenceStoreSectionFactory, StoreSectionFactoryRegister } from "../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
+import { AdminStoreFactoryRegister, PersistenceStoreAdminSectionFactory, PersistenceStoreSectionFactory, StoreSectionFactoryRegister } from "../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
-import { getLoggerName } from "../4_services/Logger.js"
 import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"ConfigurationService");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-  (value: LoggerInterface) => {
-    log = value;
-  }
-);
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ConfigurationService")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 // export type DeploymentModes = 'local' | 'remote';
 export type cacheInvalidationPolicy = 'routing' | 'periodic' | 'never';

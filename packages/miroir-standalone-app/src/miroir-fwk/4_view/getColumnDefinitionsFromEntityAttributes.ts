@@ -5,8 +5,7 @@ import {
   EntityDefinition,
   JzodElement,
   LoggerInterface,
-  MiroirLoggerFactory,
-  getLoggerName
+  MiroirLoggerFactory
 } from "miroir-core";
 
 import { packageName } from "../../constants.js";
@@ -18,11 +17,11 @@ import {
 } from "./components/SelectEntityInstanceEditor.js";
 import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"getColumnDefinitionsFromEntityDefinitionAttribute");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "getColumnDefinitionsFromEntityDefinitionAttribute")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 // ################################################################################################
 export function getColumnDefinitionsFromEntityDefinitionAttribute(

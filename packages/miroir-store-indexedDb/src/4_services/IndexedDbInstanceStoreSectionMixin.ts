@@ -1,33 +1,30 @@
 import {
   ACTION_OK,
-  PersistenceStoreInstanceSectionAbstractInterface,
   ActionEntityInstanceCollectionReturnType,
   ActionEntityInstanceReturnType,
   ActionReturnType,
   ActionVoidReturnType,
   EntityInstance,
+  ExtractorRunnerInMemory,
+  ExtractorTemplateRunnerInMemory,
   LoggerInterface,
   MiroirLoggerFactory,
-  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-  getLoggerName,
-  ExtractorTemplateRunnerInMemory,
-  ExtractorRunnerInMemory,
-  RunBoxedExtractorOrQueryAction,
+  PersistenceStoreInstanceSectionAbstractInterface,
   RunBoxedExtractorAction,
+  RunBoxedExtractorTemplateAction,
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
-  RunBoxedExtractorTemplateAction,
+  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
 } from "miroir-core";
 import { IndexedDbStoreSection, MixableIndexedDbStoreSection } from "./IndexedDbStoreSection.js";
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel, "IndexedDbInstanceStoreSectionMixin");
 let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "IndexedDbInstanceStoreSectionMixin")
+).then((logger: LoggerInterface) => {log = logger});
 
 export const MixedIndexedDbInstanceStoreSection = IndexedDbInstanceStoreSectionMixin(IndexedDbStoreSection);
 

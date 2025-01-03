@@ -1,33 +1,30 @@
 import {
+  BoxedExtractorOrCombinerReturningObjectOrObjectList,
+  BoxedExtractorTemplateReturningObjectOrObjectList,
+  BoxedQueryTemplateWithExtractorCombinerTransformer,
+  BoxedQueryWithExtractorCombinerTransformer,
   Extractor,
   ExtractorOrCombiner,
   ExtractorOrCombinerRecord,
-  BoxedExtractorTemplateReturningObject,
-  ExtractorWrapper,
-  QueryFailed,
-  BoxedExtractorOrCombinerReturningObjectOrObjectList,
+  ExtractorOrCombinerReturningObjectOrObjectList,
   ExtractorOrCombinerTemplate,
   ExtractorTemplateByExtractorWrapper,
-  BoxedQueryTemplateWithExtractorCombinerTransformer,
-  BoxedQueryWithExtractorCombinerTransformer,
-  Transformer_InnerReference,
-  Transformer_contextOrParameterReference,
-  BoxedExtractorTemplateReturningObjectOrObjectList,
   ExtractorTemplateReturningObjectOrObjectList,
-  ExtractorOrCombinerReturningObjectOrObjectList
+  ExtractorWrapper,
+  QueryFailed,
+  Transformer_contextOrParameterReference
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
-import { getLoggerName } from "../4_services/Logger.js"
 import { cleanLevel } from "./constants.js";
 import { transformer_InnerReference_resolve } from "./Transformers.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"Templates");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Templates")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 // ################################################################################################
 export function resolveExtractorTemplate(

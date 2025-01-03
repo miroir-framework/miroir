@@ -3,11 +3,11 @@ import {
   ActionReturnType,
   ApplicationSection,
   asyncApplyExtractorTransformerInMemory,
-  asyncExtractEntityInstanceListWithObjectListExtractor,
-  asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   AsyncBoxedExtractorOrQueryRunnerMap,
   AsyncBoxedExtractorRunner,
   AsyncBoxedExtractorRunnerParams,
+  asyncExtractEntityInstanceListWithObjectListExtractor,
+  asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   asyncExtractWithExtractor,
   AsyncQueryRunnerParams,
   asyncRunQuery,
@@ -21,13 +21,11 @@ import {
   DomainState,
   ExtractorOrCombiner,
   ExtractorOrCombinerReturningObject,
-  getLoggerName,
   LoggerInterface,
   MiroirLoggerFactory,
   QueryRunnerMapForJzodSchema,
   resolvePathOnObject,
   RunBoxedExtractorAction,
-  RunBoxedExtractorOrQueryAction,
   RunBoxedQueryAction,
   selectEntityJzodSchemaFromDomainStateNew,
   selectFetchQueryJzodSchemaFromDomainStateNew,
@@ -43,11 +41,10 @@ import { SqlDbDataStoreSection } from "./SqlDbDataStoreSection";
 import { SqlDbModelStoreSection } from "./SqlDbModelStoreSection";
 import { SqlDbExtractTemplateRunner } from "./SqlDbQueryTemplateRunner";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel, "PostgresExtractorRunner");
 let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PostgresExtractorRunner")
+).then((logger: LoggerInterface) => {log = logger});
 
 
 const stringQuote = "'";

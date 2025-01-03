@@ -3,18 +3,17 @@ import { Params } from 'react-router-dom';
 
 import {
   ApplicationSection,
+  BoxedQueryTemplateWithExtractorCombinerTransformer,
+  BoxedQueryWithExtractorCombinerTransformer,
   DeploymentEntityState,
   DomainElementObject,
   DomainElementObjectOrFailed,
   ExtractorRunnerParamsForJzodSchema,
-  getLoggerName,
   getQueryRunnerParamsForDeploymentEntityState,
   LoggerInterface,
   MiroirLoggerFactory,
   QueryByQuery2GetParamJzodSchema,
   QueryRunnerMapForJzodSchema,
-  BoxedQueryTemplateWithExtractorCombinerTransformer,
-  BoxedQueryWithExtractorCombinerTransformer,
   RecordOfJzodObject,
   resolveQueryTemplateWithExtractorCombinerTransformer,
   RootReport,
@@ -33,11 +32,11 @@ import { getMemoizedDeploymentEntityStateJzodSchemaSelectorMap, getMemoizedDeplo
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportView");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportView")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 export interface ReportViewProps {
   applicationSection: ApplicationSection,

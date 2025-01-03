@@ -19,11 +19,9 @@ import {
   DomainElementObjectOrFailed,
   entityMenu,
   getApplicationSection,
-  getLoggerName,
   getQueryRunnerParamsForDeploymentEntityState,
   LoggerInterface,
   MiroirLoggerFactory,
-  BoxedQueryWithExtractorCombinerTransformer,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunnerParams,
   Uuid
@@ -41,13 +39,11 @@ const MatListItemButton: any = ListItemButton;
 const MatListItemIcon: any = ListItemIcon;
 const MatListItemText: any = ListItemText;
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"Sidebar");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-  (value: LoggerInterface) => {
-    log = value;
-  }
-);
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Sidebar")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 
 export const SidebarWidth = 200;

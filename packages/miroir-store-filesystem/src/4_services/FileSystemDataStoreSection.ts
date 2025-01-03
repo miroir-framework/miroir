@@ -1,24 +1,21 @@
 import {
-  DataStoreApplicationType,
+  ActionEntityInstanceCollectionReturnType,
+  ApplicationSection,
   EntityInstanceCollection,
-  PersistenceStoreDataSectionInterface,
   LoggerInterface,
   MiroirLoggerFactory,
-  getLoggerName,
-  ActionReturnType,
-  ApplicationSection,
-  ActionEntityInstanceCollectionReturnType
+  PersistenceStoreDataSectionInterface
 } from "miroir-core";
 
-import { MixedFileSystemInstanceStoreSection } from "./FileSystemInstanceStoreSectionMixin.js";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
+import { MixedFileSystemInstanceStoreSection } from "./FileSystemInstanceStoreSectionMixin.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"FileSystemDataStoreSection");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "FileSystemDataStoreSection")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 export class FileSystemDataStoreSection extends MixedFileSystemInstanceStoreSection implements PersistenceStoreDataSectionInterface {
   // public logHeader: string;

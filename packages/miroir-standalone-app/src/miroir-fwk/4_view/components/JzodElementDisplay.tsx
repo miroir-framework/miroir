@@ -9,22 +9,21 @@ import {
   JzodRecord,
   LoggerInterface,
   MiroirLoggerFactory,
-  Uuid,
-  getLoggerName
+  Uuid
 } from "miroir-core";
 
 import { packageName } from "../../../constants.js";
 import { JzodEnumSchemaToJzodElementResolver } from "../../JzodTools.js";
-import { EntityInstanceLink } from "./EntityInstanceLink.js";
 import { useMiroirContextService } from "../MiroirContextReactProvider.js";
 import { cleanLevel } from "../constants.js";
 import { getColumnDefinitionsFromEntityDefinitionAttribute } from "../getColumnDefinitionsFromEntityAttributes.js";
+import { EntityInstanceLink } from "./EntityInstanceLink.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"JzodElementDisplay");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodElementDisplay")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 export interface JzodElementDisplayProps {
   name: string;

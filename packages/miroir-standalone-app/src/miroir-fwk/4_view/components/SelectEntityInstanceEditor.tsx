@@ -24,8 +24,7 @@ import {
   EntityInstanceWithName,
   LocalCacheExtractor,
   LoggerInterface,
-  MiroirLoggerFactory,
-  getLoggerName
+  MiroirLoggerFactory
 } from "miroir-core";
 import {
   ReduxStateWithUndoRedo,
@@ -34,16 +33,16 @@ import {
 
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../constants.js";
-import { TableComponentRow } from "./MTableComponentInterface.js";
 import {
   useMiroirContextService
 } from '../MiroirContextReactProvider.js';
+import { TableComponentRow } from "./MTableComponentInterface.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"SelectEntityInstanceEditor");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SelectEntityInstanceEditor")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 // backspace starts the editor on Windows
 const KEY_BACKSPACE = 'Backspace';

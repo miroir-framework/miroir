@@ -18,18 +18,17 @@ import {
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../../4_services/Logger.js";
 import { packageName } from "../../constants.js";
-import { getLoggerName } from "../../4_services/Logger.js"
 import { cleanLevel } from "../constants.js";
 
 // export const miroirFundamentalJzodSchema2 = miroirFundamentalJzodSchema;
 // import { miroirFundamentalJzodSchema } from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema.js";
 
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"Jzod");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Jzod")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 
 export interface ResolvedJzodSchemaReturnTypeOK {

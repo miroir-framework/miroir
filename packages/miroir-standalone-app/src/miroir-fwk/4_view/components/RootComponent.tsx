@@ -37,10 +37,10 @@ import {
   entityDefinitionQueryVersionV1,
   entityDefinitionReport,
   entityDefinitionSelfApplication,
+  entityDefinitionSelfApplicationDeploymentConfiguration,
   entityDefinitionSelfApplicationVersion,
   entityDefinitionTest,
   entityDeployment,
-  getLoggerName,
   getMiroirFundamentalJzodSchema,
   instanceEndpointVersionV1,
   JzodSchema,
@@ -54,11 +54,10 @@ import {
   storeManagementEndpoint,
   StoreOrBundleAction,
   StoreUnitConfiguration,
+  testEndpointVersionV1,
   transformerJzodSchema,
   transformerMenuV1,
-  undoRedoEndpointVersionV1,
-  testEndpointVersionV1,
-  entityDefinitionSelfApplicationDeploymentConfiguration,
+  undoRedoEndpointVersionV1
 } from "miroir-core";
 import { ReduxStateChanges } from "miroir-localcache-redux";
 
@@ -70,11 +69,11 @@ import { cleanLevel } from '../constants.js';
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"RootComponent");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RootComponent")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 const MuiBox: any = Box;
 

@@ -1,6 +1,5 @@
 import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import React from "react";
 import { describe, expect } from 'vitest';
 
 // import process from "process";
@@ -30,7 +29,6 @@ import {
   entityDefinitionPublisher,
   EntityInstance,
   entityPublisher,
-  getLoggerName,
   InstanceAction,
   LoggerInterface,
   MetaEntity,
@@ -52,40 +50,31 @@ import {
 
 import {
   createLibraryDeploymentDEFUNCT,
+  createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT,
+  deleteAndCloseApplicationDeployments,
   deploymentConfigurations,
   DisplayLoadingInfo,
   loadTestConfigFiles,
-  deleteAndCloseApplicationDeployments,
-  resetApplicationDeployments,
-  createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT,
   miroirBeforeEach_resetAndInitApplicationDeployments,
   renderWithProviders,
+  resetApplicationDeployments,
   setupMiroirTest
-} from "../utils/tests-utils.js"
+} from "../utils/tests-utils.js";
 
 
 
-import { miroirAppStartup } from "../../src/startup.js";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
+import { miroirAppStartup } from "../../src/startup.js";
 
 import { LocalCache } from "miroir-localcache-redux";
 import { TestUtilsTableComponent } from "../utils/TestUtilsTableComponent.js";
 
-import { loglevelnext } from '../../src/loglevelnextImporter.js';
 import { packageName } from "../../src/constants.js";
+import { loglevelnext } from '../../src/loglevelnextImporter.js';
 import { cleanLevel } from "./constants.js";
 
-
-// jest intercepts logs, only console.log will produce test output
-// const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.Data.CRUD.React");
-// let log:LoggerInterface = console as any as LoggerInterface;
-// MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-//   (value: LoggerInterface) => {
-//     log = value;
-//   }
-// );
 
 
 const env:any = (import.meta as any).env
@@ -100,13 +89,11 @@ MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
   loggerOptions.specificLoggerOptions
 );
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.Data.CRUD.React");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-  (value: LoggerInterface) => {
-    log = value;
-  }
-);
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DomainController.Data.CRUD.React")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 

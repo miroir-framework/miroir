@@ -1,6 +1,6 @@
 import { Formik } from "formik";
-import { v4 as uuidv4 } from 'uuid';
 import _ from "lodash";
+import { v4 as uuidv4 } from 'uuid';
 // import { ReactCodeMirror } from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import ReactCodeMirror from "@uiw/react-codemirror";
@@ -10,7 +10,6 @@ import { ChangeEvent, useCallback, useMemo, useState } from "react";
 const MyReactCodeMirror: any = ReactCodeMirror // TODO: solve the mystery: it was once well-typed, now the linter raises an error upon direct (default-typed) use!
 
 import {
-  ActionHandler,
   ApplicationDeploymentConfiguration,
   CompositeActionTemplate,
   DomainAction,
@@ -22,22 +21,17 @@ import {
   MetaModel,
   MiroirConfigClient,
   MiroirLoggerFactory,
-  adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  entityApplicationForAdmin,
-  entityDeployment,
   entityEntity,
   entityEntityDefinition,
   entityMenu,
   entityReport,
-  entitySelfApplication,
   getApplicationSection,
-  getLoggerName,
   resolveReferencesForJzodSchemaAndValueObject
 } from "miroir-core";
 
-import { packageName, adminConfigurationDeploymentParis, applicationParis, deployments } from "../../../constants.js";
+import { adminConfigurationDeploymentParis, deployments, packageName } from "../../../constants.js";
 import {
   useDomainControllerService,
   useErrorLogService,
@@ -50,11 +44,11 @@ import { JzodObjectEditor } from "../components/JzodObjectEditor.js";
 import { cleanLevel } from "../constants.js";
 
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"ToolsPage");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ToolsPage")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 export const emptyString = ""
 export const dataSection = "data"

@@ -1,21 +1,18 @@
-import Box from '@mui/material/Box';
 import { useEffect, useMemo } from 'react';
 import { Params, useParams } from 'react-router-dom';
 
 import {
+  adminConfigurationDeploymentAdmin,
+  adminConfigurationDeploymentLibrary,
+  adminConfigurationDeploymentMiroir,
   ApplicationDeploymentConfiguration,
   ApplicationSection,
+  getReportsAndEntitiesDefinitionsForDeploymentUuid,
   JzodElement,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
-  Report,
-  adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentLibrary,
-  adminConfigurationDeploymentMiroir,
-  // adminConfigurationDeploymentTest1,
-  getLoggerName,
-  getReportsAndEntitiesDefinitionsForDeploymentUuid
+  Report
 } from "miroir-core";
 import {
   useErrorLogService,
@@ -27,11 +24,11 @@ import { useCurrentModel } from '../ReduxHooks.js';
 import { ReportView } from '../components/ReportView.js';
 import { cleanLevel } from '../constants.js';
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportPage");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportPage")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 
 const miroirExpression: JzodElement = {

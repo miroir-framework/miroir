@@ -66,7 +66,7 @@ import { log } from "console";
 
 
 // jest intercepts logs, only console.log will produce test output
-// const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.Data.CRUD.React");
+// const loggerName: string = getLoggerNameDEFUNCT(packageName, cleanLevel,"DomainController.Data.CRUD.React");
 // let log:LoggerInterface = console as any as LoggerInterface;
 // MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 //   (value: LoggerInterface) => {

@@ -4,18 +4,16 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreAdminSectionInterface,
-  StoreSectionConfiguration,
-  getLoggerName
+  StoreSectionConfiguration
 } from "miroir-core";
 import { packageName } from "../constants";
 import { SqlDbStore } from "./SqlDbStore";
 import { cleanLevel } from "./constants";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel, "SqlDbAdminStore");
 let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SqlDbAdminStore")
+).then((logger: LoggerInterface) => {log = logger});
 
 export class SqlDbAdminStore extends SqlDbStore implements PersistenceStoreAdminSectionInterface {
   // for the sake of uniformity, we follow the mixin pattern also for this class although it's not mixed in any other class
@@ -32,7 +30,7 @@ export class SqlDbAdminStore extends SqlDbStore implements PersistenceStoreAdmin
     try {
       log.info("createStore", JSON.stringify(config));
       if (config.emulatedServerType !== "sql") {
-        throw new Error(loggerName + " createStore failed for serverType " + config.emulatedServerType);
+        throw new Error( "SqlDbAdminStore createStore failed for serverType " + config.emulatedServerType);
       }
       await this.sequelize.createSchema(config.schema, {});
       log.info("createStore DONE!");
@@ -49,7 +47,7 @@ export class SqlDbAdminStore extends SqlDbStore implements PersistenceStoreAdmin
   async deleteStore(config: StoreSectionConfiguration): Promise<ActionVoidReturnType> {
     try {
       if (config.emulatedServerType !== "sql") {
-        throw new Error(loggerName + " deleteStore failed for serverType " + config.emulatedServerType);
+        throw new Error("SqlDbAdminStore deleteStore failed for serverType " + config.emulatedServerType);
       }
       await this.sequelize.dropSchema(config.schema, {});
     } catch (error) {

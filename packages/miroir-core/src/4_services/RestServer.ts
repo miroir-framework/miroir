@@ -22,7 +22,7 @@ import {
 
 import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface.js";
 import { packageName } from "../constants.js";
-import { getLoggerName } from "../4_services/Logger.js"
+
 import { MiroirLoggerFactory } from "./Logger.js";
 import { generateRestServiceResponse } from "./RestTools.js";
 import { cleanLevel } from "./constants.js";
@@ -36,13 +36,11 @@ import {
 } from "../2_domain/DomainStateQueryTemplateSelector.js";
 import { extractWithBoxedExtractorTemplate, runQueryTemplateWithExtractorCombinerTransformer } from "../2_domain/QueryTemplateSelectors.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"RestServer");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-  (value: LoggerInterface) => {
-    log = value;
-  }
-);
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RestServer")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 // function wrapResults(instances: string[]): HttpResponseBodyFormat {
 function wrapResults(instances: any[]): HttpResponseBodyFormat {

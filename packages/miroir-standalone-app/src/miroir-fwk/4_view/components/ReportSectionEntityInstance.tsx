@@ -5,13 +5,12 @@ import {
   Entity,
   EntityDefinition,
   EntityInstance,
-  LoggerInterface,
   JzodElement,
+  LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
   Uuid,
   adminConfigurationDeploymentMiroir,
-  getLoggerName,
   resolveReferencesForJzodSchemaAndValueObject
 } from "miroir-core";
 
@@ -20,18 +19,18 @@ import {
 } from "../MiroirContextReactProvider.js";
 
 import { packageName } from '../../../constants.js';
-import { cleanLevel } from '../constants.js';
 import { JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from '../../JzodTools.js';
-import { JzodElementDisplay } from './JzodElementDisplay.js';
+import { cleanLevel } from '../constants.js';
 import {
   useCurrentModel
 } from "../ReduxHooks.js";
+import { JzodElementDisplay } from './JzodElementDisplay.js';
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportSectionEntityInstance");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionEntityInstance")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 export interface ReportSectionEntityInstanceProps {
   instance?: EntityInstance,

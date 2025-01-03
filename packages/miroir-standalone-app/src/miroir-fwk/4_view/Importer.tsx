@@ -1,13 +1,10 @@
-import { Button } from "@mui/material";
 import { ChangeEvent, FC, useCallback, useEffect, useMemo, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
-import { transformer, z } from "zod";
+import { z } from "zod";
 // import * as XLSX from 'xlsx/xlsx.mjs';
-import { AddBox } from "@mui/icons-material";
 import { Formik } from "formik";
 import {
   ActionHandler,
-  CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction,
   CompositeActionTemplate,
   DomainControllerInterface,
   EntityInstance,
@@ -20,11 +17,9 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   TransformerForRuntime,
-  Transformer_menu_addItem,
   Uuid,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentMiroir,
-  entity,
   entityApplicationForAdmin,
   entityDeployment,
   entityEntity,
@@ -32,7 +27,6 @@ import {
   entityMenu,
   entityReport,
   entitySelfApplication,
-  getLoggerName,
   metaModel,
   resolveReferencesForJzodSchemaAndValueObject
 } from "miroir-core";
@@ -42,14 +36,13 @@ import { JzodObjectEditor } from "./components/JzodObjectEditor.js";
 import { cleanLevel } from "./constants.js";
 import { useDomainControllerService, useErrorLogService, useMiroirContextService } from "./MiroirContextReactProvider.js";
 import { useCurrentModel } from "./ReduxHooks.js";
-import { create } from "domain";
 
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"importer");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "importer")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 export const ImporterCorePropsSchema = z.object({
   filename:z.string(),

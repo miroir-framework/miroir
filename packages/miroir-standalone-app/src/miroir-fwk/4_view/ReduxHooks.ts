@@ -23,15 +23,12 @@ import {
   MiroirQuery,
   MiroirQueryTemplate,
   QueryJzodSchemaParams,
-  BoxedQueryTemplateWithExtractorCombinerTransformer,
-  BoxedQueryWithExtractorCombinerTransformer,
   RecordOfJzodElement,
   SyncQueryRunner,
   SyncQueryRunnerParams,
   SyncQueryTemplateRunner,
   SyncQueryTemplateRunnerParams,
   Uuid,
-  getLoggerName,
   selectEntityUuidFromJzodAttribute
 } from "miroir-core";
 import {
@@ -53,11 +50,11 @@ import {
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"ReduxHooks");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReduxHooks")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 // export type EntityInstanceUuidIndexSelectorParams = localCacheEntityInstancesExtractor;
 

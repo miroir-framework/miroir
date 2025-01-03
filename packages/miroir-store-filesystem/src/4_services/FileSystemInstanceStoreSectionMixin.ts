@@ -2,25 +2,23 @@ import * as fs from "fs";
 import * as path from "path";
 
 import {
-  EntityInstance,
-  EntityInstanceCollection,
-  PersistenceStoreInstanceSectionAbstractInterface,
-  LoggerInterface,
-  MiroirLoggerFactory,
-  getLoggerName,
-  ActionReturnType,
+  ACTION_OK,
   ActionEntityInstanceCollectionReturnType,
   ActionEntityInstanceReturnType,
+  ActionReturnType,
   ActionVoidReturnType,
-  ACTION_OK,
-  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-  ExtractorTemplateRunnerInMemory,
-  RunBoxedExtractorOrQueryAction,
+  EntityInstance,
+  EntityInstanceCollection,
   ExtractorRunnerInMemory,
+  ExtractorTemplateRunnerInMemory,
+  LoggerInterface,
+  MiroirLoggerFactory,
+  PersistenceStoreInstanceSectionAbstractInterface,
   RunBoxedExtractorAction,
+  RunBoxedExtractorTemplateAction,
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
-  RunBoxedExtractorTemplateAction,
+  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
 } from "miroir-core";
 
 import { packageName } from "../constants.js";
@@ -29,11 +27,11 @@ import { cleanLevel } from "./constants.js";
 // import { FileSystemExtractorTemplateRunner } from "./FileSystemExtractorTemplateRunner.js";
 
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"FileSystemInstanceStoreSectionMixin");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "FileSystemInstanceStoreSectionMixin")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 const fileExt = ".json";
 export function fullName(baseName: string) {

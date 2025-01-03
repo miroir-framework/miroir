@@ -14,7 +14,6 @@ import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { PersistenceStoreInstanceSectionAbstractInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
-import { getLoggerName } from "../4_services/Logger.js"
 import {
   asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceListWithObjectListExtractor,
@@ -30,13 +29,12 @@ import {
   selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
 } from "./DomainStateQueryTemplateSelector.js";
 import { ExtractorRunnerInMemory } from "./ExtractorRunnerInMemory.js";
-import { handleBoxedExtractorTemplateOrQueryTemplateAction, handleBoxedExtractorTemplateAction, handleQueryTemplateAction, runQueryTemplateWithExtractorCombinerTransformer } from "./QueryTemplateSelectors.js";
+import { handleBoxedExtractorTemplateAction, handleBoxedExtractorTemplateOrQueryTemplateAction, handleQueryTemplateAction } from "./QueryTemplateSelectors.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel, "ExtractorTemplateRunnerInMemory");
 let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ExtractorTemplateRunnerInMemory")
+).then((logger: LoggerInterface) => {log = logger});
 
 export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersistenceStoreRunner {
   private logHeader: string;

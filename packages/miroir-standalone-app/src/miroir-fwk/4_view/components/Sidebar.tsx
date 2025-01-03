@@ -11,7 +11,6 @@ import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  getLoggerName,
   LoggerInterface,
   menuDefaultAdmin,
   menuDefaultLibrary,
@@ -23,13 +22,11 @@ import { adminConfigurationDeploymentParis, defaultMenuParisUuid, packageName } 
 import { cleanLevel } from '../constants.js';
 import { SidebarSection } from './SidebarSection.js';
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"Sidebar");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-  (value: LoggerInterface) => {
-    log = value;
-  }
-);
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Sidebar")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 
 export const SidebarWidth = 200;

@@ -27,14 +27,11 @@ import {
   entityEntity,
   EntityInstance,
   entityPublisher,
-  getLoggerName,
   LoggerInterface,
   MetaEntity,
-  MiroirConfigClient,
   MiroirContext,
   miroirCoreStartup,
   MiroirLoggerFactory,
-  PersistenceStoreControllerInterface,
   PersistenceStoreControllerManagerInterface,
   publisher1,
   publisher2,
@@ -49,6 +46,7 @@ import {
 } from "miroir-core";
 
 
+import { packageName } from 'miroir-core/src/constants.js';
 import { LocalCache } from 'miroir-localcache-redux';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
@@ -57,16 +55,13 @@ import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { miroirAppStartup } from '../../src/startup.js';
 import {
   chainVitestSteps,
-  createLibraryDeploymentDEFUNCT,
-  loadTestConfigFiles,
+  createDeploymentCompositeAction,
   deleteAndCloseApplicationDeployments,
-  createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT,
+  loadTestConfigFiles,
   miroirBeforeEach_resetAndInitApplicationDeployments,
   setupMiroirTest,
-  TestActionParams,
-  createDeploymentCompositeAction
+  TestActionParams
 } from "../utils/tests-utils.js";
-import { packageName } from 'miroir-core/src/constants.js';
 import { cleanLevel } from './constants.js';
 
 let domainController: DomainControllerInterface;
@@ -81,20 +76,13 @@ console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
 const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
 
-MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
-  loglevelnext,
-  (defaultLevels as any)[loggerOptions.defaultLevel],
-  loggerOptions.defaultTemplate,
-  loggerOptions.specificLoggerOptions
-);
-const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainNewController.CompositeAction.integ.test");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-  (value: LoggerInterface) => {
-    log = value;
-  }
-);
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DomainNewController.CompositeAction.integ.test")
+).then((logger: LoggerInterface) => {log = logger});
+
 console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
+
 
 // ################################################################################################
 beforeAll(
@@ -106,6 +94,14 @@ beforeAll(
     miroirIndexedDbStoreSectionStartup();
     miroirPostgresStoreSectionStartup();
     ConfigurationService.registerTestImplementation({expect: expect as any});
+
+    await MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
+      loglevelnext,
+      (defaultLevels as any)[loggerOptions.defaultLevel],
+      loggerOptions.defaultTemplate,
+      loggerOptions.specificLoggerOptions
+    );
+    
     const {
       persistenceStoreControllerManager: localpersistenceStoreControllerManager,
       domainController: localdomainController,

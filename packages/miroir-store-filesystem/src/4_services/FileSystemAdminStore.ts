@@ -1,22 +1,19 @@
 import {
   ACTION_OK,
-  ActionReturnType,
   ActionVoidReturnType,
-  PersistenceStoreAdminSectionInterface,
   LoggerInterface,
   MiroirLoggerFactory,
-  StoreSectionConfiguration,
-  getLoggerName,
+  PersistenceStoreAdminSectionInterface,
+  StoreSectionConfiguration
 } from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants";
 import { FileSystemStore } from "./FileSystemStore";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel, "SqlDbAdminStore");
 let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SqlDbAdminStore")
+).then((logger: LoggerInterface) => {log = logger});
 
 export class FileSystemAdminStore extends FileSystemStore implements PersistenceStoreAdminSectionInterface {
   // for the sake of uniformity, we follow the mixin pattern also for this class although it's not mixed in any other class

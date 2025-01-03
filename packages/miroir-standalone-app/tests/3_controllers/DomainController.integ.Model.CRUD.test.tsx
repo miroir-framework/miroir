@@ -15,7 +15,6 @@ import {
   entityEntityDefinition,
   EntityInstance,
   entityPublisher,
-  getLoggerName,
   LoggerInterface,
   MetaEntity,
   MiroirContextInterface,
@@ -48,43 +47,69 @@ import { miroirAppStartup } from "../../src/startup.js";
 import { LocalCache } from "miroir-localcache-redux";
 
 import { ConfigurationService, defaultMiroirMetaModel, Entity, entityEntity, JzodElement } from "miroir-core";
+import { packageName } from 'miroir-core/src/constants.js';
 import {
   ApplicationEntitiesAndInstances,
   testOnLibrary_deleteLibraryDeployment,
   testOnLibrary_resetInitAndAddTestDataToLibraryDeployment,
   testOnLibrary_resetLibraryDeployment,
 } from "../utils/tests-utils-testOnLibrary.js";
-import { packageName } from 'miroir-core/src/constants.js';
 // import { loglevelnext } from '../../src/loglevelnextImporter.js';
-import { cleanLevel } from './constants.js';
-import { LoggerFactoryInterface } from 'miroir-core';
 import { loglevelnext } from '../../src/loglevelnextImporter.js';
+import { cleanLevel } from './constants.js';
 
 
 const env:any = (import.meta as any).env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
-console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
-const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
+// const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
 
-MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
+// MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
+//   loglevelnext,
+//   // console as any as LoggerFactoryInterface,
+//   (defaultLevels as any)[loggerOptions.defaultLevel],
+//   loggerOptions.defaultTemplate,
+//   loggerOptions.specificLoggerOptions
+// );
+
+// // jest intercepts logs, only console.log will produce test output
+// let log: LoggerInterface = console as any as LoggerInterface;
+// MiroirLoggerFactory.registerLoggerToStart(
+//   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DomainController.integ.Model.CRUD")
+// ).then((logger: LoggerInterface) => {log = logger});
+
+
+// console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
+let miroirConfig:any;
+let loggerOptions:any;
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DomainController.integ.Data.CRUD.test")
+).then((logger: LoggerInterface) => {log = logger});
+
+miroirAppStartup();
+miroirCoreStartup();
+miroirFileSystemStoreSectionStartup();
+miroirIndexedDbStoreSectionStartup();
+miroirPostgresStoreSectionStartup();
+ConfigurationService.registerTestImplementation({expect: expect as any});
+
+const {miroirConfig: miroirConfigParam, logConfig:loggerOptionsParam} = await loadTestConfigFiles(env)
+miroirConfig = miroirConfigParam;
+loggerOptions = loggerOptionsParam;
+console.log("DomainController.integ.Data.CRUD.test received miroirConfig", JSON.stringify(miroirConfig, null, 2));
+console.log(
+  "DomainController.integ.Data.CRUD.test received miroirConfig.client",
+  JSON.stringify(miroirConfig.client, null, 2)
+);
+console.log("DomainController.integ.Data.CRUD.test received loggerOptions", JSON.stringify(loggerOptions, null, 2));
+MiroirLoggerFactory.startRegisteredLoggers(
   loglevelnext,
-  // console as any as LoggerFactoryInterface,
   (defaultLevels as any)[loggerOptions.defaultLevel],
   loggerOptions.defaultTemplate,
   loggerOptions.specificLoggerOptions
 );
-
-// jest intercepts logs, only console.log will produce test output
-const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.integ.Model.CRUD");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-  (value: LoggerInterface) => {
-    log = value;
-  }
-);
-
-console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
+console.log("DomainController.integ.Data.CRUD.test started registered loggers DONE");
 
 
 let domainController: DomainControllerInterface;
@@ -122,12 +147,12 @@ beforeAll(
   async () => {
     // Establish requests interception layer before all tests.
     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll");
-    miroirAppStartup();
-    miroirCoreStartup();
-    miroirFileSystemStoreSectionStartup();
-    miroirIndexedDbStoreSectionStartup();
-    miroirPostgresStoreSectionStartup();
-    ConfigurationService.registerTestImplementation({expect: expect as any});
+    // miroirAppStartup();
+    // miroirCoreStartup();
+    // miroirFileSystemStoreSectionStartup();
+    // miroirIndexedDbStoreSectionStartup();
+    // miroirPostgresStoreSectionStartup();
+    // ConfigurationService.registerTestImplementation({expect: expect as any});
     const {
       persistenceStoreControllerManager: localpersistenceStoreControllerManager,
       domainController: localdomainController,
@@ -187,9 +212,11 @@ const columnForTestDefinition: JzodElement = {
 const testActions: Record<string, TestActionParams> = {
   "DomainController.integ.Model.CRUD": {
     testActionType: "testCompositeActionSuite",
+    testActionLabel: "DomainController.integ.Model.CRUD",
     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
     testCompositeAction: {
       testType: "testCompositeActionSuite",
+      testLabel: "DomainController.integ.Model.CRUD",
       beforeAll: createDeploymentCompositeAction(miroirConfig, adminConfigurationDeploymentLibrary.uuid),
       // beforeEach: testOnLibrary_resetInitAndAddTestDataToLibraryDeployment(miroirConfig, libraryEntitiesAndInstancesWithoutBook3),
       beforeEach: testOnLibrary_resetInitAndAddTestDataToLibraryDeployment(miroirConfig, [
@@ -221,6 +248,7 @@ const testActions: Record<string, TestActionParams> = {
       testCompositeActions: {
         "Refresh all Instances": {
           testType: "testCompositeAction",
+          testLabel: "Refresh all Instances",
           compositeAction: {
             actionType: "compositeAction",
             actionLabel: "testLibraryBooks",
@@ -289,6 +317,7 @@ const testActions: Record<string, TestActionParams> = {
               nameGivenToResult: "checkNumberOfEntities",
               testAssertion: {
                 testType: "testAssertion",
+                testLabel: "checkNumberOfEntitiesInLibraryApplicationDeployment",
                 definition: {
                   resultAccessPath: ["elementValue", "0"],
                   resultTransformer: {
@@ -308,6 +337,7 @@ const testActions: Record<string, TestActionParams> = {
         },
         "Add Entity Author and Commit": {
           testType: "testCompositeAction",
+          testLabel: "Add Entity Author and Commit",
           compositeAction: {
             actionType: "compositeAction",
             actionLabel: "AddBookInstanceThenRollback",
@@ -403,6 +433,7 @@ const testActions: Record<string, TestActionParams> = {
               nameGivenToResult: "checkNumberOfEntities",
               testAssertion: {
                 testType: "testAssertion",
+                testLabel: "checkNumberOfBooks",
                 definition: {
                   resultAccessPath: ["elementValue", "0"],
                   resultTransformer: {
@@ -424,6 +455,7 @@ const testActions: Record<string, TestActionParams> = {
               nameGivenToResult: "checkEntityList",
               testAssertion: {
                 testType: "testAssertion",
+                testLabel: "checkEntityBooks",
                 definition: {
                   resultAccessPath: ["libraryEntityList", "entities"],
                   ignoreAttributes: [ "author" ],
@@ -438,6 +470,7 @@ const testActions: Record<string, TestActionParams> = {
         },
         "Add Entity Author then rollback": {
           testType: "testCompositeAction",
+          testLabel: "Add Entity Author then rollback",
           compositeAction: {
             actionType: "compositeAction",
             actionLabel: "AddBookInstanceThenRollback",
@@ -532,6 +565,7 @@ const testActions: Record<string, TestActionParams> = {
               nameGivenToResult: "checkNumberOfEntities",
               testAssertion: {
                 testType: "testAssertion",
+                testLabel: "checkNumberOfBooks",
                 definition: {
                   resultAccessPath: ["elementValue", "0"],
                   resultTransformer: {
@@ -551,6 +585,7 @@ const testActions: Record<string, TestActionParams> = {
         },
         "Add Entity Author then test before commit or rollback": {
           testType: "testCompositeAction",
+          testLabel: "Add Entity Author then test before commit or rollback",
           compositeAction: {
             actionType: "compositeAction",
             actionLabel: "AddBookInstanceThenRollback",
@@ -670,6 +705,7 @@ const testActions: Record<string, TestActionParams> = {
               nameGivenToResult: "checkNumberOfEntitiesFromLocalCache",
               testAssertion: {
                 testType: "testAssertion",
+                testLabel: "checkNumberOfBooks",
                 definition: {
                   resultAccessPath: ["elementValue", "0"],
                   resultTransformer: {
@@ -691,6 +727,7 @@ const testActions: Record<string, TestActionParams> = {
               nameGivenToResult: "checkEntityListFromLocalCache",
               testAssertion: {
                 testType: "testAssertion",
+                testLabel: "checkEntityBooks",
                 definition: {
                   resultAccessPath: ["libraryEntityListFromLocalCache", "entities"],
                   ignoreAttributes: [ "author" ],
@@ -707,6 +744,7 @@ const testActions: Record<string, TestActionParams> = {
               nameGivenToResult: "checkNumberOfEntitiesFromPersistentStore",
               testAssertion: {
                 testType: "testAssertion",
+                testLabel: "checkNumberOfBooks",
                 definition: {
                   resultAccessPath: ["elementValue", "0"],
                   resultTransformer: {
@@ -728,6 +766,7 @@ const testActions: Record<string, TestActionParams> = {
               nameGivenToResult: "checkEntityListFromPersistentStore",
               testAssertion: {
                 testType: "testAssertion",
+                testLabel: "checkEntityBooks",
                 definition: {
                   resultAccessPath: ["libraryEntityListFromPersistentStore", "entities"],
                   ignoreAttributes: [ "author" ],
@@ -741,6 +780,7 @@ const testActions: Record<string, TestActionParams> = {
         },
         "Drop Entity Publisher and Commit": {
           testType: "testCompositeAction",
+          testLabel: "Drop Entity Publisher and Commit",
           compositeAction: {
             actionType: "compositeAction",
             actionLabel: "AddBookInstanceThenRollback",
@@ -833,6 +873,7 @@ const testActions: Record<string, TestActionParams> = {
               nameGivenToResult: "checkNumberOfEntities",
               testAssertion: {
                 testType: "testAssertion",
+                testLabel: "checkNumberOfEntities",
                 definition: {
                   resultAccessPath: ["elementValue", "0"],
                   resultTransformer: {
@@ -870,6 +911,7 @@ const testActions: Record<string, TestActionParams> = {
           // there should be an "icon" attribute in the entityDefinitionPublisher
           // and a new attribute
           testType: "testCompositeAction",
+          testLabel: "Rename Entity Publisher and Commit",
           compositeAction: {
             actionType: "compositeAction",
             actionLabel: "AddBookInstanceThenRollback",
@@ -964,6 +1006,7 @@ const testActions: Record<string, TestActionParams> = {
               nameGivenToResult: "checkNumberOfEntities",
               testAssertion: {
                 testType: "testAssertion",
+                testLabel: "checkNumberOfBooks",
                 definition: {
                   resultAccessPath: ["elementValue", "0"],
                   resultTransformer: {
@@ -985,6 +1028,7 @@ const testActions: Record<string, TestActionParams> = {
               nameGivenToResult: "checkEntityList",
               testAssertion: {
                 testType: "testAssertion",
+                testLabel: "checkEntityBooks",
                 definition: {
                   resultAccessPath: ["libraryEntityList", "entities"],
                   ignoreAttributes: [ "author" ],
@@ -996,6 +1040,7 @@ const testActions: Record<string, TestActionParams> = {
         },
         "Alter Entity Publisher and Commit": {
           testType: "testCompositeAction",
+          testLabel: "Alter Entity Publisher and Commit",
           compositeAction: {
             actionType: "compositeAction",
             actionLabel: "AddBookInstanceThenRollback",
@@ -1130,6 +1175,7 @@ const testActions: Record<string, TestActionParams> = {
               nameGivenToResult: "checkNumberOfEntitiesFromPersistentStore",
               testAssertion: {
                 testType: "testAssertion",
+                testLabel: "checkNumberOfBooks",
                 definition: {
                   resultAccessPath: ["elementValue", "0"],
                   resultTransformer: {
@@ -1151,6 +1197,7 @@ const testActions: Record<string, TestActionParams> = {
               nameGivenToResult: "checkNumberOfEntitiesFromLocalCache",
               testAssertion: {
                 testType: "testAssertion",
+                testLabel: "checkNumberOfBooks",
                 definition: {
                   resultAccessPath: ["elementValue", "0"],
                   resultTransformer: {
@@ -1172,6 +1219,7 @@ const testActions: Record<string, TestActionParams> = {
               nameGivenToResult: "checkEntityDefinitionFromLocalCache",
               testAssertion: {
                 testType: "testAssertion",
+                testLabel: "checkEntityBooks",
                 definition: {
                   resultAccessPath: ["libraryEntityDefinitionListFromLocalCache", "entityDefinitions"],
                   ignoreAttributes: [ "author" ],
@@ -1196,6 +1244,7 @@ const testActions: Record<string, TestActionParams> = {
               nameGivenToResult: "checkEntityDefinitionFromPersistentStore",
               testAssertion: {
                 testType: "testAssertion",
+                testLabel: "checkEntityBooks",
                 definition: {
                   resultAccessPath: ["libraryEntityDefinitionListFromPersistentStore", "entityDefinitions"],
                   ignoreAttributes: [ "author" ],

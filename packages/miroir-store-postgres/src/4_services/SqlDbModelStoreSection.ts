@@ -5,19 +5,18 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreDataSectionInterface,
-  PersistenceStoreModelSectionInterface,
-  getLoggerName
+  PersistenceStoreModelSectionInterface
 } from "miroir-core";
 import { MixedSqlDbEntityAndInstanceStoreSection } from "./sqlDbEntityStoreSectionMixin";
 
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"SqlDbModelSectionStore");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SqlDbModelSectionStore")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 export class SqlDbModelStoreSection extends MixedSqlDbEntityAndInstanceStoreSection implements PersistenceStoreModelSectionInterface {
 

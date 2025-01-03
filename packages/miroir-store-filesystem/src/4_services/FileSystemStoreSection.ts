@@ -2,17 +2,14 @@ import * as fs from "fs";
 import * as path from "path";
 
 import {
-  DataStoreApplicationType,
+  ACTION_OK,
+  ActionVoidReturnType,
   EntityDefinition,
-  PersistenceStoreAbstractSectionInterface,
-  StorageSpaceHandlerInterface,
   LoggerInterface,
   MetaEntity,
   MiroirLoggerFactory,
-  getLoggerName,
-  ActionReturnType,
-  ActionVoidReturnType,
-  ACTION_OK,
+  PersistenceStoreAbstractSectionInterface,
+  StorageSpaceHandlerInterface
 } from "miroir-core";
 
 
@@ -20,11 +17,11 @@ import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 import { FileSystemStore } from "./FileSystemStore.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"FileSystemStoreSection");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "FileSystemStoreSection")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 type GConstructor<T = {}> = new (...args: any[]) => T;
 

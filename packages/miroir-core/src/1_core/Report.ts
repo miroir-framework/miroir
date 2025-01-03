@@ -1,16 +1,14 @@
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
-import { getLoggerName } from "../4_services/Logger.js"
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
-import { Report } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"Report");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Report")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 // TODO: still used?
 // export function getReportSectionTargetEntityUuid(

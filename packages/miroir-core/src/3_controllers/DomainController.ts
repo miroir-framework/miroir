@@ -54,6 +54,7 @@ import { ACTION_OK } from "../1_core/constants.js";
 import { defaultMiroirMetaModel, metaModelEntities, miroirModelEntities } from "../1_core/Model.js";
 import { resolveCompositeActionTemplate } from "../2_domain/ResolveCompositeAction.js";
 import { transformer_extended_apply } from "../2_domain/Transformers.js";
+import { CurrentlyExecuting } from '../4_services/CurrentlyExecuting.js';
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import {
@@ -66,19 +67,16 @@ import {
   selfApplicationVersionInitialMiroirVersion
 } from "../index.js";
 import { resolvePathOnObject } from "../tools.js";
-import { getLoggerName } from "../4_services/Logger.js"
 import { cleanLevel } from "./constants.js";
 import { Endpoint } from "./Endpoint.js";
 import { CallUtils } from "./ErrorHandling/CallUtils.js";
-import { TestEnvironment } from '../4_services/TestEnvironment.js';
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-  (logger: LoggerInterface) => {
-    log = logger;
-  }
-);
+
+
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DomainController")
+).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################
 export interface DeploymentConfiguration {
@@ -410,106 +408,126 @@ export class DomainController implements DomainControllerInterface {
     runBoxedExtractorOrQueryAction: RunBoxedExtractorOrQueryAction
   ): Promise<ActionReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
-    log.info(
-    "handleQueryActionOrBoxedExtractorAction",
-      // "deploymentUuid",
-      // runBoxedExtractorOrQueryAction.deploymentUuid,
-      "persistenceStoreAccessMode=",
-      this.persistenceStoreAccessMode,
-      "actionName=",
-      (runBoxedExtractorOrQueryAction as any).actionName,
-      "actionType=",
-      runBoxedExtractorOrQueryAction?.actionType,
-      "queryExecutionStrategy=",
-      runBoxedExtractorOrQueryAction.queryExecutionStrategy,
-      "objects=",
-      JSON.stringify((runBoxedExtractorOrQueryAction as any)["objects"], null, 2)
-    );
-
-    /**
-     * TODO: if the query is contaioned whithin a transactional action, it shall only access the localCache
-     * if a query is contained whithin a composite action, then it shall access only the persistent storage (?)
-     * handle the case of transactionInstanceActions...
-     */
-    if (this.persistenceStoreAccessMode == "local") {
-      /**
-       * we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
-       */
-
-      const result: ActionReturnType = await this.persistenceStoreLocalOrRemote.handlePersistenceActionForLocalPersistenceStore(
-        runBoxedExtractorOrQueryAction
-      );
-      // const result: ActionReturnType = await this.persistenceStoreLocalOrRemote.handlePersistenceActionForLocalCache(
-      //   runBoxedExtractorOrQueryAction
-      // );
+    try {
+      CurrentlyExecuting.setAction(runBoxedExtractorOrQueryAction.actionName);
       log.info(
-        "DomainController handleQueryActionOrBoxedExtractorAction runBoxedExtractorOrQueryAction callPersistenceAction Result=",
-        result
-      );
-      return result;
-    } else {
-      // we're on the client, the query is sent to the server for execution.
-      // is it right? We're limiting querying for script execution to remote queries right there!
-      // principle: the scripts using transactional (thus Model) actions are limited to localCache access
-      // while non-transactional accesses are limited to persistence store access (does this make sense?)
-      // in both cases this enforces only the most up-to-date data is accessed.
-      // log.info(
-      //   "DomainController handleQueryActionOrBoxedExtractorAction runBoxedExtractorOrQueryAction executing query",
-      //   "strategy",
-      //   runBoxedExtractorOrQueryAction.queryExecutionStrategy,
-      //   // JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction)
-      //   runBoxedExtractorOrQueryAction
-      // );
-      const executionStrategy = runBoxedExtractorOrQueryAction.queryExecutionStrategy??"localCacheOrFail";
-      switch (executionStrategy) {
-        case "ServerCache":
-        case "localCacheOrFetch": {
-          throw new Error(
-            "DomainController handleQueryActionOrBoxedExtractorAction could not handle queryExecutionStrategy " +
-              runBoxedExtractorOrQueryAction.queryExecutionStrategy
+        "handleQueryActionOrBoxedExtractorAction",
+          // "deploymentUuid",
+          // runBoxedExtractorOrQueryAction.deploymentUuid,
+          "persistenceStoreAccessMode=",
+          this.persistenceStoreAccessMode,
+          "actionName=",
+          (runBoxedExtractorOrQueryAction as any).actionName,
+          "actionType=",
+          runBoxedExtractorOrQueryAction?.actionType,
+          "queryExecutionStrategy=",
+          runBoxedExtractorOrQueryAction.queryExecutionStrategy,
+          "objects=",
+          JSON.stringify((runBoxedExtractorOrQueryAction as any)["objects"], null, 2)
+        );
+      /**
+       * TODO: if the query is contaioned whithin a transactional action, it shall only access the localCache
+       * if a query is contained whithin a composite action, then it shall access only the persistent storage (?)
+       * handle the case of transactionInstanceActions...
+       */
+      if (this.persistenceStoreAccessMode == "local") {
+        /**
+         * we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
+         */
+
+        const result: ActionReturnType =
+          await this.persistenceStoreLocalOrRemote.handlePersistenceActionForLocalPersistenceStore(
+            runBoxedExtractorOrQueryAction
           );
+        // const result: ActionReturnType = await this.persistenceStoreLocalOrRemote.handlePersistenceActionForLocalCache(
+        //   runBoxedExtractorOrQueryAction
+        // );
+        log.info(
+          "DomainController handleQueryActionOrBoxedExtractorAction runBoxedExtractorOrQueryAction callPersistenceAction Result=",
+          result
+        );
+        return result;
+      } else {
+        // we're on the client, the query is sent to the server for execution.
+        // is it right? We're limiting querying for script execution to remote queries right there!
+        // principle: the scripts using transactional (thus Model) actions are limited to localCache access
+        // while non-transactional accesses are limited to persistence store access (does this make sense?)
+        // in both cases this enforces only the most up-to-date data is accessed.
+        // log.info(
+        //   "DomainController handleQueryActionOrBoxedExtractorAction runBoxedExtractorOrQueryAction executing query",
+        //   "strategy",
+        //   runBoxedExtractorOrQueryAction.queryExecutionStrategy,
+        //   // JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction)
+        //   runBoxedExtractorOrQueryAction
+        // );
+        const executionStrategy = runBoxedExtractorOrQueryAction.queryExecutionStrategy ?? "localCacheOrFail";
+        switch (executionStrategy) {
+          case "ServerCache":
+          case "localCacheOrFetch": {
+            throw new Error(
+              "DomainController handleQueryActionOrBoxedExtractorAction could not handle queryExecutionStrategy " +
+                runBoxedExtractorOrQueryAction.queryExecutionStrategy
+            );
+          }
+          case "localCacheOrFail": {
+            const result = await this.persistenceStoreLocalOrRemote.handlePersistenceActionForLocalCache(
+              runBoxedExtractorOrQueryAction
+            );
+            log.info(
+              "handleQueryActionOrBoxedExtractorAction runBoxedExtractorOrQueryAction callPersistenceAction Result=",
+              result
+            );
+            return result;
+          }
+          case "storage": {
+            const result = await this.persistenceStoreLocalOrRemote.handlePersistenceActionForRemoteStore(
+              runBoxedExtractorOrQueryAction
+            );
+            // const result = await this.callUtil.callRemotePersistenceAction(
+            //   // what if it is a REAL persistence store?? exception?
+            //   {}, // context
+            //   {
+            //     addResultToContextAsName: "dataEntitiesFromModelSection",
+            //     expectedDomainElementType: "entityInstanceCollection",
+            //   }, // continuation
+            //   runBoxedExtractorOrQueryAction
+            // );
+            log.info(
+              "handleQueryActionOrBoxedExtractorAction runBoxedExtractorOrQueryAction callPersistenceAction Result=",
+              result
+            );
+            return result;
+            // break;
+          }
+          default: {
+            throw new Error(
+              "DomainController handleQueryActionOrBoxedExtractorAction unknown queryExecutionStrategy " +
+                runBoxedExtractorOrQueryAction.queryExecutionStrategy
+            );
+            break;
+          }
         }
-        case "localCacheOrFail": {
-          const result = await this.persistenceStoreLocalOrRemote.handlePersistenceActionForLocalCache(runBoxedExtractorOrQueryAction)
-          log.info(
-            "handleQueryActionOrBoxedExtractorAction runBoxedExtractorOrQueryAction callPersistenceAction Result=",
-            result
-          );
-          return result;
-        }
-        case "storage": {
-          const result = await this.persistenceStoreLocalOrRemote.handlePersistenceActionForRemoteStore(runBoxedExtractorOrQueryAction);
-          // const result = await this.callUtil.callRemotePersistenceAction(
-          //   // what if it is a REAL persistence store?? exception?
-          //   {}, // context
-          //   {
-          //     addResultToContextAsName: "dataEntitiesFromModelSection",
-          //     expectedDomainElementType: "entityInstanceCollection",
-          //   }, // continuation
-          //   runBoxedExtractorOrQueryAction
-          // );
-          log.info(
-            "handleQueryActionOrBoxedExtractorAction runBoxedExtractorOrQueryAction callPersistenceAction Result=",
-            result
-          );
-          return result;
-          // break;
-        }
-        default: {
-          throw new Error(
-            "DomainController handleQueryActionOrBoxedExtractorAction unknown queryExecutionStrategy " +
-              runBoxedExtractorOrQueryAction.queryExecutionStrategy
-          );
-          break;
-        }
+        // const result = await this.persistenceStoreLocalOrRemote.handlePersistenceActionForLocalCache(runBoxedExtractorOrQueryAction)
+        // log.info(
+        //   "handleQueryActionOrBoxedExtractorAction runBoxedExtractorOrQueryAction callPersistenceAction Result=",
+        //   result
+        // );
+        // return result;
+        // return result["dataEntitiesFromModelSection"];
       }
-      // const result = await this.persistenceStoreLocalOrRemote.handlePersistenceActionForLocalCache(runBoxedExtractorOrQueryAction)
-      // log.info(
-      //   "handleQueryActionOrBoxedExtractorAction runBoxedExtractorOrQueryAction callPersistenceAction Result=",
-      //   result
-      // );
-      // return result;
-      // return result["dataEntitiesFromModelSection"];
+    } catch (error) {
+      log.error(
+        "DomainController handleQueryActionOrBoxedExtractorAction caught exception",
+        error,
+        "actionName",
+        (runBoxedExtractorOrQueryAction as any).actionName,
+        "actionType",
+        runBoxedExtractorOrQueryAction?.actionType,
+        "objects",
+        JSON.stringify((runBoxedExtractorOrQueryAction as any)["objects"], null, 2)
+      );
+    } finally {
+      CurrentlyExecuting.setAction(undefined);
     }
 
     return ACTION_OK;
@@ -788,27 +806,27 @@ export class DomainController implements DomainControllerInterface {
 
 
     try {
-      TestEnvironment.setTestSuite(testAction.testLabel);
+      CurrentlyExecuting.setTestSuite(testAction.testLabel);
 
       if (testAction.beforeAll) {
-        TestEnvironment.setTest("beforeAll");
+        CurrentlyExecuting.setTest("beforeAll");
         log.info("handleTestCompositeActionSuite beforeAll", testAction.beforeAll.actionLabel, testAction.beforeAll);
         const beforeAllResult = await this.handleCompositeAction(testAction.beforeAll, localActionParams, currentModel);
         if (beforeAllResult?.status != "ok") {
           log.error("Error on beforeAll", JSON.stringify(beforeAllResult, null, 2));
         }
-        TestEnvironment.setTest(undefined);
+        CurrentlyExecuting.setTest(undefined);
       } else {
         log.info("handleTestCompositeActionSuite no beforeAll!");
       }
   
       for (const testCompositeAction of Object.entries(testAction.testCompositeActions)) {
         // expect.getState().currentTestName = testCompositeAction[0];
-        log.info("ppppppppppppppppppppppppp handleTestCompositeActionSuite test", testCompositeAction[0], "beforeEach");
+        log.info("handleTestCompositeActionSuite test", testCompositeAction[0], "beforeEach");
   
         if (testAction.beforeEach) {
           log.info("handleTestCompositeActionSuite beforeEach", testAction.beforeEach.actionLabel, testAction.beforeEach);
-          TestEnvironment.setTest(testCompositeAction[1].testLabel + ".beforeEach");
+          CurrentlyExecuting.setTest(testCompositeAction[1].testLabel + ".beforeEach");
           const beforeAllResult = await this.handleCompositeAction(
             testAction.beforeEach,
             localActionParams,
@@ -822,13 +840,13 @@ export class DomainController implements DomainControllerInterface {
               JSON.stringify(beforeAllResult, null, 2)
             );
           }
-          TestEnvironment.setTest(undefined);
+          CurrentlyExecuting.setTest(undefined);
         } else {
           log.info("handleTestCompositeActionSuite", testCompositeAction[0], "no beforeEach!");
         }
   
         if (testCompositeAction[1].beforeTestSetupAction) {
-          TestEnvironment.setTest(testCompositeAction[1].testLabel + ".beforeTestSetupAction");
+          CurrentlyExecuting.setTest(testCompositeAction[1].testLabel + ".beforeTestSetupAction");
           log.info(
             "handleTestCompositeAction",
             testCompositeAction[0],
@@ -849,7 +867,7 @@ export class DomainController implements DomainControllerInterface {
               JSON.stringify(beforeTestResult, null, 2)
             );
           }
-          TestEnvironment.setTest(undefined);
+          CurrentlyExecuting.setTest(undefined);
         } else {
           log.info("handleTestCompositeAction", testCompositeAction[0], "no beforeTestSetupAction!");
         }
@@ -861,12 +879,12 @@ export class DomainController implements DomainControllerInterface {
             ...testCompositeAction[1].testCompositeActionAssertions,
           ],
         };
-        TestEnvironment.setTest(testCompositeAction[1].testLabel);
+        CurrentlyExecuting.setTest(testCompositeAction[1].testLabel);
         const result = await this.handleCompositeAction(localCompositeAction, localActionParams, currentModel);
-        TestEnvironment.setTest(undefined);
+        CurrentlyExecuting.setTest(undefined);
 
         if (testCompositeAction[1].afterTestCleanupAction) {
-          TestEnvironment.setTest(testCompositeAction[1].testLabel + ".afterTestCleanupAction");
+          CurrentlyExecuting.setTest(testCompositeAction[1].testLabel + ".afterTestCleanupAction");
           log.info(
             "handleTestCompositeAction",
             testCompositeAction[0],
@@ -887,13 +905,13 @@ export class DomainController implements DomainControllerInterface {
               JSON.stringify(afterTestResult, null, 2)
             );
           }
-          TestEnvironment.setTest(undefined);
+          CurrentlyExecuting.setTest(undefined);
         } else {
           log.info("handleTestCompositeAction", testCompositeAction[0], "no afterTestSetupAction!");
         }
   
         if (testAction.afterEach) {
-          TestEnvironment.setTest(testCompositeAction[1].testLabel + ".afterEach");
+          CurrentlyExecuting.setTest(testCompositeAction[1].testLabel + ".afterEach");
           log.info(
             "handleTestCompositeActionSuite",
             testCompositeAction[0],
@@ -910,20 +928,20 @@ export class DomainController implements DomainControllerInterface {
               JSON.stringify(beforeAllResult, null, 2)
             );
           }
-          TestEnvironment.setTest(undefined);
+          CurrentlyExecuting.setTest(undefined);
         } else {
           log.info("handleTestCompositeActionSuite", testCompositeAction[0], "no afterEach!");
         }
       }
   
       if (testAction.afterAll) {
-        TestEnvironment.setTest("afterAll");
+        CurrentlyExecuting.setTest("afterAll");
         log.info("handleTestCompositeActionSuite afterAll", testAction.afterAll.actionLabel, testAction.beforeAll);
         const afterAllResult = await this.handleCompositeAction(testAction.afterAll, localActionParams, currentModel);
         if (afterAllResult?.status != "ok") {
           log.error("Error on afterAll", JSON.stringify(afterAllResult, null, 2));
         }
-        TestEnvironment.setTest(undefined);
+        CurrentlyExecuting.setTest(undefined);
       } else {
         log.info("handleTestCompositeActionSuite no afterAll!");
       }
@@ -938,7 +956,7 @@ export class DomainController implements DomainControllerInterface {
         }
       });
     } finally {
-      TestEnvironment.reset();
+      CurrentlyExecuting.reset();
     }
 
 
@@ -961,193 +979,214 @@ export class DomainController implements DomainControllerInterface {
 
     for (const currentAction of compositeAction.definition) {
       let actionResult: ActionReturnType | undefined = undefined;
-      log.info(
-        "handleCompositeAction compositeInstanceAction handling sub currentAction",
-        JSON.stringify(currentAction, null, 2),
-        // currentAction,
-        "localContext keys",
-        Object.keys(localContext),
-      );
-      switch (currentAction.compositeActionType) {
-        case "compositeAction": {
-          log.info("handleCompositeAction compositeAction action to handle", JSON.stringify(currentAction, null, 2));
-          actionResult = await this.handleCompositeAction(
-            currentAction.compositeAction,
-            actionParamValues,
-            currentModel
-          );
-          break;
-        }
-        case "domainAction": {
-          log.info(
-            "handleCompositeAction domainAction action to handle",
-            JSON.stringify(currentAction.domainAction, null, 2)
-          );
-          actionResult = await this.handleAction(currentAction.domainAction, currentModel);
-          if (actionResult?.status != "ok") {
-            log.error("handleCompositeAction Error on action", JSON.stringify(currentAction, null, 2), "actionResult", JSON.stringify(actionResult, null, 2));
-            throw new Error("handleCompositeAction Error on action" + JSON.stringify(currentAction, null, 2) + "actionResult" + JSON.stringify(actionResult, null, 2));
-          }
-          break;
-        }
-        case "runBoxedQueryTemplateAction": {
-          log.info(
-            "handleCompositeActionTemplate boxedQueryTemplateAction to handle",
-            currentAction,
-            "with actionParamValues",
-            actionParamValues
-          );
-
-          actionResult = await this.handleQueryTemplateActionForServerONLY(currentAction.queryTemplate);
-          if (actionResult?.status != "ok") {
-            log.error(
-              "Error on runBoxedQueryTemplateAction with nameGivenToResult",
-              currentAction.nameGivenToResult,
-              "query=",
-              JSON.stringify(actionResult, null, 2)
+      try {
+        CurrentlyExecuting.setAction(currentAction.compositeActionStepLabel);
+        log.info(
+          "handleCompositeAction compositeInstanceAction handling sub currentAction",
+          JSON.stringify(currentAction, null, 2),
+          // currentAction,
+          "localContext keys",
+          Object.keys(localContext),
+        );
+        switch (currentAction.compositeActionType) {
+          case "compositeAction": {
+            log.info("handleCompositeAction compositeAction action to handle", JSON.stringify(currentAction, null, 2));
+            actionResult = await this.handleCompositeAction(
+              currentAction.compositeAction,
+              actionParamValues,
+              currentModel
             );
-          } else {
+            break;
+          }
+          case "domainAction": {
             log.info(
-              "handleCompositeActionTemplate boxedQueryTemplateAction adding result to context as",
-              currentAction.nameGivenToResult,
-              "value",
-              actionResult
+              "handleCompositeAction domainAction action to handle",
+              JSON.stringify(currentAction.domainAction, null, 2)
             );
-            localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement.elementValue;
+            actionResult = await this.handleAction(currentAction.domainAction, currentModel);
+            if (actionResult?.status != "ok") {
+              log.error("handleCompositeAction Error on action", JSON.stringify(currentAction, null, 2), "actionResult", JSON.stringify(actionResult, null, 2));
+              throw new Error("handleCompositeAction Error on action" + JSON.stringify(currentAction, null, 2) + "actionResult" + JSON.stringify(actionResult, null, 2));
+            }
+            break;
           }
-          break;
-        }
-        case "runBoxedExtractorTemplateAction": {
-          log.info(
-            "handleCompositeAction resolved extractorTemplate action",
-            currentAction,
-            "with actionParamValues",
-            actionParamValues
-          );
-
-          actionResult = await this.handleBoxedExtractorTemplateActionForServerONLY(currentAction.queryTemplate);
-          if (actionResult?.status != "ok") {
-            log.error(
-              "Error on runBoxedQueryTemplateAction with nameGivenToResult",
-              currentAction.nameGivenToResult,
-              "query=",
-              JSON.stringify(actionResult, null, 2)
-            );
-          } else {
+          case "runBoxedQueryTemplateAction": {
             log.info(
-              "handleCompositeActionTemplate extractorTemplate adding result to context as",
-              currentAction.nameGivenToResult,
-              "value",
-              actionResult
+              "handleCompositeActionTemplate boxedQueryTemplateAction to handle",
+              currentAction,
+              "with actionParamValues",
+              actionParamValues
             );
-            localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement.elementValue;
-          }
-          break;
-        }
-        case "runBoxedExtractorOrQueryAction": {
-          // throw new Error(
-          //   "handleCompositeAction can not handle query actions: " + JSON.stringify(currentAction)
-          // );
-
-          log.info(
-            "handleCompositeAction runBoxedExtractorOrQueryAction to handle",
-            currentAction,
-            "with actionParamValues",
-            actionParamValues
-          );
-
-          actionResult = await this.handleQueryActionOrBoxedExtractorAction(currentAction.query);
-          if (actionResult?.status != "ok") {
-            log.error(
-              "Error on runBoxedExtractorOrQueryAction with nameGivenToResult",
-              currentAction.nameGivenToResult,
-              "query=",
-              JSON.stringify(actionResult, null, 2)
-            );
-          } else {
-            log.info(
-              "handleCompositeAction runBoxedExtractorOrQueryAction adding result to context as",
-              currentAction.nameGivenToResult,
-              "value",
-              JSON.stringify(actionResult, null, 2)
-            );
-            localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement.elementValue;
-          }
-          break;
-        }
-        case "runBoxedQueryTemplateOrBoxedExtractorTemplateAction": {
-          throw new Error("handleCompositeAction can not handle query actions: " + JSON.stringify(currentAction));
-        }
-        case "runTestCompositeActionAssertion": {
-          if (!ConfigurationService.testImplementation) {
-            throw new Error(
-              "ConfigurationService.testImplementation is not set, please inject a test implementation using ConfigurationService.registerTestImplementation on startup if you want to run tests at runtime."
-            );
-          }
-
-          const prePreValueToTest = currentAction.testAssertion.definition.resultTransformer
-            ? transformer_extended_apply(
-                "runtime",
-                "ROOT" /**WHAT?? */,
-                currentAction.testAssertion.definition.resultTransformer,
-                {},
-                localContext
-              )
-            : localContext;
-
-          const preValueToTest = resolvePathOnObject(
-            prePreValueToTest,
-            currentAction.testAssertion.definition.resultAccessPath ?? []
-          );
-
-          const valueToTest = Array.isArray(preValueToTest)
-            ? ignorePostgresExtraAttributesOnList(
-                preValueToTest,
-                currentAction.testAssertion.definition.ignoreAttributes ?? []
-              )
-            : ignorePostgresExtraAttributesOnObject(
-                preValueToTest,
-                currentAction.testAssertion.definition.ignoreAttributes ?? []
+  
+            actionResult = await this.handleQueryTemplateActionForServerONLY(currentAction.queryTemplate);
+            if (actionResult?.status != "ok") {
+              log.error(
+                "Error on runBoxedQueryTemplateAction with nameGivenToResult",
+                currentAction.nameGivenToResult,
+                "query=",
+                JSON.stringify(actionResult, null, 2)
               );
-          log.info(
-            "handleCompositeAction runTestCompositeActionAssertion to handle",
-            JSON.stringify(currentAction.testAssertion, null, 2),
-            // "preValueToTest typeof", typeof preValueToTest,
-            // "preValueToTest instanceof Array", preValueToTest instanceof Array,
-            "preValueToTest is array",
-            Array.isArray(preValueToTest),
-            // "preValueToTest object proto is array", JSON.stringify(Object.prototype.toString.call(preValueToTest)),
-            // "preValueToTest constuctor is array", preValueToTest.constructor === Array,
-            "preValueToTest",
-            JSON.stringify(preValueToTest, null, 2),
-            "valueToTest",
-            JSON.stringify(valueToTest, null, 2)
-          );
-          ConfigurationService.testImplementation
-            .expect(valueToTest, currentAction.nameGivenToResult)
-            .toEqual(currentAction.testAssertion.definition.expectedValue);
-          log.info("handleCompositeAction runTestCompositeActionAssertion test passed", currentAction.testAssertion);
-          actionResult = { status: "ok", returnedDomainElement: { "elementType": "void"} };
-          break;
+            } else {
+              log.info(
+                "handleCompositeActionTemplate boxedQueryTemplateAction adding result to context as",
+                currentAction.nameGivenToResult,
+                "value",
+                actionResult
+              );
+              localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement.elementValue;
+            }
+            break;
+          }
+          case "runBoxedExtractorTemplateAction": {
+            log.info(
+              "handleCompositeAction resolved extractorTemplate action",
+              currentAction,
+              "with actionParamValues",
+              actionParamValues
+            );
+  
+            actionResult = await this.handleBoxedExtractorTemplateActionForServerONLY(currentAction.queryTemplate);
+            if (actionResult?.status != "ok") {
+              log.error(
+                "Error on runBoxedQueryTemplateAction with nameGivenToResult",
+                currentAction.nameGivenToResult,
+                "query=",
+                JSON.stringify(actionResult, null, 2)
+              );
+            } else {
+              log.info(
+                "handleCompositeActionTemplate extractorTemplate adding result to context as",
+                currentAction.nameGivenToResult,
+                "value",
+                actionResult
+              );
+              localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement.elementValue;
+            }
+            break;
+          }
+          case "runBoxedExtractorOrQueryAction": {
+            // throw new Error(
+            //   "handleCompositeAction can not handle query actions: " + JSON.stringify(currentAction)
+            // );
+  
+            log.info(
+              "handleCompositeAction runBoxedExtractorOrQueryAction to handle",
+              currentAction,
+              "with actionParamValues",
+              actionParamValues
+            );
+  
+            actionResult = await this.handleQueryActionOrBoxedExtractorAction(currentAction.query);
+            if (actionResult?.status != "ok") {
+              log.error(
+                "Error on runBoxedExtractorOrQueryAction with nameGivenToResult",
+                currentAction.nameGivenToResult,
+                "query=",
+                JSON.stringify(actionResult, null, 2)
+              );
+            } else {
+              log.info(
+                "handleCompositeAction runBoxedExtractorOrQueryAction adding result to context as",
+                currentAction.nameGivenToResult,
+                "value",
+                JSON.stringify(actionResult, null, 2)
+              );
+              localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement.elementValue;
+            }
+            break;
+          }
+          case "runBoxedQueryTemplateOrBoxedExtractorTemplateAction": {
+            throw new Error("handleCompositeAction can not handle query actions: " + JSON.stringify(currentAction));
+          }
+          case "runTestCompositeActionAssertion": {
+            if (!ConfigurationService.testImplementation) {
+              throw new Error(
+                "ConfigurationService.testImplementation is not set, please inject a test implementation using ConfigurationService.registerTestImplementation on startup if you want to run tests at runtime."
+              );
+            }
+            try {
+              CurrentlyExecuting.setTestAssertion(currentAction.testAssertion.testLabel);
+              const prePreValueToTest = currentAction.testAssertion.definition.resultTransformer
+                ? transformer_extended_apply(
+                    "runtime",
+                    "ROOT" /**WHAT?? */,
+                    currentAction.testAssertion.definition.resultTransformer,
+                    {},
+                    localContext
+                  )
+                : localContext;
+    
+              const preValueToTest = resolvePathOnObject(
+                prePreValueToTest,
+                currentAction.testAssertion.definition.resultAccessPath ?? []
+              );
+    
+              const valueToTest = Array.isArray(preValueToTest)
+                ? ignorePostgresExtraAttributesOnList(
+                    preValueToTest,
+                    currentAction.testAssertion.definition.ignoreAttributes ?? []
+                  )
+                : ignorePostgresExtraAttributesOnObject(
+                    preValueToTest,
+                    currentAction.testAssertion.definition.ignoreAttributes ?? []
+                  );
+              log.info(
+                "handleCompositeAction runTestCompositeActionAssertion to handle",
+                JSON.stringify(currentAction.testAssertion, null, 2),
+                // "preValueToTest typeof", typeof preValueToTest,
+                // "preValueToTest instanceof Array", preValueToTest instanceof Array,
+                "preValueToTest is array",
+                Array.isArray(preValueToTest),
+                // "preValueToTest object proto is array", JSON.stringify(Object.prototype.toString.call(preValueToTest)),
+                // "preValueToTest constuctor is array", preValueToTest.constructor === Array,
+                "preValueToTest",
+                JSON.stringify(preValueToTest, null, 2),
+                "valueToTest",
+                JSON.stringify(valueToTest, null, 2)
+              );
+              ConfigurationService.testImplementation
+                .expect(valueToTest, currentAction.nameGivenToResult)
+                .toEqual(currentAction.testAssertion.definition.expectedValue);
+              log.info("handleCompositeAction runTestCompositeActionAssertion test passed", currentAction.testAssertion);
+              actionResult = { status: "ok", returnedDomainElement: { "elementType": "void"} };
+            } catch (error) {
+              log.error("handleCompositeAction runTestCompositeActionAssertion error", error);
+              throw new Error("handleCompositeAction runTestCompositeActionAssertion error" + JSON.stringify(error, null, 2));
+            } finally {
+              CurrentlyExecuting.setTestAssertion(undefined);
+            }
+            break;
+          }
+          default: {
+            log.error("handleCompositeAction unknown compositeActionType", currentAction);
+            break;
+          }
         }
-        default: {
-          log.error("handleCompositeAction unknown compositeActionType", currentAction);
-          break;
-        }
-      }
-      if (actionResult?.status != "ok") {
-        log.error(
-          "handleCompositeAction error",
-          JSON.stringify(actionResult, null, 2),
-          "on action",
-          JSON.stringify(currentAction, null, 2)
-        );
-        throw new Error(
-          "handleCompositeAction error" +
-            JSON.stringify(actionResult, null, 2) +
-            "on action" +
+        if (actionResult?.status != "ok") {
+          log.error(
+            "handleCompositeAction error",
+            JSON.stringify(actionResult, null, 2),
+            "on action",
             JSON.stringify(currentAction, null, 2)
-        );
+          );
+          throw new Error(
+            "handleCompositeAction error" +
+              JSON.stringify(actionResult, null, 2) +
+              "on action" +
+              JSON.stringify(currentAction, null, 2)
+          );
+        }
+      } catch (error) {
+        log.error("handleCompositeAction caught error", error);
+        return Promise.resolve({
+          status: "error",
+          error: {
+            errorType: "FailedToDeployModule",
+            errorMessage: "handleCompositeAction caught error: "+ JSON.stringify(error, null, 2),
+          }
+        });
+      } finally {
+        CurrentlyExecuting.setCompositeAction(undefined);
       }
     }
     return Promise.resolve(ACTION_OK);
@@ -1220,15 +1259,6 @@ export class DomainController implements DomainControllerInterface {
           );
           // log.info("handleCompositeActionTemplate compositeInstanceAction current model", currentModel);
 
-          // switch (resolvedActionTemplate.actionType) {
-          //   case "compositeAction": {
-          //     const actionResult = await this.handleCompositeActionTemplate(resolvedActionTemplate, currentModel);
-          //     if (actionResult?.status != "ok") {
-          //       log.error("Error on action", JSON.stringify(actionResult, null, 2));
-          //     }
-          //     break;
-          //   }
-          //   default: {
           const actionResult = await this.handleAction(resolvedActionTemplate, currentModel);
           if (actionResult?.status != "ok") {
             log.error(
@@ -1244,10 +1274,6 @@ export class DomainController implements DomainControllerInterface {
                 JSON.stringify(actionResult, null, 2)
             );
           }
-          //   break;
-          // }
-          // }
-          // const actionResult = await this.handleAction(currentAction.action, currentModel);
           break;
         }
         case "runBoxedQueryTemplateAction": {
@@ -1743,55 +1769,82 @@ export class DomainController implements DomainControllerInterface {
     //   throw new Error("waaaaa");
 
     // }
-    switch (domainAction.actionType) {
-      case "compositeAction": {
-        // old school, not used anymore (or should not be used anymore)
-        throw new Error("DomainController handleAction compositeAction should not be used anymore");
-        break;
-      }
-      case "modelAction": {
-        if (!currentModel) {
-          throw new Error("DomainController handleAction for modelAction needs a currentModel argument");
+    try {
+      CurrentlyExecuting.setAction(domainAction.actionType);
+      switch (domainAction.actionType) {
+        case "compositeAction": {
+          // old school, not used anymore (or should not be used anymore)
+          throw new Error("DomainController handleAction compositeAction should not be used anymore");
+          break;
         }
-        return this.handleModelAction(domainAction.deploymentUuid, domainAction, currentModel);
-      }
-      case "instanceAction": {
-        return this.handleInstanceAction(domainAction.deploymentUuid, domainAction);
-      }
-      case "storeManagementAction": {
-        if (domainAction.actionName == "resetAndInitApplicationDeployment") {
-          await resetAndInitApplicationDeployment(this, domainAction.deployments);
-          // await this.callAsyncActionHandler(domainAction, "*", currentModel, this, domainAction.deployments);
-        } else {
-          try {
-            switch (this.persistenceStoreAccessMode) {
-              case "local": {
-                await this.persistenceStoreLocalOrRemote.handleStoreOrBundleActionForLocalStore(
-                  domainAction
-                );
-                // await this.callAsyncActionHandler(domainAction, "local", currentModel, domainAction);
-                break;
+        case "modelAction": {
+          if (!currentModel) {
+            throw new Error("DomainController handleAction for modelAction needs a currentModel argument");
+          }
+          return this.handleModelAction(domainAction.deploymentUuid, domainAction, currentModel);
+        }
+        case "instanceAction": {
+          return this.handleInstanceAction(domainAction.deploymentUuid, domainAction);
+        }
+        case "storeManagementAction": {
+          if (domainAction.actionName == "resetAndInitApplicationDeployment") {
+            await resetAndInitApplicationDeployment(this, domainAction.deployments);
+            // await this.callAsyncActionHandler(domainAction, "*", currentModel, this, domainAction.deployments);
+          } else {
+            try {
+              switch (this.persistenceStoreAccessMode) {
+                case "local": {
+                  await this.persistenceStoreLocalOrRemote.handleStoreOrBundleActionForLocalStore(
+                    domainAction
+                  );
+                  // await this.callAsyncActionHandler(domainAction, "local", currentModel, domainAction);
+                  break;
+                }
+                case "remote": {
+                  await this.callUtil.callRemotePersistenceAction(
+                    {}, // context
+                    {}, // context update
+                    domainAction
+                  );
+                  // await this.callAsyncActionHandler(domainAction, "remote", currentModel, {}, {}, domainAction);
+                  break;
+                }
+                default: {
+                  log.error(
+                    "DomainController handleAction storeManagementAction unknown persistenceStoreAccessMode",
+                    this.persistenceStoreAccessMode
+                  );
+                  throw new Error(
+                    "DomainController handleAction storeManagementAction unknown persistenceStoreAccessMode " + this.persistenceStoreAccessMode
+                  );
+                  break;
+                }
               }
-              case "remote": {
-                await this.callUtil.callRemotePersistenceAction(
-                  {}, // context
-                  {}, // context update
-                  domainAction
-                );
-                // await this.callAsyncActionHandler(domainAction, "remote", currentModel, {}, {}, domainAction);
-                break;
-              }
-              default: {
-                log.error(
-                  "DomainController handleAction storeManagementAction unknown persistenceStoreAccessMode",
-                  this.persistenceStoreAccessMode
-                );
-                throw new Error(
-                  "DomainController handleAction storeManagementAction unknown persistenceStoreAccessMode " + this.persistenceStoreAccessMode
-                );
-                break;
-              }
+            } catch (error) {
+              log.warn(
+                "DomainController handleAction caught exception when handling",
+                domainAction.actionType,
+                "deployment",
+                domainAction.deploymentUuid,
+                "action",
+                domainAction,
+                "exception",
+                error
+              );
             }
+          }
+          return Promise.resolve(ACTION_OK);
+          break;
+        }
+        case "bundleAction": {
+          // TODO: create a test for this!
+          try {
+            await this.callUtil.callRemotePersistenceAction(
+              {}, // context
+              {}, // context update
+              // deploymentUuid,
+              domainAction
+            );
           } catch (error) {
             log.warn(
               "DomainController handleAction caught exception when handling",
@@ -1804,68 +1857,55 @@ export class DomainController implements DomainControllerInterface {
               error
             );
           }
+          return Promise.resolve(ACTION_OK);
+          break;
         }
-        return Promise.resolve(ACTION_OK);
-        break;
-      }
-      case "bundleAction": {
-        // TODO: create a test for this!
-        try {
-          await this.callUtil.callRemotePersistenceAction(
-            {}, // context
-            {}, // context update
-            // deploymentUuid,
-            domainAction
-          );
-        } catch (error) {
-          log.warn(
-            "DomainController handleAction caught exception when handling",
-            domainAction.actionType,
-            "deployment",
-            domainAction.deploymentUuid,
-            "action",
-            domainAction,
-            "exception",
-            error
-          );
+        case "undoRedoAction": {
+          if (!currentModel) {
+            throw new Error("DomainController handleAction for undoRedoAction needs a currentModel argument");
+          }
+          // TODO: create callSyncActionHandler
+          // return this.callAsyncActionHandler(domainAction, "*", currentModel, domainAction.deploymentUuid, domainAction, currentModel);
+          return this.handleDomainUndoRedoAction(domainAction.deploymentUuid, domainAction, currentModel);
         }
-        return Promise.resolve(ACTION_OK);
-        break;
-      }
-      case "undoRedoAction": {
-        if (!currentModel) {
-          throw new Error("DomainController handleAction for undoRedoAction needs a currentModel argument");
+        case "transactionalInstanceAction": {
+          try {
+            await this.callUtil.callLocalCacheAction(
+              {}, // context
+              {}, // context update
+              domainAction
+            );
+          } catch (error) {
+            log.warn(
+              "DomainController handleAction caught exception when handling",
+              domainAction.actionType,
+              "deployment",
+              domainAction.deploymentUuid,
+              "action",
+              domainAction,
+              "exception",
+              error
+            );
+          }
+          return Promise.resolve(ACTION_OK);
+          break;
         }
-        // TODO: create callSyncActionHandler
-        // return this.callAsyncActionHandler(domainAction, "*", currentModel, domainAction.deploymentUuid, domainAction, currentModel);
-        return this.handleDomainUndoRedoAction(domainAction.deploymentUuid, domainAction, currentModel);
+        default:
+          log.error("DomainController handleAction action could not be taken into account, unkown action", domainAction);
       }
-      case "transactionalInstanceAction": {
-        try {
-          await this.callUtil.callLocalCacheAction(
-            {}, // context
-            {}, // context update
-            domainAction
-          );
-        } catch (error) {
-          log.warn(
-            "DomainController handleAction caught exception when handling",
-            domainAction.actionType,
-            "deployment",
-            domainAction.deploymentUuid,
-            "action",
-            domainAction,
-            "exception",
-            error
-          );
+      return Promise.resolve(ACTION_OK);
+    } catch (error) {
+      log.error("DomainController handleAction caught error", error);
+      return Promise.resolve({
+        status: "error",
+        error: {
+          errorType: "FailedToDeployModule",
+          errorMessage: "DomainController handleAction caught error: "+ JSON.stringify(error, null, 2),
         }
-        return Promise.resolve(ACTION_OK);
-        break;
-      }
-      default:
-        log.error("DomainController handleAction action could not be taken into account, unkown action", domainAction);
+      });
+    } finally {
+      CurrentlyExecuting.setAction(undefined);
     }
-    return Promise.resolve(ACTION_OK);
   }
 } // class DomainController
 

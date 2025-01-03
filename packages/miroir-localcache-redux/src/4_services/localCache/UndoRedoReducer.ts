@@ -1,5 +1,5 @@
 import { PayloadAction, createSelector } from "@reduxjs/toolkit";
-import { produce, Patch, applyPatches, enablePatches } from "immer";
+import { Patch, applyPatches, enablePatches, produce } from "immer";
 
 import {
   Commit,
@@ -10,8 +10,7 @@ import {
   ModelActionReplayableAction,
   RestPersistenceAction,
   TransactionalInstanceAction,
-  UndoRedoAction,
-  getLoggerName
+  UndoRedoAction
 } from "miroir-core";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../constants.js";
@@ -29,11 +28,10 @@ enablePatches(); // to gather undo/redo operation history
 
 const TRANSACTIONS_ENABLED: boolean = true;
 
-const loggerName: string = getLoggerName(packageName, cleanLevel, "UndoRedoReducer");
 let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "UndoRedoReducer")
+).then((logger: LoggerInterface) => {log = logger});
 
 // ####################################################################################################
 function callNextReducer(

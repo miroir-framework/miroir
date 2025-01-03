@@ -19,8 +19,7 @@ import {
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
-  adminConfigurationDeploymentMiroir,
-  getLoggerName
+  adminConfigurationDeploymentMiroir
 } from "miroir-core";
 
 import { packageName } from '../../../constants.js';
@@ -29,18 +28,18 @@ import {
   useMiroirContextInnerFormOutput,
   useMiroirContextService
 } from '../MiroirContextReactProvider.js';
-import { ToolsCellRenderer } from './GenderCellRenderer.js';
-import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from './JsonObjectEditFormDialog.js';
-import { TableComponentProps, TableComponentRow, TableComponentTypeSchema } from './MTableComponentInterface.js';
 import { useCurrentModel } from '../ReduxHooks.js';
 import { cleanLevel } from '../constants.js';
+import { ToolsCellRenderer } from './GenderCellRenderer.js';
 import { JsonObjectDeleteFormDialog } from './JsonObjectDeleteFormDialog.js';
+import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from './JsonObjectEditFormDialog.js';
+import { TableComponentProps, TableComponentRow, TableComponentTypeSchema } from './MTableComponentInterface.js';
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"MtableComponent");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MtableComponent")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 
 let count=0

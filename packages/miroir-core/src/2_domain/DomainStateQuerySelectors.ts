@@ -3,6 +3,11 @@ import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import {
   ApplicationSection,
+  BoxedExtractorOrCombinerReturningObject,
+  BoxedExtractorOrCombinerReturningObjectList,
+  BoxedExtractorOrCombinerReturningObjectOrObjectList,
+  BoxedQueryTemplateWithExtractorCombinerTransformer,
+  BoxedQueryWithExtractorCombinerTransformer,
   DomainElement,
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceArrayOrFailed,
@@ -12,12 +17,7 @@ import {
   ExtractorOrCombinerReturningObject,
   JzodObject,
   QueryByEntityUuidGetEntityDefinition,
-  QueryByTemplateGetParamJzodSchema,
-  BoxedExtractorOrCombinerReturningObject,
-  BoxedExtractorOrCombinerReturningObjectList,
-  BoxedExtractorOrCombinerReturningObjectOrObjectList,
-  BoxedQueryTemplateWithExtractorCombinerTransformer,
-  BoxedQueryWithExtractorCombinerTransformer
+  QueryByTemplateGetParamJzodSchema
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   ExtractorRunnerParamsForJzodSchema,
@@ -32,7 +32,6 @@ import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import entityEntityDefinition from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json" assert { type: "json" };
 import { packageName } from "../constants.js";
-import { getLoggerName } from "../4_services/Logger.js"
 import { cleanLevel } from "./constants.js";
 import { runQueryTemplateFromDomainState } from "./DomainStateQueryTemplateSelector.js";
 import {
@@ -47,11 +46,10 @@ import {
 } from "./QuerySelectors.js";
 import { transformer_InnerReference_resolve } from "./Transformers.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel, "DomainStateQuerySelector");
 let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DomainStateQuerySelector")
+).then((logger: LoggerInterface) => {log = logger});
 
 const emptyDomainObject: DomainElementObject = { elementType: "object", elementValue: {} };
 

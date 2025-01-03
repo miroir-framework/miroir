@@ -1,29 +1,28 @@
 import {
   ApplicationSection,
   ConfigurationService,
+  ErrorAdminStore,
   ErrorDataStore,
   ErrorModelStore,
-  PersistenceStoreDataOrModelSectionInterface,
-  PersistenceStoreDataSectionInterface,
   LoggerInterface,
   MiroirLoggerFactory,
-  StoreSectionConfiguration,
-  getLoggerName,
   PersistenceStoreAdminSectionInterface,
-  ErrorAdminStore
+  PersistenceStoreDataOrModelSectionInterface,
+  PersistenceStoreDataSectionInterface,
+  StoreSectionConfiguration
 } from "miroir-core";
+import { IndexedDb } from "./4_services/IndexedDb.js";
+import { IndexedDbAdminStore } from "./4_services/IndexedDbAdminStore.js";
 import { IndexedDbDataStoreSection } from "./4_services/IndexedDbDataStoreSection.js";
 import { IndexedDbModelStoreSection } from "./4_services/IndexedDbModelStoreSection.js";
-import { IndexedDb } from "./4_services/IndexedDb.js";
 import { cleanLevel } from "./4_services/constants.js";
 import { packageName } from "./constants.js";
-import { IndexedDbAdminStore } from "./4_services/IndexedDbAdminStore.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"startup");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "startup")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 export function miroirIndexedDbStoreSectionStartup() {
   ConfigurationService.registerAdminStoreFactory(

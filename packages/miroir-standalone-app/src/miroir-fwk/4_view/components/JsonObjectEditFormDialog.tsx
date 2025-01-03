@@ -16,25 +16,24 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   Uuid,
-  getLoggerName,
   resolveReferencesForJzodSchemaAndValueObject
 } from "miroir-core";
 
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../constants.js";
-import { JzodObjectEditor } from "./JzodObjectEditor.js";
 import {
   useMiroirContextInnerFormOutput,
   useMiroirContextService,
   useMiroirContextformHelperState,
 } from "../MiroirContextReactProvider.js";
+import { JzodObjectEditor } from "./JzodObjectEditor.js";
 
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"JsonObjectEditFormDialog");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JsonObjectEditFormDialog")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 // #################################################################################################
 export type JsonObjectEditFormDialogInputs = { [a: string]: any };

@@ -20,7 +20,6 @@ import {
   EntityDefinition,
   EntityInstancesUuidIndex,
   getApplicationSection,
-  getLoggerName,
   getQueryRunnerParamsForDeploymentEntityState,
   InstanceAction,
   JzodElement,
@@ -30,7 +29,6 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   objectListReportSection,
-  BoxedQueryWithExtractorCombinerTransformer,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
   SyncQueryRunnerParams
@@ -42,7 +40,7 @@ import { Button } from "@mui/material";
 import { getMemoizedDeploymentEntityStateSelectorForTemplateMap } from "miroir-localcache-redux";
 
 import { AddBox } from "@mui/icons-material";
-import { packageName, deployments } from "../../../constants.js";
+import { deployments, packageName } from "../../../constants.js";
 import {
   useDomainControllerService,
   useMiroirContextInnerFormOutput,
@@ -58,11 +56,11 @@ import { MTableComponent } from "./MTableComponent.js";
 import { TableComponentType, TableComponentTypeSchema } from "./MTableComponentInterface.js";
 
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportSectionListDisplay");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionListDisplay")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 
 // ################################################################################################

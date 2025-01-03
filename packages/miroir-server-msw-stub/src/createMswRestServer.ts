@@ -3,26 +3,21 @@ import { SetupWorkerApi } from "msw/browser";
 import process from "process";
 
 import {
+  DomainControllerInterface,
   LoggerInterface,
   MiroirConfigClient,
   MiroirLoggerFactory,
-  RestServiceHandler,
   PersistenceStoreControllerManagerInterface,
-  getLoggerName,
-  LocalCacheInterface,
-  DomainControllerInterface
+  RestServiceHandler
 } from "miroir-core";
 
-import { RestMswServerStub } from "./RestMswServerStub.js";
 import { cleanLevel, packageName } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"createMswRestServer");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-  (value: LoggerInterface) => {
-    log = value;
-  }
-);
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "createMswRestServer")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 // TODO: MOVE TO miroir-server-msw-stub
 // ################################################################################################

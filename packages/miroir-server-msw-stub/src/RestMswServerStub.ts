@@ -7,16 +7,15 @@ import {
   MiroirConfigClient,
   MiroirLoggerFactory,
   PersistenceStoreControllerManagerInterface,
-  RestServiceHandler,
-  getLoggerName
+  RestServiceHandler
 } from "miroir-core";
 import { cleanLevel, packageName } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"RestMswServerStub");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RestMswServerStub")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 // Add an extra delay to all endpoints, so loading spinners show up.
 const ARTIFICIAL_DELAY_MS = 100;

@@ -1,29 +1,28 @@
 import {
   ApplicationSection,
   ConfigurationService,
+  ErrorAdminStore,
   ErrorDataStore,
   ErrorModelStore,
-  PersistenceStoreDataSectionInterface,
-  PersistenceStoreModelSectionInterface,
   LoggerInterface,
   MiroirLoggerFactory,
-  StoreSectionConfiguration,
-  getLoggerName,
   PersistenceStoreAdminSectionInterface,
-  ErrorAdminStore
+  PersistenceStoreDataSectionInterface,
+  PersistenceStoreModelSectionInterface,
+  StoreSectionConfiguration
 } from "miroir-core";
 import { SqlDbDataStoreSection } from "./4_services/SqlDbDataStoreSection.js";
 import { SqlDbModelStoreSection } from "./4_services/SqlDbModelStoreSection.js";
 
 import { cleanLevel } from "./4_services/constants.js";
-import { packageName } from "./constants.js";
 import { SqlDbAdminStore } from "./4_services/SqlDbAdminStore.js";
+import { packageName } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"startup");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "startup")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 export function miroirPostgresStoreSectionStartup() {
   log.info("miroirPostgresStoreSectionStartup called!")

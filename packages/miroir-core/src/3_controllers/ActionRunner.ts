@@ -10,7 +10,6 @@ import { PersistenceStoreControllerInterface } from "../0_interfaces/4-services/
 import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
-import { getLoggerName } from "../4_services/Logger.js"
 import { cleanLevel } from "./constants.js";
 
 import adminConfigurationDeploymentMiroir from "../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json" assert { type: "json" };
@@ -18,11 +17,10 @@ import adminConfigurationDeploymentMiroir from "../assets/admin_data/7959d814-40
 import { defaultMiroirMetaModel } from "../1_core/Model.js";
 import { ACTION_OK } from "../1_core/constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel, "ActionRunner");
 let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ActionRunner")
+).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################
 /**

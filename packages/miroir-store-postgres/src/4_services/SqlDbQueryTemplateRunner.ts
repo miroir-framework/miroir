@@ -1,38 +1,36 @@
 import {
   ActionReturnType,
   asyncApplyExtractorTransformerInMemory,
-  asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   AsyncBoxedExtractorOrQueryRunnerMap,
+  asyncExtractEntityInstanceListWithObjectListExtractor,
+  asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   asyncExtractWithExtractor,
   asyncRunQuery,
-  handleBoxedExtractorTemplateOrQueryTemplateAction,
   DomainState,
-  QueryTemplateRunnerMapForJzodSchema,
-  getLoggerName,
+  handleBoxedExtractorTemplateAction,
+  handleBoxedExtractorTemplateOrQueryTemplateAction,
+  handleQueryTemplateAction,
   LoggerInterface,
   MiroirLoggerFactory,
+  QueryTemplateRunnerMapForJzodSchema,
+  RunBoxedExtractorTemplateAction,
+  RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   selectEntityJzodSchemaFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
-  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
-  asyncExtractEntityInstanceListWithObjectListExtractor,
-  RunBoxedQueryTemplateAction,
-  handleQueryTemplateAction,
-  RunBoxedExtractorTemplateAction,
-  handleBoxedExtractorTemplateAction
+  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate
 } from "miroir-core";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { SqlDbDataStoreSection } from "./SqlDbDataStoreSection";
-import { SqlDbQueryRunner } from "./SqlDbQueryRunner";
 import { SqlDbModelStoreSection } from "./SqlDbModelStoreSection";
+import { SqlDbQueryRunner } from "./SqlDbQueryRunner";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel, "SqlDbQueryTemplateRunner");
 let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SqlDbQueryTemplateRunner")
+).then((logger: LoggerInterface) => {log = logger});
 
 export type RecursiveStringRecords = string | { [x: string]: RecursiveStringRecords };
 

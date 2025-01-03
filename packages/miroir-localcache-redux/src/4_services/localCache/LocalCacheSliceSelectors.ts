@@ -7,6 +7,9 @@
 
 import { createSelector } from "@reduxjs/toolkit";
 import {
+  BoxedExtractorOrCombinerReturningObjectOrObjectList,
+  BoxedQueryTemplateWithExtractorCombinerTransformer,
+  BoxedQueryWithExtractorCombinerTransformer,
   DeploymentEntityState,
   DomainElement,
   domainElementToPlainObject,
@@ -16,17 +19,13 @@ import {
   ExtractorRunnerParamsForJzodSchema,
   ExtractorTemplateRunnerParamsForJzodSchema,
   getDeploymentEntityStateIndex,
-  getLoggerName,
   JzodElement,
   JzodSchemaQuerySelector,
   JzodSchemaQueryTemplateSelector,
   LoggerInterface,
   MiroirLoggerFactory,
   MiroirQueryTemplate,
-  BoxedExtractorOrCombinerReturningObjectOrObjectList,
   QueryJzodSchemaParams,
-  BoxedQueryTemplateWithExtractorCombinerTransformer,
-  BoxedQueryWithExtractorCombinerTransformer,
   RecordOfJzodElement,
   SyncBoxedExtractorRunnerParams,
   SyncQueryRunner,
@@ -39,13 +38,11 @@ import { cleanLevel } from "../constants.js";
 import { selectDomainStateFromlocalCacheEntityZone } from "./LocalCacheSlice.js";
 import { ReduxStateWithUndoRedo } from "./localCacheReduxSliceInterface.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"LocalCacheSliceSelector");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-  (value: LoggerInterface) => {
-    log = value;
-  }
-);
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "LocalCacheSliceSelector")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 // ################################################################################################
 declare type JzodSchemaSelectorParamsSelector<QueryType extends DomainModelQueryTemplateJzodSchemaParams, StateType> = (

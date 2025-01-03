@@ -16,31 +16,28 @@ import {
   StoreBasedConfiguration,
   Uuid,
   adminConfigurationDeploymentMiroir,
-  entitySelfApplicationVersion,
   entityEntity,
   entityEntityDefinition,
   entityJzodSchema,
   entityMenu,
   entityReport,
-  entityStoreBasedConfiguration,
-  getLoggerName,
+  entitySelfApplicationVersion,
+  entityStoreBasedConfiguration
 } from "miroir-core";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../constants.js";
 import {
-  selectEntityInstanceUuidIndexFromLocalCacheQueryAndDeploymentEntityState,
   selectCurrentDeploymentEntityStateFromReduxState,
+  selectEntityInstanceUuidIndexFromLocalCacheQueryAndDeploymentEntityState,
   selectMiroirSelectorQueryParams,
 } from "./LocalCacheSliceSelectors.js";
 import { ReduxStateWithUndoRedo } from "./localCacheReduxSliceInterface.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"LocalCacheSliceModelSelector");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-  (value: LoggerInterface) => {
-    log = value;
-  }
-);
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "LocalCacheSliceModelSelector")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 // ################################################################################################
 function selectEntityInstancesFromDeploymentEntityState(

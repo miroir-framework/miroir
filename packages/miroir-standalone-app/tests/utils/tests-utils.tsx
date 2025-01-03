@@ -1,8 +1,9 @@
+import * as fs from "fs";
+
 import type { RenderOptions } from '@testing-library/react';
 import { render } from '@testing-library/react';
 import { expect } from 'vitest';
 
-import { setupServer } from 'msw/node';
 
 import { SetupWorkerApi } from 'msw/browser';
 import * as React from 'react';
@@ -42,9 +43,7 @@ import {
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   defaultMiroirMetaModel,
-  getLoggerName,
   resetAndInitApplicationDeploymentNew,
-  restServerDefaultHandlers,
   selfApplicationDeploymentLibrary,
   selfApplicationDeploymentMiroir
 } from "miroir-core";
@@ -52,23 +51,19 @@ import { RestClientStub } from 'miroir-core/src/4_services/RestClientStub';
 import {
   LocalCache,
   ReduxStoreWithUndoRedo,
-  // RestPersistenceClientAndRestClient,
   setupMiroirDomainController
 } from "miroir-localcache-redux";
-import { createMswRestServer } from 'miroir-server-msw-stub';
 import path from 'path';
 import { RestPersistenceClientAndRestClient } from '../../../miroir-localcache-redux/dist';
 import { packageName } from '../../src/constants';
 import { MiroirContextReactProvider } from '../../src/miroir-fwk/4_view/MiroirContextReactProvider';
 import { cleanLevel } from '../../src/miroir-fwk/4_view/constants';
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"tests-utils");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-  (value: LoggerInterface) => {
-    log = value;
-  }
-);
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "tests-utils")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 
 
@@ -436,7 +431,7 @@ export async function setupMiroirTest(
   miroirConfig: MiroirConfigClient,
 ) {
   const miroirContext = new MiroirContext(miroirConfig);
-
+  console.log("setupMiroirTest miroirConfig", JSON.stringify(miroirConfig, null, 2));
   let client: RestClientInterface | undefined = undefined;
   let remotePersistenceStoreRestClient: RestPersistenceClientAndRestClientInterface | undefined = undefined;
   if (miroirConfig.client.emulateServer) {
@@ -691,11 +686,7 @@ export async function deleteAndCloseApplicationDeployments(
 
   // if (!miroirConfig.client.emulateServer) {
     log.info('deleteAndCloseApplicationDeployments closing deployment:', adminConfigurationDeploymentMiroir.uuid); // TODO: really???
-    // const remoteStore:PersistenceStoreLocalOrRemoteInterface = domainController.getRemoteStore();
     for (const d of deploymentConfigurations) {
-      // const storeUnitConfiguration = miroirConfig.client.emulateServer
-      // ? miroirConfig.client.deploymentStorageConfig[d.adminConfigurationDeployment.uuid]
-      // : miroirConfig.client.serverConfig.storeSectionConfiguration[d.adminConfigurationDeployment.uuid];
       const deletedStore = await domainController.handleAction({
         actionType: "storeManagementAction",
         actionName: "closeStore",
@@ -722,47 +713,62 @@ export async function deleteAndCloseApplicationDeployments(
 // ################################################################################################
 // ################################################################################################
 export async function loadTestSingleConfigFile( fileName:string): Promise<MiroirConfigClient> {
-  const pwd = process.env["PWD"]??""
-  log.info("@@@@@@@@@@@@@@@@@@ loadTestConfigFile pwd", pwd, "fileName", fileName);
-  // log.info("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
-  // const configFilePath = path.join(pwd, "./packages/miroir-standalone-app/tests/" + fileName + ".json")
-  const configFilePath = path.join(pwd, fileName + ".json")
-  log.info("@@@@@@@@@@@@@@@@@@ configFilePath", configFilePath);
-  const configFileContents = await import(configFilePath);
-  log.info("@@@@@@@@@@@@@@@@@@ configFileContents", configFileContents);
+  try {
+    const pwd = process.env["PWD"]??""
+    console.log("@@@@@@@@@@@@@@@@@@ loadTestSingleConfigFile pwd", pwd, "fileName", fileName);
+    // log.info("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
+    // const configFilePath = path.join(pwd, "./packages/miroir-standalone-app/tests/" + fileName + ".json")
+    const configFilePath = path.join(pwd, fileName + ".json")
+    console.log("@@@@@@@@@@@@@@@@@@ loadTestSingleConfigFile configFilePath", configFilePath);
+    const configFileContents = await import(configFilePath);
+    // const configFileContents = JSON.parse(fs.readFileSync(new URL(configFilePath, import.meta.url)).toString());
+    // const configFileContents = JSON.parse(fs.readFileSync(new URL(configFilePath)).toString());
+    console.log("@@@@@@@@@@@@@@@@@@ loadTestSingleConfigFile configFileContents", configFileContents);
+  
+    const miroirConfig:MiroirConfigClient = configFileContents as MiroirConfigClient;
+  
+    console.log("@@@@@@@@@@@@@@@@@@ loadTestSingleConfigFile miroirConfig", JSON.stringify(miroirConfig, null, 2));
+    return Promise.resolve(miroirConfig);
+  } catch (error) {
+    console.error("@@@@@@@@@@@@@@@@@@ loadTestConfigFile error", error);
+    throw error;
+  }
 
-  const miroirConfig:MiroirConfigClient = configFileContents as MiroirConfigClient;
-
-  log.info("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
-  return miroirConfig;
 }
 // ################################################################################################
 export async function loadTestConfigFiles(env:any) {
-  let miroirConfig:MiroirConfigClient
-  if (env.VITE_MIROIR_TEST_CONFIG_FILENAME) {
-    miroirConfig = await loadTestSingleConfigFile(env.VITE_MIROIR_TEST_CONFIG_FILENAME??"");
-    log.info("@@@@@@@@@@@@@@@@@@ config file contents:", miroirConfig)
-  } else {
-    throw new Error("Environment variable VITE_MIROIR_TEST_CONFIG_FILENAME not found. Tests must find this variable, pointing to a valid test configuration file");
-  }
-  
-  let logConfig:any
-  if (env.VITE_MIROIR_LOG_CONFIG_FILENAME) {
-    logConfig = await loadTestSingleConfigFile(env.VITE_MIROIR_LOG_CONFIG_FILENAME??"specificLoggersConfig_warn");
-    log.info("@@@@@@@@@@@@@@@@@@ log config file contents:", miroirConfig)
-  
-    // MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
-    //   loglevelnext,
-    //   defaultLevels[logConfig.defaultLevel],
-    //   logConfig.defaultTemplate,
-    //   logConfig.specificLoggerOptions
-    // );
+  try {
+    console.log("@@@@@@@@@@@@@@@@@@ loadTestConfigFiles started", JSON.stringify(env, null, 2));
+    let miroirConfig:MiroirConfigClient
+    if (env.VITE_MIROIR_TEST_CONFIG_FILENAME) {
+      miroirConfig = await loadTestSingleConfigFile(env.VITE_MIROIR_TEST_CONFIG_FILENAME??"");
+      // log.info("@@@@@@@@@@@@@@@@@@ config file contents:", miroirConfig)
+    } else {
+      throw new Error("Environment variable VITE_MIROIR_TEST_CONFIG_FILENAME not found. Tests must find this variable, pointing to a valid test configuration file");
+    }
     
+    let logConfig:any
+    if (env.VITE_MIROIR_LOG_CONFIG_FILENAME) {
+      logConfig = await loadTestSingleConfigFile(env.VITE_MIROIR_LOG_CONFIG_FILENAME ?? "specificLoggersConfig_warn");
+      // console.info("@@@@@@@@@@@@@@@@@@ log config file contents:", miroirConfig)
     
-  } else {
-    throw new Error("Environment variable VITE_MIROIR_LOG_CONFIG_FILENAME not found. Tests must find this variable, pointing to a valid test configuration file");
+      // MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
+      //   loglevelnext,
+      //   defaultLevels[logConfig.defaultLevel],
+      //   logConfig.defaultTemplate,
+      //   logConfig.specificLoggerOptions
+      // );
+      
+      
+    } else {
+      throw new Error("Environment variable VITE_MIROIR_LOG_CONFIG_FILENAME not found. Tests must find this variable, pointing to a valid test configuration file");
+    }
+    console.log("@@@@@@@@@@@@@@@@@@ loadTestConfigFiles config file contents:", JSON.stringify(miroirConfig, null, 2));
+    return Promise.resolve({miroirConfig,logConfig})
+  } catch (error) {
+    console.error("@@@@@@@@@@@@@@@@@@ loadTestConfigFiles error", error);
+    throw error;    
   }
-  return {miroirConfig,logConfig}
 }
 
 // ################################################################################################

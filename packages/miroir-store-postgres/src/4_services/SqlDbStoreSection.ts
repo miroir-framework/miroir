@@ -2,7 +2,6 @@ import {
   ACTION_OK,
   ActionVoidReturnType,
   EntityDefinition,
-  getLoggerName,
   LoggerInterface,
   MetaEntity,
   MiroirLoggerFactory,
@@ -16,11 +15,10 @@ import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { SqlDbStore } from "./SqlDbStore";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel, "SqlDbStoreSection");
 let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SqlDbStoreSection")
+).then((logger: LoggerInterface) => {log = logger});
 
 type GConstructor<T = {}> = new (...args: any[]) => T;
 

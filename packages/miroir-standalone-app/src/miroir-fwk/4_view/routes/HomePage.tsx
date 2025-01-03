@@ -10,25 +10,24 @@ import { Params } from "react-router-dom";
 import { v4 as uuidv4 } from 'uuid';
 
 import {
-  ApplicationDeploymentConfiguration,
-  ApplicationSection,
-  DomainControllerInterface,
-  EntityInstance,
-  LoggerInterface,
-  MetaModel,
-  MiroirLoggerFactory,
-  Report,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
+  ApplicationDeploymentConfiguration,
+  ApplicationSection,
   // adminConfigurationDeploymentTest1,
   defaultMiroirMetaModel,
+  DomainControllerInterface,
   entityAuthor,
   entityBook,
   entityDefinitionAuthor,
   entityDefinitionBook,
-  getLoggerName,
+  EntityInstance,
   getReportsAndEntitiesDefinitionsForDeploymentUuid,
+  LoggerInterface,
+  MetaModel,
+  MiroirLoggerFactory,
+  Report,
   reportEntityDefinitionDetails,
   reportEntityDefinitionList,
   reportEntityDetails,
@@ -59,11 +58,11 @@ import { ReportView } from "../components/ReportView.js";
 import { cleanLevel } from "../constants.js";
 
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"HomePage");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "HomePage")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 export interface RootComponentProps {
   // store:any;

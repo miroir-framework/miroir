@@ -6,7 +6,6 @@ import {
   createSlice
 } from "@reduxjs/toolkit";
 import equal from "fast-deep-equal";
-import lodash from 'lodash';
 // const { memoize: _memoize } = lodash;
 
 import {
@@ -34,19 +33,18 @@ import {
   StoreBasedConfiguration,
   Uuid,
   adminConfigurationDeploymentMiroir,
-  entitySelfApplicationVersion,
   entityDefinitionEntityDefinition,
   entityEntity,
   entityEntityDefinition,
   entityJzodSchema,
   entityMenu,
   entityReport,
+  entitySelfApplicationVersion,
   entityStoreBasedConfiguration,
   getDeploymentEntityStateIndex,
   getLocalCacheIndexDeploymentSection,
   getLocalCacheIndexDeploymentUuid,
-  getLocalCacheIndexEntityUuid,
-  getLoggerName
+  getLocalCacheIndexEntityUuid
 } from "miroir-core";
 
 import { packageName } from "../../constants.js";
@@ -59,11 +57,11 @@ import {
   localCacheSliceName
 } from "./localCacheReduxSliceInterface.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"LocalCacheSlice");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "LocalCacheSlice")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 
 //#########################################################################################

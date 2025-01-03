@@ -12,7 +12,6 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   Uuid,
-  getLoggerName,
   resolveReferencesForJzodSchemaAndValueObject
 } from "miroir-core";
 
@@ -24,11 +23,11 @@ import {
 } from "../MiroirContextReactProvider.js";
 
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"JsonObjectDeleteFormDialog");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JsonObjectDeleteFormDialog")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 // #################################################################################################
 export type JsonObjectEditFormDialogInputs = { [a: string]: any };

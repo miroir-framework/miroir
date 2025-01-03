@@ -1,14 +1,14 @@
 import { Level } from 'level';
-import { ActionReturnType, ApplicationSection, LoggerInterface, MiroirLoggerFactory, RunBoxedQueryTemplateOrBoxedExtractorTemplateAction, entityDefinitionEntityDefinition, getLoggerName } from "miroir-core";
+import { ApplicationSection, LoggerInterface, MiroirLoggerFactory, entityDefinitionEntityDefinition } from "miroir-core";
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"IndexedDb");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "IndexedDb")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 export class IndexedDb {
   public db: Level | undefined = undefined;

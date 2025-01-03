@@ -2,22 +2,21 @@
 
 import {
   EntityDefinition,
-  LoggerInterface,
   JzodElement,
   JzodObject,
-  MiroirLoggerFactory,
-  getLoggerName
+  LoggerInterface,
+  MiroirLoggerFactory
 } from "miroir-core";
-import { Attributes, DataTypes, Model, ModelAttributeColumnOptions, ModelAttributes, ModelStatic } from "sequelize";
+import { Attributes, DataTypes, Model, ModelAttributes, ModelStatic } from "sequelize";
 
 import { cleanLevel } from "./4_services/constants.js";
 import { packageName } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"utils");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "utils")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 // export type SqlEntityDefinition = { [parentName in string]: ModelStatic<Model<any, any>> };
 export type EntityUuidIndexedSequelizeModel = {

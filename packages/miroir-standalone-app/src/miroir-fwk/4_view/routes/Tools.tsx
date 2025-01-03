@@ -26,7 +26,6 @@ import {
   entityDeployment,
   entityMenu,
   entitySelfApplication,
-  getLoggerName,
   resolveReferencesForJzodSchemaAndValueObject
 } from "miroir-core";
 
@@ -43,11 +42,11 @@ import { JzodObjectEditor } from "../components/JzodObjectEditor.js";
 import { cleanLevel } from "../constants.js";
 
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"ToolsPage");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  log = value;
-});
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ToolsPage")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 export const emptyString = ""
 export const dataSection = "data"
