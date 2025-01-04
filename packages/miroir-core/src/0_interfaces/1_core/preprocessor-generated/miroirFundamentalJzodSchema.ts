@@ -8320,6 +8320,22 @@ export const miroirFundamentalJzodSchema = {
                   },
                   {
                     "type": "literal",
+                    "definition": "FailedToDeleteInstance"
+                  },
+                  {
+                    "type": "literal",
+                    "definition": "FailedToDeleteInstanceWithCascade"
+                  },
+                  {
+                    "type": "literal",
+                    "definition": "FailedToUpdateInstance"
+                  },
+                  {
+                    "type": "literal",
+                    "definition": "FailedToLoadNewInstancesInLocalCache"
+                  },
+                  {
+                    "type": "literal",
                     "definition": "FailedToGetInstance"
                   },
                   {

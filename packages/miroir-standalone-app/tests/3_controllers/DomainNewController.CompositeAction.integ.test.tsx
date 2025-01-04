@@ -74,34 +74,44 @@ let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterfac
 const env:any = (import.meta as any).env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
-const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
-
+// const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
+// console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
+const testFileName = "DomainNewController.CompositeAction.integ.test";
+let miroirConfig:any;
+let loggerOptions:any;
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DomainNewController.CompositeAction.integ.test")
 ).then((logger: LoggerInterface) => {log = logger});
 
-console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
+miroirAppStartup();
+miroirCoreStartup();
+miroirFileSystemStoreSectionStartup();
+miroirIndexedDbStoreSectionStartup();
+miroirPostgresStoreSectionStartup();
+ConfigurationService.registerTestImplementation({expect: expect as any});
+
+const {miroirConfig: miroirConfigParam, logConfig:loggerOptionsParam} = await loadTestConfigFiles(env)
+miroirConfig = miroirConfigParam;
+loggerOptions = loggerOptionsParam;
+console.log(testFileName, JSON.stringify(miroirConfig, null, 2));
+console.log(
+  testFileName,
+  JSON.stringify(miroirConfig.client, null, 2)
+);
+console.log(testFileName, JSON.stringify(loggerOptions, null, 2));
+MiroirLoggerFactory.startRegisteredLoggers(
+  loglevelnext,
+  (defaultLevels as any)[loggerOptions.defaultLevel],
+  loggerOptions.defaultTemplate,
+  loggerOptions.specificLoggerOptions
+);
+console.log(testFileName, "started registered loggers DONE");
 
 
 // ################################################################################################
 beforeAll(
   async () => {
-    // Establish requests interception layer before all tests.
-    miroirAppStartup();
-    miroirCoreStartup();
-    miroirFileSystemStoreSectionStartup();
-    miroirIndexedDbStoreSectionStartup();
-    miroirPostgresStoreSectionStartup();
-    ConfigurationService.registerTestImplementation({expect: expect as any});
-
-    await MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
-      loglevelnext,
-      (defaultLevels as any)[loggerOptions.defaultLevel],
-      loggerOptions.defaultTemplate,
-      loggerOptions.specificLoggerOptions
-    );
-    
     const {
       persistenceStoreControllerManager: localpersistenceStoreControllerManager,
       domainController: localdomainController,
@@ -205,8 +215,10 @@ const testActions: Record<string, TestActionParams> = {
   "DomainNewController.CompositeAction.integ.test": {
     testActionType: "testCompositeActionSuite",
     deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+    testActionLabel: "DomainNewController.CompositeAction.integ.test",
     testCompositeAction: {
       testType: "testCompositeActionSuite",
+      testLabel: "DomainNewController.CompositeAction.integ.test",
       // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
       beforeAll: createDeploymentCompositeAction(miroirConfig, adminConfigurationDeploymentLibrary.uuid),
       
@@ -359,6 +371,7 @@ const testActions: Record<string, TestActionParams> = {
       testCompositeActions: {
         "get Entity Entity from Miroir":{
           testType: "testCompositeAction",
+          testLabel: "getEntityEntity",
           compositeAction: {
             actionType: "compositeAction",
             actionLabel: "selectEntityEntity",

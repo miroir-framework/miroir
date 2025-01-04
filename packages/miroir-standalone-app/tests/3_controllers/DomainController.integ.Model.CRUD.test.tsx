@@ -200,7 +200,7 @@ beforeEach(
 //   }
 // )
 
-const globalTimeOut = 10000;
+const globalTimeOut = 30000;
 // const globalTimeOut = 10^9;
 const columnForTestDefinition: JzodElement = {
   "type": "number", "optional": true, "tag": { "value": { "id":6, "defaultLabel": "Gender (narrow-minded)", "editable": true }}

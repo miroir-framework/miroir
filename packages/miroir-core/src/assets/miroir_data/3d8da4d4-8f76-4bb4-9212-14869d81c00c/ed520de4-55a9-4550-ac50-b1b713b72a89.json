@@ -122,6 +122,10 @@
               }
             }
           }
+        },
+        "actionErrors": {
+          "type": "literal",
+          "definition": "FailedToDeleteInstance"
         }
       },
       {
@@ -180,8 +184,13 @@
               }
             }
           }
+        },
+        "actionErrors": {
+          "type": "literal",
+          "definition": "FailedToDeleteInstanceWithCascade"
         }
       },
+      
       {
         "actionParameters": {
           "type": "object",
@@ -238,6 +247,10 @@
               }
             }
           }
+        },
+        "actionErrors": {
+          "type": "literal",
+          "definition": "FailedToUpdateInstance"
         }
       },
       {
@@ -285,6 +298,10 @@
               }
             }
           }
+        },
+        "actionErrors": {
+          "type": "literal",
+          "definition": "FailedToLoadNewInstancesInLocalCache"
         }
       },
       {

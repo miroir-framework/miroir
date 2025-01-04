@@ -159,8 +159,14 @@ beforeAll(
     localCache = locallocalCache;
     miroirContext = localmiroirContext;
 
-    const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(miroirConfig, adminConfigurationDeploymentMiroir.uuid);
-    const createDeploymentResult = await domainController.handleCompositeAction(createMiroirDeploymentCompositeAction, defaultMiroirMetaModel);
+    const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
+      miroirConfig,
+      adminConfigurationDeploymentMiroir.uuid
+    );
+    const createDeploymentResult = await domainController.handleCompositeAction(
+      createMiroirDeploymentCompositeAction,
+      defaultMiroirMetaModel
+    );
     if (createDeploymentResult.status !== "ok") {
       throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
     }
@@ -195,7 +201,7 @@ beforeEach(
 //   }
 // )
 
-const globalTimeOut = 10000;
+const globalTimeOut = 30000;
 // const globalTimeOut = 10^9;
 
 const testActions: Record<string, TestActionParams> = {

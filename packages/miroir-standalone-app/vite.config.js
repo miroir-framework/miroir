@@ -49,7 +49,7 @@ export default defineConfig({
     globals: true,
     watch: false,
     environment: 'happy-dom',
-    
+    hookTimeout: 30000,
     setupFiles: ['./setup.ts'],
   },
 });

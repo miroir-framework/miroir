@@ -166,52 +166,73 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
         });
       }
 
-      const entityInstancesUuid = fs.readdirSync(entityInstancesPath);
-      log.debug(
-        this.logHeader,
-        "FileSystemInstanceStore getInstances",
-        "entityUuid",
-        entityUuid,
-        "applicationSection",
-        this.applicationSection,
-        "directory",
-        this.directory,
-        "found entity instances",
-        entityInstancesUuid
-      );
-      const entityInstances: EntityInstanceCollection = {
-        parentUuid: entityUuid,
-        applicationSection: this.applicationSection,
-        instances: entityInstancesUuid.map((e) =>
-          JSON.parse(fs.readFileSync(path.join(entityInstancesPath, e),{encoding: "utf-8"}).toString())
-        ),
-      };
-      log.debug(
-        this.logHeader,
-        "FileSystemInstanceStore getInstances",
-        "entityUuid",
-        entityUuid,
-        "applicationSection",
-        this.applicationSection,
-        "directory",
-        this.directory,
-        "found entity instances",
-        entityInstances
-      );
-      return Promise.resolve({
-        status: "ok",
-        returnedDomainElement: {
-          elementType: "entityInstanceCollection",
-          elementValue: entityInstances
-        }
-      });
+      try {
+        const entityInstancesUuid = fs.readdirSync(entityInstancesPath);
+        log.debug(
+          this.logHeader,
+          "FileSystemInstanceStore getInstances",
+          "entityUuid",
+          entityUuid,
+          "applicationSection",
+          this.applicationSection,
+          "directory",
+          this.directory,
+          "found entity instances",
+          entityInstancesUuid
+        );
+        const entityInstances: EntityInstanceCollection = {
+          parentUuid: entityUuid,
+          applicationSection: this.applicationSection,
+          instances: entityInstancesUuid.map((e) =>
+            JSON.parse(fs.readFileSync(path.join(entityInstancesPath, e),{encoding: "utf-8"}).toString())
+          ),
+        };
+        log.debug(
+          this.logHeader,
+          "FileSystemInstanceStore getInstances",
+          "entityUuid",
+          entityUuid,
+          "applicationSection",
+          this.applicationSection,
+          "directory",
+          this.directory,
+          "found entity instances",
+          entityInstances
+        );
+        return Promise.resolve({
+          status: "ok",
+          returnedDomainElement: {
+            elementType: "entityInstanceCollection",
+            elementValue: entityInstances
+          }
+        });
+      } catch (error) {
+        return Promise.resolve({
+          status: "error",
+          error: {
+            errorType: "FailedToGetInstances",
+            errorMessage: `FileSystemInstanceStore getInstances entityUuid ${entityUuid} failed to read directory ${entityInstancesPath}`,
+          },
+        });
+      }
     }
     // #########################################################################################
     upsertInstance(entityUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
-      const filePath = path.join(this.directory, entityUuid, fullName(instance.uuid));
-      fs.writeFileSync(filePath, JSON.stringify(instance, undefined, 2), { encoding: "utf-8" });
-
-      return Promise.resolve(ACTION_OK);
+      try {
+        const filePath = path.join(this.directory, entityUuid, fullName(instance.uuid));
+        fs.writeFileSync(filePath, JSON.stringify(instance, undefined, 2), { encoding: "utf-8" });
+  
+        return Promise.resolve(ACTION_OK);
+      } catch (error) {
+        return Promise.resolve({
+          status: "error",
+          error: {
+            errorType: "FailedToUpdateInstance",
+            errorMessage: `failed to upsert instance ${instance.uuid} of entity ${entityUuid}`,
+          },
+        });
+        
+      }
     }
 
     // #############################################################################################
@@ -219,7 +240,11 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
       log.info(this.logHeader, "deleteInstances", parentUuid, instances);
       // TODO: delete in parallel, not sequentially
       for (const o of instances) {
-        await this.deleteInstance(parentUuid, { uuid: o.uuid } as EntityInstance);
+        // TODO: send back a proper "FailedToDeleteInstances" error if one of the deletes fails, with the details of the failed delete as payload
+        const tmpResult = await this.deleteInstance(parentUuid, { uuid: o.uuid } as EntityInstance);
+        if (tmpResult.status !== "ok") {
+          return tmpResult;
+        }
       }
       return Promise.resolve(ACTION_OK);
     }
@@ -245,7 +270,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
         return Promise.resolve({
           status: "error",
           error: {
-            errorType: "FailedToDeployModule",
+            errorType: "FailedToDeleteInstance",
             errorMessage: `failed to delete instance ${instance.uuid} of entity ${entityUuid}`,
           },
         });

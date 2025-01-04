@@ -256,7 +256,13 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       } catch (error) {
         // TODO: indicate exact reason!
         log.warn(this.logHeader, "getInstance", "could not fetch instance from db: parentId", parentUuid, "uuid", uuid);
-        return Promise.resolve({ status: "error", error: { errorType: "FailedToGetInstance" } });
+        return Promise.resolve({
+          status: "error",
+          error: {
+            errorType: "FailedToGetInstance",
+            errorMessage: "could not fetch instance from db: parentId " + parentUuid + ", uuid=" + uuid + ": " + error,
+          },
+        });
       }
     }
 
@@ -329,7 +335,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         this.sqlSchemaTableAccess[parentUuid] &&
         this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel
       ) {
-        log.info("getInstancesWithFilter calling this.sqlEntities findall", parentUuid);
+        log.info("getOrderedInstancesWithFilter calling this.sqlEntities findall", parentUuid);
         try {
           const sequelizeModel = this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel;
           rawResult = (await sequelizeModel?.findAll({
@@ -337,9 +343,9 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
             order: [[orderBy.attributeName, orderBy.direction??"ASC"]],
           })) as unknown as EntityInstance[];
           cleanResult = rawResult.map((i) => i["dataValues"]);
-          log.info("getInstancesWithFilter result", cleanResult);
+          log.info("getOrderedInstancesWithFilter result", cleanResult);
         } catch (e) {
-          log.warn(this.logHeader, "getInstancesWithFilter", "failed to fetch instances of entityUuid", parentUuid);
+          log.warn(this.logHeader, "getOrderedInstancesWithFilter", "failed to fetch instances of entityUuid", parentUuid);
           return {
             status: "error",
             error: {
@@ -349,10 +355,10 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           };
         }
       } else {
-        log.warn(this.logHeader, "getInstancesWithFilter", "could not find entity in database: entityUuid", parentUuid);
+        log.warn(this.logHeader, "getOrderedInstancesWithFilter", "could not find entity in database: entityUuid", parentUuid);
         return {
           status: "error",
-          error: { errorType: "FailedToGetInstances", errorMessage: `could not find entity ${parentUuid}` },
+          error: { errorType: "FailedToGetInstances", errorMessage: `getOrderedInstancesWithFilter could not find entity ${parentUuid}` },
         };
       }
       // TODO: CORRECT APPLICATION SECTION
@@ -434,7 +440,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         );
         return Promise.resolve({
           status: "error",
-          error: { errorType: "FailedToCreateInstance", errorMessage: error },
+          error: { errorType: "FailedToUpdateInstance", errorMessage: error },
         });
       }
       return Promise.resolve(ACTION_OK);
@@ -443,7 +449,18 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     // ##############################################################################################
     async deleteInstances(parentUuid: string, instances: EntityInstance[]): Promise<ActionVoidReturnType> {
       for (const instance of instances) {
-        await this.deleteInstance(parentUuid, instance);
+        try {
+          await this.deleteInstance(parentUuid, instance);
+        } catch (error) {
+          log.warn(this.logHeader, "deleteInstances", "could not delete instance from db: parentId", parentUuid, "uuid", instance.uuid);
+          return Promise.resolve({
+            status: "error",
+            error: {
+              errorType: "FailedToDeleteInstance",
+              errorMessage: "could not delete instance from db: parentId " + parentUuid + ", uuid=" + instance.uuid + ": " + error,
+            },
+          });
+        }
       }
       return Promise.resolve(ACTION_OK);
     }
@@ -451,9 +468,21 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     // ##############################################################################################
     async deleteInstance(parentUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
       log.info(this.logHeader, "deleteInstance", parentUuid, instance);
-      const sequelizeModel = this.sqlSchemaTableAccess[parentUuid].sequelizeModel;
-      await sequelizeModel.destroy({ where: { uuid: instance.uuid } });
-      return Promise.resolve(ACTION_OK);
+      try {
+        const sequelizeModel = this.sqlSchemaTableAccess[parentUuid].sequelizeModel;
+        await sequelizeModel.destroy({ where: { uuid: instance.uuid } });
+        return Promise.resolve(ACTION_OK);
+      } catch (error) {
+        log.warn(this.logHeader, "deleteInstance", "could not delete instance from db: parentId", parentUuid, "uuid", instance.uuid);
+        return Promise.resolve({
+          status: "error",
+          error: {
+            errorType: "FailedToDeleteInstance",
+            errorMessage: "could not delete instance from db: parentId " + parentUuid + ", uuid=" + instance.uuid + ": " + error,
+          },
+        });
+        
+      }
     }
   };
 }
