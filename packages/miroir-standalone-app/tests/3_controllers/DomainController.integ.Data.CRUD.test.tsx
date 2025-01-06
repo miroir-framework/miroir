@@ -40,6 +40,8 @@ import {
 import {
   chainVitestSteps,
   createDeploymentCompositeAction,
+  deleteAndCloseApplicationDeployments,
+  deploymentConfigurations,
   loadTestConfigFiles,
   miroirBeforeEach_resetAndInitApplicationDeployments,
   setupMiroirTest,
@@ -70,15 +72,16 @@ const env:any = (import.meta as any).env
 
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
+const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
 // const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
-
-console.log("DomainController.integ.Data.CRUD.test received env", JSON.stringify(env, null, 2));
+const fileName = "DomainController.integ.Data.CRUD.test";
+myConsoleLog(fileName, "received env", JSON.stringify(env, null, 2));
 
 let miroirConfig:any;
 let loggerOptions:any;
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DomainController.integ.Data.CRUD.test")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName)
 ).then((logger: LoggerInterface) => {log = logger});
 
 miroirAppStartup();
@@ -91,19 +94,19 @@ ConfigurationService.registerTestImplementation({expect: expect as any});
 const {miroirConfig: miroirConfigParam, logConfig:loggerOptionsParam} = await loadTestConfigFiles(env)
 miroirConfig = miroirConfigParam;
 loggerOptions = loggerOptionsParam;
-console.log("DomainController.integ.Data.CRUD.test received miroirConfig", JSON.stringify(miroirConfig, null, 2));
-console.log(
-  "DomainController.integ.Data.CRUD.test received miroirConfig.client",
+myConsoleLog("received miroirConfig", JSON.stringify(miroirConfig, null, 2));
+myConsoleLog(
+  "received miroirConfig.client",
   JSON.stringify(miroirConfig.client, null, 2)
 );
-console.log("DomainController.integ.Data.CRUD.test received loggerOptions", JSON.stringify(loggerOptions, null, 2));
+myConsoleLog("received loggerOptions", JSON.stringify(loggerOptions, null, 2));
 MiroirLoggerFactory.startRegisteredLoggers(
   loglevelnext,
   (defaultLevels as any)[loggerOptions.defaultLevel],
   loggerOptions.defaultTemplate,
   loggerOptions.specificLoggerOptions
 );
-console.log("DomainController.integ.Data.CRUD.test started registered loggers DONE");
+myConsoleLog("started registered loggers DONE");
 
 
 let domainController: DomainControllerInterface;
@@ -141,14 +144,14 @@ export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInst
 beforeAll(
   async () => {
     // Establish requests interception layer before all tests.
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll");
+    myConsoleLog("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll");
 
     // throw new Error("STOPPED HERE");
 
     // const testConfigFiles = await loadTestConfigFiles(env)
         
     const {
-      persistenceStoreControllerManager: localpersistenceStoreControllerManager,
+      persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
       domainController: localdomainController,
       localCache: locallocalCache,
       miroirContext: localmiroirContext,
@@ -170,7 +173,7 @@ beforeAll(
     if (createDeploymentResult.status !== "ok") {
       throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
     }
-    log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll DONE");
+    myConsoleLog("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll DONE");
 
     return Promise.resolve();
   }
@@ -191,15 +194,15 @@ beforeEach(
   }
 )
 
-// afterAll(
-//   async () => {
-//     await deleteAndCloseApplicationDeployments(
-//       miroirConfig,
-//       domainController,
-//       deploymentConfigurations,
-//     );
-//   }
-// )
+afterAll(
+  async () => {
+    await deleteAndCloseApplicationDeployments(
+      miroirConfig,
+      domainController,
+      deploymentConfigurations,
+    );
+  }
+)
 
 const globalTimeOut = 30000;
 // const globalTimeOut = 10^9;

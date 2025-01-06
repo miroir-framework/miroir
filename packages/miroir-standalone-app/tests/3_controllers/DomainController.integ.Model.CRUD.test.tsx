@@ -31,6 +31,8 @@ import {
 import {
   chainVitestSteps,
   createDeploymentCompositeAction,
+  deleteAndCloseApplicationDeployments,
+  deploymentConfigurations,
   loadTestConfigFiles,
   miroirBeforeEach_resetAndInitApplicationDeployments,
   setupMiroirTest,
@@ -62,24 +64,6 @@ import { cleanLevel } from './constants.js';
 const env:any = (import.meta as any).env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
-// const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
-
-// MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
-//   loglevelnext,
-//   // console as any as LoggerFactoryInterface,
-//   (defaultLevels as any)[loggerOptions.defaultLevel],
-//   loggerOptions.defaultTemplate,
-//   loggerOptions.specificLoggerOptions
-// );
-
-// // jest intercepts logs, only console.log will produce test output
-// let log: LoggerInterface = console as any as LoggerInterface;
-// MiroirLoggerFactory.registerLoggerToStart(
-//   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DomainController.integ.Model.CRUD")
-// ).then((logger: LoggerInterface) => {log = logger});
-
-
-// console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 let miroirConfig:any;
 let loggerOptions:any;
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -154,7 +138,7 @@ beforeAll(
     // miroirPostgresStoreSectionStartup();
     // ConfigurationService.registerTestImplementation({expect: expect as any});
     const {
-      persistenceStoreControllerManager: localpersistenceStoreControllerManager,
+      persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
       domainController: localdomainController,
       localCache: locallocalCache,
       miroirContext: localmiroirContext,
@@ -190,15 +174,15 @@ beforeEach(
   }
 )
 
-// afterAll(
-//   async () => {
-//     await deleteAndCloseApplicationDeployments(
-//       miroirConfig,
-//       domainController,
-//       deploymentConfigurations,
-//     );
-//   }
-// )
+afterAll(
+  async () => {
+    await deleteAndCloseApplicationDeployments(
+      miroirConfig,
+      domainController,
+      deploymentConfigurations,
+    );
+  }
+)
 
 const globalTimeOut = 30000;
 // const globalTimeOut = 10^9;

@@ -113,7 +113,7 @@ console.log(testFileName, "started registered loggers DONE");
 beforeAll(
   async () => {
     const {
-      persistenceStoreControllerManager: localpersistenceStoreControllerManager,
+      persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
       domainController: localdomainController,
       localCache: locallocalCache,
       miroirContext: localmiroirContext,

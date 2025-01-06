@@ -2000,16 +2000,15 @@ export function getMiroirFundamentalJzodSchema(
                   ],
                 },
                 errorMessage: { type: "string", optional: true },
-                error: {
-                  type: "object",
+                errorStack: {
+                  type: "array",
                   optional: true,
-                  definition: {
-                    errorMessage: { type: "string", optional: true },
-                    stack: {
-                      type: "array",
-                      definition: { type: "string", optional: true },
-                    },
-                  },
+                  definition: { type: "string", optional: true },
+                },
+                innerError: {
+                  type: "schemaReference",
+                  optional: true,
+                  definition: { absolutePath: miroirFundamentalJzodSchemaUuid, relativePath: "actionError" },
                 },
               },
             },

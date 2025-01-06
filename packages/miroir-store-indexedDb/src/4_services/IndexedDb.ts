@@ -1,5 +1,5 @@
 import { Level } from 'level';
-import { ApplicationSection, LoggerInterface, MiroirLoggerFactory, entityDefinitionEntityDefinition } from "miroir-core";
+import { ACTION_OK, ActionVoidReturnType, ApplicationSection, LoggerInterface, MiroirLoggerFactory, entityDefinitionEntityDefinition } from "miroir-core";
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
@@ -184,12 +184,13 @@ export class IndexedDb {
     return Promise.resolve(result);
   }
   // #############################################################################################
-  public async putValue(parentUuid: string, value: any):Promise<any> {
+  public async putValue(parentUuid: string, value: any):Promise<ActionVoidReturnType> {
     const store = this.subLevels.get(parentUuid);
     log.debug('IndexedDb in store',store,'hasSubLevel(',parentUuid,')', this.hasSubLevel(parentUuid),'PutValue of entity', parentUuid, 'value',value);
     const result1 = store?await store.put(value.uuid, value, {valueEncoding: 'json'}):[];
     // log.info('IndexedDb PutValue written', tableName,);
-    return Promise.resolve(result1);
+    // return Promise.resolve(result1);
+    return Promise.resolve(ACTION_OK);
   }
 
   // #############################################################################################
@@ -204,7 +205,7 @@ export class IndexedDb {
   }
 
   // #############################################################################################
-  public async deleteValue(tableUuid: string, uuid: string):Promise<any> {
+  public async deleteEntityInstance(tableUuid: string, uuid: string):Promise<ActionVoidReturnType> {
     // const tx = this.db.transaction(tableName, 'readwrite');
     log.info(this.logHeader, 'deleteValue called for entity', tableUuid, "instance", uuid);
     if (this.getSubLevels().includes(tableUuid)) {
@@ -213,18 +214,38 @@ export class IndexedDb {
         const instance = await store?.get(uuid);
         if (!instance) {
           log.warn(this.logHeader, 'deleteValue Id not found', uuid);
-          return Promise.resolve(undefined);
+          return Promise.resolve({
+            status: 'error',
+            error: {
+              errorType: "FailedToDeleteInstance",
+              errorMessage: `failed to delete instance ${uuid} of entity ${tableUuid}`
+            }
+            // message: 'Id not found',
+          });
         } else {
           await store?.del(uuid);
           log.debug(this.logHeader, 'DeleteValue done for entity', tableUuid, "instance with uuid", uuid);
-          return Promise.resolve(uuid);
+          return Promise.resolve(ACTION_OK);
         }
       } catch (error) {
         log.error(this.logHeader, "deleteValue could not find instance of entity: " + tableUuid + " with uuid: ", uuid);
+        return {
+          status: 'error',
+          error: {
+            errorType: "FailedToDeleteInstance",
+            errorMessage: `failed to delete instance ${uuid} of entity ${tableUuid}`
+          }
+        }
       }
     } else {
       log.error(this.logHeader, "deleteValue could not find sublevel: " + tableUuid + " existing sublevels: ", this.getSubLevels());
-      
+      return {
+        status: 'error',
+        error: {
+          errorType: "FailedToDeleteInstance",
+          errorMessage: `could not find entity ${tableUuid}`
+        }
+      }
     }
   }
 }

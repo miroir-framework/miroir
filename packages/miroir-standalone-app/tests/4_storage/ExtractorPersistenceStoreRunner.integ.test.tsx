@@ -30,6 +30,7 @@ import {
   entityReport,
   entityStoreBasedConfiguration,
   ignorePostgresExtraAttributesOnObject,
+  LoggerInterface,
   MetaEntity,
   MiroirConfigClient,
   MiroirLoggerFactory,
@@ -72,6 +73,7 @@ import { selfApplicationDeploymentLibrary } from 'miroir-core';
 import { ApplicationEntitiesAndInstances, testOnLibrary_resetInitAndAddTestDataToLibraryDeployment } from '../utils/tests-utils-testOnLibrary.js';
 import { defaultMiroirMetaModel } from 'miroir-core';
 import { ignorePostgresExtraAttributesOnList } from 'miroir-core';
+import { packageName, cleanLevel } from '../3_controllers/constants.js';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCache;
@@ -85,12 +87,39 @@ console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
 const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
 
-MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
+const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
+// const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
+const fileName = "DomainController.integ.Data.CRUD.test";
+myConsoleLog(fileName, "received env", JSON.stringify(env, null, 2));
+
+// let miroirConfig:any;
+// let loggerOptions:any;
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName)
+).then((logger: LoggerInterface) => {log = logger});
+
+miroirAppStartup();
+miroirCoreStartup();
+miroirFileSystemStoreSectionStartup();
+miroirIndexedDbStoreSectionStartup();
+miroirPostgresStoreSectionStartup();
+ConfigurationService.registerTestImplementation({expect: expect as any});
+
+// const {miroirConfig: miroirConfigParam, logConfig:loggerOptionsParam} = await loadTestConfigFiles(env)
+myConsoleLog("received miroirConfig", JSON.stringify(miroirConfig, null, 2));
+myConsoleLog(
+  "received miroirConfig.client",
+  JSON.stringify(miroirConfig.client, null, 2)
+);
+myConsoleLog("received loggerOptions", JSON.stringify(loggerOptions, null, 2));
+MiroirLoggerFactory.startRegisteredLoggers(
   loglevelnext,
   (defaultLevels as any)[loggerOptions.defaultLevel],
   loggerOptions.defaultTemplate,
   loggerOptions.specificLoggerOptions
 );
+myConsoleLog("started registered loggers DONE");
 
 console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
@@ -123,12 +152,12 @@ export const libraryEntitiesAndInstances: ApplicationEntitiesAndInstances  = [
 beforeAll(
   async () => {
     // Establish requests interception layer before all tests.
-    miroirAppStartup();
-    miroirCoreStartup();
-    miroirFileSystemStoreSectionStartup();
-    miroirIndexedDbStoreSectionStartup();
-    miroirPostgresStoreSectionStartup();
-    ConfigurationService.registerTestImplementation({expect: expect as any});
+    // miroirAppStartup();
+    // miroirCoreStartup();
+    // miroirFileSystemStoreSectionStartup();
+    // miroirIndexedDbStoreSectionStartup();
+    // miroirPostgresStoreSectionStartup();
+    // ConfigurationService.registerTestImplementation({expect: expect as any});
     if (!miroirConfig.client.emulateServer) {
       throw new Error(
         "LocalPersistenceStoreController state do not make sense for real server configurations! Please use only 'emulateServer: true' configurations for this test."
@@ -136,16 +165,21 @@ beforeAll(
     }
 
     const {
-      persistenceStoreControllerManager: localpersistenceStoreControllerManager,
+      persistenceStoreControllerManagerForServer: localpersistenceStoreControllerManager,
       domainController: localdomainController,
       localCache: locallocalCache,
       miroirContext: localmiroirContext,
     } = await setupMiroirTest(miroirConfig);
 
+    if (!localpersistenceStoreControllerManager) {
+      throw new Error("localpersistenceStoreControllerManager not defined");
+    }
+
     persistenceStoreControllerManager = localpersistenceStoreControllerManager;
     domainController = localdomainController;
     localCache = locallocalCache;
     miroirContext = localmiroirContext;
+
 
     const wrapped = await createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT(
       miroirConfig as MiroirConfigClient,
@@ -1021,7 +1055,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
   });
 
   // ################################################################################################
-  // TODO: write in UTF-8 on disk!
+  // TODO: write in UTF-8 on disk / in Database!
   it("get book title (name) list with actionRuntimeTransformer: mapperListToList + innerFullObjectTemplate", async () => {
     await chainVitestSteps(
       "ExtractorPersistenceStoreRunner_selectUniqueEntityApplication",

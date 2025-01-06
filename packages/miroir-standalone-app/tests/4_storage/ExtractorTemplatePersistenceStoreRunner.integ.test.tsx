@@ -94,7 +94,7 @@ beforeAll(
     );
   } else {
     const {
-      persistenceStoreControllerManager: localpersistenceStoreControllerManager,
+      persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
       domainController: localdomainController,
       localCache: locallocalCache,
       miroirContext: localmiroirContext,

@@ -54,8 +54,14 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       ...args: any[]
     ) {
       super(...args);
-      this.extractorRunner = new SqlDbQueryRunner(this.schema, this as any /*SqlDbQueryRunner takes a concrete implementation*/);
-      this.extractorTemplateRunner = new SqlDbExtractTemplateRunner(this as any /*SqlDbExtractTemplateRunner takes a concrete implementation*/, this.extractorRunner);
+      this.extractorRunner = new SqlDbQueryRunner(
+        this.schema,
+        this as any /*SqlDbQueryRunner takes a concrete implementation*/
+      );
+      this.extractorTemplateRunner = new SqlDbExtractTemplateRunner(
+        this as any /*SqlDbExtractTemplateRunner takes a concrete implementation*/,
+        this.extractorRunner
+      );
     }
 
     async executeRawQuery(query: string): Promise<ActionReturnType> {
@@ -71,9 +77,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     }
 
     // ##############################################################################################
-    sqlForExtractor(
-      extractor: ExtractorOrCombiner
-    ): RecursiveStringRecords {
+    sqlForExtractor(extractor: ExtractorOrCombiner): RecursiveStringRecords {
       switch (extractor.extractorOrCombinerType) {
         case "extractorForObjectByDirectReference": {
           return `SELECT * FROM "${this.schema}"."${extractor.parentName}" WHERE "uuid" = '${extractor.instanceUuid}'`;
@@ -88,7 +92,9 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         case "combinerByRelationReturningObjectList":
         case "combinerByManyToManyRelationReturningObjectList":
         case "extractorByEntityReturningObjectList": {
-          throw new Error("sqlForExtractor not implemented for extractorOrCombinerType: " + extractor.extractorOrCombinerType);
+          throw new Error(
+            "sqlForExtractor not implemented for extractorOrCombinerType: " + extractor.extractorOrCombinerType
+          );
           break;
         }
         default: {
@@ -99,9 +105,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     }
     // ##############################################################################################
     sqlForQuery(
-      query:
-        | BoxedExtractorOrCombinerReturningObjectOrObjectList
-        | BoxedQueryWithExtractorCombinerTransformer
+      query: BoxedExtractorOrCombinerReturningObjectOrObjectList | BoxedQueryWithExtractorCombinerTransformer
     ): RecursiveStringRecords {
       // log.info(this.logHeader, "sqlForExtractor called with parameter", "extractor", extractor);
       // log.info(this.logHeader, "sqlForExtractor called with sequelize", this.sequelize);
@@ -116,20 +120,21 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         case "boxedExtractorOrCombinerReturningObjectList": {
           // TODO: use queryGenerator?
           switch (query.select.extractorOrCombinerType) {
-            case "extractorByEntityReturningObjectList":{
+            case "extractorByEntityReturningObjectList": {
               return (
                 `SELECT * FROM "${this.schema}"."${query.select.parentName}"` +
-                (query.select.filter ? ` WHERE ${query.select.filter.attributeName} LIKE '%${query.select.filter.value}%'` : "")
+                (query.select.filter
+                  ? ` WHERE ${query.select.filter.attributeName} LIKE '%${query.select.filter.value}%'`
+                  : "")
               );
               break;
             }
-            case "combinerByRelationReturningObjectList":{
+            case "combinerByRelationReturningObjectList": {
               throw new Error("sqlForQuery combinerByRelationReturningObjectList not implemented");
-              
             }
-            case "combinerByManyToManyRelationReturningObjectList":{
+            case "combinerByManyToManyRelationReturningObjectList": {
               throw new Error("sqlForQuery combinerByManyToManyRelationReturningObjectList not implemented");
-              
+
               break;
             }
             default:
@@ -164,7 +169,6 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
             }
             case "combinerForObjectByRelation": {
               throw new Error("sqlForQuery combinerForObjectByRelation not implemented");
-              
             }
             default: {
               throw new Error(
@@ -198,22 +202,35 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     }
 
     // #############################################################################################
-    async handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<ActionReturnType> {
+    async handleBoxedExtractorTemplateActionForServerONLY(
+      query: RunBoxedExtractorTemplateAction
+    ): Promise<ActionReturnType> {
       log.info(this.logHeader, "handleBoxedExtractorTemplateActionForServerONLY", "query", query);
 
-      const result: ActionReturnType = await this.extractorTemplateRunner.handleBoxedExtractorTemplateActionForServerONLY(query);
+      const result: ActionReturnType =
+        await this.extractorTemplateRunner.handleBoxedExtractorTemplateActionForServerONLY(query);
 
       log.info(this.logHeader, "handleBoxedExtractorTemplateActionForServerONLY", "query", query, "result", result);
       return result;
     }
 
     // #############################################################################################
-    async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType> {
+    async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
+      query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
+    ): Promise<ActionReturnType> {
       log.info(this.logHeader, "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY", "query", query);
 
-      const result: ActionReturnType = await this.extractorTemplateRunner.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query);
+      const result: ActionReturnType =
+        await this.extractorTemplateRunner.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query);
 
-      log.info(this.logHeader, "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY", "query", query, "result", result);
+      log.info(
+        this.logHeader,
+        "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY",
+        "query",
+        query,
+        "result",
+        result
+      );
       return result;
     }
 
@@ -276,44 +293,49 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     ): Promise<ActionEntityInstanceCollectionReturnType> {
       let rawResult: any[] = [];
       let cleanResult: EntityInstance[] = [];
-      if (
-        this.sqlSchemaTableAccess &&
-        this.sqlSchemaTableAccess[parentUuid] &&
-        this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel
-      ) {
-        log.info("getInstancesWithFilter calling this.sqlEntities findall", parentUuid);
-        try {
+      try {
+        if (
+          this.sqlSchemaTableAccess &&
+          this.sqlSchemaTableAccess[parentUuid] &&
+          this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel
+        ) {
+          log.info("getInstancesWithFilter calling this.sqlEntities findall", parentUuid);
           const sequelizeModel = this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel;
           rawResult = (await sequelizeModel?.findAll({
             where: { [filter.attribute]: { [Op.like]: "%" + filter.value + "%" } },
           })) as unknown as EntityInstance[];
           cleanResult = rawResult.map((i) => i["dataValues"]);
           log.info("getInstancesWithFilter result", cleanResult);
-        } catch (e) {
-          log.warn(this.logHeader, "getInstancesWithFilter", "failed to fetch instances of entityUuid", parentUuid);
+        } else {
+          log.warn(
+            this.logHeader,
+            "getInstancesWithFilter",
+            "could not find entity in database: entityUuid",
+            parentUuid
+          );
           return {
             status: "error",
-            error: {
-              errorType: "FailedToGetInstances",
-              errorMessage: `could not get instances for entity ${parentUuid}`,
-            },
+            error: { errorType: "FailedToGetInstances", errorMessage: `could not find entity ${parentUuid}` },
           };
         }
-      } else {
-        log.warn(this.logHeader, "getInstancesWithFilter", "could not find entity in database: entityUuid", parentUuid);
+        // TODO: CORRECT APPLICATION SECTION
+        return Promise.resolve({
+          status: "ok",
+          returnedDomainElement: {
+            elementType: "entityInstanceCollection",
+            elementValue: { parentUuid, applicationSection: this.applicationSection, instances: cleanResult },
+          },
+        });
+      } catch (e) {
+        log.warn(this.logHeader, "getInstancesWithFilter", "failed to fetch instances of entityUuid", parentUuid);
         return {
           status: "error",
-          error: { errorType: "FailedToGetInstances", errorMessage: `could not find entity ${parentUuid}` },
+          error: {
+            errorType: "FailedToGetInstances",
+            errorMessage: `could not get instances for entity ${parentUuid}`,
+          },
         };
       }
-      // TODO: CORRECT APPLICATION SECTION
-      return Promise.resolve({
-        status: "ok",
-        returnedDomainElement: {
-          elementType: "entityInstanceCollection",
-          elementValue: { parentUuid, applicationSection: this.applicationSection, instances: cleanResult },
-        },
-      });
     }
 
     // ##############################################################################################
@@ -330,87 +352,100 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     ): Promise<ActionEntityInstanceCollectionReturnType> {
       let rawResult: any[] = [];
       let cleanResult: EntityInstance[] = [];
-      if (
-        this.sqlSchemaTableAccess &&
-        this.sqlSchemaTableAccess[parentUuid] &&
-        this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel
-      ) {
-        log.info("getOrderedInstancesWithFilter calling this.sqlEntities findall", parentUuid);
-        try {
+      try {
+        if (
+          this.sqlSchemaTableAccess &&
+          this.sqlSchemaTableAccess[parentUuid] &&
+          this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel
+        ) {
+          log.info("getOrderedInstancesWithFilter calling this.sqlEntities findall", parentUuid);
           const sequelizeModel = this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel;
           rawResult = (await sequelizeModel?.findAll({
             where: { [filter.attribute]: { [Op.like]: "%" + filter.value + "%" } },
-            order: [[orderBy.attributeName, orderBy.direction??"ASC"]],
+            order: [[orderBy.attributeName, orderBy.direction ?? "ASC"]],
           })) as unknown as EntityInstance[];
           cleanResult = rawResult.map((i) => i["dataValues"]);
           log.info("getOrderedInstancesWithFilter result", cleanResult);
-        } catch (e) {
-          log.warn(this.logHeader, "getOrderedInstancesWithFilter", "failed to fetch instances of entityUuid", parentUuid);
+        } else {
+          log.warn(
+            this.logHeader,
+            "getOrderedInstancesWithFilter",
+            "could not find entity in database: entityUuid",
+            parentUuid
+          );
           return {
             status: "error",
             error: {
               errorType: "FailedToGetInstances",
-              errorMessage: `could not get instances for entity ${parentUuid}`,
+              errorMessage: `getOrderedInstancesWithFilter could not find entity ${parentUuid}`,
             },
           };
         }
-      } else {
-        log.warn(this.logHeader, "getOrderedInstancesWithFilter", "could not find entity in database: entityUuid", parentUuid);
+        // TODO: CORRECT APPLICATION SECTION
+        return Promise.resolve({
+          status: "ok",
+          returnedDomainElement: {
+            elementType: "entityInstanceCollection",
+            elementValue: { parentUuid, applicationSection: this.applicationSection, instances: cleanResult },
+          },
+        });
+      } catch (e) {
+        log.warn(
+          this.logHeader,
+          "getOrderedInstancesWithFilter",
+          "failed to fetch instances of entityUuid",
+          parentUuid
+        );
         return {
           status: "error",
-          error: { errorType: "FailedToGetInstances", errorMessage: `getOrderedInstancesWithFilter could not find entity ${parentUuid}` },
+          error: {
+            errorType: "FailedToGetInstances",
+            errorMessage: `could not get instances for entity ${parentUuid}`,
+          },
         };
       }
-      // TODO: CORRECT APPLICATION SECTION
-      return Promise.resolve({
-        status: "ok",
-        returnedDomainElement: {
-          elementType: "entityInstanceCollection",
-          elementValue: { parentUuid, applicationSection: this.applicationSection, instances: cleanResult },
-        },
-      });
     }
 
     // ##############################################################################################
     async getInstances(parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType> {
       let rawResult: any[] = [];
       let cleanResult: EntityInstance[] = [];
-      if (
-        this.sqlSchemaTableAccess &&
-        this.sqlSchemaTableAccess[parentUuid] &&
-        this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel
-      ) {
-        log.info("getInstances calling this.sqlEntities findall", parentUuid);
-        try {
+      try {
+        if (
+          this.sqlSchemaTableAccess &&
+          this.sqlSchemaTableAccess[parentUuid] &&
+          this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel
+        ) {
+          log.info("getInstances calling this.sqlEntities findall", parentUuid);
           const sequelizeModel = this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel;
           rawResult = (await sequelizeModel?.findAll()) as unknown as EntityInstance[];
           cleanResult = rawResult.map((i) => i["dataValues"]);
           // log.info("getInstances result", cleanResult);
-        } catch (e) {
-          log.warn(this.logHeader, "getInstances", "failed to fetch instances of entityUuid", parentUuid);
+        } else {
+          log.warn(this.logHeader, "getInstances", "could not find entity in database: entityUuid", parentUuid);
           return {
             status: "error",
-            error: {
-              errorType: "FailedToGetInstances",
-              errorMessage: `could not get instances for entity ${parentUuid}`,
-            },
+            error: { errorType: "FailedToGetInstances", errorMessage: `could not find entity ${parentUuid}` },
           };
         }
-      } else {
-        log.warn(this.logHeader, "getInstances", "could not find entity in database: entityUuid", parentUuid);
+        // TODO: CORRECT APPLICATION SECTION
+        return Promise.resolve({
+          status: "ok",
+          returnedDomainElement: {
+            elementType: "entityInstanceCollection",
+            elementValue: { parentUuid, applicationSection: this.applicationSection, instances: cleanResult },
+          },
+        });
+      } catch (e) {
+        log.warn(this.logHeader, "getInstances", "failed to fetch instances of entityUuid", parentUuid);
         return {
           status: "error",
-          error: { errorType: "FailedToGetInstances", errorMessage: `could not find entity ${parentUuid}` },
+          error: {
+            errorType: "FailedToGetInstances",
+            errorMessage: `could not get instances for entity ${parentUuid}`,
+          },
         };
       }
-      // TODO: CORRECT APPLICATION SECTION
-      return Promise.resolve({
-        status: "ok",
-        returnedDomainElement: {
-          elementType: "entityInstanceCollection",
-          elementValue: { parentUuid, applicationSection: this.applicationSection, instances: cleanResult },
-        },
-      });
     }
 
     // ##############################################################################################
@@ -422,6 +457,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         const sequelizeModel = this.sqlSchemaTableAccess[instance.parentUuid].sequelizeModel;
         const tmp = await sequelizeModel.upsert(instance as any);
       } catch (error: any) {
+        const errorText: string = error.toString();
         log.error(
           this.logHeader,
           "upsertInstance error",
@@ -434,13 +470,11 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           "instance",
           instance,
           "error",
-          error
-          //   "db upsert result (not returned)",
-          //   tmp
+          errorText,
         );
         return Promise.resolve({
           status: "error",
-          error: { errorType: "FailedToUpdateInstance", errorMessage: error },
+          error: { errorType: "FailedToUpdateInstance", errorMessage: `failed to upsert instance ${instance.uuid} of entity ${instance.parentUuid}`, errorStack: error },
         });
       }
       return Promise.resolve(ACTION_OK);
@@ -450,14 +484,25 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     async deleteInstances(parentUuid: string, instances: EntityInstance[]): Promise<ActionVoidReturnType> {
       for (const instance of instances) {
         try {
-          await this.deleteInstance(parentUuid, instance);
+          const tmpResult = await this.deleteInstance(parentUuid, instance);
+          if (tmpResult.status !== "ok") {
+            return tmpResult;
+          }
         } catch (error) {
-          log.warn(this.logHeader, "deleteInstances", "could not delete instance from db: parentId", parentUuid, "uuid", instance.uuid);
+          log.warn(
+            this.logHeader,
+            "deleteInstances",
+            "could not delete instance from db: parentId",
+            parentUuid,
+            "uuid",
+            instance.uuid
+          );
           return Promise.resolve({
             status: "error",
             error: {
               errorType: "FailedToDeleteInstance",
-              errorMessage: "could not delete instance from db: parentId " + parentUuid + ", uuid=" + instance.uuid + ": " + error,
+              errorMessage:
+                "could not delete instance: parentId " + parentUuid + ", uuid=" + instance.uuid + ": " + error,
             },
           });
         }
@@ -468,20 +513,34 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     // ##############################################################################################
     async deleteInstance(parentUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
       log.info(this.logHeader, "deleteInstance", parentUuid, instance);
+      if (!this.sqlSchemaTableAccess[parentUuid]) {
+        log.warn(this.logHeader, "deleteInstance", "could not find entity in database: entityUuid", parentUuid);
+        return Promise.resolve({
+          status: "error",
+          error: { errorType: "FailedToDeleteInstance", errorMessage: `could not find entity ${parentUuid}` },
+        });
+      }
       try {
         const sequelizeModel = this.sqlSchemaTableAccess[parentUuid].sequelizeModel;
-        await sequelizeModel.destroy({ where: { uuid: instance.uuid } });
+        await sequelizeModel.destroy({ where: { uuid: instance.uuid },  });
         return Promise.resolve(ACTION_OK);
       } catch (error) {
-        log.warn(this.logHeader, "deleteInstance", "could not delete instance from db: parentId", parentUuid, "uuid", instance.uuid);
+        log.warn(
+          this.logHeader,
+          "deleteInstance",
+          "could not delete instance: parentId",
+          parentUuid,
+          "uuid",
+          instance.uuid
+        );
         return Promise.resolve({
           status: "error",
           error: {
             errorType: "FailedToDeleteInstance",
-            errorMessage: "could not delete instance from db: parentId " + parentUuid + ", uuid=" + instance.uuid + ": " + error,
+            errorMessage:
+              "could not delete instance: parentId " + parentUuid + ", uuid=" + instance.uuid + ": " + error,
           },
         });
-        
       }
     }
   };

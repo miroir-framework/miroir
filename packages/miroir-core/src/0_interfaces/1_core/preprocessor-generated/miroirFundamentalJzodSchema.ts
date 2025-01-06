@@ -8348,21 +8348,20 @@ export const miroirFundamentalJzodSchema = {
                 "type": "string",
                 "optional": true
               },
-              "error": {
-                "type": "object",
+              "errorStack": {
+                "type": "array",
                 "optional": true,
                 "definition": {
-                  "errorMessage": {
-                    "type": "string",
-                    "optional": true
-                  },
-                  "stack": {
-                    "type": "array",
-                    "definition": {
-                      "type": "string",
-                      "optional": true
-                    }
-                  }
+                  "type": "string",
+                  "optional": true
+                }
+              },
+              "innerError": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "actionError"
                 }
               }
             }

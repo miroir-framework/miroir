@@ -139,12 +139,21 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
 
       try {
         if (this.localUuidIndexedDb.hasSubLevel(instance.parentUuid)) {
-          await this.localUuidIndexedDb.putValue(instance.parentUuid, instance);
+          // const upsertResult = await this.localUuidIndexedDb.putValue(instance.parentUuid, instance);
+          return this.localUuidIndexedDb.putValue(instance.parentUuid, instance);
           log.info(this.logHeader, "upsertInstance", instance.parentUuid, "done");
           // const tmp = await this.getInstances(instance.parentUuid);
           // log.debug(this.logHeader, "upsertInstance", instance.parentUuid, "found existing", tmp);
+          // ret
         } else {
           log.error(this.logHeader, "upsertInstance", instance.parentUuid, "does not exists.");
+          return Promise.resolve({
+            status: "error",
+            error: {
+              errorType: "FailedToUpdateInstance",
+              errorMessage: `failed to upsert instance ${instance.uuid} of entity ${parentUuid}`,
+            },
+          });
         }
         return Promise.resolve( { status: "ok", returnedDomainElement: { elementType: "void", elementValue: undefined } } );
       } catch (error) {
@@ -153,7 +162,8 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
           status: "error",
           error: {
             errorType: "FailedToUpdateInstance",
-            errorMessage: `upsertInstance could not upsert instance ${instance.uuid} of entity ${parentUuid}: ` + error,
+            errorMessage: `failed to upsert instance ${instance.uuid} of entity ${parentUuid}`,
+            errorStack: error as any, // TODO: check the type of "error" value
           },
         });
       }
@@ -183,9 +193,20 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
     async deleteInstance(parentUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
       log.debug(this.logHeader, "deleteInstance started.", "entity", parentUuid, "instance", instance);
       try {
-        await this.localUuidIndexedDb.deleteValue(parentUuid, instance.uuid);
-        log.debug(this.logHeader, "deleteInstance done.", parentUuid, instance);
-        return Promise.resolve(ACTION_OK);
+        // const deleteResult = await this.localUuidIndexedDb.deleteEntityInstance(parentUuid, instance.uuid);
+        return this.localUuidIndexedDb.deleteEntityInstance(parentUuid, instance.uuid);
+        // if (deleteResult. === false) {
+        //   log.error(this.logHeader, "deleteInstance failed.", "entity", parentUuid, "instance", instance);
+        //   return Promise.resolve({
+        //     status: "error",
+        //     error: {
+        //       errorType: "FailedToDeleteInstance",
+        //       errorMessage: `deleteInstance could not delete instance ${instance.uuid} of entity ${parentUuid}`,
+        //     },
+          
+        // }
+        // log.debug(this.logHeader, "deleteInstance done.", parentUuid, instance);
+        // return Promise.resolve(ACTION_OK);
       } catch (error) {
         log.error(this.logHeader, "deleteInstance failed.", "entity", parentUuid, "instance", instance, "error", error);
         return Promise.resolve({

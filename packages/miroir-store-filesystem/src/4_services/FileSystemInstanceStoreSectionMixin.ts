@@ -256,7 +256,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
         if (fs.existsSync(filePath)) {
           fs.rmSync(filePath);
         } else {
-          log.debug(
+          log.error(
             "deleteInstance could not find file to delete:",
             filePath,
             "entityUuid",
@@ -264,6 +264,16 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
             "instance",
             instance
           );
+          const entityPath = path.join(this.directory, entityUuid);
+          if (!fs.existsSync(filePath)) {
+            return Promise.resolve({
+              status: "error",
+              error: {
+                errorType: "FailedToDeleteInstance",
+                errorMessage: `could not find entity ${entityUuid}`,
+              },
+            });
+          }
         }
         return Promise.resolve(ACTION_OK);
       } catch (error) {

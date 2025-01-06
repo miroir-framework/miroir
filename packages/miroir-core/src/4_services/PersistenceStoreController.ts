@@ -667,9 +667,9 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     );
     
     if (section == 'data') {
-      await this.dataStoreSection.upsertInstance(instance.parentUuid,instance);
+      return this.dataStoreSection.upsertInstance(instance.parentUuid,instance);
     } else {
-      await this.modelStoreSection.upsertInstance(instance.parentUuid,instance);
+      return this.modelStoreSection.upsertInstance(instance.parentUuid,instance);
     }
 
     // try {
@@ -678,15 +678,15 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     // } catch (e){
     //   throw new Error("UpsertInstance insert failed" + e);
     // }
-    return Promise.resolve({ status: "ok", returnedDomainElement: { elementType: "void", elementValue: undefined } } );
+    // return Promise.resolve({ status: "ok", returnedDomainElement: { elementType: "void", elementValue: undefined } } );
   }
 
   // ##############################################################################################
   async deleteInstance(section: ApplicationSection, instance:EntityInstance):Promise<ActionVoidReturnType>{
     if (section == 'data') {
-      await this.dataStoreSection.deleteInstance(instance.parentUuid,instance);
+      return this.dataStoreSection.deleteInstance(instance.parentUuid,instance);
     } else {
-      await this.modelStoreSection.deleteInstance(instance.parentUuid,instance);
+      return this.modelStoreSection.deleteInstance(instance.parentUuid,instance);
     }
     return Promise.resolve(ACTION_OK);
   }
@@ -695,9 +695,9 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   async deleteInstances(section: ApplicationSection, instances:EntityInstance[]):Promise<ActionVoidReturnType>{
     for (const instance of instances) {
       if (section == 'data') {
-        await this.dataStoreSection.deleteInstance(instance.parentUuid,instance);
+        return this.dataStoreSection.deleteInstance(instance.parentUuid,instance);
       } else {
-        await this.modelStoreSection.deleteInstance(instance.parentUuid,instance);
+        return this.modelStoreSection.deleteInstance(instance.parentUuid,instance);
       }
     }
     return Promise.resolve(ACTION_OK);

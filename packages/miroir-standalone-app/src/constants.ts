@@ -6,6 +6,7 @@ import {
 // import { adminConfigurationDeploymentParis } from "./miroir-fwk/4_view/routes/ReportPage.js";
 
 export const packageName = "miroir-standalone-app";
+export const cleanLevel = "5";
 
 
 // ################################################################################################

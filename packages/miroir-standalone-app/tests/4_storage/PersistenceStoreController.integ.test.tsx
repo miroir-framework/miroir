@@ -3,13 +3,16 @@ import { describe, expect } from 'vitest';
 // import { miroirFileSystemStoreSectionStartup } from "../dist/bundle";
 import {
   ACTION_OK,
+  ActionError,
   ActionReturnType,
   ActionVoidReturnType,
+  ConfigurationService,
   DomainControllerInterface,
   DomainElementType,
   EntityDefinition,
   EntityInstance,
   JzodElement,
+  LoggerInterface,
   MetaEntity,
   MiroirConfigClient,
   MiroirLoggerFactory,
@@ -22,6 +25,7 @@ import {
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   author1,
+  book1,
   defaultLevels,
   entityAuthor,
   entityDefinitionAuthor,
@@ -29,6 +33,8 @@ import {
   entityEntityDefinition,
   entityReport,
   ignorePostgresExtraAttributesOnList,
+  miroirCoreStartup,
+  resetAndInitApplicationDeploymentNew,
   selfApplicationDeploymentLibrary,
   selfApplicationDeploymentMiroir
 } from "miroir-core";
@@ -42,12 +48,17 @@ import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
   createDeploymentGetPersistenceStoreController,
+  createLibraryDeploymentDEFUNCT,
+  createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT,
   deleteAndCloseApplicationDeployments,
   deploymentConfigurations,
   loadTestConfigFiles,
   miroirBeforeEach_resetAndInitApplicationDeployments,
   setupMiroirTest
 } from "../utils/tests-utils.js";
+import { packageName, cleanLevel } from '../../src/constants.js';
+import { miroirAppStartup } from '../../src/startup.js';
+import { ErrorMessage } from 'formik';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCache;
@@ -59,16 +70,41 @@ let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterfac
 const env:any = (import.meta as any).env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
-const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
+const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
+// const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
+const fileName = "PersistenceStoreController.integ..test";
+myConsoleLog(fileName, "received env", JSON.stringify(env, null, 2));
 
-MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
+let miroirConfig:any;
+let loggerOptions:any;
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName)
+).then((logger: LoggerInterface) => {log = logger});
+
+miroirAppStartup();
+miroirCoreStartup();
+miroirFileSystemStoreSectionStartup();
+miroirIndexedDbStoreSectionStartup();
+miroirPostgresStoreSectionStartup();
+ConfigurationService.registerTestImplementation({expect: expect as any});
+
+const {miroirConfig: miroirConfigParam, logConfig:loggerOptionsParam} = await loadTestConfigFiles(env)
+miroirConfig = miroirConfigParam;
+loggerOptions = loggerOptionsParam;
+myConsoleLog("received miroirConfig", JSON.stringify(miroirConfig, null, 2));
+myConsoleLog(
+  "received miroirConfig.client",
+  JSON.stringify(miroirConfig.client, null, 2)
+);
+myConsoleLog("received loggerOptions", JSON.stringify(loggerOptions, null, 2));
+MiroirLoggerFactory.startRegisteredLoggers(
   loglevelnext,
   (defaultLevels as any)[loggerOptions.defaultLevel],
   loggerOptions.defaultTemplate,
   loggerOptions.specificLoggerOptions
 );
-
-console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
+myConsoleLog("started registered loggers DONE");
 
 // ################################################################################################
 beforeAll(async () => {
@@ -82,70 +118,101 @@ beforeAll(async () => {
     );
   } else {
     const {
-      persistenceStoreControllerManager: localpersistenceStoreControllerManager,
+      persistenceStoreControllerManagerForServer: localpersistenceStoreControllerManager,
       domainController: localdomainController,
       localCache: locallocalCache,
       miroirContext: localmiroirContext,
     } = await setupMiroirTest(miroirConfig);
 
+    
     persistenceStoreControllerManager = localpersistenceStoreControllerManager;
     domainController = localdomainController;
     localCache = locallocalCache;
     miroirContext = localmiroirContext;
+    
+    if (!persistenceStoreControllerManager) {
+      throw new Error("localpersistenceStoreControllerManager not defined");
+    }
 
-    localMiroirPersistenceStoreController = await createDeploymentGetPersistenceStoreController(
+    // localMiroirPersistenceStoreController = await createDeploymentGetPersistenceStoreController(
+    //   miroirConfig as MiroirConfigClient,
+    //   adminConfigurationDeploymentMiroir.uuid,
+    //   persistenceStoreControllerManager,
+    //   domainController
+    // );
+    // localAppPersistenceStoreController = await createDeploymentGetPersistenceStoreController(
+    //   miroirConfig as MiroirConfigClient,
+    //   adminConfigurationDeploymentLibrary.uuid,
+    //   persistenceStoreControllerManager,
+    //   domainController
+    // );
+    const wrapped = await createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT(
       miroirConfig as MiroirConfigClient,
-      adminConfigurationDeploymentMiroir.uuid,
       persistenceStoreControllerManager,
       domainController
     );
-    localAppPersistenceStoreController = await createDeploymentGetPersistenceStoreController(
-      miroirConfig as MiroirConfigClient,
-      adminConfigurationDeploymentLibrary.uuid,
-      persistenceStoreControllerManager,
-      domainController
+    if (wrapped) {
+      if (wrapped.localMiroirPersistenceStoreController) {
+        localMiroirPersistenceStoreController = wrapped.localMiroirPersistenceStoreController;
+      } else {
+        throw new Error("beforeAll failed localMiroirPersistenceStoreController initialization!");
+      }
+    } else {
+      throw new Error("beforeAll failed initialization!");
+    }
+    await createLibraryDeploymentDEFUNCT(miroirConfig, domainController);
+
+    const tmplocalAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
+      adminConfigurationDeploymentLibrary.uuid
     );
+    if (!tmplocalAppPersistenceStoreController) {
+      throw new Error("beforeAll failed localAppPersistenceStoreController initialization!");
+    }
+    localAppPersistenceStoreController = tmplocalAppPersistenceStoreController;
 
     return Promise.resolve();
+
+    // return Promise.resolve();
   }
 });
 
 // ################################################################################################
 beforeEach(
   async  () => {
-    await miroirBeforeEach_resetAndInitApplicationDeployments(domainController, deploymentConfigurations);
+    // await miroirBeforeEach_resetAndInitApplicationDeployments(domainController, deploymentConfigurations);
+    await resetAndInitApplicationDeploymentNew(domainController, deploymentConfigurations);
   }
 )
+
+// // // ################################################################################################
+// // afterEach(
+// //   async () => {
+// //     await resetApplicationDeployments(deploymentConfigurations, domainController, undefined);
+// //   }
+// // )
 
 // // ################################################################################################
-// afterEach(
+// afterAll(
 //   async () => {
-//     await resetApplicationDeployments(deploymentConfigurations, domainController, undefined);
+//     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
+//     await deleteAndCloseApplicationDeployments(
+//       miroirConfig,
+//       domainController,
+//       [
+//         {
+//           adminConfigurationDeployment: adminConfigurationDeploymentMiroir,
+//           selfApplicationDeployment: selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+//         },
+//         {
+//           adminConfigurationDeployment: adminConfigurationDeploymentLibrary,
+//           selfApplicationDeployment: selfApplicationDeploymentLibrary as SelfApplicationDeploymentConfiguration,
+//         },
+//       ],
+//     );
+
+//     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
 //   }
 // )
-
-// ################################################################################################
-afterAll(
-  async () => {
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
-    await deleteAndCloseApplicationDeployments(
-      miroirConfig,
-      domainController,
-      [
-        {
-          adminConfigurationDeployment: adminConfigurationDeploymentMiroir,
-          selfApplicationDeployment: selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
-        },
-        {
-          adminConfigurationDeployment: adminConfigurationDeploymentLibrary,
-          selfApplicationDeployment: selfApplicationDeploymentLibrary as SelfApplicationDeploymentConfiguration,
-        },
-      ],
-    );
-
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
-  }
-)
 
 // ##############################################################################################
 // ##############################################################################################
@@ -431,7 +498,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
         "getEntityInstancesToCheckResult",
         v,
         async () => await localAppPersistenceStoreController.getInstances("model", entityEntity.uuid),
-        (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances, ["author"]),
+        (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances, ["author", "icon"]),
         undefined, // name to give to result
         "entityInstanceCollection",
         [
@@ -447,7 +514,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
         "getEntityDefinitionInstancesToCheckResult",
         v,
         async () => await localAppPersistenceStoreController.getInstances("model", entityEntityDefinition.uuid),
-        (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances, ["author"]),
+        (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances, ["author", "icon"]),
         undefined, // name to give to result
         "entityInstanceCollection",
         [
@@ -571,60 +638,62 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
 
     await chainVitestSteps(
       "fetchEntities",
-      { },
-      async () => await localAppPersistenceStoreController.getInstances("model",entityEntity.uuid),
+      {},
+      async () => await localAppPersistenceStoreController.getInstances("model", entityEntity.uuid),
       (a, p) => (a as any).returnedDomainElement.elementValue.instances as MetaEntity[],
       "entities", // name to give to result
       "entityInstanceCollection", // expected result.elementType
-      undefined, // test result.elementValue
+      undefined // test result.elementValue
     )
-    .then (
-      (v) => chainVitestSteps(
-        "fetchEntityDefinitions",
-        v,
-        async () => await localAppPersistenceStoreController.getInstances("model", entityEntityDefinition.uuid),
-        (a, p) => (a as any).returnedDomainElement.elementValue.instances as EntityDefinition[],
-        "entityDefinitions", // name to give to result
-        "entityInstanceCollection", // expected result.elementType
-        undefined, // expected result.elementValue
+      .then((v) =>
+        chainVitestSteps(
+          "fetchEntityDefinitions",
+          v,
+          async () => await localAppPersistenceStoreController.getInstances("model", entityEntityDefinition.uuid),
+          (a, p) => (a as any).returnedDomainElement.elementValue.instances as EntityDefinition[],
+          "entityDefinitions", // name to give to result
+          "entityInstanceCollection", // expected result.elementType
+          undefined // expected result.elementValue
+        )
       )
-    )
-    .then (
-      (v) => chainVitestSteps(
-        "fetchEntityDefinitions",
-        v,
-        async () => await localAppPersistenceStoreController.alterEntityAttribute(modelActionAlterAttribute),
-        undefined,
-        undefined, // name to give to result
-        undefined, // expected result.elementType
-        undefined, // expected result.elementValue
+      .then((v) =>
+        chainVitestSteps(
+          "fetchEntityDefinitions",
+          v,
+          async () => await localAppPersistenceStoreController.alterEntityAttribute(modelActionAlterAttribute),
+          undefined,
+          undefined, // name to give to result
+          undefined, // expected result.elementType
+          undefined // expected result.elementValue
+        )
       )
-    )
-    .then((v) =>
-      chainVitestSteps(
-        "getEntityInstancesToCheckResult",
-        v,
-        async () => await localAppPersistenceStoreController.getInstances("model", entityEntityDefinition.uuid),
-        (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances),
-        undefined, // name to give to result
-        "entityInstanceCollection",
-        [
-          {
-            ...entityDefinitionAuthor,
-            jzodSchema: {
-              "type": "object",
-              "definition": {
-                ...Object.fromEntries(
-                  Object.entries(entityDefinitionAuthor.jzodSchema.definition).filter((i) => !modelActionAlterAttribute.removeColumns?.includes(i[0]))
-                ),
-                "icons": iconsDefinition
-              }
-              // entityAuthor.name + "ssss",
-            } 
-          },
-        ]
-      )
-    )
+      .then((v) =>
+        chainVitestSteps(
+          "getEntityInstancesToCheckResult",
+          v,
+          async () => await localAppPersistenceStoreController.getInstances("model", entityEntityDefinition.uuid),
+          (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances, [ "icon" ]),
+          undefined, // name to give to result
+          "entityInstanceCollection",
+          [
+            {
+              ...entityDefinitionAuthor,
+              jzodSchema: {
+                type: "object",
+                definition: {
+                  ...Object.fromEntries(
+                    Object.entries(entityDefinitionAuthor.jzodSchema.definition).filter(
+                      (i) => !modelActionAlterAttribute.removeColumns?.includes(i[0])
+                    )
+                  ),
+                  icons: iconsDefinition,
+                },
+                // entityAuthor.name + "ssss",
+              },
+            },
+          ]
+        )
+      );
     // .then((v) =>
     //   chainVitestSteps(
     //     "getEntityDefinitionInstancesToCheckResult",
@@ -679,13 +748,40 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
     await chainVitestSteps(
       "actualTest_getInstancesAndCheckResult",
       {},
-      async () => localAppPersistenceStoreController.getInstances("data",entityAuthor.uuid),
-      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances, ["birthDate", "deathDate", "conceptLevel", "icons", "language" ]),
+      async () => localAppPersistenceStoreController.getInstances("data", entityAuthor.uuid),
+      (a) =>
+        ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances, [
+          "birthDate",
+          "deathDate",
+          "conceptLevel",
+          "icons",
+          "language",
+        ]),
       undefined, // name to give to result
       "entityInstanceCollection",
       [author1]
+    );
+
+  });
+  // ################################################################################################
+  it("add Book Instance fails", async () => {
+    // setup
+    await chainVitestSteps(
+      "setup_createEntity",
+      {},
+      async () => localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition),
+      undefined,
+      undefined, // name to give to result
+      undefined, // expected result.elementType
+      undefined, // expected result.elementValue
     )
 
+    const instanceAdded = (await localAppPersistenceStoreController?.upsertInstance('data', book1 as EntityInstance)) as ActionError;
+    console.log("instanceAdded", instanceAdded)
+    expect({errorType: instanceAdded.error.errorType, errorMessage: instanceAdded.error.errorMessage}, "failed to add Book instance").toEqual({
+      errorType: "FailedToUpdateInstance",
+      errorMessage: "failed to upsert instance caef8a59-39eb-48b5-ad59-a7642d3a1e8f of entity e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+    });
   });
 
   // ################################################################################################
@@ -717,6 +813,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
     )
 
   });
+
 
   // ################################################################################################
   it("delete Author Instance", async () => {
@@ -751,6 +848,25 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       "entityInstanceCollection",
       []
     )
+  });
+
+  // ################################################################################################
+  it("delete Author Instance fails", async () => {
+    // test
+    const instanceDeleted: ActionVoidReturnType = await localAppPersistenceStoreController?.deleteInstances("data", [
+      author1,
+    ]);
+    expect(instanceDeleted.status, "failed to delete Author instances").toEqual("error");
+
+    const instanceDeletedError = instanceDeleted as ActionError;
+    console.log("instanceDeletedError", instanceDeletedError)
+    expect(
+      { errorType: instanceDeletedError.error.errorType, errorMessage: instanceDeletedError.error.errorMessage },
+      "failed to delete Author"
+    ).toEqual({
+      errorType: "FailedToDeleteInstance",
+      errorMessage: "could not find entity d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+    });
   });
 
 });
