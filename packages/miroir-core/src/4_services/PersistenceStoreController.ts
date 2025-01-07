@@ -37,7 +37,7 @@ import {
 // import { applyModelEntityUpdate } from "../3_controllers/ActionRunner.js";
 import { modelInitialize } from "../3_controllers/ModelInitializer.js";
 import { packageName } from "../constants.js";
-import { MiroirLoggerFactory } from "./Logger.js";
+import { MiroirLoggerFactory } from "./LoggerFactory.js";
 import { cleanLevel } from "./constants.js";
 
 import { ACTION_OK } from "../1_core/constants.js";
@@ -376,10 +376,8 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     if (modelBootFromPersistedState.status != "ok") {
       return Promise.resolve({
         status: "error",
-        error: {
-          errorType: "FailedToGetInstances",
-          errorMessage: `bootFromPersistedState failed for section model: ${modelBootFromPersistedState.error}`,
-        },
+        errorType: "FailedToGetInstances",
+        errorMessage: `bootFromPersistedState failed for section model: ${modelBootFromPersistedState.errorMessage}`,
       });
     }
     const dataEntities:ActionEntityInstanceCollectionReturnType = await this.modelStoreSection.getInstances(entityEntity.uuid);
@@ -387,10 +385,12 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     if (dataEntities.status != "ok" || dataEntityDefinitions.status != "ok") {
       return Promise.resolve({
         status: "error",
-        error: {
-          errorType: "FailedToGetInstances",
-          errorMessage: `bootFromPersistedState for entities getInstances(${entityEntity.uuid}) status: ${dataEntities.status}, getInstances(${entityEntityDefinition.uuid}) status: ${dataEntities.status}. Message: ${dataEntities.status == "ok"?"":dataEntities.error}, ${dataEntityDefinitions.status == "ok"?"":dataEntityDefinitions.error}`,
-        },
+        errorType: "FailedToGetInstances",
+        errorMessage: `bootFromPersistedState for entities getInstances(${entityEntity.uuid}) status: ${
+          dataEntities.status
+        }, getInstances(${entityEntityDefinition.uuid}) status: ${dataEntities.status}. Message: ${
+          dataEntities.status == "ok" ? "" : dataEntities.errorMessage
+        }, ${dataEntityDefinitions.status == "ok" ? "" : dataEntityDefinitions.errorMessage}`,
       });
     }
 
@@ -401,10 +401,8 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     if (dataBootFromPersistedState.status != "ok") {
       return Promise.resolve({
         status: "error",
-        error: {
-          errorType: "FailedToGetInstances",
-          errorMessage: `bootFromPersistedState failed for section data: ${dataBootFromPersistedState.error}`,
-        },
+        errorType: "FailedToGetInstances",
+        errorMessage: `bootFromPersistedState failed for section data: ${dataBootFromPersistedState.errorMessage}`,
       });
     }
     
@@ -453,10 +451,8 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     if (dataSectionEntities.status != "ok") {
       return Promise.resolve({
         status: "error",
-        error: {
-          errorType: "FailedToGetInstances",
-          errorMessage: `clearDataInstances failed for dataSectionEntities section: model, entityUuid ${entityEntity.uuid}, error: ${dataSectionEntities.error.errorType}, ${dataSectionEntities.error.errorMessage}`,
-        },
+        errorType: "FailedToGetInstances",
+        errorMessage: `clearDataInstances failed for dataSectionEntities section: model, entityUuid ${entityEntity.uuid}, error: ${dataSectionEntities.errorType}, ${dataSectionEntities.errorMessage}`,
       });
     }
     // if (dataSectionEntities.returnedDomainElement?.elementType != "entityInstanceCollection") {
@@ -475,10 +471,8 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     if (dataSectionEntityDefinitions.status != "ok") {
       return Promise.resolve({
         status: "error",
-        error: {
-          errorType: "FailedToGetInstances",
-          errorMessage: `clearDataInstances failed for dataSectionEntityDefinitions section: model, entityUuid ${entityEntityDefinition.uuid}, error: ${dataSectionEntityDefinitions.error.errorType}, ${dataSectionEntityDefinitions.error.errorMessage}`,
-        },
+        errorType: "FailedToGetInstances",
+        errorMessage: `clearDataInstances failed for dataSectionEntityDefinitions section: model, entityUuid ${entityEntityDefinition.uuid}, error: ${dataSectionEntityDefinitions.errorType}, ${dataSectionEntityDefinitions.errorMessage}`,
       });
     }
     // if (dataSectionEntityDefinitions.returnedDomainElement?.elementType != "entityInstanceCollection") {
@@ -624,10 +618,8 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     if (instances.status != "ok") {
       return Promise.resolve({
         status: "error",
-        error: {
           errorType: "FailedToGetInstances",
-          errorMessage: `getInstances failed for section: ${section}, entityUuid ${entityEntity.uuid}, error: ${instances.error.errorType}, ${instances.error.errorMessage}`,
-        },
+          errorMessage: `getInstances failed for section: ${section}, entityUuid ${entityEntity.uuid}, error: ${instances.errorType}, ${instances.errorMessage}`,
       });
     }
     // if (instances.returnedDomainElement?.elementType != "entityInstanceCollection") {

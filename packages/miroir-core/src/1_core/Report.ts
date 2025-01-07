@@ -1,5 +1,5 @@
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { MiroirLoggerFactory } from "../4_services/Logger.js";
+import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";

@@ -124,10 +124,8 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
       } catch (error) {
         return Promise.resolve({
           status: "error",
-          error: {
-            errorType: "FailedToCreateStore",
-            errorMessage: `failed to get instance ${uuid} of entity ${entityUuid}`,
-          },
+          errorType: "FailedToCreateStore",
+          errorMessage: `failed to get instance ${uuid} of entity ${entityUuid}`,
         });
       }
     }
@@ -159,10 +157,8 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
         );
         return Promise.resolve({
           status: "error",
-          error: {
-            errorType: "FailedToGetInstances",
-            errorMessage: `FileSystemInstanceStore getInstances entityUuid ${entityUuid} could not find path ${entityInstancesPath}`,
-          },
+          errorType: "FailedToGetInstances",
+          errorMessage: `FileSystemInstanceStore getInstances entityUuid ${entityUuid} could not find path ${entityInstancesPath}`,
         });
       }
 
@@ -209,10 +205,8 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
       } catch (error) {
         return Promise.resolve({
           status: "error",
-          error: {
-            errorType: "FailedToGetInstances",
-            errorMessage: `FileSystemInstanceStore getInstances entityUuid ${entityUuid} failed to read directory ${entityInstancesPath}`,
-          },
+          errorType: "FailedToGetInstances",
+          errorMessage: `FileSystemInstanceStore getInstances entityUuid ${entityUuid} failed to read directory ${entityInstancesPath}`,
         });
       }
     }
@@ -226,10 +220,8 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
       } catch (error) {
         return Promise.resolve({
           status: "error",
-          error: {
-            errorType: "FailedToUpdateInstance",
-            errorMessage: `failed to upsert instance ${instance.uuid} of entity ${entityUuid}`,
-          },
+          errorType: "FailedToUpdateInstance",
+          errorMessage: `failed to upsert instance ${instance.uuid} of entity ${entityUuid}`,
         });
         
       }
@@ -268,10 +260,8 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
           if (!fs.existsSync(filePath)) {
             return Promise.resolve({
               status: "error",
-              error: {
-                errorType: "FailedToDeleteInstance",
-                errorMessage: `could not find entity ${entityUuid}`,
-              },
+              errorType: "FailedToDeleteInstance",
+              errorMessage: `could not find entity ${entityUuid}`,
             });
           }
         }
@@ -279,10 +269,8 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
       } catch (error) {
         return Promise.resolve({
           status: "error",
-          error: {
-            errorType: "FailedToDeleteInstance",
-            errorMessage: `failed to delete instance ${instance.uuid} of entity ${entityUuid}`,
-          },
+          errorType: "FailedToDeleteInstance",
+          errorMessage: `failed to delete instance ${instance.uuid} of entity ${entityUuid}`,
         });
       }
     }

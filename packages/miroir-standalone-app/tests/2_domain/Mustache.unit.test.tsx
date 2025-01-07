@@ -45,7 +45,7 @@ import {
   loadTestConfigFiles,
   deleteAndCloseApplicationDeployments,
   resetApplicationDeployments,
-  createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT,
+  createMiroirDeploymentGetPersistenceStoreController,
   miroirBeforeEach_resetAndInitApplicationDeployments,
   renderWithProviders
 } from "miroir-standalone-app/tests/utils/tests-utils";

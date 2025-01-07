@@ -1646,12 +1646,10 @@ export type MiroirQuery = BoxedExtractorOrCombinerReturningObjectOrObjectList | 
 export type ______________________________________________actions_____________________________________________ = never;
 export type ActionError = {
     status: "error";
-    error: {
-        errorType: ("FailedToCreateStore" | "FailedToDeployModule") | "FailedToDeleteStore" | "FailedToResetAndInitMiroirAndApplicationDatabase" | "FailedToOpenStore" | "FailedToCloseStore" | "FailedToCreateInstance" | "FailedToDeleteInstance" | "FailedToDeleteInstanceWithCascade" | "FailedToUpdateInstance" | "FailedToLoadNewInstancesInLocalCache" | "FailedToGetInstance" | "FailedToGetInstances";
-        errorMessage?: string | undefined;
-        errorStack?: (string | undefined)[] | undefined;
-        innerError?: ActionError | undefined;
-    };
+    errorType: ("FailedToCreateStore" | "FailedToDeployModule") | "FailedToDeleteStore" | "FailedToResetAndInitMiroirAndApplicationDatabase" | "FailedToOpenStore" | "FailedToCloseStore" | "FailedToCreateInstance" | "FailedToDeleteInstance" | "FailedToDeleteInstanceWithCascade" | "FailedToUpdateInstance" | "FailedToLoadNewInstancesInLocalCache" | "FailedToGetInstance" | "FailedToGetInstances";
+    errorMessage?: string | undefined;
+    errorStack?: (string | undefined)[] | undefined;
+    innerError?: ActionError | undefined;
 };
 export type ActionVoidSuccess = {
     status: "ok";
@@ -4267,7 +4265,7 @@ export const queryJzodSchemaParams: z.ZodType<QueryJzodSchemaParams> = z.union([
 export const miroirQueryTemplate: z.ZodType<MiroirQueryTemplate> = z.union([z.lazy(() =>boxedExtractorTemplateReturningObjectOrObjectList), z.lazy(() =>boxedQueryTemplateWithExtractorCombinerTransformer), z.lazy(() =>localCacheExtractor), z.lazy(() =>queryByEntityUuidGetEntityDefinition), z.lazy(() =>queryByTemplateGetParamJzodSchema), z.lazy(() =>queryByQueryTemplateGetParamJzodSchema)]);
 export const miroirQuery: z.ZodType<MiroirQuery> = z.union([z.lazy(() =>boxedExtractorOrCombinerReturningObjectOrObjectList), z.lazy(() =>boxedQueryWithExtractorCombinerTransformer), z.lazy(() =>localCacheExtractor), z.lazy(() =>queryByEntityUuidGetEntityDefinition), z.lazy(() =>queryByQuery2GetParamJzodSchema), z.lazy(() =>queryByQueryGetParamJzodSchema)]);
 export const ______________________________________________actions_____________________________________________: z.ZodType<______________________________________________actions_____________________________________________> = z.never();
-export const actionError: z.ZodType<ActionError> = z.object({status:z.literal("error"), error:z.object({errorType:z.union([z.enum(["FailedToCreateStore","FailedToDeployModule"]), z.literal("FailedToDeleteStore"), z.literal("FailedToResetAndInitMiroirAndApplicationDatabase"), z.literal("FailedToOpenStore"), z.literal("FailedToCloseStore"), z.literal("FailedToCreateInstance"), z.literal("FailedToDeleteInstance"), z.literal("FailedToDeleteInstanceWithCascade"), z.literal("FailedToUpdateInstance"), z.literal("FailedToLoadNewInstancesInLocalCache"), z.literal("FailedToGetInstance"), z.literal("FailedToGetInstances")]), errorMessage:z.string().optional(), errorStack:z.array(z.string().optional()).optional(), innerError:z.lazy(() =>actionError).optional()}).strict()}).strict();
+export const actionError: z.ZodType<ActionError> = z.object({status:z.literal("error"), errorType:z.union([z.enum(["FailedToCreateStore","FailedToDeployModule"]), z.literal("FailedToDeleteStore"), z.literal("FailedToResetAndInitMiroirAndApplicationDatabase"), z.literal("FailedToOpenStore"), z.literal("FailedToCloseStore"), z.literal("FailedToCreateInstance"), z.literal("FailedToDeleteInstance"), z.literal("FailedToDeleteInstanceWithCascade"), z.literal("FailedToUpdateInstance"), z.literal("FailedToLoadNewInstancesInLocalCache"), z.literal("FailedToGetInstance"), z.literal("FailedToGetInstances")]), errorMessage:z.string().optional(), errorStack:z.array(z.string().optional()).optional(), innerError:z.lazy(() =>actionError).optional()}).strict();
 export const actionVoidSuccess: z.ZodType<ActionVoidSuccess> = z.object({status:z.literal("ok"), returnedDomainElement:z.lazy(() =>domainElementVoid)}).strict();
 export const actionVoidReturnType: z.ZodType<ActionVoidReturnType> = z.union([z.lazy(() =>actionError), z.lazy(() =>actionVoidSuccess)]);
 export const actionEntityInstanceSuccess: z.ZodType<ActionEntityInstanceSuccess> = z.object({status:z.literal("ok"), returnedDomainElement:z.lazy(() =>domainElementEntityInstance)}).strict();

@@ -7,7 +7,7 @@ import {
 import { ErrorLogServiceInterface, MError } from "../../0_interfaces/3_controllers/ErrorLogServiceInterface.js";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface.js";
 import { PersistenceStoreLocalOrRemoteInterface } from "../../0_interfaces/4-services/PersistenceInterface.js";
-import { MiroirLoggerFactory } from "../../4_services/Logger.js";
+import { MiroirLoggerFactory } from "../../4_services/LoggerFactory.js";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../constants.js";
 
@@ -45,7 +45,7 @@ export class CallUtils {
     if (result && result["status"] == "error") {
       //ensure the proper persistence of errors in the local storage, for it to be accessible by view components.
       // Problem: what if the local storage is not accessible? => store it in a in-memory effect.
-      const error: MError = { errorMessage: result.error.errorMessage };
+      const error: MError = { errorMessage: result.errorMessage };
       this.errorLogService.pushError(error);
       throw error;
     } else {
@@ -95,7 +95,7 @@ export class CallUtils {
     if (result["status"] == "error") {
       //ensure the proper persistence of errors in the local storage, for it to be accessible by view components.
       // Problem: what if the local storage is not accessible? => store it in a in-memory effect.
-      const error: MError = { errorMessage: result.error.errorMessage };
+      const error: MError = { errorMessage: result.errorMessage };
       this.errorLogService.pushError(error);
       throw error;
     } else {

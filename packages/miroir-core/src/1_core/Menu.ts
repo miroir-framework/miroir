@@ -1,7 +1,7 @@
 import { ComplexMenu, DomainElement, Menu, MiroirMenuItem, Transformer_menu_addItem } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { Step } from "../2_domain/Transformers.js";
-import { MiroirLoggerFactory } from "../4_services/Logger.js";
+import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 

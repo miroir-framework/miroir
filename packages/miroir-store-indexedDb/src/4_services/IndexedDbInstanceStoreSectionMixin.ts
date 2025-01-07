@@ -106,10 +106,8 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
       } catch (error) {
         return Promise.resolve({
           status: "error",
-          error: {
-            errorType: "FailedToGetInstance",
-            errorMessage: `getInstance could not retrieve instance ${uuid} of entity ${parentUuid}: ` + error,
-          },
+          errorType: "FailedToGetInstance",
+          errorMessage: `getInstance could not retrieve instance ${uuid} of entity ${parentUuid}: ` + error,
         });
       }
     }
@@ -128,7 +126,8 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
       } catch (error) {
         return {
           status: "error",
-          error: { errorType: "FailedToGetInstances", errorMessage: ("getInstances error: " + error) as string },
+          errorType: "FailedToGetInstances",
+          errorMessage: ("getInstances error: " + error) as string,
         };
       }
     }
@@ -149,10 +148,8 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
           log.error(this.logHeader, "upsertInstance", instance.parentUuid, "does not exists.");
           return Promise.resolve({
             status: "error",
-            error: {
-              errorType: "FailedToUpdateInstance",
-              errorMessage: `failed to upsert instance ${instance.uuid} of entity ${parentUuid}`,
-            },
+            errorType: "FailedToUpdateInstance",
+            errorMessage: `failed to upsert instance ${instance.uuid} of entity ${parentUuid}`,
           });
         }
         return Promise.resolve( { status: "ok", returnedDomainElement: { elementType: "void", elementValue: undefined } } );
@@ -160,11 +157,9 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
         log.error(this.logHeader, "upsertInstance", instance.parentUuid, "could not upsert instance", instance, error);
         return Promise.resolve({
           status: "error",
-          error: {
-            errorType: "FailedToUpdateInstance",
-            errorMessage: `failed to upsert instance ${instance.uuid} of entity ${parentUuid}`,
-            errorStack: error as any, // TODO: check the type of "error" value
-          },
+          errorType: "FailedToUpdateInstance",
+          errorMessage: `failed to upsert instance ${instance.uuid} of entity ${parentUuid}`,
+          errorStack: error as any, // TODO: check the type of "error" value
         });
       }
     }
@@ -179,10 +174,8 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
           log.error(this.logHeader, "deleteInstances", parentUuid, "could not delete instance", o, error);
           return Promise.resolve({
             status: "error",
-            error: {
-              errorType: "FailedToDeleteInstance",
-              errorMessage: `deleteInstances could not delete instance ${o.uuid} of entity ${parentUuid}: ` + error,
-            },
+            errorType: "FailedToDeleteInstance",
+            errorMessage: `deleteInstances could not delete instance ${o.uuid} of entity ${parentUuid}: ` + error,
           });
         }
       }
@@ -211,10 +204,8 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
         log.error(this.logHeader, "deleteInstance failed.", "entity", parentUuid, "instance", instance, "error", error);
         return Promise.resolve({
           status: "error",
-          error: {
-            errorType: "FailedToDeleteInstance",
-            errorMessage: `deleteInstance could not delete instance ${instance.uuid} of entity ${parentUuid}: ` + error,
-          },
+          errorType: "FailedToDeleteInstance",
+          errorMessage: `deleteInstance could not delete instance ${instance.uuid} of entity ${parentUuid}: ` + error,
         });
       }
     }

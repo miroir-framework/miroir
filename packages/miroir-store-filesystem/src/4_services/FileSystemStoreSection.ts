@@ -103,16 +103,11 @@ export class FileSystemStoreSection
       }
       return Promise.resolve(ACTION_OK);
     } catch (error) {
-      return Promise.resolve({ status: "error", error: {
+      return Promise.resolve({
+        status: "error",
         errorType: "FailedToDeployModule",
         errorMessage: "dropStorageSpaceForInstancesOfEntity error:" + error,
-        // error: {
-        //   errorMessage: error
-        // }
-        // error: error,
-        // entityUuid: entityUuid,
-        // entityInstancesPath: entityInstancesPath,
-      } });
+      });
     }
   }
 

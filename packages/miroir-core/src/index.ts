@@ -697,7 +697,7 @@ export { MiroirContext } from './3_controllers/MiroirContext.js';
 export {
   MiroirLoggerFactory,
   testLogger,
-} from './4_services/Logger.js';
+} from './4_services/LoggerFactory.js';
 export {
   PersistenceStoreController,
   PersistenceStoreControllerFactoryReturnType,

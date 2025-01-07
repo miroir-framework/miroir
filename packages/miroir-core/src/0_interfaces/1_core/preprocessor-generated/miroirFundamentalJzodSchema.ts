@@ -8285,85 +8285,80 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "error"
           },
-          "error": {
-            "type": "object",
-            "definition": {
-              "errorType": {
-                "type": "union",
+          "errorType": {
+            "type": "union",
+            "definition": [
+              {
+                "type": "enum",
                 "definition": [
-                  {
-                    "type": "enum",
-                    "definition": [
-                      "FailedToCreateStore",
-                      "FailedToDeployModule"
-                    ]
-                  },
-                  {
-                    "type": "literal",
-                    "definition": "FailedToDeleteStore"
-                  },
-                  {
-                    "type": "literal",
-                    "definition": "FailedToResetAndInitMiroirAndApplicationDatabase"
-                  },
-                  {
-                    "type": "literal",
-                    "definition": "FailedToOpenStore"
-                  },
-                  {
-                    "type": "literal",
-                    "definition": "FailedToCloseStore"
-                  },
-                  {
-                    "type": "literal",
-                    "definition": "FailedToCreateInstance"
-                  },
-                  {
-                    "type": "literal",
-                    "definition": "FailedToDeleteInstance"
-                  },
-                  {
-                    "type": "literal",
-                    "definition": "FailedToDeleteInstanceWithCascade"
-                  },
-                  {
-                    "type": "literal",
-                    "definition": "FailedToUpdateInstance"
-                  },
-                  {
-                    "type": "literal",
-                    "definition": "FailedToLoadNewInstancesInLocalCache"
-                  },
-                  {
-                    "type": "literal",
-                    "definition": "FailedToGetInstance"
-                  },
-                  {
-                    "type": "literal",
-                    "definition": "FailedToGetInstances"
-                  }
+                  "FailedToCreateStore",
+                  "FailedToDeployModule"
                 ]
               },
-              "errorMessage": {
-                "type": "string",
-                "optional": true
+              {
+                "type": "literal",
+                "definition": "FailedToDeleteStore"
               },
-              "errorStack": {
-                "type": "array",
-                "optional": true,
-                "definition": {
-                  "type": "string",
-                  "optional": true
-                }
+              {
+                "type": "literal",
+                "definition": "FailedToResetAndInitMiroirAndApplicationDatabase"
               },
-              "innerError": {
-                "type": "schemaReference",
-                "optional": true,
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "actionError"
-                }
+              {
+                "type": "literal",
+                "definition": "FailedToOpenStore"
+              },
+              {
+                "type": "literal",
+                "definition": "FailedToCloseStore"
+              },
+              {
+                "type": "literal",
+                "definition": "FailedToCreateInstance"
+              },
+              {
+                "type": "literal",
+                "definition": "FailedToDeleteInstance"
+              },
+              {
+                "type": "literal",
+                "definition": "FailedToDeleteInstanceWithCascade"
+              },
+              {
+                "type": "literal",
+                "definition": "FailedToUpdateInstance"
+              },
+              {
+                "type": "literal",
+                "definition": "FailedToLoadNewInstancesInLocalCache"
+              },
+              {
+                "type": "literal",
+                "definition": "FailedToGetInstance"
+              },
+              {
+                "type": "literal",
+                "definition": "FailedToGetInstances"
               }
+            ]
+          },
+          "errorMessage": {
+            "type": "string",
+            "optional": true
+          },
+          "errorStack": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "string",
+              "optional": true
+            }
+          },
+          "innerError": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "actionError"
             }
           }
         }

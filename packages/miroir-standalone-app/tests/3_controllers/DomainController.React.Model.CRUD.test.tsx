@@ -56,7 +56,7 @@ import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestU
 import {
   DisplayLoadingInfo,
   createLibraryDeploymentDEFUNCT,
-  createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT,
+  createMiroirDeploymentGetPersistenceStoreController,
   deleteAndCloseApplicationDeployments,
   deploymentConfigurations,
   loadTestConfigFiles,
@@ -118,7 +118,7 @@ beforeAll(
   
     
     // Establish requests interception layer before all tests.
-    const wrapped = await createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT(
+    const wrapped = await createMiroirDeploymentGetPersistenceStoreController(
       miroirConfig as MiroirConfigClient,
       persistenceStoreControllerManager,
       domainController,

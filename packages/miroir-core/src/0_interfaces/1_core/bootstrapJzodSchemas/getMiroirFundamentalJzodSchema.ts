@@ -17,7 +17,7 @@ import { applyCarryOnSchema, applyCarryOnSchemaOnLevel, forgeCarryOnReferenceNam
 //   extractorOrCombinerTemplateRecord,
 // } from "../preprocessor-generated/miroirFundamentalType.js";
 import { cleanLevel } from "../../../1_core/constants.js";
-import { MiroirLoggerFactory } from "../../../4_services/Logger.js";
+import { MiroirLoggerFactory } from "../../../4_services/LoggerFactory.js";
 import { packageName } from "../../../constants.js";
 import { LoggerInterface } from "../../4-services/LoggerInterface.js";
 // import {
@@ -1985,34 +1985,34 @@ export function getMiroirFundamentalJzodSchema(
           type: "object",
           definition: {
             status: { type: "literal", definition: "error" },
-            error: {
-              type: "object",
-              definition: {
-                errorType: {
-                  type: "union",
-                  definition: [
-                    ...(storeManagementEndpoint as any).definition.actions
-                      .filter((e: any) => !!e.actionErrors)
-                      .map((e: any) => e.actionErrors),
-                    ...(instanceEndpointVersionV1 as any).definition.actions
-                      .filter((e: any) => !!e.actionErrors)
-                      .map((e: any) => e.actionErrors),
-                  ],
-                },
-                errorMessage: { type: "string", optional: true },
-                errorStack: {
-                  type: "array",
-                  optional: true,
-                  definition: { type: "string", optional: true },
-                },
-                innerError: {
-                  type: "schemaReference",
-                  optional: true,
-                  definition: { absolutePath: miroirFundamentalJzodSchemaUuid, relativePath: "actionError" },
-                },
-              },
+            // error: {
+            //   type: "object",
+            //   definition: {
+            errorType: {
+              type: "union",
+              definition: [
+                ...(storeManagementEndpoint as any).definition.actions
+                  .filter((e: any) => !!e.actionErrors)
+                  .map((e: any) => e.actionErrors),
+                ...(instanceEndpointVersionV1 as any).definition.actions
+                  .filter((e: any) => !!e.actionErrors)
+                  .map((e: any) => e.actionErrors),
+              ],
+            },
+            errorMessage: { type: "string", optional: true },
+            errorStack: {
+              type: "array",
+              optional: true,
+              definition: { type: "string", optional: true },
+            },
+            innerError: {
+              type: "schemaReference",
+              optional: true,
+              definition: { absolutePath: miroirFundamentalJzodSchemaUuid, relativePath: "actionError" },
             },
           },
+            // },
+          // },
         },
         actionVoidSuccess: {
           type: "object",

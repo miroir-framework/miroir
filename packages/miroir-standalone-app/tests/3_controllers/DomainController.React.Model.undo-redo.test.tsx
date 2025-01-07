@@ -27,7 +27,7 @@ import { TestUtilsTableComponent } from "../utils/TestUtilsTableComponent.js";
 import {
   DisplayLoadingInfo,
   createLibraryDeploymentDEFUNCT,
-  createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT,
+  createMiroirDeploymentGetPersistenceStoreController,
   deleteAndCloseApplicationDeployments,
   deploymentConfigurations,
   loadTestConfigFiles,
@@ -89,7 +89,7 @@ beforeAll(
     localCache = locallocalCache;
     miroirContext = localmiroirContext;
 
-    const wrapped = await createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT(
+    const wrapped = await createMiroirDeploymentGetPersistenceStoreController(
       miroirConfig as MiroirConfigClient,
       persistenceStoreControllerManager,
       domainController,

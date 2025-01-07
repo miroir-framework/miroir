@@ -4,6 +4,8 @@
 //                          Gabor Szmetanko <https://github.com/szmeti>
 //                          Christian Rackerseder <https://github.com/screendriver>
 
+import { LoggerContextElement, LoggerGlobalContext } from "../../4_services/LoggerContext.js";
+
 // From LoglevelNext
 // export type FactoryLevels = Record<Uppercase<string>, number> & {
 export type FactoryLevels = {
@@ -49,7 +51,20 @@ export interface LogLevelOptions {
   prefix?: PrefixFactoryOptions;
 }
 
-export type SpecificLoggerOptionsMap = Record<string,{level?: string | number, template?: string}>;
+export interface SpecificLoggerOptions {
+  level?: string | number, template?: string
+}
+
+export type SpecificLoggerOptionsMap = Record<string,SpecificLoggerOptions>;
+
+export interface LoggerOptions {
+  // defaultLevel: typeof defaultLevels[keyof typeof defaultLevels];
+  defaultLevel: (typeof defaultLevels)[keyof typeof defaultLevels];
+  defaultTemplate: string;
+  // context?: LoggerGlobalContext;
+  context?: LoggerContextElement;
+  specificLoggerOptions: SpecificLoggerOptionsMap;
+}
 
 export interface LoggerFactoryInterface {
   create(opts: LogLevelOptions | string): LoggerInterface

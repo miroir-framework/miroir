@@ -92,11 +92,9 @@ function exceptionToActionReturnType(f:()=>void): ActionReturnType {
   } catch (e: any) {
     return {
       status: "error",
-      error: {
-        errorType: "FailedToDeployModule", // TODO: correct errorType
-        errorMessage: e
-      }
-    }
+      errorType: "FailedToDeployModule", // TODO: correct errorType
+      errorMessage: e,
+    };
   }
   return ACTION_OK;
 }

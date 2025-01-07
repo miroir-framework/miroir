@@ -42,7 +42,7 @@ import {
   SyncQueryRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { MiroirLoggerFactory } from "../4_services/Logger.js";
+import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 import { resolveExtractorTemplate } from "./Templates.js";
@@ -589,7 +589,8 @@ export async function handleBoxedExtractorAction(
   if (queryResult.elementType == "failure") {
     return {
       status: "error",
-      error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult) },
+      errorType: "FailedToGetInstances",
+      errorMessage: JSON.stringify(queryResult),
     } as ActionReturnType;
   } else {
     const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
@@ -621,7 +622,8 @@ export async function handleBoxedQueryAction(
   if (queryResult.elementType == "failure") {
     return {
       status: "error",
-      error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult) },
+      errorType: "FailedToGetInstances",
+      errorMessage: JSON.stringify(queryResult),
     } as ActionReturnType;
   } else {
     const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };

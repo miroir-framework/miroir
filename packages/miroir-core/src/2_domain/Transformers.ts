@@ -26,7 +26,7 @@ import {
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { transformer_menu_AddItem } from "../1_core/Menu.js";
-import { MiroirLoggerFactory } from "../4_services/Logger.js";
+import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
 import { packageName } from "../constants.js";
 import { resolvePathOnObject } from "../tools.js";
 import { cleanLevel } from "./constants.js";

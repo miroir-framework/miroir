@@ -158,10 +158,8 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
         if (entityDefinitions.status != "ok") {
           return Promise.resolve({
             status: "error",
-            error: {
-              errorType: "FailedToDeleteStore", // TODO: correct errorType
-              errorMessage: `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.error.errorType}, ${entityDefinitions.error.errorMessage}`,
-            },
+            errorType: "FailedToDeleteStore", // TODO: correct errorType
+            errorMessage: `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.errorType}, ${entityDefinitions.errorMessage}`,
           });
         }
 

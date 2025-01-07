@@ -52,7 +52,7 @@ import { Application, EntityDefinition, EntityInstance, MetaModel } from '../0_i
 import { DataStoreApplicationType } from '../0_interfaces/3_controllers/ApplicationControllerInterface.js';
 import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface.js';
 import { PersistenceStoreControllerInterface } from '../0_interfaces/4-services/PersistenceStoreControllerInterface.js';
-import { MiroirLoggerFactory } from '../4_services/Logger.js';
+import { MiroirLoggerFactory } from '../4_services/LoggerFactory.js';
 import { packageName } from '../constants.js';
 import { menuDefaultLibrary } from '../index.js';
 import { cleanLevel } from './constants.js';

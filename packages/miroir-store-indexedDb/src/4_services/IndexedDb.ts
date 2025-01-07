@@ -215,11 +215,9 @@ export class IndexedDb {
         if (!instance) {
           log.warn(this.logHeader, 'deleteValue Id not found', uuid);
           return Promise.resolve({
-            status: 'error',
-            error: {
-              errorType: "FailedToDeleteInstance",
-              errorMessage: `failed to delete instance ${uuid} of entity ${tableUuid}`
-            }
+            status: "error",
+            errorType: "FailedToDeleteInstance",
+            errorMessage: `failed to delete instance ${uuid} of entity ${tableUuid}`,
             // message: 'Id not found',
           });
         } else {
@@ -230,22 +228,18 @@ export class IndexedDb {
       } catch (error) {
         log.error(this.logHeader, "deleteValue could not find instance of entity: " + tableUuid + " with uuid: ", uuid);
         return {
-          status: 'error',
-          error: {
-            errorType: "FailedToDeleteInstance",
-            errorMessage: `failed to delete instance ${uuid} of entity ${tableUuid}`
-          }
-        }
+          status: "error",
+          errorType: "FailedToDeleteInstance",
+          errorMessage: `failed to delete instance ${uuid} of entity ${tableUuid}`,
+        };
       }
     } else {
       log.error(this.logHeader, "deleteValue could not find sublevel: " + tableUuid + " existing sublevels: ", this.getSubLevels());
       return {
-        status: 'error',
-        error: {
-          errorType: "FailedToDeleteInstance",
-          errorMessage: `could not find entity ${tableUuid}`
-        }
-      }
+        status: "error",
+        errorType: "FailedToDeleteInstance",
+        errorMessage: `could not find entity ${tableUuid}`,
+      };
     }
   }
 }

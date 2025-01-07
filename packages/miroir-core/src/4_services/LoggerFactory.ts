@@ -3,9 +3,11 @@ import {
   LoggerFactoryAsyncInterface,
   LoggerFactoryInterface,
   LoggerInterface,
+  LoggerOptions,
   SpecificLoggerOptionsMap
 } from "../0_interfaces/4-services/LoggerInterface.js";
-import { CurrentlyExecuting } from "./CurrentlyExecuting.js";
+import { defaultLoggerContextElement, LoggerGlobalContext } from "./LoggerContext.js";
+import { LoggerFilter } from "./LoggerFilter.js";
 
 const testSeparator = "-";
 // ################################################################################################
@@ -20,21 +22,21 @@ export function templateLogLevelOptionsFactory(
     prefix: {
       level: (opts) => `${opts.level}`,
       name: (opts) => opts.logger.name,
-      testSuite: (opts) => CurrentlyExecuting.getTestSuite() ?? "*",
-      test: (opts) => testSeparator + (CurrentlyExecuting.getTest() ? CurrentlyExecuting.getTest() : "*"),
+      testSuite: (opts) => LoggerGlobalContext.getTestSuite() ?? "*",
+      test: (opts) => testSeparator + (LoggerGlobalContext.getTest() ? LoggerGlobalContext.getTest() : "*"),
       testAssertion: (opts) =>
-        testSeparator + (CurrentlyExecuting.getTestAssertion() ? CurrentlyExecuting.getTestAssertion() : "*"),
+        testSeparator + (LoggerGlobalContext.getTestAssertion() ? LoggerGlobalContext.getTestAssertion() : "*"),
       compositeAction: (opts) =>
-        testSeparator + (CurrentlyExecuting.getCompositeAction() ? CurrentlyExecuting.getCompositeAction() : "*"),
-      action: (opts) => testSeparator + (CurrentlyExecuting.getAction() ? CurrentlyExecuting.getAction() : "*"),
-      template: "##{{testSuite}}{{test}}{{testAssertion}}{{compositeAction}}{{action}}## " + template,
+        testSeparator + (LoggerGlobalContext.getCompositeAction() ? LoggerGlobalContext.getCompositeAction() : "*"),
+      action: (opts) => testSeparator + (LoggerGlobalContext.getAction() ? LoggerGlobalContext.getAction() : "*"),
+      template: "#{{testSuite}}{{test}}{{testAssertion}}{{compositeAction}}{{action}}# " + template,
       time: () => new Date().toTimeString().split(" ")[0],
     },
   };
 }
 
 export interface RegisteredLoggerToStart {
-  startLogger: (value: LoggerInterface | PromiseLike<LoggerInterface>) => void;
+  returnLoggerContinuation: (value: LoggerInterface | PromiseLike<LoggerInterface>) => void;
   logLevel?: string | number,
   template?: string,
 
@@ -42,13 +44,14 @@ export interface RegisteredLoggerToStart {
 // ################################################################################################
 export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
   static effectiveLoggerFactory: LoggerFactoryInterface | undefined = undefined;
+  static loggerOptions?: LoggerOptions;
   static specificLoggerOptionsMap?: SpecificLoggerOptionsMap;
   static defaultLogLevel: string | number;
   static defaultTemplate: string;
 
-  // static registeredLoggersToStart: { [k: string]: (value: LoggerInterface | PromiseLike<LoggerInterface>) => void } = {};
   static registeredLoggersToStart: { [k: string]: RegisteredLoggerToStart } = {};
 
+  // ##############################################################################################
   static getLoggerName(
     packageName: string,
     cleanLevel: string,
@@ -56,7 +59,8 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
   ) {
     return `${cleanLevel}_${packageName}_${functionalityName}`
   }
-  
+
+  // ##############################################################################################
   static registerLoggerToStart(
     loggerName: string,
     logLevel?: string | number,
@@ -65,12 +69,12 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
     // console.log("MiroirLoggerFactory.registerLoggerToStart", loggerName, logLevel, template);
     const result = new Promise<LoggerInterface>((resolve) => {
       MiroirLoggerFactory.registeredLoggersToStart[loggerName] = {
-        startLogger: resolve,
+        returnLoggerContinuation: resolve,
         logLevel,
         template,
       };
     });
-    console.log("MiroirLoggerFactory.registerLoggerToStart DONE!", loggerName, logLevel, template);
+    // console.log("MiroirLoggerFactory.registerLoggerToStart DONE!", loggerName, logLevel, template);
     return result;
   }
 
@@ -102,32 +106,47 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
   // ###################################
   static async startRegisteredLoggers(
     effectiveLoggerFactory: LoggerFactoryInterface,
-    defaultLogLevel: string | number,
-    defaultTemplate: string,
-    specificLoggerOptionsMap?: SpecificLoggerOptionsMap
+    loggerOptions: LoggerOptions,
+    // defaultLogLevel: string | number,
+    // defaultTemplate: string,
+    // specificLoggerOptionsMap?: SpecificLoggerOptionsMap
   ) {
-    console.log("MiroirLoggerFactory.startRegisteredLoggers", effectiveLoggerFactory, defaultLogLevel, defaultTemplate, specificLoggerOptionsMap);
+    // console.log(
+    //   "MiroirLoggerFactory.startRegisteredLoggers",
+    //   // effectiveLoggerFactory,
+    //   "defaultLogLevel",
+    //   defaultLogLevel,
+    //   "defaultTemplate",
+    //   defaultTemplate,
+    //   "specificLoggerOptionsMap",
+    //   specificLoggerOptionsMap
+    // );
     MiroirLoggerFactory.effectiveLoggerFactory = effectiveLoggerFactory;
-    MiroirLoggerFactory.defaultLogLevel = defaultLogLevel;
-    MiroirLoggerFactory.defaultTemplate = defaultTemplate;
-    MiroirLoggerFactory.specificLoggerOptionsMap = specificLoggerOptionsMap;
+    MiroirLoggerFactory.defaultLogLevel = loggerOptions.defaultLevel;
+    MiroirLoggerFactory.defaultTemplate = loggerOptions.defaultTemplate;
+    MiroirLoggerFactory.specificLoggerOptionsMap = loggerOptions.specificLoggerOptions;
     for (const l of Object.entries(MiroirLoggerFactory.registeredLoggersToStart)) {
-      console.log(
-        "MiroirLoggerFactory.startRegisteredLoggers starting logger",
-        l[0],
-      );
+      // console.log(
+      //   "MiroirLoggerFactory.startRegisteredLoggers starting logger",
+      //   l[0],
+      // );
       // TODO: no await on a resolve, this is a try, rather nonsensical
-      await l[1].startLogger(
-        effectiveLoggerFactory.create(
-          MiroirLoggerFactory.getLogLevelOptionsFromMap(l[0], l[1].logLevel, l[1].template)
+      const logLevelOptions = MiroirLoggerFactory.getLogLevelOptionsFromMap(l[0], l[1].logLevel, l[1].template);
+      await l[1].returnLoggerContinuation(
+        new LoggerFilter(
+          effectiveLoggerFactory.create(
+            logLevelOptions
+          ),
+          loggerOptions.context ?? defaultLoggerContextElement,
+          l[0], l[1].logLevel as any, l[1].template as any
         )
       );
       console.log(
         "MiroirLoggerFactory.startRegisteredLoggers logger",
-        l[0], "started!"
+        l[0], "started with options:", JSON.stringify(logLevelOptions, null, 2)
       );
     }
-    console.log("MiroirLoggerFactory.startRegisteredLoggers DONE!");
+    // console.log("MiroirLoggerFactory.startRegisteredLoggers DONE!");
   }
 
   // ###################################

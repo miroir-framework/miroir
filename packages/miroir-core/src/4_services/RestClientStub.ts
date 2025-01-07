@@ -6,7 +6,7 @@ import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { RestClientCallReturnType, RestClientInterface } from "../0_interfaces/4-services/PersistenceInterface.js";
 import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface.js";
 import { packageName } from "../constants.js";
-import { MiroirLoggerFactory } from "./Logger.js";
+import { MiroirLoggerFactory } from "./LoggerFactory.js";
 import { restServerDefaultHandlers } from "./RestServer.js";
 import { cleanLevel } from "./constants.js";
 

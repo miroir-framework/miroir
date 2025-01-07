@@ -214,10 +214,8 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
         if (entityDefinitions.status != "ok") {
           return Promise.resolve({
             status: "error",
-            error: {
-              errorType: "FailedToDeleteStore",// TODO: correct errorType
-              errorMessage: `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.error.errorType}, ${entityDefinitions.error.errorMessage}`,
-            },
+            errorType: "FailedToDeleteStore", // TODO: correct errorType
+            errorMessage: `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.errorType}, ${entityDefinitions.errorMessage}`,
           });
         }
         // if (entityDefinitions.returnedDomainElement?.elementType != "entityInstanceCollection") {

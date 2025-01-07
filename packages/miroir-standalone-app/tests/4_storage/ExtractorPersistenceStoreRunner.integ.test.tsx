@@ -65,7 +65,7 @@ import {
   loadTestConfigFiles,
   deleteAndCloseApplicationDeployments,
   resetApplicationDeployments,
-  createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT,
+  createMiroirDeploymentGetPersistenceStoreController,
   miroirBeforeEach_resetAndInitApplicationDeployments,
   setupMiroirTest
 } from "../utils/tests-utils.js";
@@ -181,7 +181,7 @@ beforeAll(
     miroirContext = localmiroirContext;
 
 
-    const wrapped = await createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT(
+    const wrapped = await createMiroirDeploymentGetPersistenceStoreController(
       miroirConfig as MiroirConfigClient,
       persistenceStoreControllerManager,
       domainController

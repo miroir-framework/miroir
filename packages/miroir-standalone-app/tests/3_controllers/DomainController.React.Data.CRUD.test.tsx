@@ -50,7 +50,7 @@ import {
 
 import {
   createLibraryDeploymentDEFUNCT,
-  createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT,
+  createMiroirDeploymentGetPersistenceStoreController,
   deleteAndCloseApplicationDeployments,
   deploymentConfigurations,
   DisplayLoadingInfo,
@@ -126,7 +126,7 @@ beforeAll(
     localCache = locallocalCache;
     miroirContext = localmiroirContext;
 
-    const wrapped = await createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT(
+    const wrapped = await createMiroirDeploymentGetPersistenceStoreController(
       miroirConfig as MiroirConfigClient,
       persistenceStoreControllerManager,
       domainController,

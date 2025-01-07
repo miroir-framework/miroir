@@ -2,7 +2,7 @@ import { InstanceAction } from "../0_interfaces/1_core/preprocessor-generated/mi
 import { EndpointInterface } from "../0_interfaces/3_controllers/EndpointInterface.js";
 import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { MiroirLoggerFactory } from "../4_services/Logger.js";
+import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 

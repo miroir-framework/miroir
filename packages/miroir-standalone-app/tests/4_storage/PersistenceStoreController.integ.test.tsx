@@ -49,7 +49,7 @@ import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
   createDeploymentGetPersistenceStoreController,
   createLibraryDeploymentDEFUNCT,
-  createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT,
+  createMiroirDeploymentGetPersistenceStoreController,
   deleteAndCloseApplicationDeployments,
   deploymentConfigurations,
   loadTestConfigFiles,
@@ -146,7 +146,7 @@ beforeAll(async () => {
     //   persistenceStoreControllerManager,
     //   domainController
     // );
-    const wrapped = await createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT(
+    const wrapped = await createMiroirDeploymentGetPersistenceStoreController(
       miroirConfig as MiroirConfigClient,
       persistenceStoreControllerManager,
       domainController

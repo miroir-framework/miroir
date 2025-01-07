@@ -89,9 +89,7 @@ console.log(
 console.log("DomainController.integ.Data.CRUD.test received loggerOptions", JSON.stringify(loggerOptions, null, 2));
 MiroirLoggerFactory.startRegisteredLoggers(
   loglevelnext,
-  (defaultLevels as any)[loggerOptions.defaultLevel],
-  loggerOptions.defaultTemplate,
-  loggerOptions.specificLoggerOptions
+  loggerOptions,
 );
 console.log("DomainController.integ.Data.CRUD.test started registered loggers DONE");
 

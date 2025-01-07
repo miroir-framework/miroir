@@ -8,7 +8,7 @@ import {
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { PersistenceStoreControllerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
 import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface.js";
-import { MiroirLoggerFactory } from "../4_services/Logger.js";
+import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 
@@ -20,7 +20,7 @@ import { ACTION_OK } from "../1_core/constants.js";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ActionRunner")
-).then((logger: LoggerInterface) => {log = logger});
+).then((logger: LoggerInterface) => {log = logger; console.log("ActionRunner logger started!!!", (log === console as any), MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ActionRunner"))});
 
 // ################################################################################################
 /**
@@ -117,10 +117,8 @@ export async function storeActionOrBundleActionStoreRunner(
       if (!action.deploymentUuid) {
         return {
           status: "error",
-          error: {
-            errorType: "FailedToCreateStore",
-            errorMessage: "storeActionOrBundleActionStoreRunner no deploymentUuid in action " + JSON.stringify(action),
-          },
+          errorType: "FailedToCreateStore",
+          errorMessage: "storeActionOrBundleActionStoreRunner no deploymentUuid in action " + JSON.stringify(action),
         };
       }
 
@@ -136,13 +134,11 @@ export async function storeActionOrBundleActionStoreRunner(
       if (appModelStoreCreated.status != "ok" || appDataStoreCreated.status != "ok") {
         return {
           status: "error",
-          error: {
-            errorType: "FailedToCreateStore",
-            errorMessage:
-              (appModelStoreCreated.status != "ok" ? appModelStoreCreated.error : "model store created OK") +
-              " --- " +
-              (appDataStoreCreated.status != "ok" ? appDataStoreCreated.error : "data store created OK"),
-          },
+          errorType: "FailedToCreateStore",
+          errorMessage:
+            (appModelStoreCreated.status != "ok" ? appModelStoreCreated.errorMessage : "model store created OK") +
+            " --- " +
+            (appDataStoreCreated.status != "ok" ? appDataStoreCreated.errorMessage : "data store created OK"),
         };
       }
       log.info(
@@ -158,10 +154,8 @@ export async function storeActionOrBundleActionStoreRunner(
       if (!action.deploymentUuid) {
         return {
           status: "error",
-          error: {
-            errorType: "FailedToDeleteStore",
-            errorMessage: "storeActionOrBundleActionStoreRunner no deploymentUuid in action " + JSON.stringify(action),
-          },
+          errorType: "FailedToDeleteStore",
+          errorMessage: "storeActionOrBundleActionStoreRunner no deploymentUuid in action " + JSON.stringify(action),
         };
       }
 
@@ -177,13 +171,11 @@ export async function storeActionOrBundleActionStoreRunner(
       if (appModelStoreDeleted.status != "ok" || appDataStoreDeleted.status != "ok") {
         return {
           status: "error",
-          error: {
-            errorType: "FailedToDeleteStore",
-            errorMessage:
-              (appModelStoreDeleted.status != "ok" ? appModelStoreDeleted.error : "model store deleted OK") +
-              " --- " +
-              (appDataStoreDeleted.status != "ok" ? appDataStoreDeleted.error : "data store deleted OK"),
-          },
+          errorType: "FailedToDeleteStore",
+          errorMessage:
+            (appModelStoreDeleted.status != "ok" ? appModelStoreDeleted.errorMessage : "model store deleted OK") +
+            " --- " +
+            (appDataStoreDeleted.status != "ok" ? appDataStoreDeleted.errorMessage : "data store deleted OK"),
         };
       }
       break;
@@ -197,10 +189,12 @@ export async function storeActionOrBundleActionStoreRunner(
       if (!action.configuration[action.deploymentUuid]) {
         return {
           status: "error",
-          error: {
-            errorType: "FailedToOpenStore",
-            errorMessage:"no configuration entry found for deployment uuid " + action.deploymentUuid + " configuration: " + JSON.stringify(action.configuration, null, 2)
-          },
+          errorType: "FailedToOpenStore",
+          errorMessage:
+            "no configuration entry found for deployment uuid " +
+            action.deploymentUuid +
+            " configuration: " +
+            JSON.stringify(action.configuration, null, 2),
         };
       }
 

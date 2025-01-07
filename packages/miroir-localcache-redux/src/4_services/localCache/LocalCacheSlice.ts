@@ -638,7 +638,7 @@ function handleAction(
 
 function actionReturnTypeToException(a:ActionReturnType) {
   if (a.status == "error") {
-    throw new Error("caught error on return value " + JSON.stringify(a.error, undefined, 2));
+    throw new Error("caught error on return value " + JSON.stringify(a, undefined, 2));
   }
 }
 

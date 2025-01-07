@@ -519,7 +519,7 @@ export async function createDeploymentGetPersistenceStoreController(
 }
 
 // ################################################################################################
-export async function createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT(
+export async function createMiroirDeploymentGetPersistenceStoreController(
   miroirConfig: MiroirConfigClient,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
   domainController: DomainControllerInterface,
@@ -749,11 +749,11 @@ export const chainVitestSteps = async (
       "########################################### chainTestAsyncDomainCalls",
       stepName,
       "error:",
-      JSON.stringify(domainElement.error, undefined, 2)
+      JSON.stringify(domainElement, undefined, 2)
     );
     expect(
       domainElement.status,
-      domainElement.error?.errorType ?? "no errorType" + ": " + domainElement.error?.errorMessage ?? "no errorMessage"
+      domainElement.errorType ?? "no errorType" + ": " + domainElement.errorMessage ?? "no errorMessage"
     ).toEqual("ok");
   }
   log.info(

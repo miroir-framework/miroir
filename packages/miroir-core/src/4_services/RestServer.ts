@@ -23,7 +23,7 @@ import {
 import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface.js";
 import { packageName } from "../constants.js";
 
-import { MiroirLoggerFactory } from "./Logger.js";
+import { MiroirLoggerFactory } from "./LoggerFactory.js";
 import { generateRestServiceResponse } from "./RestTools.js";
 import { cleanLevel } from "./constants.js";
 
@@ -122,7 +122,7 @@ export async function restMethodGetHandler
             "restMethodGetHandler could not get instances for parentUuid: " +
               parentUuid +
               " error " +
-              JSON.stringify(results.error)
+              JSON.stringify(results)
           );
         }
         if (results.returnedDomainElement?.elementType != "entityInstanceCollection") {
@@ -329,61 +329,14 @@ export async function queryActionHandler(
     // useDomainControllerToHandleModelAndInstanceActions,
     JSON.stringify(runBoxedExtractorOrQueryAction, undefined, 2)
   );
-  // if (useDomainControllerToHandleModelAndInstanceActions) {
-  //   // we are on the server, the action has been received from remote client
-  //   // switch (runBoxedQueryTemplateOrBoxedExtractorTemplateAction.deploymentUuid) {
-  //   const result = await domainController.handleQueryActionOrBoxedExtractorAction(runBoxedExtractorOrQueryAction)
-  //   log.info(
-  //     "RestServer queryActionHandler used adminConfigurationDeploymentMiroir domainController result=",
-  //     JSON.stringify(result, undefined, 2)
-  //   );
-  //   return continuationFunction(response)(result)
-  // } else {
-    // we're on the client, called by RestMswServerStub
-    // uses the local cache, needs to have done a Model "rollback" action on the client
-    // or a Model "remoteLocalCacheRollback" action on the server
-
-    // USING THE LOCAL CACHE OR THE LOCAL PERSISTENCE STORE 
-    // SHALL BE DETERMINED BY DOMAINCONTROLLER DEPENDING ON THE QUERY
-    const result = await domainController.handleQueryActionOrBoxedExtractorAction(runBoxedExtractorOrQueryAction)
-    log.info(
-      "RestServer queryActionHandler used domainController result=",
-      JSON.stringify(result, undefined, 2)
-    );
-    return continuationFunction(response)(result)
-
-  //   // const domainState: DomainState = domainController.getDomainState();
-  //   // const extractorRunnerMapOnDomainState = getDomainStateExtractorRunnerMap();
-  //   // log.info("RestServer queryActionHandler runBoxedExtractorOrQueryAction=", JSON.stringify(runBoxedExtractorOrQueryAction, undefined, 2))
-  //   // // log.info("RestServer queryActionHandler domainState=", JSON.stringify(domainState, undefined, 2))
-  //   // let queryResult: DomainElement = undefined as any as DomainElement;
-  //   // switch (runBoxedExtractorOrQueryAction.query.queryType) {
-  //   //   case "boxedExtractorOrCombinerReturningObject":
-  //   //   case "boxedExtractorOrCombinerReturningObjectList": {
-  //   //     queryResult = extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
-  //   //       domainState,
-  //   //       getExtractorRunnerParamsForDomainState(runBoxedExtractorOrQueryAction.query, extractorRunnerMapOnDomainState)
-  //   //     );
-  //   //     break;
-  //   //   }
-  //   //   case "boxedQueryWithExtractorCombinerTransformer": {
-  //   //     queryResult = extractorRunnerMapOnDomainState.runQuery(
-  //   //       domainState,
-  //   //       getQueryRunnerParamsForDomainState(runBoxedExtractorOrQueryAction.query, extractorRunnerMapOnDomainState)
-  //   //     );
-  //   //     break;
-  //   //   }
-  //   //   default:
-  //   //     break;
-  //   // }
-  //   // const result:ActionReturnType = {
-  //   //   status: "ok",
-  //   //   returnedDomainElement: queryResult
-  //   // }
-  //   // log.info("RestServer queryActionHandler used local cache result=", JSON.stringify(result, undefined,2))
-
-  //   // return continuationFunction(response)(result);
-  // }
+  // USING THE LOCAL CACHE OR THE LOCAL PERSISTENCE STORE 
+  // SHALL BE DETERMINED BY DOMAINCONTROLLER DEPENDING ON THE QUERY
+  const result = await domainController.handleQueryActionOrBoxedExtractorAction(runBoxedExtractorOrQueryAction)
+  log.info(
+    "RestServer queryActionHandler used domainController result=",
+    JSON.stringify(result, undefined, 2)
+  );
+  return continuationFunction(response)(result)
 }
 
 // ################################################################################################

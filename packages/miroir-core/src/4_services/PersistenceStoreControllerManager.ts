@@ -21,7 +21,7 @@ import { PersistenceStoreLocalOrRemoteInterface } from "../0_interfaces/4-servic
 import { ACTION_OK } from "../1_core/constants.js";
 import { DomainController } from "../3_controllers/DomainController.js";
 import { packageName } from "../constants.js";
-import { MiroirLoggerFactory } from "./Logger.js";
+import { MiroirLoggerFactory } from "./LoggerFactory.js";
 import { cleanLevel } from "./constants.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -188,7 +188,7 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
 
     } else { // TODO: inject interface to raise errors!
       // throw new Error("deployModule could not find persistenceStoreController for " + newDeploymentUuid);
-      return { status: "error", error: { errorType: "FailedToDeployModule" } }
+      return { status: "error", errorType: "FailedToDeployModule" }
     }
     return ACTION_OK
   }

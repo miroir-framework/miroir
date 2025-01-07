@@ -697,11 +697,9 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
           log.error("handlePersistenceAction exception", e);
           const result: ActionReturnType = {
             status: "error",
-            error: {
-              errorType: "FailedToDeployModule", // TODO: correct errorType!
-              errorMessage: e["message"],
-              error: { errorMessage: e["message"], stack: [e["message"]] },
-            },
+            errorType: "FailedToDeployModule", // TODO: correct errorType!
+            errorMessage: e["message"],
+            innerError: { status: "error", errorType: e["errorType"], errorMessage: e["message"], errorStack: [e["message"]] },
           };
           return result;
         }
@@ -741,11 +739,9 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
           log.error("handlePersistenceAction exception", e);
           const result: ActionReturnType = {
             status: "error",
-            error: {
-              errorType: "FailedToDeployModule", // TODO: correct errorType!
-              errorMessage: e["message"],
-              error: { errorMessage: e["message"], stack: [e["message"]] },
-            },
+            errorType: "FailedToDeployModule", // TODO: correct errorType!
+            errorMessage: e["message"],
+            innerError: { status: "error", errorType: e["errorType"], errorMessage: e["message"], errorStack: [e["message"]] },
           };
           return result;
         }
@@ -774,10 +770,13 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
           log.error("handlePersistenceActionForRemoteStore exception", e);
           const result: ActionReturnType = {
             status: "error",
-            error: {
-              errorType: "FailedToDeployModule", // TODO: correct errorType!
+            errorType: "FailedToDeployModule", // TODO: correct errorType!
+            errorMessage: e["message"],
+            innerError: {
+              status: "error",
               errorMessage: e["message"],
-              error: { errorMessage: e["message"], stack: [e["message"]] },
+              errorType: e["errorType"],
+              errorStack: [e["message"]],
             },
           };
           return result;
@@ -847,11 +846,9 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
           log.error("handleStoreOrBundleActionForLocalStore exception", e);
           const result: ActionReturnType = {
             status: "error",
-            error: {
-              errorType: "FailedToDeployModule", // TODO: correct errorType!
-              errorMessage: e["message"],
-              error: { errorMessage: e["message"], stack: [e["message"]] },
-            },
+            errorType: "FailedToDeployModule", // TODO: correct errorType!
+            errorMessage: e["message"],
+            innerError: { status: "error", errorType: e["errorType"], errorMessage: e["message"], errorStack: [e["message"]] },
           };
           return result;
         }

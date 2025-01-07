@@ -54,8 +54,8 @@ import { ACTION_OK } from "../1_core/constants.js";
 import { defaultMiroirMetaModel, metaModelEntities, miroirModelEntities } from "../1_core/Model.js";
 import { resolveCompositeActionTemplate } from "../2_domain/ResolveCompositeAction.js";
 import { transformer_extended_apply } from "../2_domain/Transformers.js";
-import { CurrentlyExecuting } from '../4_services/CurrentlyExecuting.js';
-import { MiroirLoggerFactory } from "../4_services/Logger.js";
+import { LoggerGlobalContext } from '../4_services/LoggerContext.js';
+import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
 import { packageName } from "../constants.js";
 import {
   ConfigurationService,
@@ -409,7 +409,7 @@ export class DomainController implements DomainControllerInterface {
   ): Promise<ActionReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     try {
-      CurrentlyExecuting.setAction(runBoxedExtractorOrQueryAction.actionName);
+      LoggerGlobalContext.setAction(runBoxedExtractorOrQueryAction.actionName);
       log.info(
         "handleQueryActionOrBoxedExtractorAction",
           // "deploymentUuid",
@@ -527,7 +527,7 @@ export class DomainController implements DomainControllerInterface {
         JSON.stringify((runBoxedExtractorOrQueryAction as any)["objects"], null, 2)
       );
     } finally {
-      CurrentlyExecuting.setAction(undefined);
+      LoggerGlobalContext.setAction(undefined);
     }
 
     return ACTION_OK;
@@ -806,16 +806,16 @@ export class DomainController implements DomainControllerInterface {
 
 
     try {
-      CurrentlyExecuting.setTestSuite(testAction.testLabel);
+      LoggerGlobalContext.setTestSuite(testAction.testLabel);
 
       if (testAction.beforeAll) {
-        CurrentlyExecuting.setTest("beforeAll");
+        LoggerGlobalContext.setTest("beforeAll");
         log.info("handleTestCompositeActionSuite beforeAll", testAction.beforeAll.actionLabel, testAction.beforeAll);
         const beforeAllResult = await this.handleCompositeAction(testAction.beforeAll, localActionParams, currentModel);
         if (beforeAllResult?.status != "ok") {
           log.error("Error on beforeAll", JSON.stringify(beforeAllResult, null, 2));
         }
-        CurrentlyExecuting.setTest(undefined);
+        LoggerGlobalContext.setTest(undefined);
       } else {
         log.info("handleTestCompositeActionSuite no beforeAll!");
       }
@@ -826,7 +826,7 @@ export class DomainController implements DomainControllerInterface {
   
         if (testAction.beforeEach) {
           log.info("handleTestCompositeActionSuite beforeEach", testAction.beforeEach.actionLabel, testAction.beforeEach);
-          CurrentlyExecuting.setTest(testCompositeAction[1].testLabel + ".beforeEach");
+          LoggerGlobalContext.setTest(testCompositeAction[1].testLabel + ".beforeEach");
           const beforeAllResult = await this.handleCompositeAction(
             testAction.beforeEach,
             localActionParams,
@@ -840,13 +840,13 @@ export class DomainController implements DomainControllerInterface {
               JSON.stringify(beforeAllResult, null, 2)
             );
           }
-          CurrentlyExecuting.setTest(undefined);
+          LoggerGlobalContext.setTest(undefined);
         } else {
           log.info("handleTestCompositeActionSuite", testCompositeAction[0], "no beforeEach!");
         }
   
         if (testCompositeAction[1].beforeTestSetupAction) {
-          CurrentlyExecuting.setTest(testCompositeAction[1].testLabel + ".beforeTestSetupAction");
+          LoggerGlobalContext.setTest(testCompositeAction[1].testLabel + ".beforeTestSetupAction");
           log.info(
             "handleTestCompositeAction",
             testCompositeAction[0],
@@ -867,7 +867,7 @@ export class DomainController implements DomainControllerInterface {
               JSON.stringify(beforeTestResult, null, 2)
             );
           }
-          CurrentlyExecuting.setTest(undefined);
+          LoggerGlobalContext.setTest(undefined);
         } else {
           log.info("handleTestCompositeAction", testCompositeAction[0], "no beforeTestSetupAction!");
         }
@@ -879,12 +879,12 @@ export class DomainController implements DomainControllerInterface {
             ...testCompositeAction[1].testCompositeActionAssertions,
           ],
         };
-        CurrentlyExecuting.setTest(testCompositeAction[1].testLabel);
+        LoggerGlobalContext.setTest(testCompositeAction[1].testLabel);
         const result = await this.handleCompositeAction(localCompositeAction, localActionParams, currentModel);
-        CurrentlyExecuting.setTest(undefined);
+        LoggerGlobalContext.setTest(undefined);
 
         if (testCompositeAction[1].afterTestCleanupAction) {
-          CurrentlyExecuting.setTest(testCompositeAction[1].testLabel + ".afterTestCleanupAction");
+          LoggerGlobalContext.setTest(testCompositeAction[1].testLabel + ".afterTestCleanupAction");
           log.info(
             "handleTestCompositeAction",
             testCompositeAction[0],
@@ -905,13 +905,13 @@ export class DomainController implements DomainControllerInterface {
               JSON.stringify(afterTestResult, null, 2)
             );
           }
-          CurrentlyExecuting.setTest(undefined);
+          LoggerGlobalContext.setTest(undefined);
         } else {
           log.info("handleTestCompositeAction", testCompositeAction[0], "no afterTestSetupAction!");
         }
   
         if (testAction.afterEach) {
-          CurrentlyExecuting.setTest(testCompositeAction[1].testLabel + ".afterEach");
+          LoggerGlobalContext.setTest(testCompositeAction[1].testLabel + ".afterEach");
           log.info(
             "handleTestCompositeActionSuite",
             testCompositeAction[0],
@@ -928,20 +928,20 @@ export class DomainController implements DomainControllerInterface {
               JSON.stringify(beforeAllResult, null, 2)
             );
           }
-          CurrentlyExecuting.setTest(undefined);
+          LoggerGlobalContext.setTest(undefined);
         } else {
           log.info("handleTestCompositeActionSuite", testCompositeAction[0], "no afterEach!");
         }
       }
   
       if (testAction.afterAll) {
-        CurrentlyExecuting.setTest("afterAll");
+        LoggerGlobalContext.setTest("afterAll");
         log.info("handleTestCompositeActionSuite afterAll", testAction.afterAll.actionLabel, testAction.beforeAll);
         const afterAllResult = await this.handleCompositeAction(testAction.afterAll, localActionParams, currentModel);
         if (afterAllResult?.status != "ok") {
           log.error("Error on afterAll", JSON.stringify(afterAllResult, null, 2));
         }
-        CurrentlyExecuting.setTest(undefined);
+        LoggerGlobalContext.setTest(undefined);
       } else {
         log.info("handleTestCompositeActionSuite no afterAll!");
       }
@@ -950,13 +950,11 @@ export class DomainController implements DomainControllerInterface {
       log.error("handleTestCompositeActionSuite caught error", error);
       return Promise.resolve({
         status: "error",
-        error: {
-          errorType: "FailedToDeployModule",
-          errorMessage: "handleTestCompositeActionSuite caught error: "+ JSON.stringify(error, null, 2),
-        }
+        errorType: "FailedToDeployModule",
+        errorMessage: "handleTestCompositeActionSuite caught error: " + JSON.stringify(error, null, 2),
       });
     } finally {
-      CurrentlyExecuting.reset();
+      LoggerGlobalContext.reset();
     }
 
 
@@ -980,7 +978,7 @@ export class DomainController implements DomainControllerInterface {
     for (const currentAction of compositeAction.definition) {
       let actionResult: ActionReturnType | undefined = undefined;
       try {
-        CurrentlyExecuting.setAction(currentAction.compositeActionStepLabel);
+        LoggerGlobalContext.setAction(currentAction.compositeActionStepLabel);
         log.info(
           "handleCompositeAction compositeInstanceAction handling sub currentAction",
           JSON.stringify(currentAction, null, 2),
@@ -1105,7 +1103,7 @@ export class DomainController implements DomainControllerInterface {
               );
             }
             try {
-              CurrentlyExecuting.setTestAssertion(currentAction.testAssertion.testLabel);
+              LoggerGlobalContext.setTestAssertion(currentAction.testAssertion.testLabel);
               const prePreValueToTest = currentAction.testAssertion.definition.resultTransformer
                 ? transformer_extended_apply(
                     "runtime",
@@ -1153,7 +1151,7 @@ export class DomainController implements DomainControllerInterface {
               log.error("handleCompositeAction runTestCompositeActionAssertion error", error);
               throw new Error("handleCompositeAction runTestCompositeActionAssertion error" + JSON.stringify(error, null, 2));
             } finally {
-              CurrentlyExecuting.setTestAssertion(undefined);
+              LoggerGlobalContext.setTestAssertion(undefined);
             }
             break;
           }
@@ -1180,13 +1178,11 @@ export class DomainController implements DomainControllerInterface {
         log.error("handleCompositeAction caught error", error);
         return Promise.resolve({
           status: "error",
-          error: {
-            errorType: "FailedToDeployModule",
-            errorMessage: "handleCompositeAction caught error: "+ JSON.stringify(error, null, 2),
-          }
+          errorType: "FailedToDeployModule",
+          errorMessage: "handleCompositeAction caught error: " + JSON.stringify(error, null, 2),
         });
       } finally {
-        CurrentlyExecuting.setCompositeAction(undefined);
+        LoggerGlobalContext.setCompositeAction(undefined);
       }
     }
     return Promise.resolve(ACTION_OK);
@@ -1770,7 +1766,7 @@ export class DomainController implements DomainControllerInterface {
 
     // }
     try {
-      CurrentlyExecuting.setAction(domainAction.actionType);
+      LoggerGlobalContext.setAction(domainAction.actionType);
       switch (domainAction.actionType) {
         case "compositeAction": {
           // old school, not used anymore (or should not be used anymore)
@@ -1898,13 +1894,11 @@ export class DomainController implements DomainControllerInterface {
       log.error("DomainController handleAction caught error", error);
       return Promise.resolve({
         status: "error",
-        error: {
-          errorType: "FailedToDeployModule",
-          errorMessage: "DomainController handleAction caught error: "+ JSON.stringify(error, null, 2),
-        }
+        errorType: "FailedToDeployModule",
+        errorMessage: "DomainController handleAction caught error: " + JSON.stringify(error, null, 2),
       });
     } finally {
-      CurrentlyExecuting.setAction(undefined);
+      LoggerGlobalContext.setAction(undefined);
     }
   }
 } // class DomainController

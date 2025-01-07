@@ -74,7 +74,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
     if (queryResult.elementType == "failure") {
       return {
         status: "error",
-        error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult) },
+        errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult),
       } as ActionReturnType;
     } else {
       const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
@@ -96,7 +96,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
     if (queryResult.elementType == "failure") {
       return {
         status: "error",
-        error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult) },
+        errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult),
       } as ActionReturnType;
     } else {
       const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
