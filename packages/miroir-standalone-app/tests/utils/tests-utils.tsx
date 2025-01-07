@@ -58,6 +58,8 @@ import { RestPersistenceClientAndRestClient } from '../../../miroir-localcache-r
 import { packageName } from '../../src/constants';
 import { MiroirContextReactProvider } from '../../src/miroir-fwk/4_view/MiroirContextReactProvider';
 import { cleanLevel } from '../../src/miroir-fwk/4_view/constants';
+import { string } from "prop-types";
+import { R } from "vitest/dist/chunks/environment.LoooBwUu";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -768,3 +770,58 @@ export const chainVitestSteps = async (
     return context
   }
 }
+
+// ################################################################################################
+export async function runTestOrTestSuite(
+  localCache: LocalCache,
+  domainController: DomainControllerInterface,
+  testAction: TestActionParams
+) {
+  const fullTestName = expect.getState().currentTestName ?? "no test name";
+  log.info("STARTING test:", fullTestName);
+
+  // await chainVitestSteps(
+  //   fullTestName,
+  //   {},
+  //   async () => {
+  switch (testAction.testActionType) {
+    case "testCompositeActionSuite": {
+      const queryResult: ActionReturnType = await domainController.handleTestCompositeActionSuite(
+        testAction.testCompositeAction,
+        {},
+        localCache.currentModel(testAction.deploymentUuid)
+      );
+      log.info(
+        "received results for test testCompositeActionSuite",
+        fullTestName,
+        ": queryResult=",
+        JSON.stringify(queryResult, null, 2)
+      );
+      return queryResult;
+    }
+    case "testCompositeAction": {
+      const queryResult: ActionReturnType = await domainController.handleTestCompositeAction(
+        testAction.testCompositeAction,
+        {},
+        localCache.currentModel(testAction.deploymentUuid)
+      );
+      log.info(
+        "test testCompositeAction",
+        fullTestName,
+        ": queryResult=",
+        JSON.stringify(queryResult, null, 2)
+      );
+      return queryResult;
+    }
+    case "testCompositeActionTemplate": {
+      throw new Error("testCompositeActionTemplate not implemented yet!");
+    }
+  }
+  //   },
+  //   undefined, // expected result transformation
+  //   undefined, // name to give to result
+  //   "void",
+  //   undefined
+  // );
+}
+

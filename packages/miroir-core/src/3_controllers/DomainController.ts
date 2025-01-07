@@ -64,7 +64,8 @@ import {
   selfApplicationMiroir,
   selfApplicationModelBranchMiroirMasterBranch,
   selfApplicationStoreBasedConfigurationMiroir,
-  selfApplicationVersionInitialMiroirVersion
+  selfApplicationVersionInitialMiroirVersion,
+  TestResult
 } from "../index.js";
 import { resolvePathOnObject } from "../tools.js";
 import { cleanLevel } from "./constants.js";
@@ -794,16 +795,17 @@ export class DomainController implements DomainControllerInterface {
 
   // ##############################################################################################
   async handleTestCompositeActionSuite(
-    // testAction: TestAction_runTestCompositeAction,
     testAction: TestCompositeActionSuite,
     actionParamValues: Record<string, any>,
     currentModel: MetaModel
-  ): Promise<ActionVoidReturnType> {
+  // ): Promise<ActionVoidReturnType> {
+  ): Promise<ActionReturnType> {
     const localActionParams = { ...actionParamValues };
     let localContext: Record<string, any> = { ...actionParamValues };
 
     log.info("handleTestCompositeActionSuite testAction", testAction, "localActionParams", Object.keys(localActionParams));
 
+    const testSuiteResult: Record<string, TestResult> = {};
 
     try {
       LoggerGlobalContext.setTestSuite(testAction.testLabel);
@@ -848,7 +850,7 @@ export class DomainController implements DomainControllerInterface {
         if (testCompositeAction[1].beforeTestSetupAction) {
           LoggerGlobalContext.setTest(testCompositeAction[1].testLabel + ".beforeTestSetupAction");
           log.info(
-            "handleTestCompositeAction",
+            "handleTestCompositeActionSuite",
             testCompositeAction[0],
             "beforeTestSetupAction",
             testCompositeAction[1].beforeTestSetupAction.actionLabel,
@@ -861,7 +863,7 @@ export class DomainController implements DomainControllerInterface {
           );
           if (beforeTestResult?.status != "ok") {
             log.error(
-              "handleTestCompositeAction",
+              "handleTestCompositeActionSuite",
               testCompositeAction[0],
               "Error on beforeTestSetupAction",
               JSON.stringify(beforeTestResult, null, 2)
@@ -869,10 +871,10 @@ export class DomainController implements DomainControllerInterface {
           }
           LoggerGlobalContext.setTest(undefined);
         } else {
-          log.info("handleTestCompositeAction", testCompositeAction[0], "no beforeTestSetupAction!");
+          log.info("handleTestCompositeActionSuite", testCompositeAction[0], "no beforeTestSetupAction!");
         }
   
-        const localCompositeAction: CompositeAction = {
+        const localTestCompositeAction: CompositeAction = {
           ...testCompositeAction[1].compositeAction,
           definition: [
             ...testCompositeAction[1].compositeAction.definition,
@@ -880,8 +882,12 @@ export class DomainController implements DomainControllerInterface {
           ],
         };
         LoggerGlobalContext.setTest(testCompositeAction[1].testLabel);
-        const result = await this.handleCompositeAction(localCompositeAction, localActionParams, currentModel);
+        const testResult = await this.handleCompositeAction(localTestCompositeAction, localActionParams, currentModel);
         LoggerGlobalContext.setTest(undefined);
+        testSuiteResult[testCompositeAction[1].testLabel] = {testLabel: testCompositeAction[1].testLabel,  testResult: testResult.status};
+        // if (testResult?.status != "ok") {
+        //   log.error("Error on test", JSON.stringify(testResult, null, 2));
+        // }
 
         if (testCompositeAction[1].afterTestCleanupAction) {
           LoggerGlobalContext.setTest(testCompositeAction[1].testLabel + ".afterTestCleanupAction");
@@ -907,7 +913,7 @@ export class DomainController implements DomainControllerInterface {
           }
           LoggerGlobalContext.setTest(undefined);
         } else {
-          log.info("handleTestCompositeAction", testCompositeAction[0], "no afterTestSetupAction!");
+          log.info("handleTestCompositeActionSuite", testCompositeAction[0], "no afterTestSetupAction!");
         }
   
         if (testAction.afterEach) {
@@ -945,7 +951,11 @@ export class DomainController implements DomainControllerInterface {
       } else {
         log.info("handleTestCompositeActionSuite no afterAll!");
       }
-      return Promise.resolve(ACTION_OK);
+      // return Promise.resolve(ACTION_OK);
+      return Promise.resolve({
+        status: "ok",
+        returnedDomainElement: { elementType: "any", elementValue: testSuiteResult },
+      });
     } catch (error) {
       log.error("handleTestCompositeActionSuite caught error", error);
       return Promise.resolve({

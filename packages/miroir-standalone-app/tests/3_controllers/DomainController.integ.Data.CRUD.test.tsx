@@ -35,7 +35,8 @@ import {
   publisher2,
   publisher3,
   SelfApplicationDeploymentConfiguration,
-  selfApplicationDeploymentMiroir
+  selfApplicationDeploymentMiroir,
+  TestSuiteResult
 } from "miroir-core";
 
 import {
@@ -45,6 +46,7 @@ import {
   deploymentConfigurations,
   loadTestConfigFiles,
   miroirBeforeEach_resetAndInitApplicationDeployments,
+  runTestOrTestSuite,
   setupMiroirTest,
   TestActionParams
 } from "../utils/tests-utils.js";
@@ -112,6 +114,7 @@ let domainController: DomainControllerInterface;
 let localCache: LocalCache;
 let miroirContext: MiroirContextInterface;
 let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
+let globalTestSuiteResults: TestSuiteResult = {};
 
 export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances  = [
   {
@@ -195,6 +198,7 @@ afterAll(
       domainController,
       deploymentConfigurations,
     );
+    console.log("globalTestSuiteResults:\n", Object.values(globalTestSuiteResults).map((r) => "\"" + r.testLabel + "\": " + r.testResult).join("\n"));
   }
 )
 
@@ -991,56 +995,14 @@ const testActions: Record<string, TestActionParams> = {
 describe.sequential("DomainController.integ.Data.CRUD",
   () => {
   it.each(Object.entries(testActions))("test %s", async (currentTestName, testAction: TestActionParams) => {
-    // const fullTestName = describe.sequential.name + "/" + currentTestName
-    const fullTestName = expect.getState().currentTestName ?? "no test name";
-    log.info("STARTING test:", fullTestName);
-    // expect(currentTestName != undefined).toBeTruthy();
-    // expect(testParams.testAssertions).toBeDefined();
-
-    await chainVitestSteps(
-      fullTestName,
-      {},
-      async () => {
-        switch (testAction.testActionType) {
-          case "testCompositeActionSuite": {
-            const queryResult: ActionReturnType = await domainController.handleTestCompositeActionSuite(
-              testAction.testCompositeAction,
-              {},
-              localCache.currentModel(testAction.deploymentUuid)
-            );
-            log.info(
-              "test testCompositeActionSuite",
-              fullTestName,
-              ": queryResult=",
-              JSON.stringify(queryResult, null, 2)
-            );
-            return queryResult;
-          }
-          case "testCompositeAction": {
-            const queryResult: ActionReturnType = await domainController.handleTestCompositeAction(
-              testAction.testCompositeAction,
-              {},
-              localCache.currentModel(testAction.deploymentUuid)
-            );
-            log.info(
-              "test testCompositeAction",
-              fullTestName,
-              ": queryResult=",
-              JSON.stringify(queryResult, null, 2)
-            );
-            return queryResult;
-          }
-          case "testCompositeActionTemplate": {
-            throw new Error("testCompositeActionTemplate not implemented yet!");
-          }
-        }
-      },
-      undefined, // expected result transformation
-      undefined, // name to give to result
-      "void",
-      undefined // expectedValue
+    const testSuiteResults = await runTestOrTestSuite(
+      localCache,
+      domainController,
+      testAction
     );
+    globalTestSuiteResults = testSuiteResults.status == "ok"? testSuiteResults.returnedDomainElement.elementValue as any : globalTestSuiteResults;
+    console.log("testSuiteResults", testSuiteResults);
   }, globalTimeOut);
-
   } //  end describe('DomainController.Data.CRUD.React',
 )
+

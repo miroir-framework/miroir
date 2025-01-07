@@ -507,6 +507,10 @@ export {
   StoreSectionFactoryRegister,
 } from "./0_interfaces/4-services/PersistenceStoreControllerInterface.js";
 export {
+  TestResult,
+  TestSuiteResult,
+} from "./0_interfaces/4-services/TestInterface.js";
+export {
   getApplicationSection
 } from './1_core/Application.js';
 export { } from "./1_core/Report.js";

@@ -119,7 +119,8 @@ export interface DomainControllerInterface {
     testAction: TestCompositeActionSuite,
     actionParamValues: Record<string, any>,
     currentModel: MetaModel
-  ): Promise<ActionVoidReturnType>;
+  // ): Promise<ActionVoidReturnType>;
+  ): Promise<ActionReturnType>;
 
   handleAction(action: DomainAction, currentModel?: MetaModel): Promise<ActionVoidReturnType>;
   /**
