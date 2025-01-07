@@ -320,7 +320,7 @@ function loadNewEntityInstancesInLocalCache(
       : i
   );
 
-  // log.info('loadNewEntityInstancesInLocalCache loading instances',deploymentUuid,section,serializableInstances);
+  log.info('loadNewEntityInstancesInLocalCache loading instances',deploymentUuid,section,JSON.stringify(serializableInstances[0]));
 
   (state as any).loading[instanceCollectionEntityIndex] = sliceEntityAdapter.setAll(
     (state as any).loading[instanceCollectionEntityIndex],
@@ -362,7 +362,7 @@ function handleInstanceAction(
         //   // JSON.stringify(state)
         // );
 
-        const sliceEntityAdapter = initializeLocalCacheSliceStateWithEntityAdapter(
+        const sliceEntityAdapter:EntityAdapter<EntityInstance, string> = initializeLocalCacheSliceStateWithEntityAdapter(
           instanceAction.deploymentUuid,
           instanceAction.applicationSection,
           instanceCollection.parentUuid,

@@ -979,13 +979,13 @@ export class DomainController implements DomainControllerInterface {
       let actionResult: ActionReturnType | undefined = undefined;
       try {
         LoggerGlobalContext.setAction(currentAction.compositeActionStepLabel);
-        log.info(
-          "handleCompositeAction compositeInstanceAction handling sub currentAction",
-          JSON.stringify(currentAction, null, 2),
-          // currentAction,
-          "localContext keys",
-          Object.keys(localContext),
-        );
+        // log.info(
+        //   "handleCompositeAction compositeInstanceAction handling sub currentAction",
+        //   JSON.stringify(currentAction, null, 2),
+        //   // currentAction,
+        //   "localContext keys",
+        //   Object.keys(localContext),
+        // );
         switch (currentAction.compositeActionType) {
           case "compositeAction": {
             log.info("handleCompositeAction compositeAction action to handle", JSON.stringify(currentAction, null, 2));
@@ -997,10 +997,12 @@ export class DomainController implements DomainControllerInterface {
             break;
           }
           case "domainAction": {
-            log.info(
-              "handleCompositeAction domainAction action to handle",
-              JSON.stringify(currentAction.domainAction, null, 2)
-            );
+            if (currentAction.domainAction.actionType !== "modelAction" || (currentAction.domainAction as any).actionName !== "initModel") {
+              log.info(
+                "handleCompositeAction domainAction action to handle",
+                JSON.stringify(currentAction.domainAction, null, 2)
+              );
+            }
             actionResult = await this.handleAction(currentAction.domainAction, currentModel);
             if (actionResult?.status != "ok") {
               log.error("handleCompositeAction Error on action", JSON.stringify(currentAction, null, 2), "actionResult", JSON.stringify(actionResult, null, 2));

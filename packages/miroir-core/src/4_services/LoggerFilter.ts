@@ -36,7 +36,11 @@ export class LoggerFilter implements LoggerInterface {
   
   private filter(logger: (...msg: any[]) => void, ...msg: any[]): void {
     // logger("FILTER", this.contextFilter?.testSuite, LoggerGlobalContext.getTestSuite());
-    if (!this.contextFilter?.testSuite || LoggerGlobalContext.getTestSuite() == this.contextFilter?.testSuite) {
+    if (
+      (!this.contextFilter?.testSuite || LoggerGlobalContext.getTestSuite() == this.contextFilter?.testSuite) &&
+      (!this.contextFilter?.test || LoggerGlobalContext.getTest() == this.contextFilter?.test) &&
+      (!this.contextFilter?.testAssertion || LoggerGlobalContext.getTestAssertion() == this.contextFilter?.testAssertion)
+    ) {
       logger(...msg);
     }
     // else {

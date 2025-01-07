@@ -57,12 +57,12 @@ const specificLoggerOptions: SpecificLoggerOptionsMap = {
   // "4_miroir-redux_LocalCacheSlice": {template:"[{{time}}] {{level}} ({{name}}) -"},
 }
 
-MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
-  loglevelnext,
-  defaultLevels.INFO,
-  "[{{time}}] {{level}} ({{name}})# ",
-  specificLoggerOptions
-);
+// MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
+//   loglevelnext,
+//   defaultLevels.INFO,
+//   "[{{time}}] {{level}} ({{name}})# ",
+//   specificLoggerOptions
+// );
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -93,6 +93,21 @@ const currentMiroirConfig: MiroirConfigClient =
     : (miroirConfig as unknown as MiroirConfigClient);
 
 log.info("currentMiroirConfigName:",currentMiroirConfigName, "currentMiroirConfig", currentMiroirConfig); 
+
+MiroirLoggerFactory.startRegisteredLoggers(
+  loglevelnext,
+  {
+    "defaultLevel": "INFO",
+    "defaultTemplate": "[{{time}}] {{level}} {{name}} ### ",
+    // "context": {
+    //   "testSuite": "DomainController.integ.Data.CRUD",
+    //   "test": "Add Book instance"
+    // },
+    "specificLoggerOptions": {
+    }
+  },
+);
+log.info("started registered loggers DONE");
 
 const container = document.getElementById("root");
 

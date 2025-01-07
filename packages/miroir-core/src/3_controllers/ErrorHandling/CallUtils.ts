@@ -78,18 +78,17 @@ export class CallUtils {
   ): Promise<Record<string, any>> {
     if (action.actionType !== "modelAction" || action.actionName !== "initModel") {
       log.info("CallUtils callPersistenceAction called with",
-        // context,
-        // continuation, 
         "action",
         JSON.stringify(action, null, 2)
       );
-    } else {
-      log.info("CallUtils callPersistenceAction called with",
-        "action",
-        action.actionType,
-        action.actionName
-      );
-    }
+    } 
+    // else {
+    //   log.info("CallUtils callPersistenceAction called with",
+    //     "action",
+    //     action.actionType,
+    //     action.actionName
+    //   );
+    // }
     const result: ActionReturnType = await this.persistenceStoreLocalOrRemote.handlePersistenceAction(action);
     log.info("CallUtils callPersistenceAction received result", result);
     if (result["status"] == "error") {
@@ -99,8 +98,8 @@ export class CallUtils {
       this.errorLogService.pushError(error);
       throw error;
     } else {
-      log.info("CallUtils callPersistenceAction ok", result);
-      log.info("CallUtils callPersistenceAction continuation", continuation);
+      // log.info("CallUtils callPersistenceAction ok", result);
+      // log.info("CallUtils callPersistenceAction continuation", continuation);
       const transformedResult = continuation.resultTransformation
         ? continuation.resultTransformation(result, context)
         : result;

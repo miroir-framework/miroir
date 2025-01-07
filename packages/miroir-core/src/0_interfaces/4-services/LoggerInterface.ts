@@ -59,7 +59,8 @@ export type SpecificLoggerOptionsMap = Record<string,SpecificLoggerOptions>;
 
 export interface LoggerOptions {
   // defaultLevel: typeof defaultLevels[keyof typeof defaultLevels];
-  defaultLevel: (typeof defaultLevels)[keyof typeof defaultLevels];
+  // defaultLevel: (typeof defaultLevels)[keyof typeof defaultLevels];
+  defaultLevel: keyof typeof defaultLevels;
   defaultTemplate: string;
   // context?: LoggerGlobalContext;
   context?: LoggerContextElement;

@@ -1,6 +1,10 @@
 {
   "defaultLevel": "INFO",
   "defaultTemplate": "[{{time}}] {{level}} {{name}} ### ",
+  "context": {
+    "testSuite": "DomainController.integ.Data.CRUD",
+    "test": "Add Book instance"
+  },
   "specificLoggerOptions": {
   }
 }
