@@ -5,7 +5,7 @@ import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  ApplicationDeploymentConfiguration,
+  SelfApplicationDeploymentConfiguration,
   ApplicationSection,
   getReportsAndEntitiesDefinitionsForDeploymentUuid,
   JzodElement,
@@ -76,7 +76,7 @@ export const ReportPage = () => {
   //   adminConfigurationDeploymentTest1,
   //   adminConfigurationDeploymentTest4,
   // ] as any[]; //type for Admin Application Deployment Entity Definition
-  // ] as ApplicationDeploymentConfiguration[];
+  // ] as SelfApplicationDeploymentConfiguration[];
 
 
   const adminAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
@@ -116,7 +116,7 @@ export const ReportPage = () => {
     []
   );
 
-  const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(
+  const displayedDeploymentDefinition: SelfApplicationDeploymentConfiguration | undefined = deployments.find(
     (d) => d.uuid == pageParams.deploymentUuid
   );
 

@@ -42,7 +42,9 @@ import {
   selfApplicationMiroir,
   selfApplicationModelBranchMiroirMasterBranch,
   selfApplicationStoreBasedConfigurationMiroir,
-  selfApplicationVersionInitialMiroirVersion
+  selfApplicationVersionInitialMiroirVersion,
+  StoreUnitConfiguration,
+  TestSuiteResult
 } from "miroir-core";
 
 
@@ -59,10 +61,12 @@ import {
   deleteAndCloseApplicationDeployments,
   loadTestConfigFiles,
   miroirBeforeEach_resetAndInitApplicationDeployments,
+  runTestOrTestSuite,
   setupMiroirTest,
   TestActionParams
 } from "../utils/tests-utils.js";
 import { cleanLevel } from './constants.js';
+import { LoggerOptions } from 'miroir-core/src/0_interfaces/4-services/LoggerInterface.js';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCache;
@@ -70,18 +74,20 @@ let localCache: LocalCache;
 // let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
 let miroirContext: MiroirContext;
 let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
+let globalTestSuiteResults: TestSuiteResult = {};
 
 const env:any = (import.meta as any).env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
-// const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
-// console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
-const testFileName = "DomainNewController.CompositeAction.integ.test";
+const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
+const fileName = "DomainNewController.integ.test";
+myConsoleLog(fileName, "received env", JSON.stringify(env, null, 2));
+
 let miroirConfig:any;
-let loggerOptions:any;
-let log: LoggerInterface = console as any as LoggerInterface;
+let loggerOptions:LoggerOptions;
+let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DomainNewController.CompositeAction.integ.test")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName)
 ).then((logger: LoggerInterface) => {log = logger});
 
 miroirAppStartup();
@@ -91,23 +97,28 @@ miroirIndexedDbStoreSectionStartup();
 miroirPostgresStoreSectionStartup();
 ConfigurationService.registerTestImplementation({expect: expect as any});
 
-const {miroirConfig: miroirConfigParam, logConfig:loggerOptionsParam} = await loadTestConfigFiles(env)
+const {miroirConfig: miroirConfigParam, logConfig} = await loadTestConfigFiles(env)
 miroirConfig = miroirConfigParam;
-loggerOptions = loggerOptionsParam;
-console.log(testFileName, JSON.stringify(miroirConfig, null, 2));
-console.log(
-  testFileName,
+loggerOptions = logConfig;
+myConsoleLog("received miroirConfig", JSON.stringify(miroirConfig, null, 2));
+myConsoleLog(
+  "received miroirConfig.client",
   JSON.stringify(miroirConfig.client, null, 2)
 );
-console.log(testFileName, JSON.stringify(loggerOptions, null, 2));
+myConsoleLog("received loggerOptions", JSON.stringify(loggerOptions, null, 2));
 MiroirLoggerFactory.startRegisteredLoggers(
   loglevelnext,
-  (defaultLevels as any)[loggerOptions.defaultLevel],
-  loggerOptions.defaultTemplate,
-  loggerOptions.specificLoggerOptions
+  loggerOptions,
 );
-console.log(testFileName, "started registered loggers DONE");
+myConsoleLog("started registered loggers DONE");
 
+const testApplicationDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
+const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
+? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
+: miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
+const testDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
+? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
+: miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
 
 // ################################################################################################
 beforeAll(
@@ -124,7 +135,11 @@ beforeAll(
     localCache = locallocalCache;
     miroirContext = localmiroirContext;
 
-    const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(miroirConfig, adminConfigurationDeploymentMiroir.uuid);
+    const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
+      miroirConfig,
+      adminConfigurationDeploymentMiroir.uuid,
+      miroirtDeploymentStorageConfiguration,
+    );
     const createDeploymentResult = await domainController.handleCompositeAction(createMiroirDeploymentCompositeAction, defaultMiroirMetaModel);
     if (createDeploymentResult.status !== "ok") {
       throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
@@ -170,6 +185,7 @@ afterAll(
       ],
     );
     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
+    console.log("globalTestSuiteResults:\n", Object.values(globalTestSuiteResults).map((r) => "\"" + r.testLabel + "\": " + r.testResult).join("\n"));
   }
 )
 
@@ -211,37 +227,46 @@ const libraryEntitesAndInstances = [
   }
 ];
 
+const adminConfigurationDeploymentForTest = {
+  "uuid":"65119694-335a-47f3-9b76-8872697c3c9c",
+  "parentName":"SelfApplicationDeploymentConfiguration",
+  "parentUuid":"35c5608a-7678-4f07-a4ec-76fc5bc35424",
+  "type":"singleNode",
+  "name":"LibraryApplicationFilesystemDeployment",
+  "defaultLabel":"LibraryApplicationFilesystemDeployment",
+  "application":"dbabc841-b1fb-48f6-a31a-b8ce294127da",
+  "description": "The default Filesystem Deployment for Application Library",
+  "applicationModelLevel": "model",
+  "configuration": {
+    "admin": {
+      "emulatedServerType": "filesystem",
+      "directory":"../miroir-core/src/assets/admin"
+    },
+    "model": {
+      "emulatedServerType": "filesystem",
+      "directory":"../miroir-core/src/assets/library_model"
+    },
+    "data": {
+      "emulatedServerType": "filesystem",
+      "directory":"../miroir-core/src/assets/library_data"
+    }
+  }
+}
+
 const testActions: Record<string, TestActionParams> = {
-  "DomainNewController.CompositeAction.integ.test": {
+  "applicative.Library.integ.test": {
     testActionType: "testCompositeActionSuite",
     deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-    testActionLabel: "DomainNewController.CompositeAction.integ.test",
+    testActionLabel: "applicative.Library.integ.test",
     testCompositeAction: {
       testType: "testCompositeActionSuite",
-      testLabel: "DomainNewController.CompositeAction.integ.test",
-      // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-      beforeAll: createDeploymentCompositeAction(miroirConfig, adminConfigurationDeploymentLibrary.uuid),
-      
-      // beforeAll: {
-      //   actionType: "compositeAction",
-      //   actionLabel: "beforeAll",
-      //   actionName: "sequence",
-      //   definition: [
-      //     {
-      //       compositeActionType: "domainAction",
-      //       compositeActionStepLabel: "createLibraryStore",
-      //       domainAction: {
-      //         actionType: "storeManagementAction",
-      //         actionName: "createStore",
-      //         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-      //         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-      //         configuration: miroirConfig.client.emulateServer
-      //           ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid]
-      //           : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentLibrary.uuid],
-      //       },
-      //     },
-      //   ],
-      // },
+      testLabel: "applicative.Library.integ.test",
+      beforeAll: createDeploymentCompositeAction(
+        miroirConfig,
+        adminConfigurationDeploymentLibrary.uuid,
+        adminConfigurationDeploymentLibrary.configuration,
+        testDeploymentStorageConfiguration
+      ),
       beforeEach: {
         actionType: "compositeAction",
         actionLabel: "beforeEach",
@@ -362,14 +387,14 @@ const testActions: Record<string, TestActionParams> = {
               endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
               deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               configuration: miroirConfig.client.emulateServer
-              ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid]
-              : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentLibrary.uuid]
-            }
+                ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid]
+                : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentLibrary.uuid],
+            },
           },
         ],
       },
       testCompositeActions: {
-        "get Entity Entity from Miroir":{
+        "get Entity Entity from Miroir": {
           testType: "testCompositeAction",
           testLabel: "getEntityEntity",
           compositeAction: {
@@ -436,10 +461,10 @@ const testActions: Record<string, TestActionParams> = {
             },
           ],
         },
-      }
+      },
     },
   },
-    // ]
+  // ]
   // "create new Application": {
   //   testActionType: "testCompositeAction",
   //   deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
@@ -882,55 +907,63 @@ const testActions: Record<string, TestActionParams> = {
 // TODO: duplicate test with ExtractorTemplatePersistenceStoreRunner.integ.test.tsx
 describe.sequential("DomainNewController.CompositeAction.integ.test", () => {
   it.each(Object.entries(testActions))("test %s", async (currentTestName, testAction: TestActionParams) => {
-    // Manually set the currentTestName
-    // expect.getState().currentTestName = `DomainNewController.CompositeAction.integ.test/${currentTestName}`;
-    const fullTestName = expect.getState().currentTestName ?? "no test name";
-    log.info("STARTING test:", fullTestName);
-    // expect(currentTestName != undefined).toBeTruthy();
-    // expect(testParams.testAssertions).toBeDefined();
+        const testSuiteResults = await runTestOrTestSuite(
+          localCache,
+          domainController,
+          testAction
+        );
+        globalTestSuiteResults = testSuiteResults.status == "ok"? testSuiteResults.returnedDomainElement.elementValue as any : globalTestSuiteResults;
+        console.log("testSuiteResults", testSuiteResults);
+    
+  //   // Manually set the currentTestName
+  //   // expect.getState().currentTestName = `DomainNewController.CompositeAction.integ.test/${currentTestName}`;
+  //   const fullTestName = expect.getState().currentTestName ?? "no test name";
+  //   log.info("STARTING test:", fullTestName);
+  //   // expect(currentTestName != undefined).toBeTruthy();
+  //   // expect(testParams.testAssertions).toBeDefined();
 
-    await chainVitestSteps(
-      fullTestName,
-      {},
-      async () => {
-        switch (testAction.testActionType) {
-          case "testCompositeActionSuite": {
-            const queryResult: ActionReturnType = await domainController.handleTestCompositeActionSuite(
-              testAction.testCompositeAction,
-              {},
-              localCache.currentModel(testAction.deploymentUuid)
-            );
-            console.log(
-              "test testCompositeActionSuite",
-              fullTestName,
-              ": queryResult=",
-              JSON.stringify(queryResult, null, 2)
-            );
-            return queryResult;
-          }
-          case "testCompositeAction": {
-            const queryResult: ActionReturnType = await domainController.handleTestCompositeAction(
-              testAction.testCompositeAction,
-              {},
-              localCache.currentModel(testAction.deploymentUuid)
-            );
-            console.log(
-              "test testCompositeAction",
-              fullTestName,
-              ": queryResult=",
-              JSON.stringify(queryResult, null, 2)
-            );
-            return queryResult;
-          }
-          case "testCompositeActionTemplate": {
-            throw new Error("testCompositeActionTemplate not implemented yet!");
-          }
-        }
-      },
-      undefined, // expected result transformation
-      undefined, // name to give to result
-      "void",
-      undefined // expectedValue
-    );
+  //   await chainVitestSteps(
+  //     fullTestName,
+  //     {},
+  //     async () => {
+  //       switch (testAction.testActionType) {
+  //         case "testCompositeActionSuite": {
+  //           const queryResult: ActionReturnType = await domainController.handleTestCompositeActionSuite(
+  //             testAction.testCompositeAction,
+  //             {},
+  //             localCache.currentModel(testAction.deploymentUuid)
+  //           );
+  //           console.log(
+  //             "test testCompositeActionSuite",
+  //             fullTestName,
+  //             ": queryResult=",
+  //             JSON.stringify(queryResult, null, 2)
+  //           );
+  //           return queryResult;
+  //         }
+  //         case "testCompositeAction": {
+  //           const queryResult: ActionReturnType = await domainController.handleTestCompositeAction(
+  //             testAction.testCompositeAction,
+  //             {},
+  //             localCache.currentModel(testAction.deploymentUuid)
+  //           );
+  //           console.log(
+  //             "test testCompositeAction",
+  //             fullTestName,
+  //             ": queryResult=",
+  //             JSON.stringify(queryResult, null, 2)
+  //           );
+  //           return queryResult;
+  //         }
+  //         case "testCompositeActionTemplate": {
+  //           throw new Error("testCompositeActionTemplate not implemented yet!");
+  //         }
+  //       }
+  //     },
+  //     undefined, // expected result transformation
+  //     undefined, // name to give to result
+  //     "void",
+  //     undefined // expectedValue
+  //   );
   });
 });

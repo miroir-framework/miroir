@@ -101,8 +101,8 @@ myConsoleLog("received loggerOptions", JSON.stringify(loggerOptions, null, 2));
 MiroirLoggerFactory.startRegisteredLoggers(
   loglevelnext,
   (defaultLevels as any)[loggerOptions.defaultLevel],
-  loggerOptions.defaultTemplate,
-  loggerOptions.specificLoggerOptions
+  // loggerOptions.defaultTemplate,
+  // loggerOptions.specificLoggerOptions
 );
 myConsoleLog("started registered loggers DONE");
 

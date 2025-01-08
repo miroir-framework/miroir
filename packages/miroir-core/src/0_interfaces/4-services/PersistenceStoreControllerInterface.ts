@@ -7,6 +7,7 @@ import {
   ActionVoidReturnType,
   Application,
   ApplicationSection,
+  DataStoreType,
   Entity,
   EntityDefinition,
   EntityInstance,
@@ -22,6 +23,7 @@ import {
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+  SelfApplicationDeploymentConfiguration,
   StoreManagementAction,
   StoreSectionConfiguration
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
@@ -154,10 +156,12 @@ export type PersistenceStoreAdminSectionFactory = (
 export type AdminStoreFactoryRegister = Map<string,PersistenceStoreAdminSectionFactory>;
 
 export interface InitApplicationParameters {
+  // TODO: gice actual types to parameters, not just EntityInstance
   metaModel:MetaModel, 
-  dataStoreType: DataStoreApplicationType,
+  dataStoreType: DataStoreType,
   application: Application,
-  applicationDeploymentConfiguration: EntityInstance,
+  adminApplicationDeploymentConfiguration: EntityInstance,
+  selfApplicationDeploymentConfiguration: SelfApplicationDeploymentConfiguration,
   applicationModelBranch: EntityInstance,
   applicationVersion: EntityInstance,
   applicationStoreBasedConfiguration: EntityInstance,
@@ -177,7 +181,7 @@ export interface PersistenceStoreControllerInterface
     metaModel: MetaModel,
     dataStoreType: DataStoreApplicationType,
     application: Application,
-    applicationDeploymentConfiguration: EntityInstance,
+    adminApplicationDeploymentConfiguration: EntityInstance,
     applicationModelBranch: EntityInstance,
     applicationVersion: EntityInstance,
     applicationStoreBasedConfiguration: EntityInstance

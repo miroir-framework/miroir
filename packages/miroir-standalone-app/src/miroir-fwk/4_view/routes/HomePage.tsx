@@ -13,7 +13,7 @@ import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  ApplicationDeploymentConfiguration,
+  SelfApplicationDeploymentConfiguration,
   ApplicationSection,
   // adminConfigurationDeploymentTest1,
   defaultMiroirMetaModel,
@@ -109,7 +109,7 @@ export const HomePage = (props: RootComponentProps) => {
   const parisAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentParis.uuid);
 
   // computing current state #####################################################################
-  const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(
+  const displayedDeploymentDefinition: SelfApplicationDeploymentConfiguration | undefined = deployments.find(
     (d) => d.uuid == displayedDeploymentUuid
   );
   log.info("HomePage displayedDeploymentDefinition",displayedDeploymentDefinition);

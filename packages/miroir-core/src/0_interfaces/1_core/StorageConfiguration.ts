@@ -72,17 +72,17 @@ export const ApplicationModelLevelSchema = z.enum([
 export type ApplicationModelLevel = z.infer<typeof ApplicationModelLevelSchema>;
 
 
-export const ApplicationDeploymentSchema = EntityInstanceWithNameSchema.extend({
-  // uuid: z.string().uuid(),
-  type: ClientServerDistributionModeSchema,
-  defaultLabel: z.string(),
-  description: z.string(),
-  // metaModel: ModelStorageLocation,
-  application:z.string().uuid().optional(),
-  applicationVersion:z.string().uuid().optional(),
-  applicationModelLevel: ApplicationModelLevelSchema,
-  model: ModelStorageLocationSchema.optional(), // in the case of a designer access, the zone where the model can be edited.
-  data: ModelStorageLocationSchema.optional(),
-});
+// export const SelfApplicationDeploymentConfigurationSchema = EntityInstanceWithNameSchema.extend({
+//   // uuid: z.string().uuid(),
+//   type: ClientServerDistributionModeSchema,
+//   defaultLabel: z.string(),
+//   description: z.string(),
+//   // metaModel: ModelStorageLocation,
+//   application:z.string().uuid().optional(),
+//   applicationVersion:z.string().uuid().optional(),
+//   applicationModelLevel: ApplicationModelLevelSchema,
+//   model: ModelStorageLocationSchema.optional(), // in the case of a designer access, the zone where the model can be edited.
+//   data: ModelStorageLocationSchema.optional(),
+// });
 
-export type ApplicationDeploymentConfiguration = z.infer<typeof ApplicationDeploymentSchema>;
+// export type SelfApplicationDeploymentConfiguration = z.infer<typeof SelfApplicationDeploymentConfigurationSchema>;

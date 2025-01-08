@@ -8,8 +8,8 @@ import { z } from "zod";
 
 import {
   adminConfigurationDeploymentMiroir,
-  ApplicationDeploymentConfiguration,
-  ApplicationDeploymentSchema,
+  SelfApplicationDeploymentConfiguration,
+  SelfApplicationDeploymentConfigurationSchema,
   ApplicationSection,
   applicationSection,
   DeploymentEntityState,
@@ -68,7 +68,7 @@ export const ReportSectionDisplayCorePropsSchema = z.object({
   styles: z.any().optional(),
   label: z.string(),
   defaultlabel: z.string().optional(),
-  displayedDeploymentDefinition: ApplicationDeploymentSchema.optional(),
+  displayedDeploymentDefinition: SelfApplicationDeploymentConfigurationSchema.optional(),
   section: objectListReportSection, // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
   domainElementObject: domainElementObject, // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
   fetchedDataJzodSchema: z.record(jzodObject.optional()).optional(), // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
@@ -98,7 +98,7 @@ export function defaultFormValues(
   currentEntityJzodSchema: JzodObject,
   idList?:{id:number}[],
   currentMiroirEntity?: Entity,
-  displayedDeploymentDefinition?: ApplicationDeploymentConfiguration,
+  displayedDeploymentDefinition?: SelfApplicationDeploymentConfiguration,
 ):any {
   log.info(
     "defaultFormValues called TableComponentType",
@@ -213,7 +213,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
   const currentModel: MetaModel = useCurrentModel(props.deploymentUuid)
 
-  const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(
+  const displayedDeploymentDefinition: SelfApplicationDeploymentConfiguration | undefined = deployments.find(
     (d) => d.uuid == props.deploymentUuid
   );
   log.info("ReportSectionListDisplay displayedDeploymentDefinition", displayedDeploymentDefinition);

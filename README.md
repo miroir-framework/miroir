@@ -74,7 +74,7 @@ npm run startDev -w miroir-standalone-app
 ### Miroir-core
 
 ```js
-$ VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run test -w miroir-core -- domainSelector
+$ VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run vitest -w miroir-core -- domainSelector
 ```
 results in:
 ```sh

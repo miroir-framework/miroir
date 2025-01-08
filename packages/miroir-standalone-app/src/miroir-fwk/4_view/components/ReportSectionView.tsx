@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
 import {
-  ApplicationDeploymentConfiguration,
+  SelfApplicationDeploymentConfiguration,
   ApplicationSection,
   DomainElementObject,
   Entity,
@@ -83,7 +83,7 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
 
 
   // ##############################################################################################
-  const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(
+  const displayedDeploymentDefinition: SelfApplicationDeploymentConfiguration | undefined = deployments.find(
     (d) => d.uuid == props.deploymentUuid
   );
   log.info("ReportSectionView displayedDeploymentDefinition", displayedDeploymentDefinition);

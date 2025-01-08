@@ -1,9 +1,9 @@
-import { ApplicationDeploymentConfiguration } from "./0_interfaces/1_core/StorageConfiguration.js";
+import { SelfApplicationDeploymentConfiguration } from "./0_interfaces/1_core/StorageConfiguration.js";
 
 // duplicated from server!!!!!!!!
-export const applicationDeploymentLibrary: ApplicationDeploymentConfiguration = {
+export const applicationDeploymentLibrary: SelfApplicationDeploymentConfiguration = {
   "uuid":"f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-  "parentName":"ApplicationDeploymentConfiguration",
+  "parentName":"SelfApplicationDeploymentConfiguration",
   "parentUuid":"35c5608a-7678-4f07-a4ec-76fc5bc35424",
   "type":"singleNode",
   "name":"LibraryApplicationPostgresDeployment",

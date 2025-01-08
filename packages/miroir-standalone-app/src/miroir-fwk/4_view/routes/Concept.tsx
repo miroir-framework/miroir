@@ -10,7 +10,7 @@ import { ChangeEvent, useCallback, useMemo, useState } from "react";
 const MyReactCodeMirror: any = ReactCodeMirror // TODO: solve the mystery: it was once well-typed, now the linter raises an error upon direct (default-typed) use!
 
 import {
-  ApplicationDeploymentConfiguration,
+  SelfApplicationDeploymentConfiguration,
   CompositeActionTemplate,
   DomainAction,
   DomainControllerInterface,
@@ -216,7 +216,7 @@ export const ConceptPage: React.FC<any> = (
     [props,JSON.stringify(dialogOuterFormObject, null, 2)]
   );
 
-  const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(
+  const displayedDeploymentDefinition: SelfApplicationDeploymentConfiguration | undefined = deployments.find(
     (d) => d.uuid == context.deploymentUuid
   );
 

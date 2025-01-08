@@ -25,11 +25,17 @@ import {
   publisher2,
   publisher3,
   selfApplicationDeploymentLibrary,
+  selfApplicationLibrary,
   selfApplicationMiroir,
+  selfApplicationModelBranchLibraryMasterBranch,
   selfApplicationModelBranchMiroirMasterBranch,
+  selfApplicationStoreBasedConfigurationLibrary,
   selfApplicationStoreBasedConfigurationMiroir,
   selfApplicationVersionInitialMiroirVersion,
+  selfApplicationVersionLibraryInitialVersion,
+  Uuid,
 } from "miroir-core";
+import { InitApplicationParameters } from "miroir-core/src/0_interfaces/4-services/PersistenceStoreControllerInterface";
 
 export type ApplicationEntitiesAndInstances = {
   entity: MetaEntity;
@@ -88,15 +94,21 @@ export function testOnLibrary_resetInitAndAddTestDataToLibraryDeployment(
           actionName: "initModel",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           deploymentUuid: selfApplicationDeploymentLibrary.uuid,
-          params: {
+          // params: getBasicApplicationConfiguration("Library") as any, // TODO: straighten up the types
+          params: 
+          {
             dataStoreType:
               adminConfigurationDeploymentLibrary.uuid == adminConfigurationDeploymentMiroir.uuid ? "miroir" : "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
             metaModel: defaultMiroirMetaModel,
-            application: selfApplicationMiroir,
+            // application: selfApplicationMiroir,
+            application: selfApplicationLibrary,
             selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
-            applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
-            applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
-            applicationVersion: selfApplicationVersionInitialMiroirVersion,
+            // applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
+            applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
+            // applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
+            applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,
+            // applicationVersion: selfApplicationVersionInitialMiroirVersion,
+            applicationVersion: selfApplicationVersionLibraryInitialVersion,
           },
         },
       },

@@ -36,6 +36,7 @@ import {
   publisher3,
   SelfApplicationDeploymentConfiguration,
   selfApplicationDeploymentMiroir,
+  StoreUnitConfiguration,
   TestSuiteResult
 } from "miroir-core";
 
@@ -109,6 +110,18 @@ MiroirLoggerFactory.startRegisteredLoggers(
 );
 myConsoleLog("started registered loggers DONE");
 
+const globalTimeOut = 30000;
+// const globalTimeOut = 10^9;
+const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
+? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
+: miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
+
+const testApplicationDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
+
+const testDeploymentStorageConfiguration = miroirConfig.client.emulateServer
+? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
+: miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
+
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCache;
@@ -161,7 +174,8 @@ beforeAll(
 
     const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
       miroirConfig,
-      adminConfigurationDeploymentMiroir.uuid
+      adminConfigurationDeploymentMiroir.uuid,
+      miroirtDeploymentStorageConfiguration,
     );
     const createDeploymentResult = await domainController.handleCompositeAction(
       createMiroirDeploymentCompositeAction,
@@ -202,18 +216,16 @@ afterAll(
   }
 )
 
-const globalTimeOut = 30000;
-// const globalTimeOut = 10^9;
 
 const testActions: Record<string, TestActionParams> = {
   "DomainController.integ.Data.CRUD": {
     testActionType: "testCompositeActionSuite",
-    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+    deploymentUuid: testApplicationDeploymentUuid,
     testActionLabel: "DomainController.integ.Data.CRUD",
     testCompositeAction: {
       testType: "testCompositeActionSuite",
       testLabel: "DomainController.integ.Data.CRUD",
-      beforeAll: createDeploymentCompositeAction(miroirConfig, adminConfigurationDeploymentLibrary.uuid),
+      beforeAll: createDeploymentCompositeAction(miroirConfig, testApplicationDeploymentUuid, testDeploymentStorageConfiguration),
       beforeEach: testOnLibrary_resetInitAndAddTestDataToLibraryDeployment(miroirConfig, libraryEntitiesAndInstancesWithoutBook3),
       afterEach: testOnLibrary_resetLibraryDeployment(miroirConfig),
       afterAll: testOnLibrary_deleteLibraryDeployment(miroirConfig),
@@ -243,7 +255,7 @@ const testActions: Record<string, TestActionParams> = {
                   actionName: "rollback",
                   actionType: "modelAction",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  deploymentUuid: testApplicationDeploymentUuid,
                 },
               },
               {
@@ -255,12 +267,12 @@ const testActions: Record<string, TestActionParams> = {
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   applicationSection: "data", // TODO: give only application section in individual queries?
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  deploymentUuid: testApplicationDeploymentUuid,
                   query: {
                     queryType: "boxedQueryWithExtractorCombinerTransformer",
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    deploymentUuid: testApplicationDeploymentUuid,
                     pageParams: {
-                      currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      currentDeploymentUuid: testApplicationDeploymentUuid,
                     },
                     queryParams: {},
                     contextResults: {},
@@ -352,7 +364,7 @@ const testActions: Record<string, TestActionParams> = {
                   actionName: "rollback",
                   actionType: "modelAction",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  deploymentUuid: testApplicationDeploymentUuid,
                 },
               },
               {
@@ -363,7 +375,7 @@ const testActions: Record<string, TestActionParams> = {
                   actionName: "createInstance",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   applicationSection: "data",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  deploymentUuid: testApplicationDeploymentUuid,
                   objects: [
                     {
                       parentName: book3.parentName,
@@ -383,12 +395,12 @@ const testActions: Record<string, TestActionParams> = {
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   applicationSection: "data", // TODO: give only application section in individual queries?
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  deploymentUuid: testApplicationDeploymentUuid,
                   query: {
                     queryType: "boxedQueryWithExtractorCombinerTransformer",
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    deploymentUuid: testApplicationDeploymentUuid,
                     pageParams: {
-                      currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      currentDeploymentUuid: testApplicationDeploymentUuid,
                     },
                     queryParams: {},
                     contextResults: {},
@@ -480,7 +492,7 @@ const testActions: Record<string, TestActionParams> = {
                   actionName: "rollback",
                   actionType: "modelAction",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  deploymentUuid: testApplicationDeploymentUuid,
                 },
               },
               {
@@ -491,7 +503,7 @@ const testActions: Record<string, TestActionParams> = {
                   actionName: "createInstance",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   applicationSection: "data",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  deploymentUuid: testApplicationDeploymentUuid,
                   objects: [
                     {
                       parentName: book3.parentName,
@@ -511,12 +523,12 @@ const testActions: Record<string, TestActionParams> = {
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   applicationSection: "data", // TODO: give only application section in individual queries?
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  deploymentUuid: testApplicationDeploymentUuid,
                   query: {
                     queryType: "boxedQueryWithExtractorCombinerTransformer",
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    deploymentUuid: testApplicationDeploymentUuid,
                     pageParams: {
-                      currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      currentDeploymentUuid: testApplicationDeploymentUuid,
                     },
                     queryParams: {},
                     contextResults: {},
@@ -608,7 +620,7 @@ const testActions: Record<string, TestActionParams> = {
                   actionName: "rollback",
                   actionType: "modelAction",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  deploymentUuid: testApplicationDeploymentUuid,
                 },
               },
               {
@@ -619,7 +631,7 @@ const testActions: Record<string, TestActionParams> = {
                   actionName: "deleteInstance",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   applicationSection: "data",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  deploymentUuid: testApplicationDeploymentUuid,
                   objects: [
                     {
                       parentName: book2.parentName,
@@ -639,12 +651,12 @@ const testActions: Record<string, TestActionParams> = {
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   applicationSection: "data", // TODO: give only application section in individual queries?
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  deploymentUuid: testApplicationDeploymentUuid,
                   query: {
                     queryType: "boxedQueryWithExtractorCombinerTransformer",
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    deploymentUuid: testApplicationDeploymentUuid,
                     pageParams: {
-                      currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      currentDeploymentUuid: testApplicationDeploymentUuid,
                     },
                     queryParams: {},
                     contextResults: {},
@@ -736,7 +748,7 @@ const testActions: Record<string, TestActionParams> = {
                   actionName: "rollback",
                   actionType: "modelAction",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  deploymentUuid: testApplicationDeploymentUuid,
                 },
               },
               {
@@ -747,7 +759,7 @@ const testActions: Record<string, TestActionParams> = {
                   actionName: "deleteInstance",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   applicationSection: "data",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  deploymentUuid: testApplicationDeploymentUuid,
                   objects: [
                     {
                       parentName: book2.parentName,
@@ -765,7 +777,7 @@ const testActions: Record<string, TestActionParams> = {
                   actionName: "rollback",
                   actionType: "modelAction",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  deploymentUuid: testApplicationDeploymentUuid,
                 },
               },
               {
@@ -777,12 +789,12 @@ const testActions: Record<string, TestActionParams> = {
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   applicationSection: "data", // TODO: give only application section in individual queries?
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  deploymentUuid: testApplicationDeploymentUuid,
                   query: {
                     queryType: "boxedQueryWithExtractorCombinerTransformer",
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    deploymentUuid: testApplicationDeploymentUuid,
                     pageParams: {
-                      currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      currentDeploymentUuid: testApplicationDeploymentUuid,
                     },
                     queryParams: {},
                     contextResults: {},
@@ -874,7 +886,7 @@ const testActions: Record<string, TestActionParams> = {
                   actionName: "rollback",
                   actionType: "modelAction",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  deploymentUuid: testApplicationDeploymentUuid,
                 },
               },
               {
@@ -885,7 +897,7 @@ const testActions: Record<string, TestActionParams> = {
                   actionName: "updateInstance",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   applicationSection: "data",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  deploymentUuid: testApplicationDeploymentUuid,
                   objects: [
                     {
                       parentName: book4.parentName,
@@ -910,12 +922,12 @@ const testActions: Record<string, TestActionParams> = {
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   applicationSection: "data", // TODO: give only application section in individual queries?
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  deploymentUuid: testApplicationDeploymentUuid,
                   query: {
                     queryType: "boxedQueryWithExtractorCombinerTransformer",
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    deploymentUuid: testApplicationDeploymentUuid,
                     pageParams: {
-                      currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      currentDeploymentUuid: testApplicationDeploymentUuid,
                     },
                     queryParams: {},
                     contextResults: {},

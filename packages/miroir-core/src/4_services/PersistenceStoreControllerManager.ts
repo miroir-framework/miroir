@@ -165,17 +165,23 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
       newDeploymentUuid,
       storeUnitConfiguration
     );
-    const testLocalMiroirPersistenceStoreController: PersistenceStoreControllerInterface | undefined = this.getPersistenceStoreController(newDeploymentUuid);
+    const testLocalMiroirPersistenceStoreController: PersistenceStoreControllerInterface | undefined =
+      this.getPersistenceStoreController(newDeploymentUuid);
 
     if (testLocalMiroirPersistenceStoreController) {
       await testLocalMiroirPersistenceStoreController.clear();
       try {
-        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ initApplication',initApplicationParameters.dataStoreType,"START");
+        console.log(
+          "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ initApplication",
+          initApplicationParameters.dataStoreType,
+          "START"
+        );
         await testLocalMiroirPersistenceStoreController.initApplication(
           initApplicationParameters.metaModel,
           initApplicationParameters.dataStoreType,
           initApplicationParameters.application,
-          initApplicationParameters.applicationDeploymentConfiguration,
+          // initApplicationParameters.adminApplicationDeploymentConfiguration, // TODO: should be selfApplicationDeploymentConfiguration?
+          initApplicationParameters.selfApplicationDeploymentConfiguration,
           initApplicationParameters.applicationModelBranch,
           initApplicationParameters.applicationVersion,
           initApplicationParameters.applicationStoreBasedConfiguration

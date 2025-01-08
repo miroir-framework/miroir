@@ -36,6 +36,7 @@ import {
   RestClientInterface,
   RestPersistenceClientAndRestClientInterface,
   SelfApplicationDeploymentConfiguration,
+  StoreUnitConfiguration,
   TestCompositeAction,
   TestCompositeActionSuite,
   TestCompositeActionTemplate,
@@ -197,14 +198,15 @@ export const DisplayLoadingInfo:FC<{reportUuid?:string}> = (props:{reportUuid?:s
 export function createDeploymentCompositeAction(
   miroirConfig: MiroirConfigClient,
   deploymentUuid: Uuid,
+  deploymentConfiguration: StoreUnitConfiguration,
 ): CompositeAction {
-  const deploymentConfiguration = miroirConfig.client.emulateServer
-  ? miroirConfig.client.deploymentStorageConfig[deploymentUuid]
-  : miroirConfig.client.serverConfig.storeSectionConfiguration[deploymentUuid];
+  // const deploymentConfiguration = miroirConfig.client.emulateServer
+  // ? miroirConfig.client.deploymentStorageConfig[deploymentUuid]
+  // : miroirConfig.client.serverConfig.storeSectionConfiguration[deploymentUuid];
 
-  if (!deploymentConfiguration) {
-    throw new Error(`Configuration for deployment ${deploymentUuid} not found in ${JSON.stringify(miroirConfig, null, 2)}`);
-  };
+  // if (!deploymentConfiguration) {
+  //   throw new Error(`Configuration for deployment ${deploymentUuid} not found in ${JSON.stringify(miroirConfig, null, 2)}`);
+  // };
 
   log.info("createDeploymentCompositeAction deploymentConfiguration", deploymentUuid, deploymentConfiguration);
   return {

@@ -362,8 +362,8 @@ export {
 } from './0_interfaces/1_core/Model.js';
 export {
   ClientFileStorage,
-  ApplicationDeploymentSchema,
-  ApplicationDeploymentConfiguration,
+  // SelfApplicationDeploymentConfigurationSchema,
+  // SelfApplicationDeploymentConfiguration,
   ApplicationModelLevelSchema,
   ApplicationModelLevel,
   DeploymentSide,

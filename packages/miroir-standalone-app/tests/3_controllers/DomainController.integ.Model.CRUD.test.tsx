@@ -26,6 +26,7 @@ import {
   publisher3,
   SelfApplicationDeploymentConfiguration,
   selfApplicationDeploymentMiroir,
+  StoreUnitConfiguration,
   TestSuiteResult
 } from "miroir-core";
 
@@ -127,6 +128,14 @@ export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInst
   // },
 ];
 
+const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
+? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
+: miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
+
+const testApplicationDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
+const testDeploymentStorageConfiguration = miroirConfig.client.emulateServer
+? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
+: miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
 
 beforeAll(
   async () => {
@@ -150,7 +159,11 @@ beforeAll(
     localCache = locallocalCache;
     miroirContext = localmiroirContext;
 
-    const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(miroirConfig, adminConfigurationDeploymentMiroir.uuid);
+    const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
+      miroirConfig,
+      adminConfigurationDeploymentMiroir.uuid,
+      miroirtDeploymentStorageConfiguration,
+    );
     const createDeploymentResult = await domainController.handleCompositeAction(createMiroirDeploymentCompositeAction, defaultMiroirMetaModel);
     if (createDeploymentResult.status !== "ok") {
       throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
