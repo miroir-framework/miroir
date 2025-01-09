@@ -112,13 +112,14 @@ MiroirLoggerFactory.startRegisteredLoggers(
 );
 myConsoleLog("started registered loggers DONE");
 
-const testApplicationDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
 const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
-? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
-: miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
+  ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
+  : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
+
+const testApplicationDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
 const testDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
-? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
-: miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
+  ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
+  : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
 
 // ################################################################################################
 beforeAll(
@@ -263,8 +264,9 @@ const testActions: Record<string, TestActionParams> = {
       testLabel: "applicative.Library.integ.test",
       beforeAll: createDeploymentCompositeAction(
         miroirConfig,
-        adminConfigurationDeploymentLibrary.uuid,
-        adminConfigurationDeploymentLibrary.configuration,
+        // adminConfigurationDeploymentLibrary.uuid,
+        testApplicationDeploymentUuid,
+        // adminConfigurationDeploymentLibrary.configuration,
         testDeploymentStorageConfiguration
       ),
       beforeEach: {

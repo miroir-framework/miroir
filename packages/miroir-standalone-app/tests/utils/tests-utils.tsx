@@ -360,9 +360,10 @@ export async function addEntitiesAndInstances(
 export async function createLibraryDeploymentDEFUNCT(
   miroirConfig: MiroirConfigClient,
   domainController: DomainControllerInterface,
+  deploymentConfiguration: StoreUnitConfiguration,
 ) {
 
-  const action = createDeploymentCompositeAction(miroirConfig, adminConfigurationDeploymentLibrary.uuid);
+  const action = createDeploymentCompositeAction(miroirConfig, adminConfigurationDeploymentLibrary.uuid, deploymentConfiguration);
   const result = await domainController.handleCompositeAction(action, defaultMiroirMetaModel);
 }
 
@@ -487,13 +488,14 @@ export interface BeforeAllReturnType {
 export async function createDeploymentGetPersistenceStoreController(
   miroirConfig: MiroirConfigClient,
   deploymentUuid: Uuid,
+  storeUnitConfiguration: StoreUnitConfiguration,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
   domainController: DomainControllerInterface,
 ):Promise< PersistenceStoreControllerInterface > {
   log.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ createDeploymentGetPersistenceStoreController started');
   let result:any = undefined;
   try {
-    const createLocalDeploymentCompositeAction = createDeploymentCompositeAction(miroirConfig, deploymentUuid);
+    const createLocalDeploymentCompositeAction = createDeploymentCompositeAction(miroirConfig, deploymentUuid, storeUnitConfiguration);
     const createDeploymentResult = await domainController.handleCompositeAction(createLocalDeploymentCompositeAction, defaultMiroirMetaModel);
 
     if (createDeploymentResult.status != "ok") {
@@ -532,6 +534,9 @@ export async function createMiroirDeploymentGetPersistenceStoreController(
   const localMiroirPersistenceStoreController = await createDeploymentGetPersistenceStoreController(
     miroirConfig,
     adminConfigurationDeploymentMiroir.uuid,
+    miroirConfig.client.emulateServer
+    ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
+    : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid],
     persistenceStoreControllerManager,
     domainController
   );

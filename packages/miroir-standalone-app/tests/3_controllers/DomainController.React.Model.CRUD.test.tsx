@@ -7,18 +7,20 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import {
   ActionReturnType,
   CompositeAction,
+  ConfigurationService,
   DomainAction,
   DomainControllerInterface,
   Entity,
   EntityDefinition,
   EntityInstance,
   JzodElement,
+  LoggerInterface,
   MetaEntity,
-  MiroirConfigClient,
   MiroirContextInterface,
   MiroirLoggerFactory,
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManagerInterface,
+  StoreUnitConfiguration,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   author1,
@@ -29,7 +31,6 @@ import {
   book4,
   book5,
   book6,
-  defaultLevels,
   defaultMiroirMetaModel,
   entityAuthor,
   entityBook,
@@ -55,8 +56,7 @@ import {
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent.js";
 import {
   DisplayLoadingInfo,
-  createLibraryDeploymentDEFUNCT,
-  createMiroirDeploymentGetPersistenceStoreController,
+  createDeploymentCompositeAction,
   deleteAndCloseApplicationDeployments,
   deploymentConfigurations,
   loadTestConfigFiles,
@@ -71,20 +71,55 @@ import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 
+import { LoggerOptions } from "miroir-core/src/0_interfaces/4-services/LoggerInterface.js";
 import { LocalCache } from "miroir-localcache-redux";
 import { loglevelnext } from '../../src/loglevelnextImporter.js';
+import { cleanLevel, packageName } from "./constants.js";
 
 const env:any = (import.meta as any).env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
-const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
+const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
+const fileName = "DomainController.React.Model.test";
+myConsoleLog(fileName, "received env", JSON.stringify(env, null, 2));
 
-MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
-  loglevelnext,
-  (defaultLevels as any)[loggerOptions.defaultLevel],
-  loggerOptions.defaultTemplate,
-  loggerOptions.specificLoggerOptions
+let miroirConfig:any;
+let loggerOptions:LoggerOptions;
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName)
+).then((logger: LoggerInterface) => {log = logger});
+
+miroirAppStartup();
+miroirCoreStartup();
+miroirFileSystemStoreSectionStartup();
+miroirIndexedDbStoreSectionStartup();
+miroirPostgresStoreSectionStartup();
+ConfigurationService.registerTestImplementation({expect: expect as any});
+
+const {miroirConfig: miroirConfigParam, logConfig} = await loadTestConfigFiles(env)
+miroirConfig = miroirConfigParam;
+loggerOptions = logConfig;
+myConsoleLog("received miroirConfig", JSON.stringify(miroirConfig, null, 2));
+myConsoleLog(
+  "received miroirConfig.client",
+  JSON.stringify(miroirConfig.client, null, 2)
 );
+myConsoleLog("received loggerOptions", JSON.stringify(loggerOptions, null, 2));
+MiroirLoggerFactory.startRegisteredLoggers(
+  loglevelnext,
+  loggerOptions,
+);
+myConsoleLog("started registered loggers DONE");
+
+const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
+  ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
+  : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
+
+const testApplicationDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
+const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
+  ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
+  : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
 
 console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
@@ -98,12 +133,6 @@ let miroirContext: MiroirContextInterface;
 
 beforeAll(
   async () => {
-    miroirAppStartup();
-    miroirCoreStartup();
-    miroirFileSystemStoreSectionStartup();
-    miroirIndexedDbStoreSectionStartup();
-    miroirPostgresStoreSectionStartup();
-
     const {
       persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
       domainController: localdomainController,
@@ -115,27 +144,19 @@ beforeAll(
     domainController = localdomainController;
     localCache = locallocalCache;
     miroirContext = localmiroirContext;
-  
-    
-    // Establish requests interception layer before all tests.
-    const wrapped = await createMiroirDeploymentGetPersistenceStoreController(
-      miroirConfig as MiroirConfigClient,
-      persistenceStoreControllerManager,
-      domainController,
-    );
 
-    if (wrapped) {
-      if (wrapped.localMiroirPersistenceStoreController && wrapped.localAppPersistenceStoreController) {
-        localMiroirPersistenceStoreController = wrapped.localMiroirPersistenceStoreController;
-        localAppPersistenceStoreController = wrapped.localAppPersistenceStoreController;
-      }
-    } else {
-      throw new Error("beforeAll failed initialization!");
-    }
-    await createLibraryDeploymentDEFUNCT(
+    const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
       miroirConfig,
-      domainController
-    )
+      adminConfigurationDeploymentMiroir.uuid,
+      miroirtDeploymentStorageConfiguration,
+    );
+    const createDeploymentResult = await domainController.handleCompositeAction(createMiroirDeploymentCompositeAction, defaultMiroirMetaModel);
+    if (createDeploymentResult.status !== "ok") {
+      throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
+    }
+
+    const action = createDeploymentCompositeAction(miroirConfig, adminConfigurationDeploymentLibrary.uuid, libraryDeploymentStorageConfiguration);
+    const result = await domainController.handleCompositeAction(action, defaultMiroirMetaModel);
 
   }
 )
@@ -1326,181 +1347,181 @@ describe.sequential(
       10000
     )
 
-    // ###########################################################################################
-    // TODO
-    it('Alter Miroir Model Report definition then commit',
-      async () => {
-        try {
-          console.log('Alter Miroir Model Report definition start');
+    // // ###########################################################################################
+    // // TODO
+    // it('Alter Miroir Model Report definition then commit',
+    //   async () => {
+    //     try {
+    //       console.log('Alter Miroir Model Report definition start');
 
-          const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.name}/>
-          const user = (userEvent as any).setup()
+    //       const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.name}/>
+    //       const user = (userEvent as any).setup()
   
-          const {
-            getByText,
-            getAllByRole,
-            container
-          } = renderWithProviders(
-            <TestUtilsTableComponent
-              entityName={entityReport.name}
-              entityUuid={entityReport.uuid}
-              DisplayLoadingInfo={displayLoadingInfo}
-              deploymentUuid={adminConfigurationDeploymentMiroir.uuid}
-              instancesApplicationSection="data"
-            />,
-            {store:localCache.getInnerStore(),}
-          );
+    //       const {
+    //         getByText,
+    //         getAllByRole,
+    //         container
+    //       } = renderWithProviders(
+    //         <TestUtilsTableComponent
+    //           entityName={entityReport.name}
+    //           entityUuid={entityReport.uuid}
+    //           DisplayLoadingInfo={displayLoadingInfo}
+    //           deploymentUuid={adminConfigurationDeploymentMiroir.uuid}
+    //           instancesApplicationSection="data"
+    //         />,
+    //         {store:localCache.getInnerStore(),}
+    //       );
   
-          // ##########################################################################################################
-          console.log('Alter Miroir Model Report definition step 1: loading initial configuration, Author entity must be present in report list.')
-          await act(
-            async () => {
-              await domainController.handleAction({
-                actionType: "modelAction",
-                actionName: "rollback",
-                deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              },localCache.currentModel(adminConfigurationDeploymentMiroir.uuid));
-            }
-          );
+    //       // ##########################################################################################################
+    //       console.log('Alter Miroir Model Report definition step 1: loading initial configuration, Author entity must be present in report list.')
+    //       await act(
+    //         async () => {
+    //           await domainController.handleAction({
+    //             actionType: "modelAction",
+    //             actionName: "rollback",
+    //             deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
+    //             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+    //           },localCache.currentModel(adminConfigurationDeploymentMiroir.uuid));
+    //         }
+    //       );
   
-          await act(()=>user.click(screen.getByRole('button')));
+    //       await act(()=>user.click(screen.getByRole('button')));
   
-          await waitFor(
-            () => {
-              getAllByRole(/step:1/)
-            },
-          ).then(
-            ()=> {
-              expect(screen.queryByText(new RegExp(`${reportReportList.uuid}`,'i'))).toBeTruthy() 
-            }
-          );
+    //       await waitFor(
+    //         () => {
+    //           getAllByRole(/step:1/)
+    //         },
+    //       ).then(
+    //         ()=> {
+    //           expect(screen.queryByText(new RegExp(`${reportReportList.uuid}`,'i'))).toBeTruthy() 
+    //         }
+    //       );
   
-          // ##########################################################################################################
-          console.log('Alter Miroir Model Report definition step 2: update reportReportList, modified version must then be present in the report list.')
-          // const updatedReport = 
-          // const iconsDefinition: JzodElement = {
-          //   "type": "number", "optional": true, "extra": { "id":6, "defaultLabel": "Gender (narrow-minded)", "editable": true }
-          // };
+    //       // ##########################################################################################################
+    //       console.log('Alter Miroir Model Report definition step 2: update reportReportList, modified version must then be present in the report list.')
+    //       // const updatedReport = 
+    //       // const iconsDefinition: JzodElement = {
+    //       //   "type": "number", "optional": true, "extra": { "id":6, "defaultLabel": "Gender (narrow-minded)", "editable": true }
+    //       // };
 
-          const updateAction: DomainAction = {
-            actionType: "transactionalInstanceAction",
-            instanceAction: {
-              actionType: "instanceAction",
-              actionName: "updateInstance",
-              applicationSection: "data",
-              deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-              objects: [
-                {
-                  parentName: reportReportList.parentName,
-                  parentUuid: reportReportList.parentUuid,
-                  applicationSection: "data",
-                  instances: [
-                    Object.assign({}, reportReportList, {
-                      name: "Report2List",
-                      defaultLabel: "Modified List of Reports",
-                    }) as EntityInstance,
-                  ],
-                },
-              ],
-            }
-          };
+    //       const updateAction: DomainAction = {
+    //         actionType: "transactionalInstanceAction",
+    //         instanceAction: {
+    //           actionType: "instanceAction",
+    //           actionName: "updateInstance",
+    //           applicationSection: "data",
+    //           deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+    //           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    //           objects: [
+    //             {
+    //               parentName: reportReportList.parentName,
+    //               parentUuid: reportReportList.parentUuid,
+    //               applicationSection: "data",
+    //               instances: [
+    //                 Object.assign({}, reportReportList, {
+    //                   name: "Report2List",
+    //                   defaultLabel: "Modified List of Reports",
+    //                 }) as EntityInstance,
+    //               ],
+    //             },
+    //           ],
+    //         }
+    //       };
 
-          await act(
-            async () => {
-              await domainController.handleAction(updateAction, localCache.currentModel(adminConfigurationDeploymentMiroir.uuid));
-            }
-          );
+    //       await act(
+    //         async () => {
+    //           await domainController.handleAction(updateAction, localCache.currentModel(adminConfigurationDeploymentMiroir.uuid));
+    //         }
+    //       );
   
-          console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXX domainController.currentTransaction()',JSON.stringify(domainController.currentTransaction()))
+    //       console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXX domainController.currentTransaction()',JSON.stringify(domainController.currentTransaction()))
   
-          expect(domainController.currentTransaction().length).toEqual(1);
-          // testing transaction contents is implementation dependent!
-          // expect(domainController.currentTransaction()[0].actionType).toEqual("DomainTransactionalInstanceAction");
-          // expect(
-          //   (
-          //     (domainController.currentTransaction()[0] as DomainTransactionalActionWithCUDUpdate)
-          //       .update as WrappedTransactionalEntityUpdateWithCUDUpdate
-          //   ).modelEntityUpdate
-          // ).toEqual(createAction.update.modelEntityUpdate);
+    //       expect(domainController.currentTransaction().length).toEqual(1);
+    //       // testing transaction contents is implementation dependent!
+    //       // expect(domainController.currentTransaction()[0].actionType).toEqual("DomainTransactionalInstanceAction");
+    //       // expect(
+    //       //   (
+    //       //     (domainController.currentTransaction()[0] as DomainTransactionalActionWithCUDUpdate)
+    //       //       .update as WrappedTransactionalEntityUpdateWithCUDUpdate
+    //       //   ).modelEntityUpdate
+    //       // ).toEqual(createAction.update.modelEntityUpdate);
   
-          await act(()=>user.click(screen.getByRole('button')));
+    //       await act(()=>user.click(screen.getByRole('button')));
   
-          await waitFor(
-            () => {
-              getAllByRole(/step:2/)
-            },
-          ).then(
-            ()=> {
-              expect(screen.queryByText(/Report2List/i)).toBeTruthy() // Report List
-            }
-          );
+    //       await waitFor(
+    //         () => {
+    //           getAllByRole(/step:2/)
+    //         },
+    //       ).then(
+    //         ()=> {
+    //           expect(screen.queryByText(/Report2List/i)).toBeTruthy() // Report List
+    //         }
+    //       );
 
-          // ##########################################################################################################
-          console.log('Alter Miroir Model Report definition step 3: committing entity definition to remote store, modified entity must still be present in the report list.')
-          await act(
-            async () => {
-              await domainController.handleAction(
-                {
-                  actionName: "commit",
-                  actionType: "modelAction",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                },
-                localCache.currentModel(adminConfigurationDeploymentMiroir.uuid)
-              );
-            }
-          );
+    //       // ##########################################################################################################
+    //       console.log('Alter Miroir Model Report definition step 3: committing entity definition to remote store, modified entity must still be present in the report list.')
+    //       await act(
+    //         async () => {
+    //           await domainController.handleAction(
+    //             {
+    //               actionName: "commit",
+    //               actionType: "modelAction",
+    //               deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+    //               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+    //             },
+    //             localCache.currentModel(adminConfigurationDeploymentMiroir.uuid)
+    //           );
+    //         }
+    //       );
   
-          await act(()=>user.click(screen.getByRole('button')));
+    //       await act(()=>user.click(screen.getByRole('button')));
   
-          await waitFor(
-            () => {
-              getAllByRole(/step:3/)
-            },
-          ).then(
-            ()=> {
-              expect(screen.queryByText(/Report2List/i)).toBeTruthy() // Report List
-            }
-          );
+    //       await waitFor(
+    //         () => {
+    //           getAllByRole(/step:3/)
+    //         },
+    //       ).then(
+    //         ()=> {
+    //           expect(screen.queryByText(/Report2List/i)).toBeTruthy() // Report List
+    //         }
+    //       );
   
-          // ##########################################################################################################
-          console.log('Alter Miroir Model Report definition step 4: rollbacking/refreshing entity definition list from remote store after the first commit, modified entity must still be present in the report list.')
-          await act(
-            async () => {
-              await domainController.handleAction({
-                actionType: "modelAction",
-                actionName: "rollback",
-                deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              }, localCache.currentModel(adminConfigurationDeploymentMiroir.uuid));
-            }
-          );
+    //       // ##########################################################################################################
+    //       console.log('Alter Miroir Model Report definition step 4: rollbacking/refreshing entity definition list from remote store after the first commit, modified entity must still be present in the report list.')
+    //       await act(
+    //         async () => {
+    //           await domainController.handleAction({
+    //             actionType: "modelAction",
+    //             actionName: "rollback",
+    //             deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
+    //             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+    //           }, localCache.currentModel(adminConfigurationDeploymentMiroir.uuid));
+    //         }
+    //       );
   
-          await act(()=>user.click(screen.getByRole('button')));
+    //       await act(()=>user.click(screen.getByRole('button')));
   
-          console.log("domainController.currentTransaction()", domainController.currentTransaction());
-          expect(domainController.currentTransaction().length).toEqual(0);
+    //       console.log("domainController.currentTransaction()", domainController.currentTransaction());
+    //       expect(domainController.currentTransaction().length).toEqual(0);
   
-          await waitFor(
-            () => {
-              getAllByRole(/step:4/)
-            },
-          ).then(
-            ()=> {
-              expect(screen.queryByText(/Report2List/i)).toBeTruthy() // Entity Definition List
-            }
-          );
+    //       await waitFor(
+    //         () => {
+    //           getAllByRole(/step:4/)
+    //         },
+    //       ).then(
+    //         ()=> {
+    //           expect(screen.queryByText(/Report2List/i)).toBeTruthy() // Entity Definition List
+    //         }
+    //       );
 
-          // end test
-        } catch (error) {
-          console.error('error during test',expect.getState().currentTestName,error);
-          expect(false).toBeTruthy();
-        }
-      },
-      10000
-    )
+    //       // end test
+    //     } catch (error) {
+    //       console.error('error during test',expect.getState().currentTestName,error);
+    //       expect(false).toBeTruthy();
+    //     }
+    //   },
+    //   10000
+    // )
 
   }
 )

@@ -62,16 +62,21 @@ import {
 // import { loglevelnext } from '../../src/loglevelnextImporter.js';
 import { loglevelnext } from '../../src/loglevelnextImporter.js';
 import { cleanLevel } from './constants.js';
+import { LoggerOptions } from 'miroir-core/src/0_interfaces/4-services/LoggerInterface.js';
 
 
 const env:any = (import.meta as any).env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
+const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
+const fileName = "DomainController.integ.Data.CRUD.test";
+myConsoleLog(fileName, "received env", JSON.stringify(env, null, 2));
+
 let miroirConfig:any;
-let loggerOptions:any;
+let loggerOptions:LoggerOptions;
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DomainController.integ.Data.CRUD.test")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName)
 ).then((logger: LoggerInterface) => {log = logger});
 
 miroirAppStartup();
@@ -81,20 +86,36 @@ miroirIndexedDbStoreSectionStartup();
 miroirPostgresStoreSectionStartup();
 ConfigurationService.registerTestImplementation({expect: expect as any});
 
-const {miroirConfig: miroirConfigParam, logConfig:loggerOptionsParam} = await loadTestConfigFiles(env)
+const {miroirConfig: miroirConfigParam, logConfig} = await loadTestConfigFiles(env)
 miroirConfig = miroirConfigParam;
-loggerOptions = loggerOptionsParam;
-console.log("DomainController.integ.Data.CRUD.test received miroirConfig", JSON.stringify(miroirConfig, null, 2));
-console.log(
-  "DomainController.integ.Data.CRUD.test received miroirConfig.client",
+loggerOptions = logConfig;
+myConsoleLog("received miroirConfig", JSON.stringify(miroirConfig, null, 2));
+myConsoleLog(
+  "received miroirConfig.client",
   JSON.stringify(miroirConfig.client, null, 2)
 );
-console.log("DomainController.integ.Data.CRUD.test received loggerOptions", JSON.stringify(loggerOptions, null, 2));
+myConsoleLog("received loggerOptions", JSON.stringify(loggerOptions, null, 2));
 MiroirLoggerFactory.startRegisteredLoggers(
   loglevelnext,
   loggerOptions,
 );
-console.log("DomainController.integ.Data.CRUD.test started registered loggers DONE");
+myConsoleLog("started registered loggers DONE");
+
+const globalTimeOut = 30000;
+// const globalTimeOut = 10^9;
+const columnForTestDefinition: JzodElement = {
+  "type": "number", "optional": true, "tag": { "value": { "id":6, "defaultLabel": "Gender (narrow-minded)", "editable": true }}
+};
+// const globalTimeOut = 10^9;
+const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
+? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
+: miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
+
+const testApplicationDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
+
+const testDeploymentStorageConfiguration = miroirConfig.client.emulateServer
+? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
+: miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
 
 
 let domainController: DomainControllerInterface;
@@ -128,25 +149,11 @@ export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInst
   // },
 ];
 
-const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
-? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
-: miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
-
-const testApplicationDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
-const testDeploymentStorageConfiguration = miroirConfig.client.emulateServer
-? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
-: miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
 
 beforeAll(
   async () => {
     // Establish requests interception layer before all tests.
     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll");
-    // miroirAppStartup();
-    // miroirCoreStartup();
-    // miroirFileSystemStoreSectionStartup();
-    // miroirIndexedDbStoreSectionStartup();
-    // miroirPostgresStoreSectionStartup();
-    // ConfigurationService.registerTestImplementation({expect: expect as any});
     const {
       persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
       domainController: localdomainController,
@@ -201,11 +208,6 @@ afterAll(
   }
 )
 
-const globalTimeOut = 30000;
-// const globalTimeOut = 10^9;
-const columnForTestDefinition: JzodElement = {
-  "type": "number", "optional": true, "tag": { "value": { "id":6, "defaultLabel": "Gender (narrow-minded)", "editable": true }}
-};
 
 // const entityDefinitionPublisherWithoutIcon = { ...entityDefinitionPublisher };
 // delete (entityDefinitionPublisherWithoutIcon as any).icon;
@@ -218,7 +220,11 @@ const testActions: Record<string, TestActionParams> = {
     testCompositeAction: {
       testType: "testCompositeActionSuite",
       testLabel: "DomainController.integ.Model.CRUD",
-      beforeAll: createDeploymentCompositeAction(miroirConfig, adminConfigurationDeploymentLibrary.uuid),
+      beforeAll: createDeploymentCompositeAction(
+        miroirConfig,
+        adminConfigurationDeploymentLibrary.uuid,
+        testDeploymentStorageConfiguration
+      ),
       // beforeEach: testOnLibrary_resetInitAndAddTestDataToLibraryDeployment(miroirConfig, libraryEntitiesAndInstancesWithoutBook3),
       beforeEach: testOnLibrary_resetInitAndAddTestDataToLibraryDeployment(miroirConfig, [
         // {
@@ -247,95 +253,95 @@ const testActions: Record<string, TestActionParams> = {
       afterEach: testOnLibrary_resetLibraryDeployment(miroirConfig),
       afterAll: testOnLibrary_deleteLibraryDeployment(miroirConfig),
       testCompositeActions: {
-        // "Refresh all Instances": {
-        //   testType: "testCompositeAction",
-        //   testLabel: "Refresh all Instances",
-        //   compositeAction: {
-        //     actionType: "compositeAction",
-        //     actionLabel: "testLibraryBooks",
-        //     actionName: "sequence",
-        //     definition: [
-        //       {
-        //         compositeActionType: "domainAction",
-        //         compositeActionStepLabel: "refreshMiroirLocalCache",
-        //         domainAction: {
-        //           actionName: "rollback",
-        //           actionType: "modelAction",
-        //           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        //           deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-        //         },
-        //       },
-        //       {
-        //         compositeActionType: "domainAction",
-        //         compositeActionStepLabel: "refreshLibraryLocalCache",
-        //         domainAction: {
-        //           actionName: "rollback",
-        //           actionType: "modelAction",
-        //           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        //           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-        //         },
-        //       },
-        //       {
-        //         compositeActionType: "runBoxedExtractorOrQueryAction",
-        //         compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
-        //         nameGivenToResult: "libraryEntityList",
-        //         query: {
-        //           actionType: "runBoxedExtractorOrQueryAction",
-        //           actionName: "runQuery",
-        //           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-        //           applicationSection: "model", // TODO: give only application section in individual queries?
-        //           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-        //           query: {
-        //             queryType: "boxedQueryWithExtractorCombinerTransformer",
-        //             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-        //             pageParams: {
-        //               currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-        //             },
-        //             queryParams: {},
-        //             contextResults: {},
-        //             extractors: {
-        //               entities: {
-        //                 extractorOrCombinerType: "extractorByEntityReturningObjectList",
-        //                 applicationSection: "model",
-        //                 parentName: entityEntity.name,
-        //                 parentUuid: entityEntity.uuid,
-        //                 orderBy: {
-        //                   attributeName: "name",
-        //                   direction: "ASC",
-        //                 },
-        //               },
-        //             },
-        //           },
-        //         },
-        //       },
-        //     ],
-        //   },
-        //   testCompositeActionAssertions: [
-        //     // TODO: test length of entityBookList.books!
-        //     {
-        //       compositeActionType: "runTestCompositeActionAssertion",
-        //       compositeActionStepLabel: "checkNumberOfEntitiesInLibraryApplicationDeployment",
-        //       nameGivenToResult: "checkNumberOfEntities",
-        //       testAssertion: {
-        //         testType: "testAssertion",
-        //         testLabel: "checkNumberOfEntitiesInLibraryApplicationDeployment",
-        //         definition: {
-        //           resultAccessPath: ["elementValue", "0"],
-        //           resultTransformer: {
-        //             transformerType: "count",
-        //             interpolation: "runtime",
-        //             referencedExtractor: {
-        //               transformerType: "contextReference",
-        //               interpolation: "runtime",
-        //               referencePath: ["libraryEntityList", "entities"],
-        //             },
-        //           },
-        //           expectedValue: { count: 1 },
-        //         },
-        //       },
-        //     },
-        //   ],
-        // },
+        "Refresh all Instances": {
+          testType: "testCompositeAction",
+          testLabel: "Refresh all Instances",
+          compositeAction: {
+            actionType: "compositeAction",
+            actionLabel: "testLibraryBooks",
+            actionName: "sequence",
+            definition: [
+              {
+                compositeActionType: "domainAction",
+                compositeActionStepLabel: "refreshMiroirLocalCache",
+                domainAction: {
+                  actionName: "rollback",
+                  actionType: "modelAction",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                },
+              },
+              {
+                compositeActionType: "domainAction",
+                compositeActionStepLabel: "refreshLibraryLocalCache",
+                domainAction: {
+                  actionName: "rollback",
+                  actionType: "modelAction",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                },
+              },
+              {
+                compositeActionType: "runBoxedExtractorOrQueryAction",
+                compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+                nameGivenToResult: "libraryEntityList",
+                query: {
+                  actionType: "runBoxedExtractorOrQueryAction",
+                  actionName: "runQuery",
+                  endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  applicationSection: "model", // TODO: give only application section in individual queries?
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  query: {
+                    queryType: "boxedQueryWithExtractorCombinerTransformer",
+                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    pageParams: {
+                      currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    },
+                    queryParams: {},
+                    contextResults: {},
+                    extractors: {
+                      entities: {
+                        extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                        applicationSection: "model",
+                        parentName: entityEntity.name,
+                        parentUuid: entityEntity.uuid,
+                        orderBy: {
+                          attributeName: "name",
+                          direction: "ASC",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            ],
+          },
+          testCompositeActionAssertions: [
+            // TODO: test length of entityBookList.books!
+            {
+              compositeActionType: "runTestCompositeActionAssertion",
+              compositeActionStepLabel: "checkNumberOfEntitiesInLibraryApplicationDeployment",
+              nameGivenToResult: "checkNumberOfEntities",
+              testAssertion: {
+                testType: "testAssertion",
+                testLabel: "checkNumberOfEntitiesInLibraryApplicationDeployment",
+                definition: {
+                  resultAccessPath: ["elementValue", "0"],
+                  resultTransformer: {
+                    transformerType: "count",
+                    interpolation: "runtime",
+                    referencedExtractor: {
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referencePath: ["libraryEntityList", "entities"],
+                    },
+                  },
+                  expectedValue: { count: 1 },
+                },
+              },
+            },
+          ],
+        },
         "Add Entity Author and Commit": {
           testType: "testCompositeAction",
           testLabel: "Add Entity Author and Commit",
@@ -370,14 +376,14 @@ const testActions: Record<string, TestActionParams> = {
                 domainAction: {
                   actionType: "modelAction",
                   actionName: "createEntity",
-                  deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   entities: [
                     {
                       entity: entityAuthor as Entity,
                       entityDefinition: entityDefinitionAuthor as EntityDefinition,
-                    }
-                  ]
+                    },
+                  ],
                 },
               },
               {
@@ -459,11 +465,8 @@ const testActions: Record<string, TestActionParams> = {
                 testLabel: "checkEntityBooks",
                 definition: {
                   resultAccessPath: ["libraryEntityList", "entities"],
-                  ignoreAttributes: [ "author" ],
-                  expectedValue: [
-                    entityAuthor,
-                    entityPublisher,
-                  ],
+                  ignoreAttributes: ["author"],
+                  expectedValue: [entityAuthor, entityPublisher],
                 },
               },
             },
@@ -503,14 +506,14 @@ const testActions: Record<string, TestActionParams> = {
                 domainAction: {
                   actionType: "modelAction",
                   actionName: "createEntity",
-                  deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   entities: [
                     {
                       entity: entityAuthor as Entity,
                       entityDefinition: entityDefinitionAuthor as EntityDefinition,
-                    }
-                  ]
+                    },
+                  ],
                 },
               },
               {
@@ -618,14 +621,14 @@ const testActions: Record<string, TestActionParams> = {
                 domainAction: {
                   actionType: "modelAction",
                   actionName: "createEntity",
-                  deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   entities: [
                     {
                       entity: entityAuthor as Entity,
                       entityDefinition: entityDefinitionAuthor as EntityDefinition,
-                    }
-                  ]
+                    },
+                  ],
                 },
               },
               {
@@ -731,11 +734,8 @@ const testActions: Record<string, TestActionParams> = {
                 testLabel: "checkEntityBooks",
                 definition: {
                   resultAccessPath: ["libraryEntityListFromLocalCache", "entities"],
-                  ignoreAttributes: [ "author" ],
-                  expectedValue: [
-                    entityAuthor,
-                    entityPublisher,
-                  ],
+                  ignoreAttributes: ["author"],
+                  expectedValue: [entityAuthor, entityPublisher],
                 },
               },
             },
@@ -770,10 +770,8 @@ const testActions: Record<string, TestActionParams> = {
                 testLabel: "checkEntityBooks",
                 definition: {
                   resultAccessPath: ["libraryEntityListFromPersistentStore", "entities"],
-                  ignoreAttributes: [ "author" ],
-                  expectedValue: [
-                    entityPublisher,
-                  ],
+                  ignoreAttributes: ["author"],
+                  expectedValue: [entityPublisher],
                 },
               },
             },
@@ -813,7 +811,7 @@ const testActions: Record<string, TestActionParams> = {
                 domainAction: {
                   actionType: "modelAction",
                   actionName: "dropEntity",
-                  deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   entityUuid: entityPublisher.uuid,
                   entityDefinitionUuid: entityDefinitionPublisher.uuid,
@@ -1032,7 +1030,7 @@ const testActions: Record<string, TestActionParams> = {
                 testLabel: "checkEntityBooks",
                 definition: {
                   resultAccessPath: ["libraryEntityList", "entities"],
-                  ignoreAttributes: [ "author" ],
+                  ignoreAttributes: ["author"],
                   expectedValue: [{ ...entityPublisher, name: "Publishers" }],
                 },
               },
@@ -1223,15 +1221,15 @@ const testActions: Record<string, TestActionParams> = {
                 testLabel: "checkEntityBooks",
                 definition: {
                   resultAccessPath: ["libraryEntityDefinitionListFromLocalCache", "entityDefinitions"],
-                  ignoreAttributes: [ "author" ],
+                  ignoreAttributes: ["author"],
                   expectedValue: [
                     {
                       ...entityDefinitionPublisher,
                       jzodSchema: {
                         ...entityDefinitionPublisher.jzodSchema,
-                        definition: { 
+                        definition: {
                           ...entityDefinitionPublisher.jzodSchema.definition,
-                          aNewColumnForTest: columnForTestDefinition 
+                          aNewColumnForTest: columnForTestDefinition,
                         },
                       },
                     },
@@ -1248,15 +1246,15 @@ const testActions: Record<string, TestActionParams> = {
                 testLabel: "checkEntityBooks",
                 definition: {
                   resultAccessPath: ["libraryEntityDefinitionListFromPersistentStore", "entityDefinitions"],
-                  ignoreAttributes: [ "author" ],
+                  ignoreAttributes: ["author"],
                   expectedValue: [
                     {
                       ...entityDefinitionPublisher,
                       jzodSchema: {
                         ...entityDefinitionPublisher.jzodSchema,
-                        definition: { 
+                        definition: {
                           ...entityDefinitionPublisher.jzodSchema.definition,
-                          aNewColumnForTest: columnForTestDefinition 
+                          aNewColumnForTest: columnForTestDefinition,
                         },
                       },
                     },

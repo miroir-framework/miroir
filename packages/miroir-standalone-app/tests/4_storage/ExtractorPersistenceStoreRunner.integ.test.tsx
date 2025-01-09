@@ -38,16 +38,18 @@ import {
   publisher1,
   publisher2,
   publisher3,
-  Report,
-  reportBookList,
-  SelfApplicationDeploymentConfiguration
+  SelfApplicationDeploymentConfiguration,
+  StoreUnitConfiguration
 } from "miroir-core";
 
 
 import {
   ConfigurationService,
+  defaultMiroirMetaModel,
+  ignorePostgresExtraAttributesOnList,
   MiroirContext,
   PersistenceStoreControllerManagerInterface,
+  selfApplicationDeploymentLibrary,
   selfApplicationDeploymentMiroir,
 } from "miroir-core";
 import { miroirCoreStartup } from 'miroir-core/src/startup.js';
@@ -57,23 +59,19 @@ import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { miroirAppStartup } from '../../src/startup.js';
+import { cleanLevel, packageName } from '../3_controllers/constants.js';
+import { ApplicationEntitiesAndInstances, testOnLibrary_resetInitAndAddTestDataToLibraryDeployment } from '../utils/tests-utils-testOnLibrary.js';
 import {
-  addEntitiesAndInstances,
   chainVitestSteps,
   createLibraryDeploymentDEFUNCT,
+  createMiroirDeploymentGetPersistenceStoreController,
+  deleteAndCloseApplicationDeployments,
   deploymentConfigurations,
   loadTestConfigFiles,
-  deleteAndCloseApplicationDeployments,
-  resetApplicationDeployments,
-  createMiroirDeploymentGetPersistenceStoreController,
   miroirBeforeEach_resetAndInitApplicationDeployments,
+  resetApplicationDeployments,
   setupMiroirTest
 } from "../utils/tests-utils.js";
-import { selfApplicationDeploymentLibrary } from 'miroir-core';
-import { ApplicationEntitiesAndInstances, testOnLibrary_resetInitAndAddTestDataToLibraryDeployment } from '../utils/tests-utils-testOnLibrary.js';
-import { defaultMiroirMetaModel } from 'miroir-core';
-import { ignorePostgresExtraAttributesOnList } from 'miroir-core';
-import { packageName, cleanLevel } from '../3_controllers/constants.js';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCache;
@@ -89,7 +87,7 @@ const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
 
 const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
 // const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
-const fileName = "DomainController.integ.Data.CRUD.test";
+const fileName = "ExtractorPersistenceStoreRunner.integ.test";
 myConsoleLog(fileName, "received env", JSON.stringify(env, null, 2));
 
 // let miroirConfig:any;
@@ -116,10 +114,19 @@ myConsoleLog("received loggerOptions", JSON.stringify(loggerOptions, null, 2));
 MiroirLoggerFactory.startRegisteredLoggers(
   loglevelnext,
   (defaultLevels as any)[loggerOptions.defaultLevel],
-  loggerOptions.defaultTemplate,
-  loggerOptions.specificLoggerOptions
+  // loggerOptions.defaultTemplate,
+  // loggerOptions.specificLoggerOptions
 );
 myConsoleLog("started registered loggers DONE");
+
+const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
+  ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
+  : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
+
+const testApplicationDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
+const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
+  ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
+  : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
 
 console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
@@ -152,12 +159,6 @@ export const libraryEntitiesAndInstances: ApplicationEntitiesAndInstances  = [
 beforeAll(
   async () => {
     // Establish requests interception layer before all tests.
-    // miroirAppStartup();
-    // miroirCoreStartup();
-    // miroirFileSystemStoreSectionStartup();
-    // miroirIndexedDbStoreSectionStartup();
-    // miroirPostgresStoreSectionStartup();
-    // ConfigurationService.registerTestImplementation({expect: expect as any});
     if (!miroirConfig.client.emulateServer) {
       throw new Error(
         "LocalPersistenceStoreController state do not make sense for real server configurations! Please use only 'emulateServer: true' configurations for this test."
@@ -195,7 +196,7 @@ beforeAll(
     } else {
       throw new Error("beforeAll failed initialization!");
     }
-    await createLibraryDeploymentDEFUNCT(miroirConfig, domainController);
+    await createLibraryDeploymentDEFUNCT(miroirConfig, domainController, libraryDeploymentStorageConfiguration);
 
     const tmplocalAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
       adminConfigurationDeploymentLibrary.uuid

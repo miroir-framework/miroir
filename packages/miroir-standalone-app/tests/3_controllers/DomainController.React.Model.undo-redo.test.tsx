@@ -3,14 +3,17 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect } from 'vitest';
 
 import {
+  ConfigurationService,
   DomainAction,
   DomainControllerInterface,
   Entity,
   EntityDefinition,
-  MiroirConfigClient,
+  LoggerInterface,
   MiroirContextInterface,
+  MiroirLoggerFactory,
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManagerInterface,
+  StoreUnitConfiguration,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   defaultMiroirMetaModel,
@@ -26,8 +29,7 @@ import {
 import { TestUtilsTableComponent } from "../utils/TestUtilsTableComponent.js";
 import {
   DisplayLoadingInfo,
-  createLibraryDeploymentDEFUNCT,
-  createMiroirDeploymentGetPersistenceStoreController,
+  createDeploymentCompositeAction,
   deleteAndCloseApplicationDeployments,
   deploymentConfigurations,
   loadTestConfigFiles,
@@ -42,23 +44,59 @@ import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import { miroirAppStartup } from "../../src/startup.js";
 
+import { LoggerOptions } from "miroir-core/src/0_interfaces/4-services/LoggerInterface.js";
 import { LocalCache } from "miroir-localcache-redux";
+import { loglevelnext } from "../../src/loglevelnextImporter.js";
+import { cleanLevel, packageName } from "./constants.js";
 
 
 
 const env:any = (import.meta as any).env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
-const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
+const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
+const fileName = "DomainController.React.Model.test";
+myConsoleLog(fileName, "received env", JSON.stringify(env, null, 2));
 
-// console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
-
+let miroirConfig:any;
+let loggerOptions:LoggerOptions;
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName)
+).then((logger: LoggerInterface) => {log = logger});
 
 miroirAppStartup();
 miroirCoreStartup();
 miroirFileSystemStoreSectionStartup();
 miroirIndexedDbStoreSectionStartup();
 miroirPostgresStoreSectionStartup();
+ConfigurationService.registerTestImplementation({expect: expect as any});
+
+const {miroirConfig: miroirConfigParam, logConfig} = await loadTestConfigFiles(env)
+miroirConfig = miroirConfigParam;
+loggerOptions = logConfig;
+myConsoleLog("received miroirConfig", JSON.stringify(miroirConfig, null, 2));
+myConsoleLog(
+  "received miroirConfig.client",
+  JSON.stringify(miroirConfig.client, null, 2)
+);
+myConsoleLog("received loggerOptions", JSON.stringify(loggerOptions, null, 2));
+MiroirLoggerFactory.startRegisteredLoggers(
+  loglevelnext,
+  loggerOptions,
+);
+myConsoleLog("started registered loggers DONE");
+
+const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
+  ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
+  : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
+
+const testApplicationDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
+const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
+  ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
+  : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
+
+console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
@@ -67,16 +105,8 @@ let domainController: DomainControllerInterface;
 let localCache: LocalCache;
 let miroirContext: MiroirContextInterface;
 
-// const {
-//   persistenceStoreControllerManager,
-//   domainController,
-//   localCache,
-//   miroirContext,
-// } = await setupMiroirTest(miroirConfig)
-
 beforeAll(
   async () => {
-
     const {
       persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
       domainController: localdomainController,
@@ -89,23 +119,18 @@ beforeAll(
     localCache = locallocalCache;
     miroirContext = localmiroirContext;
 
-    const wrapped = await createMiroirDeploymentGetPersistenceStoreController(
-      miroirConfig as MiroirConfigClient,
-      persistenceStoreControllerManager,
-      domainController,
-    );
-    if (wrapped) {
-      if (wrapped.localMiroirPersistenceStoreController && wrapped.localAppPersistenceStoreController) {
-        localMiroirPersistenceStoreController = wrapped.localMiroirPersistenceStoreController;
-        localAppPersistenceStoreController = wrapped.localAppPersistenceStoreController;
-      }
-    } else {
-      throw new Error("beforeAll failed initialization!");
-    }
-    await createLibraryDeploymentDEFUNCT(
+    const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
       miroirConfig,
-      domainController
-    )
+      adminConfigurationDeploymentMiroir.uuid,
+      miroirtDeploymentStorageConfiguration,
+    );
+    const createDeploymentResult = await domainController.handleCompositeAction(createMiroirDeploymentCompositeAction, defaultMiroirMetaModel);
+    if (createDeploymentResult.status !== "ok") {
+      throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
+    }
+
+    const action = createDeploymentCompositeAction(miroirConfig, adminConfigurationDeploymentLibrary.uuid, libraryDeploymentStorageConfiguration);
+    const result = await domainController.handleCompositeAction(action, defaultMiroirMetaModel);
 
   }
 )
