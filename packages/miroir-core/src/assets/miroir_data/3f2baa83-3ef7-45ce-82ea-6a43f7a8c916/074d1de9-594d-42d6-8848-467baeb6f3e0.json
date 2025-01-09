@@ -1,6 +1,6 @@
 {
   "uuid": "074d1de9-594d-42d6-8848-467baeb6f3e0",
-  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "parentName":"Report",
   "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
   "conceptLevel":"Model",

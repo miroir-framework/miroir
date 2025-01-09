@@ -12,7 +12,7 @@
     "name",
     "defaultLabel",
     "type",
-    "application",
+    "selfApplication",
     "uuid"
   ],
   "jzodSchema": {
@@ -111,13 +111,13 @@
           }
         }
       },
-      "application": {
+      "selfApplication": {
         "type": "uuid",
         "optional": true,
         "tag": {
           "value": {
             "id": 9,
-            "defaultLabel": "Application",
+            "defaultLabel": "SelfApplication",
             "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
             "editable": true
           }

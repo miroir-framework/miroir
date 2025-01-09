@@ -1,5 +1,5 @@
-import { act, getByText, screen, waitFor } from "@testing-library/react";
-import userEvent, { UserEvent } from "@testing-library/user-event";
+import { act, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import React, { ChangeEvent, useEffect, useState } from "react";
 
 import { Formik } from "formik";
@@ -18,10 +18,8 @@ import {
   Uuid,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  circularReplacer,
   domainEndpointVersionV1,
-  entityDefinitionSelfApplication,
-  entityDefinitionSelfApplicationVersion,
+  entityDefinitionAdminApplication,
   entityDefinitionBundleV1,
   entityDefinitionCommit,
   entityDefinitionDeployment,
@@ -31,34 +29,33 @@ import {
   entityDefinitionMenu,
   entityDefinitionQueryVersionV1,
   entityDefinitionReport,
+  entityDefinitionSelfApplication,
+  entityDefinitionSelfApplicationDeploymentConfiguration,
+  entityDefinitionSelfApplicationVersion,
+  entityDefinitionTest,
   getMiroirFundamentalJzodSchema,
   instanceEndpointVersionV1,
   jzodSchemajzodMiroirBootstrapSchema,
   localCacheEndpointVersionV1,
   miroirCoreStartup,
+  miroirFundamentalJzodSchemaUuid,
   modelEndpointV1,
   persistenceEndpointVersionV1,
   queryEndpointVersionV1,
   resolveReferencesForJzodSchemaAndValueObject,
   storeManagementEndpoint,
-  undoRedoEndpointVersionV1,
-  transformerMenuV1,
-  miroirFundamentalJzodSchemaUuid,
-  transformerJzodSchema,
-  entityDefinitionTest,
   testEndpointVersionV1,
-  entityDefinitionSelfApplicationDeploymentConfiguration
+  transformerJzodSchema,
+  transformerMenuV1,
+  undoRedoEndpointVersionV1
 } from "miroir-core";
 
 import {
   MiroirIntegrationTestEnvironment,
   deploymentConfigurations,
   loadTestConfigFiles,
-  deleteAndCloseApplicationDeployments,
-  resetApplicationDeployments,
   miroirBeforeEach_resetAndInitApplicationDeployments,
   miroirIntegrationTestEnvironmentFactory,
-  renderWithProviders,
   renderWithProvidersWithContextProvider
 } from "miroir-standalone-app/tests/utils/tests-utils";
 
@@ -69,8 +66,7 @@ import {
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
-import { vitest } from "vitest";
-import { MiroirContextReactProvider, useMiroirContextService } from "../../src/miroir-fwk/4_view/MiroirContextReactProvider";
+import { useMiroirContextService } from "../../src/miroir-fwk/4_view/MiroirContextReactProvider";
 
 const env:any = (import.meta as any).env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
@@ -102,6 +98,7 @@ const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
   jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
   transformerJzodSchema as JzodSchema,
   [transformerMenuV1],
+  entityDefinitionAdminApplication as EntityDefinition,
   entityDefinitionSelfApplication as EntityDefinition,
   entityDefinitionSelfApplicationVersion as EntityDefinition,
   entityDefinitionDeployment as EntityDefinition,

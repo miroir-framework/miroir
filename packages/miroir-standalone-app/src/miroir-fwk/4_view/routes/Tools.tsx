@@ -333,11 +333,11 @@ export const ToolsPage: React.FC<any> = (
         },
         defaultLabel: {
           transformerType: "mustacheStringTemplate",
-          definition: "The {{newApplicationName}} application.",
+          definition: "The {{newApplicationName}} selfApplication.",
         },
         description: {
           transformerType: "mustacheStringTemplate",
-          definition: "This application contains the {{newApplicationName}} model and data",
+          definition: "This selfApplication contains the {{newApplicationName}} model and data",
         },
         selfApplication: {
           transformerType: "parameterReference",
@@ -349,7 +349,7 @@ export const ToolsPage: React.FC<any> = (
           transformerType: "parameterReference",
           referenceName: "newSelfApplicationUuid",
         },
-        parentName: "Application",
+        parentName: "SelfApplication",
         parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
         name: {
           transformerType: "parameterReference",
@@ -357,11 +357,11 @@ export const ToolsPage: React.FC<any> = (
         },
         defaultLabel: {
           transformerType: "mustacheStringTemplate",
-          definition: "The {{newApplicationName}} application.",
+          definition: "The {{newApplicationName}} selfApplication.",
         },
         description: {
           transformerType: "mustacheStringTemplate",
-          definition: "This application contains the {{newApplicationName}} model and data",
+          definition: "This selfApplication contains the {{newApplicationName}} model and data",
         },
         selfApplication: {
           transformerType: "parameterReference",
@@ -389,13 +389,13 @@ export const ToolsPage: React.FC<any> = (
           transformerType: "mustacheStringTemplate",
           definition: "{{newApplicationName}}ApplicationSqlDeployment",
         },
-        application: {
+        selfApplication: {
           transformerType: "mustacheStringTemplate",
           definition: "{{newApplicationForAdmin.uuid}}",
         },
         description: {
           transformerType: "mustacheStringTemplate",
-          definition: "The default Sql Deployment for Application {{newApplicationName}}",
+          definition: "The default Sql Deployment for SelfApplication {{newApplicationName}}",
         },
         configuration: {
           transformerType: "parameterReference",
@@ -414,7 +414,7 @@ export const ToolsPage: React.FC<any> = (
         defaultLabel: "Meta-Model",
         description: {
           transformerType: "mustacheStringTemplate",
-          definition: "This is the default menu allowing to explore the {{newApplicationName}} Application",
+          definition: "This is the default menu allowing to explore the {{newApplicationName}} SelfApplication",
         },
         definition: {
           menuType: "complexMenu",
@@ -435,7 +435,7 @@ export const ToolsPage: React.FC<any> = (
                     definition: "{{newApplicationName}} Entities",
                   },
                   section: "model",
-                  application: {
+                  selfApplication: {
                     transformerType: "parameterReference",
                     referenceName: "newDeploymentUuid",
                   },
@@ -448,7 +448,7 @@ export const ToolsPage: React.FC<any> = (
                     definition: "{{newApplicationName}} Entity Definitions",
                   },
                   section: "model",
-                  application: {
+                  selfApplication: {
                     transformerType: "parameterReference",
                     referenceName: "newDeploymentUuid",
                   },
@@ -461,7 +461,7 @@ export const ToolsPage: React.FC<any> = (
                     definition: "{{newApplicationName}} Reports",
                   },
                   section: "model",
-                  application: {
+                  selfApplication: {
                     transformerType: "parameterReference",
                     referenceName: "newDeploymentUuid",
                   },

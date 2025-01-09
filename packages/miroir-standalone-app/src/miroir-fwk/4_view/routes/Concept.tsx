@@ -223,8 +223,8 @@ export const ConceptPage: React.FC<any> = (
 
   // log.info("resolvedJzodSchema", resolvedJzodSchema, context.miroirFundamentalJzodSchema.name, "rawSchema", rawSchema)
   // ##############################################################################################
-  const currentApplicationUuid = displayedDeploymentDefinition?.application??emptyString;
-  // const currentApplicationUuid = adminConfigurationDeploymentLibrary.application;
+  const currentApplicationUuid = displayedDeploymentDefinition?.selfApplication??emptyString;
+  // const currentApplicationUuid = adminConfigurationDeploymentLibrary.selfApplication;
   // const currentDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
   const currentDeploymentUuid = context.deploymentUuid;
   // const currentApplicationUuid = props.currentApplicationUuid
@@ -332,7 +332,7 @@ export const ConceptPage: React.FC<any> = (
         const newEntity: MetaEntity = {
           uuid: newEntityUuid,
           parentUuid: entityEntity.uuid,
-          application: currentApplicationUuid,
+          selfApplication: currentApplicationUuid,
           description: createEntity_newEntityDescription,
           name: actionCreateEntityParamValues.newEntityName,
         }
@@ -427,7 +427,7 @@ export const ConceptPage: React.FC<any> = (
                 transformerType: "parameterReference",
                 referenceName: "createEntity_newEntityListReportUuid",
               },
-              application: {
+              selfApplication: {
                 transformerType: "parameterReference",
                 referenceName: "currentApplicationUuid",
               },
@@ -482,7 +482,7 @@ export const ConceptPage: React.FC<any> = (
                 transformerType: "parameterReference",
                 referenceName: "createEntity_newEntityDetailsReportUuid",
               },
-              application: {
+              selfApplication: {
                 transformerType: "parameterReference",
                 referenceName: "currentApplicationUuid",
               },

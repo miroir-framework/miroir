@@ -136,8 +136,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           <div>
             Oops, ReportSectionEntityInstance could not be displayed.
             <p/>
-            <div>props application section: {props.applicationSection}</div>
-            <div>context application section: {context.applicationSection}</div>
+            <div>props selfApplication section: {props.applicationSection}</div>
+            <div>context selfApplication section: {context.applicationSection}</div>
             <div>target entity: {currentReportTargetEntity?.name ?? "report target entity not found!"}</div>
             <div>resolved entity: {JSON.stringify(resolvedJzodSchema)}</div>
             <div>

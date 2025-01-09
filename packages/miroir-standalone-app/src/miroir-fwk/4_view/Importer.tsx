@@ -55,7 +55,7 @@ export const ImporterCorePropsSchema = z.object({
 export type ImporterCoreProps = z.infer<typeof ImporterCorePropsSchema>;
 
 const imageMimeType = /image\/(png|jpg|jpeg)/i;
-const excelMimeType = /application\//i;
+const excelMimeType = /selfApplication\//i;
 
 const pageLabel = "Importer";
 const emptyString = ""
@@ -270,7 +270,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     const newEntity: MetaEntity = {
       uuid: newEntityUuid,
       parentUuid: entityEntity.uuid,
-      application: currentApplicationUuid,
+      selfApplication: currentApplicationUuid,
       description: createEntity_newEntityDescription,
       name: newEntityName,
     }
@@ -424,7 +424,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             transformerType: "parameterReference",
             referenceName: "createEntity_newEntityListReportUuid",
           },
-          application: {
+          selfApplication: {
             transformerType: "parameterReference",
             referenceName: "currentApplicationUuid",
           },
@@ -479,7 +479,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             transformerType: "parameterReference",
             referenceName: "createEntity_newEntityDetailsReportUuid",
           },
-          application: {
+          selfApplication: {
             transformerType: "parameterReference",
             referenceName: "currentApplicationUuid",
           },
@@ -704,10 +704,10 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                       definition: "List of {{createEntity_newEntityName}}"
                     },
                     section: "data",
-                    application: {
+                    selfApplication: {
                       transformerType: "mustacheStringTemplate",
                       definition: "{{adminConfigurationDeploymentParis.uuid}}",
-                    }, // TODO: replace with application uuid, this is a deployment at the moment
+                    }, // TODO: replace with selfApplication uuid, this is a deployment at the moment
                     icon: "local_drink"
                   }
                 },
@@ -909,7 +909,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             transformerType: "mustacheStringTemplate",
             definition: "{{entityEntity.uuid}}",
           },
-          application: {
+          selfApplication: {
             transformerType: "parameterReference",
             referenceName: "currentApplicationUuid",
           },
@@ -966,7 +966,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             referenceName: "splitEntity_newEntityListReportUuid",
           },
           // uuid: actionSplitFountainEntityParams.splitEntity_newEntityListReportUuid,
-          application: {
+          selfApplication: {
             transformerType: "parameterReference",
             referenceName: "currentApplicationUuid",
           },
@@ -1019,7 +1019,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             transformerType: "parameterReference",
             referenceName: "splitEntity_newEntityDetailsReportUuid",
           },
-          application: {
+          selfApplication: {
             transformerType: "parameterReference",
             referenceName: "currentApplicationUuid",
           },
@@ -1332,7 +1332,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             actionName: "runQuery",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             // applicationSection: "data",
-            applicationSection: "model", // TODO: give only application section in individual queries?
+            applicationSection: "model", // TODO: give only selfApplication section in individual queries?
             deploymentUuid: {
               transformerType: "parameterReference",
               referenceName: "currentDeploymentUuid"
@@ -1392,11 +1392,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                     },
                     // "label": "List of " + newEntityName,
                     "section": "data",
-                    application: {
+                    selfApplication: {
                       // transformerType: "constantObject",
                       transformerType: "mustacheStringTemplate",
                       definition: "{{adminConfigurationDeploymentParis.uuid}}",
-                    }, // TODO: replace with application uuid, this is a deployment at the moment
+                    }, // TODO: replace with selfApplication uuid, this is a deployment at the moment
                     "reportUuid": {
                       transformerType: "parameterReference",
                       referenceName: "splitEntity_newEntityListReportUuid",
@@ -1505,7 +1505,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             actionName: "runQuery",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             applicationSection: "data",
-            // applicationSection: "model", // TODO: give only application section in individual queries?
+            // applicationSection: "model", // TODO: give only selfApplication section in individual queries?
             deploymentUuid: {
               transformerType: "parameterReference",
               referenceName: "currentDeploymentUuid"
@@ -1856,11 +1856,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         },
         defaultLabel: {
           transformerType: "mustacheStringTemplate",
-          definition: "The {{newApplicationName}} application.",
+          definition: "The {{newApplicationName}} selfApplication.",
         },
         description: {
           transformerType: "mustacheStringTemplate",
-          definition: "This application contains the {{newApplicationName}} model and data",
+          definition: "This selfApplication contains the {{newApplicationName}} model and data",
         },
         selfApplication: {
           transformerType: "parameterReference",
@@ -1872,7 +1872,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           transformerType: "parameterReference",
           referenceName: "newSelfApplicationUuid",
         },
-        parentName: "Application",
+        parentName: "SelfApplication",
         parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
         name: {
           transformerType: "parameterReference",
@@ -1880,11 +1880,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         },
         defaultLabel: {
           transformerType: "mustacheStringTemplate",
-          definition: "The {{newApplicationName}} application.",
+          definition: "The {{newApplicationName}} selfApplication.",
         },
         description: {
           transformerType: "mustacheStringTemplate",
-          definition: "This application contains the {{newApplicationName}} model and data",
+          definition: "This selfApplication contains the {{newApplicationName}} model and data",
         },
         selfApplication: {
           transformerType: "parameterReference",
@@ -1912,13 +1912,13 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           transformerType: "mustacheStringTemplate",
           definition: "{{newApplicationName}}ApplicationSqlDeployment",
         },
-        application: {
+        selfApplication: {
           transformerType: "mustacheStringTemplate",
           definition: "{{newApplicationForAdmin.uuid}}",
         },
         description: {
           transformerType: "mustacheStringTemplate",
-          definition: "The default Sql Deployment for Application {{newApplicationName}}",
+          definition: "The default Sql Deployment for SelfApplication {{newApplicationName}}",
         },
         configuration: {
           transformerType: "parameterReference",
@@ -1937,7 +1937,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         defaultLabel: "Meta-Model",
         description: {
           transformerType: "mustacheStringTemplate",
-          definition: "This is the default menu allowing to explore the {{newApplicationName}} Application",
+          definition: "This is the default menu allowing to explore the {{newApplicationName}} SelfApplication",
         },
         definition: {
           menuType: "complexMenu",
@@ -1958,7 +1958,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                     definition: "{{newApplicationName}} Entities",
                   },
                   section: "model",
-                  application: {
+                  selfApplication: {
                     transformerType: "parameterReference",
                     referenceName: "newDeploymentUuid",
                   },
@@ -1971,7 +1971,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                     definition: "{{newApplicationName}} Entity Definitions",
                   },
                   section: "model",
-                  application: {
+                  selfApplication: {
                     transformerType: "parameterReference",
                     referenceName: "newDeploymentUuid",
                   },
@@ -1984,7 +1984,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                     definition: "{{newApplicationName}} Reports",
                   },
                   section: "model",
-                  application: {
+                  selfApplication: {
                     transformerType: "parameterReference",
                     referenceName: "newDeploymentUuid",
                   },
@@ -2438,7 +2438,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     }
       found row A:{JSON.stringify(fileData?fileData[0]:'')}
       <h4>
-        importer props: application={JSON.stringify(props.currentApplicationUuid)} deployment={JSON.stringify(props.currentDeploymentUuid)} filename={JSON.stringify(props.filename)}
+        importer props: selfApplication={JSON.stringify(props.currentApplicationUuid)} deployment={JSON.stringify(props.currentDeploymentUuid)} filename={JSON.stringify(props.filename)}
       </h4>
 {/*
       <h3>

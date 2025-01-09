@@ -1,10 +1,10 @@
 {
   "uuid": "60648b22-e2c6-4b74-8031-53884f597d63",
-  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "parentName": "Report",
   "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
   "name": "ApplicationModelBranchList",
-  "defaultLabel": "Application Model Branches",
+  "defaultLabel": "SelfApplication Model Branches",
   "definition": {
     "reportParameters": {},
     "extractorTemplates": {
@@ -20,7 +20,7 @@
     "section": {
       "type": "objectListReportSection",
       "definition": {
-        "label": "Application Model Branches",
+        "label": "SelfApplication Model Branches",
         "parentName": "ApplicationModelBranch",
         "parentUuid": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
         "fetchedDataReference": "applicationModelBranches",

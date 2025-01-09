@@ -53,7 +53,7 @@ finding transparent access to IndexedDb in browser and nodejs: using [level](htt
   - **refactoring to use Promises at user / client level in the webapp**
 - **first try of interactive data edition in webapp.**
 - created tests at Redux Slice level, then **creating first "integration"-level tests** at react level (integration tests will be used from now on, until 2023-11)
-- adding ConfigurationService and MiroirContext for injecting application parameters, etc.
+- adding ConfigurationService and MiroirContext for injecting selfApplication parameters, etc.
 - LocalDataPersistenceStoreController allows to load persisted state through REST call
 
 ## 2023-02
@@ -96,7 +96,7 @@ Figure out needs for model evolution: entities definitions may have many version
 ### development: 36 commits
 
 - **adding Model historization: one entity can have many EntityDefinitions, grouped into ModelVersions**
-- added Model entities: Application, ApplicationVersion, ApplicationModelBranch, SelfApplicationDeploymentConfiguration.
+- added Model entities: SelfApplication, ApplicationVersion, ApplicationModelBranch, SelfApplicationDeploymentConfiguration.
 - creating EntityViewer to display the details of the definition of an Entity
 - **creating miroir-store-filesystem**
 

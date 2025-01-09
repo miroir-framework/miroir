@@ -2827,7 +2827,7 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "id": 1,
-                    "defaultLabel": "Current Application Version",
+                    "defaultLabel": "Current SelfApplication Version",
                     "editable": false
                   }
                 }
@@ -2960,7 +2960,7 @@ export const miroirFundamentalJzodSchema = {
       "______________________________________________entities_____________________________________________": {
         "type": "never"
       },
-      "application": {
+      "adminApplication": {
         "type": "object",
         "definition": {
           "uuid": {
@@ -3041,7 +3041,85 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 8,
-                "defaultLabel": "Self Application",
+                "defaultLabel": "Self SelfApplication",
+                "editable": true
+              }
+            }
+          }
+        }
+      },
+      "selfApplication": {
+        "type": "object",
+        "definition": {
+          "uuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Uuid",
+                "editable": false
+              }
+            }
+          },
+          "parentName": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 2,
+                "defaultLabel": "Entity Name",
+                "editable": false
+              }
+            }
+          },
+          "parentUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 3,
+                "defaultLabel": "Entity Uuid",
+                "editable": false
+              }
+            }
+          },
+          "parentDefinitionVersionUuid": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 4,
+                "defaultLabel": "Entity Definition Version Uuid",
+                "editable": false
+              }
+            }
+          },
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 5,
+                "defaultLabel": "Name",
+                "editable": true
+              }
+            }
+          },
+          "defaultLabel": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 6,
+                "defaultLabel": "Default Label",
+                "editable": true
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 7,
+                "defaultLabel": "Description",
                 "editable": true
               }
             }
@@ -3136,12 +3214,12 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
-          "application": {
+          "selfApplication": {
             "type": "uuid",
             "tag": {
               "value": {
                 "id": 9,
-                "defaultLabel": "Application",
+                "defaultLabel": "SelfApplication",
                 "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                 "editable": false
               }
@@ -3153,7 +3231,7 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 10,
                 "defaultLabel": "Branch",
-                "description": "The Branch of this Application Version",
+                "description": "The Branch of this SelfApplication Version",
                 "targetEntity": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
                 "editable": false
               }
@@ -3165,8 +3243,8 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 11,
-                "defaultLabel": "Previous Application Version",
-                "description": "Previous version of the application on this Branch.",
+                "defaultLabel": "Previous SelfApplication Version",
+                "description": "Previous version of the selfApplication on this Branch.",
                 "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
                 "editable": false
               }
@@ -3378,13 +3456,13 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
-          "application": {
+          "adminApplication": {
             "type": "uuid",
             "tag": {
               "value": {
                 "id": 8,
-                "defaultLabel": "Application",
-                "description": "The Application of the Branch.",
+                "defaultLabel": "AdminApplication",
+                "description": "The AdminApplication of the Branch.",
                 "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                 "editable": false
               }
@@ -3423,7 +3501,7 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 9,
-                "defaultLabel": "Application Deployment Model",
+                "defaultLabel": "SelfApplication Deployment Model",
                 "editable": true
               }
             },
@@ -3438,7 +3516,7 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 10,
-                "defaultLabel": "Application Deployment Data",
+                "defaultLabel": "SelfApplication Deployment Data",
                 "editable": true
               }
             },
@@ -3510,13 +3588,13 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
-          "application": {
+          "selfApplication": {
             "type": "uuid",
             "optional": true,
             "tag": {
               "value": {
                 "id": 6,
-                "defaultLabel": "Application",
+                "defaultLabel": "SelfApplication",
                 "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                 "editable": false
               }
@@ -3538,7 +3616,7 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 8,
-                "defaultLabel": "Application",
+                "defaultLabel": "SelfApplication",
                 "editable": true
               }
             }
@@ -4167,13 +4245,13 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
-          "application": {
+          "selfApplication": {
             "type": "uuid",
             "tag": {
               "value": {
                 "id": 8,
-                "defaultLabel": "Application",
-                "description": "The Application of the Branch.",
+                "defaultLabel": "SelfApplication",
+                "description": "The SelfApplication of the Branch.",
                 "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                 "editable": false
               }
@@ -4185,7 +4263,7 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 9,
-                "defaultLabel": "Application Deployment Model",
+                "defaultLabel": "SelfApplication Deployment Model",
                 "editable": true
               }
             }
@@ -4196,7 +4274,7 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 10,
-                "defaultLabel": "Application Deployment Data",
+                "defaultLabel": "SelfApplication Deployment Data",
                 "editable": true
               }
             }
@@ -4216,7 +4294,7 @@ export const miroirFundamentalJzodSchema = {
               "relativePath": "applicationSection"
             }
           },
-          "application": {
+          "selfApplication": {
             "type": "string",
             "validations": [
               {
@@ -4226,7 +4304,7 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 1,
-                "defaultLabel": "Application",
+                "defaultLabel": "SelfApplication",
                 "editable": false
               }
             }
@@ -4441,7 +4519,7 @@ export const miroirFundamentalJzodSchema = {
                       "relativePath": "applicationSection"
                     }
                   },
-                  "application": {
+                  "selfApplication": {
                     "type": "string",
                     "validations": [
                       {
@@ -4451,7 +4529,7 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "id": 1,
-                        "defaultLabel": "Application",
+                        "defaultLabel": "SelfApplication",
                         "editable": false
                       }
                     }
@@ -5184,13 +5262,13 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
-          "application": {
+          "selfApplication": {
             "type": "uuid",
             "optional": true,
             "tag": {
               "value": {
                 "id": 9,
-                "defaultLabel": "Application",
+                "defaultLabel": "SelfApplication",
                 "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                 "editable": true
               }
@@ -5647,7 +5725,7 @@ export const miroirFundamentalJzodSchema = {
                   "tag": {
                     "value": {
                       "id": 1,
-                      "defaultLabel": "Application Version",
+                      "defaultLabel": "SelfApplication Version",
                       "editable": false
                     }
                   }
@@ -6001,13 +6079,13 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
-          "application": {
+          "selfApplication": {
             "type": "uuid",
             "optional": true,
             "tag": {
               "value": {
                 "id": 6,
-                "defaultLabel": "Application",
+                "defaultLabel": "SelfApplication",
                 "editable": false
               }
             }
@@ -6226,7 +6304,7 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 2,
-                "defaultLabel": "Application Section",
+                "defaultLabel": "SelfApplication Section",
                 "editable": false
               }
             },
@@ -6759,7 +6837,7 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 2,
-                "defaultLabel": "Application Section",
+                "defaultLabel": "SelfApplication Section",
                 "editable": false
               }
             },
@@ -8520,11 +8598,11 @@ export const miroirFundamentalJzodSchema = {
               "relativePath": "dataStoreType"
             }
           },
-          "application": {
+          "selfApplication": {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "application"
+              "relativePath": "selfApplication"
             }
           },
           "selfApplicationDeploymentConfiguration": {
@@ -8653,11 +8731,11 @@ export const miroirFundamentalJzodSchema = {
                   "relativePath": "dataStoreType"
                 }
               },
-              "application": {
+              "selfApplication": {
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "application"
+                  "relativePath": "selfApplication"
                 }
               },
               "selfApplicationDeploymentConfiguration": {
@@ -9019,11 +9097,11 @@ export const miroirFundamentalJzodSchema = {
                       "relativePath": "dataStoreType"
                     }
                   },
-                  "application": {
+                  "selfApplication": {
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "application"
+                      "relativePath": "selfApplication"
                     }
                   },
                   "selfApplicationDeploymentConfiguration": {
@@ -12167,7 +12245,7 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 2,
-                "defaultLabel": "Application Section",
+                "defaultLabel": "SelfApplication Section",
                 "editable": false
               }
             },
@@ -12275,7 +12353,7 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 2,
-                "defaultLabel": "Application Section",
+                "defaultLabel": "SelfApplication Section",
                 "editable": false
               }
             },
@@ -14662,7 +14740,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_application": {
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplication": {
         "type": "union",
         "definition": [
           {
@@ -14864,34 +14942,6 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 7,
                         "defaultLabel": "Description",
-                        "editable": true
-                      }
-                    }
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "carryOnObject"
-                    }
-                  }
-                ]
-              },
-              "selfApplication": {
-                "type": "union",
-                "tag": {
-                  "value": {
-                    "id": 8,
-                    "defaultLabel": "Self Application",
-                    "editable": true
-                  }
-                },
-                "definition": [
-                  {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "id": 8,
-                        "defaultLabel": "Self Application",
                         "editable": true
                       }
                     }
@@ -15154,12 +15204,12 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "application": {
+              "selfApplication": {
                 "type": "union",
                 "tag": {
                   "value": {
                     "id": 9,
-                    "defaultLabel": "Application",
+                    "defaultLabel": "SelfApplication",
                     "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                     "editable": false
                   }
@@ -15170,7 +15220,7 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "id": 9,
-                        "defaultLabel": "Application",
+                        "defaultLabel": "SelfApplication",
                         "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                         "editable": false
                       }
@@ -15190,7 +15240,7 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 10,
                     "defaultLabel": "Branch",
-                    "description": "The Branch of this Application Version",
+                    "description": "The Branch of this SelfApplication Version",
                     "targetEntity": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
                     "editable": false
                   }
@@ -15202,7 +15252,7 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 10,
                         "defaultLabel": "Branch",
-                        "description": "The Branch of this Application Version",
+                        "description": "The Branch of this SelfApplication Version",
                         "targetEntity": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
                         "editable": false
                       }
@@ -15222,8 +15272,8 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "id": 11,
-                    "defaultLabel": "Previous Application Version",
-                    "description": "Previous version of the application on this Branch.",
+                    "defaultLabel": "Previous SelfApplication Version",
+                    "description": "Previous version of the selfApplication on this Branch.",
                     "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
                     "editable": false
                   }
@@ -15235,8 +15285,8 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "id": 11,
-                        "defaultLabel": "Previous Application Version",
-                        "description": "Previous version of the application on this Branch.",
+                        "defaultLabel": "Previous SelfApplication Version",
+                        "description": "Previous version of the selfApplication on this Branch.",
                         "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
                         "editable": false
                       }
@@ -15620,7 +15670,7 @@ export const miroirFundamentalJzodSchema = {
                             },
                             "context": {}
                           },
-                          "application": {
+                          "selfApplication": {
                             "type": "union",
                             "validations": [
                               {
@@ -15630,7 +15680,7 @@ export const miroirFundamentalJzodSchema = {
                             "tag": {
                               "value": {
                                 "id": 1,
-                                "defaultLabel": "Application",
+                                "defaultLabel": "SelfApplication",
                                 "editable": false
                               }
                             },
@@ -15645,7 +15695,7 @@ export const miroirFundamentalJzodSchema = {
                                 "tag": {
                                   "value": {
                                     "id": 1,
-                                    "defaultLabel": "Application",
+                                    "defaultLabel": "SelfApplication",
                                     "editable": false
                                   }
                                 }
@@ -16150,13 +16200,13 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
-              "application": {
+              "selfApplication": {
                 "type": "union",
                 "optional": true,
                 "tag": {
                   "value": {
                     "id": 6,
-                    "defaultLabel": "Application",
+                    "defaultLabel": "SelfApplication",
                     "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                     "editable": false
                   }
@@ -16168,7 +16218,7 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "id": 6,
-                        "defaultLabel": "Application",
+                        "defaultLabel": "SelfApplication",
                         "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                         "editable": false
                       }
@@ -16216,7 +16266,7 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "id": 8,
-                    "defaultLabel": "Application",
+                    "defaultLabel": "SelfApplication",
                     "editable": true
                   }
                 },
@@ -16227,7 +16277,7 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "id": 8,
-                        "defaultLabel": "Application",
+                        "defaultLabel": "SelfApplication",
                         "editable": true
                       }
                     }
@@ -17048,13 +17098,13 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "application": {
+              "adminApplication": {
                 "type": "union",
                 "tag": {
                   "value": {
                     "id": 8,
-                    "defaultLabel": "Application",
-                    "description": "The Application of the Branch.",
+                    "defaultLabel": "AdminApplication",
+                    "description": "The AdminApplication of the Branch.",
                     "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                     "editable": false
                   }
@@ -17065,8 +17115,8 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "id": 8,
-                        "defaultLabel": "Application",
-                        "description": "The Application of the Branch.",
+                        "defaultLabel": "AdminApplication",
+                        "description": "The AdminApplication of the Branch.",
                         "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                         "editable": false
                       }
@@ -17133,7 +17183,7 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "id": 9,
-                    "defaultLabel": "Application Deployment Model",
+                    "defaultLabel": "SelfApplication Deployment Model",
                     "editable": true
                   }
                 },
@@ -17148,7 +17198,7 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "id": 10,
-                    "defaultLabel": "Application Deployment Data",
+                    "defaultLabel": "SelfApplication Deployment Data",
                     "editable": true
                   }
                 },
@@ -17375,13 +17425,13 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "application": {
+              "selfApplication": {
                 "type": "union",
                 "tag": {
                   "value": {
                     "id": 8,
-                    "defaultLabel": "Application",
-                    "description": "The Application of the Branch.",
+                    "defaultLabel": "SelfApplication",
+                    "description": "The SelfApplication of the Branch.",
                     "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                     "editable": false
                   }
@@ -17392,8 +17442,8 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "id": 8,
-                        "defaultLabel": "Application",
-                        "description": "The Application of the Branch.",
+                        "defaultLabel": "SelfApplication",
+                        "description": "The SelfApplication of the Branch.",
                         "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                         "editable": false
                       }
@@ -17413,7 +17463,7 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "id": 9,
-                    "defaultLabel": "Application Deployment Model",
+                    "defaultLabel": "SelfApplication Deployment Model",
                     "editable": true
                   }
                 },
@@ -17424,7 +17474,7 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "id": 9,
-                        "defaultLabel": "Application Deployment Model",
+                        "defaultLabel": "SelfApplication Deployment Model",
                         "editable": true
                       }
                     }
@@ -17443,7 +17493,7 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "id": 10,
-                    "defaultLabel": "Application Deployment Data",
+                    "defaultLabel": "SelfApplication Deployment Data",
                     "editable": true
                   }
                 },
@@ -17454,7 +17504,7 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "id": 10,
-                        "defaultLabel": "Application Deployment Data",
+                        "defaultLabel": "SelfApplication Deployment Data",
                         "editable": true
                       }
                     }
@@ -18574,7 +18624,7 @@ export const miroirFundamentalJzodSchema = {
                 },
                 "context": {}
               },
-              "application": {
+              "selfApplication": {
                 "type": "union",
                 "validations": [
                   {
@@ -18584,7 +18634,7 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "id": 1,
-                    "defaultLabel": "Application",
+                    "defaultLabel": "SelfApplication",
                     "editable": false
                   }
                 },
@@ -18599,7 +18649,7 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "id": 1,
-                        "defaultLabel": "Application",
+                        "defaultLabel": "SelfApplication",
                         "editable": false
                       }
                     }
@@ -19926,13 +19976,13 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
-              "application": {
+              "selfApplication": {
                 "type": "union",
                 "optional": true,
                 "tag": {
                   "value": {
                     "id": 9,
-                    "defaultLabel": "Application",
+                    "defaultLabel": "SelfApplication",
                     "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                     "editable": true
                   }
@@ -19944,7 +19994,7 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "id": 9,
-                        "defaultLabel": "Application",
+                        "defaultLabel": "SelfApplication",
                         "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                         "editable": true
                       }
@@ -21039,7 +21089,7 @@ export const miroirFundamentalJzodSchema = {
                               "tag": {
                                 "value": {
                                   "id": 1,
-                                  "defaultLabel": "Application Version",
+                                  "defaultLabel": "SelfApplication Version",
                                   "editable": false
                                 }
                               },
@@ -21049,7 +21099,7 @@ export const miroirFundamentalJzodSchema = {
                                   "tag": {
                                     "value": {
                                       "id": 1,
-                                      "defaultLabel": "Application Version",
+                                      "defaultLabel": "SelfApplication Version",
                                       "editable": false
                                     }
                                   }
@@ -21560,7 +21610,7 @@ export const miroirFundamentalJzodSchema = {
                         "tag": {
                           "value": {
                             "id": 1,
-                            "defaultLabel": "Current Application Version",
+                            "defaultLabel": "Current SelfApplication Version",
                             "editable": false
                           }
                         },
@@ -21570,7 +21620,7 @@ export const miroirFundamentalJzodSchema = {
                             "tag": {
                               "value": {
                                 "id": 1,
-                                "defaultLabel": "Current Application Version",
+                                "defaultLabel": "Current SelfApplication Version",
                                 "editable": false
                               }
                             }
@@ -22364,10 +22414,10 @@ export const miroirFundamentalJzodSchema = {
                         },
                         "context": {}
                       },
-                      "application": {
+                      "selfApplication": {
                         "type": "schemaReference",
                         "definition": {
-                          "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_application"
+                          "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplication"
                         },
                         "context": {}
                       },
@@ -27837,7 +27887,7 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "id": 2,
-                    "defaultLabel": "Application Section",
+                    "defaultLabel": "SelfApplication Section",
                     "editable": false
                   }
                 },
@@ -29089,7 +29139,7 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "id": 2,
-                    "defaultLabel": "Application Section",
+                    "defaultLabel": "SelfApplication Section",
                     "editable": false
                   }
                 },

@@ -83,13 +83,13 @@
           }
         }
       },
-      "application": {
+      "selfApplication": {
         "type": "uuid",
         "tag": {
           "value": {
             "id": 8,
-            "defaultLabel": "Application",
-            "description": "The Application of the Branch.",
+            "defaultLabel": "SelfApplication",
+            "description": "The SelfApplication of the Branch.",
             "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
             "editable": false
           }
@@ -101,7 +101,7 @@
         "tag": {
           "value": {
             "id": 9,
-            "defaultLabel": "Application Deployment Model",
+            "defaultLabel": "SelfApplication Deployment Model",
             "editable": true
           }
         }
@@ -112,7 +112,7 @@
         "tag": {
           "value": {
             "id": 10,
-            "defaultLabel": "Application Deployment Data",
+            "defaultLabel": "SelfApplication Deployment Data",
             "editable": true
           }
         }

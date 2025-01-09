@@ -1,5 +1,3 @@
-// import { SelfApplicationDeploymentConfiguration } from "./0_interfaces/1_core/StorageConfiguration.js";
-
 import { SelfApplicationDeploymentConfiguration } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 // duplicated from server!!!!!!!!
@@ -10,8 +8,8 @@ export const applicationDeploymentLibrary: SelfApplicationDeploymentConfiguratio
   // "type":"singleNode",
   "name":"LibraryApplicationPostgresDeployment",
   "defaultLabel":"LibraryApplicationPostgresDeployment",
-  "application":"5af03c98-fe5e-490b-b08f-e1230971c57f",
-  "description": "The default Postgres Deployment for Application Library",
+  "selfApplication":"5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "description": "The default Postgres Deployment for SelfApplication Library",
   // "applicationModelLevel": "model",
   "model": {
     "location": {

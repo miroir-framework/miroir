@@ -4,7 +4,7 @@
   "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
   "name": "BundleProducer",
   "defaultLabel": "Query producing a bundle.",
-  "description": "This query produces a bundle for a given application.",
+  "description": "This query produces a bundle for a given selfApplication.",
   "definition": {
     "parameterSchema": {
       "type": "object",

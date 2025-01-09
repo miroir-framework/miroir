@@ -3,9 +3,9 @@
   "parentName":"EntityDefinition",
   "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-  "entityUuid": "a659d350-dd97-4da9-91de-524fa01745dc",
+  "entityUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
   "conceptLevel":"Model",
-  "name":"Application",
+  "name":"AdminApplication",
   "icon": "Interests",
   "jzodSchema": {
     "type": "object",
@@ -40,6 +40,16 @@
         "type": "string",
         "optional": true,
         "tag": { "value": {  "id":7, "defaultLabel": "Description", "editable": true }}
+      },
+      "selfApplication": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 8,
+            "defaultLabel": "Self SelfApplication",
+            "editable": true
+          }
+        }
       }
     }
   }

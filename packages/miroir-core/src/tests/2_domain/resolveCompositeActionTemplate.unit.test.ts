@@ -33,8 +33,8 @@ const adminConfigurationDeploymentParis = {
   parentUuid: "7959d814-400c-4e80-988f-a00fe582ab98",
   name: "ParisApplicationSqlDeployment",
   defaultLabel: "ParisApplicationSqlDeployment",
-  application: "70e02039-e283-4381-9575-8c52aed18a87",
-  description: "The default Sql Deployment for Application Paris",
+  selfApplication: "70e02039-e283-4381-9575-8c52aed18a87",
+  description: "The default Sql Deployment for SelfApplication Paris",
   configuration: {
     admin: {
       emulatedServerType: "sql",
@@ -101,7 +101,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
             transformerType: "parameterReference",
             referenceName: "createEntity_newEntityListReportUuid",
           },
-          application: {
+          selfApplication: {
             transformerType: "parameterReference",
             referenceName: "currentApplicationUuid",
           },
@@ -156,7 +156,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
             transformerType: "parameterReference",
             referenceName: "createEntity_newEntityDetailsReportUuid",
           },
-          application: {
+          selfApplication: {
             transformerType: "parameterReference",
             referenceName: "currentApplicationUuid",
           },
@@ -380,10 +380,10 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
                       definition: "List of {{createEntity_newEntityName}}"
                     },
                     section: "data",
-                    application: {
+                    selfApplication: {
                       transformerType: "mustacheStringTemplate",
                       definition: "{{adminConfigurationDeploymentParis.uuid}}",
-                    }, // TODO: replace with application uuid, this is a deployment at the moment
+                    }, // TODO: replace with selfApplication uuid, this is a deployment at the moment
                     icon: "local_drink"
                   }
                 },
@@ -533,7 +533,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
     const newEntity: MetaEntity = {
       uuid: newEntityUuid,
       parentUuid: entityEntity.uuid,
-      application: currentApplicationUuid,
+      selfApplication: currentApplicationUuid,
       description: createEntity_newEntityDescription,
       name: createEntity_newEntityName,
     }
@@ -581,7 +581,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
               entity: {
                 uuid: "c4b3b3b3-7b3b-4b3b-8b3b-3b3b3b3b3b3b",
                 parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                application: "a4b3b3b3-7b3b-4b3b-8b3b-3b3b3b3b3b3b",
+                selfApplication: "a4b3b3b3-7b3b-4b3b-8b3b-3b3b3b3b3b3b",
                 description: "newEntityDescription",
                 name: "newEntityName",
               },
@@ -657,7 +657,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
                 instances: [
                   {
                     uuid: "f4b3b3b3-7b3b-4b3b-8b3b-3b3b3b3b3b3b",
-                    application: "a4b3b3b3-7b3b-4b3b-8b3b-3b3b3b3b3b3b",
+                    selfApplication: "a4b3b3b3-7b3b-4b3b-8b3b-3b3b3b3b3b3b",
                     parentName: "Report",
                     parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
                     conceptLevel: "Model",
@@ -684,7 +684,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
                   },
                   {
                     uuid: "e4b3b3b3-7b3b-4b3b-8b3b-3b3b3b3b3b3b",
-                    application: "a4b3b3b3-7b3b-4b3b-8b3b-3b3b3b3b3b3b",
+                    selfApplication: "a4b3b3b3-7b3b-4b3b-8b3b-3b3b3b3b3b3b",
                     parentName: "Report",
                     parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
                     conceptLevel: "Model",
@@ -773,7 +773,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
                 reportUuid: "f4b3b3b3-7b3b-4b3b-8b3b-3b3b3b3b3b3b",
                 label: "List of newEntityName",
                 section: "data",
-                application: "",
+                selfApplication: "",
                 icon: "local_drink",
               },
               updatedMenu: {
@@ -927,7 +927,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
     const newEntity: MetaEntity = {
       uuid: newEntityUuid,
       parentUuid: entityEntity.uuid,
-      application: currentApplicationUuid,
+      selfApplication: currentApplicationUuid,
       description: createEntity_newEntityDescription,
       name: createEntity_newEntityName,
     }
@@ -1004,7 +1004,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
         //     actionName: "runQuery",
         //     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
         //     // applicationSection: "data",
-        //     applicationSection: "model", // TODO: give only application section in individual queries?
+        //     applicationSection: "model", // TODO: give only selfApplication section in individual queries?
         //     deploymentUuid: {
         //       transformerType: "parameterReference",
         //       referenceName: "currentDeploymentUuid"
@@ -1049,7 +1049,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
         //           definition: {
         //             "label": "List of " + newEntityName,
         //             "section": "data",
-        //             application: adminConfigurationDeploymentParis.uuid, // TODO: replace with application uuid, this is a deployment at the moment
+        //             selfApplication: adminConfigurationDeploymentParis.uuid, // TODO: replace with selfApplication uuid, this is a deployment at the moment
         //             "reportUuid": actionInsertMunicipalitiesParams.splitEntity_newEntityListReportUuid,
         //             "icon": "location_on"
         //           }
@@ -1138,7 +1138,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
             actionName: "runQuery",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             applicationSection: "data",
-            // applicationSection: "model", // TODO: give only application section in individual queries?
+            // applicationSection: "model", // TODO: give only selfApplication section in individual queries?
             deploymentUuid: {
               transformerType: "parameterReference",
               referenceName: "currentDeploymentUuid"
@@ -1418,7 +1418,7 @@ describe("resolveCompositeActionTemplate.unit.test", () => {
       //         menuItem: {
       //           label: "List of Test2",
       //           section: "data",
-      //           application: "f1b74341-129b-474c-affa-e910d6cba01d",
+      //           selfApplication: "f1b74341-129b-474c-affa-e910d6cba01d",
       //           reportUuid: "64b3b3b3-7b3b-4b3b-8b3b-3b3b3b3b3b3b",
       //           icon: "location_on",
       //         },

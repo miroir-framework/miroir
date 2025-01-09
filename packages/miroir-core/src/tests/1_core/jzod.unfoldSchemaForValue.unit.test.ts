@@ -28,6 +28,7 @@ import entityReport from "../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9
 import entityStoreBasedConfiguration from "../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7990c0c9-86c3-40a1-a121-036c91b55ed7.json" assert { type: "json" };
 import entityQueryVersion from "../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e4320b9e-ab45-4abe-85d8-359604b3c62f.json" assert { type: "json" };
 
+import entityDefinitionAdminApplication from "../../assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/3fb6203e-f639-4b2a-afe1-e1fb45d6b2ea.json" assert { type: "json" };
 import entityDefinitionSelfApplication from "../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json" assert { type: "json" };
 import entityDefinitionSelfApplicationDeploymentConfiguration from "../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bd303ae8-6bce-4b44-a63c-815b9ebf728b.json" assert { type: "json" };
 import entityDefinitionSelfApplicationVersion from "../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json" assert { type: "json" };
@@ -91,8 +92,8 @@ import domainEndpointVersionV1 from "../../assets/miroir_data/3d8da4d4-8f76-4bb4
 import queryEndpointVersionV1 from "../../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/0faae143-0d7b-4a8a-a950-4fc3df943bde.json" assert { type: "json" };
 import persistenceEndpointVersionV1 from "../../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/a93598b3-19b6-42e8-828c-f02042d212d4.json" assert { type: "json" };
 // import jzodSchemajzodMiroirBootstrapSchema from "../src/assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json" assert { type: "json" };
-import entityDefinitionApplicationV1 from "../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json" assert { type: "json" };
-import entityDefinitionApplicationVersionV1 from "../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json" assert { type: "json" };
+import entityDefinitionSelfApplicationV1 from "../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json" assert { type: "json" };
+import entityDefinitionSelfApplicationVersionV1 from "../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json" assert { type: "json" };
 // import entityDefinitionEntity from "../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/381ab1be-337f-4198-b1d3-f686867fc1dd.json" assert { type: "json" };
 import entityDefinitionEntityDefinitionV1 from "../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json" assert { type: "json" };
 import entityDefinitionJzodSchemaV1 from "../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/15407b85-f2c8-4a34-bfa7-89f044ba2407.json" assert { type: "json" };
@@ -221,6 +222,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
       transformerJzodSchema as JzodSchema,
       [transformerMenuV1],
+      entityDefinitionAdminApplication as EntityDefinition,
       entityDefinitionSelfApplication as EntityDefinition,
       entityDefinitionSelfApplicationVersion as EntityDefinition,
       entityDefinitionDeployment as EntityDefinition,
@@ -1032,7 +1034,7 @@ describe("jzod.unfoldSchemaForValue", () => {
                     relativePath: "applicationSection",
                   },
                 },
-                application: {
+                selfApplication: {
                   type: "string",
                   validations: [
                     {
@@ -1206,7 +1208,7 @@ describe("jzod.unfoldSchemaForValue", () => {
                   //         type: "literal",
                   //         definition: "model",
                   //       },
-                  //       application: {
+                  //       selfApplication: {
                   //         type: "string",
                   //         validations: [
                   //           {
@@ -1258,28 +1260,28 @@ describe("jzod.unfoldSchemaForValue", () => {
                 {
                   label: "Miroir Entities",
                   section: "model",
-                  application: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+                  selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
                   reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
                   icon: "category",
                 },
                 {
                   label: "Miroir Entity Definitions",
                   section: "model",
-                  application: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+                  selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
                   reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
                   icon: "category",
                 },
                 {
                   label: "Miroir Reports",
                   section: "data",
-                  application: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+                  selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
                   reportUuid: "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
                   icon: "list",
                 },
                 {
                   label: "Miroir Menus",
                   section: "data",
-                  application: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+                  selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
                   reportUuid: "ecfd8787-09cc-417d-8d2c-173633c9f998",
                   icon: "list",
                 },
@@ -1292,42 +1294,42 @@ describe("jzod.unfoldSchemaForValue", () => {
                 {
                   label: "Library Entities",
                   section: "model",
-                  application: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                  selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                   reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
                   icon: "category",
                 },
                 {
                   label: "Library Entity Definitions",
                   section: "model",
-                  application: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                  selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                   reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
                   icon: "category",
                 },
                 {
                   label: "Library Tests",
                   section: "data",
-                  application: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                  selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                   reportUuid: "931dd036-dfce-4e47-868e-36dba3654816",
                   icon: "category",
                 },
                 {
                   label: "Library Books",
                   section: "data",
-                  application: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                  selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                   reportUuid: "74b010b6-afee-44e7-8590-5f0849e4a5c9",
                   icon: "auto_stories",
                 },
                 {
                   label: "Library Authors",
                   section: "data",
-                  application: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                  selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                   reportUuid: "66a09068-52c3-48bc-b8dd-76575bbc8e72",
                   icon: "star",
                 },
                 {
                   label: "Library Publishers",
                   section: "data",
-                  application: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                  selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                   reportUuid: "a77aa662-006d-46cd-9176-01f02a1a12dc",
                   icon: "account_balance",
                 },

@@ -3,6 +3,6 @@
   "parentName":"SelfApplication",
   "parentUuid":"a659d350-dd97-4da9-91de-524fa01745dc",
   "name":"Admin",
-  "defaultLabel": "The Test1 self application.",
-  "description": "The model and data of the Admin Test1 application."
+  "defaultLabel": "The Test1 self SelfApplication.",
+  "description": "The model and data of the Test1 SelfApplication."
 }

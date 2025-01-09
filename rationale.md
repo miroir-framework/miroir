@@ -25,7 +25,7 @@ Looking in the past for inspiration, some development environments have indeed p
 
 Limitations to Smalltalk were yet important, as many issues were outside of the scope that any development environment could reach at the time: no support for version control or any delivery process, no direct support for automated testing, no support for refactoring, no support for software or database model design, etc.
 
-Then comes [online IDEs](https://en.wikipedia.org/wiki/Online_integrated_development_environment) on the scene. Starting from the late 2000's-mid 2010's, tools like [Stackblitz](https://stackblitz.com/), have offered the "usual" functionalities of well-known IDEs but running within the web browser, accessed through the cloud. One then develops a web application, from within another web application (the online IDE), without any synergy between the two.
+Then comes [online IDEs](https://en.wikipedia.org/wiki/Online_integrated_development_environment) on the scene. Starting from the late 2000's-mid 2010's, tools like [Stackblitz](https://stackblitz.com/), have offered the "usual" functionalities of well-known IDEs but running within the web browser, accessed through the cloud. One then develops a web selfApplication, from within another web selfApplication (the online IDE), without any synergy between the two.
 
 As a parenthesis, this appears to us that they received, and still receive, a welcoming similar to the one the automobile received immediately after its inception: automobiles were seen, not without reasons, as horse-carriages with motors instead of horses. Yet, in the end automobiles enabled so much more than what could have been dreamt of by the mere impovement of horse carriages.
 
@@ -34,17 +34,17 @@ The Miroir Framework aims at exploiting the synergies between web applications a
 Miroir shall provide support for:
 
 - model / database design and evolution,
-- application of "relevant" software development processes and notations,
+- selfApplication of "relevant" software development processes and notations,
 - interactive "positive" feedback loops,
 - version control, continuous integration and continuous delivery (or even continuous deployment),
 
 # Method & Means
 
-Allow to seamlessly create, integrate and benefit from DSLs at run-time. Enrich an application step-by-step, capturing new world models in DSLs, and connecting those DSLs as deemed fit.
+Allow to seamlessly create, integrate and benefit from DSLs at run-time. Enrich an selfApplication step-by-step, capturing new world models in DSLs, and connecting those DSLs as deemed fit.
 
 Model-based Software Engineering,
 
-Now web-applications more and more look like any general-purpose application [React Native](https://reactnative.dev/), [Electron](https://www.electronjs.org/).
+Now web-applications more and more look like any general-purpose selfApplication [React Native](https://reactnative.dev/), [Electron](https://www.electronjs.org/).
 
 In the worst case Miroir could end up as yet another software demonstator of somwhat ludicrous, way above their head ideas, or maybe in the best case as another Smalltalk.
 
@@ -103,4 +103,4 @@ Some existing platform limitate the scope, horizontally or vertically:
 ### What you get
 
 - a back-end web server (nodejs) able to execute your DSL Actions and return the required data 
-- a web application, that can be executed through a "plain" desktop-based application, or be deployed within the server and accessed through the browser
+- a web selfApplication, that can be executed through a "plain" desktop-based selfApplication, or be deployed within the server and accessed through the browser

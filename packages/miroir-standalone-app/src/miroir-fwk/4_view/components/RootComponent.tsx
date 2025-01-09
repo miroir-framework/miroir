@@ -27,6 +27,7 @@ import {
   DomainElementObject,
   domainEndpointVersionV1,
   EntityDefinition,
+  entityDefinitionAdminApplication,
   entityDefinitionBundleV1,
   entityDefinitionCommit,
   entityDefinitionDeployment,
@@ -256,7 +257,7 @@ export const RootComponent = (props: RootComponentProps) => {
                 <p />
                 <div>
                   <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">Chosen application Deployment</InputLabel>
+                    <InputLabel id="demo-simple-select-label">Chosen selfApplication Deployment</InputLabel>
                     <Select
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
@@ -325,7 +326,7 @@ export const RootComponent = (props: RootComponentProps) => {
 
                       if (!configurations[adminConfigurationDeploymentAdmin.uuid]) {
                         throw new Error(
-                          "no configuration for Admin application Deployment given, can not fetch data. Admin deployment uuid=" +
+                          "no configuration for Admin selfApplication Deployment given, can not fetch data. Admin deployment uuid=" +
                             adminConfigurationDeploymentAdmin.uuid +
                             " configurations=" +
                             JSON.stringify(configurations, null, 2)
@@ -372,7 +373,7 @@ export const RootComponent = (props: RootComponentProps) => {
                       ;
                       
                       if (adminDeployments.status != "ok") {
-                        throw new Error("found adminDeployments with error " + adminDeployments.error);
+                        throw new Error("found adminDeployments with error " + adminDeployments);
                       }
                   
                       if (adminDeployments.returnedDomainElement.elementType != "object" ) {
@@ -501,7 +502,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         params: {
                           dataStoreType: "miroir",
                           metaModel: defaultMiroirMetaModel,
-                          application: selfApplicationMiroir,
+                          selfApplication: selfApplicationMiroir,
                           applicationDeploymentConfiguration: adminConfigurationDeploymentMiroir,
                           applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
                           applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
@@ -516,7 +517,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         params: {
                           dataStoreType: "app",
                           metaModel: defaultMiroirMetaModel,
-                          application: selfApplicationLibrary,
+                          selfApplication: selfApplicationLibrary,
                           applicationDeploymentConfiguration: adminConfigurationDeploymentLibrary,
                           applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
                           applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,
@@ -560,7 +561,7 @@ export const RootComponent = (props: RootComponentProps) => {
                     }
                   }
                   >
-                    create Library Application Bundle
+                    create Library SelfApplication Bundle
                   </button> */}
                 </span>
                 <p />

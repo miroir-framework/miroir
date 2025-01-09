@@ -235,8 +235,8 @@ const adminConfigurationDeploymentForTest = {
   "type":"singleNode",
   "name":"LibraryApplicationFilesystemDeployment",
   "defaultLabel":"LibraryApplicationFilesystemDeployment",
-  "application":"dbabc841-b1fb-48f6-a31a-b8ce294127da",
-  "description": "The default Filesystem Deployment for Application Library",
+  "selfApplication":"dbabc841-b1fb-48f6-a31a-b8ce294127da",
+  "description": "The default Filesystem Deployment for SelfApplication Library",
   "applicationModelLevel": "model",
   "configuration": {
     "admin": {
@@ -264,9 +264,7 @@ const testActions: Record<string, TestActionParams> = {
       testLabel: "applicative.Library.integ.test",
       beforeAll: createDeploymentCompositeAction(
         miroirConfig,
-        // adminConfigurationDeploymentLibrary.uuid,
         testApplicationDeploymentUuid,
-        // adminConfigurationDeploymentLibrary.configuration,
         testDeploymentStorageConfiguration
       ),
       beforeEach: {
@@ -298,7 +296,7 @@ const testActions: Record<string, TestActionParams> = {
                     ? "miroir"
                     : "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
                 metaModel: defaultMiroirMetaModel,
-                application: selfApplicationMiroir,
+                selfApplication: selfApplicationMiroir,
                 selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
                 applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
                 applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
@@ -422,7 +420,7 @@ const testActions: Record<string, TestActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "model", // TODO: give only application section in individual queries?
+                  applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                   deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                   query: {
                     queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -467,7 +465,7 @@ const testActions: Record<string, TestActionParams> = {
     },
   },
   // ]
-  // "create new Application": {
+  // "create new SelfApplication": {
   //   testActionType: "testCompositeAction",
   //   deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
   //   compositeTestAction: {
@@ -519,11 +517,11 @@ const testActions: Record<string, TestActionParams> = {
   //           },
   //           defaultLabel: {
   //             transformerType: "mustacheStringTemplate",
-  //             definition: "The {{newApplicationName}} application.",
+  //             definition: "The {{newApplicationName}} selfApplication.",
   //           },
   //           description: {
   //             transformerType: "mustacheStringTemplate",
-  //             definition: "This application contains the {{newApplicationName}} model and data",
+  //             definition: "This selfApplication contains the {{newApplicationName}} model and data",
   //           },
   //           selfApplication: {
   //             transformerType: "parameterReference",
@@ -535,7 +533,7 @@ const testActions: Record<string, TestActionParams> = {
   //             transformerType: "parameterReference",
   //             referenceName: "newSelfApplicationUuid",
   //           },
-  //           parentName: "Application",
+  //           parentName: "SelfApplication",
   //           parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
   //           name: {
   //             transformerType: "parameterReference",
@@ -543,11 +541,11 @@ const testActions: Record<string, TestActionParams> = {
   //           },
   //           defaultLabel: {
   //             transformerType: "mustacheStringTemplate",
-  //             definition: "The {{newApplicationName}} application.",
+  //             definition: "The {{newApplicationName}} selfApplication.",
   //           },
   //           description: {
   //             transformerType: "mustacheStringTemplate",
-  //             definition: "This application contains the {{newApplicationName}} model and data",
+  //             definition: "This selfApplication contains the {{newApplicationName}} model and data",
   //           },
   //           selfApplication: {
   //             transformerType: "parameterReference",
@@ -575,13 +573,13 @@ const testActions: Record<string, TestActionParams> = {
   //             transformerType: "mustacheStringTemplate",
   //             definition: "{{newApplicationName}}ApplicationSqlDeployment",
   //           },
-  //           application: {
+  //           selfApplication: {
   //             transformerType: "mustacheStringTemplate",
   //             definition: "{{newApplicationForAdmin.uuid}}",
   //           },
   //           description: {
   //             transformerType: "mustacheStringTemplate",
-  //             definition: "The default Sql Deployment for Application {{newApplicationName}}",
+  //             definition: "The default Sql Deployment for SelfApplication {{newApplicationName}}",
   //           },
   //           configuration: {
   //             transformerType: "parameterReference",
@@ -600,7 +598,7 @@ const testActions: Record<string, TestActionParams> = {
   //           defaultLabel: "Meta-Model",
   //           description: {
   //             transformerType: "mustacheStringTemplate",
-  //             definition: "This is the default menu allowing to explore the {{newApplicationName}} Application",
+  //             definition: "This is the default menu allowing to explore the {{newApplicationName}} SelfApplication",
   //           },
   //           definition: {
   //             menuType: "complexMenu",
@@ -621,7 +619,7 @@ const testActions: Record<string, TestActionParams> = {
   //                       definition: "{{newApplicationName}} Entities",
   //                     },
   //                     section: "model",
-  //                     application: {
+  //                     selfApplication: {
   //                       transformerType: "parameterReference",
   //                       referenceName: "newDeploymentUuid",
   //                     },
@@ -634,7 +632,7 @@ const testActions: Record<string, TestActionParams> = {
   //                       definition: "{{newApplicationName}} Entity Definitions",
   //                     },
   //                     section: "model",
-  //                     application: {
+  //                     selfApplication: {
   //                       transformerType: "parameterReference",
   //                       referenceName: "newDeploymentUuid",
   //                     },
@@ -647,7 +645,7 @@ const testActions: Record<string, TestActionParams> = {
   //                       definition: "{{newApplicationName}} Reports",
   //                     },
   //                     section: "model",
-  //                     application: {
+  //                     selfApplication: {
   //                       transformerType: "parameterReference",
   //                       referenceName: "newDeploymentUuid",
   //                     },

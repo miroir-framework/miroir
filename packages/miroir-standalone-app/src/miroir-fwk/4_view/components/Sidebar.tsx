@@ -101,7 +101,7 @@ const sideBarDefaultItems = [
   {
     label: "A Menu will be displayed here!",
     section: "model",
-    application: adminConfigurationDeploymentMiroir.uuid,
+    selfApplication: adminConfigurationDeploymentMiroir.uuid,
     reportUuid: "",
     "icon": "south",
   },
@@ -213,7 +213,7 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
               (miroirMenusDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.definition ?? sideBarDefaultItems
               ).map((i: any, index: number) => (
               <ListItem key={i.label} disablePadding>
-                <ListItemButton sx={{padding: 0}} component={Link} to={`/report/${i.application}/${i.section}/${i.reportUuid}/xxxxxx`}>
+                <ListItemButton sx={{padding: 0}} component={Link} to={`/report/${i.selfApplication}/${i.section}/${i.reportUuid}/xxxxxx`}>
                   <ListItemIcon>
                     <Icon>{i.icon}</Icon>
                   </ListItemIcon>
@@ -230,7 +230,7 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
                 menuSection.items.map(
                   (curr:any, index: number) => (
                     <ListItem key={curr.label + index} disablePadding>
-                      <ListItemButton component={Link} to={`/report/${curr.application}/${curr.section}/${curr.reportUuid}/xxxxxx`}>
+                      <ListItemButton component={Link} to={`/report/${curr.selfApplication}/${curr.section}/${curr.reportUuid}/xxxxxx`}>
                         <ListItemIcon>
                           <Icon>{curr.icon}</Icon>
                         </ListItemIcon>

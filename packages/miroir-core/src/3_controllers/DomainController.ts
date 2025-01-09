@@ -109,8 +109,8 @@ export async function resetAndInitApplicationDeployment(
       params: {
         dataStoreType: selfAdminConfigurationDeployment.uuid == adminConfigurationDeploymentMiroir.uuid?"miroir":"app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
         metaModel: defaultMiroirMetaModel,
-        // TODO: this is wrong, application, application version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
-        application: selfApplicationMiroir,
+        // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
+        selfApplication: selfApplicationMiroir,
         selfApplicationDeploymentConfiguration: selfAdminConfigurationDeployment,
         applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
         applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
@@ -146,7 +146,7 @@ export async function resetAndInitApplicationDeploymentNew(
 // ################################################################################################
 /**
  * domain level contains "business" logic related to concepts defined whithin the
- * application: entities, reports, reducers, users, etc.
+ * selfApplication: entities, reports, reducers, users, etc.
  * example: get the list of reports accessible by a given user.
  */
 export class DomainController implements DomainControllerInterface {
@@ -1595,8 +1595,8 @@ export class DomainController implements DomainControllerInterface {
               description: "TODO: no description yet",
               name: "TODO: No label was given to this version.",
               previousVersion: currentModel?.configuration[0]?.definition?.currentApplicationVersion,
-              branch: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // TODO: this is wrong, application, application version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
-              application: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // TODO: this is wrong, application, application version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
+              branch: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
+              selfApplication: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
             };
 
             log.debug(
@@ -1796,7 +1796,7 @@ export class DomainController implements DomainControllerInterface {
         }
         case "storeManagementAction": {
           if (domainAction.actionName == "resetAndInitApplicationDeployment") {
-            await resetAndInitApplicationDeployment(this, domainAction.deployments);
+            await resetAndInitApplicationDeployment(this, domainAction.deployments as any as SelfApplicationDeploymentConfiguration[]); // TODO: works because only uuid of deployments is accessed in resetAndInitApplicationDeployment
             // await this.callAsyncActionHandler(domainAction, "*", currentModel, this, domainAction.deployments);
           } else {
             try {

@@ -50,7 +50,7 @@ const miroirExpression: JzodElement = {
 //   // adminConfigurationDeploymentTest1,
 //   // adminConfigurationDeploymentTest4,
 //   adminConfigurationDeploymentParis,
-// ] as any[]; //type for Admin Application Deployment Entity Definition
+// ] as any[]; //type for Admin SelfApplication Deployment Entity Definition
 
 
 let count = 0;
@@ -75,7 +75,7 @@ export const ReportPage = () => {
   //   adminConfigurationDeploymentLibrary,
   //   adminConfigurationDeploymentTest1,
   //   adminConfigurationDeploymentTest4,
-  // ] as any[]; //type for Admin Application Deployment Entity Definition
+  // ] as any[]; //type for Admin SelfApplication Deployment Entity Definition
   // ] as SelfApplicationDeploymentConfiguration[];
 
 

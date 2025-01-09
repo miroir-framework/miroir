@@ -309,7 +309,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
         parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
         name: "Entity",
-        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         conceptLevel: "MetaModel",
         description: "The Metaclass for entities.",
       }
@@ -425,7 +425,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       //     "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
       //     "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
       //     "name": "Report",
-      //     "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+      //     "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       //     "conceptLevel": "Model",
       //     "description": "Report, allowing to display model instances"
       //   },
@@ -435,7 +435,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       //     "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
       //     "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
       //     "name": "StoreBasedConfiguration",
-      //     "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+      //     "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       //     "conceptLevel": "Model",
       //     "description": "A configuration of storage-related aspects of a Model."
       //   },

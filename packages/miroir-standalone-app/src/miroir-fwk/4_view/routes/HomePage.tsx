@@ -326,7 +326,7 @@ export const HomePage = (props: RootComponentProps) => {
         </button>
       </span>
       <p />
-      {/* Reset Application database */}
+      {/* Reset SelfApplication database */}
       <span>
         <button
           onClick={async () =>
@@ -336,10 +336,10 @@ export const HomePage = (props: RootComponentProps) => {
             ] as any)
           }
         >
-          Reset Application database
+          Reset SelfApplication database
         </button>
       </span>
-      {/* Reset Library Application Data */}
+      {/* Reset Library SelfApplication Data */}
       <span>
         <button
           onClick={async () => {
@@ -360,7 +360,7 @@ export const HomePage = (props: RootComponentProps) => {
             }, defaultMiroirMetaModel);
           }}
         >
-          Reset Library Application Data
+          Reset Library SelfApplication Data
         </button>
       </span>
       <p />
@@ -503,7 +503,7 @@ export const HomePage = (props: RootComponentProps) => {
       {/* <Box sx={{ minWidth: 50 }}> */}
       <div>
         <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label">Chosen application Deployment</InputLabel>
+          <InputLabel id="demo-simple-select-label">Chosen selfApplication Deployment</InputLabel>
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
@@ -526,7 +526,7 @@ export const HomePage = (props: RootComponentProps) => {
       {/* <Box sx={{ minWidth: 50 }}> */}
       <div>
         <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label">Chosen Application Section</InputLabel>
+          <InputLabel id="demo-simple-select-label">Chosen SelfApplication Section</InputLabel>
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"

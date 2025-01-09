@@ -1,9 +1,9 @@
 {
   "uuid": "0e7e56a9-ef59-4bf1-b17e-c710444d969e",
-  "parentName": "Application",
+  "parentName": "AdminApplication",
   "parentUuid": "25d935e7-9e93-42c2-aade-0472b883492b",
   "name": "test4",
-  "defaultLabel": "The test4 application.",
-  "description": "This application contains the test4 model and data",
+  "defaultLabel": "The test4 adminApplication.",
+  "description": "This adminApplication contains the test4 model and data",
   "selfApplication": "478d3a5d-d866-41c8-944c-121aca3ab87f"
 }

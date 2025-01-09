@@ -5,8 +5,8 @@
   "type": "singleNode",
   "name": "AdminApplicationFilesystemDeployment",
   "defaultLabel": "AdminApplicationFilesystemDeployment",
-  "application": "f3e04bb2-005f-484b-aaf2-072232f60f2c",
-  "description": "The default Filesystem Deployment for Application Admin",
+  "selfApplication": "f3e04bb2-005f-484b-aaf2-072232f60f2c",
+  "description": "The default Filesystem Deployment for SelfApplication Admin",
   "configuration": {
     "admin": {
       "emulatedServerType": "filesystem",

@@ -3,9 +3,9 @@
   "parentName":"SelfApplicationDeploymentConfiguration",
   "parentUuid":"7959d814-400c-4e80-988f-a00fe582ab98",
   "name":"DefaultMiroirApplicationDeployment",
-  "defaultLabel": "Miroir Application Deployment Configuration declaring Miroir Application Deployment in Admin schema. Run-time-only / DEFUNCT?",
-  "application":"79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
-  "description": "The default Deployment for Application Miroir",
+  "defaultLabel": "Miroir SelfApplication Deployment Configuration declaring Miroir SelfApplication Deployment in Admin schema. Run-time-only / DEFUNCT?",
+  "selfApplication":"79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+  "description": "The default Deployment for SelfApplication Miroir",
   "configuration": {
     "admin": {
       "emulatedServerType": "filesystem",

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { EntityInstanceWithNameSchema } from "../../0_interfaces/1_core/Instance.js";
+import { storeUnitConfiguration } from "./preprocessor-generated/miroirFundamentalType.js";
 
 
 
@@ -72,13 +73,31 @@ export const ApplicationModelLevelSchema = z.enum([
 export type ApplicationModelLevel = z.infer<typeof ApplicationModelLevelSchema>;
 
 
+export const AdminApplicationDeploymentConfigurationSchema = EntityInstanceWithNameSchema.extend({
+  // uuid: z.string().uuid(),
+  type: ClientServerDistributionModeSchema,
+  defaultLabel: z.string(),
+  description: z.string(),
+  // metaModel: ModelStorageLocation,
+  selfApplication:z.string().uuid().optional(),
+  applicationVersion:z.string().uuid().optional(),
+  applicationModelLevel: ApplicationModelLevelSchema,
+  // model: ModelStorageLocationSchema.optional(), // in the case of a designer access, the zone where the model can be edited.
+  // data: ModelStorageLocationSchema.optional(),
+  configuration: storeUnitConfiguration
+});
+
+export type AdminApplicationDeploymentConfiguration = z.infer<typeof AdminApplicationDeploymentConfigurationSchema>;
+
+
+
 // export const SelfApplicationDeploymentConfigurationSchema = EntityInstanceWithNameSchema.extend({
 //   // uuid: z.string().uuid(),
 //   type: ClientServerDistributionModeSchema,
 //   defaultLabel: z.string(),
 //   description: z.string(),
 //   // metaModel: ModelStorageLocation,
-//   application:z.string().uuid().optional(),
+//   selfApplication:z.string().uuid().optional(),
 //   applicationVersion:z.string().uuid().optional(),
 //   applicationModelLevel: ApplicationModelLevelSchema,
 //   model: ModelStorageLocationSchema.optional(), // in the case of a designer access, the zone where the model can be edited.

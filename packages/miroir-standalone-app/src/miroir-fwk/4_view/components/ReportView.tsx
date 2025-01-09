@@ -286,7 +286,7 @@ export const ReportView = (props: ReportViewProps) => {
         {props.applicationSection}
       </div>
       <div>
-        application:
+        selfApplication:
         {props.applicationSection}
       </div>
     </div> */

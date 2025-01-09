@@ -20,7 +20,7 @@ export type Uuid = z.infer<typeof UuidSchema>;
 // #################################################################################################
 export const MetaEntitySchema = EntityInstanceWithNameSchema.extend({
   description: z.string(),
-  application: UuidSchema,
+  selfApplication: UuidSchema,
 });
 export type MetaEntity = z.infer<typeof MetaEntitySchema>;
 

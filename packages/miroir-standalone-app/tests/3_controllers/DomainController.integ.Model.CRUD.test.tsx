@@ -289,7 +289,7 @@ const testActions: Record<string, TestActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "model", // TODO: give only application section in individual queries?
+                  applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   query: {
                     queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -405,7 +405,7 @@ const testActions: Record<string, TestActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "model", // TODO: give only application section in individual queries?
+                  applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   query: {
                     queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -534,7 +534,7 @@ const testActions: Record<string, TestActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "model", // TODO: give only application section in individual queries?
+                  applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   query: {
                     queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -640,7 +640,7 @@ const testActions: Record<string, TestActionParams> = {
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   queryExecutionStrategy: "localCacheOrFail",
-                  applicationSection: "model", // TODO: give only application section in individual queries?
+                  applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   query: {
                     queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -674,7 +674,7 @@ const testActions: Record<string, TestActionParams> = {
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   queryExecutionStrategy: "storage",
-                  applicationSection: "model", // TODO: give only application section in individual queries?
+                  applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   query: {
                     queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -836,7 +836,7 @@ const testActions: Record<string, TestActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "model", // TODO: give only application section in individual queries?
+                  applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   queryExecutionStrategy: "storage",
                   query: {
@@ -969,7 +969,7 @@ const testActions: Record<string, TestActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "model", // TODO: give only application section in individual queries?
+                  applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   queryExecutionStrategy: "storage",
                   query: {
@@ -1103,7 +1103,7 @@ const testActions: Record<string, TestActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "model", // TODO: give only application section in individual queries?
+                  applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   queryExecutionStrategy: "storage",
                   query: {
@@ -1138,7 +1138,7 @@ const testActions: Record<string, TestActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "model", // TODO: give only application section in individual queries?
+                  applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   queryExecutionStrategy: "storage",
                   query: {

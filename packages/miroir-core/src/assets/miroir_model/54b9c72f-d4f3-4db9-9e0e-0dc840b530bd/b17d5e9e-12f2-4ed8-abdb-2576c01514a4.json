@@ -32,10 +32,10 @@
         "type": "date",
         "tag": { "value": {  "id": 5, "defaultLabel": "Date", "editable": false }}
       },
-      "application": {
+      "selfApplication": {
         "type": "uuid",
         "optional": true,
-        "tag": { "value": {  "id": 6, "defaultLabel": "Application", "editable": false }}
+        "tag": { "value": {  "id": 6, "defaultLabel": "SelfApplication", "editable": false }}
       },
       "name": {
         "type": "string",

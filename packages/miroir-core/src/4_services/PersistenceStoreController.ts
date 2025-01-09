@@ -5,7 +5,7 @@ import {
   ActionEntityInstanceReturnType,
   ActionReturnType,
   ActionVoidReturnType,
-  Application,
+  SelfApplication,
   ApplicationSection,
   Entity,
   EntityDefinition,
@@ -312,7 +312,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
         // defaultMiroirMetaModel,
         params.metaModel,
         params.dataStoreType,
-        params.application,
+        params.selfApplication,
         // params.applicationDeploymentConfiguration,
         params.selfApplicationDeploymentConfiguration,
         params.applicationModelBranch,
@@ -328,7 +328,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       await this.initApplication(
         params.metaModel,
         "app",
-        params.application,
+        params.selfApplication,
         // params.applicationDeploymentConfiguration,
         params.selfApplicationDeploymentConfiguration,
         params.applicationModelBranch,
@@ -346,7 +346,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   async initApplication(
     metaModel:MetaModel,
     dataStoreType: DataStoreApplicationType,
-    selfApplication: Application,
+    selfApplication: SelfApplication,
     // selfApplicationDeploymentConfiguration: EntityInstance,
     selfApplicationDeploymentConfiguration: SelfApplicationDeploymentConfiguration,
     selfApplicationModelBranch: EntityInstance,
@@ -395,7 +395,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     }
 
     const dataBootFromPersistedState = await this.dataStoreSection.bootFromPersistedState(
-      (dataEntities.returnedDomainElement?.elementValue.instances as Entity[]).filter((e) => ["Entity", "EntityDefinition"].indexOf(e.name) == -1), // for Miroir application only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table
+      (dataEntities.returnedDomainElement?.elementValue.instances as Entity[]).filter((e) => ["Entity", "EntityDefinition"].indexOf(e.name) == -1), // for Miroir selfApplication only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table
       dataEntityDefinitions.returnedDomainElement?.elementValue.instances as EntityDefinition[]
     );
     if (dataBootFromPersistedState.status != "ok") {
@@ -486,7 +486,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     // }
     const dataSectionFilteredEntities: Entity[] = (dataSectionEntities.returnedDomainElement.elementValue.instances as Entity[]).filter(
       (e: Entity) => ["Entity", "EntityDefinition"].indexOf(e.name) == -1
-    ); // for Miroir application only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table
+    ); // for Miroir selfApplication only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table
     log.trace(this.logHeader, "clearDataInstances found entities to clear:", dataSectionFilteredEntities);
     await this.dataStoreSection.clear();
 

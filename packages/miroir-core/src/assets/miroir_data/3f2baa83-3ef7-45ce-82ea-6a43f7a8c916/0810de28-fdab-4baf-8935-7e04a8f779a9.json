@@ -1,10 +1,10 @@
 {
   "uuid": "0810de28-fdab-4baf-8935-7e04a8f779a9",
-  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "parentName": "Report",
   "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
   "name": "ApplicationVersionList",
-  "defaultLabel": "Application Versions",
+  "defaultLabel": "SelfApplication Versions",
   "type": "list",
   "definition": {
     "reportParameters": {},
@@ -21,7 +21,7 @@
     "section": {
       "type": "objectListReportSection",
       "definition": {
-        "label": "Application Versions",
+        "label": "SelfApplication Versions",
         "parentName": "ApplicationVersion",
         "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
         "fetchedDataReference": "applicationVersions",

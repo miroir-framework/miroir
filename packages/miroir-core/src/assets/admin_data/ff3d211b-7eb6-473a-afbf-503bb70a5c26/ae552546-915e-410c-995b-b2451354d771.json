@@ -3,9 +3,9 @@
   "parentName":"ApplicationVersion",
   "parentUuid":"ff3d211b-7eb6-473a-afbf-503bb70a5c26",
   "name":"Initial",
-  "application":"f3e04bb2-005f-484b-aaf2-072232f60f2c",
+  "selfApplication":"f3e04bb2-005f-484b-aaf2-072232f60f2c",
   "branch":"",
-  "description": "Initial Admin application version",
+  "description": "Initial Admin selfApplication version",
   "previousVersion": "",
   "modelStructureMigration":[],
   "modelCUDMigration":[]

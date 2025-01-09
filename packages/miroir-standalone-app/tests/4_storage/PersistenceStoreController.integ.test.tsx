@@ -22,6 +22,7 @@ import {
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManagerInterface,
   SelfApplicationDeploymentConfiguration,
+  StoreUnitConfiguration,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   author1,
@@ -106,17 +107,94 @@ MiroirLoggerFactory.startRegisteredLoggers(
 );
 myConsoleLog("started registered loggers DONE");
 
+const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
+  ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
+  : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
+
+const testApplicationDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
+const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
+  ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
+  : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
+
+// // ################################################################################################
+// beforeAll(async () => {
+//   // Establish requests interception layer before all tests.
+//   miroirFileSystemStoreSectionStartup();
+//   miroirIndexedDbStoreSectionStartup();
+//   miroirPostgresStoreSectionStartup();
+//   if (!miroirConfig.client.emulateServer) {
+//     throw new Error(
+//       "LocalPersistenceStoreController state do not make sense for real server configurations! Please use only 'emulateServer: true' configurations for this test."
+//     );
+//   } else {
+//     const {
+//       persistenceStoreControllerManagerForServer: localpersistenceStoreControllerManager,
+//       domainController: localdomainController,
+//       localCache: locallocalCache,
+//       miroirContext: localmiroirContext,
+//     } = await setupMiroirTest(miroirConfig);
+
+    
+//     persistenceStoreControllerManager = localpersistenceStoreControllerManager;
+//     domainController = localdomainController;
+//     localCache = locallocalCache;
+//     miroirContext = localmiroirContext;
+    
+//     if (!persistenceStoreControllerManager) {
+//       throw new Error("localpersistenceStoreControllerManager not defined");
+//     }
+
+//     // localMiroirPersistenceStoreController = await createDeploymentGetPersistenceStoreController(
+//     //   miroirConfig as MiroirConfigClient,
+//     //   adminConfigurationDeploymentMiroir.uuid,
+//     //   persistenceStoreControllerManager,
+//     //   domainController
+//     // );
+//     // localAppPersistenceStoreController = await createDeploymentGetPersistenceStoreController(
+//     //   miroirConfig as MiroirConfigClient,
+//     //   adminConfigurationDeploymentLibrary.uuid,
+//     //   persistenceStoreControllerManager,
+//     //   domainController
+//     // );
+//     const wrapped = await createMiroirDeploymentGetPersistenceStoreController(
+//       miroirConfig as MiroirConfigClient,
+//       persistenceStoreControllerManager,
+//       domainController
+//     );
+//     if (wrapped) {
+//       if (wrapped.localMiroirPersistenceStoreController) {
+//         localMiroirPersistenceStoreController = wrapped.localMiroirPersistenceStoreController;
+//       } else {
+//         throw new Error("beforeAll failed localMiroirPersistenceStoreController initialization!");
+//       }
+//     } else {
+//       throw new Error("beforeAll failed initialization!");
+//     }
+//     await createLibraryDeploymentDEFUNCT(miroirConfig, domainController);
+
+//     const tmplocalAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
+//       adminConfigurationDeploymentLibrary.uuid
+//     );
+//     if (!tmplocalAppPersistenceStoreController) {
+//       throw new Error("beforeAll failed localAppPersistenceStoreController initialization!");
+//     }
+//     localAppPersistenceStoreController = tmplocalAppPersistenceStoreController;
+
+//     return Promise.resolve();
+
+//     // return Promise.resolve();
+//   }
+// });
 // ################################################################################################
-beforeAll(async () => {
-  // Establish requests interception layer before all tests.
-  miroirFileSystemStoreSectionStartup();
-  miroirIndexedDbStoreSectionStartup();
-  miroirPostgresStoreSectionStartup();
-  if (!miroirConfig.client.emulateServer) {
-    throw new Error(
-      "LocalPersistenceStoreController state do not make sense for real server configurations! Please use only 'emulateServer: true' configurations for this test."
-    );
-  } else {
+beforeAll(
+  async () => {
+    // Establish requests interception layer before all tests.
+    if (!miroirConfig.client.emulateServer) {
+      throw new Error(
+        "LocalPersistenceStoreController state do not make sense for real server configurations! Please use only 'emulateServer: true' configurations for this test."
+      );
+    }
+
     const {
       persistenceStoreControllerManagerForServer: localpersistenceStoreControllerManager,
       domainController: localdomainController,
@@ -124,28 +202,16 @@ beforeAll(async () => {
       miroirContext: localmiroirContext,
     } = await setupMiroirTest(miroirConfig);
 
-    
+    if (!localpersistenceStoreControllerManager) {
+      throw new Error("localpersistenceStoreControllerManager not defined");
+    }
+
     persistenceStoreControllerManager = localpersistenceStoreControllerManager;
     domainController = localdomainController;
     localCache = locallocalCache;
     miroirContext = localmiroirContext;
-    
-    if (!persistenceStoreControllerManager) {
-      throw new Error("localpersistenceStoreControllerManager not defined");
-    }
 
-    // localMiroirPersistenceStoreController = await createDeploymentGetPersistenceStoreController(
-    //   miroirConfig as MiroirConfigClient,
-    //   adminConfigurationDeploymentMiroir.uuid,
-    //   persistenceStoreControllerManager,
-    //   domainController
-    // );
-    // localAppPersistenceStoreController = await createDeploymentGetPersistenceStoreController(
-    //   miroirConfig as MiroirConfigClient,
-    //   adminConfigurationDeploymentLibrary.uuid,
-    //   persistenceStoreControllerManager,
-    //   domainController
-    // );
+
     const wrapped = await createMiroirDeploymentGetPersistenceStoreController(
       miroirConfig as MiroirConfigClient,
       persistenceStoreControllerManager,
@@ -160,7 +226,7 @@ beforeAll(async () => {
     } else {
       throw new Error("beforeAll failed initialization!");
     }
-    await createLibraryDeploymentDEFUNCT(miroirConfig, domainController);
+    await createLibraryDeploymentDEFUNCT(miroirConfig, domainController, libraryDeploymentStorageConfiguration);
 
     const tmplocalAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
       adminConfigurationDeploymentLibrary.uuid
@@ -171,10 +237,8 @@ beforeAll(async () => {
     localAppPersistenceStoreController = tmplocalAppPersistenceStoreController;
 
     return Promise.resolve();
-
-    // return Promise.resolve();
   }
-});
+)
 
 // ################################################################################################
 beforeEach(
@@ -191,28 +255,28 @@ beforeEach(
 // //   }
 // // )
 
-// // ################################################################################################
-// afterAll(
-//   async () => {
-//     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
-//     await deleteAndCloseApplicationDeployments(
-//       miroirConfig,
-//       domainController,
-//       [
-//         {
-//           adminConfigurationDeployment: adminConfigurationDeploymentMiroir,
-//           selfApplicationDeployment: selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
-//         },
-//         {
-//           adminConfigurationDeployment: adminConfigurationDeploymentLibrary,
-//           selfApplicationDeployment: selfApplicationDeploymentLibrary as SelfApplicationDeploymentConfiguration,
-//         },
-//       ],
-//     );
+// ################################################################################################
+afterAll(
+  async () => {
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
+    await deleteAndCloseApplicationDeployments(
+      miroirConfig,
+      domainController,
+      [
+        {
+          adminConfigurationDeployment: adminConfigurationDeploymentMiroir,
+          selfApplicationDeployment: selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+        },
+        {
+          adminConfigurationDeployment: adminConfigurationDeploymentLibrary,
+          selfApplicationDeployment: selfApplicationDeploymentLibrary as SelfApplicationDeploymentConfiguration,
+        },
+      ],
+    );
 
-//     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
-//   }
-// )
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
+  }
+)
 
 // ##############################################################################################
 // ##############################################################################################
@@ -323,7 +387,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
   //         {
   //           metaModel: defaultMiroirMetaModel,
   //           dataStoreType: 'miroir',
-  //           application: selfApplicationMiroir,
+  //           selfApplication: selfApplicationMiroir,
   //           applicationDeploymentConfiguration: selfApplicationDeploymentMiroir, //adminConfigurationDeploymentMiroir,
   //           applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
   //           applicationVersion: selfApplicationVersionInitialMiroirVersion,
@@ -337,7 +401,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
   //         {
   //           metaModel: defaultMiroirMetaModel,
   //           dataStoreType: 'app',
-  //           application: selfApplicationLibrary,
+  //           selfApplication: selfApplicationLibrary,
   //           applicationDeploymentConfiguration: selfApplicationDeploymentLibrary, //adminConfigurationDeploymentLibrary,
   //           applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
   //           applicationVersion: selfApplicationVersionLibraryInitialVersion,

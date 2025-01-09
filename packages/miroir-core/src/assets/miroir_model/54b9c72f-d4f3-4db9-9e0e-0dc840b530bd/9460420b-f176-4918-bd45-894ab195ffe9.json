@@ -88,16 +88,6 @@
             "editable": true
           }
         }
-      },
-      "selfApplication": {
-        "type": "uuid",
-        "tag": {
-          "value": {
-            "id": 8,
-            "defaultLabel": "Self Application",
-            "editable": true
-          }
-        }
       }
     }
   }

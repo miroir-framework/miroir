@@ -24,8 +24,8 @@ export {
   actionReturnType,
   ActionTransformer,
   actionTransformer,
-  Application,
-  application,
+  SelfApplication,
+  selfApplication,
   ApplicationVersion,
   applicationVersion,
   ApplicationSection,
@@ -512,7 +512,7 @@ export {
 } from "./0_interfaces/4-services/TestInterface.js";
 export {
   getApplicationSection
-} from './1_core/Application.js';
+} from './1_core/AdminApplication.js';
 export { } from "./1_core/Report.js";
 export { ACTION_OK } from './1_core/constants.js';
 export { DomainInstanceUuidIndexToArray } from './1_core/DomainState.js';
@@ -730,6 +730,7 @@ export {
 export { miroirCoreStartup } from './startup.js';
 export { stringTuple, circularReplacer, resolvePathOnObject } from './tools.js';
 
+import entityAdminApplication from "../src/assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/25d935e7-9e93-42c2-aade-0472b883492b.json" assert { type: "json" };
 import entityEndpointVersion from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3d8da4d4-8f76-4bb4-9212-14869d81c00c.json' assert { type: "json" };
 import entityEntity from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json' assert { type: "json" };
 import entityEntityDefinition from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json' assert { type: "json" };
@@ -744,6 +745,7 @@ import entityStoreBasedConfiguration from './assets/miroir_model/16dbfe28-e1d7-4
 import entityQueryVersion from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e4320b9e-ab45-4abe-85d8-359604b3c62f.json' assert { type: "json" };
 import entityTest from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c37625c7-0b35-4d6a-811d-8181eb978301.json' assert { type: "json" };
 
+import entityDefinitionAdminApplication from "../src/assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/3fb6203e-f639-4b2a-afe1-e1fb45d6b2ea.json" assert { type: "json" };
 import entityDefinitionEndpoint from './assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/e3c1cc69-066d-4f52-beeb-b659dc7a88b9.json' assert { type: "json" };
 import entityDefinitionEntity from './assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/381ab1be-337f-4198-b1d3-f686867fc1dd.json' assert { type: "json" };
 import entityDefinitionEntityDefinition from './assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json' assert { type: "json" };
@@ -795,8 +797,8 @@ import miroirJzodSchemaBootstrap from './assets/miroir_data/5e81e1b9-38be-487c-b
 import transformerJzodSchema from "./assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/a97756cf-dd93-42b9-a021-91a629b187b9.json" assert { type: "json" };
 
 
-// import entityDefinitionApplicationV1 from "../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json" assert { type: "json" };
-// import entityDefinitionApplicationVersionV1 from "../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json" assert { type: "json" };
+// import entityDefinitionSelfApplicationV1 from "../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json" assert { type: "json" };
+// import entityDefinitionSelfApplicationVersionV1 from "../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json" assert { type: "json" };
 import entityDefinitionBundleV1 from "../src/assets/miroirAdmin/model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/01a051d8-d43c-430d-a98e-739048f54942.json" assert { type: "json" };
 import entityDefinitionCommit from "../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b17d5e9e-12f2-4ed8-abdb-2576c01514a4.json" assert { type: "json" };
 // import entityDefinitionEntityDefinitionV1 from "../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json" assert { type: "json" };
@@ -826,6 +828,7 @@ export {
   selfApplicationStoreBasedConfigurationMiroir,
   selfApplicationVersionInitialMiroirVersion,
   
+  entityAdminApplication,
   entitySelfApplication,
   entitySelfApplicationDeploymentConfiguration,
   entitySelfApplicationModelBranch,
@@ -841,9 +844,10 @@ export {
   entityStoreBasedConfiguration,
   entityTest,
   
-  // entityDefinitionApplicationV1,
+  // entityDefinitionSelfApplicationV1,
   domainEndpointVersionV1,
-  // entityDefinitionApplicationVersionV1,
+  // entityDefinitionSelfApplicationVersionV1,
+  entityDefinitionAdminApplication,
   entityDefinitionBundleV1,
   entityDefinitionCommit,
   // entityDefinitionEntityDefinitionV1,
@@ -914,6 +918,8 @@ export {
 // ################################################################################################
 // LIBRARY APPLICATION
 // ################################################################################################
+// import adminApplicationLibrary from "./assets/admin_model/a659d350-dd97-4da9-91de-524fa01745dc/55af124e-8c05-4bae-a3ef-0933d41daa92.json" assert { type: "json" };
+import adminApplicationLibrary from "./assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/dbabc841-b1fb-48f6-a31a-b8ce294127da.json" assert { type: "json" };
 import selfApplicationLibrary from "./assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json" assert { type: "json" };
 import selfApplicationStoreBasedConfigurationLibrary from "./assets/library_model/7990c0c9-86c3-40a1-a121-036c91b55ed7/2e5b7948-ff33-4917-acac-6ae6e1ef364f.json" assert { type: "json" };
 import selfApplicationVersionLibraryInitialVersion from "./assets/library_model/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/419773b4-a73c-46ca-8913-0ee27fb2ce0a.json" assert { type: "json" };

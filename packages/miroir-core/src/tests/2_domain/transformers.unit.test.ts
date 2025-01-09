@@ -277,7 +277,7 @@ describe("transformers.unit.test", () => {
 
       const mustacheTemplate:TransformerForBuild = {
         transformerType: "mustacheStringTemplate",
-        definition: "{{newApplicationName}}Application"
+        definition: "{{newApplicationName}}SelfApplication"
       }
 
       const testResult: string = transformer_apply(

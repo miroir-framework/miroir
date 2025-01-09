@@ -3,9 +3,9 @@
   "parentName": "SelfApplicationDeploymentConfiguration",
   "parentUuid": "35c5608a-7678-4f07-a4ec-76fc5bc35424",
   "name": "DefaultMiroirApplicationDeployment",
-  "defaultLabel": "Miroir Application Deployment",
-  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-  "description": "The default Deployment for Application Miroir",
+  "defaultLabel": "Miroir SelfApplication Deployment",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "description": "The default Deployment for SelfApplication Miroir",
   "model": {
     "location": {
       "type": "sql",

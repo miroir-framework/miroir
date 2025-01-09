@@ -47,7 +47,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
               parentName: "Entity",
               parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
               name: "Entity",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+              selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               conceptLevel: "MetaModel",
               description: "The Metaclass for entities.",
             },
@@ -56,16 +56,16 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
               parentName: "Entity",
               parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
               name: "SelfApplicationDeploymentConfiguration",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+              selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               conceptLevel: "Model",
-              description: "An Application Deployment",
+              description: "An SelfApplication Deployment",
             },
             "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916": {
               uuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
               parentName: "Entity",
               parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
               name: "Report",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+              selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               conceptLevel: "Model",
               description: "Report, allowing to display model instances",
             },
@@ -74,7 +74,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
               parentName: "Entity",
               parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
               name: "EntityDefinition",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+              selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               conceptLevel: "MetaModel",
               description: "The Metaclass for the definition of entities.",
             },
@@ -83,7 +83,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
               parentName: "Entity",
               parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
               name: "JzodSchema",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+              selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               conceptLevel: "Model",
               description: "Common Jzod Schema definitions, available to all Entity definitions",
             },
@@ -92,7 +92,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
               parentName: "Entity",
               parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
               name: "StoreBasedConfiguration",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+              selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               conceptLevel: "Model",
               description: "A configuration of storage-related aspects of a Model.",
             },
@@ -101,7 +101,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
               parentName: "Entity",
               parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
               name: "ApplicationVersionCrossEntityDefinition",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+              selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               conceptLevel: "Model",
               description: "The (many-to-many) sssociation among ApplicationVersions and EntityDefinitions.",
             },
@@ -109,28 +109,28 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
               uuid: "a659d350-dd97-4da9-91de-524fa01745dc",
               parentName: "Entity",
               parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-              name: "Application",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+              name: "SelfApplication",
+              selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               conceptLevel: "Model",
-              description: "An Application",
+              description: "An SelfApplication",
             },
             "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24": {
               uuid: "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
               parentName: "Entity",
               parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
               name: "ApplicationVersion",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+              selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               conceptLevel: "Model",
-              description: "A Version of an Application",
+              description: "A Version of an SelfApplication",
             },
             "cdb0aec6-b848-43ac-a058-fe2dbe5811f1": {
               uuid: "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
               parentName: "Entity",
               parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
               name: "ApplicationModelBranch",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+              selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               conceptLevel: "Model",
-              description: "A Branch of an Application Model",
+              description: "A Branch of an SelfApplication Model",
             },
           },
         },
@@ -358,7 +358,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                       editable: true,
                     },
                   },
-                  application: {
+                  selfApplication: {
                     type: "simpleType",
                     definition: "string",
                     validations: [
@@ -368,7 +368,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                     ],
                     tag: {
                       id: 8,
-                      defaultLabel: "Application",
+                      defaultLabel: "SelfApplication",
                       targetEntity: "a659d350-dd97-4da9-91de-524fa01745dc",
                       editable: false,
                     },
@@ -384,7 +384,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                     tag: {
                       id: 9,
                       defaultLabel: "Branch",
-                      description: "The Branch of this Application Version",
+                      description: "The Branch of this SelfApplication Version",
                       targetEntity: "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
                       editable: false,
                     },
@@ -399,8 +399,8 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                     ],
                     tag: {
                       id: 10,
-                      defaultLabel: "Previous Application Version",
-                      description: "Previous version of the application on this Branch.",
+                      defaultLabel: "Previous SelfApplication Version",
+                      description: "Previous version of the selfApplication on this Branch.",
                       targetEntity: "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
                       editable: false,
                     },
@@ -513,7 +513,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                     optional: true,
                     tag: {
                       id: 6,
-                      defaultLabel: "Application",
+                      defaultLabel: "SelfApplication",
                       targetEntity: "a659d350-dd97-4da9-91de-524fa01745dc",
                       editable: true,
                     },
@@ -610,7 +610,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                       editable: true,
                     },
                   },
-                  application: {
+                  selfApplication: {
                     type: "simpleType",
                     definition: "string",
                     validations: [
@@ -620,7 +620,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                     ],
                     tag: {
                       id: 7,
-                      defaultLabel: "Application",
+                      defaultLabel: "SelfApplication",
                       targetEntity: "a659d350-dd97-4da9-91de-524fa01745dc",
                       editable: false,
                     },
@@ -660,7 +660,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
               parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
               entityUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
               conceptLevel: "Model",
-              name: "Application",
+              name: "SelfApplication",
               icon: "Interests",
               jzodSchema: {
                 type: "object",
@@ -821,7 +821,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                       editable: true,
                     },
                   },
-                  application: {
+                  selfApplication: {
                     type: "simpleType",
                     definition: "string",
                     validations: [
@@ -832,7 +832,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                     optional: true,
                     tag: {
                       id: 8,
-                      defaultLabel: "Application",
+                      defaultLabel: "SelfApplication",
                       targetEntity: "a659d350-dd97-4da9-91de-524fa01745dc",
                       editable: true,
                     },
@@ -1324,7 +1324,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                       editable: true,
                     },
                   },
-                  application: {
+                  selfApplication: {
                     type: "simpleType",
                     definition: "string",
                     validations: [
@@ -1334,8 +1334,8 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                     ],
                     tag: {
                       id: 7,
-                      defaultLabel: "Application",
-                      description: "The Application of the Branch.",
+                      defaultLabel: "SelfApplication",
+                      description: "The SelfApplication of the Branch.",
                       targetEntity: "a659d350-dd97-4da9-91de-524fa01745dc",
                       editable: false,
                     },
@@ -1345,7 +1345,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                     optional: true,
                     tag: {
                       id: 8,
-                      defaultLabel: "Application Deployment Model",
+                      defaultLabel: "SelfApplication Deployment Model",
                       editable: true,
                     },
                     definition: {
@@ -1358,7 +1358,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                     optional: true,
                     tag: {
                       id: 9,
-                      defaultLabel: "Application Deployment Data",
+                      defaultLabel: "SelfApplication Deployment Data",
                       editable: true,
                     },
                     definition: {
@@ -1469,7 +1469,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
               entityUuid: "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
               conceptLevel: "Model",
               name: "ApplicationVersionCrossEntityDefinition",
-              description: "The mapping among Application Versions and Entity Definitions",
+              description: "The mapping among SelfApplication Versions and Entity Definitions",
               icon: "Interests",
               jzodSchema: {
                 type: "object",
@@ -1542,7 +1542,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                       editable: true,
                     },
                   },
-                  application: {
+                  selfApplication: {
                     type: "simpleType",
                     definition: "string",
                     validations: [
@@ -1552,8 +1552,8 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                     ],
                     tag: {
                       id: 7,
-                      defaultLabel: "Application",
-                      description: "The Application of the Branch.",
+                      defaultLabel: "SelfApplication",
+                      description: "The SelfApplication of the Branch.",
                       targetEntity: "a659d350-dd97-4da9-91de-524fa01745dc",
                       editable: false,
                     },
@@ -1568,8 +1568,8 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                     ],
                     tag: {
                       id: 7,
-                      defaultLabel: "Application Version",
-                      description: "The Application Version of this mapping.",
+                      defaultLabel: "SelfApplication Version",
+                      description: "The SelfApplication Version of this mapping.",
                       targetEntity: "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
                       editable: false,
                     },
@@ -1686,9 +1686,9 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
               parentName: "SelfApplicationDeploymentConfiguration",
               parentUuid: "35c5608a-7678-4f07-a4ec-76fc5bc35424",
               name: "DefaultMiroirApplicationDeployment",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+              selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               applicationModelLevel: "metamodel",
-              description: "The default Deployment for Application Miroir",
+              description: "The default Deployment for SelfApplication Miroir",
               model: {
                 location: {
                   type: "sql",
@@ -1750,7 +1750,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                 section: {
                   type: "objectListReportSection",
                   definition: {
-                    parentName: "Application",
+                    parentName: "SelfApplication",
                     parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
                   },
                 },
@@ -1796,7 +1796,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
               parentName: "Report",
               parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
               name: "ApplicationModelBranchList",
-              defaultLabel: "List of Application Model Branches",
+              defaultLabel: "List of SelfApplication Model Branches",
               definition: {
                 parameters: {},
                 section: {
@@ -1848,7 +1848,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
               parentName: "Report",
               parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
               name: "ApplicationDeploymentList",
-              defaultLabel: "List of Application Deployments",
+              defaultLabel: "List of SelfApplication Deployments",
               definition: {
                 parameters: {},
                 section: {
@@ -3287,12 +3287,12 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
           entities: {
             "360fcf1f-f0d4-4f8a-9262-07886e70fa15": {
               uuid: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-              parentName: "Application",
+              parentName: "SelfApplication",
               parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
               name: "Miroir",
-              defaultLabel: "The Miroir application.",
+              defaultLabel: "The Miroir selfApplication.",
               description:
-                "This application contaies the Miroir meta-model, and the elements needed to perform the most fundamental application-editing tasks.",
+                "This selfApplication contaies the Miroir meta-model, and the elements needed to perform the most fundamental selfApplication-editing tasks.",
             },
           },
         },
@@ -3304,9 +3304,9 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
               parentName: "ApplicationVersion",
               parentUuid: "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
               name: "Initial",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+              selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               branch: "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-              description: "Initial datastore Miroir application version",
+              description: "Initial datastore Miroir selfApplication version",
               previousVersion: "",
               modelStructureMigration: [],
               modelCUDMigration: [],
@@ -3321,9 +3321,9 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
               parentName: "ApplicationModelBranch",
               parentUuid: "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
               name: "master",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+              selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               headVersion: "695826c2-aefa-4f5f-a131-dee46fe21c13",
-              description: "The master Branch of the Miroir Application",
+              description: "The master Branch of the Miroir SelfApplication",
             },
           },
         },
@@ -3332,11 +3332,11 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
           entities: {
             "5af03c98-fe5e-490b-b08f-e1230971c57f": {
               uuid: "5af03c98-fe5e-490b-b08f-e1230971c57f",
-              parentName: "Application",
+              parentName: "SelfApplication",
               parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
               name: "Library",
-              defaultLabel: "The Library application.",
-              description: "The model and data of the Library application.",
+              defaultLabel: "The Library selfApplication.",
+              description: "The model and data of the Library selfApplication.",
             },
           },
         },
@@ -3351,10 +3351,10 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
               uuid: "9034141b-0d0d-4beb-82af-dfc02be15c2d",
               parentName: "ApplicationModelBranch",
               parentUuid: "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
-              application: "5af03c98-fe5e-490b-b08f-e1230971c57f",
+              selfApplication: "5af03c98-fe5e-490b-b08f-e1230971c57f",
               headVersion: "419773b4-a73c-46ca-8913-0ee27fb2ce0a",
               name: "master",
-              description: "The master Branch of the Library Application",
+              description: "The master Branch of the Library SelfApplication",
             },
           },
         },
@@ -3366,9 +3366,9 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
               parentName: "ApplicationVersion",
               parentUuid: "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
               name: "Initial",
-              application: "5af03c98-fe5e-490b-b08f-e1230971c57f",
+              selfApplication: "5af03c98-fe5e-490b-b08f-e1230971c57f",
               branch: "9034141b-0d0d-4beb-82af-dfc02be15c2d",
-              description: "Initial Library application version",
+              description: "Initial Library selfApplication version",
               previousVersion: "",
               modelStructureMigration: [],
               modelCUDMigration: [],
@@ -3973,7 +3973,7 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
               parentName: "Configuration",
               parentUuid: "7990c0c9-86c3-40a1-a121-036c91b55ed7",
               name: "Reference",
-              defaultLabel: "The reference configuration for the Library application database schemas.",
+              defaultLabel: "The reference configuration for the Library selfApplication database schemas.",
               definition: {
                 currentApplicationVersion: "TBD",
               },

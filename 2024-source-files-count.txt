@@ -1,4 +1,4 @@
-packages/miroir-core/src/0_interfaces/1_core/Application.ts 10
+packages/miroir-core/src/0_interfaces/1_core/SelfApplication.ts 10
 packages/miroir-core/src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.ts 2836
 packages/miroir-core/src/0_interfaces/1_core/Datastore.ts 42
 packages/miroir-core/src/0_interfaces/1_core/EntityDefinition.ts 42
@@ -26,7 +26,7 @@ packages/miroir-core/src/0_interfaces/4-services/PersistenceInterface.ts 106
 packages/miroir-core/src/0_interfaces/4-services/PersistenceStoreControllerInterface.ts 207
 packages/miroir-core/src/0_interfaces/4-services/PersistenceStoreControllerManagerInterface.ts 35
 packages/miroir-core/src/1_core/alterObjectAtPath.ts 49
-packages/miroir-core/src/1_core/Application.ts 24
+packages/miroir-core/src/1_core/SelfApplication.ts 24
 packages/miroir-core/src/1_core/constants.ts 4
 packages/miroir-core/src/1_core/DomainState.ts 24
 packages/miroir-core/src/1_core/jzod/getDefaultValueForJzodSchema.ts 330

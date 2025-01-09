@@ -169,7 +169,7 @@
                 "tag": {
                   "value": {
                     "id": 2,
-                    "defaultLabel": "Application Section",
+                    "defaultLabel": "SelfApplication Section",
                     "editable": false
                   }
                 },
@@ -638,7 +638,7 @@
                 "tag": {
                   "value": {
                     "id": 2,
-                    "defaultLabel": "Application Section",
+                    "defaultLabel": "SelfApplication Section",
                     "editable": false
                   }
                 },

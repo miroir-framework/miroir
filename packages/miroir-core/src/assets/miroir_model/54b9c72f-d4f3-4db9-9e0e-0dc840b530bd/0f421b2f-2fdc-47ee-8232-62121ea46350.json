@@ -105,7 +105,7 @@
                   "relativePath": "applicationSection"
                 }
               },
-              "application": {
+              "selfApplication": {
                 "type": "string",
                 "validations": [
                   {
@@ -115,7 +115,7 @@
                 "tag": {
                   "value": {
                     "id": 1,
-                    "defaultLabel": "Application",
+                    "defaultLabel": "SelfApplication",
                     "editable": false
                   }
                 }

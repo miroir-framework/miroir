@@ -100,8 +100,8 @@ export function testOnLibrary_resetInitAndAddTestDataToLibraryDeployment(
             dataStoreType:
               adminConfigurationDeploymentLibrary.uuid == adminConfigurationDeploymentMiroir.uuid ? "miroir" : "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
             metaModel: defaultMiroirMetaModel,
-            // application: selfApplicationMiroir,
-            application: selfApplicationLibrary,
+            // selfApplication: selfApplicationMiroir,
+            selfApplication: selfApplicationLibrary,
             selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
             // applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
             applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,

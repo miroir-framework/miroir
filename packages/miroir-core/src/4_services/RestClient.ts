@@ -26,7 +26,7 @@ export class RestClient implements RestClientInterface {
   ): Promise<RestClientCallReturnType> {
     // log.info("RestClient call", method, endpoint, args)
     const { body, ...customConfig } = args;
-    const headers = { "Content-Type": "application/json" };
+    const headers = { "Content-Type": "selfApplication/json" };
 
     const config = {
       method: method,

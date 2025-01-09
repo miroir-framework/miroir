@@ -47,21 +47,21 @@
         "optional": true,
         "tag": { "value": {  "id":8, "defaultLabel": "Type of Report", "editable": true }}
       },
-      "application": {
+      "adminApplication": {
         "type": "uuid",
-        "tag": { "value": {  "id":9, "defaultLabel": "Application", "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b", "editable": false }}
+        "tag": { "value": {  "id":9, "defaultLabel": "SelfApplication", "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b", "editable": false }}
       },
       "branch": {
         "type": "uuid",
-        "tag": { "value": {  "id":10, "defaultLabel": "Branch", "description":"The Branch of this Application Version", "editable": false }}
+        "tag": { "value": {  "id":10, "defaultLabel": "Branch", "description":"The Branch of this SelfApplication Version", "editable": false }}
       },
       "previousVersion": {
         "type": "uuid",
         "optional": true,
         "tag": { "value": { 
           "id": 11,
-          "defaultLabel": "Previous Application Version",
-          "description": "Previous version of the application on this Branch.",
+          "defaultLabel": "Previous SelfApplication Version",
+          "description": "Previous version of the selfApplication on this Branch.",
           "targetEntity": "ff3d211b-7eb6-473a-afbf-503bb70a5c26",
           "editable": false
         }}

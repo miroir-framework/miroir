@@ -6,7 +6,7 @@
   "entityUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
   "conceptLevel":"Model",
   "name":"ApplicationVersionCrossEntityDefinition",
-  "description": "The mapping among Application Versions and Entity Definitions",
+  "description": "The mapping among SelfApplication Versions and Entity Definitions",
   "icon": "Interests",
   "jzodSchema": {
     "type": "object",
@@ -42,13 +42,13 @@
         "optional": true,
         "tag": { "value": {  "id":7, "defaultLabel": "Description", "editable": true }}
       },
-      "application": {
+      "selfApplication": {
         "type": "uuid",
-        "tag": { "value": {  "id":8, "defaultLabel": "Application", "description": "The Application of the Branch.", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": false }}
+        "tag": { "value": {  "id":8, "defaultLabel": "SelfApplication", "description": "The SelfApplication of the Branch.", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": false }}
       },
       "applicationVersion": {
         "type": "uuid",
-        "tag": { "value": {  "id":9, "defaultLabel": "Application Version", "description": "The Application Version of this mapping.", "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24", "editable": false }}
+        "tag": { "value": {  "id":9, "defaultLabel": "SelfApplication Version", "description": "The SelfApplication Version of this mapping.", "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24", "editable": false }}
       },
       "entity": {
         "type": "uuid",

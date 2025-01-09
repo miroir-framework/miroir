@@ -199,8 +199,9 @@ export function getMiroirFundamentalJzodSchema(
   jzodSchemajzodMiroirBootstrapSchema: any,
   transformerJzodSchema: any,
   dynamicTransformersJzodSchema: any[], // TransformerDefinition[]
-  entityDefinitionApplicationV1: any,
-  entityDefinitionApplicationVersionV1: any,
+  entityDefinitionAdminApplication: any,
+  entityDefinitionSelfApplicationV1: any,
+  entityDefinitionSelfApplicationVersionV1: any,
   entityDefinitionDeployment: any,
   entityDefinitionEntity: any,
   entityDefinitionEntityDefinitionV1: any,
@@ -208,6 +209,7 @@ export function getMiroirFundamentalJzodSchema(
   entityDefinitionMenu: any,
   entityDefinitionQueryVersionV1: any,
   entityDefinitionReportV1: any,
+  // entityDefinitionSelfApplication: any,
   entityDefinitionSelfApplicationDeploymentConfiguration: any,
   entityDefinitionTest: any
 ): any {
@@ -486,7 +488,7 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 currentApplicationVersion: {
                   type: "uuid",
-                  tag: { value: { id: 1, defaultLabel: "Current Application Version", editable: false } },
+                  tag: { value: { id: 1, defaultLabel: "Current SelfApplication Version", editable: false } },
                 },
               },
             },
@@ -581,8 +583,9 @@ export function getMiroirFundamentalJzodSchema(
         ______________________________________________entities_____________________________________________: {
           type: "never",
         },
-        application: entityDefinitionApplicationV1.jzodSchema as any,
-        applicationVersion: entityDefinitionApplicationVersionV1.jzodSchema as any,
+        adminApplication: entityDefinitionAdminApplication.jzodSchema as any,
+        selfApplication: entityDefinitionSelfApplicationV1.jzodSchema as any,
+        applicationVersion: entityDefinitionSelfApplicationVersionV1.jzodSchema as any,
         bundle: entityDefinitionBundleV1.jzodSchema as any,
         deployment: entityDefinitionDeployment.jzodSchema as any,
         entity: entityDefinitionEntity.jzodSchema as any,
@@ -601,8 +604,8 @@ export function getMiroirFundamentalJzodSchema(
         ),
         test: entityDefinitionTest.jzodSchema as any,
         selfApplicationDeploymentConfiguration: entityDefinitionSelfApplicationDeploymentConfiguration.jzodSchema as any,
-        // application: entityDefinitionApplicationV1.jzodSchema as JzodObject,
-        // applicationVersion: entityDefinitionApplicationVersionV1.jzodSchema as JzodObject,
+        // selfApplication: entityDefinitionSelfApplicationV1.jzodSchema as JzodObject,
+        // applicationVersion: entityDefinitionSelfApplicationVersionV1.jzodSchema as JzodObject,
         // bundle: entityDefinitionBundleV1.jzodSchema as JzodObject,
         // deployment: entityDefinitionDeployment.jzodSchema as JzodObject,
         // entity: entityDefinitionEntity.jzodSchema as JzodObject,
@@ -666,7 +669,7 @@ export function getMiroirFundamentalJzodSchema(
                   },
                   applicationVersion: {
                     type: "uuid",
-                    tag: { value: { id: 1, defaultLabel: "Application Version", editable: false } },
+                    tag: { value: { id: 1, defaultLabel: "SelfApplication Version", editable: false } },
                   },
                   entityDefinition: {
                     type: "uuid",
@@ -2387,7 +2390,7 @@ export function getMiroirFundamentalJzodSchema(
         // ...(jzodSchemajzodMiroirBootstrapSchema.definition as JzodReference).context,
         ...(jzodSchemajzodMiroirBootstrapSchema.definition as any).context,
         dataStoreType: (miroirFundamentalJzodSchema as any).definition.context.dataStoreType,
-        application: (miroirFundamentalJzodSchema as any).definition.context.application,
+        selfApplication: (miroirFundamentalJzodSchema as any).definition.context.selfApplication,
         applicationVersion: (miroirFundamentalJzodSchema as any).definition.context.applicationVersion,
         menu: (miroirFundamentalJzodSchema as any).definition.context.menu,
         menuDefinition: (miroirFundamentalJzodSchema as any).definition.context.menuDefinition,

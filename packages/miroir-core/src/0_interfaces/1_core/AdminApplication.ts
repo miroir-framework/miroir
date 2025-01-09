@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { EntityInstanceWithNameSchema } from "../../0_interfaces/1_core/Instance.js";
+import { EntityInstanceWithNameSchema } from "./Instance.js";
 
 // export const ApplicationSchema = EntityInstanceWithNameSchema.extend({
 //   defaultLabel: z.string(),
@@ -7,4 +7,4 @@ import { EntityInstanceWithNameSchema } from "../../0_interfaces/1_core/Instance
 // })
 
 
-// export type Application = z.infer<typeof ApplicationSchema>;
+// export type SelfApplication = z.infer<typeof ApplicationSchema>;

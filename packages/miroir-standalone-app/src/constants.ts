@@ -21,8 +21,8 @@ export const adminConfigurationDeploymentTest4 = {
   "uuid": "f97cce64-78e9-419f-a4bd-5cbf52833ede",
   "name": "test4ApplicationSqlDeployment",
   "defaultLabel": "test4ApplicationSqlDeployment",
-  "application": "0e7e56a9-ef59-4bf1-b17e-c710444d969e",
-  "description": "The default Sql Deployment for Application test4",
+  "selfApplication": "0e7e56a9-ef59-4bf1-b17e-c710444d969e",
+  "description": "The default Sql Deployment for SelfApplication test4",
   "configuration": {
       "admin": {
           "emulatedServerType": "sql",
@@ -49,8 +49,8 @@ export const adminConfigurationDeploymentTest1 = {
   "type":"singleNode",
   "name":"Test1ApplicationFilesystemDeployment",
   "defaultLabel":"Test1ApplicationFilesystemDeployment",
-  "application":"1acc4342-8180-445b-9766-7cb91e55ca6c",
-  "description": "The default Filesystem Deployment for Application Test1",
+  "selfApplication":"1acc4342-8180-445b-9766-7cb91e55ca6c",
+  "description": "The default Filesystem Deployment for SelfApplication Test1",
   "configuration": {
     "admin": {
       "emulatedServerType": "filesystem",
@@ -71,20 +71,20 @@ export const adminConfigurationDeploymentTest1 = {
 export const defaultMenuParisUuid = "84c178cc-1b1b-497a-a035-9b3d756bb085";
 export const selfApplicationParis = {
   "uuid": "70e02039-e283-4381-9575-8c52aed18a87",
-  "parentName": "Application",
+  "parentName": "SelfApplication",
   "parentUuid": "25d935e7-9e93-42c2-aade-0472b883492b",
   "name": "Paris",
-  "defaultLabel": "The Paris application.",
-  "description": "This application contains the Paris model and data",
+  "defaultLabel": "The Paris selfApplication.",
+  "description": "This selfApplication contains the Paris model and data",
   "selfApplication": "70e02039-e283-4381-9575-8c52aed18a87"
 };
 export const applicationParis = {
   "uuid": "a118ba22-1be2-423f-aa77-f0baaa76313f",
-  "parentName": "Application",
+  "parentName": "SelfApplication",
   "parentUuid": "25d935e7-9e93-42c2-aade-0472b883492b",
   "name": "Paris",
-  "defaultLabel": "The Paris application.",
-  "description": "This application contains the Paris model and data",
+  "defaultLabel": "The Paris selfApplication.",
+  "description": "This selfApplication contains the Paris model and data",
   "selfApplication": "70e02039-e283-4381-9575-8c52aed18a87"
 };
 export const adminConfigurationDeploymentParis = {
@@ -93,8 +93,8 @@ export const adminConfigurationDeploymentParis = {
   parentUuid: "7959d814-400c-4e80-988f-a00fe582ab98",
   name: "ParisApplicationSqlDeployment",
   defaultLabel: "ParisApplicationSqlDeployment",
-  application: "70e02039-e283-4381-9575-8c52aed18a87",
-  description: "The default Sql Deployment for Application Paris",
+  selfApplication: "70e02039-e283-4381-9575-8c52aed18a87",
+  description: "The default Sql Deployment for SelfApplication Paris",
   configuration: {
     admin: {
       emulatedServerType: "sql",
@@ -122,4 +122,4 @@ export const deployments = [
   // adminConfigurationDeploymentTest1,
   // adminConfigurationDeploymentTest4,
   adminConfigurationDeploymentParis,
-] as any[]; //type for Admin Application Deployment Entity Definition
+] as any[]; //type for Admin SelfApplication Deployment Entity Definition

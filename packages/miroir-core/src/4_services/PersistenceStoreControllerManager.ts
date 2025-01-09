@@ -179,7 +179,7 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
         await testLocalMiroirPersistenceStoreController.initApplication(
           initApplicationParameters.metaModel,
           initApplicationParameters.dataStoreType,
-          initApplicationParameters.application,
+          initApplicationParameters.selfApplication,
           // initApplicationParameters.adminApplicationDeploymentConfiguration, // TODO: should be selfApplicationDeploymentConfiguration?
           initApplicationParameters.selfApplicationDeploymentConfiguration,
           initApplicationParameters.applicationModelBranch,

@@ -1418,7 +1418,7 @@ commit 4c650bbf2dc200aa5d9e08e6469e24c6501235f9
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Sun Jun 2 22:53:26 2024 +0200
 
-    migrate to Jzod 0.7.0: abandon "simpleType" Jzod schema definitions #32. Step 1: dealing with strings only in JzodObjectEditor, and migrating entities of Library application.
+    migrate to Jzod 0.7.0: abandon "simpleType" Jzod schema definitions #32. Step 1: dealing with strings only in JzodObjectEditor, and migrating entities of Library selfApplication.
 
  40 files changed, 917 insertions(+), 2301 deletions(-)
 
@@ -1426,7 +1426,7 @@ commit 71893a148109ab22211142d85b992e4e37874617
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Sun Jun 2 19:29:18 2024 +0200
 
-    migrate to Jzod 0.7.0: abandon "simpleType" Jzod schema definitions #32. Step 1: dealing with strings only in JzodObjectEditor, and migrating entities of Library application.
+    migrate to Jzod 0.7.0: abandon "simpleType" Jzod schema definitions #32. Step 1: dealing with strings only in JzodObjectEditor, and migrating entities of Library selfApplication.
 
  17 files changed, 1206 insertions(+), 738 deletions(-)
 
@@ -1562,7 +1562,7 @@ commit 401162dcc33ca6e2b21715ad883f0d648d0d7b29
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Thu Apr 25 13:05:44 2024 +0200
 
-    EXPERIMENT: create & deploy a new Application #26. StoreAction "openStore" only opens one store, given by action.deploymentUuid.
+    EXPERIMENT: create & deploy a new SelfApplication #26. StoreAction "openStore" only opens one store, given by action.deploymentUuid.
 
  10 files changed, 142 insertions(+), 107 deletions(-)
 
@@ -1570,7 +1570,7 @@ commit da62a14211e507587160422af63170a4d5c5c753
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Wed Apr 24 22:44:10 2024 +0200
 
-    EXPERIMENT: create & deploy a new Application #26. Make importer work on Test1 Application / Deployment
+    EXPERIMENT: create & deploy a new SelfApplication #26. Make importer work on Test1 SelfApplication / Deployment
 
  1 file changed, 16 insertions(+), 16 deletions(-)
 
@@ -1578,7 +1578,7 @@ commit 98b01fb53bc81b2802362c791cc630cfc310fb40
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Wed Apr 24 22:29:20 2024 +0200
 
-    EXPERIMENT: create & deploy a new Application #26. Make importer work on Test1 Application / Deployment
+    EXPERIMENT: create & deploy a new SelfApplication #26. Make importer work on Test1 SelfApplication / Deployment
 
  13 files changed, 268 insertions(+), 139 deletions(-)
 
@@ -1586,7 +1586,7 @@ commit 0777221974fad757fd9a19f99a2b1ec38de39c5c
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Wed Apr 24 17:48:10 2024 +0200
 
-    EXPERIMENT: create & deploy a new Application #26. Add selfApplication attribute to (Self)Application Entity
+    EXPERIMENT: create & deploy a new SelfApplication #26. Add selfApplication attribute to (Self)SelfApplication Entity
 
  13 files changed, 77 insertions(+), 44 deletions(-)
 
@@ -1594,7 +1594,7 @@ commit d183cfe88a60073b1dd1bd6917409416a9b91185
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Wed Apr 24 16:18:26 2024 +0200
 
-    EXPERIMENT: create & deploy a new Application #26. Replace references to self-deployment applicationDeploymentMiroir by references to Admin application configuration adminConfigurationDeploymentMiroir
+    EXPERIMENT: create & deploy a new SelfApplication #26. Replace references to self-deployment applicationDeploymentMiroir by references to Admin selfApplication configuration adminConfigurationDeploymentMiroir
 
  30 files changed, 178 insertions(+), 181 deletions(-)
 
@@ -1602,7 +1602,7 @@ commit 84bbbdc7622c109edec5be83316bb1b1adc99ea9
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Wed Apr 24 16:01:01 2024 +0200
 
-    EXPERIMENT: create & deploy a new Application #26. Replace references to self-deployment applicationDeploymentLibrary by references to Admin application configuration adminConfigurationDeploymentLibrary
+    EXPERIMENT: create & deploy a new SelfApplication #26. Replace references to self-deployment applicationDeploymentLibrary by references to Admin selfApplication configuration adminConfigurationDeploymentLibrary
 
  30 files changed, 325 insertions(+), 325 deletions(-)
 
@@ -1610,7 +1610,7 @@ commit 098dfeab186dd2d6c445941a6e4e4194650914b0
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Wed Apr 24 12:41:13 2024 +0200
 
-    EXPERIMENT: create & deploy a new Application #26. Limit dependencies on specific "Library" application: removed applicationDeploymentLibrary.uuid occurrences from miroir-core
+    EXPERIMENT: create & deploy a new SelfApplication #26. Limit dependencies on specific "Library" selfApplication: removed applicationDeploymentLibrary.uuid occurrences from miroir-core
 
  19 files changed, 291 insertions(+), 450 deletions(-)
 
@@ -1618,7 +1618,7 @@ commit 8b0d3376c256576d3948b5f67f1b3c906e6596a0
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Tue Apr 23 17:50:36 2024 +0200
 
-    EXPERIMENT: create & deploy a new Application #26. Added Bundle and Deployment Entities to Admin application.
+    EXPERIMENT: create & deploy a new SelfApplication #26. Added Bundle and Deployment Entities to Admin selfApplication.
 
  31 files changed, 408 insertions(+), 90 deletions(-)
 
@@ -1626,7 +1626,7 @@ commit dd4245eaf231212c8f0fabbb4d3067d71f13cce9
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Mon Apr 22 18:51:35 2024 +0200
 
-    EXPERIMENT: create & deploy a new Application #26. Allow to display Application/Deployment dependent Menu. Created MenuSection in miroir-standalone-app for such purpose.
+    EXPERIMENT: create & deploy a new SelfApplication #26. Allow to display SelfApplication/Deployment dependent Menu. Created MenuSection in miroir-standalone-app for such purpose.
 
  20 files changed, 524 insertions(+), 214 deletions(-)
 
@@ -1634,7 +1634,7 @@ commit e45e1c57aba4c9acd0fda9db925acfff85662b02
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Mon Apr 22 14:53:21 2024 +0200
 
-    EXPERIMENT: create & deploy a new Application #26. Added "Admin" application, renamed Meta-model "Application" to "SelfApplication"
+    EXPERIMENT: create & deploy a new SelfApplication #26. Added "Admin" selfApplication, renamed Meta-model "SelfApplication" to "SelfApplication"
 
  34 files changed, 664 insertions(+), 72 deletions(-)
 
@@ -1642,7 +1642,7 @@ commit 3a1bf030b249dd8588632b5fbe8b95fd96acde64
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Sat Apr 20 16:09:06 2024 +0200
 
-    EXPERIMENT: create & deploy a new Application #26. Remove coupling to Miroir/Library application in MiroirConfigClient (no more "miroirServerConfig" and "appServerConfig"), to allow any number of applications in configuration.
+    EXPERIMENT: create & deploy a new SelfApplication #26. Remove coupling to Miroir/Library selfApplication in MiroirConfigClient (no more "miroirServerConfig" and "appServerConfig"), to allow any number of applications in configuration.
 
  34 files changed, 545 insertions(+), 2185 deletions(-)
 
@@ -1650,7 +1650,7 @@ commit a1c3e4e690aa4a20519f5897ed1502717171a4b2
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Sat Apr 20 09:52:44 2024 +0200
 
-    EXPERIMENT: create & deploy a new Application #26. Allow to create a new store from the Tools page.
+    EXPERIMENT: create & deploy a new SelfApplication #26. Allow to create a new store from the Tools page.
 
  6 files changed, 502 insertions(+), 44 deletions(-)
 
@@ -1674,7 +1674,7 @@ commit 58dbf16308f69daa01821a1f2dc8e6bbae8c0ad2
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Thu Apr 18 14:20:57 2024 +0200
 
-    bugfix: add "application" attribute to Reports
+    bugfix: add "selfApplication" attribute to Reports
 
  33 files changed, 269 insertions(+), 113 deletions(-)
 
@@ -1914,7 +1914,7 @@ commit 5a1a04747ded0730d9bae483b284c20bdaf88870
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Wed Apr 3 11:45:32 2024 +0200
 
-    Bugfix: to enable the display of the Library Application Reports, use the pageParams applicationSection in DomainSelectorNew when creating the singleSelectQuery that is executed.
+    Bugfix: to enable the display of the Library SelfApplication Reports, use the pageParams applicationSection in DomainSelectorNew when creating the singleSelectQuery that is executed.
 
  2 files changed, 16 insertions(+), 5 deletions(-)
 
@@ -3018,7 +3018,7 @@ commit d35d0404be143f809f8c14f629a26379bc9ddf44
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Sat Jan 13 16:37:42 2024 +0100
 
-    Bundle/Application DSL: adding AdminStore to miroir-store-filesystem, miroir-store-indexedDb, miroir-store-postgres
+    Bundle/SelfApplication DSL: adding AdminStore to miroir-store-filesystem, miroir-store-indexedDb, miroir-store-postgres
 
  58 files changed, 706 insertions(+), 385 deletions(-)
 

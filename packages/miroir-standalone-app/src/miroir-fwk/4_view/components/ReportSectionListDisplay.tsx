@@ -118,7 +118,7 @@ export function defaultFormValues(
         'parentName':currentMiroirEntity?.name,
         'parentUuid':currentMiroirEntity?.uuid,
         'conceptLevel':'Model',
-        'application': displayedDeploymentDefinition?.application,
+        'selfApplication': displayedDeploymentDefinition?.selfApplication,
         'attributes': [],
       }
       log.info();

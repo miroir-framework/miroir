@@ -63,7 +63,7 @@ import {
 // FIRST: CENTRALIZE LOGIC TO DETERMINE MODEL ENTITIES
 export const metaModelEntities: MetaEntity[] = [
   entitySelfApplication,
-  entitySelfApplicationDeploymentConfiguration, // TODO: remove, deployments are not part of applications, they are external to them, belonging to a separate application, which contents is specific to each node (no transactions / historization)
+  entitySelfApplicationDeploymentConfiguration, // TODO: remove, deployments are not part of applications, they are external to them, belonging to a separate selfApplication, which contents is specific to each node (no transactions / historization)
   entitySelfApplicationModelBranch,
   entitySelfApplicationVersion,
   entityEntity,

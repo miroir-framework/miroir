@@ -135,7 +135,7 @@ export interface DomainControllerInterface {
    * is it possible to have a common interface for these very different implementations?
    *
    * second step: accessing data
-   * input of second function, producing data: jzod schema, context (deployment uuid, application section...)
+   * input of second function, producing data: jzod schema, context (deployment uuid, selfApplication section...)
    * output of second function:
    *
    * have a Query interface for a facade to the data-access operations provided by DomainController?

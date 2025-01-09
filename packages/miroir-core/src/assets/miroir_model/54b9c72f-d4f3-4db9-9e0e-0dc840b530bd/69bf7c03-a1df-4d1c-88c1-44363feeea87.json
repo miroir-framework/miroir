@@ -91,12 +91,12 @@
           }
         }
       },
-      "application": {
+      "selfApplication": {
         "type": "uuid",
         "tag": {
           "value": {
             "id": 8,
-            "defaultLabel": "Application",
+            "defaultLabel": "SelfApplication",
             "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
             "editable": false
           }

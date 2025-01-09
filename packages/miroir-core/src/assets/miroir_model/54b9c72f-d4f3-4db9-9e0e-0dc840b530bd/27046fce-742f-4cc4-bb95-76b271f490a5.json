@@ -95,12 +95,12 @@
           }
         }
       },
-      "application": {
+      "selfApplication": {
         "type": "uuid",
         "tag": {
           "value": {
             "id": 9,
-            "defaultLabel": "Application",
+            "defaultLabel": "SelfApplication",
             "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
             "editable": false
           }
@@ -112,7 +112,7 @@
           "value": {
             "id": 10,
             "defaultLabel": "Branch",
-            "description": "The Branch of this Application Version",
+            "description": "The Branch of this SelfApplication Version",
             "targetEntity": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
             "editable": false
           }
@@ -124,8 +124,8 @@
         "tag": {
           "value": {
             "id": 11,
-            "defaultLabel": "Previous Application Version",
-            "description": "Previous version of the application on this Branch.",
+            "defaultLabel": "Previous SelfApplication Version",
+            "description": "Previous version of the selfApplication on this Branch.",
             "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
             "editable": false
           }

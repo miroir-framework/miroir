@@ -32,7 +32,7 @@ export function miroirPostgresStoreSectionStartup() {
       if (config.emulatedServerType == "sql") {
         const sqlDbStoreName: string = config.connectionString + ":" + config.schema
         // return Promise.resolve(new SqlDbAdminStore(sqlDbStoreName, config.connectionString, config.schema))
-        return Promise.resolve(new SqlDbAdminStore("data", sqlDbStoreName, config.connectionString, config.schema)) // TODO: fix application section, should be admin?
+        return Promise.resolve(new SqlDbAdminStore("data", sqlDbStoreName, config.connectionString, config.schema)) // TODO: fix selfApplication section, should be admin?
       } else {
         return Promise.resolve(new ErrorAdminStore())
       }

@@ -24,7 +24,7 @@
             },
             "item": {
               "type": "array",
-              "tag": { "value": {  "defaultLabel": "Application Instance to create", "editable": true }},
+              "tag": { "value": {  "defaultLabel": "SelfApplication Instance to create", "editable": true }},
               "definition": {
                 "type": "schemaReference",
                 "optional": false,

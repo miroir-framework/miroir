@@ -112,7 +112,7 @@ const sideBarDefaultItems = [
   {
     label: "A Menu will be displayed here!",
     section: "model",
-    application: adminConfigurationDeploymentMiroir.uuid,
+    selfApplication: adminConfigurationDeploymentMiroir.uuid,
     reportUuid: "",
     "icon": "south",
   },
@@ -226,7 +226,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
               (miroirMenusDomainElementObject?.elementValue?.menus as any)?.definition?.definition ?? sideBarDefaultItems
               ).map((i: any, index: number) => (
               <MatListItem key={i.label} disablePadding>
-                <MatListItemButton sx={{padding: 0}} component={Link} to={`/report/${i.application}/${i.section}/${i.reportUuid}/xxxxxx`}>
+                <MatListItemButton sx={{padding: 0}} component={Link} to={`/report/${i.selfApplication}/${i.section}/${i.reportUuid}/xxxxxx`}>
                   <MatListItemIcon>
                     {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
                     <Icon>{i.icon}</Icon>
@@ -244,7 +244,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
                 menuSection.items.map(
                   (curr:any, index: number) => (
                     <MatListItem key={curr.label + index} disablePadding>
-                      <MatListItemButton component={Link} to={`/report/${curr.application}/${curr.section}/${curr.reportUuid}/xxxxxx`}>
+                      <MatListItemButton component={Link} to={`/report/${curr.selfApplication}/${curr.section}/${curr.reportUuid}/xxxxxx`}>
                         <MatListItemIcon>
                           {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
                           <Icon>{curr.icon}</Icon>

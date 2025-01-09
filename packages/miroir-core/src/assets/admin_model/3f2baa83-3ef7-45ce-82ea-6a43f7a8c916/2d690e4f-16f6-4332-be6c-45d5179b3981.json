@@ -1,6 +1,6 @@
 {
   "uuid": "2d690e4f-16f6-4332-be6c-45d5179b3981",
-  "application": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+  "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
   "parentName":"Report",
   "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
   "name":"BundleList",
@@ -20,7 +20,7 @@
     "section": {
       "type":"objectListReportSection",
       "definition": {
-        "label": "Application Deployments",
+        "label": "SelfApplication Deployments",
         "parentName": "Bundle",
         "parentUuid": "9f9170da-538d-425c-8cb7-551640623eed",
         "fetchedDataReference": "bundles",

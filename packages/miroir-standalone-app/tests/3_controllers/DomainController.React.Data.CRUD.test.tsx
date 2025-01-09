@@ -235,7 +235,7 @@ beforeEach(
                   ? "miroir"
                   : "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
               metaModel: defaultMiroirMetaModel,
-              application: selfApplicationMiroir,
+              selfApplication: selfApplicationMiroir,
               selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
               applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
               applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,

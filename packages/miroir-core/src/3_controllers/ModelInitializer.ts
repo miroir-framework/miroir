@@ -48,7 +48,13 @@ import miroirJzodSchemaBootstrap from '../assets/miroir_data/5e81e1b9-38be-487c-
 import menuDefaultMiroir from '../assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/eaac459c-6c2b-475c-8ae4-c6c3032dae00.json' assert { type: "json" };
 
 import { MetaEntity } from "../0_interfaces/1_core/EntityDefinition.js";
-import { Application, EntityDefinition, EntityInstance, MetaModel, SelfApplicationDeploymentConfiguration } from '../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
+import {
+  EntityDefinition,
+  EntityInstance,
+  MetaModel,
+  SelfApplication,
+  SelfApplicationDeploymentConfiguration,
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DataStoreApplicationType } from '../0_interfaces/3_controllers/ApplicationControllerInterface.js';
 import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface.js';
 import { PersistenceStoreControllerInterface } from '../0_interfaces/4-services/PersistenceStoreControllerInterface.js';
@@ -68,14 +74,14 @@ export async function modelInitialize(
   metaModel:MetaModel,
   persistenceStoreController:PersistenceStoreControllerInterface,
   dataStoreType: DataStoreApplicationType,
-  selfApplication: Application,
+  selfApplication: SelfApplication,
   // selfApplicationDeploymentConfiguration: EntityInstance,
   selfApplicationDeploymentConfiguration: SelfApplicationDeploymentConfiguration,
   selfApplicationModelBranch: EntityInstance,
   selfApplicationVersion: EntityInstance,
   selfApplicationStoreBasedConfiguration: EntityInstance,
 ): Promise<void> {
-  log.info("modelInitialize application",selfApplication,'dataStoreType',dataStoreType);
+  log.info("modelInitialize selfApplication",selfApplication,'dataStoreType',dataStoreType);
   const logHeader = 'modelInitialize '+ selfApplication?.name;
   // TODO: test this.sqlEntities for emptiness, abort if not empty
   // bootstrap MetaClass entity
@@ -97,9 +103,9 @@ export async function modelInitialize(
     await persistenceStoreController.upsertInstance('model', entityDefinitionEntityDefinition as EntityInstance);
     log.info(logHeader, 'created entity entity',persistenceStoreController.getEntityUuids());
   
-    // bootstrap Application
+    // bootstrap SelfApplication
     await persistenceStoreController.createEntity(entitySelfApplication as MetaEntity, entityDefinitionSelfApplication as EntityDefinition);
-    log.info(logHeader, 'created entity Application',persistenceStoreController.getEntityUuids());
+    log.info(logHeader, 'created entity SelfApplication',persistenceStoreController.getEntityUuids());
     
     // bootstrap ApplicationModelBranch
     await persistenceStoreController.createEntity(entitySelfApplicationModelBranch as MetaEntity, entityDefinitionSelfApplicationModelBranch as EntityDefinition);
@@ -109,7 +115,7 @@ export async function modelInitialize(
     await persistenceStoreController.createEntity(entitySelfApplicationVersion as MetaEntity, entityDefinitionSelfApplicationVersion as EntityDefinition);
     log.info(logHeader, 'created entity ApplicationVersion',persistenceStoreController.getEntityUuids());
     
-    // bootstrap Application Deployment Configuration
+    // bootstrap SelfApplication Deployment Configuration
     await persistenceStoreController.createEntity(entitySelfApplicationDeploymentConfiguration as MetaEntity, entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition);
     log.info(logHeader, 'created entity entitySelfApplicationDeploymentConfiguration',persistenceStoreController.getEntityUuids());
     
@@ -199,12 +205,12 @@ export async function modelInitialize(
     );
     log.info(logHeader, "app initialized entity Definition", persistenceStoreController.getEntityUuids());
 
-    // bootstrap Self Application
+    // bootstrap Self SelfApplication
     await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entitySelfApplication as MetaEntity,
       entityDefinitionSelfApplication as EntityDefinition
     );
-    log.info(logHeader, "app initialized entity Application", persistenceStoreController.getEntityUuids());
+    log.info(logHeader, "app initialized entity SelfApplication", persistenceStoreController.getEntityUuids());
 
     // bootstrap Self ApplicationModelBranch
     await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(

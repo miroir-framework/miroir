@@ -5,7 +5,7 @@
   "endpointUuid": "a04f7b8a-cdec-4f43-b08c-388f70fdd6ba",
   "name": "ApplicationEndpoint",
   "version": "1",
-  "description": "Application Endpoint",
+  "description": "SelfApplication Endpoint",
   "definition": {
     "actions": [
       {
@@ -28,7 +28,7 @@
               "type": "array",
               "tag": {
                 "value": {
-                  "defaultLabel": "Application Instance to create",
+                  "defaultLabel": "SelfApplication Instance to create",
                   "editable": true
                 }
               },
@@ -64,7 +64,7 @@
               "type": "array",
               "tag": {
                 "value": {
-                  "defaultLabel": "Application Instance to create",
+                  "defaultLabel": "SelfApplication Instance to create",
                   "editable": true
                 }
               },

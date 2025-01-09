@@ -372,7 +372,7 @@ export function applyDomainStateQuerySelectorForCleanedResult<QueryType extends 
  * memoized per Entity. Share it among all components?
  * so that a list of Books is refreshed only when at least 1 book is modified.
  * IS THERE A NEED FOR SUCH A FINE-GRAINED REFRESH???
- * DISTINGUISH META-MODEL and MODEL, AT LEAST? (APPLICATIONS / DEPLOYMENTS and Application Section).
+ * DISTINGUISH META-MODEL and MODEL, AT LEAST? (APPLICATIONS / DEPLOYMENTS and SelfApplication Section).
  * -> that would seldom change, and could justify a page reload...
  * assign to a map in the contextService?
  * could it be feasible to have per-Entity dependency in the contextService, which depends on

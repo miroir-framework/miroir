@@ -2,8 +2,8 @@
   "uuid":"9034141b-0d0d-4beb-82af-dfc02be15c2d",
   "parentName":"ApplicationModelBranch",
   "parentUuid":"cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
-  "application":"55af124e-8c05-4bae-a3ef-0933d41daa92",
+  "selfApplication":"55af124e-8c05-4bae-a3ef-0933d41daa92",
   "headVersion":"b843bd4b-83bd-4241-95c6-b16bbdc75abd",
   "name":"master",
-  "description": "The master Branch of the Admin Application"
+  "description": "The master Branch of the Admin SelfApplication"
 }

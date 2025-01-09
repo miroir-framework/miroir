@@ -42,14 +42,14 @@ const pages: MiroirMenuItem[] = [
   {
     "label": "Tools",
     "section": "model",
-    "application": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+    "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
     "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
     "icon": "category",
   },
   {
     "label": "concept",
     "section": "model",
-    "application": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+    "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
     "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
     "icon": "category"
   },

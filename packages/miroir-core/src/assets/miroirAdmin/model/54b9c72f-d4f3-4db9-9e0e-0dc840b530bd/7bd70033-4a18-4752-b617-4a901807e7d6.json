@@ -4,7 +4,7 @@
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "84bda435-3b9c-46ca-aa74-19d3a2511b24",
-  "application": "b596c119-8e2f-40cc-9226-ebf4761ac085",
+  "selfApplication": "b596c119-8e2f-40cc-9226-ebf4761ac085",
   "conceptLevel": "Model",
   "name": "Deployment",
   "description": "Deployment",
@@ -31,7 +31,7 @@
       },
       "applicationVersion": {
         "type": "uuid",
-        "tag": { "value": {  "id":5, "defaultLabel": "Deployed Application Version", "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4", "editable": false }}
+        "tag": { "value": {  "id":5, "defaultLabel": "Deployed SelfApplication Version", "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4", "editable": false }}
       },
       "storeUnitConfiguration": {
         "type": "schemaReference",
