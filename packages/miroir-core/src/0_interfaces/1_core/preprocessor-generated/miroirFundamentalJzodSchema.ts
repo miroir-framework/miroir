@@ -11936,6 +11936,51 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "getBasicApplicationConfigurationParameters": {
+        "type": "union",
+        "discriminator": {
+          "discriminatorType": "string",
+          "value": "emulatedServerType"
+        },
+        "definition": [
+          {
+            "type": "object",
+            "definition": {
+              "emulatedServerType": {
+                "type": "literal",
+                "definition": "sql"
+              },
+              "connectionString": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "emulatedServerType": {
+                "type": "literal",
+                "definition": "indexedDb"
+              },
+              "rootIndexDbName": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "emulatedServerType": {
+                "type": "literal",
+                "definition": "filesystem"
+              },
+              "rootDirectory": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject_extend": {
         "type": "object",
         "tag": {

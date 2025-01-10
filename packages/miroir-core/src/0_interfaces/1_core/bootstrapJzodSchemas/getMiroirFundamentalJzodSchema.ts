@@ -2348,6 +2348,51 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
+        getBasicApplicationConfigurationParameters: {
+          type: "union",
+          discriminator: {
+            discriminatorType: "string",
+            value: "emulatedServerType",
+          },
+          definition: [
+            {
+              type: "object",
+              definition: {
+                emulatedServerType: {
+                  type: "literal",
+                  definition: "sql",
+                },
+                connectionString: {
+                  type: "string",
+                }
+              },
+            },
+            {
+              type: "object",
+              definition: {
+                emulatedServerType: {
+                  type: "literal",
+                  definition: "indexedDb",
+                },
+                rootIndexDbName: {
+                  type: "string",
+                }
+              },
+            },
+            {
+              type: "object",
+              definition: {
+                emulatedServerType: {
+                  type: "literal",
+                  definition: "filesystem",
+                },
+                rootDirectory: {
+                  type: "string",
+                }
+              },
+            },
+          ],
+        }
       },
       definition: {
         absolutePath: miroirFundamentalJzodSchemaUuid,

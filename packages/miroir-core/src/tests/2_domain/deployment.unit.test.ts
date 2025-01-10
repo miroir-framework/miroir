@@ -27,7 +27,13 @@ describe("deployment.unit.test", () => {
   it("getBasicApplicationConfiguration_Library", async () => { // TODO: test failure cases!
       console.log(expect.getState().currentTestName, "START")
 
-      const result:InitApplicationParameters = getBasicApplicationConfiguration("Library")
+      const result: InitApplicationParameters = getBasicApplicationConfiguration(
+        "Library",
+        selfApplicationLibrary.uuid,
+        adminConfigurationDeploymentLibrary.uuid,
+        selfApplicationModelBranchLibraryMasterBranch.uuid,
+        selfApplicationVersionLibraryInitialVersion.uuid,
+      );
       const expectedResult: InitApplicationParameters = {
         dataStoreType:
           adminConfigurationDeploymentLibrary.uuid == adminConfigurationDeploymentMiroir.uuid ? "miroir" : "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
@@ -36,21 +42,14 @@ describe("deployment.unit.test", () => {
         selfApplication: {
           ...selfApplicationLibrary,
           "uuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-          // "parentName":"SelfApplication",
-          // "parentUuid":"a659d350-dd97-4da9-91de-524fa01745dc",
           "name":"Library",
-          // "name":applicationName,
-          "defaultLabel": "The Library selfApplication.",
-          "description": "The model and data of the Library selfApplication.",
-          // "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+          "defaultLabel": "The Library selfApplication",
+          "description": "The model and data of the Library selfApplication",
         },
-        adminApplicationDeploymentConfiguration: adminConfigurationDeploymentLibrary,
+        adminApplicationDeploymentConfiguration: typedAdminConfigurationDeploymentLibrary,
         selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
-        // applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
         applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
-        // applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
         applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,
-        // applicationVersion: selfApplicationVersionInitialMiroirVersion,
         applicationVersion: selfApplicationVersionLibraryInitialVersion,
       }
 
@@ -78,10 +77,14 @@ describe("deployment.unit.test", () => {
       // const applicationUuid = "tttttttt-tttt-tttt-tttt-tttttttttttt";
       const selfApplicationUuid = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
       const adminApplicationDeploymentConfigurationUuid  = "dddddddd-dddd-dddd-dddd-dddddddddddd";
+      const applicationModelBranchUuid = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb";
+      const selfApplicationVersionUuid = "vvvvvvvv-vvvv-vvvv-vvvv-vvvvvvvvvvvv";
       const result: InitApplicationParameters = getBasicApplicationConfiguration(
         "Test",
         selfApplicationUuid,
-        adminApplicationDeploymentConfigurationUuid
+        adminApplicationDeploymentConfigurationUuid,
+        applicationModelBranchUuid,
+        selfApplicationVersionUuid,
       );
 
       const expectedResult: InitApplicationParameters = {
@@ -100,20 +103,20 @@ describe("deployment.unit.test", () => {
             // },
             model: {
               ...adminConfigurationDeploymentLibrary.configuration.model,
-              directory:  `../miroir-core/src/assets/${applicationNameLC}_model`
+              directory: `../miroir-core/src/assets/${applicationNameLC}_model`,
             } as StoreSectionConfiguration,
             data: {
               ...adminConfigurationDeploymentLibrary.configuration.model,
-              directory:  `../miroir-core/src/assets/${applicationNameLC}_data`
-            } as StoreSectionConfiguration
-          }
+              directory: `../miroir-core/src/assets/${applicationNameLC}_data`,
+            } as StoreSectionConfiguration,
+          },
         },
         selfApplication: {
           ...selfApplicationLibrary,
           uuid: selfApplicationUuid,
           name: applicationName,
-          defaultLabel: `The ${applicationName} selfApplication.`,
-          description: `The model and data of the ${applicationName} selfApplication.`,
+          defaultLabel: `The ${applicationName} selfApplication`,
+          description: `The model and data of the ${applicationName} selfApplication`,
         },
         selfApplicationDeploymentConfiguration: {
           ...selfApplicationDeploymentLibrary,
@@ -122,12 +125,21 @@ describe("deployment.unit.test", () => {
         },
         applicationModelBranch: {
           ...selfApplicationModelBranchLibraryMasterBranch,
+          uuid: applicationModelBranchUuid,
           selfApplication: selfApplicationUuid,
+          headVersion: selfApplicationVersionUuid,
+          description: `The master branch of the ${applicationName} SelfApplication`,
         } as any,
-        applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,
+        applicationStoreBasedConfiguration: {
+          ...selfApplicationStoreBasedConfigurationLibrary,
+          defaultLabel: `The reference configuration for the ${applicationName} selfApplication storage`,
+        } as any,
         applicationVersion: {
           ...selfApplicationVersionLibraryInitialVersion,
+          uuid: selfApplicationVersionUuid,
+          branch: applicationModelBranchUuid,
           selfApplication: selfApplicationUuid,
+          description: `Initial ${applicationName} selfApplication version`,
         } as any,
       };
 
