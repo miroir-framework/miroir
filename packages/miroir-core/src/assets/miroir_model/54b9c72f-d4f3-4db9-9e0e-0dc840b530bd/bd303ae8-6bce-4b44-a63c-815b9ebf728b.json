@@ -94,28 +94,6 @@
             "editable": false
           }
         }
-      },
-      "model": {
-        "type": "any",
-        "optional": true,
-        "tag": {
-          "value": {
-            "id": 9,
-            "defaultLabel": "SelfApplication Deployment Model",
-            "editable": true
-          }
-        }
-      },
-      "data": {
-        "type": "any",
-        "optional": true,
-        "tag": {
-          "value": {
-            "id": 10,
-            "defaultLabel": "SelfApplication Deployment Data",
-            "editable": true
-          }
-        }
       }
     }
   }

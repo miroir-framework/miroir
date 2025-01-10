@@ -1,12 +1,11 @@
 import { describe, expect } from 'vitest';
 
+import { fetch as crossFetch } from "cross-fetch";
 // import process from "process";
 
 import {
-  ActionReturnType,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  defaultLevels,
   DomainControllerInterface,
   entityAuthor,
   EntityDefinition,
@@ -25,18 +24,23 @@ import {
   publisher2,
   publisher3,
   SelfApplicationDeploymentConfiguration,
+  selfApplicationDeploymentLibrary,
   selfApplicationDeploymentMiroir,
+  selfApplicationLibrary,
+  selfApplicationModelBranchLibraryMasterBranch,
+  selfApplicationStoreBasedConfigurationLibrary,
+  selfApplicationVersionLibraryInitialVersion,
   StoreUnitConfiguration,
   TestSuiteResult
 } from "miroir-core";
 
 import {
-  chainVitestSteps,
   createDeploymentCompositeAction,
   deleteAndCloseApplicationDeployments,
   deploymentConfigurations,
   loadTestConfigFiles,
   miroirBeforeEach_resetAndInitApplicationDeployments,
+  resetAndinitializeDeploymentCompositeAction,
   runTestOrTestSuite,
   setupMiroirTest,
   TestActionParams
@@ -54,15 +58,13 @@ import { LocalCache } from "miroir-localcache-redux";
 import { ConfigurationService, defaultMiroirMetaModel, Entity, entityEntity, JzodElement } from "miroir-core";
 import { packageName } from 'miroir-core/src/constants.js';
 import {
-  ApplicationEntitiesAndInstances,
-  testOnLibrary_deleteLibraryDeployment,
-  testOnLibrary_resetInitAndAddTestDataToLibraryDeployment,
-  testOnLibrary_resetLibraryDeployment,
+  ApplicationEntitiesAndInstances
 } from "../utils/tests-utils-testOnLibrary.js";
 // import { loglevelnext } from '../../src/loglevelnextImporter.js';
+import { AdminApplicationDeploymentConfiguration } from 'miroir-core/src/0_interfaces/1_core/StorageConfiguration.js';
+import { LoggerOptions } from 'miroir-core/src/0_interfaces/4-services/LoggerInterface.js';
 import { loglevelnext } from '../../src/loglevelnextImporter.js';
 import { cleanLevel } from './constants.js';
-import { LoggerOptions } from 'miroir-core/src/0_interfaces/4-services/LoggerInterface.js';
 
 
 const env:any = (import.meta as any).env
@@ -117,6 +119,8 @@ const testDeploymentStorageConfiguration = miroirConfig.client.emulateServer
 ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
 : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
 
+const typedAdminConfigurationDeploymentLibrary:AdminApplicationDeploymentConfiguration = adminConfigurationDeploymentLibrary as any;
+
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCache;
@@ -159,7 +163,7 @@ beforeAll(
       domainController: localdomainController,
       localCache: locallocalCache,
       miroirContext: localmiroirContext,
-    } = await setupMiroirTest(miroirConfig);
+    } = await setupMiroirTest(miroirConfig, crossFetch);
 
     persistenceStoreControllerManager = localpersistenceStoreControllerManager;
     domainController = localdomainController;
@@ -225,33 +229,29 @@ const testActions: Record<string, TestActionParams> = {
         adminConfigurationDeploymentLibrary.uuid,
         testDeploymentStorageConfiguration
       ),
-      // beforeEach: testOnLibrary_resetInitAndAddTestDataToLibraryDeployment(miroirConfig, libraryEntitiesAndInstancesWithoutBook3),
-      beforeEach: testOnLibrary_resetInitAndAddTestDataToLibraryDeployment(miroirConfig, [
-        // {
-        //   entity: entityAuthor as MetaEntity,
-        //   entityDefinition: entityDefinitionAuthor as EntityDefinition,
-        //   instances: [author1, author2, author3 as EntityInstance],
-        // },
-        // {
-        //   entity: entityBook as MetaEntity,
-        //   entityDefinition: entityDefinitionBook as EntityDefinition,
-        //   instances: [
-        //     book1 as EntityInstance,
-        //     book2 as EntityInstance,
-        //     // book3 as EntityInstance,
-        //     book4 as EntityInstance,
-        //     book5 as EntityInstance,
-        //     book6 as EntityInstance,
-        //   ],
-        // },
+      beforeEach: resetAndinitializeDeploymentCompositeAction(
+        selfApplicationDeploymentLibrary.uuid,
+        typedAdminConfigurationDeploymentLibrary.configuration,
         {
-          entity: entityPublisher as MetaEntity,
-          entityDefinition: entityDefinitionPublisher as EntityDefinition,
-          instances: [publisher1 as EntityInstance, publisher2 as EntityInstance, publisher3 as EntityInstance],
+          dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
+          metaModel: defaultMiroirMetaModel,
+          selfApplication: selfApplicationLibrary,
+          adminApplicationDeploymentConfiguration: typedAdminConfigurationDeploymentLibrary,
+          selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
+          applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
+          applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,
+          applicationVersion: selfApplicationVersionLibraryInitialVersion,
         },
-      ]),
-      afterEach: testOnLibrary_resetLibraryDeployment(miroirConfig),
-      afterAll: testOnLibrary_deleteLibraryDeployment(miroirConfig),
+        [
+          {
+            entity: entityPublisher as MetaEntity,
+            entityDefinition: entityDefinitionPublisher as EntityDefinition,
+            instances: [publisher1 as EntityInstance, publisher2 as EntityInstance, publisher3 as EntityInstance],
+          },
+        ]
+      ),
+      // afterEach: testOnLibrary_resetLibraryDeployment(miroirConfig),
+      // afterAll: testOnLibrary_deleteLibraryDeployment(miroirConfig),
       testCompositeActions: {
         "Refresh all Instances": {
           testType: "testCompositeAction",
@@ -1280,6 +1280,9 @@ describe.sequential("DomainController.integ.Model.CRUD",
     );
     globalTestSuiteResults = testSuiteResults.status == "ok"? testSuiteResults.returnedDomainElement.elementValue as any : globalTestSuiteResults;
     console.log("testSuiteResults", testSuiteResults);
+    for (const [testLabel, testResult] of Object.entries(globalTestSuiteResults)) {
+      expect(testResult.testResult, `${testLabel} failed!`).toBe("ok");
+    }
   }, globalTimeOut);
 
   } //  end describe('DomainController.Data.CRUD.React',

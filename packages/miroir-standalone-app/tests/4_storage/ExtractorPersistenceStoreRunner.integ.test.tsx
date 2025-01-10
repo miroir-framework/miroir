@@ -15,7 +15,6 @@ import {
   book4,
   book5,
   book6,
-  defaultLevels,
   DomainControllerInterface,
   entityAuthor,
   entityBook,
@@ -39,6 +38,10 @@ import {
   publisher2,
   publisher3,
   SelfApplicationDeploymentConfiguration,
+  selfApplicationLibrary,
+  selfApplicationModelBranchLibraryMasterBranch,
+  selfApplicationStoreBasedConfigurationLibrary,
+  selfApplicationVersionLibraryInitialVersion,
   StoreUnitConfiguration
 } from "miroir-core";
 
@@ -52,6 +55,7 @@ import {
   selfApplicationDeploymentLibrary,
   selfApplicationDeploymentMiroir,
 } from "miroir-core";
+import { LoggerOptions } from 'miroir-core/src/0_interfaces/4-services/LoggerInterface.js';
 import { miroirCoreStartup } from 'miroir-core/src/startup.js';
 import { LocalCache } from 'miroir-localcache-redux';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
@@ -60,7 +64,7 @@ import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { miroirAppStartup } from '../../src/startup.js';
 import { cleanLevel, packageName } from '../3_controllers/constants.js';
-import { ApplicationEntitiesAndInstances, testOnLibrary_resetInitAndAddTestDataToLibraryDeployment } from '../utils/tests-utils-testOnLibrary.js';
+import { ApplicationEntitiesAndInstances } from '../utils/tests-utils-testOnLibrary.js';
 import {
   chainVitestSteps,
   createLibraryDeploymentDEFUNCT,
@@ -69,9 +73,11 @@ import {
   deploymentConfigurations,
   loadTestConfigFiles,
   miroirBeforeEach_resetAndInitApplicationDeployments,
+  resetAndinitializeDeploymentCompositeAction,
   resetApplicationDeployments,
   setupMiroirTest
 } from "../utils/tests-utils.js";
+import { AdminApplicationDeploymentConfiguration } from 'miroir-core/src/0_interfaces/1_core/StorageConfiguration.js';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCache;
@@ -83,11 +89,17 @@ let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterfac
 const env:any = (import.meta as any).env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
-const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
+const {miroirConfig, logConfig:importedLoggerOptions} = await loadTestConfigFiles(env);
+const loggerOptions: LoggerOptions = importedLoggerOptions??{
+  defaultLevel: "INFO", 
+  defaultTemplate: "[{{time}}] {{level}} ({{name}}) -",
+  specificLoggerOptions: {},
+};
 
-const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
-// const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
 const fileName = "ExtractorPersistenceStoreRunner.integ.test";
+const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
+myConsoleLog("using logger options:", JSON.stringify(loggerOptions, null, 2));
+// const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
 myConsoleLog(fileName, "received env", JSON.stringify(env, null, 2));
 
 // let miroirConfig:any;
@@ -113,7 +125,8 @@ myConsoleLog(
 myConsoleLog("received loggerOptions", JSON.stringify(loggerOptions, null, 2));
 MiroirLoggerFactory.startRegisteredLoggers(
   loglevelnext,
-  (defaultLevels as any)[loggerOptions.defaultLevel],
+  loggerOptions,
+  // (defaultLevels as any)[loggerOptions.defaultLevel],
   // loggerOptions.defaultTemplate,
   // loggerOptions.specificLoggerOptions
 );
@@ -128,6 +141,8 @@ const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConf
   ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
 
+const typedAdminConfigurationDeploymentLibrary:AdminApplicationDeploymentConfiguration = adminConfigurationDeploymentLibrary as any;
+  
 console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 export const libraryEntitiesAndInstances: ApplicationEntitiesAndInstances  = [
@@ -229,7 +244,29 @@ beforeEach(
     );
     console.log("beforeEach done");
     const initResult:ActionReturnType = await domainController.handleCompositeAction(
-      testOnLibrary_resetInitAndAddTestDataToLibraryDeployment(miroirConfig, libraryEntitiesAndInstances),
+      resetAndinitializeDeploymentCompositeAction(
+        selfApplicationDeploymentLibrary.uuid,
+        typedAdminConfigurationDeploymentLibrary.configuration,
+        {
+          dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
+          metaModel: defaultMiroirMetaModel,
+          selfApplication: selfApplicationLibrary,
+          adminApplicationDeploymentConfiguration: typedAdminConfigurationDeploymentLibrary,
+          selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
+          applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
+          applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,
+          applicationVersion: selfApplicationVersionLibraryInitialVersion,
+        },
+        libraryEntitiesAndInstances
+        // [
+        //   {
+        //     entity: entityPublisher as MetaEntity,
+        //     entityDefinition: entityDefinitionPublisher as EntityDefinition,
+        //     instances: [publisher1 as EntityInstance, publisher2 as EntityInstance, publisher3 as EntityInstance],
+        //   },
+        // ]
+      ),
+      // testOnLibrary_resetInitAndAddTestDataToLibraryDeployment(miroirConfig, libraryEntitiesAndInstances),
       {},
       defaultMiroirMetaModel
     );

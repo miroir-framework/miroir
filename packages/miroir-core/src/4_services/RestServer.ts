@@ -242,7 +242,10 @@ export async function restActionHandler(
   body: HttpRequestBodyFormat,
   params: any,
 ):Promise<void> {
-  // console.log("restActionHandler called with params", params, "body", body);
+  console.log("restActionHandler called with method", method);
+  console.log("restActionHandler called with effectiveUrl", effectiveUrl);
+  console.log("restActionHandler called with","body", JSON.stringify(body, undefined, 2));
+  console.log("restActionHandler called with params", JSON.stringify(params,undefined,2));
   const actionName: string = typeof params["actionName"] == "string" ? params["actionName"] : params["actionName"][0];
 
   // log.debug("restActionRunner params", params, "body", body);
@@ -353,6 +356,11 @@ export async function queryTemplateActionHandler(
   params: any,
 ):Promise<void> {
   log.info("RestServer queryTemplateActionHandler params", params, "body", body);
+  console.log("queryTemplateActionHandler called with method", method);
+  console.log("queryTemplateActionHandler called with effectiveUrl", effectiveUrl);
+  console.log("queryTemplateActionHandler called with","body", JSON.stringify(body, undefined, 2));
+  console.log("queryTemplateActionHandler called with params", JSON.stringify(params,undefined,2));
+
 
   /**
    * shall a query be executed based on the state of the localCache, or fetching state from a PersistenceStore?

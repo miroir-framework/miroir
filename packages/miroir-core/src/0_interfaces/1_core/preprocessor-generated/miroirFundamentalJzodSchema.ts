@@ -4256,28 +4256,6 @@ export const miroirFundamentalJzodSchema = {
                 "editable": false
               }
             }
-          },
-          "model": {
-            "type": "any",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 9,
-                "defaultLabel": "SelfApplication Deployment Model",
-                "editable": true
-              }
-            }
-          },
-          "data": {
-            "type": "any",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 10,
-                "defaultLabel": "SelfApplication Deployment Data",
-                "editable": true
-              }
-            }
           }
         }
       },
@@ -17491,66 +17469,6 @@ export const miroirFundamentalJzodSchema = {
                         "description": "The SelfApplication of the Branch.",
                         "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                         "editable": false
-                      }
-                    }
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "carryOnObject"
-                    }
-                  }
-                ]
-              },
-              "model": {
-                "type": "union",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "id": 9,
-                    "defaultLabel": "SelfApplication Deployment Model",
-                    "editable": true
-                  }
-                },
-                "definition": [
-                  {
-                    "type": "any",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "id": 9,
-                        "defaultLabel": "SelfApplication Deployment Model",
-                        "editable": true
-                      }
-                    }
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "carryOnObject"
-                    }
-                  }
-                ]
-              },
-              "data": {
-                "type": "union",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "id": 10,
-                    "defaultLabel": "SelfApplication Deployment Data",
-                    "editable": true
-                  }
-                },
-                "definition": [
-                  {
-                    "type": "any",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "id": 10,
-                        "defaultLabel": "SelfApplication Deployment Data",
-                        "editable": true
                       }
                     }
                   },

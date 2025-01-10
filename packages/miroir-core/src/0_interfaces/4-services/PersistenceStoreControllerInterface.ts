@@ -159,7 +159,7 @@ export type AdminStoreFactoryRegister = Map<string,PersistenceStoreAdminSectionF
 
 export interface InitApplicationParameters {
   // TODO: gice actual types to parameters, not just EntityInstance
-  metaModel:MetaModel, 
+  metaModel:MetaModel,
   dataStoreType: DataStoreType,
   selfApplication: SelfApplication,
   // adminApplicationDeploymentConfiguration: SelfApplicationDeploymentConfiguration,
@@ -184,7 +184,8 @@ export interface PersistenceStoreControllerInterface
     metaModel: MetaModel,
     dataStoreType: DataStoreApplicationType,
     selfApplication: SelfApplication,
-    adminApplicationDeploymentConfiguration: EntityInstance,
+    selfApplicationDeploymentConfiguration: SelfApplicationDeploymentConfiguration,
+    // adminApplicationDeploymentConfiguration: AdminApplicationDeploymentConfiguration,
     applicationModelBranch: EntityInstance,
     applicationVersion: EntityInstance,
     applicationStoreBasedConfiguration: EntityInstance

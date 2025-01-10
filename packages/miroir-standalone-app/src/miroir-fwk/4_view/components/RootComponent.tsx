@@ -197,6 +197,7 @@ export const RootComponent = (props: RootComponentProps) => {
     jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
     transformerJzodSchema as JzodSchema,
     [transformerMenuV1],
+    entityDefinitionAdminApplication as EntityDefinition,
     entityDefinitionSelfApplication as EntityDefinition,
     entityDefinitionSelfApplicationVersion as EntityDefinition,
     entityDefinitionDeployment as EntityDefinition,

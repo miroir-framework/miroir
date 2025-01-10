@@ -470,6 +470,7 @@ export {
   LogLevelOptions,
   defaultLevels,
   SpecificLoggerOptionsMap,
+  LoggerOptions,
 } from "./0_interfaces/4-services/LoggerInterface.js";
 export {
   PersistenceStoreControllerManagerInterface

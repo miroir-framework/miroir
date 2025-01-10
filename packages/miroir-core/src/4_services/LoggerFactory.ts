@@ -137,7 +137,7 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
           effectiveLoggerFactory.create(
             logLevelOptions
           ),
-          loggerOptions.context ?? defaultLoggerContextElement,
+          loggerOptions.contextFilter ?? defaultLoggerContextElement,
           l[0], l[1].logLevel as any, l[1].template as any
         )
       );

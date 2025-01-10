@@ -63,7 +63,7 @@ export interface LoggerOptions {
   defaultLevel: keyof typeof defaultLevels;
   defaultTemplate: string;
   // context?: LoggerGlobalContext;
-  context?: LoggerContextElement;
+  contextFilter?: LoggerContextElement;
   specificLoggerOptions: SpecificLoggerOptionsMap;
 }
 

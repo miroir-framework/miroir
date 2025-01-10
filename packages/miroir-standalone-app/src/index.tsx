@@ -272,6 +272,7 @@ async function startWebApp(root:Root) {
     const miroirContext = new MiroirContext(currentMiroirConfig);
 
     const client: RestClient = new RestClient(window.fetch.bind(window));
+
     const persistenceClientAndRestClient = new RestPersistenceClientAndRestClient(
       currentMiroirConfig.client.emulateServer
         ? currentMiroirConfig.client.rootApiUrl
@@ -295,6 +296,7 @@ async function startWebApp(root:Root) {
   
     // ################################################
     if (currentMiroirConfig.client.emulateServer) {
+      throw new Error("emulateServer must be re-implemented using RestClientStub");
       const persistenceStoreControllerManagerForEmulatedServer = new PersistenceStoreControllerManager(
         ConfigurationService.adminStoreFactoryRegister,
         ConfigurationService.StoreSectionFactoryRegister,

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import {
-  SelfApplicationDeploymentConfigurationSchema,
+  // SelfApplicationDeploymentConfigurationSchema,
   domainElementObject,
   entity,
   entityDefinition,
@@ -9,7 +9,8 @@ import {
   entityInstancesUuidIndex,
   jzodElement,
   jzodSchema,
-  metaModel
+  metaModel,
+  selfApplicationDeploymentConfiguration
 } from "miroir-core";
 
 export const TableComponentTypeSchema = z.enum(["EntityInstance", "JSON_ARRAY"]);
@@ -41,7 +42,8 @@ export const tableComponentCorePropsSchema = z.object({
 
 export const tableComponentEntityInstancePropsSchema = tableComponentCorePropsSchema.extend({
   type: z.literal(TableComponentTypeSchema.enum.EntityInstance),
-  displayedDeploymentDefinition: SelfApplicationDeploymentConfigurationSchema,
+  // displayedDeploymentDefinition: SelfApplicationDeploymentConfigurationSchema,
+  displayedDeploymentDefinition: selfApplicationDeploymentConfiguration,
   currentEntity: entity.optional(),
   currentEntityDefinition: entityDefinition,
   onRowEdit: z.function().args(z.any()).returns(z.void()).optional(),

@@ -5,21 +5,5 @@
   "name": "DefaultMiroirApplicationDeployment",
   "defaultLabel": "Miroir SelfApplication Deployment",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-  "description": "The default Deployment for SelfApplication Miroir",
-  "model": {
-    "location": {
-      "type": "sql",
-      "side": "server",
-      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "miroir"
-    }
-  },
-  "data": {
-    "location": {
-      "type": "sql",
-      "side": "server",
-      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "miroir"
-    }
-  }
+  "description": "The default Deployment for SelfApplication Miroir"
 }

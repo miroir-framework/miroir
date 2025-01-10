@@ -1,4 +1,7 @@
 import express, { Request } from 'express';
+import bodyParser from 'body-parser';
+import { readFileSync } from 'fs';
+import log from 'loglevelnext'; // TODO: use this? or plain "console" log?
 
 // import { fetch } from 'cross-fetch';
 
@@ -6,6 +9,7 @@ import {
   ConfigurationService,
   LoggerFactoryInterface,
   LoggerInterface,
+  LoggerOptions,
   MiroirConfigServer,
   MiroirContext,
   MiroirLoggerFactory,
@@ -16,6 +20,7 @@ import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
+  circularReplacer,
   // adminConfigurationDeploymentTest1,
   defaultLevels,
   miroirCoreStartup,
@@ -25,9 +30,6 @@ import {
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
-
-import { readFileSync } from 'fs';
-import log from 'loglevelnext'; // TODO: use this? or plain "console" log?
 import { setupMiroirDomainController } from 'miroir-localcache-redux';
 
 const packageName = "server"
@@ -38,6 +40,12 @@ const specificLoggerOptions: SpecificLoggerOptionsMap = {
   "4_miroir-core_RestTools": {level:defaultLevels.INFO, },
   // "4_miroir-redux_LocalCacheSlice": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) CCCCC-"},
   "4_miroir-redux_LocalCacheSlice": {level:undefined, template:undefined},
+}
+const loggerOptions: LoggerOptions = {
+  defaultLevel: "INFO",
+  defaultTemplate: "[{{time}}] {{level}} ({{name}}) -",
+  // context: undefined,
+  specificLoggerOptions: specificLoggerOptions,
 }
 
 const loglevelnext: LoggerFactoryInterface = log as any as LoggerFactoryInterface;
@@ -74,7 +82,16 @@ const portFromConfig: number = Number(miroirConfig.server.rootApiUrl.substring(m
 
 
 const app = express();
-app.use(express.json({limit: '50mb'}));
+app.use(bodyParser.json({limit: '50mb'}));
+// app.use(express.json());
+// app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
+
+// // create application/json parser
+// var jsonParser = bodyParser.json({limit: '50mb'});
+ 
+// // create application/x-www-form-urlencoded parser
+// var urlencodedParser = bodyParser.urlencoded({ extended: true, limit: '50mb' });
+
 myLogger.info(`Server being set-up, going to execute on the port::${portFromConfig}`);
 
 miroirCoreStartup();
@@ -82,11 +99,12 @@ miroirFileSystemStoreSectionStartup();
 miroirIndexedDbStoreSectionStartup();
 miroirPostgresStoreSectionStartup();
 
-MiroirLoggerFactory.startRegisteredLoggers(
+await MiroirLoggerFactory.startRegisteredLoggers(
   loglevelnext,
-  (defaultLevels as any)[(miroirConfig as any).server.defaultLevel],
-  (miroirConfig as any).server.defaultTemplate,
-  (miroirConfig as any).server.specificLoggerOptions
+  loggerOptions
+  // (defaultLevels as any)[(miroirConfig as any).server.defaultLevel],
+  // (miroirConfig as any).server.defaultTemplate,
+  // (miroirConfig as any).server.specificLoggerOptions
 );
 
 const miroirContext = new MiroirContext(miroirConfig);
@@ -124,9 +142,13 @@ for (const c of Object.entries(configurations)) {
 for (const op of restServerDefaultHandlers) {
   (app as any)[op.method](
     op.url,
+    // jsonParser,
+    // urlencodedParser,
     async (request: Request<{}, any, any, any, Record<string, any>>, response: any, context: any) => {
       const body = request.body;
-
+      // myLogger.info("server received request", op.method, request.originalUrl, JSON.stringify(request, circularReplacer, 2));
+      // myLogger.info("server received body", op.method, request.originalUrl, body);
+      // myLogger.info("server received context", op.method, request.originalUrl, context.body);
       try {
         const result = await op.handler(
           true, // useDomainControllerToHandleModelAndInstanceActions: since we're on the server, we use the localCache as intermediate step, to access the persistenceStore
